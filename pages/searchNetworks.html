@@ -1,0 +1,69 @@
+<div>
+
+    <h1>Search Networks</h1>
+
+    <div class="pull-left">
+        <form id="frmSearch" ng-submit="submitNetworkSearch()">
+            <div style="position: relative;">
+                <i id="searchInfo" class="icon-info-sign Hand" title="Info" rel="tooltip"
+                   style="font-size: 1.25em; left: 20px; position: absolute; top: 0.25em;"></i>
+                <label class="Attribute-Editable">Search:</label>
+
+                <div id="divSearch" style="display: inline-block;">
+                    <i class="icon-search"></i>
+                    <input type="search" ng-model="searchString" placeholder="Search keywords"/>
+                </div>
+            </div>
+
+            <div>
+                <label class="Attribute-Editable">Type:</label>
+                <select id="ddlSearchOperator" ng-model="searchType">
+                    <option value="starts-with">Starts With</option>
+                    <option value="contains">Contains</option>
+                    <option value="exact-match">Exact Match</option>
+                </select>
+            </div>
+
+            <div class="AlignCenter">
+                <button type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="Clear"></div>
+
+    <pre ng-show="message">
+        {{message}}
+    </pre>
+
+    <pre ng-model="networkSearchResults">
+        {{networkSearchResults}}
+    </pre>
+
+    <table ng-model="networkSearchResults">
+        <thead>
+        <tr>
+            <th>Source</th>
+            <th>Title</th>
+            <th style="width: 10%;">Nodes</th>
+            <th style="width: 10%;">Edges</th>
+        </tr>
+        </thead>
+
+        <tbody ng-show="networkSearchResults.length == 0">
+        <tr>
+            <td colspan="5">No results found that match your criteria.</td>
+        </tr>
+        </tbody>
+
+        <tbody ng-show="networkSearchResults.length > 0" ng-repeat="network in networkSearchResults">
+        <tr>
+            <td>{{network.metadata["Source"]}}</td>
+            <td>{{network.name}}</td>
+            </td>
+            <td class="AlignRight">{{network.nodeCount}}</td>
+            <td class="AlignRight">{{network.edgeCount}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

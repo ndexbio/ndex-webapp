@@ -1,0 +1,259 @@
+/******************************************************************************
+* Smaller than standard 960 (devices and browsers)
+******************************************************************************/
+@media only screen and (max-width: 959px)
+{
+    .navbar-fixed-top,
+    .navbar-fixed-bottom
+    {
+        position: fixed;
+    }
+
+    #tblSearchResults
+    {
+        width: 100%;
+    }
+
+    #divModal
+    {
+        width: 50%;
+    }
+}
+
+/******************************************************************************
+* Tablet Portrait size to standard 960 (devices and browsers)
+******************************************************************************/
+@media only screen and (min-width: 768px) and (max-width: 959px)
+{
+    #imgProfile
+    {
+        top: 25%;
+    }
+
+    #imgProfileBackground
+    {
+        height: 150px;
+    }
+
+    #divMetadata
+    {
+        border-left: 0 none;
+    }
+}
+
+/******************************************************************************
+* All Mobile Sizes (devices and browser)
+******************************************************************************/
+@media only screen and (max-width: 767px)
+{
+    #imgProfile
+    {
+        top: 40%;
+    }
+
+    #imgProfileBackground
+    {
+        height: 150px;
+    }
+
+    #divModal
+    {
+        width: 100%;
+    }
+
+    #divMetadata
+    {
+        border-left: 0 none;
+    }
+}
+
+/******************************************************************************
+* Mobile Landscape Size to Tablet Portrait (devices and browsers)
+******************************************************************************/
+@media only screen and (min-width: 481px) and (max-width: 767px)
+{
+}
+
+/******************************************************************************
+* Mobile Portrait Size to Mobile Landscape Size (devices and browsers)
+******************************************************************************/
+@media only screen and (max-width: 480px)
+{
+    body
+    {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    input, textarea, .uneditable-input
+    {
+        width: 175px;
+    }
+
+    input[type="search"]
+    {
+        width: 160px;
+    }
+
+    nav
+    {
+        margin-bottom: 20px;
+    }
+
+    select
+    {
+        width: auto;
+    }
+
+    label.Attribute
+    {
+        width: 7em;
+    }
+
+    label.Attribute-Editable
+    {
+        width: 7em;
+    }
+
+    .mobile-hide,
+    [class*=" icon-"].mobile-hide
+    {
+        display: none;
+    }
+
+    .navbar-fixed-top
+    {
+        position: static;
+    }
+
+    .navbar .brand
+    {
+        margin-left: 0;
+    }
+
+    .navbar .btn-navbar
+    {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .tabbable table
+    {
+        width: 100%;
+    }
+
+    #divLogin,
+    #divJoin
+    {
+        width: 100%;
+    }
+
+    #divSidebar
+    {
+        position: absolute;
+        top: 52px;
+    }
+
+    #divUser div.dropdown,
+    #divGroup div.dropdown
+    {
+        display: block;
+        left: 0;
+        position: relative;
+        text-align: left;
+    }
+
+    #imgProfile
+    {
+        top: 20%;
+    }
+
+    #imgProfileBackground
+    {
+        height: 120px;
+    }
+
+    #divUser div.tabbable,
+    #divGroup div.tabbable
+    {
+        margin-bottom: 50px;
+    }
+
+    #divNotifications
+    {
+        margin-bottom: 20px;
+    }
+
+    #divNetwork > dl.Accordion
+    {
+        width: 97%;
+    }
+
+    #divNetwork > dl.Accordion dt
+    {
+        display: block;
+    }
+
+    #divNetwork h3 > input.Invisible
+    {
+        width: 95%;
+    }
+
+    #divNetworkProperties
+    {
+        float: none;
+        width: 100%;
+    }
+
+    #divMetadata
+    {
+        border-left: 0 none;
+        border-top: 1px solid #CCC;
+        float: none;
+        min-height: 100px;
+        margin-top: 25px;
+        padding-top: 25px;
+        width: 100%;
+    }
+
+    #ulMetadata input
+    {
+        width: 160px;
+    }
+
+    #ddSearchNetwork #divSearch
+    {
+        float: none;
+        margin: 0 0 25px 0;
+        width: 100%;
+    }
+
+    #ddSearchNetwork #divSearch input
+    {
+        width: 90%;
+    }
+
+    #ddSearchNetwork dl.Accordion
+    {
+        float: none;
+        margin: 0 auto;
+        width: 95%;
+    }
+
+    #ulSubnetwork > li > strong:first-child
+    {
+        display: block;
+    }
+
+    #ulSubnetwork em
+    {
+        display: block;
+        text-align: center;
+    }
+
+    #ulSubnetwork > li > strong:last-child
+    {
+        display: block;
+        text-align: right;
+    }
+}
