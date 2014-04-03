@@ -41,6 +41,17 @@ var NdexClient =
             });
     },
 
+    getDeleteConfig: function(url) {
+        var config ={
+            method: 'DELETE',
+            url: NdexClient.NdexServerURI + url,
+            headers: {
+                Authorization: "Basic " + NdexClient.getEncodedUser()
+            }
+        }
+        return config;
+    },
+
     /****************************************************************************
      * AJAX GET request.
      ****************************************************************************/
@@ -124,90 +135,49 @@ var NdexClient =
             });
     },
 
+    getPutConfig: function(url, putData){
+        var config ={
+            method: 'PUT',
+            url: NdexClient.NdexServerURI + url,
+            data: JSON.stringify(putData),
+            headers: {
+                Authorization: "Basic " + NdexClient.getEncodedUser()
+            }
+        }
+        return config;
+    },
+
     /****************************************************************************
      * Logs the user out of the system.
      ****************************************************************************/
-    signOut: function () {
-        delete localStorage.username;
-        delete localStorage.password;
-        delete localStorage.userId;
-
-
-
+    clearUserCredentials: function () {
+        if (this.checkLocalStorage()){
+            delete localStorage.username;
+            delete localStorage.password;
+            delete localStorage.userId;
+        }
         //if (localStorage["Groups Search"]) delete localStorage["Groups Search"];
         //if (localStorage["Users Search"]) delete localStorage["Users Search"];
         //if (localStorage["Networks Search"]) delete localStorage["Networks Search"];
 
     },
 
-    /****************************************************************************
-     * Submits the user's credentials to the server for authentication.
-     ****************************************************************************/
-    submitCredentials: function (username, password, successAction) {
-
-        if (typeof(localStorage) === "undefined") {
-            $.gritter.add({ title: "Unsupported Browser", text: "Your browser isn't supported; you'll need to upgrade it to use this site." });
-            return;
-        }
-
-        if (!username || !password) {
-            $.gritter.add({ title: "Invalid Input", text: "username and password are required." });
-            return;
-        }
-
-        delete localStorage.username;
-        delete localStorage.password;
-        delete localStorage.userId;
-
-        console.log("username = " + username + " password = " + password);
-
-        this.get(
-            "/users/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password),
-            null,
-            function (userData) {
-                //TODO: Need to create an unsupported page to let the user know they need to upgrade their browser
-                if (userData) {
-                    localStorage.username = userData.username;
-                    localStorage.password = password;
-                    localStorage.userId = userData.id;
-                    successAction();
-                }
-                else
-                    $.gritter.add({ title: "Server Error", text: "An error occurred during authentication." });
-            },
-            function () {
-                $.gritter.add({ title: "Unauthorized", text: "Invalid username or password." });
-            }
-        );
-
+    checkLocalStorage: function(){
+        if (localStorage == undefined) return false;
+        return true;
     },
 
-    submitNetworkSearch: function(searchType, searchString, message, networkSearchResults){
-        console.log("About to post search: " + searchType + "  " + searchString);
-        this.post(
-            "/networks/search/" + searchType,
-            {
-                    searchString: searchString,
-                    top: 100,
-                    skip: 0
-            },
-            function (networks) {
-                if (networks) {
-                    console.log("Search found: " + networks.length + " networks ");
-                    networkSearchResults = networks;
-                    console.log("Set networkSearchResults");
-                    console.log("first network name = " + networks[0].name);
-                    message = "first network name = " + networks[0].name;
-                }
-                else
-                    $.gritter.add({ title: "Search Failure", text: "No networks found" });
-            },
-            function () {
-                $.gritter.add({ title: "Search Error", text: "Error in network search" });
-            }
-        );
-
+    setUserCredentials: function(userData, password){
+        localStorage.username = userData.username;
+        localStorage.password = password;
+        localStorage.userId = userData.id;
     },
+
+    getSubmitUserCredentialsConfig: function (username, password){
+        var url = "/users/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password);
+        return this.getGetConfig(url);
+    },
+
 
     getNetworkSearchConfig: function(searchType, searchString){
         var url = "/networks/search/" + searchType;
@@ -255,7 +225,9 @@ var NdexClient =
             return null;
     },
 
-
+    /****************************************************************************
+     * create a nice label for a node
+     ****************************************************************************/
 
     getNodeLabel: function(node, network) {
         if ("name" in node && node.name && node.name != "")
