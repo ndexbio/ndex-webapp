@@ -23,10 +23,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js"></script>
 
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+
     <script src="js/cytoscape.js-2.0.3/cytoscape.min.js"></script>
     <script src="js/cytoscape.js-2.0.3/arbor.js"></script>
 
     <script src="js/ndex-client.js"></script>
+    <script src="js/d3-renderer.js"></script>
     <script src="js/script.js"></script>
 
 </head>
@@ -44,6 +48,7 @@
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#searchNetworks">Search Networks</a></li>
             <li><a href="#cjs">Visualize</a></li>
+            <li><a href="#networkQuery">Network</a></li>
             <!-- Show sign in if no user, sign out otherwise -->
             <li ng-show="!username">
                 <a href="#signIn">Sign in</a>

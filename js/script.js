@@ -37,6 +37,12 @@ ndexApp.config(function ($routeProvider) {
             controller: 'cjsController'
         })
 
+        // route for the networkQuery page
+        .when('/networkQuery', {
+            templateUrl: 'pages/networkQuery.html',
+            controller: 'networkQueryController'
+        })
+
         // route for the signIn page
         .when('/signIn', {
             templateUrl: 'pages/signIn.html',
@@ -142,6 +148,79 @@ function createCyElements(network) {
 
     return elements;
 };
+
+var cn, csn;
+ndexApp.controller('networkQueryController', function ($scope, $http) {
+    if (!$scope.nodeLabels) $scope.nodeLabels = {};
+    if (!$scope.predicateLabels) $scope.predicateLabels = {};
+    if (!$scope.currentNetwork) $scope.currentNetwork = {};
+    $scope.currentNetworkId = "C25R1174";   // hardwired for testing
+    $scope.editMode = false;
+
+    $scope.searchTypes = [{
+        "id": "NEIGHBORHOOD",
+        "description": "Neighborhood",
+        "name": "Neighborhood"
+    },
+        {
+            "id": "INTERCONNECT",
+            "description": "Find paths between nodes with these terms",
+            "name": "Neighborhood"
+        }];
+
+    $scope.submitNetworkQuery = function() {
+        var terms = $scope.searchString.split(/[ ,]+/);
+        var networkQueryConfig = NdexClient.getNetworkQueryConfig($scope.currentNetworkId, terms, $scope.searchType.id, 2);
+        $http(networkQueryConfig)
+            .success(function (network) {
+                console.log("got query results for : " + $scope.searchString) ;
+                csn = network;
+                $scope.currentSubnetwork = network;
+            });
+    }
+
+    $scope.showEditControls = function()
+    {
+        if (!$scope.currentNetwork) return false;
+        if (NdexClient.canEdit($scope.currentNetwork) && $scope.editMode) return true;
+        return false;
+    };
+
+    // if there is a current network id, get the network meta information
+    var getNetworkConfig = NdexClient.getNetworkConfig($scope.currentNetworkId);
+    $http(getNetworkConfig)
+        .success(function (network) {
+            console.log("got current network") ;
+            cn = network;
+            $scope.currentNetwork = network;
+        });
+
+    //$scope.message = "retrieving example network for display...";
+
+
+    var blockSize = 500;
+    var skipBlocks = 0;
+    var config = NdexClient.getNetworkQueryByEdgesConfig($scope.currentNetworkId, blockSize, skipBlocks);
+    $http(config)
+        .success(function (network) {
+            NdexClient.updateNodeLabels($scope.nodeLabels, network);
+            $scope.currentSubnetwork = network;
+            csn = network;
+            $scope.message = "showing network '" + network.name + "'";
+
+
+            console.log('D3 Network rendering start...');
+            var height = 250; //angular.element('#canvas').height;
+            var width = 600; //angular.element('#canvas').width;
+            d3Setup(height, width, '#canvas');
+            $scope.graphData = createD3Json(network);
+            d3Render($scope.graphData);
+
+        });
+
+});
+
+
 
 ndexApp.controller('cjsController', function ($scope, $http) {
     var NETWORK_SECTION_ID = '#cyNetwork';

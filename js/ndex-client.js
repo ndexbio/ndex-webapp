@@ -1,7 +1,7 @@
 var NdexClient =
 {
-    //NdexServerURI: "http://localhost:8080/ndexbio-rest",
-    NdexServerURI: "http://test.ndexbio.org/rest/ndexbio-rest",
+    NdexServerURI: "http://localhost:8080/ndexbio-rest",
+    //NdexServerURI: "http://test.ndexbio.org/rest/ndexbio-rest",
 
     /****************************************************************************
      * Initialization of the client.
@@ -189,10 +189,31 @@ var NdexClient =
         return this.getPostConfig(url, postData);
     },
 
+    getNetworkConfig: function(networkId){
+        // networks/{networkId}
+        var url = "/networks/" + networkId ;
+        return this.getGetConfig(url, null);
+    },
+
     getNetworkQueryByEdgesConfig: function(networkId, blockSize, skipBlocks){
         // networks/{networkId}/edges/{skip}/{top}
         var url = "/networks/" + networkId + "/edges/" + skipBlocks + "/" + blockSize;
         return this.getGetConfig(url, null);
+    },
+
+    getNetworkQueryConfig: function(networkId, startingTerms, searchType, searchDepth){
+        console.log("searchType = " + searchType);
+        console.log("searchDepth = " + searchDepth);
+        for (index in startingTerms){
+            console.log("searchTerm " + index + " : " + startingTerms[index]);
+        }
+        var url = "/networks/" + networkId + "/query";
+        var postData = {
+            startingTermStrings: startingTerms,
+            searchType: searchType,
+            searchDepth: searchDepth
+        };
+        return this.getPostConfig(url, postData);
     },
 
     /****************************************************************************
@@ -226,8 +247,44 @@ var NdexClient =
     },
 
     /****************************************************************************
+     * Determines if the user has write-access to the network.
+     ****************************************************************************/
+    canEdit: function(currentNetwork)
+    {
+        if (!currentNetwork || !this.currentUser) return false;
+        for (var networkIndex = 0; networkIndex < this.currentUser.networks().length; networkIndex++)
+        {
+            var network = this.currentUser.networks()[networkIndex];
+            if (network.resourceId() === currentNetwork.id() && network.permissions() != "READ")
+                return true;
+        }
+
+        return false;
+    },
+
+
+
+    hasFormat: function(format){
+        // take dublin core annotation as first priority
+        var currentFormat = Network.ViewModel.Network().metadata.get('dc:format')();
+        // otherwise, take simple "Format"
+        if (!currentFormat){
+            currentFormat = Network.ViewModel.Network().metadata.get('Format')();
+        }
+        if (!currentFormat) return false;
+        if (currentFormat === format) return true;
+        return false;
+    },
+
+
+    /****************************************************************************
      * create a nice label for a node
      ****************************************************************************/
+    updateNodeLabels: function(nodeLabelMap, network){
+        $.each(network.nodes, function (id, node){
+            nodeLabelMap[id] = NdexClient.getNodeLabel(node, network) ;
+        });
+    },
 
     getNodeLabel: function(node, network) {
         if ("name" in node && node.name && node.name != "")

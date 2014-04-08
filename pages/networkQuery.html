@@ -1,0 +1,260 @@
+<div>
+<div id="canvas" class="intgraph AlignCenter"></div>
+
+<!--   debugging
+<pre ng-show="message">
+    {{message}}
+</pre>
+
+<pre >
+    {{d3Json}}
+</pre>
+-->
+
+<div id="divNetwork">
+    <div id="divNetworkHeadline" class="row">
+        <div id="divNetworkId" class="span11 pull-left" ng-model="currentSubnetwork">
+            <h3>{{name}}</h3>
+        </div>
+        <div id="divNetworkMenu" class="span1">
+            <div class="dropdown pull-right" ng-model="currentSubnetwork">
+                <a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown">
+                    <i class="icon-cog icon-large"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-show="showEditControls()">
+                        <a href="javascript:void()" class="accountMiniMenu"
+                           ng-click="toggleEditProperties">Edit Network Properties</a>
+                    </li>
+                    <li ng-show="editMode" ng-click="toggleEditProperties">
+                        Exit Edit Network Properties
+                    </li>
+                    <li ng-show="currentNetworkHasFormat('BEL_DOCUMENT')"
+                        ng-click="displayXbelExportNetworkModal()"
+                        class="accountMiniMenu">
+                        Export Network as XBEL
+                    </li>
+                    <li ng-click="saveCurrentSubnetwork()">
+                        Save Selected Subnetwork
+                    </li>
+                    <!--
+                    <li>
+                        <a data-bind="attr: { target: '_blank', href: '/network/' + $root.NetworkId() + '/visualize' }">Visualize
+                            Network in Cytoscape.js</a>
+                    </li>
+
+                    <li>
+                        <a data-bind="attr: { target: '_blank', href: '/network/' + $root.NetworkId() + '/triptych' }">Visualize
+                            Network in Triptych 3D</a>
+                    </li>
+                     -->
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="divNetworkStats" class="span11 offset1" ng-model="currentSubnetwork">
+        <span>
+             <label>nodes:</label>
+             <span>{{nodeCount}}</span>
+        </span>
+        <span>
+             <label>edges:</label>
+             <span>{{edgeCount}}</span>
+        </span>
+        </div>
+    </div>
+    <dl id="dlNetworkAccordion" class="Accordion">
+        <dt ng-model="currentSubnetwork">Properties
+        <span class="pull-right" ng-show="showEditControls()">
+            <button type="button" class="accordionButton"
+                    ng-click="toggleEditProperties"
+                    id="btnEditProperties">Edit
+            </button>
+        </span>
+        </dt>
+        <dd id="ddMetadata" ng-model="currentSubnetwork">
+            <div id="divEditableNetworkProperties" ng-show="showEditControls()">
+                <!--
+                <div >
+                    <label class="Attribute-Editable">Name:</label>
+                    <input type="text" class="Invisible" readonly placeholder="Name"
+                           data-bind="value: name, event: { change: Network.updateNetwork }, isEditable: Network.ViewModel.Network().id()"/>
+                </div>
+                <div>
+                    <label class="Attribute-Editable">Description:</label>
+                    <textarea class="Invisible" readonly placeholder="Description"
+                              data-bind="value: description, event: { change: Network.updateNetwork }, isEditable: Network.ViewModel.Network().id()"></textarea>
+                </div>
+                <div>
+                    <label class="Attribute-Editable">Public:</label>
+                    <input type="checkbox" data-bind="checked: isPublic, event: { click: Network.updateNetwork }"/>
+                </div>
+                <div>
+                    <label class="Attribute-Editable">Locked:</label>
+                    <input type="checkbox" data-bind="checked: isLocked, event: { click: Network.updateNetwork }"/>
+                </div>
+                -->
+            </div>
+            <div id="divNetworkProperties" ng-hide="showEditControls()">
+                <div>
+                    <label class="Attribute">Description:</label>
+                    <span>{{description}}</span>
+                </div>
+                <!--   TODO - checkboxes in angular
+                <div>
+                    <label class="Attribute">Public:</label>
+                    <input type="checkbox" data-bind="checked: isPublic"/>
+                </div>
+                <div>
+                    <label class="Attribute">Locked:</label>
+                    <input type="checkbox" data-bind="checked: isLocked"/>
+                </div>
+                -->
+            </div>
+
+            <div id="divMetadata">
+
+                <ul ng-repeat="property in metadata.items">
+                    <!--
+                    <li ng-show="showEditControls">
+                        <label class="Attribute-Editable">{{key}}</label>
+                        <input type="text" class="Invisible" readonly
+                               data-bind="value: value, event: { change: Network.updateNetwork }, isEditable: Network.ViewModel.Network().id()"/>
+                        <i class="btn icon-remove mobile-hide" title="Remove" rel="tooltip"
+                           data-bind="click: Network.removeMetadata"></i>
+                   </li>
+                   -->
+                   <li ng-hide="showEditControls()">
+                        <label class="Attribute">{{key}}</label>
+                        <span>{{value}}</span>
+                    </li>
+                </ul>
+
+                <div class="AlignCenter" ng-show="showEditControls()">
+                    <button type="button" class="btn" id="btnAddMetadata" ng-click="addProperty()">New Metadata</button>
+                </div>
+            </div>
+        </dd>
+        <!--
+        <dt>Members</dt>
+        <dd data-bind="template: { name: 'membersTemplate', data: Network() }">
+        </dd>
+        -->
+        <dt class="Expanded">Query</dt>
+        <dd id="ddSearchNetwork" data-bind="with: Search">
+            <form id="frmSearchNetwork" ng-submit="submitNetworkQuery()">
+                <div id="divSearch">
+                    <i class="icon-search"></i>
+                    <input type="search" ng-model="searchString" placeholder="Network Terms" />
+                    <span>
+                        <label class="Attribute-Editable">Type:</label>
+                        <select id="ddlSearchOperator" ng-model="searchType.id" ng-selected="INTERCONNECT"
+                                ng-options="searchType.id as searchType.name for searchType in searchTypes" required></select>
+                    </span>
+                    <button type="submit" class="btn">Run Query</button>
+                </div>
+            </form>
+        </dd>
+        <dt class="Expanded">Selected Subnetwork</dt>
+        <dd id="ddSubnetwork" ng-model="currentSubnetwork">
+            <ul class="nav nav-tabs tab-title">
+                <li class="active">
+                    <a href="#divSubnetwork" data-toggle="tab">
+                        <i class="icon-exchange"></i>
+                        Edges [ <span>{{currentSubnetwork.edgeCount}}</span> out of
+                        <span>{{currentNetwork.edgeCount}}</span> ]
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="divSubnetwork">
+                    <ul id="ulSubnetwork" ng-repeat="(id, edge) in currentSubnetwork.edges">
+
+                            <li>
+                                <i class="icon-expand Hand" ng-show="hasAliases(edge)"
+                                   ng-click="toggleTermAliases"></i>
+
+
+                                <strong>{{nodeLabels[edge.s]}}</strong>
+                                <em>{{currentSubnetwork.terms[edge.p].name}}</em>
+                                <strong>{{nodeLabels[edge.o]}}</strong>
+
+
+                                <sup rel="tooltip">{{edgeFootnotes[edge]}}
+                                </sup>
+
+                            </li>
+                            <!-- todo: aliases
+                            <li class="TermAliases" ng-show="hasAliases">
+
+                                <div>
+                                    Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                                </div>
+
+                                <div>
+                                    Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                                </div>
+
+                            </li>
+                         -->
+
+                    </ul>
+                </div>
+            </div>
+        </dd>
+    </dl>
+</div>
+
+ <!--
+<script type="text/html" id="newMetadata">
+    <form id="frmNewMetadata">
+        <div>
+            <label class="Attribute-Editable">Key:</label>
+            <input type="text" id="txtMetadataKey" placeholder="(case sensitive)"/>
+        </div>
+
+        <div>
+            <label class="Attribute-Editable">Value:</label>
+            <input type="text" id="txtMetadataValue" placeholder="(case sensitive)"/>
+        </div>
+
+        <div class="AlignCenter">
+            <button type="submit">Add Property</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="membersTemplate">
+    <table style="width: 100%;">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th style="width: 100px;">Permissions</th>
+            <th style="width: 50px;"></th>
+        </tr>
+        </thead>
+        <tbody data-bind="foreach: members">
+        <tr>
+            <td data-bind="text: resourceName"></td>
+
+            <td ng-hid="showEditControls()">{{permissions}}</td>
+
+            <td class="AlignCenter" ng-show="showEditControls()">
+                <select style="position: relative; top: 0.4em;"
+                        data-bind="value: permissions, event: { change: Network.changeMemberPermissions }">
+                    <option value="READ">Read</option>
+                    <option value="WRITE">Write</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </td>
+            <td>
+                <i class="btn icon-remove" title="Remove member" rel="tooltip" data-bind="click: Network.removeMember"/>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+</script>
+-->
+</div>
