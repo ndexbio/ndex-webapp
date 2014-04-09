@@ -195,19 +195,21 @@ var NdexClient =
         return this.getGetConfig(url, null);
     },
 
-    getNetworkQueryByEdgesConfig: function(networkId, blockSize, skipBlocks){
-        // networks/{networkId}/edges/{skip}/{top}
-        var url = "/networks/" + networkId + "/edges/" + skipBlocks + "/" + blockSize;
+    getNetworkQueryByEdgesConfig: function(networkId, skipBlocks, blockSize){
+        // network/{networkId}/edge/{skip}/{top}
+        // GET to NetworkAService
+        var url = "/network/" + networkId + "/edge/" + skipBlocks + "/" + blockSize;
         return this.getGetConfig(url, null);
     },
 
-    getNetworkQueryConfig: function(networkId, startingTerms, searchType, searchDepth){
+    getNetworkQueryConfig: function(networkId, startingTerms, searchType, searchDepth, skipBlocks, blockSize){
+        // POST to NetworkAService
         console.log("searchType = " + searchType);
         console.log("searchDepth = " + searchDepth);
         for (index in startingTerms){
             console.log("searchTerm " + index + " : " + startingTerms[index]);
         }
-        var url = "/networks/" + networkId + "/query";
+        var url = "/network/" + networkId + "/query/" + skipBlocks + "/" + blockSize;
         var postData = {
             startingTermStrings: startingTerms,
             searchType: searchType,
@@ -289,7 +291,7 @@ var NdexClient =
     getNodeLabel: function(node, network) {
         if ("name" in node && node.name && node.name != "")
             return node.name;
-        else if ("represents" in node && node.represents)
+        else if ("represents" in node && node.represents && network.terms[node.represents])
             return this.getTermLabel(network.terms[node.represents], network);
         else
             return "unknown"

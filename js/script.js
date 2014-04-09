@@ -1,6 +1,20 @@
 // create the module and name it ndexApp
 var ndexApp = angular.module('ndexApp', ['ngRoute']);
 
+ndexApp.service('sharedProperties', function() {
+    var currentNetworkId = 'none';
+
+    return {
+        getCurrentNetworkId: function() {
+            return currentNetworkId;
+        },
+        setCurrentNetworkId: function(value) {
+            currentNetworkId = value;
+        }
+    }
+});
+
+
 var cyjsObject = null;
 
 // configure our routes
@@ -104,13 +118,17 @@ ndexApp.controller('signInController', function ($scope, $location, $http) {
     }
 });
 
-ndexApp.controller('searchNetworksController', function ($scope, $http) {
+ndexApp.controller('searchNetworksController', function ($scope, $http, $location, sharedProperties) {
     $scope.message = "initial message";
     /* debugging...
      $scope.networkSearchResults = [
      {name: "fake network"}
      ];
      */
+    $scope.setAndDisplayCurrentNetwork = function(networkId){
+        sharedProperties.setCurrentNetworkId(networkId);
+        $location.path("/networkQuery");
+    }
     $scope.submitNetworkSearch = function () {
         var config = NdexClient.getNetworkSearchConfig($scope.searchType, $scope.searchString);
         $http(config)
@@ -150,11 +168,13 @@ function createCyElements(network) {
 };
 
 var cn, csn;
-ndexApp.controller('networkQueryController', function ($scope, $http) {
+ndexApp.controller('networkQueryController', function ($scope, $http, sharedProperties) {
     if (!$scope.nodeLabels) $scope.nodeLabels = {};
     if (!$scope.predicateLabels) $scope.predicateLabels = {};
     if (!$scope.currentNetwork) $scope.currentNetwork = {};
-    $scope.currentNetworkId = "C25R1174";   // hardwired for testing
+
+    $scope.currentNetworkId = sharedProperties.getCurrentNetworkId();
+    if ('none' === $scope.currentNetworkId) $scope.currentNetworkId = "C25R1174";   // hardwired for testing
     $scope.editMode = false;
 
     $scope.searchTypes = [{
@@ -165,12 +185,12 @@ ndexApp.controller('networkQueryController', function ($scope, $http) {
         {
             "id": "INTERCONNECT",
             "description": "Find paths between nodes with these terms",
-            "name": "Neighborhood"
+            "name": "Interconnect"
         }];
 
     $scope.submitNetworkQuery = function() {
         var terms = $scope.searchString.split(/[ ,]+/);
-        var networkQueryConfig = NdexClient.getNetworkQueryConfig($scope.currentNetworkId, terms, $scope.searchType.id, 2);
+        var networkQueryConfig = NdexClient.getNetworkQueryConfig($scope.currentNetworkId, terms, $scope.searchType.id, 2, 0, 500);
         $http(networkQueryConfig)
             .success(function (network) {
                 console.log("got query results for : " + $scope.searchString) ;
@@ -198,9 +218,9 @@ ndexApp.controller('networkQueryController', function ($scope, $http) {
     //$scope.message = "retrieving example network for display...";
 
 
-    var blockSize = 500;
+    var blockSize = 100;
     var skipBlocks = 0;
-    var config = NdexClient.getNetworkQueryByEdgesConfig($scope.currentNetworkId, blockSize, skipBlocks);
+    var config = NdexClient.getNetworkQueryByEdgesConfig($scope.currentNetworkId, skipBlocks, blockSize);
     $http(config)
         .success(function (network) {
             NdexClient.updateNodeLabels($scope.nodeLabels, network);
