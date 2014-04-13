@@ -17,6 +17,7 @@ var d3Nodes,
     d3Graph;
 
 function d3Setup(height, width, selector){
+    $(selector).html(""); // clear the container if we have already displayed...
 /*** Create scales to handle zoom coordinates ***/
     xScale = d3.scale.linear()
         .domain([0,width]);
@@ -44,7 +45,7 @@ function d3Setup(height, width, selector){
     //allow 10 times zoom in or out
     .on("zoom", zoom);
 
-    svg = d3.select(".intgraph")
+    svg = d3.select(selector)
         .append("svg:svg")
         .style("max-width", 2*width)
         .style("max-height", 2*height);

@@ -1,5 +1,5 @@
-<div>
-<div id="canvas" class="intgraph AlignCenter"></div>
+
+
 
 <!--   debugging
 <pre ng-show="message">
@@ -12,12 +12,27 @@
 -->
 
 <div id="divNetwork">
-    <div id="divNetworkHeadline" class="row">
-        <div id="divNetworkId" class="span11 pull-left" ng-model="currentSubnetwork">
-            <h3>{{name}}</h3>
+    <div class="span11 pull-left">
+        <h3>{{currentNetwork.name}}</h3>
+        <div id="divNetworkStats" >
+        <span>
+             <label>nodes:</label>
+            <span>{{currentSubnetwork.nodeCount}}</span> out of
+             <span>{{currentNetwork.nodeCount}}</span>
+        </span>
+        <span>
+             <label>edges:</label>
+            <span>{{currentSubnetwork.edgeCount}}</span> out of
+             <span>{{currentNetwork.edgeCount}}</span>
+        </span>
         </div>
+        <div id="canvas" class="intgraph AlignCenter"></div>
+
+    </div>
+    <div id="divNetworkHeadline" class="row">
+
         <div id="divNetworkMenu" class="span1">
-            <div class="dropdown pull-right" ng-model="currentSubnetwork">
+            <div class="dropdown pull-right">
                 <a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown">
                     <i class="icon-cog icon-large"></i>
                 </a>
@@ -53,16 +68,7 @@
         </div>
     </div>
     <div class="row">
-        <div id="divNetworkStats" class="span11 offset1" ng-model="currentSubnetwork">
-        <span>
-             <label>nodes:</label>
-             <span>{{nodeCount}}</span>
-        </span>
-        <span>
-             <label>edges:</label>
-             <span>{{edgeCount}}</span>
-        </span>
-        </div>
+
     </div>
     <dl id="dlNetworkAccordion" class="Accordion">
         <dt ng-model="currentSubnetwork">Properties
@@ -99,7 +105,7 @@
             <div id="divNetworkProperties" ng-hide="showEditControls()">
                 <div>
                     <label class="Attribute">Description:</label>
-                    <span>{{description}}</span>
+                    <span>{{currentNetwork.description}}</span>
                 </div>
                 <!--   TODO - checkboxes in angular
                 <div>
@@ -157,7 +163,7 @@
             </form>
         </dd>
         <dt class="Expanded">Selected Subnetwork</dt>
-        <dd id="ddSubnetwork" ng-model="currentSubnetwork">
+        <dd id="ddSubnetwork" >
             <ul class="nav nav-tabs tab-title">
                 <li class="active">
                     <a href="#divSubnetwork" data-toggle="tab">

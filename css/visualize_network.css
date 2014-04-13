@@ -9,8 +9,9 @@
 
 #canvas {
     font: 9px helvetica neue, helvetica, arial, sans-serif;
-    height: 400px;
-    min-width: 600px;
+    height: 300px;
+    width: 100%;
+    min-width: 800px;
     background-color:fff;
 
 }

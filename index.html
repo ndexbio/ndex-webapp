@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="css/ndex-angular-site.css"/>
     <link rel="stylesheet" type="text/css" href="css/visualize_network.css"/>
-
+    <link rel="stylesheet" type="text/css" href="css/compare_networks.css"/>
 
     <!-- Scripts -->
 
@@ -24,12 +24,31 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js"></script>
 
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <!--
+    <script type="text/javascript" src="js/three/Three.js"></script>
+    -->
+    <script src=http://mrdoob.github.io/three.js/build/three.min.js ></script>
+    <script src=http://mrdoob.github.io/three.js/examples/js/controls/TrackballControls.js ></script>
+    <script type="text/javascript" src="js/three/RequestAnimationFrame.js"></script>
 
+    <script type="text/javascript" src="js/triptych/triptych-graph.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-core.js"></script>
+    <script type="text/javascript" src="js/triptych/check-rendering.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-force.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-force-advanced.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-controls.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-WebGL.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-Canvas.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-BELWebGL.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-BELCanvas.js"></script>
+
+    <script type="text/javascript" src="js/triptych/ndex-triptych.js"></script>
 
     <script src="js/cytoscape.js-2.0.3/cytoscape.min.js"></script>
     <script src="js/cytoscape.js-2.0.3/arbor.js"></script>
 
     <script src="js/ndex-client.js"></script>
+    <script src="js/triptych/check-rendering.js"></script>
     <script src="js/d3-renderer.js"></script>
     <script src="js/script.js"></script>
 
@@ -47,7 +66,8 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#searchNetworks">Search Networks</a></li>
-            <li><a href="#cjs">Visualize</a></li>
+            <li><a href="#cjs">cjs</a></li>
+            <li><a href="#triptych">triptych</a></li>
             <li><a href="#networkQuery">Network</a></li>
             <!-- Show sign in if no user, sign out otherwise -->
             <li ng-show="!username">

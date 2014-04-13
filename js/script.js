@@ -51,6 +51,12 @@ ndexApp.config(function ($routeProvider) {
             controller: 'cjsController'
         })
 
+        // route for the triptych page
+        .when('/triptych', {
+            templateUrl: 'pages/triptych.html',
+            controller: 'triptychController'
+        })
+
         // route for the networkQuery page
         .when('/networkQuery', {
             templateUrl: 'pages/networkQuery.html',
@@ -191,11 +197,16 @@ ndexApp.controller('networkQueryController', function ($scope, $http, sharedProp
     $scope.submitNetworkQuery = function() {
         var terms = $scope.searchString.split(/[ ,]+/);
         var networkQueryConfig = NdexClient.getNetworkQueryConfig($scope.currentNetworkId, terms, $scope.searchType.id, 2, 0, 500);
+        d3Setup(height, width, '#canvas');
         $http(networkQueryConfig)
             .success(function (network) {
+                NdexClient.updateNodeLabels($scope.nodeLabels, network);
                 console.log("got query results for : " + $scope.searchString) ;
                 csn = network;
                 $scope.currentSubnetwork = network;
+                $scope.graphData = createD3Json(network);
+
+                d3Render($scope.graphData);
             });
     }
 
@@ -215,8 +226,9 @@ ndexApp.controller('networkQueryController', function ($scope, $http, sharedProp
             $scope.currentNetwork = network;
         });
 
-    //$scope.message = "retrieving example network for display...";
-
+    var height = angular.element('#canvas')[0].clientHeight;
+    var width = angular.element('#canvas')[0].clientWidth;
+    d3Setup(height, width, '#canvas');
 
     var blockSize = 100;
     var skipBlocks = 0;
@@ -230,9 +242,7 @@ ndexApp.controller('networkQueryController', function ($scope, $http, sharedProp
 
 
             console.log('D3 Network rendering start...');
-            var height = 250; //angular.element('#canvas').height;
-            var width = 600; //angular.element('#canvas').width;
-            d3Setup(height, width, '#canvas');
+
             $scope.graphData = createD3Json(network);
             d3Render($scope.graphData);
 
@@ -240,7 +250,29 @@ ndexApp.controller('networkQueryController', function ($scope, $http, sharedProp
 
 });
 
+//-------------------------------------------------------------------------
 
+// for now, assuming webgl...
+ndexApp.controller('triptychController', function ($scope, $http, sharedProperties) {
+    $scope.currentNetworkId = sharedProperties.getCurrentNetworkId();
+    if ('none' === $scope.currentNetworkId) $scope.currentNetworkId = "C25R1174";   // hardwired for testing
+
+    var blockSize = 100;
+    var skipBlocks = 0;
+    var config = NdexClient.getNetworkQueryByEdgesConfig($scope.currentNetworkId, skipBlocks, blockSize);
+    $scope.showDetails = true;
+    NdexTriptych.setup('webGl', "3d", angular.element("#triptychContainer")[0]);
+    $http(config)
+        .success(function (network) {
+            NdexClient.addNetwork(network);
+            $scope.selectedEdges = network.edges;
+            csn = network;
+            NdexTriptych.addNetwork(network);
+
+        });
+
+});
+//-------------------------------------------------------------------------
 
 ndexApp.controller('cjsController', function ($scope, $http) {
     var NETWORK_SECTION_ID = '#cyNetwork';

@@ -249,33 +249,49 @@ var NdexClient =
     },
 
     /****************************************************************************
-     * Determines if the user has write-access to the network.
+     * Determines if the current user has write-access to the network.
      ****************************************************************************/
-    canEdit: function(currentNetwork)
+    canEdit: function(network)
     {
-        if (!currentNetwork || !this.currentUser) return false;
-        for (var networkIndex = 0; networkIndex < this.currentUser.networks().length; networkIndex++)
+        if (!network || !this.currentUser || !this.currentUser.networks) return false;
+        for (var networkIndex = 0; networkIndex < this.currentUser.networks.length; networkIndex++)
         {
-            var network = this.currentUser.networks()[networkIndex];
-            if (network.resourceId() === currentNetwork.id() && network.permissions() != "READ")
+            var net = this.currentUser.networks()[networkIndex];
+            if (net.resourceId() === network.id() && net.permissions() != "READ")
                 return true;
         }
-
         return false;
     },
 
-
-
-    hasFormat: function(format){
+    hasFormat: function(network, format){
         // take dublin core annotation as first priority
-        var currentFormat = Network.ViewModel.Network().metadata.get('dc:format')();
+        var currentFormat = network.metadata.get('dc:format')();
         // otherwise, take simple "Format"
         if (!currentFormat){
-            currentFormat = Network.ViewModel.Network().metadata.get('Format')();
+            currentFormat = network.metadata.get('Format')();
         }
         if (!currentFormat) return false;
         if (currentFormat === format) return true;
         return false;
+    },
+
+    networks : [],
+
+    addNetwork: function(network){
+       this.networks.push(network);
+        $.each(network.terms, function(termId, term){
+            term.network = network;
+        });
+        $.each(network.nodes, function(nodeId, node){
+            node.network = network;
+        });
+        $.each(network.edges, function(edgeId, edge){
+            edge.network = network;
+        });
+    },
+
+    removeNetwork: function(network){
+        this.networks.remove(networks.indexOf(network));
     },
 
 
@@ -289,6 +305,7 @@ var NdexClient =
     },
 
     getNodeLabel: function(node, network) {
+        if (!network) network = NdexClient.getNodeNetwork(node);
         if ("name" in node && node.name && node.name != "")
             return node.name;
         else if ("represents" in node && node.represents && network.terms[node.represents])
@@ -304,6 +321,7 @@ var NdexClient =
  * Term is reached.
  ****************************************************************************/
     getTermLabel: function(term, network) {
+        if (!network) network = NdexClient.getTermNetwork(term);
         if (term.termType === "Base") {
             if (term.namespace) {
                 var namespace = network.namespaces[term.namespace];
@@ -336,7 +354,7 @@ var NdexClient =
                 var parameterTerm = network.terms[parameterId];
 
                 if (parameterTerm)
-                    var parameterLabel = NdexHelpers.getTermLabel(parameterTerm, network);
+                    var parameterLabel = this.getTermLabel(parameterTerm, network);
                 else
                     console.log("no parameterTerm by id " + parameterId);
 
@@ -349,43 +367,56 @@ var NdexClient =
             return "Unknown";
     },
 
+    /**************************************************************************
+     * Returns the keys of a dictionary as a sorted array.
+     **************************************************************************/
+    getDictionaryKeysSorted: function(dictionary)
+    {
+        var keys = [];
+        for(var key in dictionary)
+        {
+            if(dictionary.hasOwnProperty(key))
+                keys.push(key);
+        }
+
+        return keys.sort();
+    },
+
 /****************************************************************************
  * Looks-up abbreviations for term functions.
  ****************************************************************************/
     lookupFunctionAbbreviation: function(functionLabel) {
         var fl = functionLabel.toLowerCase();
+        if (fl.match(/^bel:/)) fl = fl.replace(/^bel:/, '');
         switch (fl) {
-            case "bel:abundance":
+            case "abundance":
                 return "a";
-            case "bel:biological_process":
+            case "biological_process":
                 return "bp";
-            case "bel:catalytic_activity":
+            case "catalytic_activity":
                 return "cat";
-            case "bel:complex_abundance":
+            case "complex_abundance":
                 return "complex";
-            case "bel:pathology":
+            case "pathology":
                 return "path";
-            case "bel:peptidase_activity":
+            case "peptidase_activity":
                 return "pep";
-            case "bel:protein_abundance":
+            case "protein_abundance":
                 return "p";
-            case "bel:rna_abundance":
+            case "rna_abundance":
                 return "r";
-            case "bel:protein_modification":
+            case "protein_modification":
                 return "pmod";
-            case "bel:transcriptional_activity":
+            case "transcriptional_activity":
                 return "trans";
-            case "bel:molecular_activity":
+            case "molecular_activity":
                 return "act";
-            case "bel:degredation":
+            case "degradation":
                 return "deg";
-            case "bel:kinase_activity":
+            case "kinase_activity":
                 return "kin";
             default:
-                if (fl.match(/^bel:/))
-                    return functionLabel.toLowerCase().replace(/^bel:/, '');
-                else
-                    return functionLabel;
+                return fl;
         }
     }
 }
