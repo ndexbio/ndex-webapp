@@ -4,19 +4,20 @@ NdexTriptych.addNetwork = function (jdexNetwork, position) {
 
     var plane = this.graph.addPlane(position);
     var nodes = [];
-    $.each(jdexNetwork.nodes, function (jdexId, jNode) {
-
+    for (jdexId in jdexNetwork.nodes){
+        var jNode = jdexNetwork.nodes[jdexId];
         var node = new Triptych.Node(NdexTriptych.graph.getNextId());
         node.jdexNode = jNode;
-        node.label = NdexClient.getNodeLabel(jNode, jdexId);
+        node.label = NdexClient.getNodeLabel(jNode, jdexNetwork);
         node.identifier = NdexTriptych.getIdentifier(plane.id, jdexId);
         //console.log(" adding " + node);
         NdexTriptych.graph.addNode(node);
         node.setPlane(plane);
         nodes.push(node);
-    });
+    }
 
-    $.each(jdexNetwork.edges, function (jdexId, jEdge) {
+    for (jdexId in jdexNetwork.edges){
+        var jEdge = jdexNetwork.edges[jdexId];
 
         var fromNode = NdexTriptych.graph.nodeByIdentifier(NdexTriptych.getIdentifier(plane.id, jEdge.s)),
             toNode = NdexTriptych.graph.nodeByIdentifier(NdexTriptych.getIdentifier(plane.id, jEdge.o)),
@@ -34,11 +35,18 @@ NdexTriptych.addNetwork = function (jdexNetwork, position) {
                 edge.jdexEdge = jEdge;
             }
         }
-    });
+    }
 
     this.layout.randomNodePositions(nodes);
     this.layout.startUpdating(400);
 
+};
+
+NdexTriptych.addEdgeBetweenPlanes = function(plane1, node1Id, plane2, node2Id, relationshipType){
+    var rel = NdexTriptych.graph.findOrCreateRelationship(relationshipType);
+    var fromNode = NdexTriptych.graph.nodeByIdentifier(NdexTriptych.getIdentifier(plane1.id, node1Id)),
+        toNode = NdexTriptych.graph.nodeByIdentifier(NdexTriptych.getIdentifier(plane2.id, node2Id));
+    NdexTriptych.graph.addEdge(new Triptych.Edge(fromNode, rel, toNode));
 };
 
 // TODO: remove network
@@ -63,18 +71,13 @@ NdexTriptych.visualizerSetup = function (visualizerMode) {
         this.visualizerMode == 'canvas'
         this.visualizer = this.canvasVisualizer;
     }
-    this.visualizer.showLabels = false;
+    this.visualizer.showLabels = true;
     this.visualizer.showEdgeLabels = false;
-    this.visualizer.addTexture("increaseMap", "img/increaseDot.png");
 }
 
 NdexTriptych.graph = new Triptych.Graph();
 
-NdexTriptych.planarForceLayout = new Triptych.MP3Layout();
-
 NdexTriptych.layout = new Triptych.ForceDirectedLayout();
-
-//NdexTriptych.controls = new Triptych.BasicControls();
 
 NdexTriptych.controls = null;
 

@@ -218,6 +218,12 @@ var NdexClient =
         return this.getPostConfig(url, postData);
     },
 
+    getSaveNetworkConfig: function(network){
+       // PUT to NetworkService (the old service)
+        var url = "/networks";
+        return this.getPutConfig(url, network);
+    },
+
     /****************************************************************************
      * Loads the information of the currently-logged in user.
      ****************************************************************************/
@@ -290,8 +296,12 @@ var NdexClient =
         });
     },
 
+    getNetworkId: function(network){
+        return this.networks.indexOf(network);
+    },
+
     removeNetwork: function(network){
-        this.networks.remove(networks.indexOf(network));
+        this.networks.remove(this.networks.indexOf(network));
     },
 
 
@@ -418,7 +428,110 @@ var NdexClient =
             default:
                 return fl;
         }
+    },
+
+    TermNodeMap: {},
+
+    addNodeTermEntry: function(nodeId, termId){
+        var nodeIds = this.TermNodeMap[termId];
+        if (!nodeIds) {
+            nodeIds = [nodeId];
+            this.TermNodeMap[termId]=nodeIds;
+        } else {
+           if (!$.inArray(nodeId, nodeIds)){
+               nodeIds.push(nodeId);
+           }
+        }
+    },
+
+    indexNodesByTerms : function(network){
+
+        for (nodeId in network.nodes){
+            var node = network.nodes[nodeId];
+            if (node.represents){
+                this.indexNodeTerm(node, nodeId, node.represents, network);
+            }
+        }
+    },
+
+    indexNodeTerm :  function(node, nodeId, termId, network){
+        var term = network.terms[termId];
+        if (term.termType === "Base") {
+           NdexClient.addNodeTermEntry(nodeId, termId);
+        } else if (term.termType === "Function") {
+            var functionTerm = network.terms[term.termFunction];
+            if (!functionTerm) {
+                console.log("in indexNodeTerm, no functionTerm by id " + term.termFunction);
+                return;
+            }
+
+            var sortedParameters = this.getDictionaryKeysSorted(term.parameters);
+            var parameterList = [];
+
+            for (var parameterIndex = 0; parameterIndex < sortedParameters.length; parameterIndex++) {
+                var parameterId = term.parameters[sortedParameters[parameterIndex]];
+                NdexClient.indexNodeTerm(node, nodeId, parameterId, network);
+            }
+        }
+    },
+
+    getTermNodes : function(network, termId){
+        return this.TermNodeMap[termId];
+        var nodeIds = [];
+        for (nodeId in network.nodes){
+            var node = network.nodes[nodeId];
+            if (termId == node.represents
+               // ||  (node.aliases && node.aliases.indexOf(termId))
+               // ||  (node.relatedTerms && node.relatedTerms.indexOf(termId))
+                ){
+                nodeIds.push(nodeId);
+            }
+        }
+        return nodeIds;
+    },
+
+    findSharedTerms : function(network1, network2, namespacePrefix){
+        var network1Terms = this.getTermsInNamespace(network1, namespacePrefix);
+        var network2Terms = this.getTermsInNamespace(network2, namespacePrefix);
+        var termPairs = [];
+        for (term1Id in network1Terms){
+            var term1 = network1Terms[term1Id];
+            for (term2Id in network2Terms){
+                var term2 = network2Terms[term2Id];
+                if (term2.name == term1.name){
+                    termPairs.push([term1Id, term2Id]);
+                }
+            }
+        }
+        return termPairs;
+    },
+
+    getTermsInNamespace: function(network, namespacePrefix){
+        var namespaceId = this.getNamespaceIdByPrefix(network, namespacePrefix);
+        var terms = {};
+        for(jdexId in network.terms){
+            var term = network.terms[jdexId];
+            if (namespaceId == term.namespace){
+                 terms[jdexId] = term;
+            }
+        }
+        return terms;
+    },
+
+    getNamespaceIdByPrefix: function(network, namespacePrefix){
+        for (namespaceId in network.namespaces){
+            var namespace = network.namespaces[namespaceId];
+            if (namespace.prefix == namespacePrefix) return namespaceId;
+        }
+        return null;
+    },
+
+    getPathsFromTerms: function(network1Terms, network1, network2Terms, network2){
+        for (jdexId in network1Terms){
+            var nodes = getTermNodes(networ);
+        }
     }
+
 }
 
 $(document).ready(function () {

@@ -88,9 +88,9 @@ Triptych.WebGLNodeDisplayer.prototype = {
 			}
 			var pos = node.displayList.label.position;
 			pos.copy(node.position);
-			pos.addSelf(this.visualizer.camera.up.clone().multiplyScalar(20));
-			var vectorToCamera = this.visualizer.camera.position.clone().subSelf( pos );
-			pos.addSelf(vectorToCamera.normalize().multiplyScalar(20));
+			pos.add(this.visualizer.camera.up.clone().multiplyScalar(20));
+			var vectorToCamera = this.visualizer.camera.position.clone().sub( pos );
+			pos.add(vectorToCamera.normalize().multiplyScalar(20));
 			node.displayList.label.visible = true;
 		}
 	},
@@ -255,7 +255,7 @@ Triptych.WebGLEdgeDisplayer.prototype = {
 				this.visualizer.addElement(edge.displayList.label, edge, 'label');
 			}
 			var v = edge.getVector();
-			edge.displayList.label.position = edge.from.position.clone().addSelf(v.multiplyScalar(0.5));
+			edge.displayList.label.position = edge.from.position.clone().add(v.multiplyScalar(0.5));
 			edge.displayList.label.matrix.lookAt( this.visualizer.camera.position, edge.displayList.label.position, this.visualizer.camera.up );
 		}
 	},
@@ -308,7 +308,7 @@ Triptych.WebGLVisualizer.prototype.findIntersectedObjects = function(mouse){
 	var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	this.projector.unprojectVector( vector, this.camera );
 
-	var ray = new THREE.Ray( this.camera.position, vector.subSelf( this.camera.position ).normalize() );
+	var ray = new THREE.Ray( this.camera.position, vector.sub( this.camera.position ).normalize() );
 
 	this.intersectedObjects = ray.intersectObjects( this.scene.children );
 };
@@ -562,7 +562,7 @@ Triptych.WebGLVisualizer.prototype.scaleAndRotateEdge = function(edge, object, u
 	object.scale.z = scale;
 	
 	if (useMidpoint){
-		object.position = edge.from.position.clone().addSelf(v.multiplyScalar(0.5));
+		object.position = edge.from.position.clone().add(v.multiplyScalar(0.5));
 	} else {
 		// place it at the edge "from" position
 		object.position.copy(edge.from.position);

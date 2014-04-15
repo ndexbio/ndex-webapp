@@ -134,8 +134,8 @@ Triptych.ForceDirectedLayout.prototype.addPlaneForces = function (node) {
             var vectorToPlaneCenter = node.plane.position.clone();
             vectorToPlaneCenter.sub(node.position);
             var len = vectorToPlaneCenter.length() - this.edgeLength;
-            if (len > 0.1) {
-                var scalar = this.springConstant * len * 0.4;
+            if (len > 20) {
+                var scalar = this.springConstant * len * 0.005;
                 this.addForce(node, vectorToPlaneCenter, scalar);
             }
         } else {

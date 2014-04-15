@@ -14,7 +14,7 @@ Triptych.Graph = function(){
     this.maxId = 0;
     this.startingPosition = new THREE.Vector3(0,0,0);
     this.changed = false;
-    this.planes = {};
+    this.planes = [];
 };
 
 Triptych.Graph.prototype = {
@@ -31,9 +31,9 @@ Triptych.Graph.prototype = {
         newPlane.id = id;
         newPlane.position = position || new THREE.Vector3(0,0,0);
         var normal = new THREE.Vector3(0,0,1);
-        var constant = 1.0;
+        var constant = position.z || 1.0;
         newPlane.plane = new THREE.Plane(normal, constant);
-        this.planes[id] = newPlane;
+        this.planes.push(newPlane);
         return newPlane;
     },
 

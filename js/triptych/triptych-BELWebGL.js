@@ -81,10 +81,10 @@ Triptych.BEL3DNodeDisplayer.prototype.updateLabel = function(node){
 		}
 		var pos = node.displayList.label.position;
 		pos.copy(node.position);
-		pos.addSelf(this.visualizer.camera.up.clone().multiplyScalar(20));
-		var vectorToCamera = this.visualizer.camera.position.clone().subSelf( pos );
+		pos.add(this.visualizer.camera.up.clone().multiplyScalar(20));
+		var vectorToCamera = this.visualizer.camera.position.clone().sub( pos );
 		
-		pos.addSelf(vectorToCamera.normalize().multiplyScalar(20));
+		pos.add(vectorToCamera.normalize().multiplyScalar(20));
 		node.displayList.label.visible = true
 
 	} else if (node.displayList.label){
@@ -250,7 +250,7 @@ Triptych.CausalEdgeDisplayer.prototype.animate = function(edge){
 	
 	var fraction = this.visualizer.timeLoop.stepFraction;
 	var v = edge.getVector();
-	edge.displayList.slider.position = edge.from.position.clone().addSelf(v.multiplyScalar(fraction));	
+	edge.displayList.slider.position = edge.from.position.clone().add(v.multiplyScalar(fraction));	
 };
 
 Triptych.CausalEdgeDisplayer.prototype.stopAnimation = function(edge){
@@ -301,7 +301,7 @@ Triptych.BindingEdgeDisplayer.prototype.constructor = Triptych.BindingEdgeDispla
 
 // edge is rendered as a rectangular bar
 Triptych.BindingEdgeDisplayer.prototype.makeMain = function(edge){
-	return this.visualizer.makeDottedBar(this.visualizer.resources.smallParticleMaterial, 16, 5);
+	return this.visualizer.makeDottedBar(this.visualizer.resources.smallParticleMaterial, 40, 3);
 };
 
 Triptych.BindingEdgeDisplayer.prototype.positionMain = function(edge){
@@ -323,6 +323,7 @@ Triptych.BEL3DVisualizer.prototype.initDefaultDisplayers = function(){
 };
 
 Triptych.BEL3DVisualizer.prototype.initDisplayers = function(){
+    /*
 	this.addNodeDisplayer("transcriptionalActivity", new Triptych.TFActivityNodeDisplayer());
 	this.addNodeDisplayer("rnaAbundance", new Triptych.RNAAbundanceNodeDisplayer());
 	
@@ -332,15 +333,18 @@ Triptych.BEL3DVisualizer.prototype.initDisplayers = function(){
 	this.addEdgeDisplayer("geneProduct", new Triptych.CausalEdgeDisplayer());
 	this.addEdgeDisplayer("actsIn", new Triptych.CausalEdgeDisplayer());
 	this.addEdgeDisplayer("directlyDecreases", new Triptych.InverseCausalEdgeDisplayer());
-	
+	 */
 	this.addEdgeDisplayer("complexComponent", new Triptych.BindingEdgeDisplayer());
-	
+
+    this.addEdgeDisplayer("corresponds", new Triptych.BindingEdgeDisplayer());
+    /*
 	this.addEdgeDisplayer("INCREASES", new Triptych.CausalEdgeDisplayer());
 	this.addEdgeDisplayer("DECREASES", new Triptych.InverseCausalEdgeDisplayer());
 	this.addEdgeDisplayer("DIRECTLY_INCREASES", new Triptych.CausalEdgeDisplayer());
 	this.addEdgeDisplayer("DIRECTLY_DECREASES", new Triptych.InverseCausalEdgeDisplayer());
 	
 	this.addNodeDisplayer("TRANSCRIPTIONAL_ACTIVITY", new Triptych.TFActivityNodeDisplayer());
+	*/
 };
 
 
@@ -365,10 +369,13 @@ Triptych.BEL3DVisualizer.prototype.initResources = function(){
 	this.resources.transparentGreenMaterial = new THREE.MeshPhongMaterial( { color: 0x00ff00,  specular:0xbbaa99, shininess:50, opacity: 0.4, shading: THREE.SmoothShading } );
 	this.resources.barGeometry = new THREE.CubeGeometry( 2, 2, this.edgeReferenceLength );
 
+    this.resources.whiteDotMap = THREE.ImageUtils.loadTexture("img/textures/white_dot.png");
+    this.resources.increaseMap = THREE.ImageUtils.loadTexture("img/textures/yellow_diamond.png");
+
 	this.resources.smallParticleMaterial = new THREE.ParticleBasicMaterial({
 			color: 0xFFFFFF,
-			map: this.resources.whiteDotMap,
-			size: 6,
+			map: this.resources.increaseMap,
+			size: 3,
 			transparent: true
 		});
 		
