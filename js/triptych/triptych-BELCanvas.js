@@ -87,10 +87,10 @@ Triptych.BEL3DCanvasNodeDisplayer.prototype.updateLabel = function(node){
 		// 2. add a vector from that position to the camera
 		var pos = node.displayList.label.position;
 		pos.copy(node.position);
-		pos.addSelf(this.visualizer.camera.up.clone().multiplyScalar(20));
-		var vectorToCamera = this.visualizer.camera.position.clone().subSelf( pos );
+		pos.add(this.visualizer.camera.up.clone().multiplyScalar(20));
+		var vectorToCamera = this.visualizer.camera.position.clone().sub( pos );
 		
-		pos.addSelf(vectorToCamera.normalize().multiplyScalar(20));
+		pos.add(vectorToCamera.normalize().multiplyScalar(20));
 		
 		node.displayList.label.visible = true;
 		
@@ -148,7 +148,7 @@ Triptych.BEL3DCanvasCausalEdgeDisplayer.prototype.animate = function(edge){
 	
 	var fraction = this.visualizer.timeLoop.stepFraction;
 	var v = edge.getVector();
-	edge.displayList.slider.position = edge.from.position.clone().addSelf(v.multiplyScalar(fraction));	
+	edge.displayList.slider.position = edge.from.position.clone().add(v.multiplyScalar(fraction));
 };
 
 Triptych.BEL3DCanvasCausalEdgeDisplayer.prototype.stopAnimation = function(edge){
@@ -197,7 +197,7 @@ Triptych.BEL3DCanvasVisualizer.prototype.initDefaultDisplayers = function(){
 };
 
 Triptych.BEL3DCanvasVisualizer.prototype.initDisplayers = function(){
-	
+/*
 	this.addEdgeDisplayer("increases", new Triptych.BEL3DCanvasCausalEdgeDisplayer());
 	this.addEdgeDisplayer("decreases", new Triptych.InverseBEL3DCanvasCausalEdgeDisplayer());
 	this.addEdgeDisplayer("directlyIncreases", new Triptych.BEL3DCanvasCausalEdgeDisplayer());
@@ -209,7 +209,7 @@ Triptych.BEL3DCanvasVisualizer.prototype.initDisplayers = function(){
 	this.addEdgeDisplayer("DECREASES", new Triptych.InverseBEL3DCanvasCausalEdgeDisplayer());
 	this.addEdgeDisplayer("DIRECTLY_INCREASES", new Triptych.BEL3DCanvasCausalEdgeDisplayer());
 	this.addEdgeDisplayer("DIRECTLY_DECREASES", new Triptych.InverseBEL3DCanvasCausalEdgeDisplayer());
-	
+*/
 };
 
 //-------------------------------------------------------
@@ -241,13 +241,13 @@ Triptych.BEL3DCanvasVisualizer.prototype.initResources = function(){
 	
 	this.resources.smallParticleMaterial = this.makeCircleParticleMaterial(6, '#FFFFFF');
 	this.resources.bigParticleMaterial = this.makeCircleParticleMaterial(12, '#FFFFFF');
-	
+/*
 	this.resources.thinArrowGeometry = new Triptych.ThinArrowGeometry(this.edgeReferenceLength);
 
 	this.resources.tArrowGeometry = new Triptych.ThinArrowGeometry(this.edgeReferenceLength);
 
 	this.resources.barGeometry = new Triptych.BarGeometry(this.edgeReferenceLength);
-
+*/
 };
 
 //-------------------------------------------------------

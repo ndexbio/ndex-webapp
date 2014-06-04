@@ -1,4 +1,4 @@
-#triptychContainer {
+#triptychContainerOld {
 
     margin: 0px;
     overflow: hidden;
@@ -22,6 +22,16 @@
     /* W3C Markup, IE10 Release Preview */
     background-image: radial-gradient(circle farthest-corner at center, #087BFF 0%, #00142E 100%);
 }
+
+#triptychContainer {
+
+    margin: 0px;
+    overflow: hidden;
+    font-family: helvetica neue, helvetica, arial, sans-serif;
+    background-color: white;
+}
+
+
 
 #details {
     position: absolute;

@@ -121,9 +121,9 @@ Triptych.ParticleNodeDisplayer.prototype = {
 			}
 			var pos = node.displayList.label.position;
 			pos.copy(node.position);
-			pos.addSelf(this.visualizer.camera.up.clone().multiplyScalar(20));
-			var vectorToCamera = this.visualizer.camera.position.clone().subSelf( pos );
-			pos.addSelf(vectorToCamera.normalize().multiplyScalar(20));
+			pos.add(this.visualizer.camera.up.clone().multiplyScalar(20));
+			var vectorToCamera = this.visualizer.camera.position.clone().sub( pos );
+			pos.add(vectorToCamera.normalize().multiplyScalar(20));
 			node.displayList.label.visible = true;
 		} else if (node.displayList.label){
 			node.displayList.label.visible = false;
@@ -141,8 +141,8 @@ Triptych.ParticleNodeDisplayer.prototype = {
 	makeParticle : function(node){
 		var material = this.visualizer.resources[this.plainMaterialName];
 		//var particle = new THREE.Particle( new THREE.ParticleCanvasMaterial( { color: this.plainColor, program: this.programFill } ) );
-	
-		var particle = new THREE.Particle( material );
+        var particle = new THREE.Sprite( material );
+		//var particle = new THREE.Particle( material );
 		particle.scale.set(0.1, 0.1);
 		particle.visible = true;
 		return particle;
@@ -249,7 +249,7 @@ Triptych.LineEdgeDisplayer.prototype = {
 				this.visualizer.addElement(edge.displayList.label, edge, 'label');
 			}
 			var v = edge.getVector();
-			edge.displayList.label.position = edge.from.position.clone().addSelf(v.multiplyScalar(0.5));
+			edge.displayList.label.position = edge.from.position.clone().add(v.multiplyScalar(0.5));
 		}
 	},
 	
@@ -323,7 +323,7 @@ Triptych.CanvasVisualizer.prototype.findIntersectedObjects = function(mouse){
 	var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
 	this.projector.unprojectVector( vector, this.camera );
 
-	var ray = new THREE.Ray( this.camera.position, vector.subSelf( this.camera.position ).normalize() );
+	var ray = new THREE.Ray( this.camera.position, vector.sub( this.camera.position ).normalize() );
 
 	this.intersectedObjects = ray.intersectObjects( this.scene.children );
 	//this.intersectedObjects = ray.intersectScene( this.scene );
@@ -360,9 +360,9 @@ Triptych.CanvasVisualizer.prototype.getScreenPosition = function(cameraDistance,
 	var foo = vector.normalize().multiplyScalar(cameraDistance);
 	
 	var pos = this.camera.position.clone();
-	pos.addSelf(foo);
+	pos.add(foo);
 	return pos;
-	//return vector.subSelf( this.camera.position ).normalize().multiplyScalar(cameraDistance) ;
+	//return vector.sub( this.camera.position ).normalize().multiplyScalar(cameraDistance) ;
 };
 
 Triptych.CanvasVisualizer.prototype.getScreenPosition2 = function(cameraDistance, x, y){
@@ -371,7 +371,7 @@ Triptych.CanvasVisualizer.prototype.getScreenPosition2 = function(cameraDistance
 	
 	
 
-	return vector.subSelf( this.camera.position ).normalize().multiplyScalar(cameraDistance) ;
+	return vector.sub( this.camera.position ).normalize().multiplyScalar(cameraDistance) ;
 };
 
 Triptych.CanvasVisualizer.prototype.getScreenPositionInFractions = function(cameraDistance, xFraction, yFraction){
@@ -388,8 +388,9 @@ Triptych.CanvasVisualizer.prototype.getScreenPositionInFractions = function(came
 
 
 Triptych.CanvasVisualizer.prototype.init = function(width, height, camera){
-	this.renderer = new THREE.CanvasRenderer();
+	this.renderer = new THREE.CanvasRenderer({alpha: true});
 	this.renderer.setSize( width, height);
+    this.renderer.setClearColor( 0xffffff, 1);
 	this.projector = new THREE.Projector();
 	
 	this.camera = camera;	
@@ -507,19 +508,20 @@ Triptych.CanvasVisualizer.prototype.updateEdge = function(edge){
 //--------------------------------------
 
 Triptych.CanvasVisualizer.prototype.initDefaultResources = function(node){
-	this.resources.defaultLineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000, opacity: 1.0 } );
+	this.resources.defaultLineMaterial = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 1.0 } );
 	this.resources.defaultLineSelectedMaterial = new THREE.LineBasicMaterial( { color: 0xffff00, opacity: 1.0 } );
 	this.resources.defaultLineHighlightedMaterial = new THREE.LineBasicMaterial( { color: 0x00ffff, opacity: 1.0 } );
 
-	this.resources.defaultNodeParticleMaterial = this.makeCircleParticleMaterial(100, '#ff0000');
+	this.resources.defaultNodeParticleMaterial = this.makeCircleParticleMaterial(100, '#CCCCCC');
 	this.resources.defaultNodeSelectedParticleMaterial = this.makeCircleParticleMaterial(100, '#ffff00');
 	this.resources.defaultNodeHighlightedParticleMaterial  = this.makeCircleParticleMaterial(100, '#00ffff');
 	
 	this.resources.defaultMeshMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000 } ) ;
 	this.resources.defaultSelectedMeshMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00 } ) ;
 	this.resources.defaultHighlightedMeshMaterial  = new THREE.MeshBasicMaterial( { color: 0x0000ff } ) ;
-
+ /*
 	this.resources.defaultEdgeGeometry  = new Triptych.ArrowGeometry(this.edgeReferenceLength) ;
+	*/
 };
 
 Triptych.CanvasVisualizer.prototype.initResources = function(){
@@ -592,7 +594,7 @@ Triptych.CanvasVisualizer.prototype.scaleAndRotateEdge = function(edge, object, 
 	object.scale.z = scale;
 	
 	if (useMidpoint){
-		object.position = edge.from.position.clone().addSelf(v.multiplyScalar(0.5));
+		object.position = edge.from.position.clone().add(v.multiplyScalar(0.5));
 	} else {
 		// place it at the edge "from" position
 		object.position.copy(edge.from.position);
@@ -626,7 +628,11 @@ Triptych.CanvasVisualizer.prototype.makeCircleParticleMaterial = function(size, 
 	context.fill();
 
 	//var material = new THREE.ParticleBasicMaterial( { map: new THREE.Texture( canvas ), blending: THREE.AdditiveBlending } );
-	var material = new THREE.ParticleBasicMaterial( { map: new THREE.Texture( canvas ) } );
+	//var material = new THREE.ParticleBasicMaterial( { map: new THREE.Texture( canvas ) } );
+    var material = new THREE.SpriteMaterial( {
+        map: new THREE.Texture( canvas ),
+        blending: THREE.AdditiveBlending
+    } );
 	return material;
 
 };
@@ -637,7 +643,7 @@ Triptych.CanvasVisualizer.prototype.makeShape = function(geometry, material){
 	return shape;
 };
 
-
+/*
 Triptych.ArrowGeometry = function(edgeReferenceLength){
 
 	var zMax = edgeReferenceLength * 0.8;
@@ -836,7 +842,7 @@ Triptych.BarGeometry.prototype.f3 = function( a, b, c ) {
 
 };
 
-
+ */
 
 
 

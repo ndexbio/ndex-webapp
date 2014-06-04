@@ -6,6 +6,9 @@ var d3Nodes,
     d3Translation,
     d3Nodes,
     d3Links,
+    d3Foci,
+    d3Node2Index,
+    d3Index,
     xScale,
     yScale,
     force,
@@ -14,10 +17,12 @@ var d3Nodes,
     graph,
     rect,
     vis,
-    d3Graph;
+    d3Graph,
+    d3Selector;
 
 function d3Setup(height, width, selector){
-    $(selector).html(""); // clear the container if we have already displayed...
+    d3Selector = selector;
+    $(d3Selector).html(""); // clear the container if we have already displayed...
 /*** Create scales to handle zoom coordinates ***/
     xScale = d3.scale.linear()
         .domain([0,width]);
@@ -29,12 +34,14 @@ function d3Setup(height, width, selector){
 /*** Configure Force Layout ***/
     force = d3.layout.force()
     .on("tick", redraw)
-    .charge(function (d) {
-        return d._children ? -d.size / 100 : -50;
-    })
-    .linkDistance(function (d) {
-        return d.target._children ? 80 : 30;
-    })
+        .charge(-100)
+    //.charge(function (d) {
+   //     return d._children ? -d.size / 50 : -50;
+    //})
+        .linkDistance(80)
+    //.linkDistance(function (d) {
+    //    return d.target._children ? 180 : 30;
+    //})
     .friction(0.90) //slow down by 10% each tick
     .size([width, height]);
 
@@ -45,7 +52,7 @@ function d3Setup(height, width, selector){
     //allow 10 times zoom in or out
     .on("zoom", zoom);
 
-    svg = d3.select(selector)
+    svg = d3.select(d3Selector)
         .append("svg:svg")
         .style("max-width", 2*width)
         .style("max-height", 2*height);
@@ -110,38 +117,15 @@ function dragended(d){
     force.resume();
 }
 
+
 /*** Initialize and position node and link elements ***/
 function d3Render(graph) {
     d3Graph = graph;
-    force.nodes(graph.nodes).links(graph.links).start();
- /*
-    d3Links = vis.selectAll('.link')
-        .data(graph.links)
-        .enter().append('line')
-        .attr('class', 'link')
-        .style("stroke", '#6666FF')
-        .attr('stroke-width', "1px");
+    force
+        .nodes(graph.nodes)
+        .links(graph.links)
+        .start();
 
-    d3Nodes = vis.selectAll('.node')
-        .data(graph.nodes)
-        .enter().append('g')
-        .attr('class', 'node')
-        .style("fill", '#0000FF')
-        .call(drag);
-
-    // Render label (use name attr)
-    d3Nodes.append('text')
-        .attr('dx', 8)
-        .attr('dy', '.25em')
-        .text(function (d) {
-            return d.name;
-        });
-
-    // Use circle for node shape
-    d3Nodes.append('circle')
-        .attr('class', 'node')
-        .attr('r', 2);
- */
     force.on('tick', function () {
         redraw();
     });
@@ -190,15 +174,133 @@ function d3Render(graph) {
     setSize();
 }
 
-/*
-function color(d) {
-    return  d===root? "#ffffff"
-        //distinguish root since it can't be dragged
-        : d.children ? "#c6dbef" : d.group;
+function d3Init(){
+    d3Graph = {nodes:[], links:[]};
+    d3Index = 0;
+    d3Node2Index = {};
+    d3Foci = {};
+
 }
-*/
+
+function d3Go(){
+    // Add more graph data to the current d3Graph
+    force
+        .nodes(d3Graph.nodes)
+        .links(d3Graph.links)
+        .on('tick', redraw)
+        .gravity(0)
+        .distance(linkDistance)
+        .start();
+
+   // force.on('tick', function () {
+   //     redraw();
+   // });
+
+    // Update the links…
+    d3Links = vis.selectAll("line.link")
+        .data(d3Graph.links);
+    //.data(graph.links, function (d) {return d.source.id;});
+
+
+    // Enter any new links.
+    d3Links.enter()
+        .insert("svg:line", ".node")
+        .attr("class", "link")
+        .style("stroke", linkStroke);
+
+    // Exit any old links.
+    d3Links.exit().remove();
+
+    d3Nodes = vis.selectAll(".node")
+        .data(d3Graph.nodes)
+        .enter().append("path")
+        .attr("class", "node")
+        .attr("d", d3.svg.symbol()
+            .type(nodeSymbol))
+        .style("fill", nodeColor)
+        .call(force.drag);
+
+    // Update the nodes
+    /*
+    d3Nodes = vis.selectAll("node")
+        .data(d3Graph.nodes)
+        //.data(graph.nodes, function (d) {return d.id;})
+        //.style("fill", "#00f")
+    ;
+
+    // Enter any new nodes.
+    d3Nodes.enter().append("svg:circle")
+        .attr("class", "node")
+        .attr("r", 2)
+        .style("fill", nodeColor)
+        .call(drag); //attach drag behaviour
+
+
+    // Exit any old nodes.
+    d3Nodes.exit().remove();
+     */
+    console.log("Links: " + d3Links.length);
+    console.log("Nodes: " + d3Nodes.length);
+
+    // Set initial size and trigger a tick() function
+    setSize();
+}
+
+function linkDistance (link){
+    if (link.type) {
+        if (link.type == "COMPARISON") return 400;
+    }
+    return 20;
+}
+
+function linkStroke (link){
+    if (link.type) {
+        if (link.type == "COMPARISON") return "#f00";
+    }
+    return "#555";
+}
+
+function nodeSymbol (node){
+    if (node.type == "PROTEIN_ABUNDANCE" || node.type == "protein") return d3.svg.symbolTypes[3];
+
+    if (node.type == "RNA_ABUNDANCE") return d3.svg.symbolTypes[4];
+    if (node.type.indexOf("ABUNDANCE") != -1) return d3.svg.symbolTypes[3];
+    if (node.type.indexOf("ACTIVITY") != -1) return d3.svg.symbolTypes[1];
+    if (node.type.indexOf("PROCESS") != -1) return d3.svg.symbolTypes[2];
+    if (node.type == "PATHOLOGY") return d3.svg.symbolTypes[2]; // diamond
+    if (node.type.indexOf("DEGRADATION") != -1) return d3.svg.symbolTypes[2];
+    return d3.svg.symbolTypes[0];
+}
+
+function nodeColor (node) {
+    if (node.type){
+        if (node.type == "PROTEIN_ABUNDANCE" || node.type == "protein") return "#0C0";
+        if (node.type == "RNA_ABUNDANCE") return "#A0C";
+        if (node.type.indexOf("PROCESS") != -1) return "#000";
+        if (node.type == "PATHOLOGY") return "#444";
+        if (node.type.indexOf("ABUNDANCE") != -1) return "#c50";
+        if (node.type.indexOf("ACTIVITY") != -1) return "#f00";
+        if (node.type.indexOf("COMPLEX") != -1) return "#050";
+        if (node.type.indexOf("DEGRADATION") != -1) return "#600";
+    }
+    return "#00f";
+}
+
 /*** Set the position of the elements based on data ***/
-function redraw() {
+function redraw(e) {
+    var k;
+    if (e) {
+        k =  0.9 * e.alpha;
+    } else{
+        k = 0;
+    }
+
+    // Push nodes toward their designated focus.
+    d3Graph.nodes.forEach(function(node, i) {
+        node.y += (d3Foci[node.networkId].y - node.y) * k * node.gravity;
+        node.x += (d3Foci[node.networkId].x - node.x) * k * node.gravity;
+    });
+
     d3Links.attr("x1", function (d) {
         return xScale(d.source.x);
     })
@@ -218,6 +320,25 @@ function redraw() {
         .attr("cy", function (d) {
             return yScale(d.y);
         });
+
+    d3Nodes.attr("transform", function(d) {
+        return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")";
+    });
+    /*
+     function tick(e) {
+     var k = .1 * e.alpha;
+
+     // Push nodes toward their designated focus.
+     nodes.forEach(function(o, i) {
+     o.y += (foci[o.id].y - o.y) * k;
+     o.x += (foci[o.id].x - o.x) * k;
+     });
+
+     node
+     .attr("cx", function(d) { return d.x; })
+     .attr("cy", function(d) { return d.y; });
+     }
+     */
 }
 
 /* Set the display size based on the SVG size and re-draw */
@@ -226,8 +347,8 @@ function setSize() {
     //var svgW = parseInt(svgStyles["width"]);
     //var svgH = parseInt(svgStyles["height"]);
 
-    var svgH = $("#canvas").innerHeight();
-    var svgW = $("#canvas").innerWidth();
+    var svgH = $(d3Selector).innerHeight();
+    var svgW = $(d3Selector).innerWidth();
     //Set the output range of the scales
     xScale.range([0, svgW]);
     yScale.range([0, svgH]);
@@ -244,11 +365,13 @@ function setSize() {
 }
 
 function createD3Json (network){
+    var networkId = NdexClient.getNetworkId(network);
+    if (!networkId) networkId = -1;
     var node2index = {};
     var graph = {nodes: [], links: []};
     var index = 0;
     $.each(network.nodes, function (id, node){
-        graph.nodes.push({name: node.name})
+        graph.nodes.push({name: node.name, networkId: networkId, type:getNodeType(node, network)})
         node2index[id] = index;
         index = index + 1;
 
@@ -257,11 +380,198 @@ function createD3Json (network){
     $.each(network.edges, function (id, edge){
         var sourceIndex = node2index[edge.s];
         var targetIndex = node2index[edge.o];
-        graph.links.push({source: sourceIndex, target: targetIndex, value:1})
+        graph.links.push({source: sourceIndex, target: targetIndex, value:1, type:getEdgeType(edge, network)})
     });
 
     return graph;
 };
+
+function addNetworkToD3 (network, focus){
+    var networkId = NdexClient.getNetworkId(network);
+
+    // make the gravity for the network weaker for larger networks
+    // give them more room to spread out
+
+    var gravity =   1 / Math.sqrt(network.nodeCount);
+
+    if (!networkId) {
+        networkId = -1;
+    }
+
+    if (!focus) {
+        focus = {x: 0, y: 0};
+    }
+
+    d3Foci[networkId] = focus;
+
+    $.each(network.nodes, function (id, node){
+        d3Graph.nodes.push({
+            name: node.name,
+            networkId: networkId,
+            type:getNodeType(node, network),
+            gravity: gravity
+        })
+        d3Node2Index[id] = d3Index;
+        d3Index = d3Index + 1;
+
+    });
+
+    $.each(network.edges, function (id, edge){
+        var sourceIndex = d3Node2Index[edge.s];
+        var targetIndex = d3Node2Index[edge.o];
+        d3Graph.links.push({
+            source: sourceIndex,
+            target: targetIndex, value:1,
+            type:getEdgeType(edge, network)
+        })
+    });
+
+};
+
+function addComparisonEdge(sourceNodeId, targetNodeId){
+    var sourceIndex = d3Node2Index[sourceNodeId];
+    var targetIndex = d3Node2Index[targetNodeId];
+    d3Graph.links.push({
+        source: sourceIndex,
+        target: targetIndex, value:1,
+        type:"COMPARISON"
+    })
+};
+
+function getNodeType(node, network){
+    // Compute a simple type for purposes of display
+
+    // Do we have a representedTerm?
+    if (node.represents){
+        var representedTerm = network.terms[node.represents];
+        if (representedTerm){
+            // Is it a functionTerm?
+            if (representedTerm.termFunction){
+                var termFunction = network.terms[representedTerm.termFunction];
+                // If so, use the function name as the term type
+                if (termFunction && termFunction.name){
+                    return termFunction.name;
+                }
+            }
+            // Otherwise examine the base term
+            if (representedTerm.namespace){
+                var namespace = network.namespaces[representedTerm.namespace];
+                if (namespace.prefix == "UniProt"){
+                    return "protein";
+                }
+            }
+        }
+    }
+    return "DEFAULT";
+}
+
+function getEdgeType(edge, network){
+    // Compute a simple type for purposes of display
+
+    // Do we have a predicate?
+    if (edge.p){
+        var predicate = network.terms[edge.p];
+        if (predicate && predicate.name){
+            return predicate.name;
+        }
+    }
+    return "DEFAULT";
+}
+
+
+/*
+ d3Links = vis.selectAll('.link')
+ .data(graph.links)
+ .enter().append('line')
+ .attr('class', 'link')
+ .style("stroke", '#6666FF')
+ .attr('stroke-width', "1px");
+
+ d3Nodes = vis.selectAll('.node')
+ .data(graph.nodes)
+ .enter().append('g')
+ .attr('class', 'node')
+ .style("fill", '#0000FF')
+ .call(drag);
+
+ // Render label (use name attr)
+ d3Nodes.append('text')
+ .attr('dx', 8)
+ .attr('dy', '.25em')
+ .text(function (d) {
+ return d.name;
+ });
+
+ // Use circle for node shape
+ d3Nodes.append('circle')
+ .attr('class', 'node')
+ .attr('r', 2);
+ */
+
+/*
+
+ var width = 960,
+ height = 500;
+
+ var fill = d3.scale.category10();
+
+ var nodes = [],
+ foci = [{x: 150, y: 150}, {x: 350, y: 250}, {x: 700, y: 400}];
+
+ var svg = d3.select("body").append("svg")
+ .attr("width", width)
+ .attr("height", height);
+
+ var force = d3.layout.force()
+ .nodes(nodes)
+ .links([])
+ .gravity(0)
+ .size([width, height])
+ .on("tick", tick);
+
+ var node = svg.selectAll("circle");
+
+ function tick(e) {
+ var k = .1 * e.alpha;
+
+ // Push nodes toward their designated focus.
+ nodes.forEach(function(o, i) {
+ o.y += (foci[o.id].y - o.y) * k;
+ o.x += (foci[o.id].x - o.x) * k;
+ });
+
+ node
+ .attr("cx", function(d) { return d.x; })
+ .attr("cy", function(d) { return d.y; });
+ }
+
+ setInterval(function(){
+ nodes.push({id: ~~(Math.random() * foci.length)});
+ force.start();
+
+ node = node.data(nodes);
+
+ node.enter().append("circle")
+ .attr("class", "node")
+ .attr("cx", function(d) { return d.x; })
+ .attr("cy", function(d) { return d.y; })
+ .attr("r", 8)
+ .style("fill", function(d) { return fill(d.id); })
+ .style("stroke", function(d) { return d3.rgb(fill(d.id)).darker(2); })
+ .call(force.drag);
+ }, 500);
+
+ */
+
+/*
+function color(d) {
+    return  d===root? "#ffffff"
+        //distinguish root since it can't be dragged
+        : d.children ? "#c6dbef" : d.group;
+}
+*/
+
+
 
 /*
 var d3Vis;

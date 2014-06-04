@@ -10,12 +10,12 @@
 
 <div id="divNetwork">
     <div id="divNetworkHeadline" class="row">
-        <div class="span11 pull-left">
+        <div class="col-md-10 pull-left">
             <h3>{{currentNetwork.name}}</h3>
         </div>
 
-        <div id="divNetworkMenu" class="span1 pull-right">
-            <a ng-click="saveSelectedSubnetwork()">Save Selected Subnetwork</a>
+        <div id="divNetworkMenu" class="col-md-2 pull-right">
+            <a ng-click="saveSelectedSubnetwork()">Actions</a>
             <!--
             <div class="dropdown" >
                 <a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown" >Options</a>
@@ -47,100 +47,32 @@
 
     </div>
 
-    <dl id="dlNetworkAccordion" class="Accordion">
-        <dt ng-model="currentSubnetwork">Properties
-        <span class="pull-right" ng-show="showEditControls()">
-            <button type="button" class="accordionButton"
-                    ng-click="toggleEditProperties"
-                    id="btnEditProperties">Edit
-            </button>
-        </span>
-        </dt>
-        <dd id="ddMetadata" ng-model="currentSubnetwork">
-            <div id="divEditableNetworkProperties" ng-show="showEditControls()">
-
-
-            </div>
-            <div id="divNetworkProperties" ng-hide="showEditControls()">
-                <div>
-                    <label class="Attribute">Description:</label>
-                    <span>{{currentNetwork.description}}</span>
-                </div>
-                <!--   TODO - checkboxes in angular
-                <div>
-                    <label class="Attribute">Public:</label>
-                    <input type="checkbox" data-bind="checked: isPublic"/>
-                </div>
-                <div>
-                    <label class="Attribute">Locked:</label>
-                    <input type="checkbox" data-bind="checked: isLocked"/>
-                </div>
-                -->
-            </div>
-
-            <div id="divMetadata">
-
-                <ul ng-repeat="property in metadata.items">
-                    <!--
-                    <li ng-show="showEditControls">
-                        <label class="Attribute-Editable">{{key}}</label>
-                        <input type="text" class="Invisible" readonly
-                               data-bind="value: value, event: { change: Network.updateNetwork }, isEditable: Network.ViewModel.Network().id()"/>
-                        <i class="btn icon-remove mobile-hide" title="Remove" rel="tooltip"
-                           data-bind="click: Network.removeMetadata"></i>
-                   </li>
-                   -->
-                    <li ng-hide="showEditControls()">
-                        <label class="Attribute">{{key}}</label>
-                        <span>{{value}}</span>
-                    </li>
-                </ul>
-
-                <div class="AlignCenter" ng-show="showEditControls()">
-                    <button type="button" class="btn" id="btnAddMetadata" ng-click="addProperty()">New Metadata</button>
-                </div>
-            </div>
-        </dd>
-        <!--
-        <dt>Members</dt>
-        <dd data-bind="template: { name: 'membersTemplate', data: Network() }">
-        </dd>
-        -->
-        <dt class="Expanded">Query</dt>
-        <dd id="ddSearchNetwork" data-bind="with: Search">
-            <form id="frmSearchNetwork" ng-submit="submitNetworkQuery()">
-                <div id="divSearch">
-                    <i class="icon-search"></i>
-                    <input type="search" ng-model="searchString" placeholder="Network Terms"/>
-                    <span>
-                        <label class="Attribute-Editable">Type:</label>
-                        <select id="ddlSearchOperator" ng-model="searchType.id" ng-selected="INTERCONNECT"
-                                ng-options="searchType.id as searchType.name for searchType in searchTypes"
-                                required></select>
-                    </span>
-
-                    <span>
-                        <label>Depth:</label>
-                        <select id="ddlSearchDepth" ng-model="searchDepth.value" ng-selected="1"
-                                ng-options="searchDepth.value as searchDepth.name for searchDepth in searchDepths"
-                                required></select>
-                    </span>
-
-                    <button type="submit" class="btn">Run Query</button>
-                </div>
-            </form>
-        </dd>
-        <dt class="Expanded">Selected Subnetwork</dt>
-        <dd id="ddSubnetwork">
-            <ul class="nav nav-tabs tab-title">
+    <!-- tabs -->
+    <div id="divNetworkTabs" class="row">
+        <div class="tabbable">
+            <ul class="nav nav-tabs tab-title" data-toggle=tab">
                 <li class="active">
-                    <a href="#divSubnetwork" data-toggle="tab">
+                    <a href="#divEdges">
                         <i class="icon-exchange"></i>
-                        Edges [ <span>{{currentSubnetwork.edgeCount}}</span> out of
-                        <span>{{currentNetwork.edgeCount}}</span> ]
+                        Edges
                     </a>
                 </li>
+                <li>
+                    <a href="#divQuery"  data-toggle=tab">
+                        <i class="icon-group"></i>
+                        Query
+                    </a>
+                </li>
+
+                <li >
+                    <a href="#divProperties"  data-toggle=tab">
+                        <i class="icon-tasks"></i>
+                        Properties
+                    </a>
+                </li>
+
             </ul>
+
             <div class="tab-content">
                 <div class="tab-pane active" id="divSubnetwork">
                     <ul id="ulSubnetwork" ng-repeat="(id, edge) in currentSubnetwork.edges">
@@ -175,60 +107,83 @@
 
                     </ul>
                 </div>
+
+                <div id="divQuery" class="tab-pane">
+                    <dd id="ddSearchNetwork" data-bind="with: Search">
+                        <form id="frmSearchNetwork" ng-submit="submitNetworkQuery()">
+                            <div id="divSearch">
+                                <i class="icon-search"></i>
+                                <input type="search" ng-model="searchString" placeholder="Network Terms"/>
+                    <span>
+                        <label class="Attribute-Editable">Type:</label>
+                        <select id="ddlSearchOperator" ng-model="searchType.id" ng-selected="INTERCONNECT"
+                                ng-options="searchType.id as searchType.name for searchType in searchTypes"
+                                required></select>
+                    </span>
+
+                    <span>
+                        <label>Depth:</label>
+                        <select id="ddlSearchDepth" ng-model="searchDepth.value" ng-selected="1"
+                                ng-options="searchDepth.value as searchDepth.name for searchDepth in searchDepths"
+                                required></select>
+                    </span>
+
+                                <button type="submit" class="btn">Run Query</button>
+                            </div>
+                        </form>
+                    </dd>
+                </div>
+
+                <div id="divProperties" class="tab-pane " ng-model="currentSubnetwork">
+                    <div id="divEditableNetworkProperties" ng-show="showEditControls()">
+
+
+                    </div>
+                    <div id="divNetworkProperties" ng-hide="showEditControls()">
+                        <div>
+                            <label class="Attribute">Description:</label>
+                            <span>{{currentNetwork.description}}</span>
+                        </div>
+                        <!--   TODO - checkboxes in angular
+                        <div>
+                            <label class="Attribute">Public:</label>
+                            <input type="checkbox" data-bind="checked: isPublic"/>
+                        </div>
+                        <div>
+                            <label class="Attribute">Locked:</label>
+                            <input type="checkbox" data-bind="checked: isLocked"/>
+                        </div>
+                        -->
+                    </div>
+
+                    <div id="divMetadata">
+
+                        <ul ng-repeat="property in metadata.items">
+                            <!--
+                            <li ng-show="showEditControls">
+                                <label class="Attribute-Editable">{{key}}</label>
+                                <input type="text" class="Invisible" readonly
+                                       data-bind="value: value, event: { change: Network.updateNetwork }, isEditable: Network.ViewModel.Network().id()"/>
+                                <i class="btn icon-remove mobile-hide" title="Remove" rel="tooltip"
+                                   data-bind="click: Network.removeMetadata"></i>
+                           </li>
+                           -->
+                            <li ng-hide="showEditControls()">
+                                <label class="Attribute">{{key}}</label>
+                                <span>{{value}}</span>
+                            </li>
+                        </ul>
+
+                        <div class="AlignCenter" ng-show="showEditControls()">
+                            <button type="button" class="btn" id="btnAddMetadata" ng-click="addProperty()">New Metadata</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </dd>
-    </dl>
-</div>
 
-<!--
-<script type="text/html" id="newMetadata">
-   <form id="frmNewMetadata">
-       <div>
-           <label class="Attribute-Editable">Key:</label>
-           <input type="text" id="txtMetadataKey" placeholder="(case sensitive)"/>
-       </div>
+        </div>
+    </div>
 
-       <div>
-           <label class="Attribute-Editable">Value:</label>
-           <input type="text" id="txtMetadataValue" placeholder="(case sensitive)"/>
-       </div>
 
-       <div class="AlignCenter">
-           <button type="submit">Add Property</button>
-       </div>
-   </form>
-</script>
-
-<script type="text/html" id="membersTemplate">
-   <table style="width: 100%;">
-       <thead>
-       <tr>
-           <th>Name</th>
-           <th style="width: 100px;">Permissions</th>
-           <th style="width: 50px;"></th>
-       </tr>
-       </thead>
-       <tbody data-bind="foreach: members">
-       <tr>
-           <td data-bind="text: resourceName"></td>
-
-           <td ng-hid="showEditControls()">{{permissions}}</td>
-
-           <td class="AlignCenter" ng-show="showEditControls()">
-               <select style="position: relative; top: 0.4em;"
-                       data-bind="value: permissions, event: { change: Network.changeMemberPermissions }">
-                   <option value="READ">Read</option>
-                   <option value="WRITE">Write</option>
-                   <option value="ADMIN">Admin</option>
-               </select>
-           </td>
-           <td>
-               <i class="btn icon-remove" title="Remove member" rel="tooltip" data-bind="click: Network.removeMember"/>
-           </td>
-
-       </tr>
-       </tbody>
-   </table>
-</script>
--->
 </div>

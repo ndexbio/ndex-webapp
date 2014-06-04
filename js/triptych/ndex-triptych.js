@@ -55,13 +55,13 @@ NdexTriptych.getIdentifier = function (networkId, jdexId) {
     return networkId + ":" + jdexId;
 },
 
-    NdexTriptych.webglVisualizer = new Triptych.BEL3DVisualizer();
+NdexTriptych.webglVisualizer = new Triptych.BEL3DVisualizer();
 
-NdexTriptych.canvasVisualizer = new Triptych.BEL3DCanvasVisualizer();
+NdexTriptych.canvasVisualizer = new Triptych.CanvasVisualizer();
 
-NdexTriptych.visualizer = NdexTriptych.canvasVisualizer;
+NdexTriptych.visualizer = NdexTriptych.webglVisualizer;
 
-NdexTriptych.visualizerMode = 'canvas';
+NdexTriptych.visualizerMode = 'webGL';
 
 NdexTriptych.visualizerSetup = function (visualizerMode) {
     if (Triptych.WebGLEnabled && visualizerMode == 'webGl') {
@@ -71,7 +71,7 @@ NdexTriptych.visualizerSetup = function (visualizerMode) {
         this.visualizerMode == 'canvas'
         this.visualizer = this.canvasVisualizer;
     }
-    this.visualizer.showLabels = true;
+    this.visualizer.showLabels = false;
     this.visualizer.showEdgeLabels = false;
 }
 
@@ -88,7 +88,7 @@ NdexTriptych.selectNode = function (identifier) {
 
 NdexTriptych.setFlyParameters = function () {
     // this.controls.flyToAndLookAt(new THREE.Vector3(0, 600, 100), this.controls.target, 5.0, 0.5);
-}
+};
 
 NdexTriptych.setCameraPosition = function () {
     this.space.camera.position.set(0, 700, 105);
@@ -99,7 +99,7 @@ NdexTriptych.space = null;
 
 NdexTriptych.setup = function (visualizerMode, layoutMode, container) {
     Triptych.checkRenderingStatus();
-    this.visualizerSetup(visualizerMode);
+    //this.visualizerSetup(visualizerMode);
 
     // start the layout with 400 steps each time we do setup
     this.layout.updateCount = 400;

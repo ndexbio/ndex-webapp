@@ -9,7 +9,16 @@
 
 #canvas {
     font: 9px helvetica neue, helvetica, arial, sans-serif;
-    height: 300px;
+    height: 250px;
+    width: 100%;
+    min-width: 800px;
+    background-color:fff;
+
+}
+
+#compareCanvas {
+    font: 9px helvetica neue, helvetica, arial, sans-serif;
+    height: 800px;
     width: 100%;
     min-width: 800px;
     background-color:fff;

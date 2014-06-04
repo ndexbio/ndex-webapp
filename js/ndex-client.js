@@ -1,5 +1,8 @@
 var NdexClient =
 {
+    termNodeMaps: [],
+    networks : [],
+
     NdexServerURI: "http://localhost:8080/ndexbio-rest",
     //NdexServerURI: "http://test.ndexbio.org/rest/ndexbio-rest",
 
@@ -148,7 +151,7 @@ var NdexClient =
     },
 
     /****************************************************************************
-     * Logs the user out of the system.
+     * USER Credentials & ID
      ****************************************************************************/
     clearUserCredentials: function () {
         if (this.checkLocalStorage()){
@@ -173,11 +176,76 @@ var NdexClient =
         localStorage.userId = userData.id;
     },
 
+    getUserId : function(){
+        return localStorage.userId;
+    },
+
     getSubmitUserCredentialsConfig: function (username, password){
         var url = "/users/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password);
         return this.getGetConfig(url);
     },
 
+    /****************************************************************************
+     * Loads the information of the currently-logged in user.
+     ****************************************************************************/
+
+    getUserQueryConfig: function(userId){
+    return this.getGetConfig(
+        "/users/" + userId,
+        null);
+    },
+
+
+    loadUser: function () {
+        if (!localStorage.userId)
+            return;
+
+        this.get(
+            "/users/" + localStorage.userId,
+            null,
+            function (userData) {
+                this.currentUser = userData;
+                this.userId = this.currentUser.id;
+            },
+            this.errorHandler
+        );
+    },
+
+
+    /****************************************************************************
+     * Returns the user's credentials as required by Basic Authentication base64
+     * encoded.
+     ****************************************************************************/
+    getEncodedUser: function () {
+        if (localStorage.userId)
+            return btoa(localStorage.username + ":" + localStorage.password);
+        else
+            return null;
+    },
+
+    /****************************************************************************
+     * Determines if the current user has write-access to the network.
+     ****************************************************************************/
+    canEdit: function(network)
+    {
+        if (!network || !this.currentUser || !this.currentUser.networks) return false;
+        for (var networkIndex = 0; networkIndex < this.currentUser.networks.length; networkIndex++)
+        {
+            var net = this.currentUser.networks()[networkIndex];
+            if (net.resourceId() === network.id() && net.permissions() != "READ")
+                return true;
+        }
+        return false;
+    },
+
+    getUserUpdateConfig: function(userData){
+        var url = "/users";
+        return this.getPostConfig(url, userData);
+    },
+
+    /****************************************************************************
+     * Networks
+     ****************************************************************************/
 
     getNetworkSearchConfig: function(searchType, searchString){
         var url = "/networks/search/" + searchType;
@@ -224,51 +292,6 @@ var NdexClient =
         return this.getPutConfig(url, network);
     },
 
-    /****************************************************************************
-     * Loads the information of the currently-logged in user.
-     ****************************************************************************/
-    loadUser: function () {
-        if (!localStorage.userId)
-            return;
-
-        this.get(
-            "/users/" + localStorage.userId,
-            null,
-            function (userData) {
-                this.currentUser = userData;
-                this.userId = this.currentUser.id;
-            },
-            this.errorHandler
-        );
-    },
-
-
-    /****************************************************************************
-     * Returns the user's credentials as required by Basic Authentication base64
-     * encoded.
-     ****************************************************************************/
-    getEncodedUser: function () {
-        if (localStorage.userId)
-            return btoa(localStorage.username + ":" + localStorage.password);
-        else
-            return null;
-    },
-
-    /****************************************************************************
-     * Determines if the current user has write-access to the network.
-     ****************************************************************************/
-    canEdit: function(network)
-    {
-        if (!network || !this.currentUser || !this.currentUser.networks) return false;
-        for (var networkIndex = 0; networkIndex < this.currentUser.networks.length; networkIndex++)
-        {
-            var net = this.currentUser.networks()[networkIndex];
-            if (net.resourceId() === network.id() && net.permissions() != "READ")
-                return true;
-        }
-        return false;
-    },
-
     hasFormat: function(network, format){
         // take dublin core annotation as first priority
         var currentFormat = network.metadata.get('dc:format')();
@@ -281,7 +304,10 @@ var NdexClient =
         return false;
     },
 
-    networks : [],
+    setNetwork: function(network){
+          this.networks = [];
+          this.addNetwork(network);
+    },
 
     addNetwork: function(network){
        this.networks.push(network);
@@ -430,22 +456,23 @@ var NdexClient =
         }
     },
 
-    TermNodeMap: {},
-
-    addNodeTermEntry: function(nodeId, termId){
-        var nodeIds = this.TermNodeMap[termId];
+    addNodeTermEntry: function(networkId, nodeId, termId){
+        var termNodeMap = this.termNodeMaps[networkId];
+        if (!termNodeMap){
+            termNodeMap = {};
+            this.termNodeMaps[networkId] = termNodeMap;
+        }
+        var nodeIds = termNodeMap[termId];
         if (!nodeIds) {
             nodeIds = [nodeId];
-            this.TermNodeMap[termId]=nodeIds;
+            termNodeMap[termId]=nodeIds;
         } else {
-           if (!$.inArray(nodeId, nodeIds)){
-               nodeIds.push(nodeId);
-           }
+           nodeIds.push(nodeId);
+            $.unique(nodeIds);
         }
     },
 
     indexNodesByTerms : function(network){
-
         for (nodeId in network.nodes){
             var node = network.nodes[nodeId];
             if (node.represents){
@@ -456,38 +483,21 @@ var NdexClient =
 
     indexNodeTerm :  function(node, nodeId, termId, network){
         var term = network.terms[termId];
+        var networkId = this.getNetworkId(network);
         if (term.termType === "Base") {
-           NdexClient.addNodeTermEntry(nodeId, termId);
+           NdexClient.addNodeTermEntry(networkId, nodeId, termId);
         } else if (term.termType === "Function") {
-            var functionTerm = network.terms[term.termFunction];
-            if (!functionTerm) {
-                console.log("in indexNodeTerm, no functionTerm by id " + term.termFunction);
-                return;
-            }
-
-            var sortedParameters = this.getDictionaryKeysSorted(term.parameters);
-            var parameterList = [];
-
-            for (var parameterIndex = 0; parameterIndex < sortedParameters.length; parameterIndex++) {
-                var parameterId = term.parameters[sortedParameters[parameterIndex]];
+            for (parameterIndex in term.parameters) {
+                var parameterId = term.parameters[parameterIndex];
                 NdexClient.indexNodeTerm(node, nodeId, parameterId, network);
             }
         }
     },
 
     getTermNodes : function(network, termId){
-        return this.TermNodeMap[termId];
-        var nodeIds = [];
-        for (nodeId in network.nodes){
-            var node = network.nodes[nodeId];
-            if (termId == node.represents
-               // ||  (node.aliases && node.aliases.indexOf(termId))
-               // ||  (node.relatedTerms && node.relatedTerms.indexOf(termId))
-                ){
-                nodeIds.push(nodeId);
-            }
-        }
-        return nodeIds;
+        var networkId = this.getNetworkId(network);
+        var termNodeMap = this.termNodeMaps[networkId];
+        if (termNodeMap) return termNodeMap[termId];
     },
 
     findSharedTerms : function(network1, network2, namespacePrefix){
@@ -524,14 +534,16 @@ var NdexClient =
             if (namespace.prefix == namespacePrefix) return namespaceId;
         }
         return null;
-    },
-
+    }
+    /*
     getPathsFromTerms: function(network1Terms, network1, network2Terms, network2){
         for (jdexId in network1Terms){
             var nodes = getTermNodes(networ);
         }
     }
 
+
+      */
 }
 
 $(document).ready(function () {

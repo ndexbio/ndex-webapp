@@ -345,8 +345,10 @@ Triptych.WebGLVisualizer.prototype.findClosestIntersectedElement = function(mous
 
 
 Triptych.WebGLVisualizer.prototype.init = function(width, height, camera){
-	this.renderer = new THREE.WebGLRenderer( { antialias: true } );
+	//this.renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+    this.renderer = new THREE.WebGLRenderer(  );
 	this.renderer.setSize( width, height);
+    //this.renderer.setClearColor( 0xffffff, 1);
 	this.projector = new THREE.Projector();
 	
 	this.camera = camera;	
