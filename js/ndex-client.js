@@ -1,7 +1,10 @@
 var NdexClient =
 {
-    //NdexServerURI: "http://localhost:8080/ndexbio-rest",
-    NdexServerURI: "http://test.ndexbio.org/rest/ndexbio-rest",
+    termNodeMaps: [],
+    networks : [],
+
+    NdexServerURI: "http://localhost:8080/ndexbio-rest",
+    //NdexServerURI: "http://test.ndexbio.org/rest/ndexbio-rest",
 
     /****************************************************************************
      * Initialization of the client.
@@ -148,7 +151,7 @@ var NdexClient =
     },
 
     /****************************************************************************
-     * Logs the user out of the system.
+     * USER Credentials & ID
      ****************************************************************************/
     clearUserCredentials: function () {
         if (this.checkLocalStorage()){
@@ -173,31 +176,26 @@ var NdexClient =
         localStorage.userId = userData.id;
     },
 
+    getUserId : function(){
+        return localStorage.userId;
+    },
+
     getSubmitUserCredentialsConfig: function (username, password){
         var url = "/users/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password);
         return this.getGetConfig(url);
     },
 
-
-    getNetworkSearchConfig: function(searchType, searchString){
-        var url = "/networks/search/" + searchType;
-        var postData = {
-                searchString: searchString,
-                top: 100,
-                skip: 0
-            };
-        return this.getPostConfig(url, postData);
-    },
-
-    getNetworkQueryByEdgesConfig: function(networkId, blockSize, skipBlocks){
-        // networks/{networkId}/edges/{skip}/{top}
-        var url = "/networks/" + networkId + "/edges/" + skipBlocks + "/" + blockSize;
-        return this.getGetConfig(url, null);
-    },
-
     /****************************************************************************
      * Loads the information of the currently-logged in user.
      ****************************************************************************/
+
+    getUserQueryConfig: function(userId){
+    return this.getGetConfig(
+        "/users/" + userId,
+        null);
+    },
+
+
     loadUser: function () {
         if (!localStorage.userId)
             return;
@@ -226,13 +224,127 @@ var NdexClient =
     },
 
     /****************************************************************************
-     * create a nice label for a node
+     * Determines if the current user has write-access to the network.
+     ****************************************************************************/
+    canEdit: function(network)
+    {
+        if (!network || !this.currentUser || !this.currentUser.networks) return false;
+        for (var networkIndex = 0; networkIndex < this.currentUser.networks.length; networkIndex++)
+        {
+            var net = this.currentUser.networks()[networkIndex];
+            if (net.resourceId() === network.id() && net.permissions() != "READ")
+                return true;
+        }
+        return false;
+    },
+
+    getUserUpdateConfig: function(userData){
+        var url = "/users";
+        return this.getPostConfig(url, userData);
+    },
+
+    /****************************************************************************
+     * Networks
      ****************************************************************************/
 
+    getNetworkSearchConfig: function(searchType, searchString){
+        var url = "/networks/search/" + searchType;
+        var postData = {
+                searchString: searchString,
+                top: 100,
+                skip: 0
+            };
+        return this.getPostConfig(url, postData);
+    },
+
+    getNetworkConfig: function(networkId){
+        // networks/{networkId}
+        var url = "/networks/" + networkId ;
+        return this.getGetConfig(url, null);
+    },
+
+    getNetworkQueryByEdgesConfig: function(networkId, skipBlocks, blockSize){
+        // network/{networkId}/edge/{skip}/{top}
+        // GET to NetworkAService
+        var url = "/network/" + networkId + "/edge/" + skipBlocks + "/" + blockSize;
+        return this.getGetConfig(url, null);
+    },
+
+    getNetworkQueryConfig: function(networkId, startingTerms, searchType, searchDepth, skipBlocks, blockSize){
+        // POST to NetworkAService
+        console.log("searchType = " + searchType);
+        console.log("searchDepth = " + searchDepth);
+        for (index in startingTerms){
+            console.log("searchTerm " + index + " : " + startingTerms[index]);
+        }
+        var url = "/network/" + networkId + "/query/" + skipBlocks + "/" + blockSize;
+        var postData = {
+            startingTermStrings: startingTerms,
+            searchType: searchType,
+            searchDepth: searchDepth
+        };
+        return this.getPostConfig(url, postData);
+    },
+
+    getSaveNetworkConfig: function(network){
+       // PUT to NetworkService (the old service)
+        var url = "/networks";
+        return this.getPutConfig(url, network);
+    },
+
+    hasFormat: function(network, format){
+        // take dublin core annotation as first priority
+        var currentFormat = network.metadata.get('dc:format')();
+        // otherwise, take simple "Format"
+        if (!currentFormat){
+            currentFormat = network.metadata.get('Format')();
+        }
+        if (!currentFormat) return false;
+        if (currentFormat === format) return true;
+        return false;
+    },
+
+    setNetwork: function(network){
+          this.networks = [];
+          this.addNetwork(network);
+    },
+
+    addNetwork: function(network){
+       this.networks.push(network);
+        $.each(network.terms, function(termId, term){
+            term.network = network;
+        });
+        $.each(network.nodes, function(nodeId, node){
+            node.network = network;
+        });
+        $.each(network.edges, function(edgeId, edge){
+            edge.network = network;
+        });
+    },
+
+    getNetworkId: function(network){
+        return this.networks.indexOf(network);
+    },
+
+    removeNetwork: function(network){
+        this.networks.remove(this.networks.indexOf(network));
+    },
+
+
+    /****************************************************************************
+     * create a nice label for a node
+     ****************************************************************************/
+    updateNodeLabels: function(nodeLabelMap, network){
+        $.each(network.nodes, function (id, node){
+            nodeLabelMap[id] = NdexClient.getNodeLabel(node, network) ;
+        });
+    },
+
     getNodeLabel: function(node, network) {
+        if (!network) network = NdexClient.getNodeNetwork(node);
         if ("name" in node && node.name && node.name != "")
             return node.name;
-        else if ("represents" in node && node.represents)
+        else if ("represents" in node && node.represents && network.terms[node.represents])
             return this.getTermLabel(network.terms[node.represents], network);
         else
             return "unknown"
@@ -245,6 +357,7 @@ var NdexClient =
  * Term is reached.
  ****************************************************************************/
     getTermLabel: function(term, network) {
+        if (!network) network = NdexClient.getTermNetwork(term);
         if (term.termType === "Base") {
             if (term.namespace) {
                 var namespace = network.namespaces[term.namespace];
@@ -277,7 +390,7 @@ var NdexClient =
                 var parameterTerm = network.terms[parameterId];
 
                 if (parameterTerm)
-                    var parameterLabel = NdexHelpers.getTermLabel(parameterTerm, network);
+                    var parameterLabel = this.getTermLabel(parameterTerm, network);
                 else
                     console.log("no parameterTerm by id " + parameterId);
 
@@ -290,45 +403,147 @@ var NdexClient =
             return "Unknown";
     },
 
+    /**************************************************************************
+     * Returns the keys of a dictionary as a sorted array.
+     **************************************************************************/
+    getDictionaryKeysSorted: function(dictionary)
+    {
+        var keys = [];
+        for(var key in dictionary)
+        {
+            if(dictionary.hasOwnProperty(key))
+                keys.push(key);
+        }
+
+        return keys.sort();
+    },
+
 /****************************************************************************
  * Looks-up abbreviations for term functions.
  ****************************************************************************/
     lookupFunctionAbbreviation: function(functionLabel) {
         var fl = functionLabel.toLowerCase();
+        if (fl.match(/^bel:/)) fl = fl.replace(/^bel:/, '');
         switch (fl) {
-            case "bel:abundance":
+            case "abundance":
                 return "a";
-            case "bel:biological_process":
+            case "biological_process":
                 return "bp";
-            case "bel:catalytic_activity":
+            case "catalytic_activity":
                 return "cat";
-            case "bel:complex_abundance":
+            case "complex_abundance":
                 return "complex";
-            case "bel:pathology":
+            case "pathology":
                 return "path";
-            case "bel:peptidase_activity":
+            case "peptidase_activity":
                 return "pep";
-            case "bel:protein_abundance":
+            case "protein_abundance":
                 return "p";
-            case "bel:rna_abundance":
+            case "rna_abundance":
                 return "r";
-            case "bel:protein_modification":
+            case "protein_modification":
                 return "pmod";
-            case "bel:transcriptional_activity":
+            case "transcriptional_activity":
                 return "trans";
-            case "bel:molecular_activity":
+            case "molecular_activity":
                 return "act";
-            case "bel:degredation":
+            case "degradation":
                 return "deg";
-            case "bel:kinase_activity":
+            case "kinase_activity":
                 return "kin";
             default:
-                if (fl.match(/^bel:/))
-                    return functionLabel.toLowerCase().replace(/^bel:/, '');
-                else
-                    return functionLabel;
+                return fl;
+        }
+    },
+
+    addNodeTermEntry: function(networkId, nodeId, termId){
+        var termNodeMap = this.termNodeMaps[networkId];
+        if (!termNodeMap){
+            termNodeMap = {};
+            this.termNodeMaps[networkId] = termNodeMap;
+        }
+        var nodeIds = termNodeMap[termId];
+        if (!nodeIds) {
+            nodeIds = [nodeId];
+            termNodeMap[termId]=nodeIds;
+        } else {
+           nodeIds.push(nodeId);
+            $.unique(nodeIds);
+        }
+    },
+
+    indexNodesByTerms : function(network){
+        for (nodeId in network.nodes){
+            var node = network.nodes[nodeId];
+            if (node.represents){
+                this.indexNodeTerm(node, nodeId, node.represents, network);
+            }
+        }
+    },
+
+    indexNodeTerm :  function(node, nodeId, termId, network){
+        var term = network.terms[termId];
+        var networkId = this.getNetworkId(network);
+        if (term.termType === "Base") {
+           NdexClient.addNodeTermEntry(networkId, nodeId, termId);
+        } else if (term.termType === "Function") {
+            for (parameterIndex in term.parameters) {
+                var parameterId = term.parameters[parameterIndex];
+                NdexClient.indexNodeTerm(node, nodeId, parameterId, network);
+            }
+        }
+    },
+
+    getTermNodes : function(network, termId){
+        var networkId = this.getNetworkId(network);
+        var termNodeMap = this.termNodeMaps[networkId];
+        if (termNodeMap) return termNodeMap[termId];
+    },
+
+    findSharedTerms : function(network1, network2, namespacePrefix){
+        var network1Terms = this.getTermsInNamespace(network1, namespacePrefix);
+        var network2Terms = this.getTermsInNamespace(network2, namespacePrefix);
+        var termPairs = [];
+        for (term1Id in network1Terms){
+            var term1 = network1Terms[term1Id];
+            for (term2Id in network2Terms){
+                var term2 = network2Terms[term2Id];
+                if (term2.name == term1.name){
+                    termPairs.push([term1Id, term2Id]);
+                }
+            }
+        }
+        return termPairs;
+    },
+
+    getTermsInNamespace: function(network, namespacePrefix){
+        var namespaceId = this.getNamespaceIdByPrefix(network, namespacePrefix);
+        var terms = {};
+        for(jdexId in network.terms){
+            var term = network.terms[jdexId];
+            if (namespaceId == term.namespace){
+                 terms[jdexId] = term;
+            }
+        }
+        return terms;
+    },
+
+    getNamespaceIdByPrefix: function(network, namespacePrefix){
+        for (namespaceId in network.namespaces){
+            var namespace = network.namespaces[namespaceId];
+            if (namespace.prefix == namespacePrefix) return namespaceId;
+        }
+        return null;
+    }
+    /*
+    getPathsFromTerms: function(network1Terms, network1, network2Terms, network2){
+        for (jdexId in network1Terms){
+            var nodes = getTermNodes(networ);
         }
     }
+
+
+      */
 }
 
 $(document).ready(function () {

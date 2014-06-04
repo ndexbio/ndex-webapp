@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css"/>
 
     <link rel="stylesheet" href="css/ndex-angular-site.css"/>
-    <link rel="stylesheet" href="css/visualize_network.css"/>
+    <link rel="stylesheet" type="text/css" href="css/visualize_network.css"/>
+    <link rel="stylesheet" type="text/css" href="css/compare_networks.css"/>
+
     <!-- Scripts -->
 
 
@@ -22,18 +24,39 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js"></script>
 
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <!--
+    <script type="text/javascript" src="js/three/Three.js"></script>
+    -->
+    <script src=http://mrdoob.github.io/three.js/build/three.min.js ></script>
+    <script src=http://mrdoob.github.io/three.js/examples/js/controls/TrackballControls.js ></script>
+    <script type="text/javascript" src="js/three/RequestAnimationFrame.js"></script>
 
+    <script type="text/javascript" src="js/triptych/triptych-graph.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-core.js"></script>
+    <script type="text/javascript" src="js/triptych/check-rendering.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-force.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-force-advanced.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-controls.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-WebGL.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-Canvas.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-BELWebGL.js"></script>
+    <script type="text/javascript" src="js/triptych/triptych-BELCanvas.js"></script>
+
+    <script type="text/javascript" src="js/triptych/ndex-triptych.js"></script>
 
     <script src="js/cytoscape.js-2.0.3/cytoscape.min.js"></script>
     <script src="js/cytoscape.js-2.0.3/arbor.js"></script>
 
     <script src="js/ndex-client.js"></script>
+    <script src="js/triptych/check-rendering.js"></script>
     <script src="js/d3-renderer.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/examples-top-level.js"></script>
     <script src="js/controllers/sign-in-controller.js"></script>
     <script src="js/controllers/network-search-controller.js"></script>
     <script src="js/controllers/query-controller.js"></script>
     <script src="js/controllers/cytoscapejs-controller.js"></script>
+    <script src="js/controllers/triptych-controller.js"></script>
+    <script src="js/controllers/compare-controller.js"></script>
     <script src="js/controllers/user-controller.js"></script>
 
 </head>
@@ -50,9 +73,11 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#user">MyAccount</a></li>
-            <li><a href="#searchNetworks">Search</a></li>
-            <li><a href="#networkQuery">Current Network</a></li>
-
+            <li><a href="#searchNetworks">Find</a></li>
+            <li><a href="#cjs">Cytoscape.js</a></li>
+            <li><a href="#triptych">Compare 3D</a></li>
+            <li><a href="#compare">Compare</a></li>
+            <li><a href="#networkQuery">Query</a></li>
             <!-- Show sign in if no user, sign out otherwise -->
             <li ng-show="!username">
                 <a href="#signIn">Sign in</a>
@@ -60,7 +85,6 @@
             <li ng-show="username">
                 <a href="#" ng-click="signout()">Sign out</a>
             </li>
-
             <li><a href="#"><i class="fa fa-home"></i> Home</a></li>
         </ul>
     </div>
@@ -68,7 +92,7 @@
 <!-- the footer as a fixed bottom nav bar -->
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
-        <!-- <span class="pull-right">&copy; Cytoscape Consortium 2014</span>    -->
+        <span class="pull-right">&copy; Cytoscape Consortium 2013</span>
         <a href="mailto:support@ndexbio.org" class="pull-left">Support</a>
     </div>
 </nav>

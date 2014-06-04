@@ -45,24 +45,6 @@ ndexApp.config(function ($routeProvider) {
             controller: 'searchNetworksController'
         })
 
-        // route for the cjs page
-        .when('/cjs', {
-            templateUrl: 'pages/cjs.html',
-            controller: 'cjsController'
-        })
-
-        // route for the triptych page
-        .when('/triptych', {
-            templateUrl: 'pages/triptych.html',
-            controller: 'triptychController'
-        })
-
-        // route for the compare page
-        .when('/compare', {
-            templateUrl: 'pages/compare.html',
-            controller: 'compareController'
-        })
-
         // route for the user page
         .when('/user', {
             templateUrl: 'pages/user.html',

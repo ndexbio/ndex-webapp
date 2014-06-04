@@ -1,0 +1,189 @@
+<!--   debugging
+<pre ng-show="message">
+    {{message}}
+</pre>
+
+<pre >
+    {{d3Json}}
+</pre>
+-->
+
+<div id="divNetwork">
+    <div id="divNetworkHeadline" class="row">
+        <div class="col-md-10 pull-left">
+            <h3>{{currentNetwork.name}}</h3>
+        </div>
+
+        <div id="divNetworkMenu" class="col-md-2 pull-right">
+            <a ng-click="saveSelectedSubnetwork()">Actions</a>
+            <!--
+            <div class="dropdown" >
+                <a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown" >Options</a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="option in networkOptions">
+                        <a ng-click="handleNetworkOption(option)">{{option}}</a>
+                    </li>
+                </ul>
+            </div>
+            -->
+        </div>
+    </div>
+    <div class="row">
+        <div id="divNetworkStats">
+        <span>
+             <label>nodes:</label>
+            <span>{{currentSubnetwork.nodeCount}}</span> out of
+             <span>{{currentNetwork.nodeCount}}</span>
+        </span>
+        <span>
+             <label>edges:</label>
+            <span>{{currentSubnetwork.edgeCount}}</span> out of
+             <span>{{currentNetwork.edgeCount}}</span>
+        </span>
+        </div>
+    </div>
+    <div class="row">
+        <div id="canvas" class="intgraph AlignCenter"></div>
+
+    </div>
+
+    <!-- tabs -->
+    <div id="divNetworkTabs" class="row">
+        <div class="tabbable">
+            <ul class="nav nav-tabs tab-title" data-toggle=tab">
+                <li class="active">
+                    <a href="#divEdges">
+                        <i class="icon-exchange"></i>
+                        Edges
+                    </a>
+                </li>
+                <li>
+                    <a href="#divQuery"  data-toggle=tab">
+                        <i class="icon-group"></i>
+                        Query
+                    </a>
+                </li>
+
+                <li >
+                    <a href="#divProperties"  data-toggle=tab">
+                        <i class="icon-tasks"></i>
+                        Properties
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="divSubnetwork">
+                    <ul id="ulSubnetwork" ng-repeat="(id, edge) in currentSubnetwork.edges">
+
+                        <li>
+                            <i class="icon-expand Hand" ng-show="hasAliases(edge)"
+                               ng-click="toggleTermAliases"></i>
+
+
+                            <strong>{{nodeLabels[edge.s]}}</strong>
+                            <em>{{currentSubnetwork.terms[edge.p].name}}</em>
+                            <strong>{{nodeLabels[edge.o]}}</strong>
+
+
+                            <sup rel="tooltip">{{edgeFootnotes[edge]}}
+                            </sup>
+
+                        </li>
+                        <!-- todo: aliases
+                        <li class="TermAliases" ng-show="hasAliases">
+
+                            <div>
+                                Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                            </div>
+
+                            <div>
+                                Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                            </div>
+
+                        </li>
+                     -->
+
+                    </ul>
+                </div>
+
+                <div id="divQuery" class="tab-pane">
+                    <dd id="ddSearchNetwork" data-bind="with: Search">
+                        <form id="frmSearchNetwork" ng-submit="submitNetworkQuery()">
+                            <div id="divSearch">
+                                <i class="icon-search"></i>
+                                <input type="search" ng-model="searchString" placeholder="Network Terms"/>
+                    <span>
+                        <label class="Attribute-Editable">Type:</label>
+                        <select id="ddlSearchOperator" ng-model="searchType.id" ng-selected="INTERCONNECT"
+                                ng-options="searchType.id as searchType.name for searchType in searchTypes"
+                                required></select>
+                    </span>
+
+                    <span>
+                        <label>Depth:</label>
+                        <select id="ddlSearchDepth" ng-model="searchDepth.value" ng-selected="1"
+                                ng-options="searchDepth.value as searchDepth.name for searchDepth in searchDepths"
+                                required></select>
+                    </span>
+
+                                <button type="submit" class="btn">Run Query</button>
+                            </div>
+                        </form>
+                    </dd>
+                </div>
+
+                <div id="divProperties" class="tab-pane " ng-model="currentSubnetwork">
+                    <div id="divEditableNetworkProperties" ng-show="showEditControls()">
+
+
+                    </div>
+                    <div id="divNetworkProperties" ng-hide="showEditControls()">
+                        <div>
+                            <label class="Attribute">Description:</label>
+                            <span>{{currentNetwork.description}}</span>
+                        </div>
+                        <!--   TODO - checkboxes in angular
+                        <div>
+                            <label class="Attribute">Public:</label>
+                            <input type="checkbox" data-bind="checked: isPublic"/>
+                        </div>
+                        <div>
+                            <label class="Attribute">Locked:</label>
+                            <input type="checkbox" data-bind="checked: isLocked"/>
+                        </div>
+                        -->
+                    </div>
+
+                    <div id="divMetadata">
+
+                        <ul ng-repeat="property in metadata.items">
+                            <!--
+                            <li ng-show="showEditControls">
+                                <label class="Attribute-Editable">{{key}}</label>
+                                <input type="text" class="Invisible" readonly
+                                       data-bind="value: value, event: { change: Network.updateNetwork }, isEditable: Network.ViewModel.Network().id()"/>
+                                <i class="btn icon-remove mobile-hide" title="Remove" rel="tooltip"
+                                   data-bind="click: Network.removeMetadata"></i>
+                           </li>
+                           -->
+                            <li ng-hide="showEditControls()">
+                                <label class="Attribute">{{key}}</label>
+                                <span>{{value}}</span>
+                            </li>
+                        </ul>
+
+                        <div class="AlignCenter" ng-show="showEditControls()">
+                            <button type="button" class="btn" id="btnAddMetadata" ng-click="addProperty()">New Metadata</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
