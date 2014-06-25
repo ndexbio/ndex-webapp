@@ -1,4 +1,19 @@
-ndexApp.controller('networkQueryController', function ($scope, $http, sharedProperties) {
+ndexApp.controller('networkQueryController', function (ndexService, $scope, $http, sharedProperties) {
+    controller = this;
+
+    controller.activeTab = 'edges';
+
+    controller.isTabSet = function(div) {
+        console.log("click2");
+        return controller.activeTab === div;
+    };
+
+    controller.setTab = function(div) {
+        console.log("click");
+        controller.activeTab = div;
+    };
+
+
     if (!$scope.nodeLabels) $scope.nodeLabels = {};
     if (!$scope.predicateLabels) $scope.predicateLabels = {};
     if (!$scope.currentNetwork) $scope.currentNetwork = {};

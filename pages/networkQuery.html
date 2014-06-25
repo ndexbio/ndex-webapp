@@ -48,25 +48,25 @@
     </div>
 
     <!-- begins tab content -->
-
+    <!-- tab bar -->
     <div id="divNetworkTabs" class="row">
         <div class="tabbable">
-            <ul class="nav nav-tabs tab-title" data-toggle=tab">
-                <li ng-class="{ active:tab.isSet(1) }">
-                    <a href="#divEdges" data-toggle=tab">
+            <ul class="nav nav-tabs tab-title">
+                <li ng-class="{ active:networkQuery.isTabSet('edges') }">
+                    <a href ng-click="networkQuery.setTab('edges')">
                         <i class="icon-exchange"></i>
                         Edges
                     </a>
                 </li>
-                <li ng-class="{ active:tab.isSet(1) }">
-                    <a href="#divQuery"  data-toggle=tab">
+                <li ng-class="{ active:networkQuery.isTabSet('query') }">
+                    <a href ng-click="networkQuery.setTab('query')">
                         <i class="icon-group"></i>
                         Query
                     </a>
                 </li>
 
-                <li ng-class="{ active:tab.isSet(1) }">
-                    <a href="#divProperties"  data-toggle=tab">
+                <li ng-class="{ active:networkQuery.isTabSet('properties') }">
+                    <a href ng-click="networkQuery.setTab('properties')">
                         <i class="icon-tasks"></i>
                         Properties
                     </a>
@@ -76,6 +76,23 @@
 
         </div>
     </div>
+
+    <div id="divNetworkTabs" class="tab-content">
+        <div id="divEdges" ng-show="networkQuery.isTabSet('edges')">
+            <p> test </p>
+        </div>
+
+        <div id="divQuery" ng-show="networkQuery.isTabSet('query')">
+            <p> test2 </p>
+        </div>
+
+        <div id="divProperties" ng-show="networkQuery.isTabSet('properties')">
+            <p> test3 </p>
+        </div>
+
+
+    </div>
+
     <!-- end tab content -->
 
 
@@ -83,22 +100,22 @@
     <!--
     <div id="divNetworkTabs" class="row">
         <div class="tabbable">
-            <ul class="nav nav-tabs tab-title" data-toggle=tab">
+            <ul class="nav nav-tabs tab-title" data-toggle="tab">
                 <li class="active">
-                    <a href="#divEdges" data-toggle=tab">
+                    <a href="#divEdges" data-toggle="tab">
                         <i class="icon-exchange"></i>
                         Edges
                     </a>
                 </li>
                 <li>
-                    <a href="#divQuery"  data-toggle=tab">
+                    <a href="#divQuery"  data-toggle="tab">
                         <i class="icon-group"></i>
                         Query
                     </a>
                 </li>
 
                 <li >
-                    <a href="#divProperties"  data-toggle=tab">
+                    <a href="#divProperties"  data-toggle="tab">
                         <i class="icon-tasks"></i>
                         Properties
                     </a>

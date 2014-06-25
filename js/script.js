@@ -1,5 +1,6 @@
+//function () {
 // create the module and name it ndexApp
-var ndexApp = angular.module('ndexApp', ['ngRoute']);
+var ndexApp = angular.module('ndexApp', ['ngRoute', 'ndexServiceApp']);
 var net1, net2;
 var cn, csn;
 var cUser;
@@ -45,7 +46,8 @@ ndexApp.config(function ($routeProvider) {
         // route for the searchNetworks page
         .when('/searchNetworks', {
             templateUrl: 'pages/searchNetworks.html',
-            controller: 'searchNetworksController'
+            controller: 'searchNetworksController',
+            controllerAs: 'networkSearch'
         })
 
         // route for the cjs page
@@ -75,7 +77,8 @@ ndexApp.config(function ($routeProvider) {
         // route for the networkQuery page
         .when('/networkQuery', {
             templateUrl: 'pages/networkQuery.html',
-            controller: 'networkQueryController'
+            controller: 'networkQueryController',
+            controllerAs: 'networkQuery'
         })
 
         // route for the signIn page
@@ -105,26 +108,8 @@ ndexApp.controller('mainController', function ($scope, $location, $http) {
         $.gritter.add({ title: "Error", text: "This web application requires a recent browser that supports localStorage" });
     }
 });
+//}) ();
 
-/*
-    Factory is part of the service family (value, factory, service, and provider).
-    Value and Provider have special use cases where factory and service are the
-    most similar. The difference is service invokes a constructor with the new
-    operator where as factory returns a service instance. For our purposes, both
-    achieve the same behavior. Factory is a simpler version of service.
- */
-ndexApp.factory('ndexService',function($http) {
-    // define and initialize factory object
-    var factory = {};
-
-    factory.findNetworks = function (searchType, searchString) {
-        var config = NdexClient.getNetworkSearchConfig(searchType, searchString);
-        return $http(config);
-    }
-
-    // return factory object
-    return factory;
-});
 
 
 
