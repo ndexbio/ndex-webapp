@@ -4,7 +4,7 @@
 
     <div class="pull-left">
         <form id="frmSearch" ng-submit="submitNetworkSearch()">
-            <div style="position: relative;">
+            <div class="" style="position: relative;">
                 <i id="searchInfo" class="icon-info-sign Hand" title="Info" rel="tooltip"
                    style="font-size: 1.25em; left: 20px; position: absolute; top: 0.25em;"></i>
                 <label class="Attribute-Editable">Search:</label>
@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <div>
+            <div class="">
                 <label class="Attribute-Editable">Type:</label>
                 <select id="ddlSearchOperator" ng-model="searchType">
                     <option value="starts-with">Starts With</option>
@@ -40,7 +40,8 @@
         {{networkSearchResults}}
     </pre>
     -->
-    <table ng-model="networkSearchResults">
+
+    <table ng-model="networkSearchResults" ng-hide="networkSearchResults == null">
         <thead>
         <tr>
             <th>Source</th>

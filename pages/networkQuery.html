@@ -47,12 +47,45 @@
 
     </div>
 
+    <!-- begins tab content -->
+
+    <div id="divNetworkTabs" class="row">
+        <div class="tabbable">
+            <ul class="nav nav-tabs tab-title" data-toggle=tab">
+                <li ng-class="{ active:tab.isSet(1) }">
+                    <a href="#divEdges" data-toggle=tab">
+                        <i class="icon-exchange"></i>
+                        Edges
+                    </a>
+                </li>
+                <li ng-class="{ active:tab.isSet(1) }">
+                    <a href="#divQuery"  data-toggle=tab">
+                        <i class="icon-group"></i>
+                        Query
+                    </a>
+                </li>
+
+                <li ng-class="{ active:tab.isSet(1) }">
+                    <a href="#divProperties"  data-toggle=tab">
+                        <i class="icon-tasks"></i>
+                        Properties
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+    <!-- end tab content -->
+
+
     <!-- tabs -->
+    <!--
     <div id="divNetworkTabs" class="row">
         <div class="tabbable">
             <ul class="nav nav-tabs tab-title" data-toggle=tab">
                 <li class="active">
-                    <a href="#divEdges">
+                    <a href="#divEdges" data-toggle=tab">
                         <i class="icon-exchange"></i>
                         Edges
                     </a>
@@ -74,7 +107,7 @@
             </ul>
 
             <div class="tab-content">
-                <div class="tab-pane active" id="divSubnetwork">
+                <div class="tab-pane active" id="divEdges">
                     <ul id="ulSubnetwork" ng-repeat="(id, edge) in currentSubnetwork.edges">
 
                         <li>
@@ -103,7 +136,7 @@
                             </div>
 
                         </li>
-                     -->
+                     /-/->/ remove slashes for original comments
 
                     </ul>
                 </div>
@@ -153,7 +186,7 @@
                             <label class="Attribute">Locked:</label>
                             <input type="checkbox" data-bind="checked: isLocked"/>
                         </div>
-                        -->
+                        /-/->/ remove slashes for original comments
                     </div>
 
                     <div id="divMetadata">
@@ -167,7 +200,7 @@
                                 <i class="btn icon-remove mobile-hide" title="Remove" rel="tooltip"
                                    data-bind="click: Network.removeMetadata"></i>
                            </li>
-                           -->
+                           /-/-/> remove comments for original comments
                             <li ng-hide="showEditControls()">
                                 <label class="Attribute">{{key}}</label>
                                 <span>{{value}}</span>
@@ -183,7 +216,8 @@
             </div>
 
         </div>
-    </div>
+    </div>-->
+    <!-- end tabs -->
 
 
 </div>

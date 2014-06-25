@@ -3,8 +3,8 @@ var NdexClient =
     termNodeMaps: [],
     networks : [],
 
-    NdexServerURI: "http://localhost:8080/ndexbio-rest",
-    //NdexServerURI: "http://test.ndexbio.org/rest/ndexbio-rest",
+    //NdexServerURI: "http://localhost:8080/ndexbio-rest",
+    NdexServerURI: "http://test.ndexbio.org/rest/ndexbio-rest",
 
     /****************************************************************************
      * Initialization of the client.
