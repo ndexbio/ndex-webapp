@@ -1,18 +1,81 @@
-ndexApp.controller('networkQueryController', function (ndexService, $scope, $http, sharedProperties) {
+ndexApp.controller('networkQueryController', function (ndexService, ndexUtility, $scope, $http, sharedProperties) {
+    //refactoring
+    //------------------------------------------------------------------------------------------------//
     controller = this;
 
+    //setup current network
+    controller.currentNetworkId = sharedProperties.getCurrentNetworkId();
+    if ('none' === controller.currentNetworkId) controller.currentNetworkId = "C25R1174";   // hardwired for testing
+    controller.editMode = false;
+
+
+    //tab functionality
     controller.activeTab = 'edges';
 
     controller.isTabSet = function(div) {
-        console.log("click2");
         return controller.activeTab === div;
     };
 
     controller.setTab = function(div) {
-        console.log("click");
         controller.activeTab = div;
     };
+    //
 
+    //tab search
+    controller.searchDepth = {
+        "name" : "1-step",
+        "description": "1-step",
+        "value": 1,
+        "id": "1"};
+
+    controller.networkOptions = [
+        "Save Selected Subnetwork",
+        "And another choice for you.",
+        "but wait! A third!"
+    ];
+
+    controller.searchDepths = [
+        {
+            "name" : "1-step",
+            "description": "1-step",
+            "value": 1,
+            "id": "1"
+        },
+        {
+            "name" : "2-step",
+            "description": "2-step",
+            "value": 2,
+            "id": "2"
+        },
+        {
+            "name" : "3-step",
+            "description": "3-step",
+            "value": 3,
+            "id": "3"
+        }
+    ];
+
+    controller.submitNetworkQuery = function() {
+        var terms = controller.searchString.split(/[ ,]+/);
+        ndexService.queryNetwork( controller.currentNetworkId, terms, controller.searchDepth.value).success(
+            function(network) {
+                console.log("got query results for : " + controller.searchString);
+
+                csn = network;
+                controller.currentSubnetwork = network;
+                console.log(JSON.stringify(controller.currentSubnetwork));
+                controller.graphData = createD3Json(network);
+
+                d3Setup(height, width, '#canvas');
+                d3Init();
+                addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
+                d3Go();
+            }
+        );
+    };
+    //
+
+    //--------------------------------------------------------------------------------------------------//
 
     if (!$scope.nodeLabels) $scope.nodeLabels = {};
     if (!$scope.predicateLabels) $scope.predicateLabels = {};
@@ -76,7 +139,7 @@ ndexApp.controller('networkQueryController', function (ndexService, $scope, $htt
     ];
 
 
-    $scope.submitNetworkQuery = function () {
+    /*$scope.submitNetworkQuery = function () {
         var terms = $scope.searchString.split(/[ ,]+/);
         var networkQueryConfig = NdexClient.getNetworkQueryConfig(
             $scope.currentNetworkId,
@@ -101,7 +164,7 @@ ndexApp.controller('networkQueryController', function (ndexService, $scope, $htt
                 addNetworkToD3(NdexClient.networks[0], {x: (width * .5), y: height/2});
                 d3Go();
             });
-    }
+    }*/
 
     $scope.showEditControls = function () {
         if (!$scope.currentNetwork) return false;

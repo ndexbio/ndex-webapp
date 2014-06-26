@@ -47,6 +47,26 @@
 
     </div>
 
+
+    <div class="row">
+
+        <form id="frmSearchNetwork" ng-submit="networkQuery.submitNetworkQuery()" class="pull-left">
+        <div id="divSearch">
+            <i class="icon-search"></i>
+            <input type="search" ng-model="networkQuery.searchString" placeholder="Network Terms"/>
+
+            <span>
+                <label>Depth:</label>
+                <select id="" ng-model="networkQuery.searchDepth.value" ng-selected="1"
+                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkQuery.searchDepths"required></select>
+            </span>
+
+            <button type="submit" class="">Run Query</button>
+        </div>
+        </form>
+
+    </div>
+
     <!-- begins tab content -->
     <!-- tab bar -->
     <div id="divNetworkTabs" class="row">
@@ -58,10 +78,10 @@
                         Edges
                     </a>
                 </li>
-                <li ng-class="{ active:networkQuery.isTabSet('query') }">
-                    <a href ng-click="networkQuery.setTab('query')">
+                <li ng-class="{ active:networkQuery.isTabSet('terms') }">
+                    <a href ng-click="networkQuery.setTab('terms')">
                         <i class="icon-group"></i>
-                        Query
+                        Terms
                     </a>
                 </li>
 
@@ -75,15 +95,43 @@
             </ul>
 
         </div>
-    </div>
 
-    <div id="divNetworkTabs" class="tab-content">
-        <div id="divEdges" ng-show="networkQuery.isTabSet('edges')">
-            <p> test </p>
+        <div class="tab-content">
+            <div id="divEdges" ng-show="networkQuery.isTabSet('edges')">
+                <ul id="ulSubnetwork" ng-repeat="(id, edge) in networkQuery.currentSubnetwork.edges">
+
+                    <li>
+                        <i class="icon-expand Hand" ng-show="hasAliases(edge)"
+                           ng-click="toggleTermAliases"></i>
+
+
+                        <!-- <strong>{{nodeLabels[edge.s]}}</strong> -->
+                        <em>{{networkQuery.currentSubnetwork.terms[edge.p].name}}</em>
+                        <!-- <strong>{{nodeLabels[edge.o]}}</strong> -->
+
+
+                        <sup rel="tooltip">{{edgeFootnotes[edge]}}
+                        </sup>
+
+                    </li>
+                    <!-- todo: aliases
+                    <li class="TermAliases" ng-show="hasAliases">
+
+                        <div>
+                            Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                        </div>
+
+                        <div>
+                            Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                        </div>
+
+                    </li>-->
+
+                </ul>
         </div>
 
-        <div id="divQuery" ng-show="networkQuery.isTabSet('query')">
-            <p> test2 </p>
+        <div id="divQuery" ng-show="networkQuery.isTabSet('terms')">
+            <p> test 2</p>
         </div>
 
         <div id="divProperties" ng-show="networkQuery.isTabSet('properties')">
@@ -92,7 +140,11 @@
 
 
     </div>
+</div>
 
+
+
+<!-- end tab content -->
     <!-- end tab content -->
 
 

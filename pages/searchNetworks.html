@@ -3,30 +3,18 @@
     <h1>Search Networks</h1>
 
     <div class="pull-left">
-        <form id="frmSearch" ng-submit="networkSearch.submitNetworkSearch()">
-            <div class="" style="position: relative;">
-                <i id="searchInfo" class="icon-info-sign Hand" title="Info" rel="tooltip"
-                   style="font-size: 1.25em; left: 20px; position: absolute; top: 0.25em;"></i>
-                <label class="Attribute-Editable">Search:</label>
-
-                <div id="divSearch" style="display: inline-block;">
-                    <i class="icon-search"></i>
-                    <input type="search" ng-model="networkSearch.searchString" placeholder="Search keywords"/>
-                </div>
+        <form class="form-inline" id="frmSearch" ng-submit="networkSearch.submitNetworkSearch()">
+            <!--<div class="" style="position: relative;">
+             <i id="searchInfo" class="icon-info-sign Hand" title="Info" rel="tooltip"
+                 style="font-size: 1.25em; left: 20px; position: absolute; top: 0.25em;"></i>
+            <label class="Attribute-Editable"></label>
+            -->
+            <div class="" id="divSearch" style="display: inline-block;">
+                <i class="icon-search"></i>
+                <input type="search" ng-model="networkSearch.searchString" placeholder="Search keywords"/>
             </div>
 
-            <div class="">
-                <label class="Attribute-Editable">Type:</label>
-                <select id="ddlSearchOperator" ng-model="networkSearch.searchType">
-                    <option value="starts-with">Starts With</option>
-                    <option value="contains">Contains</option>
-                    <option value="exact-match">Exact Match</option>
-                </select>
-            </div>
-
-            <div class="AlignCenter">
-                <button type="submit">Search</button>
-            </div>
+            <button type="submit">Search</button>
         </form>
     </div>
 
@@ -58,7 +46,7 @@
         </tbody>
 
         <tbody ng-show="networkSearch.networkSearchResults.length > 0" ng-repeat="network in networkSearch.networkSearchResults">
-        <tr ng-click="networkSearchsetAndDisplayCurrentNetwork(network.id)">
+        <tr ng-click="networkSearch.setAndDisplayCurrentNetwork(network.id)">
             <td>{{network.metadata["Source"]}}</td>
             <td>{{network.name}}</td>
             </td>
