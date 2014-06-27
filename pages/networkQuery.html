@@ -11,7 +11,7 @@
 <div id="divNetwork">
     <div id="divNetworkHeadline" class="row">
         <div class="col-md-10 pull-left">
-            <h3>{{currentNetwork.name}}</h3>
+            <h3>{{networkQuery.currentNetwork.name}}</h3>
         </div>
 
         <div id="divNetworkMenu" class="col-md-2 pull-right">
@@ -32,13 +32,13 @@
         <div id="divNetworkStats">
         <span>
              <label>nodes:</label>
-            <span>{{currentSubnetwork.nodeCount}}</span> out of
-             <span>{{currentNetwork.nodeCount}}</span>
+            <span>{{networkQuery.currentSubnetwork.nodeCount}}</span> out of
+             <span>{{networkQuery.currentNetwork.nodeCount}}</span>
         </span>
         <span>
              <label>edges:</label>
-            <span>{{currentSubnetwork.edgeCount}}</span> out of
-             <span>{{currentNetwork.edgeCount}}</span>
+            <span>{{networkQuery.currentSubnetwork.edgeCount}}</span> out of
+             <span>{{networkQuery.currentNetwork.edgeCount}}</span>
         </span>
         </div>
     </div>
@@ -67,9 +67,9 @@
 
     </div>
 
-    <!-- begins tab content -->
-    <!-- tab bar -->
+    <!-- begins tabbable section -->
     <div id="divNetworkTabs" class="row">
+        <!-- tab bar -->
         <div class="tabbable">
             <ul class="nav nav-tabs tab-title">
                 <li ng-class="{ active:networkQuery.isTabSet('edges') }">
@@ -96,6 +96,7 @@
 
         </div>
 
+        <!-- tab content -->
         <div class="tab-content">
             <div id="divEdges" ng-show="networkQuery.isTabSet('edges')">
                 <ul id="ulSubnetwork" ng-repeat="(id, edge) in networkQuery.currentSubnetwork.edges">
@@ -105,9 +106,9 @@
                            ng-click="toggleTermAliases"></i>
 
 
-                        <!-- <strong>{{nodeLabels[edge.s]}}</strong> -->
+                        <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.s]}}</strong>
                         <em>{{networkQuery.currentSubnetwork.terms[edge.p].name}}</em>
-                        <!-- <strong>{{nodeLabels[edge.o]}}</strong> -->
+                        <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.o]}}</strong>
 
 
                         <sup rel="tooltip">{{edgeFootnotes[edge]}}

@@ -11,8 +11,8 @@ ndexApp.controller('searchNetworksController',function (ndexService, $scope, $ht
     controller.networkSearchResults = null;
 
     controller.setAndDisplayCurrentNetwork = function (networkId) {
-        sharedProperties.setCurrentNetworkId(networkId);
-        $location.path("/networkQuery");
+        //sharedProperties.setCurrentNetworkId(networkId);
+        $location.path("/networkQuery/" + networkId);
     }
     
     controller.submitNetworkSearch = function () {

@@ -1,4 +1,4 @@
-ndexApp.controller('signInController', function ($scope, $location, $http) {
+ndexApp.controller('signInController', function (sharedProperties, $scope, $location, $http) {
     $scope.username = null;
     $scope.password = null;
     $scope.goHome = function (name) {
@@ -7,9 +7,11 @@ ndexApp.controller('signInController', function ($scope, $location, $http) {
     };
     $scope.submitSignIn = function () {
         NdexClient.clearUserCredentials();
+        sharedProperties.setUserLoggedIn(false); //refactor 1.0
         var config = NdexClient.getSubmitUserCredentialsConfig($scope.username, $scope.password);
         $http(config)
             .success(function (userdata) {
+                sharedProperties.setUserLoggedIn(true); //refactor 1.0
                 $scope.goHome();
                 NdexClient.setUserCredentials(userdata, $scope.password);
             })
@@ -17,8 +19,9 @@ ndexApp.controller('signInController', function ($scope, $location, $http) {
                 $.gritter.add({ title: "Error", text: "Error in sign-in: check username and password." });
             });
 
-    }
+    };
     $scope.getNdexServer = function () {
         return NdexClient.NdexServerURI;
-    }
+    };
+    console.log("duh" + mainController.loggedIn);
 });

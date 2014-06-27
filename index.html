@@ -42,7 +42,7 @@
 </head>
 
 <!-- define angular controller -->
-<body ng-controller="mainController">
+<body ng-controller="mainController as main">
 
 <!-- the top nav bar -->
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -52,7 +52,7 @@
         </div>
 
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#user">MyAccount</a></li>
+            <li ng-show="main.loggedIn"><a href="#user">MyAccount</a></li>
             <li><a href="#searchNetworks">Search</a></li>
             <li><a href="#networkQuery">Current Network</a></li>
 
@@ -61,7 +61,7 @@
                 <a href="#signIn">Sign in</a>
             </li>
             <li ng-show="username">
-                <a href="#" ng-click="signout()">Sign out</a>
+                <a href="#" ng-click="main.signout()">Sign out</a>
             </li>
 
             <li><a href="#"><i class="fa fa-home"></i> Home</a></li>

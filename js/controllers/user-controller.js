@@ -1,4 +1,22 @@
-ndexApp.controller('userController', function ($scope, $http, $location, sharedProperties) {
+ndexApp.controller('userController', function (ndexService, ndexUtility, $scope, $http, $location, sharedProperties) {
+
+    //                               refactoring
+    //------------------------------------------------------------------------------------//
+    controller = this;
+    //tab functionality
+    controller.activeTab = 'networks';
+
+    controller.isTabSet = function(div) {
+        return controller.activeTab === div;
+    };
+
+    controller.setTab = function(div) {
+        controller.activeTab = div;
+    };
+    //
+
+
+    //------------------------------------------------------------------------------------//
 
     // This controller displays the user designated by
     // sharedProperties.displayedUserId

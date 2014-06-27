@@ -16,7 +16,7 @@
     var ndexServiceApp = angular.module('ndexServiceApp', []);
 
     /****************************************************************************
-     * description  : $http calls to rest server.
+     * description  : $http calls to rest server. can do pre-processing here
      * dependencies : $http and ndexConfigs
      * return       : promise with success and error methods
      ****************************************************************************/
@@ -24,14 +24,54 @@
         // define and initialize factory object
         var factory = {};
 
+        factory.getNdexServer = function(){
+            return ndexConfigs.NdexServerURI;
+        };
+
         /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/
-        factory.findNetworks = function (searchString) {
+        // getNetwork
+        // notes: returns network metadata? should find out
+        factory.getNetwork = function(networkId) {
+            var config = ndexConfigs.getNetworkConfig(networkId);
+            return $http(config);
+        };
+
+        // getNetworkByEdges
+        // - get a block of edges
+        factory.getNetworkByEdges = function(networkId, skipBlocks, blockSize) {
+            var config = ndexConfigs.getNetworkQueryByEdgesConfig(networkId, skipBlocks, blockSize);
+            /*return {success: function(success) {
+                $http(config).success(function(){});
+            }
+            }*/
+
+            return $http(config).success(function(network){
+                ndexUtility.updateNodeLabels(network); //set the labels
+                ndexUtility.setNetwork(network);
+                return {success: function(handler){
+                    handler(network);
+                }
+                }
+            }).error(function(error){
+                return {error: function(handler){
+                    handler(error);
+                }
+                }
+            });
+        };
+
+        // findNetworks
+        // - simple network search
+        factory.findNetworks = function(searchString) {
             var config = ndexConfigs.getNetworkSearchConfig(searchString);
             return $http(config);
         };
 
+        // queryNetwork
+        // - search the network for a subnetwork via search terms and depth
+        // TODO current version does not include an error handler, consider implementing promise
         factory.queryNetwork = function(networkId, terms, searchDepth) {
             var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth,
                 0,    // skip blocks
@@ -40,9 +80,10 @@
 
             return {success: function(success) {
                 $http(config).success(function (network) {
-                    console.log(JSON.stringify(network));
                     ndexUtility.updateNodeLabels(network);
-                    ndexUtility.setNetwork(network);
+                    ndexUtility.setNetwork(network); // consider removing
+
+                    console.log(network.nodeLabelMap);
                     //TODO add error check
                     success(network);
                     //errorHandler(Error("didnt work")
@@ -75,6 +116,23 @@
         //factory.NdexServerURI = "http://localhost:8080/ndexbio-rest";
 
         /*---------------------------------------------------------------------*
+         * GET request configuration
+         *---------------------------------------------------------------------*/
+        factory.getGetConfig = function(url, queryArgs){
+            var config ={
+                method: 'GET',
+                url: factory.NdexServerURI + url,
+                headers: {
+                    Authorization: "Basic " + factory.getEncodedUser()
+                }
+            }
+            if (queryArgs){
+                config.data =  JSON.stringify(queryArgs);
+            }
+            return config;
+        };
+
+        /*---------------------------------------------------------------------*
          * POST request configuration
          *---------------------------------------------------------------------*/
         factory.getPostConfig = function(url, postData){
@@ -103,6 +161,19 @@
         /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/
+
+        factory.getNetworkConfig = function(networkId){
+            // networks/{networkId}
+            var url = "/networks/" + networkId ;
+            return this.getGetConfig(url, null);
+        };
+
+        factory.getNetworkQueryByEdgesConfig = function(networkId, skipBlocks, blockSize){
+            // network/{networkId}/edge/{skip}/{top}
+            // GET to NetworkAService
+            var url = "/network/" + networkId + "/edge/" + skipBlocks + "/" + blockSize;
+            return this.getGetConfig(url, null);
+        };
 
         factory.getNetworkSearchConfig = function(searchString){
             var url = "/networks/search/" + "contains";
@@ -140,7 +211,7 @@
     ndexServiceApp.factory('ndexUtility', function() {
         factory = {};
 
-        factory.network = [];
+        factory.networks = [];
 
         /*-----------------------------------------------------------------------*
          * networks
@@ -175,6 +246,7 @@
          * create a nice label for a node
          *-----------------------------------------------------------------------*/
         factory.updateNodeLabels = function(network){
+            network.nodeLabelMap = [];
             $.each(network.nodes, function (id, node){
                 network.nodeLabelMap[id] = factory.getNodeLabel(node, network) ;
             });
@@ -182,8 +254,9 @@
 
         factory.getNodeLabel = function(node, network) {
             //if (!network) network = factory.getNodeNetwork(node);
-            if ("name" in node && node.name && node.name != "")
-                return node.name;
+            if ("name" in node && node.name && node.name != ""){
+                //console.log(node.name);
+                return node.name;}
             else if ("represents" in node && node.represents && network.terms[node.represents])
                 return factory.getTermLabel(network.terms[node.represents], network);
             else
