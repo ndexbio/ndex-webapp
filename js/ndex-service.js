@@ -16,6 +16,7 @@
     var ndexServiceApp = angular.module('ndexServiceApp', []);
 
     /****************************************************************************
+     * NDEx HTTP Service
      * description  : $http calls to rest server. can do pre-processing here
      * dependencies : $http and ndexConfigs
      * return       : promise with success and error methods
@@ -28,6 +29,28 @@
             return ndexConfigs.NdexServerURI;
         };
 
+        /*---------------------------------------------------------------------*
+         * Users
+         *---------------------------------------------------------------------*/
+        factory.signIn = function(username, password) {
+            ndexUtility.clearUserCredentials();
+            var config = ndexConfigs.getSubmitUserCredentialsConfig(username, password);
+            return $http(config).success(function(userData){
+                ndexUtility.setUserCredentials(userData, password);
+                return {success: function(handler){
+                    handler(userData);
+                }
+                }
+            }).error(function(error){
+                return {error: function(handler){
+                    handler(error);
+                }
+                }
+            });
+        };
+        factory.signOut = function() {
+            ndexUtility.clearUserCredentials();
+        };
         /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/
@@ -159,6 +182,14 @@
         };
 
         /*---------------------------------------------------------------------*
+         * Users
+         *---------------------------------------------------------------------*/
+        factory.getSubmitUserCredentialsConfig = function (username, password){
+            var url = "/users/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password);
+            return this.getGetConfig(url);
+        };
+
+        /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/
 
@@ -212,6 +243,36 @@
         factory = {};
 
         factory.networks = [];
+
+        /*-----------------------------------------------------------------------*
+         * user credentials and ID
+         *-----------------------------------------------------------------------*/
+        factory.clearUserCredentials = function () {
+            if (this.checkLocalStorage()){
+                delete localStorage.username;
+                delete localStorage.password;
+                delete localStorage.userId;
+            }
+            //if (localStorage["Groups Search"]) delete localStorage["Groups Search"];
+            //if (localStorage["Users Search"]) delete localStorage["Users Search"];
+            //if (localStorage["Networks Search"]) delete localStorage["Networks Search"];
+
+        };
+
+        factory.checkLocalStorage = function(){
+            if (localStorage == undefined) return false;
+            return true;
+        };
+
+        factory.setUserCredentials = function(userData, password){
+            localStorage.username = userData.username;
+            localStorage.password = password;
+            localStorage.userId = userData.id;
+        };
+
+        factory.getUserId = function(){
+            return localStorage.userId;
+        };
 
         /*-----------------------------------------------------------------------*
          * networks

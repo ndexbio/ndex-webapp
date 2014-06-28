@@ -57,10 +57,10 @@
             <li><a href="#networkQuery">Current Network</a></li>
 
             <!-- Show sign in if no user, sign out otherwise -->
-            <li ng-show="!main.username">
+            <li ng-show="!main.loggedIn">
                 <a href="#signIn">Sign in</a>
             </li>
-            <li ng-show="main.username">
+            <li ng-show="main.loggedIn">
                 <a href="#" ng-click="main.signout()">Sign out</a>
             </li>
 

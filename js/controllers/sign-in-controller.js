@@ -23,5 +23,4 @@ ndexApp.controller('signInController', function (sharedProperties, $scope, $loca
     $scope.getNdexServer = function () {
         return NdexClient.NdexServerURI;
     };
-    console.log("duh" + mainController.loggedIn);
 });

@@ -16,7 +16,7 @@ ndexApp.controller('searchNetworksController',function (ndexService, $scope, $ht
     }
     
     controller.submitNetworkSearch = function () {
-        ndexService.findNetworks(controller.searchString).success(function (networks) {
+        ndexService.findNetworks(controller.searchString).success(function(networks) {
             controller.networkSearchResults = networks;
             console.log("Set networkSearchResults");
             console.log("first network name = " + networks[0].name);

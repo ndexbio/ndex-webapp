@@ -18,13 +18,6 @@ ndexApp.service('sharedProperties', function () {
         setCurrentNetworkId: function (value) {
             this.currentNetworkId = value;
         },
-        //
-        isUserLoggedIn: function() {
-            return this.userLoggedIn;
-        },
-        setUserLoggedIn: function(userBoolean) {
-            this.userLoggedIn = userBoolean;
-        }
     }
 });
 
@@ -100,7 +93,7 @@ ndexApp.config(function ($routeProvider) {
 });
 
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', function (ndexService, sharedProperties, $scope, $location, $http) {
+ndexApp.controller('mainController', function (ndexService, ndexUtility, sharedProperties, $scope, $location, $http) {
     controller = this;
 
     //consider placing variables to holder signin submit that are different from saved credentials
@@ -108,56 +101,43 @@ ndexApp.controller('mainController', function (ndexService, sharedProperties, $s
     controller.username = '';
     controller.password = '';
 
-    //controller.loggedIn = function() {return sharedProperties.isUserLoggedIn()};
-    //console.log(controller.loggedIn());
-
     controller.goHome = function () {
         console.log("going to home");
         $location.path("/");
     };
     controller.submitSignIn = function () {
-        NdexClient.clearUserCredentials();
-        //sharedProperties.setUserLoggedIn(false); //refactor 1.0
-        //localStorage.username = controller.username;
-        //localStorage.password = controller.password;
-        //localStorage.userId = 3;
+        //ndexUtility.clearUserCredentials();
         controller.loggedIn = false;
-        var config = NdexClient.getSubmitUserCredentialsConfig(controller.username, controller.password);
-        $http(config)
-            .success(function (userdata) {
-                controller.loggedIn = true;
-                controller.goHome();
-                NdexClient.setUserCredentials(userdata, controller.password);
-                
-                console.log("user" + localStorage.username);
-            })
-            .error(function (error) {
-                $.gritter.add({ title: "Error", text: "Error in sign-in: check username and password." });
-            });
-
-    }
+        ndexService.signIn(controller.username, controller.password).success(function(userData) {
+            controller.loggedIn = true;
+            controller.goHome();
+        });
+    };
     controller.getNdexServer = function () {
         //console.log("called");
         return ndexService.getNdexServer();
-    }
+    };
 
     controller.signout = function () {
-        NdexClient.clearUserCredentials();
+        ndexService.signOut();
         controller.loggedIn = false;
         controller.username = null;
         controller.password = null;
         $location.path("/signIn");
-    }
+        console.log('scope not changing:' + controller.loggedIn);
+    };
+
+    console.log(controller.username);
     // create a message to display in our view
-    if (NdexClient.checkLocalStorage()) {
+    if (ndexUtility.checkLocalStorage()) {
 
         if (localStorage.username) {
-            controller.loggedIn = true;
+           // controller.loggedIn = true;
             controller.username = localStorage.username;
             controller.password = localStorage.password;
         }
         $scope.networkSearchResults = null;
-        controller.signout();
+        //controller.signout();
     } else {
         $.gritter.add({ title: "Error", text: "This web application requires a recent browser that supports localStorage" });
     }
