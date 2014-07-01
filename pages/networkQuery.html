@@ -69,84 +69,57 @@
 
     <!-- begins tabbable section -->
     <div id="divNetworkTabs" class="row">
-        <!-- tab bar -->
-        <div class="tabbable">
-            <ul class="nav nav-tabs tab-title">
-                <li ng-class="{ active:networkQuery.isTabSet('edges') }">
-                    <a href ng-click="networkQuery.setTab('edges')">
-                        <i class="icon-exchange"></i>
-                        Edges
-                    </a>
-                </li>
-                <li ng-class="{ active:networkQuery.isTabSet('terms') }">
-                    <a href ng-click="networkQuery.setTab('terms')">
-                        <i class="icon-group"></i>
-                        Terms
-                    </a>
-                </li>
 
-                <li ng-class="{ active:networkQuery.isTabSet('properties') }">
-                    <a href ng-click="networkQuery.setTab('properties')">
-                        <i class="icon-tasks"></i>
-                        Properties
-                    </a>
-                </li>
+        <tabset>
+            <tab heading="Edges">
+                <div id="divEdges">
+                    <ul id="ulSubnetwork" ng-repeat="(id, edge) in networkQuery.currentSubnetwork.edges">
 
-            </ul>
-
-        </div>
-
-        <!-- tab content -->
-        <div class="tab-content">
-            <div id="divEdges" ng-show="networkQuery.isTabSet('edges')">
-                <ul id="ulSubnetwork" ng-repeat="(id, edge) in networkQuery.currentSubnetwork.edges">
-
-                    <li>
-                        <i class="icon-expand Hand" ng-show="hasAliases(edge)"
-                           ng-click="toggleTermAliases"></i>
+                        <li>
+                            <i class="icon-expand Hand" ng-show="hasAliases(edge)"
+                               ng-click="toggleTermAliases"></i>
 
 
-                        <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.s]}}</strong>
-                        <em>{{networkQuery.currentSubnetwork.terms[edge.p].name}}</em>
-                        <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.o]}}</strong>
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.s]}}</strong>
+                            <em>{{networkQuery.currentSubnetwork.terms[edge.p].name}}</em>
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.o]}}</strong>
 
 
-                        <sup rel="tooltip">{{edgeFootnotes[edge]}}
-                        </sup>
+                            <sup rel="tooltip">{{edgeFootnotes[edge]}}
+                            </sup>
 
-                    </li>
-                    <!-- todo: aliases
-                    <li class="TermAliases" ng-show="hasAliases">
+                        </li>
+                        <!-- todo: aliases
+                        <li class="TermAliases" ng-show="hasAliases">
 
-                        <div>
-                            Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
-                        </div>
+                            <div>
+                                Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                            </div>
 
-                        <div>
-                            Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
-                        </div>
+                            <div>
+                                Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                            </div>
 
-                    </li>-->
+                        </li>-->
 
-                </ul>
-        </div>
-
-        <div id="divQuery" ng-show="networkQuery.isTabSet('terms')">
-            <p> test 2</p>
-        </div>
-
-        <div id="divProperties" ng-show="networkQuery.isTabSet('properties')">
-            <p> test3 </p>
-        </div>
-
+                    </ul>
+                </div>
+            </tab>
+            <tab heading="Terms">
+                <div id="divQuery">
+                    <p> test 2</p>
+                </div>
+            </tab>
+            <tab heading="Properties">
+                <div id="divProperties">
+                    <p> test3 </p>
+                </div>
+            </tab>
+        </tabset>
 
     </div>
-</div>
-
-
 
 <!-- end tab content -->
-    <!-- end tab content -->
 
 
     <!-- tabs -->

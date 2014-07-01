@@ -1,19 +1,41 @@
-ndexApp.controller('userController', function (ndexService, ndexUtility, $scope, $http, $location, sharedProperties) {
+ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal', function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
     //                               refactoring
     //------------------------------------------------------------------------------------//
-    controller = this;
-    //tab functionality
-    controller.activeTab = 'networks';
 
-    controller.isTabSet = function(div) {
-        return controller.activeTab === div;
+    $scope.user = {};
+
+    //user
+    $scope.user.currentUserId = $routeParams.userId;
+
+    $scope.user.setAndDisplayCurrentNetwork = function (networkId) {
+        sharedProperties.setCurrentNetworkId(networkId);
+        $location.path("/networkQuery/" + networkId);
     };
 
-    controller.setTab = function(div) {
-        controller.activeTab = div;
-    };
-    //
+    //initializations
+    var modalInstance = $modal.open({
+        template: '<div class="modal-body text-center"><img src="img/horizontal-loader.gif"></div>',
+        size: ''
+    });
+
+    ndexService.getUserQuery($scope.user.currentUserId).success(function(user) {
+            console.log("Set displayedUser");
+            $scope.user.displayedUser = user;
+            cUser = user;
+        });
+
+    //hack to display networks for users
+    $scope.user.networkSearchResults = null;
+    $scope.user.searchString = "apoptosis";
+
+    ndexService.findNetworks($scope.user.searchString).success(function(networks) {
+        $scope.user.networkSearchResults = networks;
+        console.log("Set networkSearchResults");
+        console.log("first network name = " + networks[0].name);
+        $scope.user.message = "first network name = " + networks[0].name;
+        modalInstance.close();
+    });
 
 
     //------------------------------------------------------------------------------------//
@@ -27,20 +49,18 @@ ndexApp.controller('userController', function (ndexService, ndexUtility, $scope,
     // If a user is selected in a search, the action will be  to set
     // sharedProperties.displayedUserId and then invoke this controller
     //
+
+    /*
     if (sharedProperties.displayedUserId){
         $scope.displayedUserId = sharedProperties.displayedUserId;
     } else {
         $scope.displayedUserId = NdexClient.getUserId();
     }
+    */
 
-    $scope.myAccount = ($scope.displayedUserId == NdexClient.getUserId);
+    //$scope.myAccount = ($scope.displayedUserId == NdexClient.getUserId);
 
-    $scope.setAndDisplayCurrentNetwork = function (networkId) {
-        sharedProperties.setCurrentNetworkId(networkId);
-        $location.path("/networkQuery");
-    }
 
-    $scope.networkSearchResults = null;
 
     // Requests:
     //  Requests that mention the displayed user AND the signed-in user are displayed
@@ -305,7 +325,7 @@ ndexApp.controller('userController', function (ndexService, ndexUtility, $scope,
     },
 */
 
-
+/*
     // update the users editable properties
     $scope.updateUser = function()
     {
@@ -317,6 +337,8 @@ ndexApp.controller('userController', function (ndexService, ndexUtility, $scope,
             });
     };
 
+    */
+
     // The first pass at this controller will not attempt to cache user information
     // and will instead fetch the information each time the controller is invoked
 
@@ -326,15 +348,16 @@ ndexApp.controller('userController', function (ndexService, ndexUtility, $scope,
     // In the NDEx 1.0 API, networks, requests, and tasks will be fetched page-wise in separate,
     // async operations and this controller will be updated to uses those operations.
 
-    var config = NdexClient.getUserQueryConfig($scope.displayedUserId);
+   /* var config = NdexClient.getUserQueryConfig($scope.user.currentUserId);
     $http(config)
         .success(function (user) {
             console.log("Set displayedUser");
             $scope.displayedUser = user;
             cUser = user;
         });
-
+    */
     // Hack to get some networks to display
+    /*
     $scope.searchString = "apoptosis";
     $scope.searchType = "contains";
     $scope.submitNetworkSearch = function () {
@@ -348,6 +371,6 @@ ndexApp.controller('userController', function (ndexService, ndexUtility, $scope,
                 $scope.message = "first network name = " + networks[0].name;
             });
     }
-    $scope.submitNetworkSearch();
+    $scope.submitNetworkSearch();*/
 
-});
+}]);

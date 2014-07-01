@@ -4,64 +4,34 @@
             <!--
             <img id="imgProfile" ng-show="displayedUser.username" ng-src="http://test.ndexbio.org/profile/foreground/{{displayedUser.username}}.jpg"/>
             -->
-        <img id="imgProfile" ng-show="displayedUser.username" ng-src="http://i.imgur.com/09oVvZg.jpg"/>
+        <img id="imgProfile" ng-show="user.displayedUser.username" ng-src="http://i.imgur.com/09oVvZg.jpg"/>
     </div>
     <div class="col-md-10">
         <h3 >
-            {{displayedUser.firstName}} {{displayedUser.lastName}}
+            {{user.displayedUser.firstName}} {{user.displayedUser.lastName}}
         </h3>
 
         <div>
-            {{displayedUser.emailAddress}}
+            {{user.displayedUser.emailAddress}}
         </div>
 
         <div>
-            <a href="{{displayedUser.website}}">{{displayedUser.website}}</a>
+            <a href="{{user.displayedUser.website}}">{{user.displayedUser.website}}</a>
         </div>
 
         <div>
-            {{displayedUser.description}}
+            {{user.displayedUser.description}}
         </div>
     </div>
 </div>
 
 <!- tabs -->
-<div id="divUserTabs" class="row" ng-show="displayedUser">
-    <!-- tabbar -->
-    <div class="tabbable">
-        <ul class="nav nav-tabs tab-title">
-            <li ng-class="{ active:user.isTabSet('networks') }">
-                <a href ng-click="user.setTab('networks')">
-                    <i class="icon-exchange"></i>
-                    Networks
-                </a>
-            </li>
-            <li ng-class="{ active:user.isTabSet('groups') }">
-                <a href ng-click="user.setTab('groups')">
-                    <i class="icon-group"></i>
-                    Groups
-                </a>
-            </li>
+<div id="divUserTabs" class="row" ng-show="user.displayedUser">
 
-            <li ng-class="{ active:user.isTabSet('tasks') }">
-                <a href ng-click="user.setTab('tasks')">
-                    <i class="icon-tasks"></i>
-                    Tasks
-                </a>
-            </li>
-            <li ng-class="{ active:user.isTabSet('requests') }">
-                <a href ng-click="user.setTab('requests')">
-                    <i class="icon-envelope-alt"></i>
-                    Requests
-                </a>
-            </li>
-
-        </ul>
-    </div>
-
-        <div class="tab-content">
-            <div id="divNetworks"  ng-show="user.isTabSet('networks')">
-                <table ng-show="networkSearchResults.length > 0">
+    <tabset>
+        <tab heading="Networks">
+            <div id="divNetworks">
+                <table class="table table-hover" ng-show="user.networkSearchResults.length > 0">
                     <!--
                     <tbody ng-repeat="(index, network) in displayedUser.networks">
                     <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
@@ -77,8 +47,8 @@
                         <th style="width: 10%;">Edges</th>
                     </tr>
                     </thead>
-                    <tbody  ng-repeat="network in networkSearchResults">
-                    <tr ng-click="setAndDisplayCurrentNetwork(network.id)">
+                    <tbody  ng-repeat="network in user.networkSearchResults">
+                    <tr ng-click="user.setAndDisplayCurrentNetwork(network.id)">
                         <td>{{network.metadata["Source"]}}</td>
                         <td>{{network.name}}</td>
                         </td>
@@ -89,20 +59,22 @@
 
                 </table>
             </div>
-
-            <div id="divGroups" ng-show="user.isTabSet('groups')">
+        </tab>
+        <tab heading="Groups">
+            <div id="divGroups">
                 <table>
-                    <tbody ng-repeat="(index, group) in displayedUser.groups">
-                    <tr ng-click="setAndDisplayCurrentGroup(group.resourceId)">
+                    <tbody ng-repeat="(index, group) in user.displayedUser.groups">
+                    <tr ng-click="user.setAndDisplayCurrentGroup(group.resourceId)">
                         <td>{{group.resourceName}}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-
-            <div id="divTasks" ng-show="user.isTabSet('tasks')">
+        </tab>
+        <tab heading="Tasks">
+            <div id="divTasks">
                 <table>
-                    <tbody ng-repeat="(index, task) in displayedUser.tasks">
+                    <tbody ng-repeat="(index, task) in user.displayedUser.tasks">
 
                     <tr>
                         <td><i class="icon-remove icon-white" ng-click="markTaskForDeletion(task.id)"></i></td>
@@ -113,9 +85,11 @@
                     </tbody>
                 </table>
             </div>
-            <div id="divRequests" ng-show="user.isTabSet('requests')">
+        </tab>
+        <tab heading="Requests">
+            <div id="divRequests">
                 <table>
-                    <tbody ng-repeat="(index, request) in displayedUser.requests">
+                    <tbody ng-repeat="(index, request) in user.displayedUser.requests">
 
                     <tr>
                         <td>From: {{request.from}}</td>
@@ -123,8 +97,8 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-
+        </tab>
+    </tabset>
 
 </div>
 

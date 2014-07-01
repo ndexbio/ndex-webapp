@@ -1,23 +1,26 @@
 //function () {
 // create the module and name it ndexApp
-var ndexApp = angular.module('ndexApp', ['ngRoute', 'ndexServiceApp']);
+var ndexApp = angular.module('ndexApp', ['ngRoute', 'ndexServiceApp', 'ui.bootstrap']);
 var net1, net2;
 var cn, csn;
 var cUser;
 
 ndexApp.service('sharedProperties', function () {
-    //revise
-    this.currentNetworkId = 'none';
-    this.userLoggedIn = false;
-
     return {
-        //may soon be deprecated
         getCurrentNetworkId: function () {
+            if (!this.currentNetworkId) this.currentNetworkId = "C25R1174";   // hardwired for testing
             return this.currentNetworkId;
         },
         setCurrentNetworkId: function (value) {
             this.currentNetworkId = value;
         },
+        getCurrentUserId: function () {
+            //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
+            return this.currentUserId;
+        },
+        setCurrentUserId: function (value) {
+            this.currentUserId = value;
+        }
     }
 });
 
@@ -25,7 +28,7 @@ ndexApp.service('sharedProperties', function () {
 
 
 // configure our routes
-ndexApp.config(function ($routeProvider) {
+ndexApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
 
         // route for the home page
@@ -49,8 +52,7 @@ ndexApp.config(function ($routeProvider) {
         // route for the searchNetworks page
         .when('/searchNetworks', {
             templateUrl: 'pages/searchNetworks.html',
-            controller: 'searchNetworksController',
-            controllerAs: 'networkSearch'
+            controller: 'searchNetworksController'
         })
 
         // route for the cjs page
@@ -72,17 +74,15 @@ ndexApp.config(function ($routeProvider) {
         })
 
         // route for the user page
-        .when('/user', {
+        .when('/user/:userId', {
             templateUrl: 'pages/user.html',
-            controller: 'userController',
-            controllerAs: 'user'
+            controller: 'userController'
         })
 
         // route for the networkQuery page
         .when('/networkQuery/:networkId', {
             templateUrl: 'pages/networkQuery.html',
-            controller: 'networkQueryController',
-            controllerAs: 'networkQuery'
+            controller: 'networkQueryController'
         })
 
         // route for the signIn page
@@ -90,58 +90,69 @@ ndexApp.config(function ($routeProvider) {
             templateUrl: 'pages/signIn.html',
             controller: ''
         });
-});
+}]);
 
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', function (ndexService, ndexUtility, sharedProperties, $scope, $location, $http) {
-    controller = this;
+ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', function(ndexService, ndexUtility, sharedProperties, $scope, $location) {
 
-    //consider placing variables to holder signin submit that are different from saved credentials
-    controller.loggedIn = false;
-    controller.username = '';
-    controller.password = '';
+    $scope.main = {};
 
-    controller.goHome = function () {
-        console.log("going to home");
-        $location.path("/");
-    };
-    controller.submitSignIn = function () {
-        //ndexUtility.clearUserCredentials();
-        controller.loggedIn = false;
-        ndexService.signIn(controller.username, controller.password).success(function(userData) {
-            controller.loggedIn = true;
-            controller.goHome();
-        });
-    };
-    controller.getNdexServer = function () {
-        //console.log("called");
+
+    $scope.main.loggedIn = false;
+    $scope.main.username = '';
+    $scope.main.password = '';
+
+    //home page
+    $scope.main.getNdexServer = function () {
         return ndexService.getNdexServer();
     };
 
-    controller.signout = function () {
-        ndexService.signOut();
-        controller.loggedIn = false;
-        controller.username = null;
-        controller.password = null;
-        $location.path("/signIn");
-        console.log('scope not changing:' + controller.loggedIn);
+    //sign in page
+    $scope.main.goHome = function () {
+        console.log("going to home");
+        $location.path("/");
+    };
+    $scope.main.submitSignIn = function () {
+        $scope.main.loggedIn = false;
+        ndexService.signIn($scope.main.username, $scope.main.password).success(function(userData) {
+            sharedProperties.setCurrentUserId(userData.id);
+            $scope.main.loggedIn = true;
+            $scope.main.goHome();
+        });
     };
 
-    console.log(controller.username);
-    // create a message to display in our view
-    if (ndexUtility.checkLocalStorage()) {
+    $scope.main.signout = function () {
+        ndexService.signOut();
+        $scope.main.loggedIn = false;
+        $scope.main.username = null;
+        $scope.main.password = null;
+        $location.path("/signIn");
+    };
 
+    //initialization
+    if (ndexUtility.checkLocalStorage()) {
+        //the following code should be replace my method in ndex service or ndex utility
         if (localStorage.username) {
-           // controller.loggedIn = true;
-            controller.username = localStorage.username;
-            controller.password = localStorage.password;
+            $scope.main.loggedIn = true;
+            $scope.main.username = localStorage.username;
+            $scope.main.password = localStorage.password;
+            sharedProperties.setCurrentUserId(localStorage.userId);
         }
         $scope.networkSearchResults = null;
-        //controller.signout();
+        //$scope.main.signout();
     } else {
         $.gritter.add({ title: "Error", text: "This web application requires a recent browser that supports localStorage" });
     }
-});
+
+    //navbar
+    $scope.main.getCurrentNetwork = function() {
+        return sharedProperties.getCurrentNetworkId();
+    };
+    $scope.main.getCurrentUser = function() {
+        return sharedProperties.getCurrentUserId();
+    }
+
+}]);
 //}) ();
 
 

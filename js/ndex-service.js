@@ -21,7 +21,7 @@
      * dependencies : $http and ndexConfigs
      * return       : promise with success and error methods
      ****************************************************************************/
-    ndexServiceApp.factory('ndexService',function(ndexConfigs, ndexUtility, $http) {
+    ndexServiceApp.factory('ndexService',['ndexConfigs', 'ndexUtility', '$http', function(ndexConfigs, ndexUtility, $http) {
         // define and initialize factory object
         var factory = {};
 
@@ -32,6 +32,7 @@
         /*---------------------------------------------------------------------*
          * Users
          *---------------------------------------------------------------------*/
+        //signIn
         factory.signIn = function(username, password) {
             ndexUtility.clearUserCredentials();
             var config = ndexConfigs.getSubmitUserCredentialsConfig(username, password);
@@ -48,9 +49,18 @@
                 }
             });
         };
+        //signOut
         factory.signOut = function() {
             ndexUtility.clearUserCredentials();
         };
+        //getUserQuery
+        // - returns networks, groups, etc?
+        factory.getUserQuery = function(userId) {
+            var config = ndexConfigs.getUserQueryConfig(userId);
+            return $http(config);
+        };
+
+
         /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/
@@ -119,7 +129,7 @@
 
         // return factory object
         return factory;
-    });
+    }]);
 
     /****************************************************************************
      * $http configuration service
@@ -189,6 +199,10 @@
             return this.getGetConfig(url);
         };
 
+        factory.getUserQueryConfig = function(userId){
+            var url = "/users/" + userId;
+            return this.getGetConfig(url, null);
+        },
         /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/

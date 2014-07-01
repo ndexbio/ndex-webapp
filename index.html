@@ -21,10 +21,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js"></script>
 
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
+    <script src="js/ui-bootstrap.js"></script>
 
     <script src="js/cytoscape.js-2.0.3/cytoscape.min.js"></script>
     <script src="js/cytoscape.js-2.0.3/arbor.js"></script>
@@ -42,7 +41,7 @@
 </head>
 
 <!-- define angular controller -->
-<body ng-controller="mainController as main">
+<body ng-controller="mainController">
 
 <!-- the top nav bar -->
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -52,19 +51,19 @@
         </div>
 
         <ul class="nav navbar-nav navbar-right">
-            <li ng-show="main.loggedIn"><a href="#user">MyAccount</a></li>
-            <li><a href="#searchNetworks">Search</a></li>
-            <li><a href="#networkQuery">Current Network</a></li>
+            <li ng-show="main.loggedIn"><a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a></li>
+            <li><a ng-href="#searchNetworks">Search</a></li>
+            <li><a ng-href="{{'#networkQuery/' + main.getCurrentNetwork()}}">Current Network</a></li>
 
             <!-- Show sign in if no user, sign out otherwise -->
             <li ng-show="!main.loggedIn">
-                <a href="#signIn">Sign in</a>
+                <a ng-href="#signIn">Sign in</a>
             </li>
             <li ng-show="main.loggedIn">
-                <a href="#" ng-click="main.signout()">Sign out</a>
+                <a ng-href="#" ng-click="main.signout()">Sign out</a>
             </li>
 
-            <li><a href="#"><i class="fa fa-home"></i> Home</a></li>
+            <li ng-class=""><a ng-href="#"><i class="fa fa-home"></i> Home</a></li>
         </ul>
     </div>
 </nav>
