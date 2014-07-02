@@ -106,25 +106,25 @@
         // - search the network for a subnetwork via search terms and depth
         // TODO current version does not include an error handler, consider implementing promise
         factory.queryNetwork = function(networkId, terms, searchDepth) {
+            terms = terms.split(/[ ,]+/);
             var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth,
                 0,    // skip blocks
                 500  // block size for edges
             );
 
-            return {success: function(success) {
-                $http(config).success(function (network) {
-                    ndexUtility.updateNodeLabels(network);
-                    ndexUtility.setNetwork(network); // consider removing
-
-                    console.log(network.nodeLabelMap);
-                    //TODO add error check
-                    success(network);
-                    //errorHandler(Error("didnt work")
-                    //)
-                    //;
-                });
-            }
-            }
+            return $http(config).success(function (network) {
+                ndexUtility.updateNodeLabels(network);
+                ndexUtility.setNetwork(network); // consider removing
+                return {success: function(handler) {
+                    handler(network);
+                }
+                }
+            }).error(function(error){
+                return {error: function(error){
+                    handler(error);
+                }
+                }
+            });
         };
 
         // return factory object

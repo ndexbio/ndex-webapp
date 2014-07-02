@@ -105,8 +105,17 @@
                     </ul>
                 </div>
             </tab>
+            <tab heading="Nodes">
+                <div id="divNodes">
+                    <ul id="ulSubnetwork" ng-repeat="node in networkQuery.currentSubnetwork.nodes">
+                        <li>
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[node.id]}}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </tab>
             <tab heading="Terms">
-                <div id="divQuery">
+                <div id="divTerms">
                     <p> test 2</p>
                 </div>
             </tab>

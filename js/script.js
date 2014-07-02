@@ -97,6 +97,8 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     $scope.main = {};
 
+    $scope.main.url = $location; //expose the service to the scope for nav
+    $scope.main.isCollapsed = true;
 
     $scope.main.loggedIn = false;
     $scope.main.username = '';
@@ -151,7 +153,6 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.main.getCurrentUser = function() {
         return sharedProperties.getCurrentUserId();
     }
-
 }]);
 //}) ();
 

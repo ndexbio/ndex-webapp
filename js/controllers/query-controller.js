@@ -49,8 +49,8 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
             template: '<div class="modal-body text-center"><img src="img/horizontal-loader.gif"></div>',
             size: ''
         });
-        var terms = $scope.networkQuery.searchString.split(/[ ,]+/);
-        ndexService.queryNetwork( $scope.networkQuery.currentNetworkId, terms, $scope.networkQuery.searchDepth.value).success(
+
+        ndexService.queryNetwork( $scope.networkQuery.currentNetworkId, $scope.networkQuery.searchString, $scope.networkQuery.searchDepth.value).success(
             function(network) {
                 console.log("got query results for : " + $scope.networkQuery.searchString);
 

@@ -44,27 +44,34 @@
 <body ng-controller="mainController">
 
 <!-- the top nav bar -->
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">NDEx</a>
+            <button type="button" class="btn btn-default navbar-toggle" data-toggle="collapse"ng-click="main.isCollapsed = !main.isCollapsed">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" style="max-height: 40px; padding-top: 0; padding-bottom: 0;"> <img src="img/NDEx-horizontal-transparent.png" style="max-width:100%; max-height:100%;"></a>
         </div>
-
+        <div class="collapse navbar-collapse" collapse="main.isCollapsed">
         <ul class="nav navbar-nav navbar-right">
-            <li ng-show="main.loggedIn"><a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a></li>
-            <li><a ng-href="#searchNetworks">Search</a></li>
-            <li><a ng-href="{{'#networkQuery/' + main.getCurrentNetwork()}}">Current Network</a></li>
+            <li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}"><a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a></li>
+            <li ng-class="{active:main.url.url() == '/searchNetworks'}"><a ng-href="#searchNetworks">Search</a></li>
+            <li ng-class="{active:main.url.url().search('/networkQuery') != -1}"><a ng-href="{{'#networkQuery/' + main.getCurrentNetwork()}}">Current Network</a></li>
 
             <!-- Show sign in if no user, sign out otherwise -->
-            <li ng-show="!main.loggedIn">
+            <li ng-show="!main.loggedIn" ng-class="{active:main.url.url() == '/signIn'}">
                 <a ng-href="#signIn">Sign in</a>
             </li>
-            <li ng-show="main.loggedIn">
+            <li ng-show="main.loggedIn" ng-class="{active:main.url.url() == '/signOut'}">
                 <a ng-href="#" ng-click="main.signout()">Sign out</a>
             </li>
 
-            <li ng-class=""><a ng-href="#"><i class="fa fa-home"></i> Home</a></li>
+            <li ng-class="{active:main.url.url() == '/'}"><a ng-href="#"><i class="fa fa-home"></i> Home</a></li>
         </ul>
+        </div>
     </div>
 </nav>
 <!-- the footer as a fixed bottom nav bar -->
