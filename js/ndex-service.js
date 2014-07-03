@@ -21,23 +21,19 @@
      * dependencies : $http and ndexConfigs
      * return       : promise with success and error methods
      ****************************************************************************/
-    ndexServiceApp.factory('ndexService',['ndexConfigs', 'ndexUtility', '$http', function(ndexConfigs, ndexUtility, $http) {
+    ndexServiceApp.factory('ndexService',['ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', function(ndexConfigs, ndexUtility, ndexHelper, $http) {
         // define and initialize factory object
         var factory = {};
-
-        factory.getNdexServer = function(){
-            return ndexConfigs.NdexServerURI;
-        };
 
         /*---------------------------------------------------------------------*
          * Users
          *---------------------------------------------------------------------*/
         //signIn
         factory.signIn = function(username, password) {
-            ndexUtility.clearUserCredentials();
+            //ndexUtility.clearUserCredentials();
             var config = ndexConfigs.getSubmitUserCredentialsConfig(username, password);
             return $http(config).success(function(userData){
-                ndexUtility.setUserCredentials(userData, password);
+                //ndexUtility.setUserCredentials(userData, password);
                 return {success: function(handler){
                     handler(userData);
                 }
@@ -53,6 +49,7 @@
         factory.signOut = function() {
             ndexUtility.clearUserCredentials();
         };
+
         //getUserQuery
         // - returns networks, groups, etc?
         factory.getUserQuery = function(userId) {
@@ -81,8 +78,8 @@
             }*/
 
             return $http(config).success(function(network){
-                ndexUtility.updateNodeLabels(network); //set the labels
-                ndexUtility.updateTermLabels(network);
+                ndexHelper.updateNodeLabels(network); //set the labels
+                ndexHelper.updateTermLabels(network);
                 ndexUtility.setNetwork(network);
                 return {success: function(handler){
                     handler(network);
@@ -114,9 +111,9 @@
             );
 
             return $http(config).success(function (network) {
-                ndexUtility.updateNodeLabels(network);
-                ndexUtility.updateTermLabels(network);
-                ndexUtility.setNetwork(network); // consider removing
+                ndexHelper.updateNodeLabels(network);
+                ndexHelper.updateTermLabels(network);
+                ndexUtility.setNetwork(network); // consider removing, this is for future possibility of saving networks
                 return {success: function(handler) {
                     handler(network);
                 }
@@ -132,6 +129,121 @@
         // return factory object
         return factory;
     }]);
+
+
+    /****************************************************************************
+     * NDEx Utility Service
+     ****************************************************************************/
+    ndexServiceApp.factory('ndexUtility', function() {
+
+        factory = {};
+
+        factory.networks = [];
+
+        /*-----------------------------------------------------------------------*
+         * servers
+         *-----------------------------------------------------------------------*/
+
+        factory.getSavedServers = function() {
+            console.log("retrieving servers...");
+            if (this.checkLocalStorage()){
+                if(!localStorage.servers) {
+                    localStorage.servers = JSON.stringify([
+                        {
+                            name: 'Web Server',
+                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
+                            status:'online'
+                        }]);
+                }
+                if(JSON.parse(localStorage.servers).length === 0){
+                    localStorage.servers = JSON.stringify([
+                        {
+                            name: 'Web Server',
+                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
+                            status:'online'
+                        }]);
+                }
+                return JSON.parse(localStorage.servers);
+            }
+        };
+
+        factory.saveServers = function(servers) {
+            console.log("saving servers...");
+            if (this.checkLocalStorage()){
+                localStorage.servers = JSON.stringify(servers);
+            }
+        };
+
+        factory.getServer = function(index){
+            var serverArray = JSON.parse(localstorage.servers);
+            if(serverArray.length = 0 || !serverArray) {console.log("empty array: there are no saved servers");}
+            if(serverArray.length < index){console.log("out of bounds: server array");}
+            return serverArray[index];
+        };
+
+
+        /*-----------------------------------------------------------------------*
+         * user credentials and ID
+         *-----------------------------------------------------------------------*/
+        //old
+        factory.clearUserCredentials = function () {
+            if (this.checkLocalStorage()){
+                delete localStorage.username;
+                delete localStorage.password;
+                delete localStorage.userId;
+            }
+            //if (localStorage["Groups Search"]) delete localStorage["Groups Search"];
+            //if (localStorage["Users Search"]) delete localStorage["Users Search"];
+            //if (localStorage["Networks Search"]) delete localStorage["Networks Search"];
+
+        };
+
+        factory.checkLocalStorage = function(){
+            if (localStorage == undefined) return false;
+            return true;
+        };
+        //old
+        factory.setUserCredentials = function(userData, password){
+            localStorage.username = userData.username;
+            localStorage.password = password;
+            localStorage.userId = userData.id;
+        };
+
+        factory.getUserId = function(){
+            return localStorage.userId;
+        };
+
+        /*-----------------------------------------------------------------------*
+         * networks
+         *-----------------------------------------------------------------------*/
+        factory.setNetwork = function(network){
+            factory.networks = [];
+            factory.addNetwork(network);
+        };
+
+        factory.addNetwork = function(network){
+            factory.networks.push(network);
+            $.each(network.terms, function(termId, term){
+                term.network = network;
+            });
+            $.each(network.nodes, function(nodeId, node){
+                node.network = network;
+            });
+            $.each(network.edges, function(edgeId, edge){
+                edge.network = network;
+            });
+        };
+
+        factory.getNetworkId = function(network){
+            return factory.networks.indexOf(network);
+        };
+
+        factory.removeNetwork = function(network){
+            factory.networks.remove(factory.networks.indexOf(network));
+        };
+
+        return factory;
+    });
 
     /****************************************************************************
      * $http configuration service
@@ -204,7 +316,7 @@
         factory.getUserQueryConfig = function(userId){
             var url = "/users/" + userId;
             return this.getGetConfig(url, null);
-        },
+        };
         /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/
@@ -253,107 +365,10 @@
     });
 
     /****************************************************************************
-     * NDEx Utility Service
+     * NDEx Helper Service
      ****************************************************************************/
-    ndexServiceApp.factory('ndexUtility', function() {
+    ndexServiceApp.factory('ndexHelper', function() {
         factory = {};
-
-        factory.networks = [];
-        /*-----------------------------------------------------------------------*
-         * servers
-         *-----------------------------------------------------------------------*/
-        factory.getSavedServers = function() {
-            console.log("retrieving servers...");
-            if (this.checkLocalStorage()){
-                if(!localStorage.servers) {
-                    localStorage.servers = JSON.stringify([
-                        {
-                            name: 'Web Server',
-                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
-                            status:'online'
-                        }]);
-                }
-                if(JSON.parse(localStorage.servers).length === 0){
-                    localStorage.servers = JSON.stringify([
-                        {
-                            name: 'Web Server',
-                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
-                            status:'online'
-                        }]);
-                }
-                return JSON.parse(localStorage.servers);
-            }
-        };
-
-        factory.saveServers = function(servers) {
-            console.log("saving servers...");
-            if (this.checkLocalStorage()){
-                localStorage.servers = JSON.stringify(servers);
-            }
-        };
-
-        factory.deleteServer = function(index) {
-
-        };
-
-        /*-----------------------------------------------------------------------*
-         * user credentials and ID
-         *-----------------------------------------------------------------------*/
-        factory.clearUserCredentials = function () {
-            if (this.checkLocalStorage()){
-                delete localStorage.username;
-                delete localStorage.password;
-                delete localStorage.userId;
-            }
-            //if (localStorage["Groups Search"]) delete localStorage["Groups Search"];
-            //if (localStorage["Users Search"]) delete localStorage["Users Search"];
-            //if (localStorage["Networks Search"]) delete localStorage["Networks Search"];
-
-        };
-
-        factory.checkLocalStorage = function(){
-            if (localStorage == undefined) return false;
-            return true;
-        };
-
-        factory.setUserCredentials = function(userData, password){
-            localStorage.username = userData.username;
-            localStorage.password = password;
-            localStorage.userId = userData.id;
-        };
-
-        factory.getUserId = function(){
-            return localStorage.userId;
-        };
-
-        /*-----------------------------------------------------------------------*
-         * networks
-         *-----------------------------------------------------------------------*/
-        factory.setNetwork = function(network){
-            factory.networks = [];
-            factory.addNetwork(network);
-        };
-
-        factory.addNetwork = function(network){
-            factory.networks.push(network);
-            $.each(network.terms, function(termId, term){
-                term.network = network;
-            });
-            $.each(network.nodes, function(nodeId, node){
-                node.network = network;
-            });
-            $.each(network.edges, function(edgeId, edge){
-                edge.network = network;
-            });
-        };
-
-        factory.getNetworkId = function(network){
-            return factory.networks.indexOf(network);
-        };
-
-        factory.removeNetwork = function(network){
-            factory.networks.remove(factory.networks.indexOf(network));
-        };
 
         /*-----------------------------------------------------------------------*
          * create a nice label for a node

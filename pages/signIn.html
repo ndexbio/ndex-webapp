@@ -7,61 +7,61 @@
                 <tr>
                     <td class="col-md-2 panel panel-default">
 
-                        <ul ng-show="main.servers.length > 0" class="list-unstyled" ng-repeat="(index, server) in main.servers">
-                            <li><a ng-click="main.currentServer = index">
-                                <h5 ng-class="{'text-primary':server === main.servers[main.currentServer], 'text-muted':server != main.servers[main.currentServer]}">{{server.name}}</h5>
+                        <ul ng-show="signIn.servers.length > 0" class="list-unstyled" ng-repeat="(index, server) in signIn.servers">
+                            <li><a ng-click="signIn.currentServer = index">
+                                <h5 ng-class="{'text-primary':server === signIn.servers[signIn.currentServer], 'text-muted':server != signIn.servers[signIn.currentServer]}">{{server.name}}</h5>
                             </a></li>
                             <li><p ng-class="{'text-success':server.status==='online', 'text-warning':server.status ==='offline'}">{{server.status}}</p></li>
                         </ul>
                         <div class="btn-group btn-group-xs pull-down">
-                            <button type="button" class="btn btn-default" ng-click="main.editServer(true)"><span class="glyphicon glyphicon-plus"></span></button>
-                            <button type="button" class="btn btn-default" ng-click="main.deleteServer()"><span class="glyphicon glyphicon-minus"></span></button>
-                            <button type="button" class="btn btn-default" ng-click="main.editServer(false)"><span class="glyphicon glyphicon-cog"></span></button>
+                            <button type="button" class="btn btn-default" ng-click="signIn.editServer(true)"><span class="glyphicon glyphicon-plus"></span></button>
+                            <button type="button" class="btn btn-default" ng-click="signIn.deleteServer()"><span class="glyphicon glyphicon-minus"></span></button>
+                            <button type="button" class="btn btn-default" ng-click="signIn.editServer(false)"><span class="glyphicon glyphicon-cog"></span></button>
                         </div>
                     </td>
                     <td class="col-md-4">
-                        <dl ng-hide="main.editServerForm" class="dl-horizontal">
+                        <dl ng-hide="signIn.editServerForm" class="dl-horizontal">
                             <dt>NDEx Server URL:</dt>
-                            <dd>{{main.servers[main.currentServer].url}}</dd>
+                            <dd>{{signIn.servers[signIn.currentServer].url}}</dd>
                             <dt>Username:</dt>
-                            <dd>{{main.servers[main.currentServer].username}}</dd>
+                            <dd>{{signIn.servers[signIn.currentServer].username}}</dd>
                         </dl>
-                        <form ng-show="main.editServerForm" class="form-horizontal" role="form" ng-submit="main.submitSignIn()">
+                        <form ng-show="signIn.editServerForm" class="form-horizontal" role="form" ng-submit="signIn.submitSignIn()">
                             <div class="form-group">
                                 <label for="inputUrl" class="col-sm-4 control-label">NDEx Server URL</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="inputUrl" placeholder="NDEx Server URL" ng-model="main.serverInstance.url">
+                                    <input type="text" class="form-control" id="inputUrl" placeholder="NDEx Server URL" ng-model="signIn.serverInstance.url">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="inputServername" class="col-sm-4 control-label">Name</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="inputServername" placeholder="Servername" ng-model="main.serverInstance.name">
+                                    <input type="text" class="form-control" id="inputServername" placeholder="Servername" ng-model="signIn.serverInstance.name">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="inputUsername" class="col-sm-4 control-label">Username</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="inputUsername" placeholder="Username" ng-model="main.serverInstance.username">
+                                    <input type="text" class="form-control" id="inputUsername" placeholder="Username" ng-model="signIn.serverInstance.username">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="inputPassword" class="col-sm-4 control-label">Password</label>
                                 <div class="col-sm-6">
-                                    <input type="password" class="form-control" id="inputPassword" placeholder="Password" ng-model="main.serverInstance.password">
+                                    <input type="password" class="form-control" id="inputPassword" placeholder="Password" ng-model="signIn.serverInstance.password">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-4 col-sm-6 btn-group">
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="main.editServerForm = false" type="" class="btn-block">Cancel</button>
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="main.saveServer()" type="" class="btn-block">Save Server</button>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="signIn.editServerForm = false" type="" class="btn-block">Cancel</button>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="signIn.saveServer()" type="" class="btn-block">Save Server</button>
                                     <button class="btn btn-default btn-sm" type="submit">Sign in</button>
                                 </div>
                             </div>
 
                         </form>
-                        <div ng-hide="main.editServerForm" class="col-sm-offset-4 col-sm-3">
-                            <button class="btn btn-default btn-sm" ng-click="main.submitSignIn()">Sign in</button>
+                        <div ng-hide="signIn.editServerForm" class="col-sm-offset-4 col-sm-3">
+                            <button class="btn btn-default btn-sm" ng-click="signIn.submitSignIn()">Sign in</button>
                         </div>
                     </td>
                 </tr>
