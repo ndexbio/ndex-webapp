@@ -82,6 +82,7 @@
 
             return $http(config).success(function(network){
                 ndexUtility.updateNodeLabels(network); //set the labels
+                ndexUtility.updateTermLabels(network);
                 ndexUtility.setNetwork(network);
                 return {success: function(handler){
                     handler(network);
@@ -114,6 +115,7 @@
 
             return $http(config).success(function (network) {
                 ndexUtility.updateNodeLabels(network);
+                ndexUtility.updateTermLabels(network);
                 ndexUtility.setNetwork(network); // consider removing
                 return {success: function(handler) {
                     handler(network);
@@ -158,7 +160,7 @@
                 headers: {
                     Authorization: "Basic " + factory.getEncodedUser()
                 }
-            }
+            };
             if (queryArgs){
                 config.data =  JSON.stringify(queryArgs);
             }
@@ -176,7 +178,7 @@
                 headers: {
                     Authorization: "Basic " + factory.getEncodedUser()
                 }
-            }
+            };
             return config;
         };
 
@@ -244,7 +246,7 @@
                 searchDepth: searchDepth
             };
             return this.getPostConfig(url, postData);
-        }
+        };
 
         return factory;
 
@@ -257,6 +259,42 @@
         factory = {};
 
         factory.networks = [];
+        /*-----------------------------------------------------------------------*
+         * servers
+         *-----------------------------------------------------------------------*/
+        factory.getSavedServers = function() {
+            console.log("retrieving servers...");
+            if (this.checkLocalStorage()){
+                if(!localStorage.servers) {
+                    localStorage.servers = JSON.stringify([
+                        {
+                            name: 'Web Server',
+                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
+                            status:'online'
+                        }]);
+                }
+                if(JSON.parse(localStorage.servers).length === 0){
+                    localStorage.servers = JSON.stringify([
+                        {
+                            name: 'Web Server',
+                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
+                            status:'online'
+                        }]);
+                }
+                return JSON.parse(localStorage.servers);
+            }
+        };
+
+        factory.saveServers = function(servers) {
+            console.log("saving servers...");
+            if (this.checkLocalStorage()){
+                localStorage.servers = JSON.stringify(servers);
+            }
+        };
+
+        factory.deleteServer = function(index) {
+
+        };
 
         /*-----------------------------------------------------------------------*
          * user credentials and ID
@@ -341,6 +379,13 @@
         factory.getNodeNetwork = function(node) {
             //TODO
             return {};
+        };
+
+        factory.updateTermLabels = function(network) {
+            network.termLabelMap = [];
+            $.each(network.terms, function (id, term){
+                network.termLabelMap[id] = factory.getTermLabel(term, network) ;
+            });
         };
 
         /*-----------------------------------------------------------------------*

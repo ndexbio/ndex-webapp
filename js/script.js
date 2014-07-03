@@ -93,7 +93,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', function(ndexService, ndexUtility, sharedProperties, $scope, $location) {
+ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', function(ndexService, ndexUtility, sharedProperties, $scope, $location, $modal) {
 
     $scope.main = {};
 
@@ -102,7 +102,6 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     $scope.main.loggedIn = false;
     $scope.main.username = '';
-    $scope.main.password = '';
 
     //home page
     $scope.main.getNdexServer = function () {
@@ -110,13 +109,41 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     };
 
     //sign in page
+
+    $scope.main.servers = [];
+    $scope.main.currentServer = 0;
+    $scope.main.editServerForm = false;
+    $scope.main.serverInstance = {};
+
+    $scope.main.editServer = function(addEntry){
+        $scope.main.editServerForm = true;
+        if(addEntry) {
+            if($scope.main.currentServer != $scope.main.servers.length) {
+                $scope.main.currentServer = $scope.main.servers.length;
+            }
+            $scope.main.serverInstance = {};
+        } else {
+            $scope.main.serverInstance = $scope.main.servers[$scope.main.currentServer];
+        }
+    };
+
+    $scope.main.saveServer = function() {
+        if($scope.main.serverInstance != {}){$scope.main.servers[$scope.main.currentServer] = $scope.main.serverInstance;}
+        ndexUtility.saveServers($scope.main.servers);
+        $scope.main.editServerForm = false;
+    };
+
+    $scope.main.deleteServer = function() {
+        $scope.main.servers.splice($scope.main.currentServer,1);
+        ndexUtility.saveServers($scope.main.servers);
+    };
+
     $scope.main.goHome = function () {
-        console.log("going to home");
         $location.path("/");
     };
     $scope.main.submitSignIn = function () {
-        $scope.main.loggedIn = false;
-        ndexService.signIn($scope.main.username, $scope.main.password).success(function(userData) {
+        $scope.main.saveServer();
+        ndexService.signIn($scope.main.servers[$scope.main.currentServer].username, $scope.main.servers[$scope.main.currentServer].password).success(function(userData) {
             sharedProperties.setCurrentUserId(userData.id);
             $scope.main.loggedIn = true;
             $scope.main.goHome();
@@ -126,12 +153,14 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.main.signout = function () {
         ndexService.signOut();
         $scope.main.loggedIn = false;
-        $scope.main.username = null;
-        $scope.main.password = null;
+        $scope.main.servers[$scope.main.currentServer].password = null;
         $location.path("/signIn");
     };
 
     //initialization
+
+    $scope.main.servers = ndexUtility.getSavedServers();
+
     if (ndexUtility.checkLocalStorage()) {
         //the following code should be replace my method in ndex service or ndex utility
         if (localStorage.username) {

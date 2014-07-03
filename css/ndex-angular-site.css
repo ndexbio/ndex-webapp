@@ -587,4 +587,6 @@ dl.Accordion > dd
     left: 25%;
 }
 
+/*angular ui fix for cursor*/
+a { cursor: pointer; }
 
