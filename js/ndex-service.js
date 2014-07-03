@@ -30,10 +30,10 @@
          *---------------------------------------------------------------------*/
         //signIn
         factory.signIn = function(username, password) {
-            //ndexUtility.clearUserCredentials();
+            ndexUtility.clearUserCredentials();
             var config = ndexConfigs.getSubmitUserCredentialsConfig(username, password);
             return $http(config).success(function(userData){
-                //ndexUtility.setUserCredentials(userData, password);
+                ndexUtility.setUserCredentials(userData, password);
                 return {success: function(handler){
                     handler(userData);
                 }
@@ -136,56 +136,14 @@
      ****************************************************************************/
     ndexServiceApp.factory('ndexUtility', function() {
 
-        factory = {};
+        var factory = {};
 
-        factory.networks = [];
-
-        /*-----------------------------------------------------------------------*
-         * servers
-         *-----------------------------------------------------------------------*/
-
-        factory.getSavedServers = function() {
-            console.log("retrieving servers...");
-            if (this.checkLocalStorage()){
-                if(!localStorage.servers) {
-                    localStorage.servers = JSON.stringify([
-                        {
-                            name: 'Web Server',
-                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
-                            status:'online'
-                        }]);
-                }
-                if(JSON.parse(localStorage.servers).length === 0){
-                    localStorage.servers = JSON.stringify([
-                        {
-                            name: 'Web Server',
-                            url: 'http://test.ndexbio.org/rest/ndexbio-rest',
-                            status:'online'
-                        }]);
-                }
-                return JSON.parse(localStorage.servers);
-            }
-        };
-
-        factory.saveServers = function(servers) {
-            console.log("saving servers...");
-            if (this.checkLocalStorage()){
-                localStorage.servers = JSON.stringify(servers);
-            }
-        };
-
-        factory.getServer = function(index){
-            var serverArray = JSON.parse(localstorage.servers);
-            if(serverArray.length = 0 || !serverArray) {console.log("empty array: there are no saved servers");}
-            if(serverArray.length < index){console.log("out of bounds: server array");}
-            return serverArray[index];
-        };
+        factory.networks = []; //revise: meant for saving multiple networks
 
 
         /*-----------------------------------------------------------------------*
          * user credentials and ID
          *-----------------------------------------------------------------------*/
-        //old
         factory.clearUserCredentials = function () {
             if (this.checkLocalStorage()){
                 delete localStorage.username;
@@ -199,30 +157,38 @@
         };
 
         factory.checkLocalStorage = function(){
-            if (localStorage == undefined) return false;
+            if(!localStorage) return false;
             return true;
         };
-        //old
         factory.setUserCredentials = function(userData, password){
             localStorage.username = userData.username;
             localStorage.password = password;
             localStorage.userId = userData.id;
         };
 
-        factory.getUserId = function(){
+        /*factory.getUserId = function(){
             return localStorage.userId;
+        };*/
+
+        factory.getUserCredentials = function() {
+            if (factory.checkLocalStorage()) {
+                if (localStorage.username) {
+                    var userData = {username: localStorage.username,
+                        userId: localStorage.userId,
+                        token: localStorage.password
+                    };
+                    return userData;
+
+                }
+            }
         };
 
         /*-----------------------------------------------------------------------*
          * networks
          *-----------------------------------------------------------------------*/
-        factory.setNetwork = function(network){
-            factory.networks = [];
-            factory.addNetwork(network);
-        };
-
         factory.addNetwork = function(network){
             factory.networks.push(network);
+
             $.each(network.terms, function(termId, term){
                 term.network = network;
             });
@@ -232,6 +198,11 @@
             $.each(network.edges, function(edgeId, edge){
                 edge.network = network;
             });
+        };
+
+        factory.setNetwork = function(network){
+            factory.networks = [];
+            factory.addNetwork(network);
         };
 
         factory.getNetworkId = function(network){
@@ -248,7 +219,7 @@
     /****************************************************************************
      * $http configuration service
      ****************************************************************************/
-    ndexServiceApp.factory('ndexConfigs',function() {
+    ndexServiceApp.factory('ndexConfigs', function() {
         var factory = {};
 
         /*
@@ -368,7 +339,7 @@
      * NDEx Helper Service
      ****************************************************************************/
     ndexServiceApp.factory('ndexHelper', function() {
-        factory = {};
+        var factory = {};
 
         /*-----------------------------------------------------------------------*
          * create a nice label for a node
@@ -398,9 +369,30 @@
 
         factory.updateTermLabels = function(network) {
             network.termLabelMap = [];
+            var count = 0;
             $.each(network.terms, function (id, term){
-                network.termLabelMap[id] = factory.getTermLabel(term, network) ;
+                if (term.termType === "Base") {
+                    network.termLabelMap[count] = factory.getTermBase(term, network);
+                    count++;
+                }
             });
+        };
+
+        factory.getTermBase = function(term, network) {
+            if (term.namespace) {
+                var namespace = network.namespaces[term.namespace];
+
+                if (!namespace || namespace.prefix === "LOCAL")
+                    return {prefix: 'none', name: term.name};
+                else if (!namespace.prefix)
+                    return {prefix: 'none', name: term.name};
+                else
+                    return {prefix: namespace.prefix, name: term.name};
+            }
+            else {
+                return term.name;
+            }
+
         };
 
         /*-----------------------------------------------------------------------*

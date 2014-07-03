@@ -18,8 +18,13 @@ ndexApp.service('sharedProperties', function () {
             //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
             return this.currentUserId;
         },
-        setCurrentUserId: function (value) {
+        getCurrentUserUsername: function () {
+            //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
+            return this.username;
+        },
+        setCurrentUser: function (value, username) {
             this.currentUserId = value;
+            this.username = username;
         }
     }
 });
@@ -106,27 +111,15 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     $scope.$on('LOGGED_IN', function() {
         $scope.main.loggedIn = true;
+        $scope.main.username = sharedProperties.getCurrentUserUsername();
     });
 
     $scope.main.signout = function () {
         ndexService.signOut();
         $scope.main.loggedIn = false;
+        delete $scope.main.username;
         $location.path("/signIn");
     };
-
-    if (ndexUtility.checkLocalStorage()) {
-        // TODO the following code should be replace my method in ndex service or ndex utility
-        if (localStorage.username) {
-            $scope.main.loggedIn = true;
-            $scope.main.username = localStorage.username;
-            $scope.main.password = localStorage.password;
-            sharedProperties.setCurrentUserId(localStorage.userId);
-        }
-        $scope.networkSearchResults = null;
-        //$scope.main.signout();
-    } else {
-        $.gritter.add({ title: "Error", text: "This web application requires a recent browser that supports localStorage" });
-    }
 
     //navbar
     $scope.main.getCurrentNetwork = function() {
@@ -137,7 +130,12 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     };
 
 
-    //check if signed in?
+    var userData = ndexUtility.getUserCredentials();
+    if(userData) {
+        sharedProperties.setCurrentUser(userData.userId, userData.username);
+        $scope.main.username = userData.username;
+        $scope.main.loggedIn = true;
+    }
 
 
 }]);

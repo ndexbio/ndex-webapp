@@ -1,48 +1,13 @@
 ndexApp.controller('signInController',['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', function (ndexService, ndexUtility, sharedProperties, $scope, $location) {
 
     $scope.signIn = {};
-    $scope.signIn.servers = [];
-    $scope.signIn.currentServer = 0;
-    $scope.signIn.editServerForm = false;
-    $scope.signIn.serverInstance = {};
-
-    //todo fix bugs with sign in without credentials
-    //todo fix bug on sign out and then sign back in
-
-    $scope.signIn.editServer = function(addEntry){
-        $scope.signIn.editServerForm = true;
-        if(addEntry) {
-            if($scope.signIn.currentServer != $scope.signIn.servers.length) {
-                $scope.signIn.currentServer = $scope.signIn.servers.length;
-            }
-            $scope.signIn.serverInstance = {};
-        } else {
-            $scope.signIn.serverInstance = $scope.signIn.servers[$scope.signIn.currentServer];
-        }
-    };
-
-    $scope.signIn.saveServer = function() {
-        if($scope.signIn.serverInstance != {}){$scope.signIn.servers[$scope.signIn.currentServer] = $scope.signIn.serverInstance;}
-        //dont save password?
-        ndexUtility.saveServers($scope.signIn.servers);
-        $scope.signIn.editServerForm = false;
-    };
-
-    $scope.signIn.deleteServer = function() {
-        $scope.signIn.servers.splice($scope.signIn.currentServer,1);
-        ndexUtility.saveServers($scope.signIn.servers);
-    };
 
     $scope.signIn.submitSignIn = function () {
-        $scope.signIn.saveServer();//should be done automatically
-        ndexService.signIn($scope.signIn.servers[$scope.signIn.currentServer].username, $scope.signIn.servers[$scope.signIn.currentServer].password).success(function(userData) {
-            sharedProperties.setCurrentUserId(userData.id);
-            $scope.$emit('LOGGED_IN');
+        ndexService.signIn($scope.signIn.username, $scope.signIn.password).success(function(userData) {
+            sharedProperties.setCurrentUser(userData.id, userData.username); //this info will have to be sent via emit if we want dynamic info on the nav bar
+            $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
             $location.path("/");
         });
     };
-
-    //initializations
-    $scope.signIn.servers = ndexUtility.getSavedServers();
 
 }]);
