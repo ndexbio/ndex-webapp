@@ -20,7 +20,7 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
     });
 
     ndexService.getUserQuery($scope.user.currentUserId).success(function(user) {
-            console.log("Set displayedUser");
+            //console.log("Set displayedUser");
             $scope.user.displayedUser = user;
             cUser = user;
         });
@@ -32,8 +32,8 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
     ndexService.findNetworks($scope.user.searchString).success(function(networks) {
         $scope.user.networkSearchResults = networks;
         console.log("Set networkSearchResults");
-        console.log("first network name = " + networks[0].name);
-        $scope.user.message = "first network name = " + networks[0].name;
+        //console.log("first network name = " + networks[0].name);
+        //$scope.user.message = "first network name = " + networks[0].name;
         modalInstance.close();
     });
 

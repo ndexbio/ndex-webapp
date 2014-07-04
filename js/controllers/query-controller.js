@@ -76,7 +76,6 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
         });
         // get metadata
         ndexService.getNetwork($scope.networkQuery.currentNetworkId).success(function(network) {
-            console.log("got current network");
             cn = network;
             $scope.networkQuery.currentNetwork = network;
         });
@@ -92,7 +91,6 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
         // get a chunk of the the network
         ndexService.getNetworkByEdges($scope.networkQuery.currentNetworkId, skipBlocks, blockSize).success(function(network){
             $scope.networkQuery.currentSubnetwork = network;
-            console.log("set network");
             $scope.networkQuery.selectedEdges = network.edges;
             csn = network;
             $scope.networkQuery.message = "showing network '" + network.name + "'";

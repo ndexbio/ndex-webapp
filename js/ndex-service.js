@@ -31,6 +31,7 @@
         //signIn
         factory.signIn = function(username, password) {
             ndexUtility.clearUserCredentials();
+            console.log("submitting user credentials for user: " + username);
             var config = ndexConfigs.getSubmitUserCredentialsConfig(username, password);
             return $http(config).success(function(userData){
                 ndexUtility.setUserCredentials(userData, password);
@@ -53,6 +54,7 @@
         //getUserQuery
         // - returns networks, groups, etc?
         factory.getUserQuery = function(userId) {
+            console.log("retrieving user with id " + userId);
             var config = ndexConfigs.getUserQueryConfig(userId);
             return $http(config);
         };
@@ -64,6 +66,7 @@
         // getNetwork
         // notes: returns network metadata? should find out
         factory.getNetwork = function(networkId) {
+            console.log("retrieving network " + networkId);
             var config = ndexConfigs.getNetworkConfig(networkId);
             return $http(config);
         };
@@ -71,6 +74,7 @@
         // getNetworkByEdges
         // - get a block of edges
         factory.getNetworkByEdges = function(networkId, skipBlocks, blockSize) {
+            console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
             var config = ndexConfigs.getNetworkQueryByEdgesConfig(networkId, skipBlocks, blockSize);
             /*return {success: function(success) {
                 $http(config).success(function(){});
@@ -96,6 +100,7 @@
         // findNetworks
         // - simple network search
         factory.findNetworks = function(searchString) {
+            console.log("searching for networks");
             var config = ndexConfigs.getNetworkSearchConfig(searchString);
             return $http(config);
         };
@@ -104,6 +109,7 @@
         // - search the network for a subnetwork via search terms and depth
         // TODO current version does not include an error handler, consider implementing promise
         factory.queryNetwork = function(networkId, terms, searchDepth) {
+            console.log("searching for subnetworks");
             terms = terms.split(/[ ,]+/);
             var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth,
                 0,    // skip blocks

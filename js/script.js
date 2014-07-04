@@ -107,8 +107,6 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     $scope.main.loggedIn = false;
 
-    //todo add stuff for home page display
-
     $scope.$on('LOGGED_IN', function() {
         $scope.main.loggedIn = true;
         $scope.main.username = sharedProperties.getCurrentUserUsername();
