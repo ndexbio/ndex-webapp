@@ -339,38 +339,4 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     */
 
-    // The first pass at this controller will not attempt to cache user information
-    // and will instead fetch the information each time the controller is invoked
-
-
-    // In the beta API, the getUser method fetches all networks, requests, and tasks
-    // first pass will use the beta API
-    // In the NDEx 1.0 API, networks, requests, and tasks will be fetched page-wise in separate,
-    // async operations and this controller will be updated to uses those operations.
-
-   /* var config = NdexClient.getUserQueryConfig($scope.user.currentUserId);
-    $http(config)
-        .success(function (user) {
-            console.log("Set displayedUser");
-            $scope.displayedUser = user;
-            cUser = user;
-        });
-    */
-    // Hack to get some networks to display
-    /*
-    $scope.searchString = "apoptosis";
-    $scope.searchType = "contains";
-    $scope.submitNetworkSearch = function () {
-        var config = NdexClient.getNetworkSearchConfig($scope.searchType, $scope.searchString);
-        console.log("network search config = " + config);
-        $http(config)
-            .success(function (networks) {
-                $scope.networkSearchResults = networks;
-                console.log("Set networkSearchResults");
-                console.log("first network name = " + networks[0].name);
-                $scope.message = "first network name = " + networks[0].name;
-            });
-    }
-    $scope.submitNetworkSearch();*/
-
 }]);

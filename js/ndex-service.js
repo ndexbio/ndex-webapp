@@ -21,7 +21,7 @@
      * dependencies : $http and ndexConfigs
      * return       : promise with success and error methods
      ****************************************************************************/
-    ndexServiceApp.factory('ndexService',['ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', function(ndexConfigs, ndexUtility, ndexHelper, $http) {
+    ndexServiceApp.factory('ndexService',['ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q', function(ndexConfigs, ndexUtility, ndexHelper, $http, $q) {
         // define and initialize factory object
         var factory = {};
 
@@ -63,73 +63,199 @@
         /*---------------------------------------------------------------------*
          * Networks
          *---------------------------------------------------------------------*/
+
+        // ---
         // getNetwork
-        // notes: returns network metadata? should find out
+        // ---
         factory.getNetwork = function(networkId) {
             console.log("retrieving network " + networkId);
+
+            // The $http timeout property takes a deferred value that can abort AJAX request
+            var deferredAbort = $q.defer();
+
+            // Grab the config for this request. We modify the config to allow for $http request aborts.
+            // This may become standard in the client.
             var config = ndexConfigs.getNetworkConfig(networkId);
-            return $http(config);
-        };
+            config.timeout = deferredAbort.promise;
 
-        // getNetworkByEdges
-        // - get a block of edges
-        factory.getNetworkByEdges = function(networkId, skipBlocks, blockSize) {
-            console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
-            var config = ndexConfigs.getNetworkQueryByEdgesConfig(networkId, skipBlocks, blockSize);
-            /*return {success: function(success) {
-                $http(config).success(function(){});
-            }
-            }*/
+            // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+            var request = $http(config);
 
-            return $http(config).success(function(network){
-                ndexHelper.updateNodeLabels(network); //set the labels
-                ndexHelper.updateTermLabels(network);
-                ndexUtility.setNetwork(network);
-                return {success: function(handler){
-                    handler(network);
-                }
-                }
-            }).error(function(error){
-                return {error: function(handler){
-                    handler(error);
-                }
-                }
-            });
-        };
+            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+            request.abort = function(){
+                deferredAbort.resolve();
+            };
 
-        // findNetworks
-        // - simple network search
-        factory.findNetworks = function(searchString) {
-            console.log("searching for networks");
-            var config = ndexConfigs.getNetworkSearchConfig(searchString);
-            return $http(config);
-        };
-
-        // queryNetwork
-        // - search the network for a subnetwork via search terms and depth
-        // TODO current version does not include an error handler, consider implementing promise
-        factory.queryNetwork = function(networkId, terms, searchDepth) {
-            console.log("searching for subnetworks");
-            terms = terms.split(/[ ,]+/);
-            var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth,
-                0,    // skip blocks
-                500  // block size for edges
+            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+            request.finally(
+                function() {
+                    request.abort = angular.noop; // angular.noop is an empty function
+                    deferredAbort = request = null;
+                }
             );
 
-            return $http(config).success(function (network) {
-                ndexHelper.updateNodeLabels(network);
-                ndexHelper.updateTermLabels(network);
-                ndexUtility.setNetwork(network); // consider removing, this is for future possibility of saving networks
-                return {success: function(handler) {
-                    handler(network);
+            return request;
+        };
+
+        // ---
+        // getNetworkByEdges
+        // ---
+        // Get a block of edges
+        factory.getNetworkByEdges = function(networkId, skipBlocks, blockSize) {
+            console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
+
+            // The $http timeout property takes a deferred value that can abort AJAX request
+            var deferredAbort = $q.defer();
+
+            // Grab the config for this request. We modify the config to allow for $http request aborts.
+            // This may become standard in the client.
+            var config = ndexConfigs.getNetworkQueryByEdgesConfig(networkId, skipBlocks, blockSize);
+            config.timeout = deferredAbort.promise;
+
+            // We want to perform some operations on the response from the $http request. We can simply wrap the
+            // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
+            // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
+            var request = $http(config);
+            var promise = {};
+
+            promise.success = function(handler) {
+                request.success(
+                    function(network) {
+                        ndexHelper.updateNodeLabels(network);
+                        ndexHelper.updateTermLabels(network);
+                        ndexUtility.setNetwork(network); // consider removing, this is for future possibility of saving networks
+                        handler(network);
+                    }
+                );
+                return promise;
+            };
+
+            promise.error = function(handler) {
+                request.then(
+                    null,
+                    function(error) {
+                        handler(error);
+                    }
+                );
+                return promise;
+            };
+
+            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+            promise.abort = function() {
+                deferredAbort.resolve();
+            };
+
+            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+            promise.finally = function(){
+                request.finally(
+                    function() {
+                        promise.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = promise = null;
+                    }
+                );
+            };
+
+            return promise;
+        };
+
+        // ---
+        // findNetworks
+        // ---
+        // Simple network search
+        factory.findNetworks = function(searchString) {
+            console.log("searching for networks");
+
+            // The $http timeout property takes a deferred value that can abort AJAX request
+            var deferredAbort = $q.defer();
+
+            // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
+            // the first pass. We modify the config to allow for $http request aborts. This may become standard in
+            // the client.
+            var config = ndexConfigs.getNetworkSearchConfig(searchString);
+            config.timeout = deferredAbort.promise;
+
+            // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+            var request = $http(config);
+
+            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+            request.abort = function(){
+                deferredAbort.resolve();
+            };
+
+            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+            request.finally(
+                function() {
+                    request.abort = angular.noop; // angular.noop is an empty function
+                    deferredAbort = request = null;
                 }
-                }
-            }).error(function(error){
-                return {error: function(error){
-                    handler(error);
-                }
-                }
-            });
+            );
+
+            return request;
+        };
+
+        // ---
+        // queryNetwork
+        // ---
+        // search the network for a subnetwork via search terms and depth
+        factory.queryNetwork = function(networkId, terms, searchDepth) {
+            console.log("searching for subnetworks");
+
+            // Split the string into an array of strings for the $http request
+            terms = terms.split(/[ ,]+/);
+
+            // The $http timeout property takes a deferred value that can abort AJAX request
+            var deferredAbort = $q.defer();
+
+            // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
+            // the first pass. We modify the config to allow for $http request aborts. This may become standard in
+            // the client.
+            var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth, 0, 500);
+            config.timeout = deferredAbort.promise;
+
+            // We want to perform some operations on the response from the $http request. We can simply wrap the
+            // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
+            // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
+            var request = $http(config);
+            var promise = {};
+
+            promise.success = function(handler) {
+                request.success(
+                    function(network) {
+                        ndexHelper.updateNodeLabels(network);
+                        ndexHelper.updateTermLabels(network);
+                        ndexUtility.setNetwork(network); // consider removing, this is for future possibility of saving networks
+                        handler(network);
+                    }
+                );
+                return promise;
+            };
+
+            promise.error = function(handler) {
+                request.then(
+                    null,
+                    function(error) {
+                        handler(error);
+                    }
+                );
+                return promise;
+            };
+
+            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+            promise.abort = function() {
+                deferredAbort.resolve();
+            };
+
+            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+            promise.finally = function(){
+                request.finally(
+                    function() {
+                        promise.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = promise = null;
+                    }
+                );
+            };
+
+            return promise;
         };
 
         // return factory object
@@ -391,7 +517,7 @@
                 if (!namespace || namespace.prefix === "LOCAL")
                     return {prefix: 'none', name: term.name};
                 else if (!namespace.prefix)
-                    return {prefix: 'none', name: term.name};
+                    return {prefix: '', name: term.name};
                 else
                     return {prefix: namespace.prefix, name: term.name};
             }

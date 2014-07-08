@@ -29,7 +29,19 @@
     </pre>
     -->
 
-    <table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null">
+    <div ng-show="networkSearch.networkSearchResults.length == 0">
+        <strong>No results found that match your criteria.</strong>
+    </div>
+
+    <div ng-show="networkSearch.errors.length == 0">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-2" ng-repeat="message in networkQuery.errors">
+                <p><strong>{{message.label}}</strong> {{message.error}}</p>
+            </div>
+        </div>
+    </div>
+
+    <table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null || networkSearch.networkSearchResults.length == 0"">
         <thead>
         <tr>
             <th>Source</th>
@@ -39,14 +51,8 @@
         </tr>
         </thead>
 
-        <tbody ng-show="networkSearch.networkSearchResults.length == 0">
-        <tr>
-            <td colspan="5">No results found that match your criteria.</td>
-        </tr>
-        </tbody>
-
         <tbody ng-show="networkSearch.networkSearchResults.length > 0" ng-repeat="network in networkSearch.networkSearchResults">
-        <tr ng-click="networkSearch.setAndDisplayCurrentNetwork(network.id)">
+        <tr ng-click="networkSearch.setAndDisplayCurrentNetwork(network.id)" style="cursor:pointer;">
             <td>{{network.metadata["Source"]}}</td>
             <td>{{network.name}}</td>
             </td>
@@ -56,3 +62,12 @@
         </tbody>
     </table>
 </div>
+
+<script type="text/ng-template" id="searchContent.html">
+    <div class="modal-body text-center">
+        <img src="img/horizontal-loader.gif">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-default" ng-click="networkSearch.cancel()">Cancel</button>
+    </div>
+</script>
