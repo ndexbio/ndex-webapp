@@ -1,0 +1,167 @@
+<!--   debugging
+<pre ng-show="message">
+    {{message}}
+</pre>
+
+<pre >
+    {{d3Json}}
+</pre>
+-->
+
+<div id="divNetwork" ng-show="networkQuery.errors.length == 0">
+    <div id="divNetworkHeadline" class="row">
+        <div class="col-md-10 pull-left">
+            <h3>{{networkQuery.currentNetwork.name}}</h3>
+        </div>
+
+        <!--<div id="divNetworkMenu" class="col-md-2 pull-right">
+            <a ng-click="saveSelectedSubnetwork()">Actions</a>
+            <!--
+            <div class="dropdown" >
+                <a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown" >Options</a>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="option in networkOptions">
+                        <a ng-click="handleNetworkOption(option)">{{option}}</a>
+                    </li>
+                </ul>
+            </div>
+            /-/->
+        </div> -->
+    </div>
+    <div class="row">
+        <div id="divNetworkStats">
+        <span>
+             <label>nodes:</label>
+            <span>{{networkQuery.currentSubnetwork.nodeCount}}</span> out of
+             <span>{{networkQuery.currentNetwork.nodeCount}}</span>
+        </span>
+        <span>
+             <label>edges:</label>
+            <span>{{networkQuery.currentSubnetwork.edgeCount}}</span> out of
+             <span>{{networkQuery.currentNetwork.edgeCount}}</span>
+        </span>
+        </div>
+    </div>
+    <div class="row">
+        <div id="canvas" class="intgraph AlignCenter"></div>
+
+    </div>
+
+
+    <div class="row">
+
+        <form id="frmSearchNetwork" ng-submit="networkQuery.submitNetworkQuery()" class="form-inline pull-left">
+            <div class="form-group">
+            <input class="form-control" type="search" ng-model="networkQuery.searchString" placeholder="Network Terms" required />
+            </div>
+            <div class="form-group">
+            <label>Depth:</label>
+                </div>
+            <div class="form-group">
+            <span>
+                <select class="form-control" id="" ng-model="networkQuery.searchDepth.value" ng-selected="1"
+                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkQuery.searchDepths"required></select>
+            </span>
+            </div>
+
+            <button type="submit" class="btn btn-default ">Run Query</button>
+        </form>
+
+    </div>
+
+    <!-- begins tabbable section -->
+    <div id="divNetworkTabs" class="row">
+
+        <div ng-show="networkQuery.currentSubnetwork.edgeCount == 0">
+            <strong>No results found that match your criteria.</strong>
+        </div>
+        <tabset ng-hide="networkQuery.currentSubnetwork.edgeCount == 0">
+            <tab heading="Edges">
+                <div id="divEdges">
+                    <ul id="ulSubnetwork" ng-repeat="(id, edge) in networkQuery.currentSubnetwork.edges">
+
+                        <li>
+                            <i class="icon-expand Hand" ng-show="hasAliases(edge)"
+                               ng-click="toggleTermAliases"></i>
+
+
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.s]}}</strong>
+                            <em>{{networkQuery.currentSubnetwork.terms[edge.p].name}}</em>
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.o]}}</strong>
+
+
+                            <!--<sup rel="tooltip">{{edgeFootnotes[edge]}}
+                            </sup>-->
+
+                        </li>
+                        <!-- todo: aliases
+                        <li class="TermAliases" ng-show="hasAliases">
+
+                            <div>
+                                Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                            </div>
+
+                            <div>
+                                Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                            </div>
+
+                        </li>-->
+
+                    </ul>
+                </div>
+            </tab>
+            <tab heading="Nodes">
+                <div id="divNodes">
+                    <ul id="ulSubnetwork" ng-repeat="node in networkQuery.currentSubnetwork.nodes">
+                        <li>
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[node.id]}}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </tab>
+            <tab heading="Terms">
+                <ul>
+                    <li class="row">
+                        <div class="col-md-3 col-md-offset-3">
+                            <strong>Prefix</strong>
+                        </div>
+                        <div class="col-md-3"><strong>Base Terms</strong></div>
+                    </li>
+                </ul>
+                <ul id="ulSubnetwork" ng-repeat="(index, term) in networkQuery.currentSubnetwork.termLabelMap">
+                    <li class="row">
+                        <div class="col-md-3 col-md-offset-3">
+                        <strong>{{term.prefix}}</strong></div>
+                        <div class="col-md-3">{{term.name}}</div>
+                    </li>
+                </ul>
+            </tab>
+            <tab heading="Properties">
+                <div id="divProperties">
+                    <p> test3 </p>
+                </div>
+            </tab>
+        </tabset>
+
+    </div>
+
+<!-- end tab content -->
+</div>
+
+<div class="container-fluid" ng-hide="networkQuery.validRequest.length == 0">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-2" ng-repeat="message in networkQuery.errors">
+            <p><strong>{{message.label}}</strong> {{message.error}}</p>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/ng-template" id="queryContent.html">
+    <div class="modal-body text-center">
+        <img src="img/horizontal-loader.gif">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-default" ng-click="networkQuery.cancel()">Cancel</button>
+    </div>
+</script>

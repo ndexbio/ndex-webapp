@@ -3,23 +3,59 @@
     font: 24px helvetica neue, helvetica, arial, sans-serif;
     height: 400px;
     width: 600px;
-//position: absolute;
-//left: 0;
-//top: 0;
-    background-color:rgb(40,40,40);
-}
-/*
-#message {
-	font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-	position:absolute; 
-	color: white;
-	left: 10px;
-	text-align:left; 
-	margin:1em 0 -4.5em 0; 
-	z-index:1010; 
-	}
+    background-color:fff;
 
-.errorMessage{
-    color: #FF0000;
 }
-*/
+
+#canvas {
+    font: 9px helvetica neue, helvetica, arial, sans-serif;
+    height: 250px;
+    width: 100%;
+    min-width: 800px;
+    background-color:fff;
+
+}
+
+#compareCanvas {
+    font: 9px helvetica neue, helvetica, arial, sans-serif;
+    height: 800px;
+    width: 100%;
+    min-width: 800px;
+    background-color:fff;
+
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+.link {
+    stroke: #000;
+    stroke-width: 1.5px;
+    stroke-opacity: .6;
+}
+
+circle.node {
+    stroke: #555;
+    stroke-width: .5px;
+}
+
+line.link {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+
+svg {
+    display:block; /* required for firefox to give valid
+    height and width used values for getComputedStyle()
+    see https://bugzilla.mozilla.org/show_bug.cgi?id=874919
+    */
+    border: solid 1px gray;
+    margin:1em;
+    height:calc(100% - 2em);
+    width: calc(100% - 2em);
+}
+
+

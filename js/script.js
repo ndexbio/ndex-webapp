@@ -1,16 +1,45 @@
+//function () {
 // create the module and name it ndexApp
-var ndexApp = angular.module('ndexApp', ['ngRoute']);
+var ndexApp = angular.module('ndexApp', ['ngRoute', 'ndexServiceApp', 'ui.bootstrap']);
+var net1, net2;
+var cn, csn;
+var cUser;
 
-var cyjsObject = null;
+ndexApp.service('sharedProperties', function () {
+    return {
+        getCurrentNetworkId: function () {
+            if (!this.currentNetworkId) this.currentNetworkId = "C25R1174";   // hardwired for testing
+            return this.currentNetworkId;
+        },
+        setCurrentNetworkId: function (value) {
+            this.currentNetworkId = value;
+        },
+        getCurrentUserId: function () {
+            //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
+            return this.currentUserId;
+        },
+        getCurrentUserUsername: function () {
+            //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
+            return this.username;
+        },
+        setCurrentUser: function (value, username) {
+            this.currentUserId = value;
+            this.username = username;
+        }
+    }
+});
+
+
+
 
 // configure our routes
-ndexApp.config(function ($routeProvider) {
+ndexApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
 
         // route for the home page
         .when('/', {
             templateUrl: 'pages/home.html',
-            controller: 'mainController'
+            controller: ''
         })
 
         // route for the about page
@@ -37,315 +66,85 @@ ndexApp.config(function ($routeProvider) {
             controller: 'cjsController'
         })
 
+        // route for the triptych page
+        .when('/triptych', {
+            templateUrl: 'pages/triptych.html',
+            controller: 'triptychController'
+        })
+
+        // route for the compare page
+        .when('/compare', {
+            templateUrl: 'pages/compare.html',
+            controller: 'compareController'
+        })
+
+        // route for the user page
+        .when('/user/:userId', {
+            templateUrl: 'pages/user.html',
+            controller: 'userController'
+        })
+
+        // route for the networkQuery page
+        .when('/networkQuery/:networkId', {
+            templateUrl: 'pages/networkQuery.html',
+            controller: 'networkQueryController'
+        })
+
         // route for the signIn page
         .when('/signIn', {
             templateUrl: 'pages/signIn.html',
             controller: 'signInController'
         });
-});
+}]);
 
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', function ($scope, $location) {
-    // create a message to display in our view
-    if (localStorage.username) {
-        $scope.username = localStorage.username;
-        $scope.password = localStorage.password;
-    }
-    $scope.networkSearchResults = null;
-    $scope.signout = function () {
-        $scope.username = null;
-        $scope.password = null;
+ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', function(ndexService, ndexUtility, sharedProperties, $scope, $location, $modal) {
+
+    $scope.main = {};
+
+    $scope.main.url = $location; //expose the service to the scope for nav
+    $scope.main.isCollapsed = true;  //TODO find out what this is for
+
+    $scope.main.loggedIn = false;
+
+    $scope.$on('LOGGED_IN', function() {
+        $scope.main.loggedIn = true;
+        $scope.main.username = sharedProperties.getCurrentUserUsername();
+    });
+
+    $scope.main.signout = function () {
+        ndexService.signOut();
+        $scope.main.loggedIn = false;
+        delete $scope.main.username;
         $location.path("/signIn");
-    }
-});
-
-ndexApp.controller('aboutController', function ($scope) {
-    $scope.message = 'Look! I am an about page.';
-});
-
-ndexApp.controller('contactController', function ($scope) {
-    $scope.message = 'Contact us! JK. This is just a demo.';
-});
-
-ndexApp.controller('signInController', function ($scope, $location) {
-    $scope.username = null;
-    $scope.password = null;
-    $scope.goHome = function (name) {
-        console.log("going to home");
-        $location.path("/");
-    };
-    $scope.submitSignIn = function () {
-        NdexClient.submitCredentials(
-            $scope.username,
-            $scope.password,
-            $scope.goHome
-        );
-    }
-    $scope.getNdexServer = function () {
-        return NdexClient.NdexServerURI;
-    }
-});
-
-ndexApp.controller('searchNetworksController', function ($scope, $http) {
-    $scope.message = "initial message";
-    $scope.networkSearchResults = [
-        {name: "fake network"}
-    ];
-    $scope.submitNetworkSearch = function () {
-        var config = NdexClient.getNetworkSearchConfig($scope.searchType, $scope.searchString);
-        $http(config)
-            .success(function (networks) {
-                $scope.networkSearchResults = networks;
-                console.log("Set networkSearchResults");
-                console.log("first network name = " + networks[0].name);
-                $scope.message = "first network name = " + networks[0].name;
-            });
-    }
-});
-
-function loadCy(elements) {
-    var cy;
-    options = {
-        showOverlay: false,
-        minZoom: 0.5,
-        maxZoom: 2,
-
-        style: cytoscape.stylesheet()
-            .selector('node')
-            .css({
-                'content': 'data(name)',
-                'font-family': 'helvetica',
-                'font-size': 11,
-                'text-outline-width': 0,
-                'text-outline-color': '#888',
-                'text-valign': 'center',
-                'color': '#f00',
-                'width': 'mapData(weight, 30, 80, 20, 50)',
-                'height': 'mapData(height, 0, 200, 10, 45)',
-                'border-color': '#fff'
-            })
-            .selector(':selected')
-            .css({
-                'background-color': '#000',
-                'line-color': '#000',
-                'target-arrow-color': '#000',
-                'text-outline-color': '#000'
-            })
-            .selector('edge')
-            .css({
-                'width': 2,
-                'target-arrow-shape': 'triangle'
-            }),
-
-        elements: elements,
-
-        ready: undefined,
-
-        layout: {
-            name: 'arbor',
-            liveUpdate: true, // whether to show the layout as it's running
-            ready: undefined, // callback on layoutready
-            stop: undefined, // callback on layoutstop
-            maxSimulationTime: 4000, // max length in ms to run the layout
-            fit: true, // reset viewport to fit default simulationBounds
-            padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
-            simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by default
-            ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
-
-            // forces used by arbor (use arbor default on undefined)
-            repulsion: undefined,
-            stiffness: undefined,
-            friction: undefined,
-            gravity: true,
-            fps: undefined,
-            precision: undefined,
-
-            // static numbers or functions that dynamically return what these
-            // values should be for each element
-            nodeMass: undefined,
-            edgeLength: undefined,
-
-            stepSize: 1, // size of timestep in simulation
-
-            // function that returns true if the system is stable to indicate
-            // that the layout can be stopped
-            stableEnergy: function (energy) {
-                var e = energy;
-                return (e.max <= 0.5) || (e.mean <= 0.3);
-            }
-        }
     };
 
-    $('#cy').cytoscape(options);
-    return cy;
-
-}
-
-function createCyElements(network) {
-
-    var elements = {nodes: [], edges: []};
-
-    $.each(network.nodes, function (index, node) {
-        var label = NdexClient.getTermLabel(network.terms[node.represents], network);
-        /*
-         if (node.represents && network.terms && network.terms[node.represents]) {
-         var term = network.terms[node.represents];
-         label = term.name;
-         }
-         */
-        var cyNode = {data: {id: "n" + index, name: label}};
-        elements.nodes.push(cyNode);
-
-    });
-
-    $.each(network.edges, function (index, edge) {
-        var cyEdge = {data: {source: "n" + edge.s, target: "n" + edge.o}};
-        elements.edges.push(cyEdge);
-    });
-
-    return elements;
-};
-
-ndexApp.controller('cjsController', function ($scope, $http) {
-    var NETWORK_SECTION_ID = '#cyNetwork';
-
-    //var VISUAL_STYLE_FILE = 'ps1.json';
-
-    var DEFAULT_VISUAL_STYLE = 'hallmarksOfCancer';
-
-    // Basic settings for the Cytoscape window
-    var options = {
-
-        showOverlay: false,
-        minZoom: 0.01,
-        maxZoom: 200,
-
-        layout: {
-            name: 'preset'
-        },
-
-        style: cytoscape.stylesheet()
-            .selector('node')
-            .css({
-                'content': 'data(name)',
-                'font-family': 'helvetica',
-                'font-size': 11,
-                'text-outline-width': 0,
-                'text-outline-color': '#888',
-                'text-valign': 'center',
-                'color': '#f00',
-                'width': 'mapData(weight, 30, 80, 20, 50)',
-                'height': 'mapData(height, 0, 200, 10, 45)',
-                'border-color': '#fff'
-            })
-            .selector(':selected')
-            .css({
-                'background-color': '#000',
-                'line-color': '#000',
-                'target-arrow-color': '#000',
-                'text-outline-color': '#000'
-            })
-            .selector('edge')
-            .css({
-                'width': 2,
-                'target-arrow-shape': 'triangle'
-            }),
-
-        layout: {
-            name: 'arbor',
-            liveUpdate: true, // whether to show the layout as it's running
-            ready: undefined, // callback on layoutready
-            stop: undefined, // callback on layoutstop
-            maxSimulationTime: 4000, // max length in ms to run the layout
-            fit: true, // reset viewport to fit default simulationBounds
-            padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
-            simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by default
-            ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
-
-            // forces used by arbor (use arbor default on undefined)
-            repulsion: undefined,
-            stiffness: undefined,
-            friction: undefined,
-            gravity: true,
-            fps: undefined,
-            precision: undefined,
-
-            // static numbers or functions that dynamically return what these
-            // values should be for each element
-            nodeMass: undefined,
-            edgeLength: undefined,
-
-            stepSize: 1, // size of timestep in simulation
-
-            // function that returns true if the system is stable to indicate
-            // that the layout can be stopped
-            stableEnergy: function (energy) {
-                var e = energy;
-                return (e.max <= 0.5) || (e.mean <= 0.3);
-            }
-        },
-        ready: function (cy) {
-            console.log("running cy ready function");
-            $scope.cy = this;
-            //$scope.cy.load($scope.cyNetworkElements);
-            setEventListeners();
-        }
+    //navbar
+    $scope.main.getCurrentNetwork = function() {
+        return sharedProperties.getCurrentNetworkId();
+    };
+    $scope.main.getCurrentUser = function() {
+        return sharedProperties.getCurrentUserId();
     };
 
-    /*
-     Event listener setup for Cytoscape.js
-     */
-    function setEventListeners() {
 
-        $scope.selectedNodes = {};
-        $scope.selectedEdges = {};
-
-        // Node selection
-        $scope.cy.on('select', 'node', function (event) {
-            var id = event.cyTarget.id();
-            $scope.$apply(function () {
-                $scope.selectedNodes[id] = event.cyTarget;
-            });
-        });
-        $scope.cy.on('select', 'edge', function (event) {
-            var id = event.cyTarget.id();
-            $scope.$apply(function () {
-                $scope.selectedEdges[id] = event.cyTarget;
-            });
-        });
-
-        // Reset selection
-        $scope.cy.on('unselect', 'node', function (event) {
-            var id = event.cyTarget.id();
-            $scope.$apply(function () {
-                delete $scope.selectedNodes[id];
-            });
-        });
-        $scope.cy.on('unselect', 'edge', function (event) {
-            var id = event.cyTarget.id();
-            $scope.$apply(function () {
-                delete $scope.selectedEdges[id];
-            });
-        });
+    var userData = ndexUtility.getUserCredentials();
+    if(userData) {
+        sharedProperties.setCurrentUser(userData.userId, userData.username);
+        $scope.main.username = userData.username;
+        $scope.main.loggedIn = true;
     }
 
-    $scope.message = "initial message";
-    $scope.currentSubnetwork = {name: "fake network"};
-    var networkId =  "C25R1174";
-    var blockSize = 500;
-    var skipBlocks = 0;
-    var config = NdexClient.getNetworkQueryByEdgesConfig(networkId, blockSize, skipBlocks);
-    $http(config)
-        .success(function (network) {
-            $scope.currentSubnetwork = network;
-            $scope.cyNetworkElements = createCyElements(network);
-            options.elements = $scope.cyNetworkElements;
-            $scope.message = "element id = " + NETWORK_SECTION_ID + "   network name = " + network.name;
-            //$scope.cy.load($scope.cyNetworkElements);
-            //setEventListeners();
-            cyjsObject = angular.element(NETWORK_SECTION_ID).cytoscape(options);
-            //options.ready();
-        });
 
-});
+}]);
+//}) ();
+
+
+
+
+
+
+
+
+
 

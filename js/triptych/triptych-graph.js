@@ -1,35 +1,59 @@
-// this is put as a global var in the browser
-// or it's just a global to this module if commonjs
-var NdexGraph;
+if (typeof(Triptych) === 'undefined') Triptych = {};
+/*
+ ------------------------------------
+ Graph
+ ------------------------------------
+ */
 
-NdexGraph  = function(){  'use strict';
-    this.nodes = {};
-    this.edges = {};
-    this.terms = {};
-    this.citations = {};
-    this.supports = {};
+Triptych.Graph = function(){
+    this.nodes = [];
+    this.edges = [];
+    this.nodeIdMap = {};
     this.nodeIdentifierMap = {};
+    this.relationships = {};
     this.maxId = 0;
-    //this.startingPosition = new THREE.Vector3(0,0,0);
+    this.startingPosition = new THREE.Vector3(0,0,0);
     this.changed = false;
+    this.planes = [];
 };
 
-NdexGraph.prototype = {
+Triptych.Graph.prototype = {
 
-    constructor : NdexGraph,
+    constructor : Triptych.Graph,
+
+    getNextId : function () {
+        return this.maxId++;
+    },
+
+    addPlane : function (position){
+        var id = this.getNextId();
+        var newPlane = {};
+        newPlane.id = id;
+        newPlane.position = position || new THREE.Vector3(0,0,0);
+        var normal = new THREE.Vector3(0,0,1);
+        var constant = position.z || 1.0;
+        newPlane.plane = new THREE.Plane(normal, constant);
+        this.planes.push(newPlane);
+        return newPlane;
+    },
+
+    updateMaxId : function(addedId){
+        this.maxId = Math.max(this.maxId, addedId);
+    },
 
     addNode : function (node){
-        this.nodes[node.id] = node;
+        this.nodes.push(node);
+        this.nodeIdMap[node.id] = node;
         if (node.identifier) this.nodeIdentifierMap[node.identifier] = node;
         node.graph = this;
-        this.maxId = Math.max(this.maxId, node.id);
+        this.updateMaxId(node.id);
         this.changed = true;
     },
 
     copyExternalNode : function (externalNode){
         var internalNode = this.nodeByIdentifier(externalNode.identifier);
         if (internalNode) return internalNode;
-        internalNode = new NdexGraph.Node(graph.maxId + 1);
+        internalNode = new Triptych.Node(this.getNextId());
         internalNode.identifier = externalNode.identifier;
         internalNode.type = externalNode.type;
         internalNode.label = externalNode.label;
@@ -55,8 +79,8 @@ NdexGraph.prototype = {
     findOrCreateRelationship : function (type){
         var rel = this.relationshipByType(type);
         if (rel) return rel;
-        console.log("creating relationship from " + type);
-        rel = new NdexGraph.Relationship(type);
+        //console.log("creating relationship from " + type);
+        rel = new Triptych.Relationship(type);
         this.relationships[type] = rel;
         return rel;
     },
@@ -87,7 +111,7 @@ NdexGraph.prototype = {
     findOrCreateNodeByIdentifier : function(identifier){
         var node = this.nodeByIdentifier(identifier);
         if (node) return node;
-        node = new NdexGraph.Node(this.maxId++);
+        node = new Triptych.Node(this.maxId++);
         node.identifier = identifier;
         this.addNode(node)
         return node;
@@ -108,7 +132,7 @@ NdexGraph.prototype = {
     findOrCreateEdge : function(fromNode, rel, toNode){
         var edge = this.findEdge(fromNode, rel, toNode);
         if (edge) return edge;
-        edge = new NdexGraph.Edge(fromNode, rel, toNode);
+        edge = new Triptych.Edge(fromNode, rel, toNode);
         this.addEdge(edge);
         return edge;
     },
@@ -119,7 +143,7 @@ NdexGraph.prototype = {
         var to = this.copyExternalNode(edge.to);
         var internalEdge = this.findEdge(from, rel, to);
         if (internalEdge) return internalEdge;
-        internalEdge = new NdexGraph.Edge(from, rel, to);
+        internalEdge = new Triptych.Edge(from, rel, to);
         this.addEdge(internalEdge);
         return internalEdge;
     },
@@ -175,7 +199,7 @@ NdexGraph.prototype = {
 
     mappedClone : function(){
         var originalGraph = this;
-        var mappedGraph = new NdexGraph();
+        var mappedGraph = new Triptych.Graph();
         $.each(originalGraph.nodes, function(index, node){
             var mappedNode = mappedGraph.copyExternalNode(node);
             mappedNode.mapsTo = node;
@@ -271,36 +295,32 @@ NdexGraph.prototype = {
  ------------------------------------
  */
 
-NdexGraph.Node = function(id){
+Triptych.Node = function(id){
 
-    this.id = id; 					// id within the graph
-    this.identifier = null;
-    this.represents = null;
-    this.metadata = {};
-    this.graphics = {};
-
+    this.literals = {};
     this.position = new THREE.Vector3(0, 0, 0);
     this.force = new THREE.Vector3(0, 0, 0);
     this.modified = true;
-    		// external identifier
+    this.id = id; 					// id within the graph
+    this.identifier = null; 		// external identifier
     this.ns = null;					// namespace for external identifier
     this.label = "node";  			// label to display
     this.type = "node";				// primary type of node
     this.displayList = {};
     this.selected = false;
     this.graph = null;
-    this.planes = [];
+    this.plane = null;
     this.subGraphs = {};				// marked subsets - typically disjoint graphs
 
 };
 
-NdexGraph.Node.prototype = {
+Triptych.Node.prototype = {
 
-    constructor : NdexGraph.Node,
+    constructor : Triptych.Node,
 
     getVector : function (node){
         var v = node.position.clone();
-        v.subSelf(this.position);
+        v.sub(this.position);
         return v;
     },
 
@@ -391,8 +411,8 @@ NdexGraph.Node.prototype = {
         }
     },
 
-    addPlane : function(id){
-        if (this.planes.lastIndexOf(id) == -1) this.planes.push(id);
+    setPlane : function(plane){
+        this.plane = plane;
         this.graph.changed = true;
     }
 
@@ -405,24 +425,23 @@ NdexGraph.Node.prototype = {
  ------------------------------------
  */
 
-NdexGraph.Edge = function(fromNode, relationship, toNode){
+Triptych.Edge = function(fromNode, relationship, toNode){
 
     this.from = fromNode;
     this.to = toNode;
     this.relationship = relationship;
     this.displayList = {};
     this.subGraphs = {};
-    this.planes = [];
 
 };
 
-NdexGraph.Edge.prototype = {
+Triptych.Edge.prototype = {
 
-    constructor : NdexGraph.Edge,
+    constructor : Triptych.Edge,
 
     getVector : function(){
         var v = this.to.position.clone();
-        v.subSelf(this.from.position);
+        v.sub(this.from.position);
         return v;
     },
 
@@ -484,13 +503,7 @@ NdexGraph.Edge.prototype = {
         if (!this.subGraphs.id){
             this.subGraphs.id = text;
         }
-    },
-
-    addPlane : function(id){
-        this.planes.push(id);
-        this.graph.changed = true;
     }
-
 };
 
 /*
@@ -499,7 +512,7 @@ NdexGraph.Edge.prototype = {
  ------------------------------------
  */
 
-NdexGraph.Relationship = function(type, causal, inverting){
+Triptych.Relationship = function(type, causal, inverting){
 
     this.type = type;
     if (causal){
@@ -514,9 +527,8 @@ NdexGraph.Relationship = function(type, causal, inverting){
     }
 };
 
-NdexGraph.Relationship.prototype = {
+Triptych.Relationship.prototype = {
 
-    constructor : NdexGraph.Relationship
+    constructor : Triptych.Relationship
 
 };
-

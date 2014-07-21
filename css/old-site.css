@@ -21,6 +21,7 @@ body
     padding-left: 0;
     padding-right:0;
     color: #333;
+    background: #F2F2F2;
     font-size: 12px;
     font-style: normal;
     font-variant: normal;
@@ -52,7 +53,7 @@ fieldset
 h1, h2, h3, h4, h5, h6
 {
 
-    font-weight: 200;
+    font-weight: 100;
     letter-spacing:1px;
     //margin-bottom: 1em;
 }
@@ -169,10 +170,56 @@ textarea
 .hero-unit
 {
     border: 1px solid;
-    font-weight: 100;
     background-color:#FFFFFF;
 }
 
+input.Invisible,
+    select.Invisible,
+    textarea.Invisible
+{
+    border: 1px solid #FFF;
+    box-shadow: 0 0 0 0;
+    outline: 0 none;
+}
+
+input.Invisible:not([readonly]):hover,
+    select.Invisible:not([readonly]):hover,
+    textarea.Invisible:not([readonly]):hover
+{
+    border: 1px dashed #CCC;
+}
+
+input.Invisible:not([readonly]):focus,
+    select.Invisible:not([readonly]):focus,
+    textarea.Invisible:not([readonly]):focus
+{
+    border: 1px solid #52A8EC;
+}
+
+label.Attribute
+{
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 5px;
+    text-align: right;
+    //vertical-align: top;
+    width: 10em;
+}
+
+label.Attribute-Editable
+{
+    display: inline-block;
+    font-weight: bold;
+    margin: 0.4em 5px 0 0;
+    text-align: right;
+    //vertical-align: top;
+    width: 10em;
+}
+
+select
+{
+    width: auto;
+}
 
 /******************************************************************************
  * wrap and footer styling
@@ -202,21 +249,137 @@ textarea
 /******************************************************************************
  * Navigation styling
  ******************************************************************************/
-.nav
+.main-nav
 {
-    font-size: 1.2em;
-    vertical-align: top;
-    letter-spacing:1px;
+    font-size: 1.5em;
+    vertical-align: middle;
 }
 
-.navbar-brand
+/******************************************************************************
+ * Work Surface styling
+ ******************************************************************************/
+#divSidebar
 {
-    font-weight: 200;
-    font-size: 2.0em;
-    letter-spacing:1px;
-    color: #fff;
+    background: #EEE;
+    height: 100%;
+    margin: 0;
+    padding: 0 0 0 10px;
+    position: fixed;
+    right: 0px;
+    top: 40px;
+    width: 0;
+    z-index: 2;
 }
 
+#divSidebar > a:first-child
+{
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+#divWorkSurface
+{
+    height: 250px;
+    margin: 5px;
+    padding-left: 13px;
+    overflow-y: auto;
+    width: 150px;
+}
+
+#divWorkSurface > ul
+{
+    margin: 0;
+}
+
+#divTools
+{
+    font-size: 0;
+    text-align: center;
+}
+
+.thumbText
+{
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.thumbIcon
+{
+    width: 120px;
+    height: 100px;
+    background: white;
+}
+
+/******************************************************************************
+ * Modal styling
+ ******************************************************************************/
+#divModalBackground
+{
+    background: #666;
+    display: none;
+    filter: alpha(opacity=50);
+    height: 100%;
+    left: 0;
+    opacity: 0.5;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 4;
+}
+
+#divModal
+{
+    background: #FFF;
+    border: 1px solid #666;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #999;
+    display: none;
+    height: auto;
+    left: 50%;
+    margin-left: -20%;
+    overflow: hidden;
+    position: fixed;
+    top: 15%;
+    width: 40%;
+    z-index: 5;
+}
+
+#divModal > div.Title
+{
+    background: #0E5177;
+    background: linear-gradient(center top, #438EB9, #0E5177);
+    background: -moz-linear-gradient(center top, #438EB9, #0E5177);
+    background: -ms-linear-gradient(center top, #438EB9, #0E5177);
+    background: -o-linear-gradient(center top, #438EB9, #0E5177);
+    background: -webkit-linear-gradient(top, #438EB9, #0E5177);
+    border-radius: 6px 6px 0 0;
+    color: #FFF;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#438EB9", endColorstr="#0E5177");
+    font-size: 1.75em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0.25em 0;
+    position: relative;
+    text-align: center;
+}
+
+#btnCloseModal
+{
+    position: absolute;
+    right: 3px;
+    top: 3px;
+}
+
+#divModalContent
+{
+    overflow-y: auto;
+    padding: 10px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+}
 
 /******************************************************************************
  * Search styling
@@ -311,25 +474,126 @@ dl.Accordion > dd
 }
 
 /******************************************************************************
+ * Feedback styling
+ ******************************************************************************/
+#divFeedback
+{
+    margin: 0 auto;
+    width: 340px;
+}
+
+#frmFeedback textarea
+{
+    height: 100px;
+    width: 100%;
+}
+
+/******************************************************************************
  * User/Group styling
  ******************************************************************************/
+#divUser div.dropdown,
+#divGroup div.dropdown
+{
+    position: absolute;
+    left: -40px;
+    top: 10px;
+    width: auto;
+    z-index: 3;
+}
+
+#divProfileImages
+{
+    //width: 100%;
+    //min-width: 100%;
+    padding: 0;
+    margin: 0;
+    //position: relative;
+}
 
 #imgProfile
 {
-    width: 100px;
+    width: 10%;
+    //position: absolute;
     left: 5%;
     top: 10%;
+    //border-width: 3px;
+    //border-color: blue;
+    //z-index: 2;
 }
 
-#divUser
+#imgProfileBackground
 {
-    padding-bottom: 20px;
-
+    height: 200px;
+    padding: 0;
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
 }
 
-#divUserTabs
+#divUser h3 > input.Invisible
 {
+    font-size: 24px;
+    width: 40%;
+}
 
+#divGroup h3 > input.Invisible
+{
+    font-size: 24px;
+    width: 95%;
+}
+
+
+#divUser #txtPassword,
+#divUser #txtConfirmPassword
+{
+    width: 125px;
+}
+
+#divNotifications
+{
+    background-color: white;
+    padding: 0px 0px;
+    border: 2px solid #EBEBEB;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+#divNotifications > h4
+{
+    background-color: #F5F5F5;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin: 0;
+    padding: 5px;
+    text-align: center;
+}
+
+#divNotifications > h5
+{
+    border-bottom: 2px solid #F5F5F5;
+    border-top: 2px solid #F5F5F5;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 0;
+    padding: 5px;
+}
+
+#divNotifications ul
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#txtMessage
+{
+    height: 100px;
+    width: 60%;
 }
 
 /******************************************************************************
@@ -351,6 +615,8 @@ dl.Accordion > dd
 {
     //display: none;
 }
+
+
 
 #dlNetworkAccordion > dd
 {
@@ -587,6 +853,4 @@ dl.Accordion > dd
     left: 25%;
 }
 
-/*angular ui fix for cursor*/
-a { cursor: pointer; }
 

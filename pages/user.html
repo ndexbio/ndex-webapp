@@ -1,0 +1,140 @@
+<div id="divUser" class="row" >
+
+    <div class="col-md-2">
+            <!--
+            <img id="imgProfile" ng-show="displayedUser.username" ng-src="http://test.ndexbio.org/profile/foreground/{{displayedUser.username}}.jpg"/>
+            -->
+        <img id="imgProfile" ng-show="user.displayedUser.username" ng-src="http://i.imgur.com/09oVvZg.jpg"/>
+    </div>
+    <div class="col-md-10">
+        <h3 >
+            {{user.displayedUser.firstName}} {{user.displayedUser.lastName}}
+        </h3>
+
+        <div>
+            {{user.displayedUser.emailAddress}}
+        </div>
+
+        <div>
+            <a href="{{user.displayedUser.website}}">{{user.displayedUser.website}}</a>
+        </div>
+
+        <div>
+            {{user.displayedUser.description}}
+        </div>
+    </div>
+</div>
+
+<!- tabs -->
+<div id="divUserTabs" class="row" ng-show="user.displayedUser">
+
+    <tabset>
+        <tab heading="Networks">
+            <div id="divNetworks">
+                <table class="table table-hover" ng-show="user.networkSearchResults.length > 0">
+                    <!--
+                    <tbody ng-repeat="(index, network) in displayedUser.networks">
+                    <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
+                        <td>{{network.resourceName}}</td>
+                    </tr>
+                    </tbody>
+                    -->
+                    <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Title</th>
+                        <th style="width: 10%;">Nodes</th>
+                        <th style="width: 10%;">Edges</th>
+                    </tr>
+                    </thead>
+                    <tbody  ng-repeat="network in user.networkSearchResults">
+                    <tr ng-click="user.setAndDisplayCurrentNetwork(network.id)">
+                        <td>{{network.metadata["Source"]}}</td>
+                        <td>{{network.name}}</td>
+                        </td>
+                        <td class="AlignRight">{{network.nodeCount}}</td>
+                        <td class="AlignRight">{{network.edgeCount}}</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </tab>
+        <tab heading="Groups">
+            <div id="divGroups">
+                <table>
+                    <tbody ng-repeat="(index, group) in user.displayedUser.groups">
+                    <tr ng-click="user.setAndDisplayCurrentGroup(group.resourceId)">
+                        <td>{{group.resourceName}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </tab>
+        <tab heading="Tasks">
+            <div id="divTasks">
+                <table>
+                    <tbody ng-repeat="(index, task) in user.displayedUser.tasks">
+
+                    <tr>
+                        <td><i class="icon-remove icon-white" ng-click="markTaskForDeletion(task.id)"></i></td>
+                        <td>{{task.description}}</td>
+                        <td>{{task.status}}</td>
+                        <td><span ng-show="false">download</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </tab>
+        <tab heading="Requests">
+            <div id="divRequests">
+                <table>
+                    <tbody ng-repeat="(index, request) in user.displayedUser.requests">
+
+                    <tr>
+                        <td>From: {{request.from}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </tab>
+    </tabset>
+
+</div>
+
+<!--
+
+        TODO: Menu of actions
+
+<div class="span4 pull-right" style="position: relative;">
+<div class="dropdown">
+<a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown">
+    <i class="icon-cog icon-large"></i>
+</a>
+
+<ul class="dropdown-menu">
+
+<li>
+<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.createGroup">Create Group</a>
+</li>
+<li>
+<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.createNetwork">Create Network</a>
+</li>
+<li>
+<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.changeProfileImage">Change Profile Image</a>
+</li>
+<li>
+<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.changeProfileImage">Change Background Image</a>
+</li>
+<li>
+<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.changePassword">Change Password</a>
+</li>
+
+<li>
+<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.inviteToGroup">Invite to Join...</a>
+</li>
+
+</ul>
+</div>
+
+-->

@@ -3,35 +3,23 @@
     <h1>Search Networks</h1>
 
     <div class="pull-left">
-        <form id="frmSearch" ng-submit="submitNetworkSearch()">
-            <div style="position: relative;">
-                <i id="searchInfo" class="icon-info-sign Hand" title="Info" rel="tooltip"
-                   style="font-size: 1.25em; left: 20px; position: absolute; top: 0.25em;"></i>
-                <label class="Attribute-Editable">Search:</label>
-
-                <div id="divSearch" style="display: inline-block;">
-                    <i class="icon-search"></i>
-                    <input type="search" ng-model="searchString" placeholder="Search keywords"/>
-                </div>
+        <form class="form-inline" id="frmSearch" ng-submit="networkSearch.submitNetworkSearch()">
+            <!--<div class="" style="position: relative;">
+             <i id="searchInfo" class="icon-info-sign Hand" title="Info" rel="tooltip"
+                 style="font-size: 1.25em; left: 20px; position: absolute; top: 0.25em;"></i>
+            <label class="Attribute-Editable"></label>
+            -->
+            <div class="" id="divSearch" style="display: inline-block;">
+                <i class="icon-search"></i>
+                <input type="search" class="form-control" ng-model="networkSearch.searchString" placeholder="Search keywords" required/>
             </div>
 
-            <div>
-                <label class="Attribute-Editable">Type:</label>
-                <select id="ddlSearchOperator" ng-model="searchType">
-                    <option value="starts-with">Starts With</option>
-                    <option value="contains">Contains</option>
-                    <option value="exact-match">Exact Match</option>
-                </select>
-            </div>
-
-            <div class="AlignCenter">
-                <button type="submit">Search</button>
-            </div>
+            <button class="btn btn-default" type="submit">Search</button>
         </form>
     </div>
 
     <div class="Clear"></div>
-
+    <!-- debugging elements
     <pre ng-show="message">
         {{message}}
     </pre>
@@ -39,8 +27,21 @@
     <pre ng-model="networkSearchResults">
         {{networkSearchResults}}
     </pre>
+    -->
 
-    <table ng-model="networkSearchResults">
+    <div ng-show="networkSearch.networkSearchResults.length == 0">
+        <strong>No results found that match your criteria.</strong>
+    </div>
+
+    <div ng-show="networkSearch.errors.length == 0">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-2" ng-repeat="message in networkQuery.errors">
+                <p><strong>{{message.label}}</strong> {{message.error}}</p>
+            </div>
+        </div>
+    </div>
+
+    <table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null || networkSearch.networkSearchResults.length == 0"">
         <thead>
         <tr>
             <th>Source</th>
@@ -50,14 +51,8 @@
         </tr>
         </thead>
 
-        <tbody ng-show="networkSearchResults.length == 0">
-        <tr>
-            <td colspan="5">No results found that match your criteria.</td>
-        </tr>
-        </tbody>
-
-        <tbody ng-show="networkSearchResults.length > 0" ng-repeat="network in networkSearchResults">
-        <tr>
+        <tbody ng-show="networkSearch.networkSearchResults.length > 0" ng-repeat="network in networkSearch.networkSearchResults">
+        <tr ng-click="networkSearch.setAndDisplayCurrentNetwork(network.id)" style="cursor:pointer;">
             <td>{{network.metadata["Source"]}}</td>
             <td>{{network.name}}</td>
             </td>
@@ -67,3 +62,12 @@
         </tbody>
     </table>
 </div>
+
+<script type="text/ng-template" id="searchContent.html">
+    <div class="modal-body text-center">
+        <img src="img/horizontal-loader.gif">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-default" ng-click="networkSearch.cancel()">Cancel</button>
+    </div>
+</script>
