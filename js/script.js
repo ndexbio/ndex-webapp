@@ -18,13 +18,13 @@ ndexApp.service('sharedProperties', function () {
             //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
             return this.currentUserId;
         },
-        getCurrentUserUsername: function () {
+        getCurrentUserAccountName: function () {
             //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
-            return this.username;
+            return this.accountName;
         },
-        setCurrentUser: function (value, username) {
+        setCurrentUser: function (value, accountName) {
             this.currentUserId = value;
-            this.username = username;
+            this.accountName = accountName;
         }
     }
 });
@@ -109,13 +109,13 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     $scope.$on('LOGGED_IN', function() {
         $scope.main.loggedIn = true;
-        $scope.main.username = sharedProperties.getCurrentUserUsername();
+        $scope.main.accountName = sharedProperties.getCurrentUserAccountName();
     });
 
     $scope.main.signout = function () {
         ndexService.signOut();
         $scope.main.loggedIn = false;
-        delete $scope.main.username;
+        delete $scope.main.accountName;
         $location.path("/signIn");
     };
 
@@ -124,14 +124,14 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         return sharedProperties.getCurrentNetworkId();
     };
     $scope.main.getCurrentUser = function() {
-        return sharedProperties.getCurrentUserId();
+        return sharedProperties.getCurrentUserAccountName();
     };
 
 
     var userData = ndexUtility.getUserCredentials();
     if(userData) {
         sharedProperties.setCurrentUser(userData.userId, userData.username);
-        $scope.main.username = userData.username;
+        $scope.main.accountName = userData.accountName;
         $scope.main.loggedIn = true;
     }
 

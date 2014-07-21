@@ -6,7 +6,7 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.user = {};
 
     //user
-    $scope.user.currentUserId = $routeParams.userId;
+    $scope.user.currentUserId = $routeParams.userId; //actually acount name
 
     $scope.user.setAndDisplayCurrentNetwork = function (networkId) {
         sharedProperties.setCurrentNetworkId(networkId);

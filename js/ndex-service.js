@@ -362,8 +362,8 @@
         });
         */
 
-        factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
-        //factory.NdexServerURI = "http://localhost:8080/ndexbio-rest";
+        //factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
+        factory.NdexServerURI = "http://localhost:8080/ndexbio-rest";
 
         /*---------------------------------------------------------------------*
          * GET request configuration
@@ -412,12 +412,12 @@
          * Users
          *---------------------------------------------------------------------*/
         factory.getSubmitUserCredentialsConfig = function (username, password){
-            var url = "/users/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password);
+            var url = "/user/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password);
             return this.getGetConfig(url);
         };
 
         factory.getUserQueryConfig = function(userId){
-            var url = "/users/" + userId;
+            var url = "/user/" + userId;
             return this.getGetConfig(url, null);
         };
         /*---------------------------------------------------------------------*
@@ -426,7 +426,7 @@
 
         factory.getNetworkConfig = function(networkId){
             // networks/{networkId}
-            var url = "/networks/" + networkId ;
+            var url = "/network/" + networkId ;
             return this.getGetConfig(url, null);
         };
 
@@ -438,7 +438,7 @@
         };
 
         factory.getNetworkSearchConfig = function(searchString){
-            var url = "/networks/search/" + "contains";
+            var url = "/network/search/" + "contains";
             var postData = {
                 searchString: searchString,
                 top: 100,

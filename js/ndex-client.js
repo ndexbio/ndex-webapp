@@ -1,3 +1,8 @@
+
+
+//Deprecated
+
+
 var NdexClient =
 {
     termNodeMaps: [],
