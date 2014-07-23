@@ -103,7 +103,7 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.main = {};
 
     $scope.main.url = $location; //expose the service to the scope for nav
-    $scope.main.isCollapsed = true;  //TODO find out what this is for
+    $scope.main.isCollapsed = true;  //angular-ui bootstrap collapse implementation
 
     $scope.main.loggedIn = false;
 
