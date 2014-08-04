@@ -19,24 +19,27 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
         size: ''
     });
 
-    ndexService.getUserQuery($scope.user.currentUserId).success(function(user) {
+    ndexService.getUser($scope.user.currentUserId)
+    .success(
+        function(user) {
             //console.log("Set displayedUser");
             $scope.user.displayedUser = user;
             cUser = user;
+            
+            $scope.user.networkSearchResults = null;
+            $scope.user.searchString = "";
+
+            ndexService.findNetworks($scope.user.searchString, $scope.user.displayedUser.accountName, 0, 50)
+            .success(
+                function(networks) {
+                    $scope.user.networkSearchResults = networks;
+                    console.log("Set networkSearchResults");
+                    //console.log("first network name = " + networks[0].name);
+                    //$scope.user.message = "first network name = " + networks[0].name;
+                    modalInstance.close();
+                });
+
         });
-
-    //hack to display networks for users
-    $scope.user.networkSearchResults = null;
-    $scope.user.searchString = "apoptosis";
-
-    ndexService.findNetworks($scope.user.searchString).success(function(networks) {
-        $scope.user.networkSearchResults = networks;
-        console.log("Set networkSearchResults");
-        //console.log("first network name = " + networks[0].name);
-        //$scope.user.message = "first network name = " + networks[0].name;
-        modalInstance.close();
-    });
-
 
     //------------------------------------------------------------------------------------//
 

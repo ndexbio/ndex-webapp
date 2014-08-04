@@ -5,7 +5,7 @@
  *               code will make use of the ndexService service to make high level
  *               calls to the rest server.
  *
- * Notes       : Code be reduced by setting $http headers
+ * Notes       : Will soon be investigating replacing code with angular-resource
  *
  *==============================================================================*/
 
@@ -28,11 +28,13 @@
         /*---------------------------------------------------------------------*
          * Users
          *---------------------------------------------------------------------*/
+        //
         //signIn
-        factory.signIn = function(username, password) {
+        //
+        factory.signIn = function(accountName, password) {
             ndexUtility.clearUserCredentials();
-            console.log("submitting user credentials for user: " + username);
-            var config = ndexConfigs.getSubmitUserCredentialsConfig(username, password);
+            console.log("submitting user credentials for user: " + accountName);
+            var config = ndexConfigs.getSubmitUserCredentialsConfig(accountName, password);
             return $http(config).success(function(userData){
                 ndexUtility.setUserCredentials(userData, password);
                 return {success: function(handler){
@@ -46,16 +48,20 @@
                 }
             });
         };
+
+        //
         //signOut
+        //
         factory.signOut = function() {
             ndexUtility.clearUserCredentials();
         };
 
+        //
         //getUserQuery
-        // - returns networks, groups, etc?
-        factory.getUserQuery = function(userId) {
+        //
+        factory.getUser = function(userId) {
             console.log("retrieving user with id " + userId);
-            var config = ndexConfigs.getUserQueryConfig(userId);
+            var config = ndexConfigs.getUserConfig(userId);
             return $http(config);
         };
 
@@ -64,9 +70,9 @@
          * Networks
          *---------------------------------------------------------------------*/
 
-        // ---
+        // 
         // getNetwork
-        // ---
+        // 
         factory.getNetwork = function(networkId) {
             console.log("retrieving network " + networkId);
 
@@ -97,9 +103,9 @@
             return request;
         };
 
-        // ---
+        // 
         // getNetworkByEdges
-        // ---
+        // 
         // Get a block of edges
         factory.getNetworkByEdges = function(networkId, skipBlocks, blockSize) {
             console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
@@ -109,7 +115,7 @@
 
             // Grab the config for this request. We modify the config to allow for $http request aborts.
             // This may become standard in the client.
-            var config = ndexConfigs.getNetworkQueryByEdgesConfig(networkId, skipBlocks, blockSize);
+            var config = ndexConfigs.getNetworkByEdgesConfig(networkId, skipBlocks, blockSize);
             config.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
@@ -158,11 +164,11 @@
             return promise;
         };
 
-        // ---
+        // 
         // findNetworks
-        // ---
+        // 
         // Simple network search
-        factory.findNetworks = function(searchString) {
+        factory.findNetworks = function(searchString, accountName, skipBlocks, blockSize) {
             console.log("searching for networks");
 
             // The $http timeout property takes a deferred value that can abort AJAX request
@@ -171,7 +177,7 @@
             // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
             // the first pass. We modify the config to allow for $http request aborts. This may become standard in
             // the client.
-            var config = ndexConfigs.getNetworkSearchConfig(searchString);
+            var config = ndexConfigs.getNetworkSearchConfig(searchString, accountName, skipBlocks, blockSize);
             config.timeout = deferredAbort.promise;
 
             // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -193,9 +199,9 @@
             return request;
         };
 
-        // ---
+        // 
         // queryNetwork
-        // ---
+        // 
         // search the network for a subnetwork via search terms and depth
         factory.queryNetwork = function(networkId, terms, searchDepth) {
             console.log("searching for subnetworks");
@@ -278,7 +284,7 @@
          *-----------------------------------------------------------------------*/
         factory.clearUserCredentials = function () {
             if (this.checkLocalStorage()){
-                delete localStorage.username;
+                delete localStorage.accountName;
                 delete localStorage.password;
                 delete localStorage.userId;
             }
@@ -293,9 +299,9 @@
             return true;
         };
         factory.setUserCredentials = function(userData, password){
-            localStorage.username = userData.username;
+            localStorage.accountName = userData.accountName;
             localStorage.password = password;
-            localStorage.userId = userData.id;
+            localStorage.userId = userData.externalId;
         };
 
         /*factory.getUserId = function(){
@@ -304,8 +310,8 @@
 
         factory.getUserCredentials = function() {
             if (factory.checkLocalStorage()) {
-                if (localStorage.username) {
-                    var userData = {username: localStorage.username,
+                if (localStorage.accountName) {
+                    var userData = {accountName: localStorage.accountName,
                         userId: localStorage.userId,
                         token: localStorage.password
                     };
@@ -354,14 +360,6 @@
     ndexServiceApp.factory('ndexConfigs', function() {
         var factory = {};
 
-        /*
-        // sets a common default header for $http requests
-        // TODO consider implementing once authorization is verified
-        ndexServiceApp.run(function($http) {
-            //$http.defaults.headers.common.Authorization = 'Basic ' + factory.getEncodedUser()
-        });
-        */
-
         //factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
         factory.NdexServerURI = "http://localhost:8080/ndexbio-rest";
 
@@ -402,8 +400,8 @@
          * encoded.
          *---------------------------------------------------------------------*/
         factory.getEncodedUser = function () {
-            if (localStorage.userId)
-                return btoa(localStorage.username + ":" + localStorage.password);
+            if (localStorage.accountName)
+                return btoa(localStorage.accountName + ":" + localStorage.password);
             else
                 return null;
         };
@@ -411,12 +409,12 @@
         /*---------------------------------------------------------------------*
          * Users
          *---------------------------------------------------------------------*/
-        factory.getSubmitUserCredentialsConfig = function (username, password){
-            var url = "/user/authenticate/" + encodeURIComponent(username) + "/" + encodeURIComponent(password);
+        factory.getSubmitUserCredentialsConfig = function (accountName, password){
+            var url = "/user/authenticate/" + encodeURIComponent(accountName) + "/" + encodeURIComponent(password);
             return this.getGetConfig(url);
         };
 
-        factory.getUserQueryConfig = function(userId){
+        factory.getUserConfig = function(userId){
             var url = "/user/" + userId;
             return this.getGetConfig(url, null);
         };
@@ -430,19 +428,18 @@
             return this.getGetConfig(url, null);
         };
 
-        factory.getNetworkQueryByEdgesConfig = function(networkId, skipBlocks, blockSize){
+        factory.getNetworkByEdgesConfig = function(networkId, skipBlocks, blockSize){
             // network/{networkId}/edge/{skip}/{top}
             // GET to NetworkAService
-            var url = "/network/" + networkId + "/edge/" + skipBlocks + "/" + blockSize;
+            var url = "/network/" + networkId + "/edge/asNetwork/" + skipBlocks + "/" + blockSize;
             return this.getGetConfig(url, null);
         };
 
-        factory.getNetworkSearchConfig = function(searchString){
-            var url = "/network/search/" + "contains";
+        factory.getNetworkSearchConfig = function(searchString, accountName, skipBlocks, blockSize){
+            var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
             var postData = {
                 searchString: searchString,
-                top: 100,
-                skip: 0
+                accountName: accountName
             };
             return this.getPostConfig(url, postData);
         };
@@ -451,13 +448,12 @@
             // POST to NetworkAService
             console.log("searchType = " + "NEIGHBORHOOD");
             console.log("searchDepth = " + searchDepth);
-            for (index in startingTerms){
+            /*for (index in startingTerms){
                 console.log("searchTerm " + index + " : " + startingTerms[index]);
-            }
-            var url = "/network/" + networkId + "/query/" + skipBlocks + "/" + blockSize;
+            }*/
+            var url = "/network/" + networkId + "/asNetwork/query/";
             var postData = {
-                startingTermStrings: startingTerms,
-                searchType: "NEIGHBORHOOD",
+                searchString: startingTerms,
                 searchDepth: searchDepth
             };
             return this.getPostConfig(url, postData);

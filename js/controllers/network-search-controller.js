@@ -38,7 +38,7 @@ ndexApp.controller('searchNetworksController',[ 'ndexService', 'sharedProperties
             request.abort();
         };
 
-        (request = ndexService.findNetworks($scope.networkSearch.searchString) )
+        (request = ndexService.findNetworks($scope.networkSearch.searchString, null, 0, 50) )
             .success(
                 function(networks) {
                     // Save the results
