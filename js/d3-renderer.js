@@ -443,7 +443,7 @@ function getNodeType(node, network){
 
     // Do we have a representedTerm?
     if (node.represents){
-        var representedTerm = network.terms[node.represents];
+        var representedTerm = network.baseTerms[node.represents];
         if (representedTerm){
             // Is it a functionTerm?
             if (representedTerm.termFunction){

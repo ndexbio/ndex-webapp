@@ -79,15 +79,15 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
                     // Save the results in proper locations.
                     csn = network;
                     $scope.networkQuery.currentSubnetwork = network;
-                    $scope.networkQuery.graphData = createD3Json(network);
+                    //$scope.networkQuery.graphData = createD3Json(network);
 
                     // Network rendering preparation.
                     var height = angular.element('#canvas')[0].clientHeight;
                     var width = angular.element('#canvas')[0].clientWidth;
-                    d3Setup(height, width, '#canvas');
-                    d3Init();
-                    addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
-                    d3Go();
+                    //3Setup(height, width, '#canvas');
+                    //d3Init();
+                    //addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
+                    //d3Go();
 
                     // close the modal
                     modalInstance.close();
@@ -177,14 +177,14 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
                     $scope.networkQuery.message = "showing network '" + network.name + "'";
 
                     // Prepartion for network rendering
-                    console.log('D3 Network rendering start...');
-                    $scope.networkQuery.graphData = createD3Json(network);
+                    //console.log('D3 Network rendering start...');
+                    //$scope.networkQuery.graphData = createD3Json(network);
                     var height = angular.element('#canvas')[0].clientHeight;
                     var width = angular.element('#canvas')[0].clientWidth;
-                    d3Setup(height, width, '#canvas');
-                    d3Init();
-                    addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
-                    d3Go();
+                    //d3Setup(height, width, '#canvas');
+                    //d3Init();
+                    //addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
+                    //d3Go();
 
                     modalInstance.close();
                 }

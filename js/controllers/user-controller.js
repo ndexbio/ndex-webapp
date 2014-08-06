@@ -2,7 +2,7 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     //                               refactoring
     //------------------------------------------------------------------------------------//
-
+    //console.log("got here");
     $scope.user = {};
 
     //user
@@ -18,7 +18,7 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
         template: '<div class="modal-body text-center"><img src="img/horizontal-loader.gif"></div>',
         size: ''
     });
-
+    //console.log("got here");
     ndexService.getUser($scope.user.currentUserId)
     .success(
         function(user) {

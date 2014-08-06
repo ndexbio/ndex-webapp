@@ -48,7 +48,7 @@
                     </tr>
                     </thead>
                     <tbody  ng-repeat="network in user.networkSearchResults">
-                    <tr ng-click="user.setAndDisplayCurrentNetwork(network.id)">
+                    <tr ng-click="user.setAndDisplayCurrentNetwork(network.externalId)">
                         <td>{{network.metadata["Source"]}}</td>
                         <td>{{network.name}}</td>
                         </td>

@@ -128,7 +128,7 @@
                 request.success(
                     function(network) {
                         ndexHelper.updateNodeLabels(network);
-                        ndexHelper.updateTermLabels(network);
+                        //ndexHelper.updateTermLabels(network);
                         ndexUtility.setNetwork(network); // consider removing, this is for future possibility of saving networks
                         handler(network);
                     }
@@ -327,7 +327,13 @@
         factory.addNetwork = function(network){
             factory.networks.push(network);
 
-            $.each(network.terms, function(termId, term){
+            $.each(network.baseTerms, function(termId, term){
+                term.network = network;
+            });
+            $.each(network.functionTerms, function(termId, term){
+                term.network = network;
+            });
+            $.each(network.reifiedEdgeTerms, function(termId, term){
                 term.network = network;
             });
             $.each(network.nodes, function(nodeId, node){
