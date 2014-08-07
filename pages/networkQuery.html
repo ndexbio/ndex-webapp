@@ -85,9 +85,9 @@
                                ng-click="toggleTermAliases"></i>
 
 
-                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.s]}}</strong>
-                            <em>{{networkQuery.currentSubnetwork.terms[edge.p].name}}</em>
-                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.o]}}</strong>
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.subjectId]}}</strong>
+                            <em>{{networkQuery.currentSubnetwork.terms[edge.predicateId].name}}</em>
+                            <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.objectId]}}</strong>
 
 
                             <!--<sup rel="tooltip">{{edgeFootnotes[edge]}}

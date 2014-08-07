@@ -127,9 +127,9 @@
             promise.success = function(handler) {
                 request.success(
                     function(network) {
+                        ndexUtility.setNetwork(network);
                         ndexHelper.updateNodeLabels(network);
                         //ndexHelper.updateTermLabels(network);
-                        ndexUtility.setNetwork(network); // consider removing, this is for future possibility of saving networks
                         handler(network);
                     }
                 );
@@ -227,9 +227,9 @@
             promise.success = function(handler) {
                 request.success(
                     function(network) {
+                        ndexUtility.setNetwork(network);
                         ndexHelper.updateNodeLabels(network);
                         ndexHelper.updateTermLabels(network);
-                        ndexUtility.setNetwork(network); // consider removing, this is for future possibility of saving networks
                         handler(network);
                     }
                 );
@@ -326,15 +326,19 @@
          *-----------------------------------------------------------------------*/
         factory.addNetwork = function(network){
             factory.networks.push(network);
+            network.terms = {};
 
             $.each(network.baseTerms, function(termId, term){
                 term.network = network;
+                network.terms[termId] = term;
             });
             $.each(network.functionTerms, function(termId, term){
                 term.network = network;
+                network.terms[termId] = term;
             });
             $.each(network.reifiedEdgeTerms, function(termId, term){
                 term.network = network;
+                network.terms[termId] = term;
             });
             $.each(network.nodes, function(nodeId, node){
                 node.network = network;
@@ -342,6 +346,8 @@
             $.each(network.edges, function(edgeId, edge){
                 edge.network = network;
             });
+            network.nodeCount = Object.keys(network.nodes).length;
+            network.edgeCount = Object.keys(network.edges).length;
         };
 
         factory.setNetwork = function(network){
@@ -579,7 +585,7 @@
                 return functionLabel + "(" + parameterList.join(", ") + ")";
             }
             else
-                return "Unknown";
+                return "Unknown Term Type";
         };
 
         factory.getTermNetwork = function(term) {

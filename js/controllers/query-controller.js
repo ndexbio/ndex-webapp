@@ -134,7 +134,8 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
             request2.abort();
         };
 
-        // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
+        // Note we save the 'promise' from the ndexService wrapped http request.
+        // We do not want to lose the original
         // reference and lose access to the .abort method.
         (request1 = ndexService.getNetwork($scope.networkQuery.currentNetworkId) )
             .success(
@@ -151,7 +152,8 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
                         $scope.networkQuery.errors.push({label: "Get Network Info Request: ", error: error});
                         modalInstance.close();
 
-                        // Let's remember this modal is closed to avoid closing it on an undefined object
+                        // Let's remember this modal is closed to avoid
+                        // closing it on an undefined object
                         // on the next async call.
                         modalInstance.closed = true;
                     } else {
@@ -185,8 +187,8 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
                     //d3Init();
                     //addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
                     //d3Go();
-
-                    modalInstance.close();
+                    if(!modalInstance.closed) modalInstance.close();
+                    //modalInstance.close();
                 }
             )
             .error(
