@@ -9,8 +9,8 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
     // We do this to avoid undefined errors
     if (!$scope.networkQuery.currentNetwork) $scope.networkQuery.currentNetwork = {};
 
-    // Here we create and initialize an object whom's properties we will modify in the DOM and use as parameters
-    // for API requests
+    // Here we create and initialize an object whose properties we
+    // will modify in the DOM and use as parameters for API requests
     $scope.networkQuery.searchDepth =
         {
             "name" : "1-step",
@@ -19,7 +19,7 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
             "id": "1"
         };
 
-    // All the possible paramertes our API request for subnetwork queries.
+    // All the possible parameters of our API request for subnetwork queries.
     $scope.networkQuery.searchDepths = [
         {
             "name" : "1-step",
@@ -42,7 +42,8 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
     ];
 
     // submitNetworkQuery
-    // We make the call to retrieve a subnetwork based on the selected parameters. On load, we display a modal.
+    // We make the call to retrieve a subnetwork based on the selected parameters.
+    // On load, we display a modal.
     // On errors, we hide all the content and display the message received from the server.
     // On success, we save the subnetwork retrieved and display all of its properties.
     $scope.networkQuery.submitNetworkQuery = function() {

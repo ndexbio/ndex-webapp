@@ -206,8 +206,9 @@
         factory.queryNetwork = function(networkId, terms, searchDepth) {
             console.log("searching for subnetworks");
 
+            // REMOVED: we pass a simple string.  It is processed on the server, not here on the client
             // Split the string into an array of strings for the $http request
-            terms = terms.split(/[ ,]+/);
+            // terms = terms.split(/[ ,]+/);
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
