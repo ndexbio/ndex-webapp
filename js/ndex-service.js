@@ -651,4 +651,28 @@
         return factory;
     });
 
+    /****************************************************************************
+     * NDEx Cytoscape Service
+     ****************************************************************************/
+    ndexServiceApp.factory('cytoscapeService', function() {
+        var factory = {};
+
+        /*-----------------------------------------------------------------------*
+         * initialize the cytoscape instance
+         *-----------------------------------------------------------------------*/
+        factory.initCyGraph = function(){
+
+        };
+
+        /*-----------------------------------------------------------------------*
+         * Set a network to be displayed in the viewer
+         *-----------------------------------------------------------------------*/
+        factory.setNetwork = function(network){
+
+        };
+
+
+        return factory;
+    });
+
 }) (); //end function closure

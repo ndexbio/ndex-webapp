@@ -1,4 +1,6 @@
-ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal', function(ndexService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
+ndexApp.controller('networkQueryController',
+    ['ndexService', 'cytoscapeService', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
+    function(ndexService, cytoscapeService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
 
     // To avoid issues with child scopes, we use an object bind controller data to the DOM
     $scope.networkQuery = {};
@@ -45,7 +47,7 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
     // We make the call to retrieve a subnetwork based on the selected parameters.
     // On load, we display a modal.
     // On errors, we hide all the content and display the message received from the server.
-    // On success, we save the subnetwork retrieved and display all of its properties.
+    // On success, we set the subnetwork retrieved and display all of its properties.
     $scope.networkQuery.submitNetworkQuery = function() {
 
         // An array to hold our errors. ng-show and ng-hide relay on the length to toggle content.
@@ -85,10 +87,8 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
                     // Network rendering preparation.
                     var height = angular.element('#canvas')[0].clientHeight;
                     var width = angular.element('#canvas')[0].clientWidth;
-                    //3Setup(height, width, '#canvas');
-                    //d3Init();
-                    //addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
-                    //d3Go();
+                    // Ask the cytoscapeService to process the network for rendering
+                    cytoscapeService.setNetwork(network);
 
                     // close the modal
                     modalInstance.close();
@@ -163,7 +163,7 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
                 }
             );
 
-        // hard-coded paramters for ndexService call, later on we may want to implement pagination
+        // hard-coded parameters for ndexService call, later on we may want to implement pagination
         var blockSize = 250;
         var skipBlocks = 0;
 
@@ -173,23 +173,20 @@ ndexApp.controller('networkQueryController', ['ndexService', 'ndexUtility', 'sha
             .success(
                 function(network){
 
-                    // Save the subnetwork
+                    // set the returned network as the current subnetwork
                     $scope.networkQuery.currentSubnetwork = network;
                     $scope.networkQuery.selectedEdges = network.edges;
+                    // csn is a debugging convenience variable
                     csn = network;
                     $scope.networkQuery.message = "showing network '" + network.name + "'";
 
-                    // Prepartion for network rendering
-                    //console.log('D3 Network rendering start...');
-                    //$scope.networkQuery.graphData = createD3Json(network);
+                    // Preparation for network rendering
                     var height = angular.element('#canvas')[0].clientHeight;
                     var width = angular.element('#canvas')[0].clientWidth;
-                    //d3Setup(height, width, '#canvas');
-                    //d3Init();
-                    //addNetworkToD3(ndexUtility.networks[0], {x: (width * .5), y: height/2});
-                    //d3Go();
+                    // Ask the cytoscapeService to process the network for rendering
+                    cytoscapeService.setNetwork(network);
                     if(!modalInstance.closed) modalInstance.close();
-                    //modalInstance.close();
+
                 }
             )
             .error(
