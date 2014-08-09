@@ -53,11 +53,12 @@ ndexApp.controller('searchNetworksController',[ 'ndexService', 'sharedProperties
                 function(error){
                     // Save the error.
                    if(error) {
+                    $scope.networkSearch.networkSearchResults == null;
                         $scope.networkSearch.errors.push({label: "Http request error", error: error});
 
                         // close the modal.
                         modalInstance.close();
-                    }
+                    
                 }
             );
     };

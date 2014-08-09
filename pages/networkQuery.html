@@ -88,7 +88,7 @@
                             <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.subjectId]}}</strong>
                             <em>{{networkQuery.currentSubnetwork.terms[edge.predicateId].name}}</em>
                             <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.objectId]}}</strong>
-
+                            <a ng-href="https://www.google.com" target="_blank"><sup>[911]</sup></a>
 
                             <!--<sup rel="tooltip">{{edgeFootnotes[edge]}}
                             </sup>-->
@@ -113,8 +113,11 @@
             <tab heading="Nodes">
                 <div id="divNodes">
                     <ul id="ulSubnetwork" ng-repeat="node in networkQuery.currentSubnetwork.nodes">
-                        <li>
+                        <li style="cursor:pointer" ng-click="node.showAliases = !node.showAliases">
                             <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[node.id]}}</strong>
+                        </li>
+                        <li style="background : white" ng-show="node.showAliases">
+                            test
                         </li>
                     </ul>
                 </div>

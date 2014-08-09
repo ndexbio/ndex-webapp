@@ -130,7 +130,7 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
 
     var userData = ndexUtility.getUserCredentials();
     if(userData) {
-        sharedProperties.setCurrentUser(userData.userId, userData.username);
+        sharedProperties.setCurrentUser(userData.userId, userData.accountName);
         $scope.main.accountName = userData.accountName;
         $scope.main.loggedIn = true;
     }
