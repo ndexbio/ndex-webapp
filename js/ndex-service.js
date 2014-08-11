@@ -545,7 +545,7 @@
          *-----------------------------------------------------------------------*/
         factory.getTermLabel = function (term, network) {
             //if (!network) network = factory.getTermNetwork(term);
-            if (term.termType === "Base") {
+            if (term.termType === "BaseTerm") {
                 if (term.namespace) {
                     var namespace = network.namespaces[term.namespace];
 
@@ -559,7 +559,7 @@
                 else
                     return term.name;
             }
-            else if (term.termType === "Function") {
+            else if (term.termType === "FunctionTerm") {
                 var functionTerm = network.terms[term.termFunction];
                 if (!functionTerm) {
                     console.log("no functionTerm by id " + term.termFunction);
