@@ -560,9 +560,9 @@
                     return term.name;
             }
             else if (term.termType === "FunctionTerm") {
-                var functionTerm = network.terms[term.termFunction];
+                var functionTerm = network.terms[term.functionTermId];
                 if (!functionTerm) {
-                    console.log("no functionTerm by id " + term.termFunction);
+                    console.log("no functionTerm by id " + term.functionTermId);
                     return;
                 }
 
