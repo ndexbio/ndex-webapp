@@ -5,6 +5,8 @@ ndexApp.controller('networkQueryController',
     // To avoid issues with child scopes, we use an object bind controller data to the DOM
     $scope.networkQuery = {};
 
+    cytoscapeService.initCyGraph();
+
     // Retrieve the network id from route params
     $scope.networkQuery.currentNetworkId = $routeParams.networkId;
 
@@ -85,8 +87,8 @@ ndexApp.controller('networkQueryController',
                     //$scope.networkQuery.graphData = createD3Json(network);
 
                     // Network rendering preparation.
-                    var height = angular.element('#canvas')[0].clientHeight;
-                    var width = angular.element('#canvas')[0].clientWidth;
+                    //var height = angular.element('#canvas')[0].clientHeight;
+                    //var width = angular.element('#canvas')[0].clientWidth;
                     // Ask the cytoscapeService to process the network for rendering
                     cytoscapeService.setNetwork(network);
 
@@ -167,7 +169,8 @@ ndexApp.controller('networkQueryController',
         var blockSize = 250;
         var skipBlocks = 0;
 
-        // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
+        // Note we save the 'promise' from the ndexService wrapped http request.
+        // We do not want to lose the original
         // reference and lose access to the .abort method.
         (request2 = ndexService.getNetworkByEdges($scope.networkQuery.currentNetworkId, skipBlocks, blockSize) )
             .success(
@@ -181,8 +184,8 @@ ndexApp.controller('networkQueryController',
                     $scope.networkQuery.message = "showing network '" + network.name + "'";
 
                     // Preparation for network rendering
-                    var height = angular.element('#canvas')[0].clientHeight;
-                    var width = angular.element('#canvas')[0].clientWidth;
+                    //var height = angular.element('#canvas')[0].clientHeight;
+                    //var width = angular.element('#canvas')[0].clientWidth;
                     // Ask the cytoscapeService to process the network for rendering
                     cytoscapeService.setNetwork(network);
                     if(!modalInstance.closed) modalInstance.close();

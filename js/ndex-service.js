@@ -11,7 +11,7 @@
 
 
 //angularjs suggested function closure
-(function() {
+(function () {
 
     var ndexServiceApp = angular.module('ndexServiceApp', []);
 
@@ -21,7 +21,7 @@
      * dependencies : $http and ndexConfigs
      * return       : promise with success and error methods
      ****************************************************************************/
-    ndexServiceApp.factory('ndexService',['ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q', function(ndexConfigs, ndexUtility, ndexHelper, $http, $q) {
+    ndexServiceApp.factory('ndexService', ['ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q', function (ndexConfigs, ndexUtility, ndexHelper, $http, $q) {
         // define and initialize factory object
         var factory = {};
 
@@ -31,35 +31,35 @@
         //
         //signIn
         //
-        factory.signIn = function(accountName, password) {
+        factory.signIn = function (accountName, password) {
             ndexUtility.clearUserCredentials();
             console.log("submitting user credentials for user: " + accountName);
             var config = ndexConfigs.getSubmitUserCredentialsConfig(accountName, password);
-            return $http(config).success(function(userData){
+            return $http(config).success(function (userData) {
                 ndexUtility.setUserCredentials(userData, password);
-                return {success: function(handler){
+                return {success: function (handler) {
                     handler(userData);
                 }
                 }
-            }).error(function(error){
-                return {error: function(handler){
-                    handler(error);
-                }
-                }
-            });
+            }).error(function (error) {
+                    return {error: function (handler) {
+                        handler(error);
+                    }
+                    }
+                });
         };
 
         //
         //signOut
         //
-        factory.signOut = function() {
+        factory.signOut = function () {
             ndexUtility.clearUserCredentials();
         };
 
         //
         //getUserQuery
         //
-        factory.getUser = function(userId) {
+        factory.getUser = function (userId) {
             console.log("retrieving user with id " + userId);
             var config = ndexConfigs.getUserConfig(userId);
             return $http(config);
@@ -73,7 +73,7 @@
         // 
         // getNetwork
         // 
-        factory.getNetwork = function(networkId) {
+        factory.getNetwork = function (networkId) {
             console.log("retrieving network " + networkId);
 
             // The $http timeout property takes a deferred value that can abort AJAX request
@@ -88,13 +88,13 @@
             var request = $http(config);
 
             // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-            request.abort = function(){
+            request.abort = function () {
                 deferredAbort.resolve();
             };
 
             // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
             request.finally(
-                function() {
+                function () {
                     request.abort = angular.noop; // angular.noop is an empty function
                     deferredAbort = request = null;
                 }
@@ -107,7 +107,7 @@
         // getNetworkByEdges
         // 
         // Get a block of edges
-        factory.getNetworkByEdges = function(networkId, skipBlocks, blockSize) {
+        factory.getNetworkByEdges = function (networkId, skipBlocks, blockSize) {
             console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
 
             // The $http timeout property takes a deferred value that can abort AJAX request
@@ -124,9 +124,9 @@
             var request = $http(config);
             var promise = {};
 
-            promise.success = function(handler) {
+            promise.success = function (handler) {
                 request.success(
-                    function(network) {
+                    function (network) {
                         ndexUtility.setNetwork(network);
                         ndexHelper.updateNodeLabels(network);
                         //ndexHelper.updateTermLabels(network);
@@ -136,10 +136,10 @@
                 return promise;
             };
 
-            promise.error = function(handler) {
+            promise.error = function (handler) {
                 request.then(
                     null,
-                    function(error) {
+                    function (error) {
                         handler(error);
                     }
                 );
@@ -147,14 +147,14 @@
             };
 
             // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-            promise.abort = function() {
+            promise.abort = function () {
                 deferredAbort.resolve();
             };
 
             // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-            promise.finally = function(){
+            promise.finally = function () {
                 request.finally(
-                    function() {
+                    function () {
                         promise.abort = angular.noop; // angular.noop is an empty function
                         deferredAbort = request = promise = null;
                     }
@@ -168,7 +168,7 @@
         // findNetworks
         // 
         // Simple network search
-        factory.findNetworks = function(searchString, accountName, skipBlocks, blockSize) {
+        factory.findNetworks = function (searchString, accountName, skipBlocks, blockSize) {
             console.log("searching for networks");
 
             // The $http timeout property takes a deferred value that can abort AJAX request
@@ -184,13 +184,13 @@
             var request = $http(config);
 
             // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-            request.abort = function(){
+            request.abort = function () {
                 deferredAbort.resolve();
             };
 
             // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
             request.finally(
-                function() {
+                function () {
                     request.abort = angular.noop; // angular.noop is an empty function
                     deferredAbort = request = null;
                 }
@@ -203,7 +203,7 @@
         // queryNetwork
         // 
         // search the network for a subnetwork via search terms and depth
-        factory.queryNetwork = function(networkId, terms, searchDepth) {
+        factory.queryNetwork = function (networkId, terms, searchDepth) {
             console.log("searching for subnetworks");
 
             // REMOVED: we pass a simple string.  It is processed on the server, not here on the client
@@ -225,9 +225,9 @@
             var request = $http(config);
             var promise = {};
 
-            promise.success = function(handler) {
+            promise.success = function (handler) {
                 request.success(
-                    function(network) {
+                    function (network) {
                         ndexUtility.setNetwork(network);
                         ndexHelper.updateNodeLabels(network);
                         ndexHelper.updateTermLabels(network);
@@ -237,10 +237,10 @@
                 return promise;
             };
 
-            promise.error = function(handler) {
+            promise.error = function (handler) {
                 request.then(
                     null,
-                    function(error) {
+                    function (error) {
                         handler(error);
                     }
                 );
@@ -248,14 +248,14 @@
             };
 
             // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-            promise.abort = function() {
+            promise.abort = function () {
                 deferredAbort.resolve();
             };
 
             // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-            promise.finally = function(){
+            promise.finally = function () {
                 request.finally(
-                    function() {
+                    function () {
                         promise.abort = angular.noop; // angular.noop is an empty function
                         deferredAbort = request = promise = null;
                     }
@@ -273,7 +273,7 @@
     /****************************************************************************
      * NDEx Utility Service
      ****************************************************************************/
-    ndexServiceApp.factory('ndexUtility', function() {
+    ndexServiceApp.factory('ndexUtility', function () {
 
         var factory = {};
 
@@ -284,7 +284,7 @@
          * user credentials and ID
          *-----------------------------------------------------------------------*/
         factory.clearUserCredentials = function () {
-            if (this.checkLocalStorage()){
+            if (this.checkLocalStorage()) {
                 delete localStorage.accountName;
                 delete localStorage.password;
                 delete localStorage.userId;
@@ -295,21 +295,21 @@
 
         };
 
-        factory.checkLocalStorage = function(){
-            if(!localStorage) return false;
+        factory.checkLocalStorage = function () {
+            if (!localStorage) return false;
             return true;
         };
-        factory.setUserCredentials = function(userData, password){
+        factory.setUserCredentials = function (userData, password) {
             localStorage.accountName = userData.accountName;
             localStorage.password = password;
             localStorage.userId = userData.externalId;
         };
 
         /*factory.getUserId = function(){
-            return localStorage.userId;
-        };*/
+         return localStorage.userId;
+         };*/
 
-        factory.getUserCredentials = function() {
+        factory.getUserCredentials = function () {
             if (factory.checkLocalStorage()) {
                 if (localStorage.accountName) {
                     var userData = {accountName: localStorage.accountName,
@@ -325,42 +325,42 @@
         /*-----------------------------------------------------------------------*
          * networks
          *-----------------------------------------------------------------------*/
-        factory.addNetwork = function(network){
+        factory.addNetwork = function (network) {
             factory.networks.push(network);
             network.terms = {};
 
-            $.each(network.baseTerms, function(termId, term){
+            $.each(network.baseTerms, function (termId, term) {
                 term.network = network;
                 network.terms[termId] = term;
             });
-            $.each(network.functionTerms, function(termId, term){
+            $.each(network.functionTerms, function (termId, term) {
                 term.network = network;
                 network.terms[termId] = term;
             });
-            $.each(network.reifiedEdgeTerms, function(termId, term){
+            $.each(network.reifiedEdgeTerms, function (termId, term) {
                 term.network = network;
                 network.terms[termId] = term;
             });
-            $.each(network.nodes, function(nodeId, node){
+            $.each(network.nodes, function (nodeId, node) {
                 node.network = network;
             });
-            $.each(network.edges, function(edgeId, edge){
+            $.each(network.edges, function (edgeId, edge) {
                 edge.network = network;
             });
             network.nodeCount = Object.keys(network.nodes).length;
             network.edgeCount = Object.keys(network.edges).length;
         };
 
-        factory.setNetwork = function(network){
+        factory.setNetwork = function (network) {
             factory.networks = [];
             factory.addNetwork(network);
         };
 
-        factory.getNetworkId = function(network){
+        factory.getNetworkId = function (network) {
             return factory.networks.indexOf(network);
         };
 
-        factory.removeNetwork = function(network){
+        factory.removeNetwork = function (network) {
             factory.networks.remove(factory.networks.indexOf(network));
         };
 
@@ -370,7 +370,7 @@
     /****************************************************************************
      * $http configuration service
      ****************************************************************************/
-    ndexServiceApp.factory('ndexConfigs', function() {
+    ndexServiceApp.factory('ndexConfigs', function () {
         var factory = {};
 
         //factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
@@ -379,16 +379,16 @@
         /*---------------------------------------------------------------------*
          * GET request configuration
          *---------------------------------------------------------------------*/
-        factory.getGetConfig = function(url, queryArgs){
-            var config ={
+        factory.getGetConfig = function (url, queryArgs) {
+            var config = {
                 method: 'GET',
                 url: factory.NdexServerURI + url,
                 headers: {
                     Authorization: "Basic " + factory.getEncodedUser()
                 }
             };
-            if (queryArgs){
-                config.data =  JSON.stringify(queryArgs);
+            if (queryArgs) {
+                config.data = JSON.stringify(queryArgs);
             }
             return config;
         };
@@ -396,8 +396,8 @@
         /*---------------------------------------------------------------------*
          * POST request configuration
          *---------------------------------------------------------------------*/
-        factory.getPostConfig = function(url, postData){
-            var config ={
+        factory.getPostConfig = function (url, postData) {
+            var config = {
                 method: 'POST',
                 url: factory.NdexServerURI + url,
                 data: JSON.stringify(postData),
@@ -422,12 +422,12 @@
         /*---------------------------------------------------------------------*
          * Users
          *---------------------------------------------------------------------*/
-        factory.getSubmitUserCredentialsConfig = function (accountName, password){
+        factory.getSubmitUserCredentialsConfig = function (accountName, password) {
             var url = "/user/authenticate/" + encodeURIComponent(accountName) + "/" + encodeURIComponent(password);
             return this.getGetConfig(url);
         };
 
-        factory.getUserConfig = function(userId){
+        factory.getUserConfig = function (userId) {
             var url = "/user/" + userId;
             return this.getGetConfig(url, null);
         };
@@ -435,20 +435,20 @@
          * Networks
          *---------------------------------------------------------------------*/
 
-        factory.getNetworkConfig = function(networkId){
+        factory.getNetworkConfig = function (networkId) {
             // networks/{networkId}
-            var url = "/network/" + networkId ;
+            var url = "/network/" + networkId;
             return this.getGetConfig(url, null);
         };
 
-        factory.getNetworkByEdgesConfig = function(networkId, skipBlocks, blockSize){
+        factory.getNetworkByEdgesConfig = function (networkId, skipBlocks, blockSize) {
             // network/{networkId}/edge/{skip}/{top}
             // GET to NetworkAService
             var url = "/network/" + networkId + "/edge/asNetwork/" + skipBlocks + "/" + blockSize;
             return this.getGetConfig(url, null);
         };
 
-        factory.getNetworkSearchConfig = function(searchString, accountName, skipBlocks, blockSize){
+        factory.getNetworkSearchConfig = function (searchString, accountName, skipBlocks, blockSize) {
             var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
             var postData = {
                 searchString: searchString,
@@ -457,13 +457,13 @@
             return this.getPostConfig(url, postData);
         };
 
-        factory.getNetworkQueryConfig = function(networkId, startingTerms, searchDepth, skipBlocks, blockSize){
+        factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, skipBlocks, blockSize) {
             // POST to NetworkAService
             console.log("searchType = " + "NEIGHBORHOOD");
             console.log("searchDepth = " + searchDepth);
             /*for (index in startingTerms){
-                console.log("searchTerm " + index + " : " + startingTerms[index]);
-            }*/
+             console.log("searchTerm " + index + " : " + startingTerms[index]);
+             }*/
             var url = "/network/" + networkId + "/asNetwork/query/";
             var postData = {
                 searchString: startingTerms,
@@ -479,39 +479,40 @@
     /****************************************************************************
      * NDEx Helper Service
      ****************************************************************************/
-    ndexServiceApp.factory('ndexHelper', function() {
+    ndexServiceApp.factory('ndexHelper', function () {
         var factory = {};
 
         /*-----------------------------------------------------------------------*
          * create a nice label for a node
          *-----------------------------------------------------------------------*/
-        factory.updateNodeLabels = function(network){
+        factory.updateNodeLabels = function (network) {
             network.nodeLabelMap = [];
-            $.each(network.nodes, function (id, node){
-                network.nodeLabelMap[id] = factory.getNodeLabel(node, network) ;
+            $.each(network.nodes, function (id, node) {
+                network.nodeLabelMap[id] = factory.getNodeLabel(node, network);
             });
         };
 
-        factory.getNodeLabel = function(node, network) {
+        factory.getNodeLabel = function (node, network) {
             //if (!network) network = factory.getNodeNetwork(node);
-            if ("name" in node && node.name && node.name != ""){
+            if ("name" in node && node.name && node.name != "") {
                 //console.log(node.name);
-                return node.name;}
+                return node.name;
+            }
             else if ("represents" in node && node.represents && network.terms[node.represents])
                 return factory.getTermLabel(network.terms[node.represents], network);
             else
                 return "unknown"
         };
 
-        factory.getNodeNetwork = function(node) {
+        factory.getNodeNetwork = function (node) {
             //TODO
             return {};
         };
 
-        factory.updateTermLabels = function(network) {
+        factory.updateTermLabels = function (network) {
             network.termLabelMap = [];
             var count = 0;
-            $.each(network.terms, function (id, term){
+            $.each(network.terms, function (id, term) {
                 if (term.termType === "Base") {
                     network.termLabelMap[count] = factory.getTermBase(term, network);
                     count++;
@@ -519,7 +520,7 @@
             });
         };
 
-        factory.getTermBase = function(term, network) {
+        factory.getTermBase = function (term, network) {
             if (term.namespace) {
                 var namespace = network.namespaces[term.namespace];
 
@@ -542,7 +543,7 @@
          * Function Terms or Base Terms, and as such must be traversed until a Base
          * Term is reached.
          *-----------------------------------------------------------------------*/
-        factory.getTermLabel = function(term, network) {
+        factory.getTermLabel = function (term, network) {
             //if (!network) network = factory.getTermNetwork(term);
             if (term.termType === "Base") {
                 if (term.namespace) {
@@ -589,7 +590,7 @@
                 return "Unknown Term Type";
         };
 
-        factory.getTermNetwork = function(term) {
+        factory.getTermNetwork = function (term) {
             //TODO
             return {};
         }
@@ -598,12 +599,10 @@
         /*-----------------------------------------------------------------------*
          * Returns the keys of a dictionary as a sorted array.
          *-----------------------------------------------------------------------*/
-        factory.getDictionaryKeysSorted = function(dictionary)
-        {
+        factory.getDictionaryKeysSorted = function (dictionary) {
             var keys = [];
-            for(var key in dictionary)
-            {
-                if(dictionary.hasOwnProperty(key))
+            for (var key in dictionary) {
+                if (dictionary.hasOwnProperty(key))
                     keys.push(key);
             }
 
@@ -613,7 +612,7 @@
         /*-----------------------------------------------------------------------*
          * Looks-up abbreviations for term functions.
          *-----------------------------------------------------------------------*/
-        factory.lookupFunctionAbbreviation = function(functionLabel) {
+        factory.lookupFunctionAbbreviation = function (functionLabel) {
             var fl = functionLabel.toLowerCase();
             if (fl.match(/^bel:/)) fl = fl.replace(/^bel:/, '');
             switch (fl) {
@@ -654,25 +653,141 @@
     /****************************************************************************
      * NDEx Cytoscape Service
      ****************************************************************************/
-    ndexServiceApp.factory('cytoscapeService', function() {
+//     ndexServiceApp.factory('ndexService', ['ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q', function (ndexConfigs, ndexUtility, ndexHelper, $http, $q) {
+
+    ndexServiceApp.factory('cytoscapeService',  ['ndexService', 'ndexHelper', '$q', function (ndexService, ndexHelper, $q) {
         var factory = {};
+        var cy;
 
         /*-----------------------------------------------------------------------*
          * initialize the cytoscape instance
          *-----------------------------------------------------------------------*/
-        factory.initCyGraph = function(){
+        factory.initCyGraph = function () {
+            var deferred = $q.defer();
 
+            // elements
+            var eles = [];
+
+            $(function () { // on dom ready
+
+                cy = cytoscape({
+                    container: $('#canvas')[0],
+
+                    style: cytoscape.stylesheet()
+                        .selector('node')
+                        .css({
+                            'content': 'data(name)',
+                            'height': 50,
+                            'width': 50,
+                            'text-valign': 'center',
+                            'background-color': 'blue',
+                            'text-outline-width': 2,
+                            'text-outline-color': 'blue',
+                            'color' : 'white'
+                        })
+                        .selector('edge')
+                        .css({
+                            'target-arrow-shape': 'triangle'
+                        })
+                        .selector(':selected')
+                        .css({
+                            'background-color': 'white',
+                            'line-color': 'black',
+                            'target-arrow-color': 'black',
+                            'source-arrow-color': 'black',
+                            'text-outline-color': 'black'
+                        }),
+
+                    layout: {
+                        //name : 'circle',
+                        //padding: 10
+
+                        name: 'arbor',
+                        liveUpdate: true, // whether to show the layout as it's running
+                        ready: undefined, // callback on layoutready
+                        stop: undefined, // callback on layoutstop
+                        maxSimulationTime: 4000, // max length in ms to run the layout
+                        fit: true, // reset viewport to fit default simulationBounds
+                        padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
+                        simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by default
+                        ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
+
+                        // forces used by arbor (use arbor default on undefined)
+                        repulsion: undefined,
+                        stiffness: undefined,
+                        friction: undefined,
+                        gravity: true,
+                        fps: undefined,
+                        precision: undefined,
+
+                        // static numbers or functions that dynamically return what these
+                        // values should be for each element
+                        nodeMass: undefined,
+                        edgeLength: undefined,
+
+                        stepSize: 1, // size of timestep in simulation
+
+                        // function that returns true if the system is stable to indicate
+                        // that the layout can be stopped
+                        stableEnergy: function (energy) {
+                            var e = energy;
+                            return (e.max <= 0.5) || (e.mean <= 0.3);
+                        }
+
+                        //name: 'cose',
+                        //padding: 10
+                    },
+
+                    elements: eles,
+
+                    ready: function () {
+                        deferred.resolve(this);
+
+                        // add listener behavior later...
+                        //cy.on('cxtdrag', 'node', function(e){
+                        //    var node = this;
+                        //    var dy = Math.abs( e.cyPosition.x - node.position().x );
+                        //    var weight = Math.round( dy*2 );
+                        //
+                        //    node.data('weight', weight);
+                        //
+                        //    fire('onWeightChange', [ node.id(), node.data('weight') ]);
+                        //});
+
+                    }
+                });
+
+            }); // on dom ready
+
+            return deferred.promise;
         };
 
         /*-----------------------------------------------------------------------*
          * Set a network to be displayed in the viewer
          *-----------------------------------------------------------------------*/
-        factory.setNetwork = function(network){
+        factory.setNetwork = function (network) {
+            // build the new elements structure
+            var elements = {nodes: [], edges: []};
+
+            $.each(network.nodes, function (index, node) {
+                var label = ndexHelper.getNodeLabel(node, network);
+                var cyNode = {data: {id: "n" + index, name: label}};
+                elements.nodes.push(cyNode);
+
+            });
+
+            $.each(network.edges, function (index, edge) {
+                var cyEdge = {data: {source: "n" + edge.subjectId, target: "n" + edge.objectId}};
+                elements.edges.push(cyEdge);
+            });
+
+            // set the cytoscsape instance elements
+            cy.load(elements);
 
         };
 
 
         return factory;
-    });
+    }]);
 
-}) (); //end function closure
+})(); //end function closure

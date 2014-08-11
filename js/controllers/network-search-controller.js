@@ -1,4 +1,4 @@
-ndexApp.controller('searchNetworksController',[ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', function (ndexService, sharedProperties, $scope, $location, $modal) {
+ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', function (ndexService, sharedProperties, $scope, $location, $modal) {
 
     $scope.networkSearch = {};
     /* debugging...
@@ -33,34 +33,38 @@ ndexApp.controller('searchNetworksController',[ 'ndexService', 'sharedProperties
 
         // cancel
         // Close the modal and abort the AJAX request.
-        $scope.networkSearch.cancel = function() {
+        $scope.networkSearch.cancel = function () {
             modalInstance.close();
             request.abort();
         };
 
         (request = ndexService.findNetworks($scope.networkSearch.searchString, null, 0, 50) )
             .success(
-                function(networks) {
-                    // Save the results
-                    $scope.networkSearch.networkSearchResults = networks;
-                    console.log("Set networkSearchResults");
-                    //console.log("first network name = " + networks[0].name);
-                    //$scope.networkSearch.message = "first network name = " + networks[0].name;
-                    modalInstance.close();
-                }
-            )
+            function (networks) {
+                // Save the results
+                $scope.networkSearch.networkSearchResults = networks;
+                console.log("Set networkSearchResults");
+                //console.log("first network name = " + networks[0].name);
+                //$scope.networkSearch.message = "first network name = " + networks[0].name;
+                modalInstance.close();
+            }
+        )
             .error(
-                function(error){
-                    // Save the error.
-                   if(error) {
+            function (error) {
+                // Save the error.
+                if (error) {
                     $scope.networkSearch.networkSearchResults == null;
-                        $scope.networkSearch.errors.push({label: "Http request error", error: error});
+                    $scope.networkSearch.errors.push({label: "Http request error", error: error});
 
-                        // close the modal.
-                        modalInstance.close();
-                    
+                    // close the modal.
+                    modalInstance.close();
+
                 }
-            );
+            }
+        )
+
     };
-}]);
+}
+])
+;
 
