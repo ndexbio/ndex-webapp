@@ -64,7 +64,7 @@
         <ul class="nav navbar-nav navbar-right">
             <li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}"><a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a></li>
             <li ng-class="{active:main.url.url() == '/searchNetworks'}"><a ng-href="#searchNetworks">Search</a></li>
-            <li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/networkQuery') != -1}"><a ng-href="{{'#networkQuery/' + main.getCurrentNetwork()}}">Current Network</a></li>
+            <li ng-show="main.getCurrentNetwork() != null" ng-class="{active:main.url.url().search('/networkQuery') != -1}"><a ng-href="{{'#networkQuery/' + main.getCurrentNetwork()}}">Current Network</a></li>
 
             <!-- Show sign in if no user, sign out otherwise -->
             <li ng-show="!main.loggedIn" ng-class="{active:main.url.url() == '/signIn'}">

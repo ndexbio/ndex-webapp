@@ -6,12 +6,16 @@ var cn, csn;
 var cUser;
 
 ndexApp.service('sharedProperties', function () {
+    // this service is going to act as a general global variable throughout the application
+    // should consider implementing some degree of relationship with localStorage to guard against
+    // refreshes. In fact, we might just use cookies or something else because we may not want this to be permanent
     return {
         getCurrentNetworkId: function () {
-            if (!this.currentNetworkId) this.currentNetworkId = "C25R1174";   // hardwired for testing
+            //if (!this.currentNetworkId) this.currentNetworkId = "C25R1174";   // hardwired for testing
             return this.currentNetworkId;
         },
         setCurrentNetworkId: function (value) {
+            //should save in local storage
             this.currentNetworkId = value;
         },
         getCurrentUserId: function () {

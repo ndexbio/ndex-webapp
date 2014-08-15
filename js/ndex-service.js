@@ -168,7 +168,7 @@
         // findNetworks
         // 
         // Simple network search
-        factory.findNetworks = function (searchString, accountName, skipBlocks, blockSize) {
+        factory.findNetworks = function (searchString, accountName, permission, skipBlocks, blockSize) {
             console.log("searching for networks");
 
             // The $http timeout property takes a deferred value that can abort AJAX request
@@ -177,7 +177,7 @@
             // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
             // the first pass. We modify the config to allow for $http request aborts. This may become standard in
             // the client.
-            var config = ndexConfigs.getNetworkSearchConfig(searchString, accountName, skipBlocks, blockSize);
+            var config = ndexConfigs.getNetworkSearchConfig(searchString, accountName, permission, skipBlocks, blockSize);
             config.timeout = deferredAbort.promise;
 
             // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -448,12 +448,14 @@
             return this.getGetConfig(url, null);
         };
 
-        factory.getNetworkSearchConfig = function (searchString, accountName, skipBlocks, blockSize) {
+        factory.getNetworkSearchConfig = function (searchString, accountName, permission, skipBlocks, blockSize) {
             var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
             var postData = {
                 searchString: searchString,
                 accountName: accountName
             };
+
+            if(permission) postData.permission = permission;
             return this.getPostConfig(url, postData);
         };
 

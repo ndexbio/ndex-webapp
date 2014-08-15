@@ -29,7 +29,7 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
             $scope.user.networkSearchResults = null;
             $scope.user.searchString = "";
 
-            ndexService.findNetworks($scope.user.searchString, $scope.user.displayedUser.accountName, 0, 50)
+            ndexService.findNetworks($scope.user.searchString, $scope.user.displayedUser.accountName, 'ADMIN', 0, 50)
             .success(
                 function(networks) {
                     $scope.user.networkSearchResults = networks;
