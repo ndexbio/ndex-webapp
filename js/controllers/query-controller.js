@@ -166,7 +166,7 @@ ndexApp.controller('networkQueryController',
             );
 
         // hard-coded parameters for ndexService call, later on we may want to implement pagination
-        var blockSize = 250;
+        var blockSize = 50;
         var skipBlocks = 0;
 
         // Note we save the 'promise' from the ndexService wrapped http request.

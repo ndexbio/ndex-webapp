@@ -679,13 +679,14 @@
                         .selector('node')
                         .css({
                             'content': 'data(name)',
-                            'height': 50,
-                            'width': 50,
+                            'height': 10,
+                            'width': 10,
                             'text-valign': 'center',
                             'background-color': 'blue',
-                            'text-outline-width': 2,
-                            'text-outline-color': 'blue',
-                            'color' : 'white'
+                            'font-size'  : 8,
+                            //'text-outline-width': 2,
+                            //'text-outline-color': 'blue',
+                            'color' : 'black'
                         })
                         .selector('edge')
                         .css({
