@@ -1,6 +1,6 @@
 //function () {
 // create the module and name it ndexApp
-var ndexApp = angular.module('ndexApp', ['ngRoute', 'ndexServiceApp', 'ui.bootstrap']);
+var ndexApp = angular.module('ndexApp', ['ngRoute', 'ngResource', 'ndexServiceApp', 'ui.bootstrap']);
 var net1, net2;
 var cn, csn;
 var cUser;
@@ -64,28 +64,16 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'searchNetworksController'
         })
 
-        // route for the cjs page
-        .when('/cjs', {
-            templateUrl: 'pages/cjs.html',
-            controller: 'cjsController'
-        })
-
-        // route for the triptych page
-        .when('/triptych', {
-            templateUrl: 'pages/triptych.html',
-            controller: 'triptychController'
-        })
-
-        // route for the compare page
-        .when('/compare', {
-            templateUrl: 'pages/compare.html',
-            controller: 'compareController'
-        })
-
         // route for the user page
         .when('/user/:userId', {
             templateUrl: 'pages/user.html',
             controller: 'userController'
+        })
+
+        // route for the group page
+        .when('/group/:groupId', {
+            templateUrl: 'pages/group.html',
+            controller: 'groupController'
         })
 
         // route for the networkQuery page

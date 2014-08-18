@@ -1,4 +1,6 @@
-ndexApp.controller('signInController',['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', function (ndexService, ndexUtility, sharedProperties, $scope, $location) {
+ndexApp.controller('signInController',
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location) {
 
     $scope.signIn = {};
 

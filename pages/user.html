@@ -25,6 +25,30 @@
     </div>
 </div>
 
+
+
+
+<div >
+
+
+    <!-- Single button -->
+    <div class="btn-group" dropdown is-open="status.isopen">
+        <button type="button" class="btn btn-primary dropdown-toggle">
+            Actions <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a ng-click="ndexNavigation.openCreateGroupModal()">Create Group</a></li>
+            <li><a href="#">Action 2</a></li>
+            <li><a href="#">Action 3</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Action 4</a></li>
+        </ul>
+    </div>
+
+</div>
+
+
+
 <!-- tabs -->
 <div id="divUserTabs" class="row" ng-show="user.displayedUser">
 
@@ -64,8 +88,9 @@
             <div id="divGroups">
                 <table>
                     <tbody ng-repeat="(index, group) in user.displayedUser.groups">
-                    <tr ng-click="user.setAndDisplayCurrentGroup(group.resourceId)">
+                    <tr ng-click="user.setAndDisplayCurrentGroup(group.resourceName)">
                         <td>{{group.resourceName}}</td>
+                        <td ng-show="group.organizationName">{{group.organizationName}}</td>
                     </tr>
                     </tbody>
                 </table>

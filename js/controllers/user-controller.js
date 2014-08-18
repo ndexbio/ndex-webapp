@@ -1,4 +1,6 @@
-ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal', function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
+ndexApp.controller('userController',
+    ['ndexService', 'ndexNavigation', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
+        function (ndexService, ndexNavigation, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
     //                               refactoring
     //------------------------------------------------------------------------------------//
@@ -6,12 +8,7 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.user = {};
 
     //user
-    $scope.user.currentUserId = $routeParams.userId; //actually acount name
-
-    $scope.user.setAndDisplayCurrentNetwork = function (networkId) {
-        sharedProperties.setCurrentNetworkId(networkId);
-        $location.path("/networkQuery/" + networkId);
-    };
+    $scope.user.currentUserId = $routeParams.userId; //actually account name right now - should change to UUID
 
     //initializations
     var modalInstance = $modal.open({
@@ -40,6 +37,8 @@ ndexApp.controller('userController', ['ndexService', 'ndexUtility', 'sharedPrope
                 });
 
         });
+
+    ndexNavigation.openCreateGroupModal();
 
     //------------------------------------------------------------------------------------//
 

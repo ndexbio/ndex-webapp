@@ -1,0 +1,70 @@
+<div id="divGroup" class="row" >
+
+    <div class="col-md-2">
+        <img id="imgProfile" ng-show="group.displayedGroup.accountName" ng-src="http://i.imgur.com/09oVvZg.jpg"/>
+    </div>
+    <div class="col-md-10">
+        <h3 >
+            {{group.displayedGroup.organizationName}}
+        </h3>
+        <div>
+            <a href="{{group.displayedGroup.website}}">{{group.displayedGroup.website}}</a>
+        </div>
+
+        <div>
+            {{group.displayedGroup.description}}
+        </div>
+    </div>
+</div>
+
+<!-- tabs -->
+<div id="divUserTabs" class="row" ng-show="group.displayedGroup">
+
+    <tabset>
+        <tab heading="Networks">
+            <div id="divNetworks">
+                <table class="table table-hover" ng-show="group.networkSearchResults.length > 0">
+                    <!--
+                    <tbody ng-repeat="(index, network) in displayedUser.networks">
+                    <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
+                        <td>{{network.resourceName}}</td>
+                    </tr>
+                    </tbody>
+                    -->
+                    <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Title</th>
+                        <th style="width: 10%;">Nodes</th>
+                        <th style="width: 10%;">Edges</th>
+                    </tr>
+                    </thead>
+                    <tbody  ng-repeat="network in user.networkSearchResults">
+                    <tr ng-click="user.setAndDisplayCurrentNetwork(network.externalId)">
+                        <td>{{network.metadata["Source"]}}</td>
+                        <td>{{network.name}}</td>
+                        </td>
+                        <td class="AlignRight">{{network.nodeCount}}</td>
+                        <td class="AlignRight">{{network.edgeCount}}</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </tab>
+        <tab heading="Users">
+            <div id="divUsers">
+                <table>
+                    <tbody ng-repeat="(index, user) in group.displayedGroup.users">
+                    <tr ng-click="group.setAndDisplayCurrentUser(user.resourceId)">
+                        <td>{{user.resourceName}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </tab>
+
+    </tabset>
+
+</div>
+
