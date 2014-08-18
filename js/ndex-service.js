@@ -74,25 +74,30 @@
                  * Groups
                  *---------------------------------------------------------------------*/
 
-                var Group = $resource(ndexServerURI + '/group/:groupUUID',
+                var GroupResource = $resource(ndexServerURI + '/group/:groupUUID',
                     {}
                 );
 
                 factory.getGroup = function (groupUUID) {
                     console.log("retrieving group with UUID " + groupUUID);
-                    return Group.$get(groupUUID);
+                    return GroupResource.$get(groupUUID);
                 };
 
-                factory.createGroup = function(accountName, organizationName){
+                factory.createGroup = function(group, successHandler, errorHandler){
+                    // be sure accountType is set
+                    group.accountType = "Group";
+                    // ensure authorization header is set.
+                    // May become superfluous if we update headers on sign-in, sign-out, initialization
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    console.log("creating group with accountName = " + accountName);
-                    var group = new Group({
-                        accountName: accountName,
-                        organizationName: organizationName,
-                        accountType: "Group"
+
+                    console.log("creating group with accountName = " + group.accountName);
+
+                    var groupResource = new GroupResource(group);
+                    groupResource.$save(
+                        function(postResponse, postResponseHeaders){
+                        handler(postResponse, postResponseHeaders);
                     });
-                    return group.$save();
-                }
+                };
 
 
                 /*---------------------------------------------------------------------*
