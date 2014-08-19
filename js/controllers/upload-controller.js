@@ -7,17 +7,18 @@ ndexApp.controller('uploadController',
             });
 
             // FILTERS
-
+            // item is {File|FileLikeObject}
             uploader.filters.push({
                 name: 'customFilter',
-                fn: function(item /*{File|FileLikeObject}*/, options) {
+                fn: function(item , options) {
                     return this.queue.length < 10;
                 }
             });
 
             // CALLBACKS
 
-            uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+            // /*{File|FileLikeObject}*/
+            uploader.onWhenAddingFileFailed = function(item, filter, options) {
                 console.info('onWhenAddingFileFailed', item, filter, options);
             };
             uploader.onAfterAddingFile = function(fileItem) {

@@ -369,6 +369,43 @@
                     })
                 };
 
+                factory.openCreateRequestModal = function(){
+                    console.log("attempting to open createRequestModal");
+                    $modal.open({
+                        templateUrl: 'pages/createRequestModal.html',
+                        controller: 'requestController'
+                    })
+                };
+
+                factory.openRequestResponseModal = function(){
+                    console.log("attempting to open requestResponseModal");
+                    $modal.open({
+                        templateUrl: 'pages/requestResponseModal.html',
+                        controller: 'requestController'
+                    })
+                };
+
+                factory.openConfirmationModal = function(message, confirmHandler){
+                    console.log("attempting to open confirmationModal");
+                    var ConfirmCtrl = function($scope, $modalInstance) {
+                        $scope.input = {};
+                        $scope.message = message;
+                        $scope.confirm = function(){
+                            $modalInstance.dismiss();
+                            confirmHandler();
+                        }
+
+                        $scope.cancel = function(){
+                            $modalInstance.dismiss();
+                        };
+                    };
+
+                    $modal.open({
+                        templateUrl: 'pages/confirmationModal.html',
+                        controller: ConfirmCtrl
+                    })
+                };
+
                 // return factory object
                 return factory;
             }]);

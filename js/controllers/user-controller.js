@@ -2,24 +2,24 @@ ndexApp.controller('userController',
     ['ndexService', 'ndexNavigation', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
         function (ndexService, ndexNavigation, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
-    //                               refactoring
-    //------------------------------------------------------------------------------------//
-    //console.log("got here");
     $scope.user = {};
 
     //user
     $scope.user.currentUserId = $routeParams.userId; //actually account name right now - should change to UUID
 
-    //initializations
-    var modalInstance = $modal.open({
-        template: '<div class="modal-body text-center"><img src="img/horizontal-loader.gif"></div>',
-        size: ''
-    });
-    //console.log("got here");
+    $scope.openCreateGroupModal = ndexNavigation.openCreateGroupModal;
+    $scope.openRequestResponseModal = ndexNavigation.openRequestResponseModal;
+    $scope.confirmTest = function(){
+        ndexNavigation.openConfirmationModal("test message", function(){
+            console.log("test modal confirmed");
+        })
+    };
+
+
     ndexService.getUser($scope.user.currentUserId)
     .success(
         function(user) {
-            //console.log("Set displayedUser");
+            //console.log("Setting displayedUser");
             $scope.user.displayedUser = user;
             cUser = user;
             
@@ -30,15 +30,10 @@ ndexApp.controller('userController',
             .success(
                 function(networks) {
                     $scope.user.networkSearchResults = networks;
-                    console.log("Set networkSearchResults");
-                    //console.log("first network name = " + networks[0].name);
-                    //$scope.user.message = "first network name = " + networks[0].name;
-                    modalInstance.close();
+                    //console.log("Setting networkSearchResults");
                 });
 
         });
-
-    ndexNavigation.openCreateGroupModal();
 
     //------------------------------------------------------------------------------------//
 

@@ -190,7 +190,7 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     }
 
 }]);
-//}) ();
+
 
 
 

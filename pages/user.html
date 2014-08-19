@@ -11,6 +11,22 @@
             {{user.displayedUser.firstName}} {{user.displayedUser.lastName}}
         </h3>
 
+        <div class="pull-right pull-top">
+            <div class="btn-group" dropdown is-open="status.isopen">
+                <button type="button" class="btn btn-primary dropdown-toggle">
+                    Actions <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a ng-click="openCreateGroupModal()">Create Group</a></li>
+                    <li><a ng-click="confirmTest()">Test Confirm</a></li>
+                    <li><a href="#">Action 3</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Action 4</a></li>
+                </ul>
+            </div>
+
+        </div>
+
         <div>
             {{user.displayedUser.emailAddress}}
         </div>
@@ -28,24 +44,7 @@
 
 
 
-<div >
 
-
-    <!-- Single button -->
-    <div class="btn-group" dropdown is-open="status.isopen">
-        <button type="button" class="btn btn-primary dropdown-toggle">
-            Actions <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-            <li><a ng-click="ndexNavigation.openCreateGroupModal()">Create Group</a></li>
-            <li><a href="#">Action 2</a></li>
-            <li><a href="#">Action 3</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Action 4</a></li>
-        </ul>
-    </div>
-
-</div>
 
 
 
