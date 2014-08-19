@@ -3,7 +3,7 @@ ndexApp.controller('uploadController',
         function(FileUploader, ndexService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
 
             var uploader = $scope.uploader = new FileUploader({
-                url: ndexService.getUploadURL()
+                url: ndexService.getNetworkUploadURI()
             });
 
             // FILTERS

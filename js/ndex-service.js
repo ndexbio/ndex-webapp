@@ -30,6 +30,10 @@
                 // Temporary hard code, will be replaced with config file value (local host can still be default)
                 var ndexServerURI = "http://localhost:8080/ndexbio-rest";
 
+                factory.getNetworkUploadURI = function(){
+                    return ndexServerURI + "/network/upload";
+                }
+
                 /*---------------------------------------------------------------------*
                  * Users
                  *---------------------------------------------------------------------*/
