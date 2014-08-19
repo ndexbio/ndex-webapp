@@ -24,7 +24,7 @@ ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedPropertie
         var request = null;
 
         // AngularUi modal service use. queryContent.html is reused across this controller. It is located in our
-        // networkQuery.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
+        // network.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
         var modalInstance = $modal.open({
             templateUrl: 'searchContent.html',
             scope: $scope,

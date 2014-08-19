@@ -3,6 +3,7 @@ ndexApp.controller('createGroupController',
         function (ndexService, ndexNavigation, $scope, $modalInstance) {
 
             $scope.group = {};
+            $scope.message = null;
 
             $scope.cancel = function(){
                 $modalInstance.dismiss();
@@ -11,15 +12,15 @@ ndexApp.controller('createGroupController',
             $scope.create = function () {
                 console.log("Attempting to call ndexService.createGroup ")
                 ndexService.createGroup($scope.group,
-                    // Handler
-                    (function (response, headers) {
-                        if (headers.)
+                    // Success Handler
+                    (function (groupData) {
                         $modalInstance.dismiss();
-                        ndexNavigation.setAndDisplayCurrentGroup(groupData.UUID);
-                    })
-                    .error(function (error) {
+                        ndexNavigation.displayCurrentGroup(groupData.UUID);
+                    }),
+                    // Error handler
+                    (function (error) {
                         $scope.message = error;
-                    });
+                    }));
             };
 
         }]);

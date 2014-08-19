@@ -1,4 +1,4 @@
-ndexApp.controller('networkQueryController',
+ndexApp.controller('networkController',
     ['ndexService', 'cytoscapeService', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
     function(ndexService, cytoscapeService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
 
@@ -60,7 +60,7 @@ ndexApp.controller('networkQueryController',
         var request = null;
 
         // AngularUi modal service use. queryContent.html is reused across this controller. It is located in our
-        // networkQuery.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
+        // network.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
         var modalInstance = $modal.open({
             templateUrl: 'queryContent.html',
             scope: $scope,
@@ -122,7 +122,7 @@ ndexApp.controller('networkQueryController',
         var request2 = null;
 
         // AngularUi modal service use. queryContent.html is reused across this controller. It is located in our
-        // networkQuery.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
+        // network.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
         var modalInstance = $modal.open({
             templateUrl: 'queryContent.html',
             scope: $scope,

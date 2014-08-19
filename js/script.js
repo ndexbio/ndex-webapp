@@ -1,6 +1,7 @@
 //function () {
 // create the module and name it ndexApp
-var ndexApp = angular.module('ndexApp', ['ngRoute', 'ngResource', 'ndexServiceApp', 'ui.bootstrap']);
+var ndexApp = angular.module('ndexApp',
+    ['ngRoute', 'ngResource', 'ndexServiceApp', 'ui.bootstrap', 'angularFileUpload']);
 var net1, net2;
 var cn, csn;
 var cUser;
@@ -76,10 +77,16 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'groupController'
         })
 
-        // route for the networkQuery page
-        .when('/networkQuery/:networkId', {
-            templateUrl: 'pages/networkQuery.html',
-            controller: 'networkQueryController'
+        // route for the network page
+        .when('/network/:networkId', {
+            templateUrl: 'pages/network.html',
+            controller: 'networkController'
+        })
+
+        // route for the upload page
+        .when('/upload', {
+            templateUrl: 'pages/upload.html',
+            controller: 'uploadController'
         })
 
         // route for the signIn page
