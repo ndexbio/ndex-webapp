@@ -15,6 +15,10 @@ ndexApp.controller('userController',
         })
     };
 
+     $scope.user.setAndDisplayCurrentNetwork = function (networkId) {
+        sharedProperties.setCurrentNetworkId(networkId);
+        $location.path("/network/" + networkId);
+    };
 
     ndexService.getUser($scope.user.currentUserId)
     .success(
