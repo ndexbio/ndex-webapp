@@ -127,6 +127,60 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         $scope.main.loggedIn = true;
     }
 
+    //test group functions
+    var group = 
+    {
+        "accountType": "Group",
+        "description": "change",
+        "organizationName" : "group",
+        "accountName": "group",
+        "image": "http://i.imgur.com/09oVvZg.jpg",
+        "website": "www.triptychjs.com",
+        "type": "Group"
+    }
+
+    $scope.main.createGroup = function() {
+
+        ndexService.createGroup(group, 
+            function(groupData) {
+                $scope.main.group = groupData;
+            },
+            function(error) {
+                $scope.main.errors = error;
+            });
+
+    }
+
+    $scope.main.getGroup = function() {
+        ndexService.getGroup($scope.main.group.externalId,
+            function(groupData) {
+                $scope.main.retrievedGroup = groupData;
+            },
+            function(error) {
+                $scope.main.errors = error;
+            });
+    }
+
+    $scope.main.deleteGroup = function() {
+        ndexService.deleteGroup($scope.main.group.externalId,
+            function() {
+                $scope.main.group = {};
+                $scope.main.retrievedGroup = {};
+            },
+            function(error) {
+                $scope.main.errors = error;
+            });
+    }
+
+    $scope.main.searchGroups = function() {
+        ndexService.searchGroups({},
+            function(results){
+                $scope.main.searchResults = results;
+            },
+            function(error) {
+                $scope.main.errors = error;
+            });
+    }
 
 }]);
 //}) ();

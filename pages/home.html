@@ -3,3 +3,17 @@
 	<p ng-show="main.accountName">Welcome {{ main.accountName }}</p>
     <p ng-show="!main.accountName">Please Sign In</p>
 </div>
+
+<div>
+	<h5> Test Stuff </h5>
+	<a ng-click="main.createGroup()">create group</a>
+	<p> {{main.group}} </p>
+	<a ng-click="main.getGroup()">get group</a>
+	<p> {{main.retrievedGroup}} </p>
+	<a ng-click="main.deleteGroup()">delete group</a>
+	<p></p>
+	<a ng-click="main.searchGroups()">search groups</a>
+	<p> {{main.searchResults}} </p>
+	<hr>
+	<p> {{main.errors}} </p>
+</div>

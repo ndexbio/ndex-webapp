@@ -74,13 +74,32 @@
                  * Groups
                  *---------------------------------------------------------------------*/
 
-                var GroupResource = $resource(ndexServerURI + '/group/:groupUUID',
-                    {}
+                var GroupResource = $resource(ndexServerURI + '/group/:groupId:action/:subResource/:permission:subId/:skipBlocks/:blockSize',
+                    //paramDefaults
+                    {
+                        groupId: '@groupId',
+                        action: '@action',
+                        subResource: '@subResource',
+                        permission: '@permission',
+                        subId: '@subId',
+                        skipBlocks: '@skipBlocks',
+                        blockSize: '@blockSize'
+                    },
+                    //actions
+                    {
+                        search: {
+                            method: 'POST',
+                            params: {
+                                action: 'search'
+                            },
+                            isArray : true
+                        }
+                    }
                 );
 
-                factory.getGroup = function (groupUUID) {
+                factory.getGroup = function (groupUUID, successHandler, errorHandler) {
                     console.log("retrieving group with UUID " + groupUUID);
-                    return GroupResource.$get(groupUUID);
+                    GroupResource.get({'groupId':groupUUID}, successHandler, errorHandler);
                 };
 
                 factory.createGroup = function(group, successHandler, errorHandler){
@@ -89,16 +108,23 @@
                     // ensure authorization header is set.
                     // May become superfluous if we update headers on sign-in, sign-out, initialization
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-
                     console.log("creating group with accountName = " + group.accountName);
 
-                    var groupResource = new GroupResource(group);
-                    groupResource.$save(
-                        function(postResponse, postResponseHeaders){
-                        handler(postResponse, postResponseHeaders);
-                    });
+                    GroupResource.save({}, group, successHandler, errorHandler);
                 };
 
+                factory.deleteGroup = function(groupUUID, successHandler, errorHandler) {
+                    console.log("deleting group with UUID " + groupUUID);
+                    GroupResource.delete({'groupId':groupUUID}, successHandler, errorHandler);
+                }
+
+                factory.searchGroups = function(queryObject, successHandler, errorHandler) {
+                    //an empty js object will cause the request to be canceled
+                    if(queryObject.searchString == null)
+                        queryObject.searchString = '';
+                    console.log('searching for groups');
+                    GroupResource.search({'skipBlocks': 0, 'blockSize': 5}, queryObject, successHandler, errorHandler);
+                }
 
                 /*---------------------------------------------------------------------*
                  * Networks
