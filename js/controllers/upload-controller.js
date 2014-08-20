@@ -28,6 +28,7 @@ ndexApp.controller('uploadController',
                 console.info('onAfterAddingAll', addedFileItems);
             };
             uploader.onBeforeUploadItem = function(item) {
+                console.log('onBeforeUploadItem', item);
                 console.info('onBeforeUploadItem', item);
             };
             uploader.onProgressItem = function(fileItem, progress) {
@@ -46,6 +47,7 @@ ndexApp.controller('uploadController',
                 console.info('onCancelItem', fileItem, response, status, headers);
             };
             uploader.onCompleteItem = function(fileItem, response, status, headers) {
+                console.log('onCompleteItem', fileItem, response, status, headers);
                 console.info('onCompleteItem', fileItem, response, status, headers);
             };
             uploader.onCompleteAll = function() {
