@@ -30,7 +30,7 @@
                 // Temporary hard code, will be replaced with config file value (local host can still be default)
                 var ndexServerURI = "http://localhost:8080/ndexbio-rest";
 
-                factory.getNetworkUploadURI = function(){
+                factory.getNetworkUploadURI = function () {
                     return ndexServerURI + "/network/upload";
                 }
 
@@ -98,11 +98,11 @@
                         createUser: {
                             method: 'POST',
                             interceptor: {
-                                response: function(data) {
+                                response: function (data) {
                                     localStorage.userId = data.data.externalId; //should fix
                                     return data.data;
                                 },
-                                responseError: function(data){
+                                responseError: function (data) {
                                     ndexUtility.clearUserCredentials();
                                     return data;
                                 }
@@ -110,19 +110,37 @@
                         }
                     })
 
-                factory.searchUsers = function(queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
-                    console.log('searching for users with params: \n    '+JSON.stringify(queryObject));
-                    if(queryObject.searchString == null)
+                factory.searchUsers = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
+                    console.log('searching for users with params: \n    ' + JSON.stringify(queryObject));
+                    if (queryObject.searchString == null)
                         queryObject.searchString = '';
-                    UserResource.search({'skipBlocks': skipBlocks, 'blockSize' : blockSize}, queryObject, successHandler, errorHandler);
+                    UserResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
                 }
 
-                factory.createUser = function(user, successHandler, errorHandler) {
-                    console.log('creating user with params:\n    '+JSON.stringify(user));
+                factory.createUser = function (user, successHandler, errorHandler) {
+                    console.log('creating user with params:\n    ' + JSON.stringify(user));
                     user.accountType = 'User';
                     ndexUtility.setUserCredentials(user, user.password); //fix to only take user, probably, no need for utility function
                     //need to intercept message
                     UserResource.createUser({}, user, successHandler, errorHandler);
+                }
+
+                // /user/{userUUID}/task/{status}/{skipBlocks}/{blockSize}
+                factory.getUserTasks = function (userUUID, taskStatus, skipBlocks, blockSize, successHandler, errorHandler) {
+                    if (!taskStatus){
+                        taskStatus = "ALL";
+                    }
+                    console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
+
+                    UserResource.get({
+                            'userId': userUUID,
+                            'skipBlocks': skipBlocks,
+                            'blockSize': blockSize,
+                            'subResource': "task",
+                            'status': taskStatus
+                        },
+                        successHandler,
+                        errorHandler)
                 }
 
                 /*---------------------------------------------------------------------*
@@ -147,17 +165,17 @@
                             params: {
                                 action: 'search'
                             },
-                            isArray : true
+                            isArray: true
                         }
                     }
                 );
 
                 factory.getGroup = function (groupUUID, successHandler, errorHandler) {
                     console.log("retrieving group with UUID " + groupUUID);
-                    GroupResource.get({'groupId':groupUUID}, successHandler, errorHandler);
+                    GroupResource.get({'groupId': groupUUID}, successHandler, errorHandler);
                 };
 
-                factory.createGroup = function(group, successHandler, errorHandler){
+                factory.createGroup = function (group, successHandler, errorHandler) {
                     // be sure accountType is set
                     group.accountType = "Group";
                     // ensure authorization header is set.
@@ -168,18 +186,72 @@
                     GroupResource.save({}, group, successHandler, errorHandler);
                 };
 
-                factory.deleteGroup = function(groupUUID, successHandler, errorHandler) {
+                factory.deleteGroup = function (groupUUID, successHandler, errorHandler) {
                     console.log("deleting group with UUID " + groupUUID);
-                    GroupResource.delete({'groupId':groupUUID}, successHandler, errorHandler);
+                    GroupResource.delete({'groupId': groupUUID}, successHandler, errorHandler);
                 }
 
-                factory.searchGroups = function(queryObject, successHandler, errorHandler) {
+                factory.searchGroups = function (queryObject, successHandler, errorHandler) {
                     //an empty js object will cause the request to be canceled
-                    if(queryObject.searchString == null)
+                    if (queryObject.searchString == null)
                         queryObject.searchString = '';
                     console.log('searching for groups');
                     GroupResource.search({'skipBlocks': 0, 'blockSize': 5}, queryObject, successHandler, errorHandler);
                 }
+
+                /*---------------------------------------------------------------------*
+                 * Tasks
+                 *
+                 * 	GET	    /task/api		RestResource[]
+                 *  GET	    /task/{taskUUID}		Task
+                 *  POST	/task/{taskUUID}	Task
+                 *  POST	/task	Task	UUID
+                 *  DELETE	/task/{taskUUID}
+                 *  PUT	    /task/{taskUUID}/status/{status}	Task
+                 *---------------------------------------------------------------------*/
+
+                var TaskResource = $resource(ndexServerURI + '/task/:taskId/status/:status/',
+                    //paramDefaults
+                    {
+                        taskId: '@taskId',
+                        status: '@status'
+                    },
+                    //actions
+                    {
+                        setStatus: {
+                            method: 'PUT',
+                            isArray: true
+                        }
+                    }
+                );
+
+                factory.getTask = function (taksUUID, successHandler, errorHandler) {
+                    console.log("retrieving task with UUID " + taskUUID);
+                    TaskResource.get({'taskId': taskUUID}, successHandler, errorHandler);
+                };
+
+                factory.createTask = function (task, successHandler, errorHandler) {
+                    console.log("creating task with task = " + task.taskType);
+
+                    TaskResource.save({}, task, successHandler, errorHandler);
+                };
+
+                factory.deleteTask = function (taskUUID, successHandler, errorHandler) {
+                    console.log("deleting task with UUID " + taskUUID);
+                    TaskResource.delete({'taskId': taskUUID}, successHandler, errorHandler);
+                };
+
+                factory.setTaskStatus = function (task, status, successHandler, errorHandler) {
+
+                    console.log('updating status to ' + status + " for task " + task.taskUUID);
+                    TaskResource.setStatus({'taskId': task.taskUUID, 'status': status}, queryObject,
+                        function (data) {
+                            successHandler(data);
+                            task.status = status;
+                        },
+                        errorHandler
+                    );
+                };
 
                 /*---------------------------------------------------------------------*
                  * Networks
@@ -384,532 +456,531 @@
                 return factory;
             }]);
 
-    
 
-        /****************************************************************************
-         * NDEx Utility Service
-         ****************************************************************************/
-        ndexServiceApp.factory('ndexUtility', function () {
+    /****************************************************************************
+     * NDEx Utility Service
+     ****************************************************************************/
+    ndexServiceApp.factory('ndexUtility', function () {
 
-            var factory = {};
+        var factory = {};
 
-            factory.networks = []; //revise: meant for saving multiple networks
+        factory.networks = []; //revise: meant for saving multiple networks
 
 
-            /*-----------------------------------------------------------------------*
-             * user credentials and ID
-             *-----------------------------------------------------------------------*/
-            factory.clearUserCredentials = function () {
-                if (this.checkLocalStorage()) {
-                    delete localStorage.accountName;
-                    delete localStorage.password;
-                    delete localStorage.userId;
+        /*-----------------------------------------------------------------------*
+         * user credentials and ID
+         *-----------------------------------------------------------------------*/
+        factory.clearUserCredentials = function () {
+            if (this.checkLocalStorage()) {
+                delete localStorage.accountName;
+                delete localStorage.password;
+                delete localStorage.userId;
+            }
+            //if (localStorage["Groups Search"]) delete localStorage["Groups Search"];
+            //if (localStorage["Users Search"]) delete localStorage["Users Search"];
+            //if (localStorage["Networks Search"]) delete localStorage["Networks Search"];
+
+        };
+
+        factory.checkLocalStorage = function () {
+            if (!localStorage) return false;
+            return true;
+        };
+
+        factory.setUserCredentials = function (userData, password) {
+            localStorage.accountName = userData.accountName;
+            localStorage.password = password;
+            localStorage.userId = userData.externalId;
+        };
+
+        /*factory.getUserId = function(){
+         return localStorage.userId;
+         };*/
+
+        factory.getUserCredentials = function () {
+            if (factory.checkLocalStorage()) {
+                if (localStorage.accountName) {
+                    var userData = {accountName: localStorage.accountName,
+                        userId: localStorage.userId,
+                        token: localStorage.password
+                    };
+                    return userData;
+
                 }
-                //if (localStorage["Groups Search"]) delete localStorage["Groups Search"];
-                //if (localStorage["Users Search"]) delete localStorage["Users Search"];
-                //if (localStorage["Networks Search"]) delete localStorage["Networks Search"];
+            }
+        };
 
-            };
+        /*-----------------------------------------------------------------------*
+         * networks
+         *-----------------------------------------------------------------------*/
+        factory.addNetwork = function (network) {
+            factory.networks.push(network);
+            network.terms = {};
 
-            factory.checkLocalStorage = function () {
-                if (!localStorage) return false;
-                return true;
-            };
+            $.each(network.baseTerms, function (termId, term) {
+                term.network = network;
+                network.terms[termId] = term;
+            });
+            $.each(network.functionTerms, function (termId, term) {
+                term.network = network;
+                network.terms[termId] = term;
+            });
+            $.each(network.reifiedEdgeTerms, function (termId, term) {
+                term.network = network;
+                network.terms[termId] = term;
+            });
+            $.each(network.nodes, function (nodeId, node) {
+                node.network = network;
+            });
+            $.each(network.edges, function (edgeId, edge) {
+                edge.network = network;
+            });
+            network.nodeCount = Object.keys(network.nodes).length;
+            network.edgeCount = Object.keys(network.edges).length;
+        };
 
-            factory.setUserCredentials = function (userData, password) {
-                localStorage.accountName = userData.accountName;
-                localStorage.password = password;
-                localStorage.userId = userData.externalId;
-            };
+        factory.setNetwork = function (network) {
+            factory.networks = [];
+            factory.addNetwork(network);
+        };
 
-            /*factory.getUserId = function(){
-             return localStorage.userId;
-             };*/
+        factory.getNetworkId = function (network) {
+            return factory.networks.indexOf(network);
+        };
 
-            factory.getUserCredentials = function () {
-                if (factory.checkLocalStorage()) {
-                    if (localStorage.accountName) {
-                        var userData = {accountName: localStorage.accountName,
-                            userId: localStorage.userId,
-                            token: localStorage.password
-                        };
-                        return userData;
+        factory.removeNetwork = function (network) {
+            factory.networks.remove(factory.networks.indexOf(network));
+        };
 
-                    }
+        return factory;
+    });
+
+    /****************************************************************************
+     * $http configuration service
+     ****************************************************************************/
+    ndexServiceApp.factory('ndexConfigs', function () {
+        var factory = {};
+
+        //factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
+        factory.NdexServerURI = "http://localhost:8080/ndexbio-rest";
+
+        /*---------------------------------------------------------------------*
+         * GET request configuration
+         *---------------------------------------------------------------------*/
+        factory.getGetConfig = function (url, queryArgs) {
+            var config = {
+                method: 'GET',
+                url: factory.NdexServerURI + url,
+                headers: {
+                    Authorization: "Basic " + factory.getEncodedUser()
                 }
             };
+            if (queryArgs) {
+                config.data = JSON.stringify(queryArgs);
+            }
+            return config;
+        };
 
-            /*-----------------------------------------------------------------------*
-             * networks
-             *-----------------------------------------------------------------------*/
-            factory.addNetwork = function (network) {
-                factory.networks.push(network);
-                network.terms = {};
-
-                $.each(network.baseTerms, function (termId, term) {
-                    term.network = network;
-                    network.terms[termId] = term;
-                });
-                $.each(network.functionTerms, function (termId, term) {
-                    term.network = network;
-                    network.terms[termId] = term;
-                });
-                $.each(network.reifiedEdgeTerms, function (termId, term) {
-                    term.network = network;
-                    network.terms[termId] = term;
-                });
-                $.each(network.nodes, function (nodeId, node) {
-                    node.network = network;
-                });
-                $.each(network.edges, function (edgeId, edge) {
-                    edge.network = network;
-                });
-                network.nodeCount = Object.keys(network.nodes).length;
-                network.edgeCount = Object.keys(network.edges).length;
-            };
-
-            factory.setNetwork = function (network) {
-                factory.networks = [];
-                factory.addNetwork(network);
-            };
-
-            factory.getNetworkId = function (network) {
-                return factory.networks.indexOf(network);
-            };
-
-            factory.removeNetwork = function (network) {
-                factory.networks.remove(factory.networks.indexOf(network));
-            };
-
-            return factory;
-        });
-
-        /****************************************************************************
-         * $http configuration service
-         ****************************************************************************/
-        ndexServiceApp.factory('ndexConfigs', function () {
-            var factory = {};
-
-            //factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
-            factory.NdexServerURI = "http://localhost:8080/ndexbio-rest";
-
-            /*---------------------------------------------------------------------*
-             * GET request configuration
-             *---------------------------------------------------------------------*/
-            factory.getGetConfig = function (url, queryArgs) {
-                var config = {
-                    method: 'GET',
-                    url: factory.NdexServerURI + url,
-                    headers: {
-                        Authorization: "Basic " + factory.getEncodedUser()
-                    }
-                };
-                if (queryArgs) {
-                    config.data = JSON.stringify(queryArgs);
+        /*---------------------------------------------------------------------*
+         * POST request configuration
+         *---------------------------------------------------------------------*/
+        factory.getPostConfig = function (url, postData) {
+            var config = {
+                method: 'POST',
+                url: factory.NdexServerURI + url,
+                data: JSON.stringify(postData),
+                headers: {
+                    Authorization: "Basic " + factory.getEncodedUser()
                 }
-                return config;
+            };
+            return config;
+        };
+
+        /*---------------------------------------------------------------------*
+         * Returns the user's credentials as required by Basic Authentication base64
+         * encoded.
+         *---------------------------------------------------------------------*/
+        factory.getEncodedUser = function () {
+            if (localStorage.accountName)
+                return btoa(localStorage.accountName + ":" + localStorage.password);
+            else
+                return null;
+        };
+
+        /*---------------------------------------------------------------------*
+         * Users
+         *---------------------------------------------------------------------*/
+        factory.getSubmitUserCredentialsConfig = function (accountName, password) {
+            var url = "/user/authenticate/" + encodeURIComponent(accountName) + "/" + encodeURIComponent(password);
+            return this.getGetConfig(url);
+        };
+
+        factory.getUserConfig = function (userId) {
+            var url = "/user/" + userId;
+            return this.getGetConfig(url, null);
+        };
+        /*---------------------------------------------------------------------*
+         * Networks
+         *---------------------------------------------------------------------*/
+
+        factory.getNetworkConfig = function (networkId) {
+            // networks/{networkId}
+            var url = "/network/" + networkId;
+            return this.getGetConfig(url, null);
+        };
+
+        factory.getNetworkByEdgesConfig = function (networkId, skipBlocks, blockSize) {
+            // network/{networkId}/edge/{skip}/{top}
+            // GET to NetworkAService
+            var url = "/network/" + networkId + "/edge/asNetwork/" + skipBlocks + "/" + blockSize;
+            return this.getGetConfig(url, null);
+        };
+
+        factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
+            var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
+            var postData = {
+                searchString: searchString,
+                accountName: accountName
             };
 
-            /*---------------------------------------------------------------------*
-             * POST request configuration
-             *---------------------------------------------------------------------*/
-            factory.getPostConfig = function (url, postData) {
-                var config = {
-                    method: 'POST',
-                    url: factory.NdexServerURI + url,
-                    data: JSON.stringify(postData),
-                    headers: {
-                        Authorization: "Basic " + factory.getEncodedUser()
-                    }
-                };
-                return config;
-            };
+            if (permission) postData.permission = permission;
+            if (includeGroups) postData.includeGroups = includeGroups;
 
-            /*---------------------------------------------------------------------*
-             * Returns the user's credentials as required by Basic Authentication base64
-             * encoded.
-             *---------------------------------------------------------------------*/
-            factory.getEncodedUser = function () {
-                if (localStorage.accountName)
-                    return btoa(localStorage.accountName + ":" + localStorage.password);
+            return this.getPostConfig(url, postData);
+        };
+
+        factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, skipBlocks, blockSize) {
+            // POST to NetworkAService
+            console.log("searchType = " + "NEIGHBORHOOD");
+            console.log("searchDepth = " + searchDepth);
+            /*for (index in startingTerms){
+             console.log("searchTerm " + index + " : " + startingTerms[index]);
+             }*/
+            var url = "/network/" + networkId + "/asNetwork/query/";
+            var postData = {
+                searchString: startingTerms,
+                searchDepth: searchDepth
+            };
+            return this.getPostConfig(url, postData);
+        };
+
+        return factory;
+
+    });
+
+    /****************************************************************************
+     * NDEx Helper Service
+     ****************************************************************************/
+    ndexServiceApp.factory('ndexHelper', function () {
+        var factory = {};
+
+        /*-----------------------------------------------------------------------*
+         * create a nice label for a node
+         *-----------------------------------------------------------------------*/
+        factory.updateNodeLabels = function (network) {
+            network.nodeLabelMap = [];
+            $.each(network.nodes, function (id, node) {
+                network.nodeLabelMap[id] = factory.getNodeLabel(node, network);
+            });
+        };
+
+        factory.getNodeLabel = function (node, network) {
+            //if (!network) network = factory.getNodeNetwork(node);
+            if ("name" in node && node.name && node.name != "") {
+                //console.log(node.name);
+                return node.name;
+            }
+            else if ("represents" in node && node.represents && network.terms[node.represents])
+                return factory.getTermLabel(network.terms[node.represents], network);
+            else
+                return "unknown"
+        };
+
+        factory.getNodeNetwork = function (node) {
+            //TODO
+            return {};
+        };
+
+        factory.updateTermLabels = function (network) {
+            network.termLabelMap = [];
+            var count = 0;
+            $.each(network.terms, function (id, term) {
+                if (term.termType === "Base") {
+                    network.termLabelMap[count] = factory.getTermBase(term, network);
+                    count++;
+                }
+            });
+        };
+
+        factory.getTermBase = function (term, network) {
+            if (term.namespace) {
+                var namespace = network.namespaces[term.namespace];
+
+                if (!namespace || namespace.prefix === "LOCAL")
+                    return {prefix: 'none', name: term.name};
+                else if (!namespace.prefix)
+                    return {prefix: '', name: term.name};
                 else
-                    return null;
-            };
+                    return {prefix: namespace.prefix, name: term.name};
+            }
+            else {
+                return term.name;
+            }
 
-            /*---------------------------------------------------------------------*
-             * Users
-             *---------------------------------------------------------------------*/
-            factory.getSubmitUserCredentialsConfig = function (accountName, password) {
-                var url = "/user/authenticate/" + encodeURIComponent(accountName) + "/" + encodeURIComponent(password);
-                return this.getGetConfig(url);
-            };
+        };
 
-            factory.getUserConfig = function (userId) {
-                var url = "/user/" + userId;
-                return this.getGetConfig(url, null);
-            };
-            /*---------------------------------------------------------------------*
-             * Networks
-             *---------------------------------------------------------------------*/
-
-            factory.getNetworkConfig = function (networkId) {
-                // networks/{networkId}
-                var url = "/network/" + networkId;
-                return this.getGetConfig(url, null);
-            };
-
-            factory.getNetworkByEdgesConfig = function (networkId, skipBlocks, blockSize) {
-                // network/{networkId}/edge/{skip}/{top}
-                // GET to NetworkAService
-                var url = "/network/" + networkId + "/edge/asNetwork/" + skipBlocks + "/" + blockSize;
-                return this.getGetConfig(url, null);
-            };
-
-            factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
-                var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
-                var postData = {
-                    searchString: searchString,
-                    accountName: accountName
-                };
-
-                if (permission) postData.permission = permission;
-                if (includeGroups) postData.includeGroups = includeGroups;
-
-                return this.getPostConfig(url, postData);
-            };
-
-            factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, skipBlocks, blockSize) {
-                // POST to NetworkAService
-                console.log("searchType = " + "NEIGHBORHOOD");
-                console.log("searchDepth = " + searchDepth);
-                /*for (index in startingTerms){
-                 console.log("searchTerm " + index + " : " + startingTerms[index]);
-                 }*/
-                var url = "/network/" + networkId + "/asNetwork/query/";
-                var postData = {
-                    searchString: startingTerms,
-                    searchDepth: searchDepth
-                };
-                return this.getPostConfig(url, postData);
-            };
-
-            return factory;
-
-        });
-
-        /****************************************************************************
-         * NDEx Helper Service
-         ****************************************************************************/
-        ndexServiceApp.factory('ndexHelper', function () {
-            var factory = {};
-
-            /*-----------------------------------------------------------------------*
-             * create a nice label for a node
-             *-----------------------------------------------------------------------*/
-            factory.updateNodeLabels = function (network) {
-                network.nodeLabelMap = [];
-                $.each(network.nodes, function (id, node) {
-                    network.nodeLabelMap[id] = factory.getNodeLabel(node, network);
-                });
-            };
-
-            factory.getNodeLabel = function (node, network) {
-                //if (!network) network = factory.getNodeNetwork(node);
-                if ("name" in node && node.name && node.name != "") {
-                    //console.log(node.name);
-                    return node.name;
-                }
-                else if ("represents" in node && node.represents && network.terms[node.represents])
-                    return factory.getTermLabel(network.terms[node.represents], network);
-                else
-                    return "unknown"
-            };
-
-            factory.getNodeNetwork = function (node) {
-                //TODO
-                return {};
-            };
-
-            factory.updateTermLabels = function (network) {
-                network.termLabelMap = [];
-                var count = 0;
-                $.each(network.terms, function (id, term) {
-                    if (term.termType === "Base") {
-                        network.termLabelMap[count] = factory.getTermBase(term, network);
-                        count++;
-                    }
-                });
-            };
-
-            factory.getTermBase = function (term, network) {
+        /*-----------------------------------------------------------------------*
+         * Builds a term label based on the term type; labels rely on Base Terms,
+         * which have names and namespaces. Function Terms can refer to other
+         * Function Terms or Base Terms, and as such must be traversed until a Base
+         * Term is reached.
+         *-----------------------------------------------------------------------*/
+        factory.getTermLabel = function (term, network) {
+            //if (!network) network = factory.getTermNetwork(term);
+            if (term.termType === "BaseTerm") {
                 if (term.namespace) {
                     var namespace = network.namespaces[term.namespace];
 
                     if (!namespace || namespace.prefix === "LOCAL")
-                        return {prefix: 'none', name: term.name};
-                    else if (!namespace.prefix)
-                        return {prefix: '', name: term.name};
-                    else
-                        return {prefix: namespace.prefix, name: term.name};
-                }
-                else {
-                    return term.name;
-                }
-
-            };
-
-            /*-----------------------------------------------------------------------*
-             * Builds a term label based on the term type; labels rely on Base Terms,
-             * which have names and namespaces. Function Terms can refer to other
-             * Function Terms or Base Terms, and as such must be traversed until a Base
-             * Term is reached.
-             *-----------------------------------------------------------------------*/
-            factory.getTermLabel = function (term, network) {
-                //if (!network) network = factory.getTermNetwork(term);
-                if (term.termType === "BaseTerm") {
-                    if (term.namespace) {
-                        var namespace = network.namespaces[term.namespace];
-
-                        if (!namespace || namespace.prefix === "LOCAL")
-                            return term.name;
-                        else if (!namespace.prefix)
-                            return namespace.uri + term.name;
-                        else
-                            return namespace.prefix + ":" + term.name;
-                    }
-                    else
                         return term.name;
-                }
-                else if (term.termType === "FunctionTerm") {
-                    var functionTerm = network.terms[term.functionTermId];
-                    if (!functionTerm) {
-                        console.log("no functionTerm by id " + term.functionTermId);
-                        return;
-                    }
-
-                    var functionLabel = factory.getTermLabel(functionTerm, network);
-                    functionLabel = factory.lookupFunctionAbbreviation(functionLabel);
-
-                    var sortedParameters = factory.getDictionaryKeysSorted(term.parameters);
-                    var parameterList = [];
-
-                    for (var parameterIndex = 0; parameterIndex < sortedParameters.length; parameterIndex++) {
-                        var parameterId = term.parameters[sortedParameters[parameterIndex]];
-                        var parameterTerm = network.terms[parameterId];
-
-                        if (parameterTerm)
-                            var parameterLabel = factory.getTermLabel(parameterTerm, network);
-                        else
-                            console.log("no parameterTerm by id " + parameterId);
-
-                        parameterList.push(parameterLabel);
-                    }
-
-                    return functionLabel + "(" + parameterList.join(", ") + ")";
+                    else if (!namespace.prefix)
+                        return namespace.uri + term.name;
+                    else
+                        return namespace.prefix + ":" + term.name;
                 }
                 else
-                    return "Unknown Term Type";
-            };
+                    return term.name;
+            }
+            else if (term.termType === "FunctionTerm") {
+                var functionTerm = network.terms[term.functionTermId];
+                if (!functionTerm) {
+                    console.log("no functionTerm by id " + term.functionTermId);
+                    return;
+                }
 
-            factory.getTermNetwork = function (term) {
-                //TODO
-                return {};
+                var functionLabel = factory.getTermLabel(functionTerm, network);
+                functionLabel = factory.lookupFunctionAbbreviation(functionLabel);
+
+                var sortedParameters = factory.getDictionaryKeysSorted(term.parameters);
+                var parameterList = [];
+
+                for (var parameterIndex = 0; parameterIndex < sortedParameters.length; parameterIndex++) {
+                    var parameterId = term.parameters[sortedParameters[parameterIndex]];
+                    var parameterTerm = network.terms[parameterId];
+
+                    if (parameterTerm)
+                        var parameterLabel = factory.getTermLabel(parameterTerm, network);
+                    else
+                        console.log("no parameterTerm by id " + parameterId);
+
+                    parameterList.push(parameterLabel);
+                }
+
+                return functionLabel + "(" + parameterList.join(", ") + ")";
+            }
+            else
+                return "Unknown Term Type";
+        };
+
+        factory.getTermNetwork = function (term) {
+            //TODO
+            return {};
+        }
+
+
+        /*-----------------------------------------------------------------------*
+         * Returns the keys of a dictionary as a sorted array.
+         *-----------------------------------------------------------------------*/
+        factory.getDictionaryKeysSorted = function (dictionary) {
+            var keys = [];
+            for (var key in dictionary) {
+                if (dictionary.hasOwnProperty(key))
+                    keys.push(key);
             }
 
+            return keys.sort();
+        };
 
-            /*-----------------------------------------------------------------------*
-             * Returns the keys of a dictionary as a sorted array.
-             *-----------------------------------------------------------------------*/
-            factory.getDictionaryKeysSorted = function (dictionary) {
-                var keys = [];
-                for (var key in dictionary) {
-                    if (dictionary.hasOwnProperty(key))
-                        keys.push(key);
-                }
+        /*-----------------------------------------------------------------------*
+         * Looks-up abbreviations for term functions.
+         *-----------------------------------------------------------------------*/
+        factory.lookupFunctionAbbreviation = function (functionLabel) {
+            var fl = functionLabel.toLowerCase();
+            if (fl.match(/^bel:/)) fl = fl.replace(/^bel:/, '');
+            switch (fl) {
+                case "abundance":
+                    return "a";
+                case "biological_process":
+                    return "bp";
+                case "catalytic_activity":
+                    return "cat";
+                case "complex_abundance":
+                    return "complex";
+                case "pathology":
+                    return "path";
+                case "peptidase_activity":
+                    return "pep";
+                case "protein_abundance":
+                    return "p";
+                case "rna_abundance":
+                    return "r";
+                case "protein_modification":
+                    return "pmod";
+                case "transcriptional_activity":
+                    return "trans";
+                case "molecular_activity":
+                    return "act";
+                case "degradation":
+                    return "deg";
+                case "kinase_activity":
+                    return "kin";
+                default:
+                    return fl;
+            }
+        };
 
-                return keys.sort();
-            };
+        return factory;
+    });
 
-            /*-----------------------------------------------------------------------*
-             * Looks-up abbreviations for term functions.
-             *-----------------------------------------------------------------------*/
-            factory.lookupFunctionAbbreviation = function (functionLabel) {
-                var fl = functionLabel.toLowerCase();
-                if (fl.match(/^bel:/)) fl = fl.replace(/^bel:/, '');
-                switch (fl) {
-                    case "abundance":
-                        return "a";
-                    case "biological_process":
-                        return "bp";
-                    case "catalytic_activity":
-                        return "cat";
-                    case "complex_abundance":
-                        return "complex";
-                    case "pathology":
-                        return "path";
-                    case "peptidase_activity":
-                        return "pep";
-                    case "protein_abundance":
-                        return "p";
-                    case "rna_abundance":
-                        return "r";
-                    case "protein_modification":
-                        return "pmod";
-                    case "transcriptional_activity":
-                        return "trans";
-                    case "molecular_activity":
-                        return "act";
-                    case "degradation":
-                        return "deg";
-                    case "kinase_activity":
-                        return "kin";
-                    default:
-                        return fl;
-                }
-            };
-
-            return factory;
-        });
-
-        /****************************************************************************
-         * NDEx Cytoscape Service
-         ****************************************************************************/
+    /****************************************************************************
+     * NDEx Cytoscape Service
+     ****************************************************************************/
 //     ndexServiceApp.factory('ndexService', ['ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q', function (ndexConfigs, ndexUtility, ndexHelper, $http, $q) {
 
-        ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', function (ndexService, ndexHelper, $q) {
-            var factory = {};
-            var cy;
+    ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', function (ndexService, ndexHelper, $q) {
+        var factory = {};
+        var cy;
 
-            /*-----------------------------------------------------------------------*
-             * initialize the cytoscape instance
-             *-----------------------------------------------------------------------*/
-            factory.initCyGraph = function () {
-                var deferred = $q.defer();
+        /*-----------------------------------------------------------------------*
+         * initialize the cytoscape instance
+         *-----------------------------------------------------------------------*/
+        factory.initCyGraph = function () {
+            var deferred = $q.defer();
 
-                // elements
-                var eles = [];
+            // elements
+            var eles = [];
 
-                $(function () { // on dom ready
+            $(function () { // on dom ready
 
-                    cy = cytoscape({
-                        container: $('#canvas')[0],
+                cy = cytoscape({
+                    container: $('#canvas')[0],
 
-                        style: cytoscape.stylesheet()
-                            .selector('node')
-                            .css({
-                                'content': 'data(name)',
-                                'height': 10,
-                                'width': 10,
-                                'text-valign': 'center',
-                                'background-color': 'blue',
-                                'font-size': 8,
-                                //'text-outline-width': 2,
-                                //'text-outline-color': 'blue',
-                                'color': 'black'
-                            })
-                            .selector('edge')
-                            .css({
-                                'target-arrow-shape': 'triangle'
-                            })
-                            .selector(':selected')
-                            .css({
-                                'background-color': 'white',
-                                'line-color': 'black',
-                                'target-arrow-color': 'black',
-                                'source-arrow-color': 'black',
-                                'text-outline-color': 'black'
-                            }),
+                    style: cytoscape.stylesheet()
+                        .selector('node')
+                        .css({
+                            'content': 'data(name)',
+                            'height': 10,
+                            'width': 10,
+                            'text-valign': 'center',
+                            'background-color': 'blue',
+                            'font-size': 8,
+                            //'text-outline-width': 2,
+                            //'text-outline-color': 'blue',
+                            'color': 'black'
+                        })
+                        .selector('edge')
+                        .css({
+                            'target-arrow-shape': 'triangle'
+                        })
+                        .selector(':selected')
+                        .css({
+                            'background-color': 'white',
+                            'line-color': 'black',
+                            'target-arrow-color': 'black',
+                            'source-arrow-color': 'black',
+                            'text-outline-color': 'black'
+                        }),
 
-                        layout: {
-                            //name : 'circle',
-                            //padding: 10
+                    layout: {
+                        //name : 'circle',
+                        //padding: 10
 
-                            name: 'arbor',
-                            liveUpdate: true, // whether to show the layout as it's running
-                            ready: undefined, // callback on layoutready
-                            stop: undefined, // callback on layoutstop
-                            maxSimulationTime: 4000, // max length in ms to run the layout
-                            fit: true, // reset viewport to fit default simulationBounds
-                            padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
-                            simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by default
-                            ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
+                        name: 'arbor',
+                        liveUpdate: true, // whether to show the layout as it's running
+                        ready: undefined, // callback on layoutready
+                        stop: undefined, // callback on layoutstop
+                        maxSimulationTime: 4000, // max length in ms to run the layout
+                        fit: true, // reset viewport to fit default simulationBounds
+                        padding: [ 50, 50, 50, 50 ], // top, right, bottom, left
+                        simulationBounds: undefined, // [x1, y1, x2, y2]; [0, 0, width, height] by default
+                        ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
 
-                            // forces used by arbor (use arbor default on undefined)
-                            repulsion: undefined,
-                            stiffness: undefined,
-                            friction: undefined,
-                            gravity: true,
-                            fps: undefined,
-                            precision: undefined,
+                        // forces used by arbor (use arbor default on undefined)
+                        repulsion: undefined,
+                        stiffness: undefined,
+                        friction: undefined,
+                        gravity: true,
+                        fps: undefined,
+                        precision: undefined,
 
-                            // static numbers or functions that dynamically return what these
-                            // values should be for each element
-                            nodeMass: undefined,
-                            edgeLength: undefined,
+                        // static numbers or functions that dynamically return what these
+                        // values should be for each element
+                        nodeMass: undefined,
+                        edgeLength: undefined,
 
-                            stepSize: 1, // size of timestep in simulation
+                        stepSize: 1, // size of timestep in simulation
 
-                            // function that returns true if the system is stable to indicate
-                            // that the layout can be stopped
-                            stableEnergy: function (energy) {
-                                var e = energy;
-                                return (e.max <= 0.5) || (e.mean <= 0.3);
-                            }
-
-                            //name: 'cose',
-                            //padding: 10
-                        },
-
-                        elements: eles,
-
-                        ready: function () {
-                            deferred.resolve(this);
-
-                            // add listener behavior later...
-                            //cy.on('cxtdrag', 'node', function(e){
-                            //    var node = this;
-                            //    var dy = Math.abs( e.cyPosition.x - node.position().x );
-                            //    var weight = Math.round( dy*2 );
-                            //
-                            //    node.data('weight', weight);
-                            //
-                            //    fire('onWeightChange', [ node.id(), node.data('weight') ]);
-                            //});
-
+                        // function that returns true if the system is stable to indicate
+                        // that the layout can be stopped
+                        stableEnergy: function (energy) {
+                            var e = energy;
+                            return (e.max <= 0.5) || (e.mean <= 0.3);
                         }
-                    });
 
-                }); // on dom ready
+                        //name: 'cose',
+                        //padding: 10
+                    },
 
-                return deferred.promise;
-            };
+                    elements: eles,
 
-            /*-----------------------------------------------------------------------*
-             * Set a network to be displayed in the viewer
-             *-----------------------------------------------------------------------*/
-            factory.setNetwork = function (network) {
-                // build the new elements structure
-                var elements = {nodes: [], edges: []};
+                    ready: function () {
+                        deferred.resolve(this);
 
-                $.each(network.nodes, function (index, node) {
-                    var label = ndexHelper.getNodeLabel(node, network);
-                    var cyNode = {data: {id: "n" + index, name: label}};
-                    elements.nodes.push(cyNode);
+                        // add listener behavior later...
+                        //cy.on('cxtdrag', 'node', function(e){
+                        //    var node = this;
+                        //    var dy = Math.abs( e.cyPosition.x - node.position().x );
+                        //    var weight = Math.round( dy*2 );
+                        //
+                        //    node.data('weight', weight);
+                        //
+                        //    fire('onWeightChange', [ node.id(), node.data('weight') ]);
+                        //});
 
+                    }
                 });
 
-                $.each(network.edges, function (index, edge) {
-                    var cyEdge = {data: {source: "n" + edge.subjectId, target: "n" + edge.objectId}};
-                    elements.edges.push(cyEdge);
-                });
+            }); // on dom ready
 
-                // set the cytoscsape instance elements
-                cy.load(elements);
+            return deferred.promise;
+        };
 
-            };
+        /*-----------------------------------------------------------------------*
+         * Set a network to be displayed in the viewer
+         *-----------------------------------------------------------------------*/
+        factory.setNetwork = function (network) {
+            // build the new elements structure
+            var elements = {nodes: [], edges: []};
+
+            $.each(network.nodes, function (index, node) {
+                var label = ndexHelper.getNodeLabel(node, network);
+                var cyNode = {data: {id: "n" + index, name: label}};
+                elements.nodes.push(cyNode);
+
+            });
+
+            $.each(network.edges, function (index, edge) {
+                var cyEdge = {data: {source: "n" + edge.subjectId, target: "n" + edge.objectId}};
+                elements.edges.push(cyEdge);
+            });
+
+            // set the cytoscsape instance elements
+            cy.load(elements);
+
+        };
 
 
-            return factory;
-        }]);
+        return factory;
+    }]);
 
-    })(); //end function closure
+})(); //end function closure

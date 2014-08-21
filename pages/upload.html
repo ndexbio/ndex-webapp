@@ -116,6 +116,21 @@
                         <span class="glyphicon glyphicon-trash"></span> Remove
                     </button>
                 </td>
+
+                <div id="divTasks">
+                    <table>
+                        <tbody ng-repeat="(index, task) in user.displayedUser.tasks">
+
+                        <tr>
+                            <td><i class="icon-remove icon-white" ng-click="markTaskForDeletion(task.id)"></i></td>
+                            <td>{{task.description}}</td>
+                            <td>{{task.status}}</td>
+                            <td><span ng-show="false">download</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </tr>
             </tbody>
         </table>
