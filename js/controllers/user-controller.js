@@ -16,7 +16,6 @@ ndexApp.controller('userController',
     };
 
      $scope.user.setAndDisplayCurrentNetwork = function (networkId) {
-        sharedProperties.setCurrentNetworkId(networkId);
         $location.path("/network/" + networkId);
     };
 
@@ -27,6 +26,10 @@ ndexApp.controller('userController',
             $scope.user.displayedUser = user;
             cUser = user;
             
+            if($scope.user.displayedUser.image == null) {
+                $scope.user.displayedUser.image = 'img/no-pic.jpg';
+            }
+
             $scope.user.networkSearchResults = null;
             $scope.user.searchString = "";
 

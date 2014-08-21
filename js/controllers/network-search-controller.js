@@ -10,7 +10,6 @@ ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedPropertie
     $scope.networkSearch.networkSearchResults = null;
 
     $scope.networkSearch.setAndDisplayCurrentNetwork = function (networkId) {
-        sharedProperties.setCurrentNetworkId(networkId);
         $location.path("/network/" + networkId);
     };
 

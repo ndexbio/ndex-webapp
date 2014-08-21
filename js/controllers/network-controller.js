@@ -9,7 +9,7 @@ ndexApp.controller('networkController',
 
     // Retrieve the network id from route params
     $scope.networkQuery.currentNetworkId = $routeParams.networkId;
-
+    sharedProperties.setCurrentNetworkId($scope.networkQuery.currentNetworkId);
     // We do this to avoid undefined errors
     if (!$scope.networkQuery.currentNetwork) $scope.networkQuery.currentNetwork = {};
 

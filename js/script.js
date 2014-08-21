@@ -126,6 +126,7 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.main.loggedIn = false;
 
     $scope.$on('LOGGED_IN', function() {
+        //listener for changes in log in.
         $scope.main.loggedIn = true;
         $scope.main.accountName = sharedProperties.getCurrentUserAccountName();
     });
@@ -171,15 +172,25 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         } 
 
     }
+
+    //navbar initializations
+    if($location.path() == '/searchNetworks')
+        $scope.main.searchType = 'Networks';
+    if($location.path() == '/searchUsers')
+        $scope.main.searchType = 'Users';
+    if($location.path() == '/searchGroups')
+        $scope.main.searchType = 'Groups';
+
     //end navbar code
 
-
+    //initializions for page refresh
     var userData = ndexUtility.getUserCredentials();
     if(userData) {
         sharedProperties.setCurrentUser(userData.userId, userData.accountName);
         $scope.main.accountName = userData.accountName;
         $scope.main.loggedIn = true;
     }
+
 
     //test group functions
     var group = 

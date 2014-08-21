@@ -1,37 +1,5 @@
 <div class = "row">
-
-    <!--
-    <h1>Search Networks</h1>
-    <div class="pull-left">
-        <form class="form-inline" id="frmSearch" ng-submit="networkSearch.submitNetworkSearch()">
-            <!--<div class="" style="position: relative;">
-             <i id="searchInfo" class="icon-info-sign Hand" title="Info" rel="tooltip"
-                 style="font-size: 1.25em; left: 20px; position: absolute; top: 0.25em;"></i>
-            <label class="Attribute-Editable"></label>
-            -/->
-            <div class="" id="divSearch" style="display: inline-block;">
-                <i class="icon-search"></i>
-                <input type="search" class="form-control" ng-model="networkSearch.searchString" placeholder="Search keywords" required/>
-            </div>
-
-            <button class="btn btn-default" type="submit">Search</button>
-        </form>
-    </div>
- -->
     <div class="Clear"></div>
-    <!-- debugging elements
-    <pre ng-show="message">
-        {{message}}
-    </pre>
-
-    <pre ng-model="networkSearchResults">
-        {{networkSearchResults}}
-    </pre>
-    -->
-
-    <div ng-show="userSearch.userSearchResults.length == 0">
-        <strong>No results found that match your criteria.</strong>
-    </div>
 
     <!-- errors div needs recoding -->
     <div class=" col-sm-2 col-md-2 col-lg-2">  
@@ -78,24 +46,6 @@
             <hr>
         </ul>
     </ul>
-        <!--<table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null || networkSearch.networkSearchResults.length == 0">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th style="width: 10%;">Nodes</th>
-                <th style="width: 10%;">Edges</th>
-            </tr>
-            </thead>
-
-            <tbody ng-show="networkSearch.networkSearchResults.length > 0" ng-repeat="network in networkSearch.networkSearchResults">
-            <tr ng-click="networkSearch.setAndDisplayCurrentNetwork(network.externalId)" style="cursor:pointer;">
-                <td>{{network.name}}</td>
-                </td>
-                <td class="AlignRight">{{network.nodeCount}}</td>
-                <td class="AlignRight">{{network.edgeCount}}</td>
-            </tr>
-            </tbody>
-        </table>-->
     </div>
 
 </div>

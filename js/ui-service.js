@@ -35,7 +35,7 @@
                     console.log("attempting to open createGroupModal");
                     $modal.open({
                         templateUrl: 'pages/createGroupModal.html',
-                        controller: 'createGroupController'
+                        controller: 'createGroupController2'
                     })
                 };
 
