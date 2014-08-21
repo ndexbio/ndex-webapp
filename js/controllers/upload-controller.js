@@ -1,9 +1,13 @@
 ndexApp.controller('uploadController',
-    ['FileUploader', 'ndexService',  'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
-        function(FileUploader, ndexService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
+    ['FileUploader', 'ndexService',  'ndexConfigs', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
+        function(FileUploader, ndexService, ndexConfigs, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
 
             var uploader = $scope.uploader = new FileUploader({
-                url: ndexService.getNetworkUploadURI()
+                url: ndexService.getNetworkUploadURI(),
+                alias: "fileUpload",
+                headers: {
+                    Authorization: "Basic " + ndexConfigs.getEncodedUser()
+                }
             });
 
             // FILTERS
@@ -28,6 +32,7 @@ ndexApp.controller('uploadController',
                 console.info('onAfterAddingAll', addedFileItems);
             };
             uploader.onBeforeUploadItem = function(item) {
+                item.formData.push({filename: item.file.name});
                 console.log('onBeforeUploadItem', item);
                 console.info('onBeforeUploadItem', item);
             };
