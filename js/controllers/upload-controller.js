@@ -2,6 +2,28 @@ ndexApp.controller('uploadController',
     ['FileUploader', 'ndexService',  'ndexConfigs', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
         function(FileUploader, ndexService, ndexConfigs, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
 
+            $scope.tasks = null;
+            $scope.taskSkipBlocks = 0;
+            $scope.taskBlockSize = 100;
+
+            $scope.refreshTasks = function(){
+                ndexService.getUserTasks(
+                    sharedProperties.getCurrentUserId(),
+                    "ALL",
+                    $scope.taskSkipBlocks,
+                    $scope.taskBlockSize,
+                    // Success
+                    function(tasks){
+                        $scope.tasks = tasks;
+                    },
+                    // Error
+                    function(response){
+                       //TBD
+                    }
+                )
+
+            }
+
             var uploader = $scope.uploader = new FileUploader({
                 url: ndexService.getNetworkUploadURI(),
                 alias: "fileUpload",
@@ -61,4 +83,5 @@ ndexApp.controller('uploadController',
 
             console.info('uploader', uploader);
 
+            $scope.refreshTasks();
         }]);
