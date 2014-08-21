@@ -114,7 +114,12 @@
                     console.log('searching for users with params: \n    ' + JSON.stringify(queryObject));
                     if (queryObject.searchString == null)
                         queryObject.searchString = '';
-                    UserResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
+                    UserResource.search({
+                        'skipBlocks': skipBlocks,
+                        'blockSize': blockSize},
+                        queryObject,
+                        successHandler,
+                        errorHandler);
                 }
 
                 factory.createUser = function (user, successHandler, errorHandler) {
@@ -131,8 +136,8 @@
                         taskStatus = "ALL";
                     }
                     console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
-
-                    UserResource.get({
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    UserResource.query({
                             'userId': userUUID,
                             'skipBlocks': skipBlocks,
                             'blockSize': blockSize,
