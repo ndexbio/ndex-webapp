@@ -74,6 +74,57 @@
                     return $http(config);
                 };
 
+                var UserResource = $resource(ndexServerURI + '/user/:userId:action/:subResource/:permission:subId:status/:skipBlocks/:blockSize',
+                    //parmaDefaults
+                    {
+                        userId: '@userId',
+                        action: '@action',
+                        subResource: '@subResource',
+                        permission: '@permission',
+                        status: '@status',
+                        subId: '@subId',
+                        skipBlocks: '@skipBlocks',
+                        blockSize: '@blockSize'
+                    },
+                    //actions
+                    {
+                        search: {
+                            method: 'POST',
+                            params: {
+                                action: 'search'
+                            },
+                            isArray: true
+                        },
+                        createUser: {
+                            method: 'POST',
+                            interceptor: {
+                                response: function(data) {
+                                    localStorage.userId = data.data.externalId; //should fix
+                                    return data.data;
+                                },
+                                responseError: function(data){
+                                    ndexUtility.clearUserCredentials();
+                                    return data;
+                                }
+                            }
+                        }
+                    })
+
+                factory.searchUsers = function(queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
+                    console.log('searching for users with params: \n    '+JSON.stringify(queryObject));
+                    if(queryObject.searchString == null)
+                        queryObject.searchString = '';
+                    UserResource.search({'skipBlocks': skipBlocks, 'blockSize' : blockSize}, queryObject, successHandler, errorHandler);
+                }
+
+                factory.createUser = function(user, successHandler, errorHandler) {
+                    console.log('creating user with params:\n    '+JSON.stringify(user));
+                    user.accountType = 'User';
+                    ndexUtility.setUserCredentials(user, user.password); //fix to only take user, probably, no need for utility function
+                    //need to intercept message
+                    UserResource.createUser({}, user, successHandler, errorHandler);
+                }
+
                 /*---------------------------------------------------------------------*
                  * Groups
                  *---------------------------------------------------------------------*/
@@ -232,7 +283,7 @@
                 // findNetworks
                 //
                 // Simple network search
-                factory.findNetworks = function (searchString, accountName, permission, skipBlocks, blockSize) {
+                factory.findNetworks = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
                     console.log("searching for networks");
 
                     // The $http timeout property takes a deferred value that can abort AJAX request
@@ -241,7 +292,7 @@
                     // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
                     // the first pass. We modify the config to allow for $http request aborts. This may become standard in
                     // the client.
-                    var config = ndexConfigs.getNetworkSearchConfig(searchString, accountName, permission, skipBlocks, blockSize);
+                    var config = ndexConfigs.getNetworkSearchConfig(searchString, accountName, permission, includeGroups, skipBlocks, blockSize);
                     config.timeout = deferredAbort.promise;
 
                     // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -333,82 +384,7 @@
                 return factory;
             }]);
 
-    ndexServiceApp.factory('ndexNavigation',
-        ['sharedProperties', '$location', '$modal',
-            function (sharedProperties, $location, $modal) {
-                var factory = {};
-
-                /*-----------------------------------------------------------------------*
-                 * navigation
-                 *-----------------------------------------------------------------------*/
-
-                factory.setAndDisplayCurrentNetwork = function (networkId) {
-                    console.log("attempting to set and display current network: " + networkId);
-                    sharedProperties.setCurrentNetworkId(networkId);
-                    $location.path("/networkQuery/" + networkId);
-                };
-
-                factory.setAndDisplayCurrentGroup = function (groupId) {
-                    console.log("attempting to set and display current group " + groupId);
-                    sharedProperties.setCurrentGroupId(groupId);
-                    $location.path("/group/" + groupId);
-                };
-
-                factory.setAndDisplayCurrentUser = function (userId) {
-                    console.log("attempting to set and display current user " + userId);
-                    sharedProperties.setCurrentUserId(userId);
-                    $location.path("/user/" + userId);
-                };
-
-                factory.openCreateGroupModal = function(){
-                    // display the create group modal using its template and controller
-                    console.log("attempting to open createGroupModal");
-                    $modal.open({
-                        templateUrl: 'pages/createGroupModal.html',
-                        controller: 'createGroupController'
-                    })
-                };
-
-                factory.openCreateRequestModal = function(){
-                    console.log("attempting to open createRequestModal");
-                    $modal.open({
-                        templateUrl: 'pages/createRequestModal.html',
-                        controller: 'requestController'
-                    })
-                };
-
-                factory.openRequestResponseModal = function(){
-                    console.log("attempting to open requestResponseModal");
-                    $modal.open({
-                        templateUrl: 'pages/requestResponseModal.html',
-                        controller: 'requestController'
-                    })
-                };
-
-                factory.openConfirmationModal = function(message, confirmHandler){
-                    console.log("attempting to open confirmationModal");
-                    var ConfirmCtrl = function($scope, $modalInstance) {
-                        $scope.input = {};
-                        $scope.message = message;
-                        $scope.confirm = function(){
-                            $modalInstance.dismiss();
-                            confirmHandler();
-                        }
-
-                        $scope.cancel = function(){
-                            $modalInstance.dismiss();
-                        };
-                    };
-
-                    $modal.open({
-                        templateUrl: 'pages/confirmationModal.html',
-                        controller: ConfirmCtrl
-                    })
-                };
-
-                // return factory object
-                return factory;
-            }]);
+    
 
         /****************************************************************************
          * NDEx Utility Service
@@ -462,7 +438,6 @@
                     }
                 }
             };
-
 
             /*-----------------------------------------------------------------------*
              * networks
@@ -590,7 +565,7 @@
                 return this.getGetConfig(url, null);
             };
 
-            factory.getNetworkSearchConfig = function (searchString, accountName, permission, skipBlocks, blockSize) {
+            factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
                 var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
                 var postData = {
                     searchString: searchString,
@@ -598,6 +573,8 @@
                 };
 
                 if (permission) postData.permission = permission;
+                if (includeGroups) postData.includeGroups = includeGroups;
+
                 return this.getPostConfig(url, postData);
             };
 

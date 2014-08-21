@@ -1,4 +1,3 @@
-<div class="container-fluid">
     <div class="row-fluid">
         <div class="col-md-4 col-md-offset-4">
             <form class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
@@ -9,11 +8,58 @@
                 <div class="form-group">
                 <input type="password" class="form-control" placeholder="Password" required ng-model="signIn.password">
                 </div>
-                <hr>
+               
                 <button class="btn btn-default btn-block" type="submit">Sign in</button>
             </form>
             <span class="text-danger">{{signIn.message}}</span>
+
+            <hr>
+            <p>Don't have an account? <a ng-click="signIn.openSignUp()">Sign Up</a></p>
         </div>
     </div>
-</div>
+
+<script type="text/ng-template" id="signUp.html">
+    <div class="modal-header">
+    <h4>Sign Up for NDEx</h4>
+    </div>
+    <div class="modal-body text-center">
+        <form role="form" ng-submit="signIn.signUp()">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <input type="text" class="form-control" ng-model="signIn.newUser.firstName" 
+                        placeholder="First Name" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <input type="text" class="form-control" ng-model="signIn.newUser.lastName" 
+                        placeholder="Last Name" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" ng-model="signIn.newUser.accountName" 
+                    placeholder="Account Name (e.g. dexterpratt)"  required>
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" ng-model="signIn.newUser.emailAddress" 
+                    placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" ng-model="signIn.newUser.password" 
+                    placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" ng-model="signIn.newUser.passwordConfirm" 
+                    placeholder="Confirm Password" required>
+            </div>
+        </form>
+        <div class='text-danger'>
+            <strong>
+            {{signIn.signUpErrors}}
+            </strong>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-danger" ng-click="signIn.cancelSignUp()">Cancel</button>
+        <button class="btn btn-sm btn-default" ng-click="signIn.signUp()">Sign Up</button>
+    </div>
+</script>
 

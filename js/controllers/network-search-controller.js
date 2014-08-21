@@ -14,6 +14,7 @@ ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedPropertie
         $location.path("/network/" + networkId);
     };
 
+
     $scope.networkSearch.submitNetworkSearch = function () {
 
         // An array to hold our errors. ng-show and ng-hide relay on the length to toggle content.
@@ -38,7 +39,11 @@ ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedPropertie
             request.abort();
         };
 
-        (request = ndexService.findNetworks($scope.networkSearch.searchString, null, null, 0, 50) )
+        (request = ndexService.findNetworks($scope.networkSearch.searchString, 
+                                            $scope.networkSearch.accountName, 
+                                            $scope.networkSearch.permission,
+                                            $scope.networkSearch.includeGroups,
+                                            0, 50) )
             .success(
             function (networks) {
                 // Save the results
@@ -64,6 +69,15 @@ ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedPropertie
         )
 
     };
+
+
+    //quick implementation for navbar search support
+    if(sharedProperties.doSearch()) {
+        $scope.networkSearch.searchString = sharedProperties.getSearchString();
+        $scope.networkSearch.submitNetworkSearch();
+    }
+
+
 }
 ])
 ;

@@ -29,7 +29,7 @@
     </pre>
     -->
 
-    <div ng-show="networkSearch.networkSearchResults.length == 0">
+    <div ng-show="userSearch.userSearchResults.length == 0">
         <strong>No results found that match your criteria.</strong>
     </div>
 
@@ -37,58 +37,48 @@
     <div class=" col-sm-2 col-md-2 col-lg-2">  
         <h5>Refine By</h5>
         
-        <form role="form" ng-submit="networkSearch.submitNetworkSearch()">
+        <form role="form" ng-submit="userSearch.submitUserSearch()">
           <div class="form-group form-group-sm">
-            <label>Filter by Account:</label>
-            <input type="text" class="form-control input-sm" ng-model="networkSearch.accountName" placeholder="e.g. dexterpratt">
+            <label>Search within Group</label>
+            <input type="text" class="form-control input-sm" ng-model="userSearch.query.accountName" 
+                placeholder="e.g. myGroup">
           </div>
-          <div ng-show="networkSearch.accountName" class="checkbox">
-            <label>
-              <input type="checkbox" ng-model="networkSearch.includeGroups" value="true"> Include Account's Groups
-            </label>
-          </div>
-
-          <div ng-show="networkSearch.accountName">
-                <label>Account Permissions</label>
+          <div ng-show="userSearch.query.accountName">
+                <label>Type of Member</label>
               <div class="radio">
                   <label>
-                    <input type="radio" name="optionsRadios" ng-model="networkSearch.permission" value="ADMIN">
+                    <input type="radio" name="optionsRadios" ng-model="userSearch.query.permission" value="GROUPADMIN">
                     Is Admin
                   </label>
                </div>
                <div class="radio">
                   <label>
-                    <input type="radio" name="optionsRadios" ng-model="networkSearch.permission" value="WRITE">
-                    Can Edit
-                  </label>
-               </div>
-               <div class="radio">
-                  <label>
-                    <input type="radio" name="optionsRadios" ng-model="networkSearch.permission" value="READ">
-                    Can Read
+                    <input type="radio" name="optionsRadios" ng-model="userSearch.query.permission" value="MEMBER">
+                    Is Member
                   </label>
                </div>
             </div>
-
-           <div class="form-group form-group-sm">
-            <label>Larger Search</label>
-            <textarea class="form-control" ng-model="networkSearch.searchString" rows="20"></textarea>
-          </div>
           <button type="submit" class="btn btn-default btn-sm">Refine</button>
         </form>
 
     </div>
     <div class=" col-sm-7 col-md-7 col-lg-7">
 
-        <div ng-show="networkSearch.errors.length > 0">
-            <div class="row">
-                <div class="col-md-6 col-md-offset-2" ng-repeat="message in networkQuery.errors">
-                    <p><strong>{{message.label}}</strong> {{message.error}}</p>
+    <ul>
+        <ul ng-repeat="user in userSearch.userSearchResults">
+            <div class='row' ng-click="userSearch.displayUser(user.externalId)" style="cursor:pointer">
+                <img class ='col-xs-2 col-sm-2 col-md-2 col-lg-2' ng-src='{{userSearch.getImage(user)}}'>
+                <div>
+                <h5><strong>{{user.firstName}} {{user.lastName}}</strong></h5>
+                <p class="text-muted">{{user.accountName}}</p>
+                <p class="">{{user.description.substring(0,30)}}</p>
+                <!--should add logic to split only when to big and add '...'-->
                 </div>
             </div>
-        </div>
-
-        <table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null || networkSearch.networkSearchResults.length == 0">
+            <hr>
+        </ul>
+    </ul>
+        <!--<table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null || networkSearch.networkSearchResults.length == 0">
             <thead>
             <tr>
                 <th>Title</th>
@@ -105,7 +95,7 @@
                 <td class="AlignRight">{{network.edgeCount}}</td>
             </tr>
             </tbody>
-        </table>
+        </table>-->
     </div>
 
 </div>
@@ -113,8 +103,5 @@
 <script type="text/ng-template" id="searchContent.html">
     <div class="modal-body text-center">
         <img src="img/horizontal-loader.gif">
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-sm btn-default" ng-click="networkSearch.cancel()">Cancel</button>
     </div>
 </script>

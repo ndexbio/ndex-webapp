@@ -37,7 +37,7 @@
 
     <!-- ndex scripts -->
     <script src="js/ndex-service.js"></script>
-
+    <script src="js/ui-service.js"></script>
     <script src="js/script.js"></script>
 
     <!-- page controllers -->
@@ -46,6 +46,7 @@
     <script src="js/controllers/network-controller.js"></script>
     <script src="js/controllers/user-controller.js"></script>
     <script src="js/controllers/upload-controller.js"></script>
+    <script src="js/controllers/user-search-controller.js"></script>
 
     <!-- modal controllers -->
     <script src="js/controllers/create-group-modal-controller.js"></script>
@@ -68,40 +69,58 @@
             <a class="navbar-brand" href="#" style="max-height: 40px; padding-top: 0; padding-bottom: 0;"> 
             <div style="
                 background-image: url('img/NDEx-horizontal-transparent.png');
-                width: 150px;
+                background-repeat: no-repeat;
+                background-position: 0px 10px;
+                width: 120px;
                 height: 40px;
-                background-size: 150px 40px;
+                background-size: 120px 30px;
             "></div>
             </a>
         </div>
-        <div class="navbar-collapse" collapse="main.isCollapsed">
+        <div class="collapse navbar-collapse" collapse="main.isCollapsed">
+            <div class="col-sm-6 col-md-7 col-lg-8">
+                <form class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
+                    <div class="input-group" >
+                        <div class="input-group-btn dropdown">
+                          <button type="button" class="btn btn-default dropdown-toggle">
+                            {{main.searchType}} <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" role="menu">
+                            <li>
+                            <a class ="dropdown-toggle" ng-click="main.searchType = 'Networks'; main.searchString = ''">
+                            Networks</a></li>
+                            <li>
+                            <a class ="dropdown-toggle" ng-click="main.searchType = 'Users'; main.searchString = ''">
+                            Users</a></li>
+                            <li>
+                            <a class ="dropdown-toggle" ng-click="main.searchType = 'Groups'; main.searchString = ''">
+                            Groups</a></li>
+                          </ul>
+                        </div>
+                        <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
+                        <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
+                    </div>
+                </form>
+            </div>
         <ul class="nav navbar-nav navbar-right">
-            <li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}">
-                <a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a></li>
-
-            <li ng-class="{active:main.url.url() == '/searchNetworks'}">
-                <a ng-href="#searchNetworks">Search</a></li>
-
-            <li ng-class="{active:main.url.url() == '/upload'}">
-                <a ng-href="#upload">Upload</a></li>
-
             <li ng-show="main.getCurrentNetwork() != null"
                 ng-class="{active:main.url.url().search('/network') != -1}">
-                <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Current Network</a></li>
-
+                <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a></li>
+            <li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}">
+                <a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a></li>
+            <li ng-show="main.loggedIn" class="dropdown"><a href class="dropdown-toggle"><span class="caret"></span></a>
+                 <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Some Action</a></li>
+                    <li><a ng-href="#upload">Upload</a></li></li>
+                    <li class="divider"></li>
+                    <li><a ng-href="#" ng-click="main.signout()">Sign out</a></li>
+                  </ul>
+            </li>
             <!-- Show sign in if no user, sign out otherwise -->
             <li ng-show="!main.loggedIn"
                 ng-class="{active:main.url.url() == '/signIn'}">
                 <a ng-href="#signIn">Sign in</a>
             </li>
-
-            <li ng-show="main.loggedIn"
-                ng-class="{active:main.url.url() == '/signOut'}">
-                <a ng-href="#" ng-click="main.signout()">Sign out</a>
-            </li>
-
-            <li ng-class="{active:main.url.url() == '/'}">
-                <a ng-href="#"><i class="fa fa-home"></i> Home</a></li>
         </ul>
         </div>
     </div>

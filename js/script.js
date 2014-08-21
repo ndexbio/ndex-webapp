@@ -1,7 +1,7 @@
 //function () {
 // create the module and name it ndexApp
 var ndexApp = angular.module('ndexApp',
-    ['ngRoute', 'ngResource', 'ndexServiceApp', 'ui.bootstrap', 'angularFileUpload']);
+    ['ngRoute', 'ngResource', 'ndexServiceApp', 'ui.bootstrap', 'angularFileUpload', 'uiServiceApp']);
 var net1, net2;
 var cn, csn;
 var cUser;
@@ -30,6 +30,20 @@ ndexApp.service('sharedProperties', function () {
         setCurrentUser: function (value, accountName) {
             this.currentUserId = value;
             this.accountName = accountName;
+        },
+        setDoSearch: function() {
+            this.Search = true;
+        },
+        doSearch: function() {
+            var val = this.Search
+            this.Search = false;
+            return val;
+        },
+        setSearchString: function(searchString) {
+            this.searchString = searchString
+        },
+        getSearchString: function() {
+            return this.searchString;
         }
     }
 });
@@ -65,6 +79,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'searchNetworksController'
         })
 
+        .when('/searchUsers', {
+            templateUrl: 'pages/searchUsers.html',
+            controller: 'searchUsersController'
+        })
+
         // route for the user page
         .when('/user/:userId', {
             templateUrl: 'pages/user.html',
@@ -97,7 +116,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', function(ndexService, ndexUtility, sharedProperties, $scope, $location, $modal) {
+ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', function(ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route) {
 
     $scope.main = {};
 
@@ -125,6 +144,34 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.main.getCurrentUser = function() {
         return sharedProperties.getCurrentUserAccountName();
     };
+  
+    $scope.main.searchType = 'Networks';
+    $scope.main.searchString = '';
+    $scope.main.search = function(){
+        console.log("navbar search");
+        sharedProperties.setDoSearch();
+        //could user url instead, good for refresh
+        sharedProperties.setSearchString($scope.main.searchString);
+        
+        if($scope.main.searchType == 'Networks') {
+            if($location.path() == '/searchNetworks')
+                $route.reload();
+            else
+                $location.path("/searchNetworks");
+        } else if($scope.main.searchType == 'Users') {
+            if($location.path() == '/searchUsers')
+                $route.reload();
+            else
+                $location.path("/searchUsers");
+        } else if($scope.main.searchType == 'Groups') {
+            if($location.path() == '/searchGroups')
+                $route.reload();
+            else
+                $location.path("/searchGroups");
+        } 
+
+    }
+    //end navbar code
 
 
     var userData = ndexUtility.getUserCredentials();
