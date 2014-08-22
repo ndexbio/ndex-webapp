@@ -8,7 +8,7 @@ ndexApp.controller('networkController',
     cytoscapeService.initCyGraph();
 
     // Retrieve the network id from route params
-    $scope.networkQuery.currentNetworkId = $routeParams.networkId;
+    $scope.networkQuery.currentNetworkId = $routeParams.Identifier;
     sharedProperties.setCurrentNetworkId($scope.networkQuery.currentNetworkId);
     // We do this to avoid undefined errors
     if (!$scope.networkQuery.currentNetwork) $scope.networkQuery.currentNetwork = {};

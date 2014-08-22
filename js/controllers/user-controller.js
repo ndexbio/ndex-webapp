@@ -1,35 +1,71 @@
 ndexApp.controller('userController',
-    ['ndexService', 'ndexNavigation', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
-        function (ndexService, ndexNavigation, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
+    //general initializations
     $scope.user = {};
+    $scope.user.isLoggedInUser = false;
 
-    //user
-    $scope.user.currentUserId = $routeParams.userId; //actually account name right now - should change to UUID
+    $scope.user.identifier = $routeParams.identifier; //actually account name right now - should change to UUID
 
-    $scope.openCreateGroupModal = ndexNavigation.openCreateGroupModal;
-    $scope.openRequestResponseModal = ndexNavigation.openRequestResponseModal;
+    //move to directive?
     $scope.confirmTest = function(){
         ndexNavigation.openConfirmationModal("test message", function(){
             console.log("test modal confirmed");
         })
     };
 
-     $scope.user.setAndDisplayCurrentNetwork = function (networkId) {
-        $location.path("/network/" + networkId);
+    //move to shared properties? could be directive
+     $scope.user.setAndDisplayCurrentNetwork = function (identifier) {
+        $location.path("/network/" + identifier);
     };
 
-    ndexService.getUser($scope.user.currentUserId)
+    //          GROUPS
+
+    // initializations
+    $scope.user.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
+    $scope.user.groupSearchMember = false;
+    // declarations
+    $scope.user.submitGroupSearch = function() {
+        $scope.user.groupSearchResults = null;
+
+        var query = {};
+
+        query.accountName = $scope.user.displayedUser.accountName;
+        query.searchString = $scope.user.groupSearchString
+        if($scope.user.groupSearchAdmin) query.permission = 'GROUPADMIN';
+        if($scope.user.groupSearchMember) query.permission = 'MEMBER'
+        
+        //pagination missing
+        ndexService.searchGroups(query, 0, 50,
+            function (groups) {
+                // Save the results
+                $scope.user.groupSearchResults = groups;
+                
+            },
+            function (error) {
+                       
+            });
+    }
+
+
+    //page initializations
+
+    ndexService.getUser($scope.user.identifier)
     .success(
         function(user) {
-            //console.log("Setting displayedUser");
             $scope.user.displayedUser = user;
-            cUser = user;
-            
-            if($scope.user.displayedUser.image == null) {
-                $scope.user.displayedUser.image = 'img/no-pic.jpg';
-            }
+            var loggedInUser = ndexUtility.getUserCredentials();
 
+            if( (user.externalId == loggedInUser.userId)
+             || (user.accountName == loggedInUser.accountName)) 
+                $scope.user.isLoggedInUser = true;
+
+            cUser = user;
+
+            $scope.user.submitGroupSearch(); // get groups
+
+            // get networks
             $scope.user.networkSearchResults = null;
             $scope.user.searchString = "";
 

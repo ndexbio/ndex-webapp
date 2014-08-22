@@ -1,70 +1,128 @@
 <div id="divGroup" class="row" >
 
     <div class="col-md-2">
-        <img id="imgProfile" ng-show="group.displayedGroup.accountName" ng-src="http://i.imgur.com/09oVvZg.jpg"/>
-    </div>
-    <div class="col-md-10">
-        <h3 >
-            {{group.displayedGroup.organizationName}}
-        </h3>
-        <div>
-            <a href="{{group.displayedGroup.website}}">{{group.displayedGroup.website}}</a>
+        <div class="row">
+            <ndex-account-image 
+                    ndex-src="group.displayedGroup.image">
+            </ndex-account-image>
+            <h4>
+                {{group.displayedGroup.organizationName}}
+            </h4>
+            <div>
+                <small>{{group.displayedGroup.emailAddress}}</small>
+            </div>
+            <div>
+                <a ng-href="{{group.displayedGroup.website}}">{{group.displayedGroup.website}}</a>
+            </div>
+            <div>
+                {{group.displayedGroup.description}}
+            </div>
+            <hr>
+            <div class="btn-group" dropdown is-open="status.isopen" ng-show='group.isAdmin'>
+                <button type="button" class="btn btn-primary dropdown-toggle">
+                    Actions <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Action 3</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Action 4</a></li>
+                </ul>
+            </div>
         </div>
 
-        <div>
-            {{group.displayedGroup.description}}
-        </div>
     </div>
+
+    <!-- tabs -->
+    <div id="divgroupTabs" class="col-md-7" ng-show="group.displayedGroup">
+
+        <tabset justified="true">
+            <tab heading="Networks">
+                <div id="divNetworks">
+                    <table class="table table-hover" ng-show="group.networkSearchResults.length > 0">
+                        <!--
+                        <tbody ng-repeat="(index, network) in displayedGroup.networks">
+                        <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
+                            <td>{{network.resourceName}}</td>
+                        </tr>
+                        </tbody>
+                        -->
+                        <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Title</th>
+                            <th style="width: 10%;">Nodes</th>
+                            <th style="width: 10%;">Edges</th>
+                        </tr>
+                        </thead>
+                        <tbody  ng-repeat="network in group.networkSearchResults">
+                        <tr ng-click="group.setAndDisplayCurrentNetwork(network.externalId)">
+                            <td>{{network.metadata["Source"]}}</td>
+                            <td>{{network.name}}</td>
+                            </td>
+                            <td class="AlignRight">{{network.nodeCount}}</td>
+                            <td class="AlignRight">{{network.edgeCount}}</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </tab>
+            <tab heading="Members">
+                <div id="divGroups">
+                    <div class='row center-block'>
+                        <hr>
+                        <form class='form-inline col-md-6' role="form" ng-submit="group.submitUserSearch()">
+                            <div class='form-group'>
+                                <div class="input-group input-group-sm" >
+                                    <input type="text" class="form-control input-sm" placeholder="Search Members" >
+                                    <div class="input-group-btn"><button type="submit" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-search"></span></button></div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class='offset-col-md-2 col-md-2'>
+                            <div class="checkbox"><label>
+                                <input type="checkbox"
+                                    ng-click='group.userSearchAdmin = !group.userSearchAdmin; 
+                                                group.userSearchMember = false; 
+                                                group.submitUserSearch()'
+                                    ng-model="group.userSearchAdmin">Admin</label>
+                            </div>
+                        </div>
+                        <div class='col-md-2'>
+                            <div class="checkbox"><label>
+                                <input type="checkbox"
+                                    ng-click='group.userSearchMember = !group.userSearchMember;
+                                                group.userSearchAdmin = false; 
+                                                group.submitUserSearch()'
+                                    ng-model="group.userSearchMember">Member</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div> 
+                        <ul ng-repeat="user in group.userSearchResults">
+                            <ndex-navigation ndex-class="'row'" ndex-url="'user/'+user.externalId">
+                                <ndex-account-image 
+                                  ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
+                                  ndex-src="user.image">
+                                </ndex-account-image>
+                                <div class="'col-xs-10 col-sm-10 col-md-10 col-lg-10'">
+                                <h5><strong>{{user.firstName}} {{user.lastName}}</strong></h5>
+                                <p class="text-muted">{{user.accountName}}</p>
+                                <p class="">{{user.description.substring(0,30)}}</p>
+                                <!--should add logic to split only when to big and add '...'-->
+                                </div>
+                            </ndex-navigation>
+                            
+                        </ul>
+                    </div>
+
+                </div>
+            </tab>
+        </tabset>
+
+    </div>
+
 </div>
-
-<!-- tabs -->
-<div id="divUserTabs" class="row" ng-show="group.displayedGroup">
-
-    <tabset>
-        <tab heading="Networks">
-            <div id="divNetworks">
-                <table class="table table-hover" ng-show="group.networkSearchResults.length > 0">
-                    <!--
-                    <tbody ng-repeat="(index, network) in displayedUser.networks">
-                    <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
-                        <td>{{network.resourceName}}</td>
-                    </tr>
-                    </tbody>
-                    -->
-                    <thead>
-                    <tr>
-                        <th>Source</th>
-                        <th>Title</th>
-                        <th style="width: 10%;">Nodes</th>
-                        <th style="width: 10%;">Edges</th>
-                    </tr>
-                    </thead>
-                    <tbody  ng-repeat="network in user.networkSearchResults">
-                    <tr ng-click="user.setAndDisplayCurrentNetwork(network.externalId)">
-                        <td>{{network.metadata["Source"]}}</td>
-                        <td>{{network.name}}</td>
-                        </td>
-                        <td class="AlignRight">{{network.nodeCount}}</td>
-                        <td class="AlignRight">{{network.edgeCount}}</td>
-                    </tr>
-                    </tbody>
-
-                </table>
-            </div>
-        </tab>
-        <tab heading="Users">
-            <div id="divUsers">
-                <table>
-                    <tbody ng-repeat="(index, user) in group.displayedGroup.users">
-                    <tr ng-click="group.setAndDisplayCurrentUser(user.resourceId)">
-                        <td>{{user.resourceName}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </tab>
-
-    </tabset>
-
-</div>
-

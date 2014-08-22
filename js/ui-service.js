@@ -80,4 +80,77 @@
                 return factory;
             }]);
 
+    //----------------------------------------------------
+    //                  Attributes
+    
+    // First shot at directives, using a service to invoke modals presents unknown problems
+    uiServiceApp.directive('triggerCreateGroupModal', function() {
+        return {
+            restrict: 'A',
+            templateUrl: 'pages/directives/createGroupModal.html',
+            controller: function($scope, $attrs, $modal, $location, ndexService) {
+                var modalInstance;
+
+                $scope.group = {};
+                $scope.text = $attrs.triggerCreateGroupModal;
+
+                $scope.openMe = function() {
+                   modalInstance = $modal.open({
+                        templateUrl: 'modal.html',
+                        scope: $scope
+                    });
+                };
+                
+                $scope.cancel = function() {
+                    modalInstance.dismiss();
+                };
+
+                $scope.submit = function() {
+                    ndexService.createGroup($scope.group,
+                        function(groupData){
+                            modalInstance.close();
+                            console.log(groupData);
+                            $location.path('/group/'+groupData.externalId);
+                        },
+                        function(error){
+                            // do some error handling
+                        });
+                };
+            }
+        }
+    });
+
+    //----------------------------------------------------
+    //              Elements
+
+    uiServiceApp.directive('ndexAccountImage', function() {
+        return {
+            scope: {
+                ndexSrc:'=',
+                ndexClass: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/accountImage.html',
+            link: function($attrs) {
+                if ($attrs.ndexSrc == null) $attrs.ndexSrc = 'img/no-pic.jpg';
+            } 
+        }
+    });
+
+    uiServiceApp.directive('ndexNavigation', function(){
+        return {
+            scope: {
+                ndexUrl: '=',
+                ndexClass: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/ndexNavigation.html',
+            transclude: true,
+            controller: function($scope, $location) {
+                $scope.location = $location;
+            }
+        }
+    });
+
+
 }) ()

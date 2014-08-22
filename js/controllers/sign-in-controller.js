@@ -24,6 +24,7 @@ ndexApp.controller('signInController',
     }
 
     $scope.signIn.cancelSignUp = function(){
+        $scope.signIn.newUser = {};
         $scope.signIn.modalInstance.close();
         $scope.signIn.modalInstance = null;
     }

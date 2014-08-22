@@ -74,13 +74,13 @@
                     return $http(config);
                 };
 
-                var UserResource = $resource(ndexServerURI + '/user/:userId:action/:subResource/:permission:subId:status/:skipBlocks/:blockSize',
+                var UserResource = $resource(ndexServerURI + '/user/:identifier:action/:subResource/:permissions:subId:status/:skipBlocks/:blockSize',
                     //parmaDefaults
                     {
-                        userId: '@userId',
+                        identifier: '@identifier',
                         action: '@action',
                         subResource: '@subResource',
-                        permission: '@permission',
+                        permissions: '@permissions',
                         status: '@status',
                         subId: '@subId',
                         skipBlocks: '@skipBlocks',
@@ -107,8 +107,19 @@
                                     return data;
                                 }
                             }
+                        },
+                        getMembership: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'membership'
+                            }
                         }
                     })
+
+                factory.getMyMembership = function(resourceId, successHandler, errorHandler) {
+                    var loggedInUser = ndexUtility.getUserCredentials();
+                    UserResource.getMembership({identifier: loggedInUser.userId, subId: resourceId}, successHandler, errorHandler);
+                };
 
                 factory.searchUsers = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
                     console.log('searching for users with params: \n    ' + JSON.stringify(queryObject));
@@ -133,7 +144,7 @@
                     console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
 
                     UserResource.get({
-                            'userId': userUUID,
+                            'identifier': userUUID,
                             'skipBlocks': skipBlocks,
                             'blockSize': blockSize,
                             'subResource': "task",
@@ -147,13 +158,13 @@
                  * Groups
                  *---------------------------------------------------------------------*/
 
-                var GroupResource = $resource(ndexServerURI + '/group/:groupId:action/:subResource/:permission:subId/:skipBlocks/:blockSize',
+                var GroupResource = $resource(ndexServerURI + '/group/:groupId:action/:subResource/:permissions:subId/:skipBlocks/:blockSize',
                     //paramDefaults
                     {
-                        groupId: '@groupId',
+                        identifier: '@identifier',
                         action: '@action',
                         subResource: '@subResource',
-                        permission: '@permission',
+                        permissions: '@permissions',
                         subId: '@subId',
                         skipBlocks: '@skipBlocks',
                         blockSize: '@blockSize'
@@ -172,7 +183,7 @@
 
                 factory.getGroup = function (groupUUID, successHandler, errorHandler) {
                     console.log("retrieving group with UUID " + groupUUID);
-                    GroupResource.get({'groupId': groupUUID}, successHandler, errorHandler);
+                    GroupResource.get({'identifier': groupUUID}, successHandler, errorHandler);
                 };
 
                 factory.createGroup = function (group, successHandler, errorHandler) {
@@ -186,17 +197,17 @@
                     GroupResource.save({}, group, successHandler, errorHandler);
                 };
 
-                factory.deleteGroup = function (groupUUID, successHandler, errorHandler) {
+                factory.deleteGroup = function (externalId, successHandler, errorHandler) {
                     console.log("deleting group with UUID " + groupUUID);
-                    GroupResource.delete({'groupId': groupUUID}, successHandler, errorHandler);
+                    GroupResource.delete({'identifier': externalId}, successHandler, errorHandler);
                 }
 
-                factory.searchGroups = function (queryObject, successHandler, errorHandler) {
+                factory.searchGroups = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
                     //an empty js object will cause the request to be canceled
                     if (queryObject.searchString == null)
                         queryObject.searchString = '';
                     console.log('searching for groups');
-                    GroupResource.search({'skipBlocks': 0, 'blockSize': 5}, queryObject, successHandler, errorHandler);
+                    GroupResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
                 }
 
                 /*---------------------------------------------------------------------*

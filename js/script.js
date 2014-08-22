@@ -49,8 +49,6 @@ ndexApp.service('sharedProperties', function () {
 });
 
 
-
-
 // configure our routes
 ndexApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -84,20 +82,25 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'searchUsersController'
         })
 
+        .when('/searchGroups', {
+            templateUrl: 'pages/searchGroups.html',
+            controller: 'searchGroupsController'
+        })
+
         // route for the user page
-        .when('/user/:userId', {
+        .when('/user/:identifier', {
             templateUrl: 'pages/user.html',
             controller: 'userController'
         })
 
         // route for the group page
-        .when('/group/:groupId', {
+        .when('/group/:identifier', {
             templateUrl: 'pages/group.html',
             controller: 'groupController'
         })
 
         // route for the network page
-        .when('/network/:networkId', {
+        .when('/network/:identifier', {
             templateUrl: 'pages/network.html',
             controller: 'networkController'
         })

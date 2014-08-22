@@ -12,7 +12,7 @@
                 placeholder="e.g. myGroup">
           </div>
           <div ng-show="userSearch.query.accountName">
-                <label>Type of Member</label>
+                <label>Type of Members</label>
               <div class="radio">
                   <label>
                     <input type="radio" name="optionsRadios" ng-model="userSearch.query.permission" value="GROUPADMIN">
@@ -34,24 +34,21 @@
 
     <ul>
         <ul ng-repeat="user in userSearch.userSearchResults">
-            <div class='row' ng-click="userSearch.displayUser(user.externalId)" style="cursor:pointer">
-                <img class ='col-xs-2 col-sm-2 col-md-2 col-lg-2' ng-src='{{userSearch.getImage(user)}}'>
+            <ndex-navigation ndex-class="'row'" ndex-url="'user/'+user.externalId">
+                <ndex-account-image 
+                  ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
+                  ndex-src="user.image">
+                </ndex-account-image>
                 <div>
                 <h5><strong>{{user.firstName}} {{user.lastName}}</strong></h5>
                 <p class="text-muted">{{user.accountName}}</p>
                 <p class="">{{user.description.substring(0,30)}}</p>
                 <!--should add logic to split only when to big and add '...'-->
                 </div>
-            </div>
-            <hr>
+            </ndex-navigation>
+            
         </ul>
     </ul>
     </div>
 
 </div>
-
-<script type="text/ng-template" id="searchContent.html">
-    <div class="modal-body text-center">
-        <img src="img/horizontal-loader.gif">
-    </div>
-</script>

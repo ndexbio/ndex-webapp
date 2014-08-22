@@ -1,23 +1,30 @@
 <div id="divUser" class="row" >
 
     <div class="col-md-2">
-            <!--
-            <img id="imgProfile" ng-show="displayedUser.username" ng-src="http://test.ndexbio.org/profile/foreground/{{displayedUser.username}}.jpg"/>
-            -->
-        <img id="imgProfile" ng-show="user.displayedUser.accountName" ng-src="{{user.displayedUser.image}}"/>
-    </div>
-    <div class="col-md-10">
-        <h3 >
-            {{user.displayedUser.firstName}} {{user.displayedUser.lastName}}
-        </h3>
-
-        <div class="pull-right pull-top">
-            <div class="btn-group" dropdown is-open="status.isopen">
+        <div class="row">
+            <ndex-account-image 
+                    ndex-class="'col-md-10'"
+                    ndex-src="user.displayedUser.image">
+            </ndex-account-image>
+            <h4>
+                {{user.displayedUser.firstName}} {{user.displayedUser.lastName}}
+            </h4>
+            <div>
+                <small>{{user.displayedUser.emailAddress}}</small>
+            </div>
+            <div>
+                <a href="{{user.displayedUser.website}}">{{user.displayedUser.website}}</a>
+            </div>
+            <div>
+                {{user.displayedUser.description}}
+            </div>
+            <hr>
+            <div class="btn-group" dropdown is-open="status.isopen" ng-show='user.isLoggedInUser'>
                 <button type="button" class="btn btn-primary dropdown-toggle">
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a ng-click="openCreateGroupModal()">Create Group</a></li>
+                    <li><a trigger-create-group-modal="Create Group"></a></li>
                     <li><a ng-click="confirmTest()">Test Confirm</a></li>
                     <li><a href="#">Action 3</a></li>
                     <li class="divider"></li>
@@ -27,96 +34,119 @@
 
         </div>
 
-        <div>
-            {{user.displayedUser.emailAddress}}
-        </div>
+    </div>
 
-        <div>
-            <a href="{{user.displayedUser.website}}">{{user.displayedUser.website}}</a>
-        </div>
+    <!-- tabs -->
+    <div id="divUserTabs" class="col-md-7" ng-show="user.displayedUser">
 
-        <div>
-            {{user.displayedUser.description}}
+        <tabset justified="true">
+            <tab heading="Networks">
+                <div id="divNetworks">
+                    <table class="table table-hover" ng-show="user.networkSearchResults.length > 0">
+                        <!--
+                        <tbody ng-repeat="(index, network) in displayedUser.networks">
+                        <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
+                            <td>{{network.resourceName}}</td>
+                        </tr>
+                        </tbody>
+                        -->
+                        <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Title</th>
+                            <th style="width: 10%;">Nodes</th>
+                            <th style="width: 10%;">Edges</th>
+                        </tr>
+                        </thead>
+                        <tbody  ng-repeat="network in user.networkSearchResults">
+                        <tr ng-click="user.setAndDisplayCurrentNetwork(network.externalId)">
+                            <td>{{network.metadata["Source"]}}</td>
+                            <td>{{network.name}}</td>
+                            </td>
+                            <td class="AlignRight">{{network.nodeCount}}</td>
+                            <td class="AlignRight">{{network.edgeCount}}</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </tab>
+            <tab heading="Groups">
+                <div id="divGroups">
+                    <div class='row center-block'>
+                        <hr>
+                        <form class='form-inline col-md-6' role="form" ng-submit="user.submitGroupSearch()">
+                            <div class='form-group'>
+                                <div class="input-group input-group-sm" >
+                                    <input type="text" class="form-control input-sm" placeholder="Search Groups" >
+                                    <div class="input-group-btn"><button type="submit" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-search"></span></button></div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class='offset-col-md-2 col-md-2'>
+                            <div class="checkbox"><label>
+                                <input type="checkbox"
+                                    ng-click='user.groupSearchAdmin = !user.groupSearchAdmin; 
+                                                user.groupSearchMember = false; 
+                                                user.submitGroupSearch()'
+                                    ng-model="user.groupSearchAdmin">Admin</label>
+                            </div>
+                        </div>
+                        <div class='col-md-2'>
+                            <div class="checkbox"><label>
+                                <input type="checkbox"
+                                    ng-click='user.groupSearchMember = !user.groupSearchMember;
+                                                user.groupSearchAdmin = false; 
+                                                user.submitGroupSearch()'
+                                    ng-model="user.groupSearchMember">Member</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div> 
+                        <ul ng-repeat="group in user.groupSearchResults">
+                            <ndex-navigation ndex-class="'row'" ndex-url="'group/'+group.externalId">
+                                <ndex-account-image 
+                                  ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
+                                  ndex-src="group.image">
+                                </ndex-account-image>
+                                <div class="'col-xs-10 col-sm-10 col-md-10 col-lg-10'">
+                                <h5><strong>{{group.organizationName}}</strong></h5>
+                                <p class="text-muted">{{group.accountName}}</p>
+                                <p class="">{{group.description.substring(0,30)}}</p>
+                                <!--should add logic to split only when to big and add '...'-->
+                                </div>
+                            </ndex-navigation>
+                            
+                        </ul>
+                    </div>
+
+                </div>
+            </tab>
+        </tabset>
+
+    </div>
+
+    <div class="col-md-3" ng-show='user.isLoggedInUser'>
+        <div class="row panel panel-default">
+            <div class="panel-body">
+                <h5>Requests</h5>
+                <hr>
+                show only if i have requests
+                Some request
+            </div>
+        </div>
+        <div class="row panel panel-default" ng-show='user.isLoggedInUser'>
+            <div class="panel-body">
+                <h5>Tasks</h5>
+                <hr>
+                show only if i have tasks
+                Some task
+            </div>
         </div>
     </div>
-</div>
-
-
-<!-- tabs -->
-<div id="divUserTabs" class="row" ng-show="user.displayedUser">
-
-    <tabset>
-        <tab heading="Networks">
-            <div id="divNetworks">
-                <table class="table table-hover" ng-show="user.networkSearchResults.length > 0">
-                    <!--
-                    <tbody ng-repeat="(index, network) in displayedUser.networks">
-                    <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
-                        <td>{{network.resourceName}}</td>
-                    </tr>
-                    </tbody>
-                    -->
-                    <thead>
-                    <tr>
-                        <th>Source</th>
-                        <th>Title</th>
-                        <th style="width: 10%;">Nodes</th>
-                        <th style="width: 10%;">Edges</th>
-                    </tr>
-                    </thead>
-                    <tbody  ng-repeat="network in user.networkSearchResults">
-                    <tr ng-click="user.setAndDisplayCurrentNetwork(network.externalId)">
-                        <td>{{network.metadata["Source"]}}</td>
-                        <td>{{network.name}}</td>
-                        </td>
-                        <td class="AlignRight">{{network.nodeCount}}</td>
-                        <td class="AlignRight">{{network.edgeCount}}</td>
-                    </tr>
-                    </tbody>
-
-                </table>
-            </div>
-        </tab>
-        <tab heading="Groups">
-            <div id="divGroups">
-                <table>
-                    <tbody ng-repeat="(index, group) in user.displayedUser.groups">
-                    <tr ng-click="user.setAndDisplayCurrentGroup(group.resourceName)">
-                        <td>{{group.resourceName}}</td>
-                        <td ng-show="group.organizationName">{{group.organizationName}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </tab>
-        <tab heading="Tasks">
-            <div id="divTasks">
-                <table>
-                    <tbody ng-repeat="(index, task) in user.displayedUser.tasks">
-
-                    <tr>
-                        <td><i class="icon-remove icon-white" ng-click="markTaskForDeletion(task.id)"></i></td>
-                        <td>{{task.description}}</td>
-                        <td>{{task.status}}</td>
-                        <td><span ng-show="false">download</span></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </tab>
-        <tab heading="Requests">
-            <div id="divRequests">
-                <table>
-                    <tbody ng-repeat="(index, request) in user.displayedUser.requests">
-
-                    <tr>
-                        <td>From: {{request.from}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </tab>
-    </tabset>
 
 </div>
 
