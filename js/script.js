@@ -5,6 +5,7 @@ var ndexApp = angular.module('ndexApp',
 var net1, net2;
 var cn, csn;
 var cUser;
+var cTasks;
 
 ndexApp.service('sharedProperties', function () {
     // this service is going to act as a general global variable throughout the application

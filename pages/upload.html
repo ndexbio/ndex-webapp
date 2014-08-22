@@ -7,17 +7,23 @@
         <div ng-show="uploader.isHTML5">
             <!-- 3. nv-file-over uploader="link" over-class="className" -->
             <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
-                Drop files here
+                Drop
+                files
+                here
             </div>
         </div>
 
         Browse Network Files
-        <input type="file" nv-file-select="" uploader="uploader" />
+        <input type="file" nv-file-select="" uploader="uploader"/>
 
         <h3>How It Works:</h3>
+
         <p>First select network files for uploading in SIF, XBEL, or XGMML format</p>
+
         <p>Then upload the files - they will be temporarily stored on NDEx for processing</p>
+
         <p>Each uploaded file is assigned a network loading task, displayed at the bottom of this page</p>
+
         <p>The status of each file will update as NDEx processes it</p>
 
     </div>
@@ -25,6 +31,7 @@
     <div class="col-md-9" style="margin-bottom: 40px">
 
         <h3>My Network Files to Upload</h3>
+
         <p>Queue length: {{ uploader.queue.length }}</p>
 
         <table class="table">
@@ -52,10 +59,12 @@
                     <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
                 </td>
                 <td nowrap>
-                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()"
+                            ng-disabled="item.isReady || item.isUploading || item.isSuccess">
                         <span class="glyphicon glyphicon-upload"></span> Upload
                     </button>
-                    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()"
+                            ng-disabled="!item.isUploading">
                         <span class="glyphicon glyphicon-ban-circle"></span> Cancel
                     </button>
                     <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
@@ -73,13 +82,16 @@
                     <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
                 </div>
             </div>
-            <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+            <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()"
+                    ng-disabled="!uploader.getNotUploadedItems().length">
                 <span class="glyphicon glyphicon-upload"></span> Upload all
             </button>
-            <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+            <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()"
+                    ng-disabled="!uploader.isUploading">
                 <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
             </button>
-            <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+            <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()"
+                    ng-disabled="!uploader.queue.length">
                 <span class="glyphicon glyphicon-trash"></span> Remove all
             </button>
         </div>
@@ -93,44 +105,31 @@
         <table class="table">
             <thead>
             <tr>
-                <th width="50%">Name</th>
                 <th>Status</th>
+                <th>Description</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="task in tasks">
-                <td><strong>{{ task.resource }}</strong></td>
                 <td class="text-center">
-                    <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                    {{task.status}}
+                    <!--
+                    <span ng-show="task.status"><i class="glyphicon glyphicon-ok"></i></span>
                     <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
                     <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                    -->
                 </td>
+                <td>{{task.description}}</td>
                 <td nowrap>
-                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                        <span class="glyphicon glyphicon-upload"></span> Upload
-                    </button>
-                    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel
-                    </button>
-                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                    <button type="button" class="btn btn-danger btn-xs"
+                            ng-click="markTaskForDeletion(task.id)">
                         <span class="glyphicon glyphicon-trash"></span> Remove
                     </button>
+                    <button type="button" class="btn btn-danger btn-xs"
+                            > Download
+                    </button>
                 </td>
-
-                <div id="divTasks">
-                    <table>
-                        <tbody ng-repeat="(index, task) in user.displayedUser.tasks">
-
-                        <tr>
-                            <td><i class="icon-remove icon-white" ng-click="markTaskForDeletion(task.id)"></i></td>
-                            <td>{{task.description}}</td>
-                            <td>{{task.status}}</td>
-                            <td><span ng-show="false">download</span></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-
             </tr>
             </tbody>
         </table>

@@ -14,10 +14,12 @@ ndexApp.controller('uploadController',
                     $scope.taskBlockSize,
                     // Success
                     function(tasks){
-                        $scope.tasks = tasks;
+                        console.log("Successfully retrieved tasks: " + tasks);
+                        cTasks = $scope.tasks = tasks;
                     },
                     // Error
                     function(response){
+                        console.log("Failed to retrieve tasks: " + response);
                        //TBD
                     }
                 )
