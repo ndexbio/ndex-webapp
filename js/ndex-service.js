@@ -228,7 +228,7 @@
                  *  PUT	    /task/{taskUUID}/status/{status}	Task
                  *---------------------------------------------------------------------*/
 
-                var TaskResource = $resource(ndexServerURI + '/task/:taskId/status/:status/',
+                var TaskResource = $resource(ndexServerURI + '/task/:taskId/:action/:status/',
                     //paramDefaults
                     {
                         taskId: '@taskId',
@@ -238,7 +238,9 @@
                     {
                         setStatus: {
                             method: 'PUT',
-                            isArray: true
+                            params: {
+                                action: 'status'
+                            }
                         }
                     }
                 );
@@ -259,14 +261,16 @@
                     TaskResource.delete({'taskId': taskUUID}, successHandler, errorHandler);
                 };
 
-                factory.setTaskStatus = function (task, status, successHandler, errorHandler) {
+                factory.setTaskStatus = function (taskUUID, status, successHandler, errorHandler) {
 
-                    console.log('updating status to ' + status + " for task " + task.taskUUID);
-                    TaskResource.setStatus({'taskId': task.taskUUID, 'status': status}, queryObject,
-                        function (data) {
-                            successHandler(data);
-                            task.status = status;
+                    console.log('updating status to ' + status + " for task " + taskUUID);
+                    TaskResource.setStatus(
+                        {
+                            'taskId': taskUUID,
+                            'status': status
                         },
+                        {},
+                        successHandler,
                         errorHandler
                     );
                 };

@@ -123,11 +123,8 @@
                 <td>{{task.description}}</td>
                 <td nowrap>
                     <button type="button" class="btn btn-danger btn-xs"
-                            ng-click="markTaskForDeletion(task.id)">
+                            ng-click="markTaskForDeletion(task.externalId)">
                         <span class="glyphicon glyphicon-trash"></span> Remove
-                    </button>
-                    <button type="button" class="btn btn-danger btn-xs"
-                            > Download
                     </button>
                 </td>
             </tr>

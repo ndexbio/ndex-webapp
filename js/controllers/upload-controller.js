@@ -14,8 +14,14 @@ ndexApp.controller('uploadController',
                     $scope.taskBlockSize,
                     // Success
                     function(tasks){
-                        console.log("Successfully retrieved tasks: " + tasks);
-                        cTasks = $scope.tasks = tasks;
+                        //console.log("Successfully retrieved tasks: " + tasks);
+                        $scope.tasks = [];
+                        $.each(tasks, function(index, task){
+                            if (task.taskType == "PROCESS_UPLOADED_NETWORK"){
+                                $scope.tasks.push(task);
+                            }
+                        });
+                        cTasks = $scope.tasks; // convenience variable
                     },
                     // Error
                     function(response){
@@ -24,6 +30,13 @@ ndexApp.controller('uploadController',
                     }
                 )
 
+            }
+
+            $scope.markTaskForDeletion= function(taskUUID){
+                ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
+                    function(){
+                        $scope.refreshTasks();
+                    })
             }
 
             var uploader = $scope.uploader = new FileUploader({
@@ -81,6 +94,8 @@ ndexApp.controller('uploadController',
             };
             uploader.onCompleteAll = function() {
                 console.info('onCompleteAll');
+                console.log('onCompleteAll');
+                $scope.refreshTasks();
             };
 
             console.info('uploader', uploader);
