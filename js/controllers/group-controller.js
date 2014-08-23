@@ -26,7 +26,7 @@ ndexApp.controller('groupController',
                   var query = {};
 
                   query.accountName = $scope.group.displayedGroup.accountName;
-                  query.searchString = $scope.group.groupSearchString
+                  query.searchString = $scope.group.memberSearchString
                   if($scope.group.userSearchAdmin) query.permission = 'GROUPADMIN';
                   if($scope.group.userSearchMember) query.permission = 'MEMBER'
                           
@@ -52,7 +52,7 @@ ndexApp.controller('groupController',
 
                     ndexService.getMyMembership(group.externalId, 
                         function(membership) {
-                              if(membership != null)
+                              if(membership.permissions != null)
                                     $scope.group.isAdmin = true;
                         },
                         function(error){

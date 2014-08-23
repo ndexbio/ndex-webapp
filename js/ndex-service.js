@@ -15,6 +15,10 @@
 
     var ndexServiceApp = angular.module('ndexServiceApp', []);
 
+    //ndexServiceApp.config(['$httpProvider', 'ndexConfigs', function($httpProvider, ndexConfigs) {
+     //  $httpProvider.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+    //}]);
+
     /****************************************************************************
      * NDEx HTTP Service
      * description  : $http calls to rest server. can do pre-processing here
@@ -45,7 +49,7 @@
                     console.log("submitting user credentials for user: " + accountName);
                     var config = ndexConfigs.getSubmitUserCredentialsConfig(accountName, password);
                     return $http(config).success(function (userData) {
-                        ndexUtility.setUserCredentials(userData, password);
+                        ndexUtility.setUserCredentials(userData.accountName, userData.externalId, password);
                         return {success: function (handler) {
                             handler(userData);
                         }
@@ -99,7 +103,7 @@
                             method: 'POST',
                             interceptor: {
                                 response: function (data) {
-                                    localStorage.userId = data.data.externalId; //should fix
+                                    ndexUtility.setUserInfo(data.data.accountName, data.data.externalId);
                                     return data.data;
                                 },
                                 responseError: function (data) {
@@ -112,13 +116,25 @@
                             method: 'GET',
                             params: {
                                 subResource: 'membership'
+                            },
+                            interceptor: {
+                                response: function(data) {
+                                    return data.data;
+                                }
                             }
                         }
                     })
 
+                factory.editUserProfile = function(user, successHandler, errorHandler) {
+                    user.accountType = 'User';
+                    var externalId = ndexUtility.getLoggedInUserExternalId();
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    UserResource.save({identifier: externalId}, user, successHandler, errorHandler);
+                }
+
                 factory.getMyMembership = function(resourceId, successHandler, errorHandler) {
-                    var loggedInUser = ndexUtility.getUserCredentials();
-                    UserResource.getMembership({identifier: loggedInUser.userId, subId: resourceId}, successHandler, errorHandler);
+                    var externalId = ndexUtility.getLoggedInUserExternalId();
+                    UserResource.getMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
                 };
 
                 factory.searchUsers = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
@@ -136,8 +152,8 @@
                 factory.createUser = function (user, successHandler, errorHandler) {
                     console.log('creating user with params:\n    ' + JSON.stringify(user));
                     user.accountType = 'User';
-                    ndexUtility.setUserCredentials(user, user.password); //fix to only take user, probably, no need for utility function
-                    //need to intercept message
+                    ndexUtility.setUserAuthToken(user.password);
+
                     UserResource.createUser({}, user, successHandler, errorHandler);
                 }
 
@@ -165,13 +181,13 @@
                  * Groups
                  *---------------------------------------------------------------------*/
 
-                var GroupResource = $resource(ndexServerURI + '/group/:groupId:action/:subResource/:permissions:subId/:skipBlocks/:blockSize',
+                var GroupResource = $resource(ndexServerURI + '/group/:identifier:action/:subResource/:permissionType:subId/:skipBlocks/:blockSize',
                     //paramDefaults
                     {
                         identifier: '@identifier',
                         action: '@action',
                         subResource: '@subResource',
-                        permissions: '@permissions',
+                        permissionType: '@permissionType',
                         subId: '@subId',
                         skipBlocks: '@skipBlocks',
                         blockSize: '@blockSize'
@@ -184,9 +200,29 @@
                                 action: 'search'
                             },
                             isArray: true
+                        },
+                        updateMembership: {
+                            method: 'POST',
+                            params: {
+                                subResource: 'member'
+                            }
                         }
                     }
                 );
+
+                factory.updateGroupMember = function(membership, successHandler, errorHandler) {
+                    membership.accountType='Group';
+                    membership.type = 'Membership'
+                    console.log(membership);
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    GroupResource.updateMembership({identifier:membership.resourceUUID}, membership, successHandler, errorHandler);
+                }
+
+                factory.editGroupProfile = function(group, successHandler, errorHandler) {
+                    group.accountType = 'Group';
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    GroupResource.save({identifier: group.externalId}, group, successHandler, errorHandler);
+                }
 
                 factory.getGroup = function (groupUUID, successHandler, errorHandler) {
                     console.log("retrieving group with UUID " + groupUUID);
@@ -199,7 +235,6 @@
                     // ensure authorization header is set.
                     // May become superfluous if we update headers on sign-in, sign-out, initialization
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    console.log("creating group with accountName = " + group.accountName);
 
                     GroupResource.save({}, group, successHandler, errorHandler);
                 };
@@ -493,14 +528,7 @@
          * user credentials and ID
          *-----------------------------------------------------------------------*/
         factory.clearUserCredentials = function () {
-            if (this.checkLocalStorage()) {
-                delete localStorage.accountName;
-                delete localStorage.password;
-                delete localStorage.userId;
-            }
-            //if (localStorage["Groups Search"]) delete localStorage["Groups Search"];
-            //if (localStorage["Users Search"]) delete localStorage["Users Search"];
-            //if (localStorage["Networks Search"]) delete localStorage["Networks Search"];
+            localStorage.setItem('loggedInUser', null);
 
         };
 
@@ -509,27 +537,61 @@
             return true;
         };
 
-        factory.setUserCredentials = function (userData, password) {
-            localStorage.accountName = userData.accountName;
-            localStorage.password = password;
-            localStorage.userId = userData.externalId;
+        factory.setUserCredentials = function (accountName, externalId, token) {
+            var loggedInUser = {};
+            loggedInUser.accountName = accountName;
+            loggedInUser.token = token;
+            loggedInUser.externalId = externalId;
+            localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
         };
 
-        /*factory.getUserId = function(){
-         return localStorage.userId;
-         };*/
 
         factory.getUserCredentials = function () {
             if (factory.checkLocalStorage()) {
-                if (localStorage.accountName) {
-                    var userData = {accountName: localStorage.accountName,
-                        userId: localStorage.userId,
-                        token: localStorage.password
+                if (localStorage.loggedInUser) {
+                    var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+                    var userData = {
+                        accountName: loggedInUser.accountName,
+                        externalId: loggedInUser.externalId,
+                        token: loggedInUser.token
                     };
                     return userData;
 
                 }
             }
+        };
+
+        factory.setUserAuthToken = function(token) {
+            var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if(!loggedInUser) loggedInUser = {};
+            loggedInUser.token = token;
+            localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+        };
+
+        factory.setUserInfo = function(accountName, externalId) {
+            var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if(!loggedInUser) loggedInUser = {};
+            loggedInUser.accountName = accountName;
+            loggedInUser.externalId = externalId;
+            localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+        };
+
+        factory.getLoggedInUserExternalId = function() {
+            var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if(!loggedInUser) loggedInUser = {};
+            return loggedInUser.externalId;
+        };
+
+        factory.getLoggedInUserAccountName = function() {
+            var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if(!loggedInUser) loggedInUser = {};
+            return loggedInUser.accountName;
+        };
+
+        factory.getLoggedInUserAuthToken = function() {
+            var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if(!loggedInUser) loggedInUser = {};
+            return loggedInUser.token;
         };
 
         /*-----------------------------------------------------------------------*
@@ -580,7 +642,7 @@
     /****************************************************************************
      * $http configuration service
      ****************************************************************************/
-    ndexServiceApp.factory('ndexConfigs', function () {
+    ndexServiceApp.factory('ndexConfigs', function (ndexUtility) {
         var factory = {};
 
         //factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
@@ -623,8 +685,8 @@
          * encoded.
          *---------------------------------------------------------------------*/
         factory.getEncodedUser = function () {
-            if (localStorage.accountName)
-                return btoa(localStorage.accountName + ":" + localStorage.password);
+            if (ndexUtility.getLoggedInUserAccountName)
+                return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
             else
                 return null;
         };

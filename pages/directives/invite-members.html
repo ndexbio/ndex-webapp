@@ -1,0 +1,39 @@
+<span ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="invite-members-modal.html">
+<div class='modal-content'>
+    <div class="modal-header">
+        <h3 class="modal-title">Add NDEx Users to Group</h3>
+    </div>
+    <div class="modal-body">
+        
+          <div class='row'>
+            <div class='col-md-8'>
+                <input name='text' type="text" class="form-control input-sm" placeholder="Search for Ndex Users" 
+                    ng-model='query.searchString'>
+            </div>
+          </div>
+          <hr>
+          <div class='row'>
+            <ul ng-repeat='user in userSearchResults'>
+              <div class='row' ng-click='addUser(user.externalId)' style='cursor:pointer'>
+                <ndex-account-image 
+                    ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
+                     ndex-src="user.image">
+                </ndex-account-image>
+                <p>{{user.accountName}}</p>
+              </div>
+            </ul>
+          </div>
+
+          <div class='text-danger'>
+            <strong>
+              {{errors}}
+            </strong>
+          </div>
+        
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click='close()'>Done</button>
+    </div>
+  </div>
+</script>

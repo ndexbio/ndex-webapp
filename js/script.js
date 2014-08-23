@@ -188,10 +188,10 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     //end navbar code
 
     //initializions for page refresh
-    var userData = ndexUtility.getUserCredentials();
-    if(userData) {
-        sharedProperties.setCurrentUser(userData.userId, userData.accountName);
-        $scope.main.accountName = userData.accountName;
+    var accountName = ndexUtility.getLoggedInUserAccountName();
+    if(accountName) {
+        sharedProperties.setCurrentUser(ndexUtility.getLoggedInUserExternalId(), accountName);
+        $scope.main.accountName = accountName;
         $scope.main.loggedIn = true;
     }
 

@@ -2,9 +2,12 @@
 
     <div class="col-md-2">
         <div class="row">
+            <div class='row'>
             <ndex-account-image 
+                    ndex-class="'col-md-10'"
                     ndex-src="group.displayedGroup.image">
             </ndex-account-image>
+            </div>
             <h4>
                 {{group.displayedGroup.organizationName}}
             </h4>
@@ -23,7 +26,14 @@
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Action 3</a></li>
+                    <li><a><edit-group-modal 
+                                ndex-data='group.displayedGroup'>
+                                Edit Profile
+                            </edit-group-modal></a></li>
+                    <li><a><invite-members-modal 
+                                ndex-data='group.displayedGroup.externalId'>
+                                Add Collaborators!
+                            </invite-members-modal></a></li>
                     <li class="divider"></li>
                     <li><a href="#">Action 4</a></li>
                 </ul>
@@ -74,7 +84,8 @@
                         <form class='form-inline col-md-6' role="form" ng-submit="group.submitUserSearch()">
                             <div class='form-group'>
                                 <div class="input-group input-group-sm" >
-                                    <input type="text" class="form-control input-sm" placeholder="Search Members" >
+                                    <input type="text" class="form-control input-sm" placeholder="Search Members"
+                                            ng-model='group.memberSearchString' >
                                     <div class="input-group-btn"><button type="submit" class="btn btn-default">
                                         <span class="glyphicon glyphicon-search"></span></button></div>
                                 </div>

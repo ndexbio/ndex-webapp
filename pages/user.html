@@ -2,29 +2,38 @@
 
     <div class="col-md-2">
         <div class="row">
-            <ndex-account-image 
-                    ndex-class="'col-md-10'"
-                    ndex-src="user.displayedUser.image">
-            </ndex-account-image>
+            <div class='row'>
+                <ndex-account-image 
+                        ndex-class="'col-md-10'"
+                        ndex-src="userController.displayedUser.image">
+                </ndex-account-image>
+            </div>
             <h4>
-                {{user.displayedUser.firstName}} {{user.displayedUser.lastName}}
+                {{userController.displayedUser.firstName}} {{userController.displayedUser.lastName}}
             </h4>
             <div>
-                <small>{{user.displayedUser.emailAddress}}</small>
+                <small>{{userController.displayedUser.accountName}}</small>
             </div>
             <div>
-                <a href="{{user.displayedUser.website}}">{{user.displayedUser.website}}</a>
+                <small>{{userController.displayeduser.emailAddress}}</small>
             </div>
             <div>
-                {{user.displayedUser.description}}
+                <a href="{{userController.displayedUser.website}}">{{userController.displayedUser.website}}</a>
+            </div>
+            <div>
+                {{userController.displayedUser.description}}
             </div>
             <hr>
-            <div class="btn-group" dropdown is-open="status.isopen" ng-show='user.isLoggedInUser'>
+            <div class="btn-group" dropdown is-open="status.isopen" ng-show='userController.isLoggedInUser'>
                 <button type="button" class="btn btn-primary dropdown-toggle">
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li><a trigger-create-group-modal="Create Group"></a></li>
+                    <li><a><edit-user-modal 
+                                ndex-data='userController.displayedUser'>
+                                Edit Profile
+                            </edit-user-modal></a></li>
                     <li><a ng-click="confirmTest()">Test Confirm</a></li>
                     <li><a href="#">Action 3</a></li>
                     <li class="divider"></li>
@@ -37,12 +46,12 @@
     </div>
 
     <!-- tabs -->
-    <div id="divUserTabs" class="col-md-7" ng-show="user.displayedUser">
+    <div id="divUserTabs" class="col-md-7" ng-show="userController.displayedUser">
 
         <tabset justified="true">
             <tab heading="Networks">
                 <div id="divNetworks">
-                    <table class="table table-hover" ng-show="user.networkSearchResults.length > 0">
+                    <table class="table table-hover" ng-show="userController.networkSearchResults.length > 0">
                         <!--
                         <tbody ng-repeat="(index, network) in displayedUser.networks">
                         <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
@@ -58,8 +67,8 @@
                             <th style="width: 10%;">Edges</th>
                         </tr>
                         </thead>
-                        <tbody  ng-repeat="network in user.networkSearchResults">
-                        <tr ng-click="user.setAndDisplayCurrentNetwork(network.externalId)">
+                        <tbody  ng-repeat="network in userController.networkSearchResults">
+                        <tr ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)">
                             <td>{{network.metadata["Source"]}}</td>
                             <td>{{network.name}}</td>
                             </td>
@@ -75,10 +84,11 @@
                 <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
-                        <form class='form-inline col-md-6' role="form" ng-submit="user.submitGroupSearch()">
+                        <form class='form-inline col-md-6' role="form" ng-submit="userController.submitGroupSearch()">
                             <div class='form-group'>
                                 <div class="input-group input-group-sm" >
-                                    <input type="text" class="form-control input-sm" placeholder="Search Groups" >
+                                    <input type="text" class="form-control input-sm" placeholder="Search Groups" 
+                                            ng-model='userController.groupSearchString'>
                                     <div class="input-group-btn"><button type="submit" class="btn btn-default">
                                         <span class="glyphicon glyphicon-search"></span></button></div>
                                 </div>
@@ -87,26 +97,26 @@
                         <div class='offset-col-md-2 col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='user.groupSearchAdmin = !user.groupSearchAdmin; 
-                                                user.groupSearchMember = false; 
-                                                user.submitGroupSearch()'
-                                    ng-model="user.groupSearchAdmin">Admin</label>
+                                    ng-click='userController.groupSearchAdmin = !userController.groupSearchAdmin; 
+                                                userController.groupSearchMember = false; 
+                                                userController.submitGroupSearch()'
+                                    ng-model="userController.groupSearchAdmin">Admin</label>
                             </div>
                         </div>
                         <div class='col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='user.groupSearchMember = !user.groupSearchMember;
-                                                user.groupSearchAdmin = false; 
-                                                user.submitGroupSearch()'
-                                    ng-model="user.groupSearchMember">Member</label>
+                                    ng-click='userController.groupSearchMember = !userController.groupSearchMember;
+                                                userController.groupSearchAdmin = false; 
+                                                userController.submitGroupSearch()'
+                                    ng-model="userController.groupSearchMember">Member</label>
                             </div>
                         </div>
 
                     </div>
 
                     <div> 
-                        <ul ng-repeat="group in user.groupSearchResults">
+                        <ul ng-repeat="group in userController.groupSearchResults">
                             <ndex-navigation ndex-class="'row'" ndex-url="'group/'+group.externalId">
                                 <ndex-account-image 
                                   ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
@@ -129,7 +139,7 @@
 
     </div>
 
-    <div class="col-md-3" ng-show='user.isLoggedInUser'>
+    <div class="col-md-3" ng-show='userController.isLoggedInUser'>
         <div class="row panel panel-default">
             <div class="panel-body">
                 <h5>Requests</h5>
@@ -138,7 +148,7 @@
                 Some request
             </div>
         </div>
-        <div class="row panel panel-default" ng-show='user.isLoggedInUser'>
+        <div class="row panel panel-default" ng-show='userController.isLoggedInUser'>
             <div class="panel-body">
                 <h5>Tasks</h5>
                 <hr>

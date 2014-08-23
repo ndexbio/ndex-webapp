@@ -3,82 +3,88 @@ ndexApp.controller('userController',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
     //general initializations
-    $scope.user = {};
-    $scope.user.isLoggedInUser = false;
+    $scope.userController = {};
+    var userController = $scope.userController;
+    userController.isLoggedInUser = false;
 
-    $scope.user.identifier = $routeParams.identifier; //actually account name right now - should change to UUID
+    userController.identifier = $routeParams.identifier; //actually account name right now - should change to UUID
 
     //move to directive?
     $scope.confirmTest = function(){
-        ndexNavigation.openConfirmationModal("test message", function(){
-            console.log("test modal confirmed");
-        })
+        //ndexNavigation.openConfirmationModal("test message", function(){
+          //  console.log("test modal confirmed");
+        //})
     };
 
     //move to shared properties? could be directive
-     $scope.user.setAndDisplayCurrentNetwork = function (identifier) {
+     userController.setAndDisplayCurrentNetwork = function (identifier) {
         $location.path("/network/" + identifier);
     };
 
     //          GROUPS
 
     // initializations
-    $scope.user.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
-    $scope.user.groupSearchMember = false;
+    userController.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
+    userController.groupSearchMember = false;
     // declarations
-    $scope.user.submitGroupSearch = function() {
-        $scope.user.groupSearchResults = null;
+    userController.submitGroupSearch = function() {
+        userController.groupSearchResults = null;
 
         var query = {};
 
-        query.accountName = $scope.user.displayedUser.accountName;
-        query.searchString = $scope.user.groupSearchString
-        if($scope.user.groupSearchAdmin) query.permission = 'GROUPADMIN';
-        if($scope.user.groupSearchMember) query.permission = 'MEMBER'
+        query.accountName = userController.displayedUser.accountName;
+        query.searchString = userController.groupSearchString
+        if(userController.groupSearchAdmin) query.permission = 'GROUPADMIN';
+        if(userController.groupSearchMember) query.permission = 'MEMBER';
         
         //pagination missing
         ndexService.searchGroups(query, 0, 50,
             function (groups) {
                 // Save the results
-                $scope.user.groupSearchResults = groups;
+                userController.groupSearchResults = groups;
                 
             },
             function (error) {
                        
             });
-    }
+    };
 
-
-    //page initializations
-
-    ndexService.getUser($scope.user.identifier)
+    ndexService.getUser(userController.identifier)
     .success(
         function(user) {
-            $scope.user.displayedUser = user;
+            userController.displayedUser = user;
             var loggedInUser = ndexUtility.getUserCredentials();
 
             if( (user.externalId == loggedInUser.userId)
              || (user.accountName == loggedInUser.accountName)) 
-                $scope.user.isLoggedInUser = true;
+                userController.isLoggedInUser = true;
 
             cUser = user;
-
-            $scope.user.submitGroupSearch(); // get groups
+            //console.log($scope.user)
+            userController.submitGroupSearch(); // get groups
 
             // get networks
-            $scope.user.networkSearchResults = null;
-            $scope.user.searchString = "";
+            userController.networkSearchResults = null;
+            userController.searchString = "";
 
-            ndexService.findNetworks($scope.user.searchString, $scope.user.displayedUser.accountName, 'ADMIN', false, 0, 50)
+            ndexService.findNetworks(userController.searchString, userController.displayedUser.accountName, 'ADMIN', false, 0, 50)
             .success(
                 function(networks) {
-                    $scope.user.networkSearchResults = networks;
+                    userController.networkSearchResults = networks;
                     //console.log("Setting networkSearchResults");
                 });
 
-        });
+        }); 
 
-    //------------------------------------------------------------------------------------//
+}]);
+
+
+
+
+
+
+
+ //------------------------------------------------------------------------------------//
 
     // This controller displays the user designated by
     // sharedProperties.displayedUserId
@@ -378,5 +384,3 @@ ndexApp.controller('userController',
     };
 
     */
-
-}]);
