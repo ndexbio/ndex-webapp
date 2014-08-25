@@ -16,7 +16,10 @@
           <hr>
           <div class='row'>
             <ul ng-repeat='user in userSearchResults'>
-              <div class='row' ng-click='addUser(user.externalId)' style='cursor:pointer'>
+              <div class='row' 
+                    ng-click='addUser(user.externalId)'
+                    ng-show='user.showMe'
+                    style='cursor:pointer'>
                 <ndex-account-image 
                     ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
                      ndex-src="user.image">

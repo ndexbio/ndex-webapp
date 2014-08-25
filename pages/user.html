@@ -117,19 +117,18 @@
 
                     <div> 
                         <ul ng-repeat="group in userController.groupSearchResults">
-                            <ndex-navigation ndex-class="'row'" ndex-url="'group/'+group.externalId">
+                            <div class='row'>
+                            <ndex-navigation ndex-class="" ndex-url="'group/'+group.externalId">
                                 <ndex-account-image 
                                   ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
                                   ndex-src="group.image">
                                 </ndex-account-image>
-                                <div class="'col-xs-10 col-sm-10 col-md-10 col-lg-10'">
+                                <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                 <h5><strong>{{group.organizationName}}</strong></h5>
                                 <p class="text-muted">{{group.accountName}}</p>
-                                <p class="">{{group.description.substring(0,30)}}</p>
-                                <!--should add logic to split only when to big and add '...'-->
                                 </div>
                             </ndex-navigation>
-                            
+                            </div>
                         </ul>
                     </div>
 

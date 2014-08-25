@@ -137,6 +137,10 @@
                     UserResource.save({identifier: externalId}, user, successHandler, errorHandler);
                 }
 
+                factory.getMembership = function(resourceExternalId, memberExternalId, successHandler, errorHandler) {
+                    UserResource.getMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
+                }
+
                 factory.getMyMembership = function(resourceId, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
                     UserResource.getMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
@@ -216,8 +220,7 @@
                 );
 
                 factory.updateGroupMember = function(membership, successHandler, errorHandler) {
-                    membership.accountType='Group';
-                    membership.type = 'Membership'
+                    membership.membershipType = 'GROUP'
                     console.log(membership);
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     GroupResource.updateMembership({identifier:membership.resourceUUID}, membership, successHandler, errorHandler);

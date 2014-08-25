@@ -293,6 +293,7 @@
                 
                 $scope.close = function() {
                    $scope.externalId = $scope.ndexData;
+                   $route.reload();
                    modalInstance.close();
                    modalInstance = null;
                 };
@@ -311,7 +312,7 @@
                         function(){
 
                         })
-                }
+                };
 
                 $scope.$watch('query', function(query) {
                     if(query.searchString !=null) {
@@ -319,7 +320,9 @@
                             ndexService.searchUsers(query, 0, 5,
                                 function (users) {
                                     // Save the results
+
                                     $scope.userSearchResults = users;
+
                                 },
                                 function (error) {
                                         

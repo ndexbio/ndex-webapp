@@ -114,19 +114,19 @@
 
                     <div> 
                         <ul ng-repeat="user in group.userSearchResults">
-                            <ndex-navigation ndex-class="'row'" ndex-url="'user/'+user.externalId">
+                            <div class='row'>
+                            <ndex-navigation ndex-class="" ndex-url="'user/'+user.externalId">
                                 <ndex-account-image 
                                   ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
                                   ndex-src="user.image">
                                 </ndex-account-image>
-                                <div class="'col-xs-10 col-sm-10 col-md-10 col-lg-10'">
-                                <h5><strong>{{user.firstName}} {{user.lastName}}</strong></h5>
-                                <p class="text-muted">{{user.accountName}}</p>
-                                <p class="">{{user.description.substring(0,30)}}</p>
-                                <!--should add logic to split only when to big and add '...'-->
+                                <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                                    <h5><strong>{{user.firstName}} {{user.lastName}}
+                                        </strong> </h5>
+                                    <p class="text-muted">{{user.accountName}}</p>
                                 </div>
                             </ndex-navigation>
-                            
+                            </div>
                         </ul>
                     </div>
 

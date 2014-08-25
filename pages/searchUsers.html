@@ -36,10 +36,10 @@
         <ul ng-repeat="user in userSearch.userSearchResults">
             <ndex-navigation ndex-class="'row'" ndex-url="'user/'+user.externalId">
                 <ndex-account-image 
-                  ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
+                  ndex-class="'col-xs-3 col-sm-3 col-md-3 col-lg-3'" 
                   ndex-src="user.image">
                 </ndex-account-image>
-                <div>
+                <div class='col-xs-9 col-sm-9 col-md-9 col-lg-9'>
                 <h5><strong>{{user.firstName}} {{user.lastName}}</strong></h5>
                 <p class="text-muted">{{user.accountName}}</p>
                 <p class="">{{user.description.substring(0,30)}}</p>
