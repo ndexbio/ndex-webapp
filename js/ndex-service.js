@@ -31,8 +31,13 @@
                 // define and initialize factory object
                 var factory = {};
 
-                // Temporary hard code, will be replaced with config file value (local host can still be default)
                 var ndexServerURI = "http://localhost:8080/ndexbio-rest";
+                // This convention is useful, but we may later allow a
+                // site configuration to explicitly specify a different host
+                if (location.hostname.toLowerCase() != "localhost")
+                    ndexServerURI=  "http://" + location.host + "/rest/ndexbio-rest";
+
+
 
                 factory.getNetworkUploadURI = function () {
                     return ndexServerURI + "/network/upload";
