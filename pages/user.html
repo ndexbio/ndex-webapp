@@ -139,22 +139,51 @@
     </div>
 
     <div class="col-md-3" ng-show='userController.isLoggedInUser'>
+
         <div class="row panel panel-default">
-            <div class="panel-body">
-                <h5>Requests</h5>
-                <hr>
-                show only if i have requests
-                Some request
+            <div class="panel-heading">
+                <ol class="list-inline">
+                  <li><strong>Requests</strong></li>
+                  <li><a ng-click='sentTab = null'
+                            ng-class="{'text-primary': sentTab == null, 'text-muted': sentTab}">
+                            Pending</a></li>
+                  <li><a ng-click='sentTab = true'
+                            ng-class="{'text-muted': sentTab == null, 'text-primary': sentTab}">
+                            Sent</a></li>
+                </ol>
             </div>
+
+            <ul class="list-group" ng-hide='sentTab'>
+                <li class="list-group-item">Cras juasdfsdasto odio</li>
+            </ul>
+            <ul class="list-group" ng-show='sentTab' ng-repeat='request in userController.sentRequests'>
+                <li class="list-group-item">
+                    <span class='text-success'>{{request.permission}}</span> access to 
+                    <ndex-navigation 
+                        ndex-class="'text-primary'"
+                        ndex-url="'group/'+request.destinationUUID" >
+                    {{request.destinationName}}
+                    </ndex-navigation>
+                    <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button
+                    </li>
+            </ul>
+
         </div>
+
         <div class="row panel panel-default" ng-show='userController.isLoggedInUser'>
             <div class="panel-body">
-                <h5>Tasks</h5>
-                <hr>
-                show only if i have tasks
-                Some task
+                <h5><strong>Tasks</strong></h5>
             </div>
+            <!-- List group -->
+              <ul class="list-group">
+                <li class="list-group-item">Cras justo odio</li>
+                <li class="list-group-item">Dapibus ac facilisis in</li>
+                <li class="list-group-item">Morbi leo risus</li>
+                <li class="list-group-item">Porta ac consectetur ac</li>
+                <li class="list-group-item">Vestibulum at eros</li>
+              </ul>
         </div>
+
     </div>
 
 </div>

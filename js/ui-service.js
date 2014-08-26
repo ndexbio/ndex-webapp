@@ -307,10 +307,10 @@
 
                     ndexService.updateGroupMember(membership, 
                         function(){
-
+                            //TODO
                         },
                         function(){
-
+                            //TODO
                         })
                 };
 
@@ -319,13 +319,32 @@
                         if(query.searchString.length > 0) {
                             ndexService.searchUsers(query, 0, 5,
                                 function (users) {
-                                    // Save the results
+                                    console.log('got '+users.length+' user search results')
+                                    var key = 0;
+                                    var length = users.length;
 
-                                    $scope.userSearchResults = users;
+                                    for(; key < length; key++){
+                                        //closure allows us to keep current val of iteration in async callback;
+                                        (function() {
+                                            var val = key;
+                                            ndexService.getMembership($scope.externalId, users[val].externalId,
+                                                function(membership) {
+                                                    if(membership.resourceName)
+                                                        users[val].showMe = false
+                                                    else
+                                                        users[val].showMe = true;
+
+                                                    $scope.userSearchResults = users;
+                                                },
+                                                function(error) {
+                                                    // TODO
+                                                });
+                                        })()
+                                    }
 
                                 },
                                 function (error) {
-                                        
+                                    // TODO 
                                 });
                         } else {
                             $scope.userSearchResults = [];

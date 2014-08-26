@@ -15,10 +15,11 @@
           </div>
           <hr>
           <div class='row'>
+
             <ul ng-repeat='user in userSearchResults'>
               <div class='row' 
                     ng-click='addUser(user.externalId)'
-                    ng-show='user.showMe'
+                    ng-show='{{user.showMe}}'
                     style='cursor:pointer'>
                 <ndex-account-image 
                     ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
@@ -36,6 +37,7 @@
           </div>
         
     <div class="modal-footer">
+        <sm>Click on a user to add to group.
         <button class="btn btn-default" ng-click='close()'>Done</button>
     </div>
   </div>

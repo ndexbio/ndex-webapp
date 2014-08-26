@@ -5,50 +5,56 @@
             <div class='row'>
             <ndex-account-image 
                     ndex-class="'col-md-10'"
-                    ndex-src="group.displayedGroup.image">
+                    ndex-src="groupController.displayedGroup.image">
             </ndex-account-image>
             </div>
             <h4>
-                {{group.displayedGroup.organizationName}}
+                {{groupController.displayedGroup.organizationName}}
             </h4>
             <div>
-                <small>{{group.displayedGroup.emailAddress}}</small>
+                {{groupController.displayedGroup.accountName}}
             </div>
             <div>
-                <a ng-href="{{group.displayedGroup.website}}">{{group.displayedGroup.website}}</a>
+                <small>{{groupController.displayedGroup.emailAddress}}</small>
             </div>
             <div>
-                {{group.displayedGroup.description}}
+                <a ng-href="{{groupController.displayedGroup.website}}">{{groupController.displayedGroup.website}}</a>
+            </div>
+            <div>
+                {{groupController.displayedGroup.description}}
             </div>
             <hr>
-            <div class="btn-group" dropdown is-open="status.isopen" ng-show='group.isAdmin'>
+            <div class="btn-group" dropdown is-open="status.isopen" ng-show='groupController.isAdmin'>
                 <button type="button" class="btn btn-primary dropdown-toggle">
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     <li><a><edit-group-modal 
-                                ndex-data='group.displayedGroup'>
+                                ndex-data='groupController.displayedGroup'>
                                 Edit Profile
                             </edit-group-modal></a></li>
                     <li><a><invite-members-modal 
-                                ndex-data='group.displayedGroup.externalId'>
+                                ndex-data='groupController.displayedGroup.externalId'>
                                 Add Collaborators!
                             </invite-members-modal></a></li>
                     <li class="divider"></li>
                     <li><a href="#">Action 4</a></li>
                 </ul>
             </div>
+            <button class='btn btn-primary' 
+                ng-click='groupController.submitRequest()'
+                ng-hide='groupController.isAdmin'>Ask to Join</button>
         </div>
 
     </div>
 
     <!-- tabs -->
-    <div id="divgroupTabs" class="col-md-7" ng-show="group.displayedGroup">
+    <div id="divgroupTabs" class="col-md-7" ng-show="groupController.displayedGroup">
 
         <tabset justified="true">
-            <tab heading="Networks">
+            <tab heading="Networks" ng-show='groupController.networkSearchResults'>
                 <div id="divNetworks">
-                    <table class="table table-hover" ng-show="group.networkSearchResults.length > 0">
+                    <table class="table table-hover" ng-show="groupController.networkSearchResults.length > 0">
                         <!--
                         <tbody ng-repeat="(index, network) in displayedGroup.networks">
                         <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
@@ -64,8 +70,8 @@
                             <th style="width: 10%;">Edges</th>
                         </tr>
                         </thead>
-                        <tbody  ng-repeat="network in group.networkSearchResults">
-                        <tr ng-click="group.setAndDisplayCurrentNetwork(network.externalId)">
+                        <tbody  ng-repeat="network in groupController.networkSearchResults">
+                        <tr ng-click="groupController.setAndDisplayCurrentNetwork(network.externalId)">
                             <td>{{network.metadata["Source"]}}</td>
                             <td>{{network.name}}</td>
                             </td>
@@ -77,15 +83,15 @@
                     </table>
                 </div>
             </tab>
-            <tab heading="Members">
+            <tab heading="Members" active='!groupController.networkSearchResults'>
                 <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
-                        <form class='form-inline col-md-6' role="form" ng-submit="group.submitUserSearch()">
+                        <form class='form-inline col-md-6' role="form" ng-submit="groupController.submitUserSearch()">
                             <div class='form-group'>
                                 <div class="input-group input-group-sm" >
                                     <input type="text" class="form-control input-sm" placeholder="Search Members"
-                                            ng-model='group.memberSearchString' >
+                                            ng-model='groupController.memberSearchString' >
                                     <div class="input-group-btn"><button type="submit" class="btn btn-default">
                                         <span class="glyphicon glyphicon-search"></span></button></div>
                                 </div>
@@ -94,26 +100,26 @@
                         <div class='offset-col-md-2 col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='group.userSearchAdmin = !group.userSearchAdmin; 
-                                                group.userSearchMember = false; 
-                                                group.submitUserSearch()'
-                                    ng-model="group.userSearchAdmin">Admin</label>
+                                    ng-click='groupController.userSearchAdmin = !groupController.userSearchAdmin; 
+                                                groupController.userSearchMember = false; 
+                                                groupController.submitUserSearch()'
+                                    ng-model="groupController.userSearchAdmin">Admin</label>
                             </div>
                         </div>
                         <div class='col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='group.userSearchMember = !group.userSearchMember;
-                                                group.userSearchAdmin = false; 
-                                                group.submitUserSearch()'
-                                    ng-model="group.userSearchMember">Member</label>
+                                    ng-click='groupController.userSearchMember = !groupController.userSearchMember;
+                                                groupController.userSearchAdmin = false; 
+                                                groupController.submitUserSearch()'
+                                    ng-model="groupController.userSearchMember">Member</label>
                             </div>
                         </div>
 
                     </div>
 
                     <div> 
-                        <ul ng-repeat="user in group.userSearchResults">
+                        <ul ng-repeat="user in groupController.userSearchResults">
                             <div class='row'>
                             <ndex-navigation ndex-class="" ndex-url="'user/'+user.externalId">
                                 <ndex-account-image 

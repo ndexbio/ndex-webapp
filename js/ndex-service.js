@@ -127,8 +127,37 @@
                                     return data.data;
                                 }
                             }
+                        },
+                        getSentRequest: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'request'
+                            },
+                            isArray: true
+                        },
+                        getPendingRequest: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'request',
+                                status: 'pending'
+                            },
+                            isArray: true
                         }
                     })
+
+                factory.getSentRequests = function(skipBlocks, blockSize, successHandler, errorHandler) {
+                    var externalId = ndexUtility.getLoggedInUserExternalId();
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    UserResource.getSentRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
+                        successHandler, errorHandler);
+                }
+
+                factory.getPendingRequests = function(skipBlocks, blockSize, successHandler, errorHandler) {
+                    var externalId = ndexUtility.getLoggedInUserExternalId();
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    UserResource.getPendingRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
+                        successHandler, errorHandler);
+                }
 
                 factory.editUserProfile = function(user, successHandler, errorHandler) {
                     user.accountType = 'User';
@@ -259,6 +288,21 @@
                     console.log('searching for groups');
                     GroupResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
                 }
+
+                /*---------------------------------------------------------------------*
+                 * Requests
+                 *---------------------------------------------------------------------*/
+
+                 var RequestResource = $resource(ndexServerURI + '/request/:identifier');
+
+                 factory.createRequest = function(request, successHandler, errorHandler) {
+                    request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+                    request.sourceName = ndexUtility.getLoggedInUserAccountName();
+                    request.type = 'Request';
+
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    RequestResource.save({}, request, successHandler, errorHandler);
+                 };
 
                 /*---------------------------------------------------------------------*
                  * Tasks

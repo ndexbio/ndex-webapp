@@ -49,6 +49,27 @@ ndexApp.controller('userController',
             });
     };
 
+    var getRequests = function() {
+        ndexService.getPendingRequests(0, 20,
+            function(requests) {
+                userController.pendingRequests = requests;
+            },
+            function(error) {
+                console.log(error);
+            });
+
+        ndexService.getSentRequests(0, 20,
+            function(requests) {
+                userController.sentRequests = requests;
+                console.log(requests);
+            },
+            function(error) {
+                console.log(error);
+            })
+    }
+
+    // controller/page initializations
+
     ndexService.getUser(userController.identifier)
     .success(
         function(user) {
@@ -60,8 +81,13 @@ ndexApp.controller('userController',
                 userController.isLoggedInUser = true;
 
             cUser = user;
-            //console.log($scope.user)
-            userController.submitGroupSearch(); // get groups
+
+            // get requests
+
+            getRequests();
+
+            // get groups
+            userController.submitGroupSearch();
 
             // get networks
             userController.networkSearchResults = null;

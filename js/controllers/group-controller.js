@@ -2,39 +2,40 @@ ndexApp.controller('groupController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
-            $scope.group = {};
-            $scope.group.isAdmin = false;
+            $scope.groupController = {};
+            var groupController = $scope.groupController;
+            groupController.isAdmin = false;
             
-            $scope.group.identifier = $routeParams.identifier;
+            groupController.identifier = $routeParams.identifier;
 
 
             // called on Networks belonging to group displayed on page
-            $scope.group.setAndDisplayCurrentNetwork = function (identifier) {
+            groupController.setAndDisplayCurrentNetwork = function (identifier) {
                 $location.path("/networkQuery/" + identifier);
             };
 
 
-            //          GROUPS
+            //          Members
 
             // initializations
-            $scope.group.userSearchAdmin = false; // this state needs to be saved to avoid browser refresh
-            $scope.group.userSearchMember = false;
+            groupController.userSearchAdmin = false; // this state needs to be saved to avoid browser refresh
+            groupController.userSearchMember = false;
             // declarations
-            $scope.group.submitUserSearch = function() {
-                  $scope.group.userSearchResults = null;
+            groupController.submitUserSearch = function() {
+                  groupController.userSearchResults = null;
 
                   var query = {};
 
-                  query.accountName = $scope.group.displayedGroup.accountName;
-                  query.searchString = $scope.group.memberSearchString
-                  if($scope.group.userSearchAdmin) query.permission = 'GROUPADMIN';
-                  if($scope.group.userSearchMember) query.permission = 'MEMBER'
+                  query.accountName = groupController.displayedGroup.accountName;
+                  query.searchString = groupController.memberSearchString
+                  if(groupController.userSearchAdmin) query.permission = 'GROUPADMIN';
+                  if(groupController.userSearchMember) query.permission = 'MEMBER'
                           
                   //pagination missing
                   ndexService.searchUsers(query, 0, 50,
                         function (users) {
                               // Save the results
-                              $scope.group.userSearchResults = users;
+                              groupController.userSearchResults = users;
                                   
                         },
                         function (error) {
@@ -42,29 +43,47 @@ ndexApp.controller('groupController',
                         });
             };
 
+            groupController.submitRequest = function() {
+                  var request = {
+                    destinationUUID: groupController.displayedGroup.externalId,
+                    destinationName: groupController.displayedGroup.organizationName,
+                    permission: 'MEMBER'
+                  }
+
+                  ndexService.createRequest(request, 
+                    function(request) {
+                      //TODO some modal
+                      console.log('request sent');
+                    },
+                    function(error){
+                      //TODO
+                      console.log('failed to send request');
+                    })
+            }
+
             // initializations
 
-            ndexService.getGroup($scope.group.identifier,
+            ndexService.getGroup(groupController.identifier,
                 function (group) {
                     //console.log("Set displayedUser");
-                    $scope.group.displayedGroup = group;
+                    groupController.displayedGroup = group;
                     cGroup = group;
 
                     ndexService.getMyMembership(group.externalId, 
                         function(membership) {
                               if(membership.permissions != null)
-                                    $scope.group.isAdmin = true;
+                                    groupController.isAdmin = true;
                         },
                         function(error){
                               console.log(error);
                         });
 
-                    $scope.group.submitUserSearch();
+                    groupController.submitUserSearch();
 
-                    $scope.group.networkSearchResults = null;
-                    $scope.group.searchString = "";
+                    groupController.networkSearchResults = null;
+                    groupController.searchString = "";
 
-                    /*ndexService.findNetworks($scope.group.searchString, $scope.group.displayedGroup.accountName, 'ADMIN', 0, 50)
+                    /*ndexService.findNetworks(groupController.searchString, groupController.displayedGroup.accountName, 'ADMIN', 0, 50)
                         .success(
                         function (networks) {
                             $scope.user.networkSearchResults = networks;
