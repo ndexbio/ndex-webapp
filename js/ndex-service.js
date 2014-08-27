@@ -35,7 +35,7 @@
                 // This convention is useful, but we may later allow a
                 // site configuration to explicitly specify a different host
                 if (location.hostname.toLowerCase() != "localhost")
-                    ndexServerURI=  "http://" + location.host + "/rest/ndexbio-rest";
+                    ndexServerURI=  "http://" + location.host + "/rest";
 
 
 
