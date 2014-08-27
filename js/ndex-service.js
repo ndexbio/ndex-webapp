@@ -1129,4 +1129,157 @@
         return factory;
     }]);
 
+
+    /****************************************************************************
+     * NDEx Provenance Visualizer Service
+     ****************************************************************************/
+    ndexServiceApp.factory('provenanceVisualizerService', ['ndexService', 'ndexHelper', '$q', function (ndexService, ndexHelper, $q) {
+        var factory = {};
+        var cy;
+        var elements;
+        var elementIndex = 0;
+
+        /*-----------------------------------------------------------------------*
+         * Set a provenance structure to be displayed in the viewer
+         *-----------------------------------------------------------------------*/
+        factory.setProvenance = function (provenanceRoot) {
+            // build the new elements structure
+            elements = {nodes: [], edges: []};
+            elementIndex = 0;
+            processProvenanceEntity(provenanceRoot);
+
+            // set the cytoscsape instance elements
+            cy.load(elements);
+
+        };
+
+        var processProvenanceEntity = function(pEntity, parentEventNode){
+
+            // Make the node for the entity
+            var entityLabel = getProperty("dc:title", pEntity.properties);
+            elementIndex = elementIndex + 1;
+            var entityNode = {
+                data: {
+                    id: "n" + elementIndex,
+                    name: entityLabel
+                }};
+            elements.nodes.push(entityNode);
+
+            // if there is a parentEventNode, link it to the entityNode
+            if (parentEventNode != null){
+                var eventToEntityEdge = {
+                    data: {
+                        source: parentEventNode.data.id,
+                        target: entityNode.data.id}
+                }
+                elements.edges.push(eventToEntityEdge);
+            };
+
+            // if there is a creation event:
+            if (pEntity.creationEvent){
+            // Create the node for the event
+            var eventLabel = pEntity.creationEvent.eventType;
+            elementIndex = elementIndex + 1;
+            var eventNode = {
+                data: {
+                    id: "n" + elementIndex,
+                    name: eventLabel
+                }};
+
+            // Link the entityNode to the eventNode
+            var entityToEventEdge = {
+                data: {
+                    source: entityNode.data.id,
+                    target: eventNode.data.id
+                }};
+
+            elements.nodes.push(eventNode);
+            elements.edges.push(entityToEventEdge);
+
+            // get the event inputs.
+            // for each input, call processProvenanceEntity and link the returned node to the event
+                $.each(pEntity.creationEvent.inputs, function(index, inputEntity) {
+                    processProvenanceEntity(inputEntity, eventNode);
+
+                });
+            }
+        };
+
+        /*-----------------------------------------------------------------------*
+         * initialize the cytoscape instance
+         *-----------------------------------------------------------------------*/
+        factory.initCyGraph = function () {
+            var deferred = $q.defer();
+
+            // elements
+            var eles = [];
+
+            $(function () { // on dom ready
+
+                cy = cytoscape({
+                    container: $('#canvas')[0],
+
+                    style: cytoscape.stylesheet()
+                        .selector('node')
+                        .css({
+                            'content': 'data(name)',
+                            'height': 10,
+                            'width': 10,
+                            'text-valign': 'center',
+                            'background-color': 'blue',
+                            'font-size': 8,
+                            //'text-outline-width': 2,
+                            //'text-outline-color': 'blue',
+                            'color': 'black'
+                        })
+                        .selector('edge')
+                        .css({
+                            'target-arrow-shape': 'triangle'
+                        })
+                        .selector(':selected')
+                        .css({
+                            'background-color': 'white',
+                            'line-color': 'black',
+                            'target-arrow-color': 'black',
+                            'source-arrow-color': 'black',
+                            'text-outline-color': 'black'
+                        }),
+
+                    layout: {
+                        name: 'breadthfirst',
+                        directed: true,
+                        roots: '#a',
+                        padding: 10
+                    },
+
+                    elements: eles,
+
+                    ready: function () {
+                        deferred.resolve(this);
+
+                        // add listener behavior later...
+                        //cy.on('cxtdrag', 'node', function(e){
+                        //    var node = this;
+                        //    var dy = Math.abs( e.cyPosition.x - node.position().x );
+                        //    var weight = Math.round( dy*2 );
+                        //
+                        //    node.data('weight', weight);
+                        //
+                        //    fire('onWeightChange', [ node.id(), node.data('weight') ]);
+                        //});
+
+                    }
+                });
+
+            }); // on dom ready
+
+            return deferred.promise;
+        };
+
+
+
+        return factory;
+
+    }]);
+
 })(); //end function closure
