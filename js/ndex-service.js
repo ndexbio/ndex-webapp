@@ -736,8 +736,11 @@
     ndexServiceApp.factory('ndexConfigs', function (ndexUtility) {
         var factory = {};
 
-        //factory.NdexServerURI = "http://test.ndexbio.org/rest/ndexbio-rest";
-        factory.NdexServerURI = "http://localhost:8080/ndexbio-rest";
+        var ndexServerURI = "http://localhost:8080/ndexbio-rest";
+        // This convention is useful, but we may later allow a
+        // site configuration to explicitly specify a different host
+        if (location.hostname.toLowerCase() != "localhost")
+            ndexServerURI=  "http://" + location.host + "/rest";
 
         /*---------------------------------------------------------------------*
          * GET request configuration
@@ -745,7 +748,7 @@
         factory.getGetConfig = function (url, queryArgs) {
             var config = {
                 method: 'GET',
-                url: factory.NdexServerURI + url,
+                url: ndexServerURI + url,
                 headers: {
                     Authorization: "Basic " + factory.getEncodedUser()
                 }
@@ -762,7 +765,7 @@
         factory.getPostConfig = function (url, postData) {
             var config = {
                 method: 'POST',
-                url: factory.NdexServerURI + url,
+                url: ndexServerURI + url,
                 data: JSON.stringify(postData),
                 headers: {
                     Authorization: "Basic " + factory.getEncodedUser()
