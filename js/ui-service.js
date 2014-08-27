@@ -362,6 +362,85 @@
         }
     });
 
+    uiServiceApp.directive('sentRequest', function() {
+        return {
+            scope: {
+                ndexData:'='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/sentRequest.html',
+            controller: function($scope, $modal, $route, ndexService) {
+                var modalInstance;
+                $scope.errors = null;
+
+                $scope.openMe = function() {
+                   modalInstance = $modal.open({
+                        templateUrl: 'sent-request-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.close = function() {
+                    modalInstance.close();
+                }
+
+                $scope.delete = function() {
+                    ndexService.deleteRequest($scope.request.externalId,
+                        function(data) {
+                            modalInstance.close();
+                            $route.reload();
+                        }, 
+                        function(error){
+                            //TODO
+                        })
+                }
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.request = {};
+                    for(var key in value) {
+                        $scope.request[key] = value[key];
+                    }  
+                }); 
+            }
+        }
+    });
+
+    uiServiceApp.directive('receivedRequest', function() {
+        return {
+            scope: {
+                ndexData:'='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/receivedRequest.html',
+            controller: function($scope, $modal, $route, ndexService) {
+                var modalInstance;
+                $scope.errors = null;
+
+                $scope.openMe = function() {
+                   modalInstance = $modal.open({
+                        templateUrl: 'received-request-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.close = function() {
+                    modalInstance.close();
+                }
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.request = {};
+                    for(var key in value) {
+                        $scope.request[key] = value[key];
+                    }  
+                }); 
+            }
+        }
+    });
+
 
 
 }) ()

@@ -304,6 +304,16 @@
                     RequestResource.save({}, request, successHandler, errorHandler);
                  };
 
+                 factory.updateRequest = function(externalId, request, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    RequestResource.save({identifier: externalId}, request, successHandler, errorHandler);
+                 }
+
+                 factory.deleteRequest = function(externalId, successHandler, errorHandler){
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    RequestResource.delete({identifier: externalId}, successHandler, errorHandler);
+                 }
+
                 /*---------------------------------------------------------------------*
                  * Tasks
                  *

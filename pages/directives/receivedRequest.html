@@ -1,0 +1,22 @@
+<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="received-request-modal.html">
+	<div class='modal-content'>
+		<div class='modal-body' ng-hide='false'>
+			<h5><strong>
+			{{request.sourceName}} requests <span class='text-success'>{{request.permission}}</span> access to {{request.destinationName}}
+			</strong></h5>
+			<p>{{request.message}}</p>
+
+			<hr>
+			<strong>Response Message</strong>
+			<textarea class='form-control' rows='3'></textarea>
+		</div>
+
+		<div class='modal-footer' ng-hide='false'>
+			<button class='btn btn-default' ng-click='close()'>Cancel</button>
+			<button class='btn btn-danger' ng-click=''>Decline</button>
+			<button class='btn btn-primary' ng-click=''>Accept</button>
+		</div>
+	</div>
+</script>

@@ -146,24 +146,35 @@
                   <li><strong>Requests</strong></li>
                   <li><a ng-click='sentTab = null'
                             ng-class="{'text-primary': sentTab == null, 'text-muted': sentTab}">
-                            Pending</a></li>
+                            Received</a></li>
                   <li><a ng-click='sentTab = true'
-                            ng-class="{'text-muted': sentTab == null, 'text-primary': sentTab}">
+                            ng-class="{'text-muted': sentTab == null, 'text-primary': sentTab}"
+                            ng-show='userController.sentRequests.length > 0'>
                             Sent</a></li>
                 </ol>
             </div>
 
-            <ul class="list-group" ng-hide='sentTab'>
-                <li class="list-group-item">Cras juasdfsdasto odio</li>
-            </ul>
-            <ul class="list-group" ng-show='sentTab' ng-repeat='request in userController.sentRequests'>
+            <ul class="list-group" 
+                ng-hide='sentTab'
+                ng-repeat='request in userController.pendingRequests'>
                 <li class="list-group-item">
-                    <span class='text-success'>{{request.permission}}</span> access to 
-                    <ndex-navigation 
-                        ndex-class="'text-primary'"
-                        ndex-url="'group/'+request.destinationUUID" >
-                    {{request.destinationName}}
-                    </ndex-navigation>
+                    <!-- destination names should be cut off -->
+                    <received-request ndex-data='request'>
+                        {{request.sourceName}} requests
+                        <span class='text-success'>{{request.permission}}</span> access to {{request.destinationName}}
+                        <em class='text-muted'> - {{request.response}}</em>
+                    </received-request>
+                </li>
+            </ul>
+            <ul class="list-group" 
+                ng-show='sentTab && (userController.sentRequests.length > 0)' 
+                ng-repeat='request in userController.sentRequests'>
+                <li class="list-group-item">
+                    <!-- destination names should be cut off -->
+                    <sent-request ndex-data='request'>
+                        <span class='text-success'>{{request.permission}}</span> access to {{request.destinationName}}
+                        <em class='text-muted'> - {{request.response}}</em>
+                    </sent-request>
                     <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button
                     </li>
             </ul>
