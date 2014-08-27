@@ -1,11 +1,12 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'cytoscapeService', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
-    function(ndexService, cytoscapeService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
+    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
+    function(ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
 
     // To avoid issues with child scopes, we use an object bind controller data to the DOM
     $scope.networkQuery = {};
 
     cytoscapeService.initCyGraph();
+    provenanceVisualizerService.initCyGraph();
 
     // Retrieve the network id from route params
     $scope.networkQuery.currentNetworkId = $routeParams.identifier;
@@ -109,6 +110,20 @@ ndexApp.controller('networkController',
             );
     };
 
+
+    $scope.networkQuery.getCitation = function(citation) {
+        //return;
+        var identifier = $scope.networkQuery.currentSubnetwork.citations[citation].identifier;
+        var parsedString = identifier.split(':');
+
+        if(parsedString[0] == 'pmid') {
+            return 'http://www.ncbi.nlm.nih.gov/pubmed/'+parsedString[1];
+        } else {
+            //TODO
+        }
+    }
+
+
     // initialize
     // first subnetwork to load and get network meta data.
     $scope.networkQuery.initialize = function() {
@@ -188,6 +203,15 @@ ndexApp.controller('networkController',
                     //var width = angular.element('#canvas')[0].clientWidth;
                     // Ask the cytoscapeService to process the network for rendering
                     cytoscapeService.setNetwork(network);
+
+                    ndexService.getProvenance($scope.networkQuery.currentNetworkId,
+                        function(data) {
+                           // provenanceVisualizerService.setProvenance(data);
+                        }, function(error) {
+                            //TODO
+                        });
+
+                    
                     if(!modalInstance.closed) modalInstance.close();
 
                 }

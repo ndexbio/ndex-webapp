@@ -376,6 +376,35 @@
                  * Networks
                  *---------------------------------------------------------------------*/
 
+                 var NetworkResource = $resource(ndexServerURI + '/network/:identifier:action/:subResource/:permissionType:subId/:skipBlocks/:blockSize',
+                    //paramDefaults
+                    {
+                        identifier: '@identifier',
+                        action: '@action',
+                        subResource: '@subResource',
+                        permissionType: '@permissionType',
+                        subId: '@subId',
+                        skipBlocks: '@skipBlocks',
+                        blockSize: '@blockSize'
+                    },
+                    //actions
+                    {
+                        getProvenance: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'provenance'
+                            }
+                        }
+                    }
+                );
+
+
+                 factory.getProvenance = function(externalId, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.getProvenance({identifier: externalId}, successHandler, errorHandler);
+                 }
+
+
                 //
                 // getNetwork
                 //
@@ -1147,7 +1176,7 @@
             elements = {nodes: [], edges: []};
             elementIndex = 0;
             processProvenanceEntity(provenanceRoot);
-
+            console.log(elements);
             // set the cytoscsape instance elements
             cy.load(elements);
 
@@ -1156,7 +1185,7 @@
         var processProvenanceEntity = function(pEntity, parentEventNode){
 
             // Make the node for the entity
-            var entityLabel = getProperty("dc:title", pEntity.properties);
+            var entityLabel = 'none'//getProperty("dc:title", pEntity.properties);
             elementIndex = elementIndex + 1;
             var entityNode = {
                 data: {
@@ -1198,10 +1227,12 @@
 
             // get the event inputs.
             // for each input, call processProvenanceEntity and link the returned node to the event
+                if(pEntity.creationEvent.inputs) {
                 $.each(pEntity.creationEvent.inputs, function(index, inputEntity) {
                     processProvenanceEntity(inputEntity, eventNode);
 
                 });
+                }
             }
         };
 
@@ -1217,7 +1248,7 @@
             $(function () { // on dom ready
 
                 cy = cytoscape({
-                    container: $('#canvas')[0],
+                    container: $('#provenanceCanvas')[0],
 
                     style: cytoscape.stylesheet()
                         .selector('node')

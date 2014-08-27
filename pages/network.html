@@ -4,44 +4,51 @@
 </pre>
 -->
 
-<div id="divNetwork" ng-show="networkQuery.errors.length == 0">
-    <div id="divNetworkHeadline" class="row">
-        <div class="col-md-10 pull-left">
-            <h3>{{networkQuery.currentNetwork.name}}</h3>
+<div id="divNetwork" ng-show="networkQuery.errors.length == 0" class='row'>
+    <div class='col-md-3'>
+
+        <div id="divNetworkHeadline" class="row">
+                <h4><label>{{networkQuery.currentNetwork.name}}</label</h4>
         </div>
 
-        <!--<div id="divNetworkMenu" class="col-md-2 pull-right">
-            <a ng-click="saveSelectedSubnetwork()">Actions</a>
-            <!--
-            <div class="dropdown" >
-                <a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown" >Options</a>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="option in networkOptions">
-                        <a ng-click="handleNetworkOption(option)">{{option}}</a>
-                    </li>
-                </ul>
+        <div class="row">
+            <div id="divNetworkStats">
+            <span>
+                 <label>nodes:</label>
+                <!--<span>{{networkQuery.currentSubnetwork.nodeCount}}</span> out of-->
+                 <span>{{networkQuery.currentNetwork.nodeCount}}</span>
+            </span>
+            <span>
+                 <label>edges:</label>
+                <!--<span>{{networkQuery.currentSubnetwork.edgeCount}}</span> out of-->
+                 <span>{{networkQuery.currentNetwork.edgeCount}}</span>
+            </span>
             </div>
-            /-/->
-        </div> -->
-    </div>
-    <div class="row">
-        <div id="divNetworkStats">
-        <span>
-             <label>nodes:</label>
-            <span>{{networkQuery.currentSubnetwork.nodeCount}}</span> out of
-             <span>{{networkQuery.currentNetwork.nodeCount}}</span>
-        </span>
-        <span>
-             <label>edges:</label>
-            <span>{{networkQuery.currentSubnetwork.edgeCount}}</span> out of
-             <span>{{networkQuery.currentNetwork.edgeCount}}</span>
-        </span>
         </div>
+        <div class='row text-success'>{{networkQuery.currentNetwork.visibility}}</div>
+
+        <hr>
+
+        <div class='row' id='provenanceCanvas'>
+        </div>
+    </div>
+
+    <div class='col-md-9'>
+
+    <div class='row text-center'>
+        <h4>Retrieved Subnetwork</h4>
+            <span>
+                 <label>nodes:</label>
+                <span>{{networkQuery.currentSubnetwork.nodeCount}}</span>
+            </span>
+            <span>
+                 <label>edges:</label>
+                 <span>{{networkQuery.currentSubnetwork.edgeCount}}</span>
+            </span>
     </div>
 
     <div class="row" id="canvas">
     </div>
-
 
     <div class="row">
 
@@ -76,14 +83,14 @@
                     <ul id="ulSubnetwork" ng-repeat="(id, edge) in networkQuery.currentSubnetwork.edges">
 
                         <li>
-                            <i class="icon-expand Hand" ng-show="hasAliases(edge)"
-                               ng-click="toggleTermAliases"></i>
-
-
                             <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.subjectId]}}</strong>
                             <em>{{networkQuery.currentSubnetwork.terms[edge.predicateId].name}}</em>
                             <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[edge.objectId]}}</strong>
-                            <a ng-href="https://www.google.com" target="_blank"><sup>[911]</sup></a>
+                            <span ng-repeat='citation in edge.citations'>
+                            <a ng-href="{{networkQuery.getCitation(citation)}}" target="_blank"><sup>
+                            <span class='glyphicon glyphicon-book'></span>
+                            </sup></a>
+                            </span>
 
                             <!--<sup rel="tooltip">{{edgeFootnotes[edge]}}
                             </sup>-->
@@ -110,9 +117,18 @@
                     <ul id="ulSubnetwork" ng-repeat="node in networkQuery.currentSubnetwork.nodes">
                         <li style="cursor:pointer" ng-click="node.showAliases = !node.showAliases">
                             <strong>{{networkQuery.currentSubnetwork.nodeLabelMap[node.id]}}</strong>
+                            <span ng-repeat='citation in node.citations'>
+                            <a ng-href="{{networkQuery.getCitation(citation)}}" target="_blank"><sup>
+                            <span class='glyphicon glyphicon-book'></span>
+                            </sup></a>
+                            </span>
                         </li>
-                        <li style="background : white" ng-show="node.showAliases">
-                            test
+                        <li style="background : white" ng-show="node.showAliases && (node.aliases.length > 0)">
+                            <span>Aliases:</span>
+                            <em ng-repeat='(key,alias) in node.aliases'>
+                                {{networkQuery.currentSubnetwork.baseTerms[alias].name}}
+                                <span ng-show='(node.aliases.length > 1) && (key < node.aliases.length-1)'>,</span>
+                            </em>
                         </li>
                     </ul>
                 </div>
@@ -134,12 +150,9 @@
                     </li>
                 </ul>
             </tab>
-            <tab heading="Properties">
-                <div id="divProperties">
-                    <p> test3 </p>
-                </div>
-            </tab>
         </tabset>
+
+    </div>
 
     </div>
 
