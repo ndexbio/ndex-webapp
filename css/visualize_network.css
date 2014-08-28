@@ -16,6 +16,13 @@
 
 }
 
+#provenanceCanvas {
+    font: 9px helvetica neue, helvetica, arial, sans-serif;
+    height: 250px;
+    width: 100%;
+    background-color:fff;
+}
+
 #compareCanvas {
     font: 9px helvetica neue, helvetica, arial, sans-serif;
     height: 800px;

@@ -1185,10 +1185,37 @@
 
         };
 
+        factory.makeProvenanceEntity = function (uri) {
+            return {
+                uri: uri
+            }
+        };
+
+        factory.makeProvenanceEvent = function(eventType) {
+            return {
+                eventType: eventType,
+                inputs: []
+            }
+        };
+
+        factory.createFakeProvenance = function(){
+            var fakeRoot = this.makeProvenanceEntity("www.example.com/fakeThing");
+            var fakeEvent1 = this.makeProvenanceEvent("Transform");
+            fakeRoot.creationEvent = fakeEvent1;
+            var fakeThing2  = this.makeProvenanceEntity("www.example.com/fakeThing2");
+            fakeEvent1.inputs.push(fakeThing2);
+            var fakeEvent2 = this.makeProvenanceEvent("Copy");
+            fakeThing2.creationEvent = fakeEvent2;
+            var fakeThing3  = this.makeProvenanceEntity("www.example.com/fakeThing3");
+            fakeEvent2.inputs.push(fakeThing3);
+            return fakeRoot;
+
+        };
+
         var processProvenanceEntity = function(pEntity, parentEventNode){
 
             // Make the node for the entity
-            var entityLabel = 'none'//getProperty("dc:title", pEntity.properties);
+            var entityLabel = pEntity.uri; //getProperty("dc:title", pEntity.properties);
             elementIndex = elementIndex + 1;
             var entityNode = {
                 data: {
@@ -1201,8 +1228,8 @@
             if (parentEventNode != null){
                 var eventToEntityEdge = {
                     data: {
-                        source: parentEventNode.data.id,
-                        target: entityNode.data.id}
+                        target: parentEventNode.data.id,
+                        source: entityNode.data.id}
                 }
                 elements.edges.push(eventToEntityEdge);
             };
@@ -1221,8 +1248,8 @@
             // Link the entityNode to the eventNode
             var entityToEventEdge = {
                 data: {
-                    source: entityNode.data.id,
-                    target: eventNode.data.id
+                    target: entityNode.data.id,
+                    source: eventNode.data.id
                 }};
 
             elements.nodes.push(eventNode);
@@ -1260,7 +1287,7 @@
                             'height': 10,
                             'width': 10,
                             'text-valign': 'center',
-                            'background-color': 'blue',
+                            'background-color': 'light-green',
                             'font-size': 8,
                             //'text-outline-width': 2,
                             //'text-outline-color': 'blue',
@@ -1281,8 +1308,9 @@
 
                     layout: {
                         name: 'breadthfirst',
-                        directed: true,
-                        roots: '#a',
+                        directed: false,
+                        fit: true,
+                        roots: '#n1',
                         padding: 10
                     },
 

@@ -152,6 +152,7 @@ ndexApp.controller('networkController',
             request2.abort();
         };
 
+
         // Note we save the 'promise' from the ndexService wrapped http request.
         // We do not want to lose the original
         // reference and lose access to the .abort method.
@@ -206,6 +207,8 @@ ndexApp.controller('networkController',
 
                     ndexService.getProvenance($scope.networkQuery.currentNetworkId,
                         function(data) {
+                            // fake data
+                            provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
                            // provenanceVisualizerService.setProvenance(data);
                         }, function(error) {
                             //TODO
