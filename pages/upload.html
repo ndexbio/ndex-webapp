@@ -103,6 +103,10 @@
     <div class="col-md-9" style="margin-bottom: 40px">
 
         <h3>My Network Loading Tasks on NDEx</h3>
+        <button type="button" class="btn btn-success btn-xs"
+                ng-click="refreshTasks()">
+            Update
+        </button>
         <table class="table">
             <thead>
             <tr>
@@ -125,7 +129,7 @@
                 <td nowrap>
                     <button type="button" class="btn btn-danger btn-xs"
                             ng-click="markTaskForDeletion(task.externalId)">
-                        <span class="glyphicon glyphicon-trash"></span> Remove
+                        <span class="glyphicon glyphicon-trash"></span>
                     </button>
                 </td>
             </tr>
