@@ -61,7 +61,7 @@ ndexApp.controller('userController',
         ndexService.getSentRequests(0, 20,
             function(requests) {
                 userController.sentRequests = requests;
-                console.log(requests);
+                
             },
             function(error) {
                 console.log(error);

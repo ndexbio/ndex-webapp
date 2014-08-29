@@ -10,13 +10,13 @@
 
 			<hr>
 			<strong>Response Message</strong>
-			<textarea class='form-control' rows='3'></textarea>
+			<textarea class='form-control' rows='3' ng-model='request.responseMessage'></textarea>
 		</div>
 
 		<div class='modal-footer' ng-hide='false'>
 			<button class='btn btn-default' ng-click='close()'>Cancel</button>
-			<button class='btn btn-danger' ng-click=''>Decline</button>
-			<button class='btn btn-primary' ng-click=''>Accept</button>
+			<button class='btn btn-danger' ng-click='decline()'>Decline</button>
+			<button class='btn btn-primary' ng-click='accept()'>Accept</button>
 		</div>
 	</div>
 </script>

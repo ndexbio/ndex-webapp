@@ -30,31 +30,6 @@
                     $location.path("/user/" + userId);
                 };
 
-                factory.openCreateGroupModal = function(){
-                    // display the create group modal using its template and controller
-                    console.log("attempting to open createGroupModal");
-                    $modal.open({
-                        templateUrl: 'pages/createGroupModal.html',
-                        controller: 'createGroupController2'
-                    })
-                };
-
-                factory.openCreateRequestModal = function(){
-                    console.log("attempting to open createRequestModal");
-                    $modal.open({
-                        templateUrl: 'pages/createRequestModal.html',
-                        controller: 'requestController'
-                    })
-                };
-
-                factory.openRequestResponseModal = function(){
-                    console.log("attempting to open requestResponseModal");
-                    $modal.open({
-                        templateUrl: 'pages/requestResponseModal.html',
-                        controller: 'requestController'
-                    })
-                };
-
                 factory.openConfirmationModal = function(message, confirmHandler){
                     console.log("attempting to open confirmationModal");
                     var ConfirmCtrl = function($scope, $modalInstance) {
@@ -428,7 +403,70 @@
                 };
 
                 $scope.close = function() {
+                    for(var key in $scope.ndexData) {
+                        $scope.request[key] = $scope.ndexData[key];
+                    } 
                     modalInstance.close();
+                };
+
+                $scope.accept = function() {
+
+                    var membership = {
+                        resourceUUID: $scope.request.destinationUUID,
+                        permissions: $scope.request.permission,
+                        memberUUID: $scope.request.sourceUUID
+                    }
+
+                    if($scope.request.permission == 'MEMBER' || $scope.request.permission == 'GROUPADMIN') {
+                        
+                        ndexService.updateGroupMember(membership, 
+                            function(data){
+                                
+                                $scope.request.response = 'ACCEPTED'
+                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request, 
+                                    function(data) {
+                                        console.log($scope.request)
+                                        modalInstance.close();
+                                        $route.reload();
+                                    },
+                                    function(error){
+                                        //TODO
+                                    });
+                            },
+                            function(error){
+                                //TODO
+                            });
+                    } else {
+                        ndexService.updateNetworkMember(membership,
+                            function(data){
+                                //TODO
+                                $scope.request.response = 'ACCEPTED'
+                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request, 
+                                    function(data) {
+                                        modalInstance.close();
+                                        $route.reload();
+                                    },
+                                    function(error){
+                                        //TODO
+                                    });
+                            },
+                            function(error){
+                                //TODO
+                            });
+                    }
+
+                };
+
+                $scope.decline = function() {
+                    $scope.request.response = 'DECLINED'
+                    ndexService.updateRequest($scope.ndexData.externalId, $scope.request, 
+                        function(data) {
+                            modalInstance.close();
+                            $route.reload();
+                        },
+                        function(error){
+                            //TODO
+                        })
                 }
 
                 $scope.$watch('ndexData', function(value) {
@@ -441,6 +479,164 @@
         }
     });
 
+    uiServiceApp.directive('createRequestGroup', function() {
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/createRequestGroup.html',
+            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.request = {};
+                $scope.permissionLabel ='Is Member';
 
+                $scope.openMe = function() {
+                   modalInstance = $modal.open({
+                        templateUrl: 'create-request-group-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.close = function() {
+                    $scope.request = {};
+                    for(var key in $scope.ndexData) {
+                        $scope.request.destinationName = $scope.ndexData.accountName;
+                        $scope.request.destinationUUID = $scope.ndexData.externalId;
+                        $scope.permissionLabel ='Is member';
+                    } 
+                    modalInstance.close();
+                };
+                
+                $scope.submitRequest = function() {
+                    if($scope.permissionLabel == 'Is member')
+                        $scope.request.permission = 'MEMBER'
+                    else
+                        $scope.request.permission = 'GROUPADMIN'
+
+                    $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
+                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+
+                    ndexService.createRequest($scope.request, 
+                        function(request) {
+                          //TODO some modal
+                          $scope.close();
+                        },
+                        function(error){
+                          //TODO
+                          console.log('failed to send request');
+                        });
+                }
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.request = {};
+                    $scope.request.destinationName = $scope.ndexData.accountName;
+                    $scope.request.destinationUUID = $scope.ndexData.externalId;
+                    $scope.permissionLabel ='Is member'; 
+                }); 
+            }
+        }
+    });
+
+    uiServiceApp.directive('createRequestNetwork', function() {
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/createRequestNetwork.html',
+            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.request = {};
+                $scope.modal = {};
+                $scope.accounts = [];
+
+                $scope.openMe = function() {
+                intialize();
+                   modalInstance = $modal.open({
+                        templateUrl: 'create-request-network-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.close = function() {
+                    
+                    modalInstance.close();
+                };
+                
+                $scope.submitRequest = function() {
+
+                    if($scope.modal.permissionLabel == 'Can edit')
+                        $scope.request.permission = 'WRITE';
+                    if($scope.modal.permissionLabel == 'Is admin')
+                        $scope.request.permission = 'ADMIN';
+                    if($scope.modal.permissionLabel == 'Can read')
+                        $scope.request.permission = 'READ';
+
+                    var length = $scope.accounts.length;
+                    for(var ii=0; ii<length; ii++) {
+                        if($scope.accounts[ii].accountName == $scope.request.sourceName)
+                            $scope.request.sourceUUID = $scope.accounts[ii].externalId;
+                    }
+
+                    ndexService.createRequest($scope.request, 
+                        function(request) {
+                          //TODO some modal
+                          $scope.close();
+                        },
+                        function(error){
+                          //TODO
+                          console.log('failed to send request');
+                        });
+                }
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.request.destinationName = $scope.ndexData.name;
+                    $scope.request.destinationUUID = $scope.ndexData.externalId;
+                }); 
+
+
+                var intialize = function() {
+                    $scope.accounts = [];
+
+                    $scope.modal.permissionLabel ='Can edit';
+
+                    $scope.request.destinationName = $scope.ndexData.name;
+                    $scope.request.destinationUUID = $scope.ndexData.externalId;
+
+                    $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
+                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+
+                    var query = {};
+
+                    query.accountName = ndexUtility.getLoggedInUserAccountName();
+                    query.permission = 'GROUPADMIN';
+                    
+                    // TODO 0,50 shouldnt be a set number
+                    ndexService.searchGroups(query, 0, 50,
+                        function (groups) {
+                            var length = groups.length;
+                            for(var ii=0; ii < length; ii++) {
+                                $scope.accounts.push(groups[ii]);
+                            }
+                            $scope.accounts.push({
+                                accountName: ndexUtility.getLoggedInUserAccountName(),
+                                externalId: ndexUtility.getLoggedInUserExternalId()
+                            });
+                        },
+                        function (error) {
+                                   
+                        });
+                }
+
+            }
+        }
+    });
 
 }) ()

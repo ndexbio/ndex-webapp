@@ -38,12 +38,16 @@
                                 Add Collaborators!
                             </invite-members-modal></a></li>
                     <li class="divider"></li>
-                    <li><a href="#">Action 4</a></li>
+                    <li><a ng-click='groupController.leaveGroup()'>Leave Group</a></li>
                 </ul>
             </div>
-            <button class='btn btn-primary' 
-                ng-click='groupController.submitRequest()'
-                ng-hide='groupController.isAdmin'>Ask to Join</button>
+            <create-request-group 
+                    ndex-data='groupController.displayedGroup'
+                    ng-hide='groupController.isAdmin'>
+                <button class='btn btn-primary'>
+                Ask to Join!
+                </button>
+            </create-request-group>
         </div>
 
     </div>

@@ -1,6 +1,6 @@
 ndexApp.controller('groupController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
+    ['ndexService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal', '$route',
+        function (ndexService, ndexUtility, ndexNavigation, sharedProperties, $scope, $location, $routeParams, $modal, $route) {
 
             $scope.groupController = {};
             var groupController = $scope.groupController;
@@ -43,24 +43,22 @@ ndexApp.controller('groupController',
                         });
             };
 
-            groupController.submitRequest = function() {
-                  var request = {
-                    destinationUUID: groupController.displayedGroup.externalId,
-                    destinationName: groupController.displayedGroup.organizationName,
-                    permission: 'MEMBER'
-                  }
-
-                  ndexService.createRequest(request, 
-                    function(request) {
-                      //TODO some modal
-                      console.log('request sent');
-                    },
-                    function(error){
-                      //TODO
-                      console.log('failed to send request');
-                    })
-            }
-
+            groupController.leaveGroup = function() {
+                ndexNavigation.openConfirmationModal(
+                    'Are you sure you want to leave this group?',
+                    function() {
+                        ndexService.removeGroupMember(
+                            groupController.displayedGroup.externalId,
+                            ndexUtility.getLoggedInUserExternalId(),
+                            function(data){
+                                //TODO
+                                $route.reload();
+                            },
+                            function(error){
+                                //TODO
+                            });
+                    });
+            };
             // initializations
 
             ndexService.getGroup(groupController.identifier,

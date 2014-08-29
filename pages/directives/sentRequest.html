@@ -3,10 +3,23 @@
 <script type="text/ng-template" id="sent-request-modal.html">
 	<div class='modal-content'>
 		<div class='modal-body' ng-hide='false'>
-			<h5><strong>
-			You requested <span class='text-success'>{{request.permission}}</span> access to {{request.destinationName}}
-			</strong></h5>
+			<h5>
+				<strong>
+				You requested <span class='text-success'>{{request.permission}}</span> access to {{request.destinationName}} for {{request.sourceName}}
+				</strong>
+				<em class='text-muted' 
+					ng-class='{"text-danger":request.response=="DECLINED", "text-success":request.response=="ACCEPTED"}'>
+					 - {{request.response}}
+				</em>
+			</h5>
+			<hr ng-show='request.message'>
+			<strong ng-show='request.message'>Message</strong>
 			<p>{{request.message}}</p>
+			<div ng-hide='request.response == "PENDING"'>
+				<hr>
+				<h5><strong>Response</strong> - <em>from {{request.responder}}</em></h5>
+				<p ng-show='request.responseMessage'>{{request.responseMessage}}</p>
+			</div>
 		</div>
 
 		<div class='modal-footer' ng-hide='false'>

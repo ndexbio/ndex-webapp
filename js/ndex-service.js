@@ -244,9 +244,20 @@
                             params: {
                                 subResource: 'member'
                             }
+                        },
+                        removeMembership: {
+                            method: 'DELETE',
+                            params: {
+                                subResource: 'member'
+                            }
                         }
                     }
                 );
+
+                factory.removeGroupMember = function(groupExternalId, memberExternalId, successHandler, errorHandler){
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, successHandler, errorHandler);
+                }
 
                 factory.updateGroupMember = function(membership, successHandler, errorHandler) {
                     membership.membershipType = 'GROUP'
@@ -296,8 +307,6 @@
                  var RequestResource = $resource(ndexServerURI + '/request/:identifier');
 
                  factory.createRequest = function(request, successHandler, errorHandler) {
-                    request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
-                    request.sourceName = ndexUtility.getLoggedInUserAccountName();
                     request.type = 'Request';
 
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
@@ -306,6 +315,7 @@
 
                  factory.updateRequest = function(externalId, request, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    request.responder = ndexUtility.getLoggedInUserAccountName();
                     RequestResource.save({identifier: externalId}, request, successHandler, errorHandler);
                  }
 
@@ -394,6 +404,12 @@
                             params: {
                                 subResource: 'provenance'
                             }
+                        },
+                        updateNetworkMember: {
+                            method: 'POST',
+                            params: {
+                                subResource: 'member'
+                            }
                         }
                     }
                 );
@@ -404,6 +420,11 @@
                     NetworkResource.getProvenance({identifier: externalId}, successHandler, errorHandler);
                  }
 
+                 factory.updateNetworkMember = function(membership, successHandler, errorHandler) {
+                    membership.membershipType = 'NETWORK';
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.updateNetworkMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
+                 }
 
                 //
                 // getNetwork
@@ -1179,7 +1200,6 @@
             elements = {nodes: [], edges: []};
             elementIndex = 0;
             processProvenanceEntity(provenanceRoot);
-            console.log(elements);
             // set the cytoscsape instance elements
             cy.load(elements);
 

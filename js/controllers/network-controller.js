@@ -2,30 +2,22 @@ ndexApp.controller('networkController',
     ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
     function(ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
 
-    // To avoid issues with child scopes, we use an object bind controller data to the DOM
-    $scope.networkQuery = {};
+    //              Process the URL to get application state
+    //-----------------------------------------------------------------------------------
+    var networkExternalId = $routeParams.identifier;
+    sharedProperties.setCurrentNetworkId(networkExternalId);
 
-    cytoscapeService.initCyGraph();
-    provenanceVisualizerService.initCyGraph();
+    //              CONTROLLER INTIALIZATIONS
+    //------------------------------------------------------------------------------------
+    $scope.networkController = {};
+    var networkController = $scope.networkController;
 
-    // Retrieve the network id from route params
-    $scope.networkQuery.currentNetworkId = $routeParams.identifier;
-    sharedProperties.setCurrentNetworkId($scope.networkQuery.currentNetworkId);
-    // We do this to avoid undefined errors
-    if (!$scope.networkQuery.currentNetwork) $scope.networkQuery.currentNetwork = {};
+    networkController.currentNetworkId = networkExternalId; // externalId
+    networkController.currentNetwork = {}; // network summary
+    networkController.currentSubnetwork = {}; // subnetwork
+    networkController.errors = []; // general page errors
 
-    // Here we create and initialize an object whose properties we
-    // will modify in the DOM and use as parameters for API requests
-    $scope.networkQuery.searchDepth =
-        {
-            "name" : "1-step",
-            "description": "1-step",
-            "value": 1,
-            "id": "1"
-        };
-
-    // All the possible parameters of our API request for subnetwork queries.
-    $scope.networkQuery.searchDepths = [
+    networkController.searchDepths = [
         {
             "name" : "1-step",
             "description": "1-step",
@@ -46,22 +38,14 @@ ndexApp.controller('networkController',
         }
     ];
 
-    // submitNetworkQuery
-    // We make the call to retrieve a subnetwork based on the selected parameters.
-    // On load, we display a modal.
-    // On errors, we hide all the content and display the message received from the server.
-    // On success, we set the subnetwork retrieved and display all of its properties.
-    $scope.networkQuery.submitNetworkQuery = function() {
+    // queries within a network
+    networkController.submitNetworkQuery = function() {
 
-        // An array to hold our errors. ng-show and ng-hide relay on the length to toggle content.
-        $scope.networkQuery.errors = [];
-
-        // We want to hold on to the request for the subnetwork query. The request contains the .abort method.
-        // This way, we can call the method midstream and cancel the AJAX call.
+        // var to keep the reference to http call to call abort method;
         var request = null;
 
-        // AngularUi modal service use. queryContent.html is reused across this controller. It is located in our
-        // network.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
+        
+        // replace with in page loader
         var modalInstance = $modal.open({
             templateUrl: 'queryContent.html',
             scope: $scope,
@@ -70,39 +54,28 @@ ndexApp.controller('networkController',
 
         // cancel
         // Close the modal and abort the AJAX request.
-        $scope.networkQuery.cancel = function() {
+        networkController.cancel = function() {
             modalInstance.close();
             request.abort();
         };
 
         // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
         // reference and lose access to the .abort method.
-        (request = ndexService.queryNetwork( $scope.networkQuery.currentNetworkId, $scope.networkQuery.searchString, $scope.networkQuery.searchDepth.value) )
+        (request = ndexService.queryNetwork( networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value) )
             .success(
                 function(network) {
-                    console.log("got query results for : " + $scope.networkQuery.searchString);
-
-                    // Save the results in proper locations.
+                    console.log("got query results for : " + networkController.searchString);
                     csn = network;
-                    $scope.networkQuery.currentSubnetwork = network;
-                    //$scope.networkQuery.graphData = createD3Json(network);
-
-                    // Network rendering preparation.
-                    //var height = angular.element('#canvas')[0].clientHeight;
-                    //var width = angular.element('#canvas')[0].clientWidth;
-                    // Ask the cytoscapeService to process the network for rendering
+                    networkController.currentSubnetwork = network;
                     cytoscapeService.setNetwork(network);
-
                     // close the modal
                     modalInstance.close();
                 }
             )
             .error(
                 function(error) {
-                    // Save the error.
                     if(error.status != 0) {
-                        $scope.networkQuery.errors.push({label: "Http request error", error: error});
-
+                        networkController.errors.push({label: "Http request error", error: error});
                         // close the modal.
                         modalInstance.close();
                     }
@@ -111,9 +84,9 @@ ndexApp.controller('networkController',
     };
 
 
-    $scope.networkQuery.getCitation = function(citation) {
+    networkController.getCitation = function(citation) {
         //return;
-        var identifier = $scope.networkQuery.currentSubnetwork.citations[citation].identifier;
+        var identifier = networkController.currentSubnetwork.citations[citation].identifier;
         var parsedString = identifier.split(':');
 
         if(parsedString[0] == 'pmid') {
@@ -121,62 +94,30 @@ ndexApp.controller('networkController',
         } else {
             //TODO
         }
-    }
+    };
 
-
-    // initialize
-    // first subnetwork to load and get network meta data.
-    $scope.networkQuery.initialize = function() {
-
-        // An array to hold our errors. ng-show and ng-hide relay on the length to toggle content.
-        $scope.networkQuery.errors = [];
-
-        // We want to hold on to the request for the subnetwork query. The request contains the .abort method.
-        // This way, we can call the method midstream and cancel the AJAX call.
+    var initialize = function() {
+        // vars to keep references to http calls to allow aborts
         var request1 = null;
         var request2 = null;
-
-        // AngularUi modal service use. queryContent.html is reused across this controller. It is located in our
-        // network.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
-        var modalInstance = $modal.open({
-            templateUrl: 'queryContent.html',
-            scope: $scope,
-            backdrop: 'static'
-        });
-
-        // cancel
-        // Close the modal and abort the AJAX request.
-        $scope.networkQuery.cancel = function() {
-            modalInstance.close();
-            request1.abort();
-            request2.abort();
-        };
-
-
-        // Note we save the 'promise' from the ndexService wrapped http request.
-        // We do not want to lose the original
-        // reference and lose access to the .abort method.
-        (request1 = ndexService.getNetwork($scope.networkQuery.currentNetworkId) )
+        
+        // get network summary
+        // keep a reference to the promise
+        (request1 = ndexService.getNetwork(networkController.currentNetworkId) )
             .success(
                 function(network) {
-                    // We save the network
                     cn = network;
-                    $scope.networkQuery.currentNetwork = network;
+                    networkController.currentNetwork = network;
                 }
             )
             .error(
                 function(error) {
                     if(error.status != 0) {
-                        // Save the error
-                        $scope.networkQuery.errors.push({label: "Get Network Info Request: ", error: error});
-                        modalInstance.close();
-
-                        // Let's remember this modal is closed to avoid
-                        // closing it on an undefined object
-                        // on the next async call.
-                        modalInstance.closed = true;
+                        networkController.errors.push({label: "Get Network Info Request: ", error: error});
+                        //modalInstance.close();
+                        //modalInstance.closed = true;
                     } else {
-                        $scope.networkQuery.errors.push({label: "Get Network Info Request: ", error: "Process Killed"});
+                        networkController.errors.push({label: "Get Network Info Request: ", error: "Process Killed"});
                     }
                 }
             );
@@ -185,27 +126,17 @@ ndexApp.controller('networkController',
         var blockSize = 50;
         var skipBlocks = 0;
 
-        // Note we save the 'promise' from the ndexService wrapped http request.
-        // We do not want to lose the original
-        // reference and lose access to the .abort method.
-        (request2 = ndexService.getNetworkByEdges($scope.networkQuery.currentNetworkId, skipBlocks, blockSize) )
+        // get first couple of edges
+        (request2 = ndexService.getNetworkByEdges(networkController.currentNetworkId, skipBlocks, blockSize) )
             .success(
                 function(network){
+                    csn = network; // csn is a debugging convenience variable
+                    networkController.currentSubnetwork = network;
+                    networkController.selectedEdges = network.edges;
 
-                    // set the returned network as the current subnetwork
-                    $scope.networkQuery.currentSubnetwork = network;
-                    $scope.networkQuery.selectedEdges = network.edges;
-                    // csn is a debugging convenience variable
-                    csn = network;
-                    $scope.networkQuery.message = "showing network '" + network.name + "'";
-
-                    // Preparation for network rendering
-                    //var height = angular.element('#canvas')[0].clientHeight;
-                    //var width = angular.element('#canvas')[0].clientWidth;
-                    // Ask the cytoscapeService to process the network for rendering
                     cytoscapeService.setNetwork(network);
 
-                    ndexService.getProvenance($scope.networkQuery.currentNetworkId,
+                    ndexService.getProvenance(networkController.currentNetworkId,
                         function(data) {
                             // fake data
                             provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
@@ -214,57 +145,51 @@ ndexApp.controller('networkController',
                             //TODO
                         });
 
-                    
-                    if(!modalInstance.closed) modalInstance.close();
-
                 }
             )
             .error(
                 function(error) {
                     if(error.status != 0) {
-                        $scope.networkQuery.errors.push({label: "Get Network Edges Request: ", error: error});
-                        if(!modalInstance.closed) modalInstance.close();
+                        networkController.errors.push({label: "Get Network Edges Request: ", error: error});
                     } else {
-                        $scope.networkQuery.errors.push({label: "Get Network Edges Request: ", error: "Process killed"});
+                        networkController.errors.push({label: "Get Network Edges Request: ", error: "Process killed"});
                     }
                 }
             );
     };
 
-    // Initialize the current network and current subnetwork
-    $scope.networkQuery.initialize();
-
-    //--------------------------------------------------------------------------------------------------//
-
-    /*
-    NOT IMPLEMENTED
-    $scope.networkOptions = [
-        "Save Selected Subnetwork",
-        "And another choice for you.",
-        "but wait! A third!"
-    ];
-
-    $scope.saveSelectedSubnetwork = function(){
-        $scope.currentSubnetwork.description = "test subnetwork";
-        $scope.currentSubnetwork.name = "testSubnetwork" + Math.floor(Math.random() * 10000);
-        $scope.currentSubnetwork.isPublic = true;
-        var config = NdexClient.getSaveNetworkConfig($scope.currentSubnetwork);
-        alert("about to save selected subnetwork " + $scope.currentSubnetwork.name);
-        $http(config)
-            .success(function (network) {
-                alert("saved selected subnetwork " + $scope.currentSubnetwork.name);
+    var getMembership = function() {
+        ndexService.getMyMembership(networkController.currentNetworkId, 
+            function(membership) {
+                if((membership.permissions == 'ADMIN') || (membership.permissions == 'WRITE'))
+                    networkController.isAdmin = true;
+            },
+            function(error){
+                console.log(error);
             });
 
-    };
+    }
 
-    NOT IMPLEMENTED
-    scope.showEditControls = function () {
-        if (!$scope.currentNetwork) return false;
-        if (NdexClient.canEdit($scope.currentNetwork) && $scope.editMode) return true;
-        return false;
-    };*/
+    //                  PAGE INITIALIZATIONS/INITIAL API CALLS
+    //----------------------------------------------------------------------------
 
+    // prepare the cytoscape viewer
+    cytoscapeService.initCyGraph();
+    provenanceVisualizerService.initCyGraph();
 
+    // set the initial depth for queries
+    networkController.searchDepth = {
+            "name" : "1-step",
+            "description": "1-step",
+            "value": 1,
+            "id": "1"
+        };
+
+    networkController.isAdmin = false;
+
+    // Initialize the current network and current subnetwork
+    initialize();
+    getMembership();
 
 }]);
 

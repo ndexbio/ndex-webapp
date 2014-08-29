@@ -1,0 +1,36 @@
+<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="create-request-group-modal.html">
+	<div class='modal-content'>
+		<div class='modal-body' ng-hide='false'>
+			
+			<h5><strong>
+			Ask to join {{request.destinationName}}!
+			</strong></h5>
+
+			<span class="dropdown">
+		      <a href class="dropdown-toggle">
+		        {{permissionLabel}} <span class="caret"></span>
+		      </a>
+		      <ul class="dropdown-menu">
+		      	<li>
+		          <a class="dropdown-toggle" ng-click='permissionLabel = "Is admin"'><small>Is Admin</small></a>
+		        </li>
+		        <li>
+		          <a class="dropdown-toggle" ng-click='permissionLabel = "Is member"'><small>Is Member</small></a>
+		        </li>
+		      </ul>
+		    </span>
+
+			<hr>
+			<strong>Message</strong>
+			<textarea class='form-control' rows='3' placeholder='' ng-model='request.message'></textarea>
+
+		</div>
+
+		<div class='modal-footer' ng-hide='false'>
+			<button class='btn btn-default' ng-click='close()'>Cancel</button>
+			<button class='btn btn-primary' ng-click='submitRequest()'>Send</button>
+		</div>
+	</div>
+</script>
