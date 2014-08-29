@@ -2,33 +2,40 @@ ndexApp.controller('userController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
-    //general initializations
+    //              Process the URL to get application state
+    //-----------------------------------------------------------------------------------
+    var identifier = $routeParams.identifier;
+
+
+    //              CONTROLLER INTIALIZATIONS
+    //------------------------------------------------------------------------------------
+
     $scope.userController = {};
     var userController = $scope.userController;
     userController.isLoggedInUser = false;
+    userController.identifier = identifier;
+    userController.displayedUser = {};
 
-    userController.identifier = $routeParams.identifier; //actually account name right now - should change to UUID
+    //groups
+    userController.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
+    userController.groupSearchMember = false;
+    userController.groupSearchResults = [];
 
-    //move to directive?
-    $scope.confirmTest = function(){
-        //ndexNavigation.openConfirmationModal("test message", function(){
-          //  console.log("test modal confirmed");
-        //})
-    };
+    //networks
+    userController.networkQuery={};
+    userController.networkSearchResults = [];
 
-    //move to shared properties? could be directive
+
+    //              scope functions
+
+    // change to use directive. setting of current network should occur controller initialization
      userController.setAndDisplayCurrentNetwork = function (identifier) {
         $location.path("/network/" + identifier);
     };
 
-    //          GROUPS
 
-    // initializations
-    userController.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
-    userController.groupSearchMember = false;
-    // declarations
     userController.submitGroupSearch = function() {
-        userController.groupSearchResults = null;
+        userController.groupSearchResults = [];
 
         var query = {};
 
@@ -45,9 +52,26 @@ ndexApp.controller('userController',
                 
             },
             function (error) {
-                       
+                //TODO  
             });
     };
+
+    userController.submitNetworkSearch = function() {
+        userController.networkSearchResults = [];
+        userController.networkQuery.accountName = userController.displayedUser.accountName;
+
+        ndexService.searchNetworks(userController.networkQuery, 0, 50,
+            function(networks) {
+                userController.networkSearchResults = networks;
+
+            //console.log(userController.networkSearchResults[0])
+            },
+            function(error){
+                //TODO
+            })
+    }
+
+    //              local functions
 
     var getRequests = function() {
         ndexService.getPendingRequests(0, 20,
@@ -81,7 +105,6 @@ ndexApp.controller('userController',
                 userController.isLoggedInUser = true;
 
             cUser = user;
-
             // get requests
 
             getRequests();
@@ -90,7 +113,9 @@ ndexApp.controller('userController',
             userController.submitGroupSearch();
 
             // get networks
-            userController.networkSearchResults = null;
+            userController.submitNetworkSearch();
+
+            /*userController.networkSearchResults = null;
             userController.searchString = "";
 
             ndexService.findNetworks(userController.searchString, userController.displayedUser.accountName, 'ADMIN', false, 0, 50)
@@ -98,7 +123,7 @@ ndexApp.controller('userController',
                 function(networks) {
                     userController.networkSearchResults = networks;
                     //console.log("Setting networkSearchResults");
-                });
+                });*/
 
         }); 
 

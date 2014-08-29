@@ -405,11 +405,18 @@
                                 subResource: 'provenance'
                             }
                         },
-                        updateNetworkMember: {
+                        updateMember: {
                             method: 'POST',
                             params: {
                                 subResource: 'member'
                             }
+                        },
+                        search: {
+                            method: 'POST',
+                            params: {
+                                action: 'search'
+                            },
+                            isArray: true
                         }
                     }
                 );
@@ -423,8 +430,19 @@
                  factory.updateNetworkMember = function(membership, successHandler, errorHandler) {
                     membership.membershipType = 'NETWORK';
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    NetworkResource.updateNetworkMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
+                    NetworkResource.updateMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
                  }
+
+                 factory.searchNetworks = function(query, skipBlocks, blockSize, successHandler, errorHandler) {
+                    if (query.searchString == null)
+                        query.searchString = '';
+                    
+                    if(ndexUtility.getLoggedInUserAccountName() != null)
+                        $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.search({skipBlocks: skipBlocks, blockSize: blockSize}, query, successHandler, errorHandler);
+                 }
+
+                //old http calls below
 
                 //
                 // getNetwork

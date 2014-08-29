@@ -33,11 +33,9 @@
                     <li><a><edit-user-modal 
                                 ndex-data='userController.displayedUser'>
                                 Edit Profile
-                            </edit-user-modal></a></li>
-                    <li><a ng-click="confirmTest()">Test Confirm</a></li>
-                    <li><a href="#">Action 3</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Action 4</a></li>
+                            </edit-user-modal>
+                        </a>
+                    </li>
                 </ul>
             </div>
 
@@ -49,19 +47,11 @@
     <div id="divUserTabs" class="col-md-7" ng-show="userController.displayedUser">
 
         <tabset justified="true">
-            <tab heading="Networks" ng-show='userController.networkSearchResults.length > 0'>
-                <div id="divNetworks">
+            <tab heading="Networks">
+                <div id="divNetworks" ng-show='userController.networkSearchResults.length > 0'>
                     <table class="table table-hover" ng-show="userController.networkSearchResults.length > 0">
-                        <!--
-                        <tbody ng-repeat="(index, network) in displayedUser.networks">
-                        <tr ng-click="setAndDisplayCurrentNetwork(network.resourceId)">
-                            <td>{{network.resourceName}}</td>
-                        </tr>
-                        </tbody>
-                        -->
                         <thead>
                         <tr>
-                            <th>Source</th>
                             <th>Title</th>
                             <th style="width: 10%;">Nodes</th>
                             <th style="width: 10%;">Edges</th>
@@ -69,7 +59,6 @@
                         </thead>
                         <tbody  ng-repeat="network in userController.networkSearchResults">
                         <tr ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)">
-                            <td>{{network.metadata["Source"]}}</td>
                             <td>{{network.name}}</td>
                             </td>
                             <td class="AlignRight">{{network.nodeCount}}</td>
@@ -79,9 +68,13 @@
 
                     </table>
                 </div>
+                <div class='row' ng-hide='userController.networkSearchResults.length > 0'>
+                <br>
+                <p class='text-center text-muted'>No networks to display</p>
+                </div>
             </tab>
-            <tab heading="Groups" active='userController.networkSearchResults < 1'>
-                <div id="divGroups">
+            <tab heading="Groups">
+                <div id="divGroups" ng-show='userController.groupSearchResults.length > 0'>
                     <div class='row center-block'>
                         <hr>
                         <form class='form-inline col-md-6' role="form" ng-submit="userController.submitGroupSearch()">
@@ -132,6 +125,10 @@
                         </ul>
                     </div>
 
+                </div>
+                <div class='row' ng-hide='userController.groupSearchResults.length > 0'>
+                <br>
+                <p class='text-center text-muted'>No groups to display</p>
                 </div>
             </tab>
         </tabset>
