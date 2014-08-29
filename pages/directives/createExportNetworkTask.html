@@ -1,0 +1,25 @@
+<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="create-export-network-task-modal.html">
+    <div class='modal-content'>
+        <div class='modal-body' ng-hide='false'>
+
+            <h5><strong>
+                Export {{network.name}}!
+            </strong></h5>
+            <div>This will create a background task to export the network as a file.
+                When complete, the task will be displayed on your account home page
+                with a link to download the exported file.
+            </div>
+
+            <div>Currently, only the XBEL export format is supported.
+                Only use this for BEL format networks.
+            </div>
+        </div>
+
+        <div class='modal-footer' ng-hide='false'>
+            <button class='btn btn-default' ng-click='close()'>Cancel</button>
+            <button class='btn btn-primary' ng-click='createTask()'>Create Task</button>
+        </div>
+    </div>
+</script>
