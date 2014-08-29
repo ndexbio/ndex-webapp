@@ -129,6 +129,12 @@ ndexApp.controller('networkController',
                 function(network) {
                     cn = network;
                     networkController.currentNetwork = network;
+                    getMembership(function() {
+                        if(networkController.isAdmin || network.visibility == 'PUBLIC')
+                            getEdges(function(subnetwork){
+                                cytoscapeService.setNetwork(subnetwork);
+                            })
+                    })
                 }
             )
             .error(
@@ -143,29 +149,36 @@ ndexApp.controller('networkController',
                 }
             );
 
+        getProvenance();
+    };
+
+    var getMembership = function(callback) {
+        ndexService.getMyMembership(networkController.currentNetworkId, 
+            function(membership) {
+                if((membership.permissions == 'ADMIN') || (membership.permissions == 'WRITE'))
+                    networkController.isAdmin = true;
+
+                callback();
+            },
+            function(error){
+                console.log(error);
+            });
+
+    }
+
+    var getEdges = function(callback) {
         // hard-coded parameters for ndexService call, later on we may want to implement pagination
         var blockSize = 50;
         var skipBlocks = 0;
 
-        // get first couple of edges
+        // get first convenienceuple of edges
         (request2 = ndexService.getNetworkByEdges(networkController.currentNetworkId, skipBlocks, blockSize) )
             .success(
                 function(network){
                     csn = network; // csn is a debugging convenience variable
                     networkController.currentSubnetwork = network;
-                    networkController.selectedEdges = network.edges;
-
-                    cytoscapeService.setNetwork(network);
-
-                    ndexService.getProvenance(networkController.currentNetworkId,
-                        function(data) {
-                            // fake data
-                            provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
-                           // provenanceVisualizerService.setProvenance(data);
-                        }, function(error) {
-                            //TODO
-                        });
-
+                    networkController.selectedEdges = network.edges;  
+                    callback(network);
                 }
             )
             .error(
@@ -177,18 +190,17 @@ ndexApp.controller('networkController',
                     }
                 }
             );
-    };
+    }
 
-    var getMembership = function() {
-        ndexService.getMyMembership(networkController.currentNetworkId, 
-            function(membership) {
-                if((membership.permissions == 'ADMIN') || (membership.permissions == 'WRITE'))
-                    networkController.isAdmin = true;
-            },
-            function(error){
-                console.log(error);
+    var getProvenance = function() {
+        ndexService.getProvenance(networkController.currentNetworkId,
+            function(data) {
+                // fake data
+                provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
+               // provenanceVisualizerService.setProvenance(data);
+            }, function(error) {
+                //TODO
             });
-
     }
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
@@ -210,7 +222,6 @@ ndexApp.controller('networkController',
 
     // Initialize the current network and current subnetwork
     initialize();
-    getMembership();
 
 }]);
 

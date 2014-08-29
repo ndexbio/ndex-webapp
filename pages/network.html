@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    <div class='col-md-9'>
+    <div class='col-md-9' ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin'>
 
     <div class='row text-center'>
         <h4>Retrieved Subnetwork</h4>
@@ -163,7 +163,7 @@
                     </ul>
                 </div>
             </tab>
-            <tab heading="Terms">
+            <!--<tab heading="Terms">
                 <ul>
                     <li class="row">
                         <div class="col-md-3 col-md-offset-3">
@@ -179,11 +179,17 @@
                         <div class="col-md-3">{{term.name}}</div>
                     </li>
                 </ul>
-            </tab>
+            </tab>-->
         </tabset>
 
     </div>
 
+    </div>
+
+    <div class='col-md-9' ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin'>
+    <br>
+    <br>
+    <p class='text-center'>You do not have access to this network</p>
     </div>
 
 <!-- end tab content -->
