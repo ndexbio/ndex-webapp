@@ -27,7 +27,7 @@ ndexApp.controller('groupController',
     //              scope functions
     // called on Networks belonging to group displayed on page
     groupController.setAndDisplayCurrentNetwork = function (identifier) {
-        $location.path("/networkQuery/" + identifier);
+        $location.path("/network/" + identifier);
     };
 
 

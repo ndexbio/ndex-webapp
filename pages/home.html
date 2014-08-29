@@ -1,9 +1,13 @@
 <div class="jumbotron text-center">
-	<h1>NDEx</h1>
-	<p ng-show="main.accountName">Welcome {{ main.accountName }}</p>
-    <p ng-show="!main.accountName">Please Sign In</p>
+    <div>
+        <img src='img/NDEx-horizontal-transparent.png' style="width:70%; max-height:300; align=center"></img>
+    </div>
+	<p ng-show="main.accountName">Welcome {{ main.accountName }}!</p>
+    <p ng-show="!main.accountName">
+        <a ng-href="#signIn">Please Sign In</a>
+    </p>
 </div>
-
+<!--
 <div>
 	<h5> Test Stuff </h5>
 	<a ng-click="main.createGroup()">create group</a>
@@ -17,3 +21,4 @@
 	<hr>
 	<p> {{main.errors}} </p>
 </div>
+-->
