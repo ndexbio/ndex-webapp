@@ -89,7 +89,7 @@ ndexApp.controller('groupController',
     var getMembership = function() {
         ndexService.getMyDirectMembership(groupController.displayedGroup.externalId, 
             function(membership) {
-                if(membership.permissions != null)
+                if(membership && membership.permissions != null)
                     groupController.isAdmin = true;
             },
             function(error){

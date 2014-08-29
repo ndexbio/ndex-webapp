@@ -198,11 +198,19 @@
 
                 factory.getMyDirectMembership = function(resourceId, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
+                    if(externalId == null) {
+                        successHandler(null);
+                        return;
+                    }
                     UserResource.getDirectMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
                 };
 
                 factory.getMyMembership = function(resourceId, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
+                    if(externalId == null) {
+                        successHandler(null);
+                        return;
+                    }
                     UserResource.getMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
                 };
 

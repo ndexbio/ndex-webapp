@@ -155,7 +155,7 @@ ndexApp.controller('networkController',
     var getMembership = function(callback) {
         ndexService.getMyMembership(networkController.currentNetworkId, 
             function(membership) {
-                if((membership.permissions == 'ADMIN') || (membership.permissions == 'WRITE'))
+                if((membership && membership.permissions == 'ADMIN') || (membership && membership.permissions == 'WRITE'))
                     networkController.isAdmin = true;
 
                 callback();
