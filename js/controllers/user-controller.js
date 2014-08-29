@@ -74,6 +74,13 @@ ndexApp.controller('userController',
             })
     }
 
+     userController.markTaskForDeletion = function (taskUUID) {
+                ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
+                    function () {
+                        userController.refreshTasks();
+                    })
+            };
+
     userController.refreshTasks = function () {
         ndexService.getUserTasks(
             sharedProperties.getCurrentUserId(),
@@ -83,27 +90,20 @@ ndexApp.controller('userController',
             // Success
             function (tasks) {
                 //console.log("Successfully retrieved tasks: " + tasks);
-
-                $.each(tasks, function (index, task) {
-                    userController.pendingTasks.push(task);
-                });
+                userController.pendingTasks = tasks;
+                //$.each(tasks, function (index, task) {
+                //    userController.pendingTasks.push(task);
+                //});
                 cTasks = userController.pendingTasks; // convenience variable
             },
-                    // Error
+            // Error
             function (response) {
                 console.log("Failed to retrieve tasks: " + response);
-                    //TBD
-                }
-            );
+                //TBD
+            }
+        )
 
     }
-
-    userController.markTaskForDeletion = function (taskUUID) {
-        ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
-            function () {
-                $scope.refreshTasks();
-            })
-    };
 
     //              local functions
 
