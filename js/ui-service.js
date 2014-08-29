@@ -639,4 +639,63 @@
         }
     });
 
+    uiServiceApp.directive('createExportNetworkTask', function() {
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/createExportNetworkTask.html',
+            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.modal = {};
+
+                $scope.openMe = function() {
+                    intialize();
+                    modalInstance = $modal.open({
+                        templateUrl: 'create-export-network-task-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.close = function() {
+                    
+                    modalInstance.close();
+                };
+                
+                $scope.createTask = function() {
+                    var task = {
+                        description: 'network export',
+                        priority: 'MEDIUM',
+                        format: 'XBEL',
+                        resource: $scope.externalId
+                    }
+                    
+                    ndexService.createTask(task, 
+                        function(data) {
+                            console.log(data);
+                            modalInstance.close();
+                        },
+                        function(error) {
+                            console.log(error);
+                            //TODO error handling
+                        });
+                }
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.externalId = $scope.ndexData.externalId;
+                }); 
+
+
+                var intialize = function() {
+                    
+                }
+
+            }
+        }
+    });
+
 }) ()

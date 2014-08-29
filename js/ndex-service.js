@@ -359,7 +359,7 @@
 
                 factory.createTask = function (task, successHandler, errorHandler) {
                     console.log("creating task with task = " + task.taskType);
-
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     TaskResource.save({}, task, successHandler, errorHandler);
                 };
 
