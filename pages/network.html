@@ -36,12 +36,18 @@
             </button>
             <ul class="dropdown-menu" role="menu">
                 <li ng-show='networkController.isAdmin'><a>
+                    <edit-network-summary-modal
+                        ndex-data='networkController.currentNetwork'>
+                        Edit Network
+                    </edit-network-summary-modal>
+                </a></li>
+                <li ng-show='networkController.isAdmin'><a>
                     <create-export-network-task
                         ndex-data='networkController.currentNetwork'>
                         Export Network as File
                     </create-export-network-task>
                 </a></li>
-                <li ng-hide='networkController.isAdmin'><a>
+                <li><a>
                     <create-request-network 
                         ndex-data='networkController.currentNetwork'>
                         Ask for Access!

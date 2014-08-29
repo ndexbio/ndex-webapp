@@ -701,4 +701,57 @@
         }
     });
 
+    uiServiceApp.directive('editNetworkSummaryModal', function() {
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/editNetworkSummaryModal.html',
+            transclude: true,
+            controller: function($scope, $attrs, $modal, $location, ndexService, $route) {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.network = {}; 
+
+                $scope.openMe = function() {
+                   modalInstance = $modal.open({
+                        templateUrl: 'edit-network-summary-modal.html',
+                        scope: $scope
+                    });
+                };
+                
+                $scope.cancel = function() {
+                    $scope.network.name = $scope.ndexData.name;
+                    $scope.network.description = $scope.ndexData.description;
+                    $scope.network.version = $scope.ndexData.version;
+                    $scope.network.visibility = $scope.ndexData.visibility;
+                    modalInstance.close();
+                    modalInstance = null;
+                };
+
+                $scope.submit = function() {
+                    ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
+                        function(data) {
+                            modalInstance.close();
+                            modalInstance = null;
+
+                            $route.reload();
+
+                        },
+                        function(error) {
+                            console.log('error' + error);
+                        })
+                };
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.network.name = $scope.ndexData.name;
+                    $scope.network.description = $scope.ndexData.description;
+                    $scope.network.version = $scope.ndexData.version;
+                    $scope.network.visibility = $scope.ndexData.visibility;
+                }); 
+            }
+        }
+    });
+
 }) ()

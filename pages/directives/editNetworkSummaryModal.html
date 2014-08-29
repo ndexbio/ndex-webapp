@@ -1,0 +1,53 @@
+<span ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="edit-network-summary-modal.html">
+<div class='modal-content'>
+  <form class="form-horizontal" role="form" ng-submit='submit()'>
+    <div class="modal-header">
+        <h4 class="modal-title">Edit Profile</h4>
+    </div>
+    <div class="modal-body">
+        
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Name</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" placeholder="Network Name" ng-model='network.name'>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Description</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" placeholder="Description" ng-model='network.description'>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Version</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" placeholder="v1.0"  
+                ng-model='network.version'>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Visibility</label>
+            <div class="col-sm-4">
+              <select class="form-control" ng-model='network.visibility';>
+                <option value='PULBIC' ng-selected='network.visibility =  "PUBLIC"'>Public</option>
+                <option value='DISCOVERABLE' ng-selected='network.visibility =  "DISCOVERABLE"'>Discoverable</option>
+                <option value='PRIVATE' ng-selected='network.visibility =  "PRIVATE"'>Private</option>
+              </select>
+            </div>
+          </div>
+
+          <div class='text-danger'>
+            <strong>
+              {{errors}}
+            </strong>
+          </div>
+        
+    <div class="modal-footer">
+        <a class="btn btn-default" type='button' ng-click='cancel()'>Cancel</a>
+        <button class="btn btn-primary" type='submit'>Save</button>
+    </div>
+  </form>
+</div>
+</script>

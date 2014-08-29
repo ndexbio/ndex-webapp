@@ -91,7 +91,7 @@
                     return $http(config);
                 };
 
-                var UserResource = $resource(ndexServerURI + '/user/:identifier:action/:subResource/:permissions:subId:status/:skipBlocks/:blockSize',
+                var UserResource = $resource(ndexServerURI + '/user/:identifier:action/:subResource/:permissions:subId:status/:skipBlocks:membershipDepth/:blockSize',
                     //parmaDefaults
                     {
                         identifier: '@identifier',
@@ -101,7 +101,8 @@
                         status: '@status',
                         subId: '@subId',
                         skipBlocks: '@skipBlocks',
-                        blockSize: '@blockSize'
+                        blockSize: '@blockSize',
+                        membershipDepth: '@membershipDepth'
                     },
                     //actions
                     {
@@ -125,10 +126,23 @@
                                 }
                             }
                         },
+                        getDirectMembership: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'membership',
+                                membershipDepth: 1
+                            },
+                            interceptor: {
+                                response: function(data) {
+                                    return data.data;
+                                }
+                            }
+                        },
                         getMembership: {
                             method: 'GET',
                             params: {
-                                subResource: 'membership'
+                                subResource: 'membership',
+                                membershipDepth: 2
                             },
                             interceptor: {
                                 response: function(data) {
@@ -174,9 +188,18 @@
                     UserResource.save({identifier: externalId}, user, successHandler, errorHandler);
                 }
 
+                factory.getDirectMembership = function(resourceExternalId, memberExternalId, successHandler, errorHandler) {
+                    UserResource.getDirectMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
+                }
+
                 factory.getMembership = function(resourceExternalId, memberExternalId, successHandler, errorHandler) {
                     UserResource.getMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
                 }
+
+                factory.getMyDirectMembership = function(resourceId, successHandler, errorHandler) {
+                    var externalId = ndexUtility.getLoggedInUserExternalId();
+                    UserResource.getDirectMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
+                };
 
                 factory.getMyMembership = function(resourceId, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
@@ -394,7 +417,7 @@
                  * Networks
                  *---------------------------------------------------------------------*/
 
-                 var NetworkResource = $resource(ndexServerURI + '/network/:identifier:action/:subResource/:permissionType:subId/:skipBlocks/:blockSize',
+                 var NetworkResource = $resource(ndexServerURI + '/network/:identifier:action/:subResource/:permissionType:subId:subAction/:skipBlocks/:blockSize',
                     //paramDefaults
                     {
                         identifier: '@identifier',
@@ -403,7 +426,8 @@
                         permissionType: '@permissionType',
                         subId: '@subId',
                         skipBlocks: '@skipBlocks',
-                        blockSize: '@blockSize'
+                        blockSize: '@blockSize',
+                        subAction: '@subAction'
                     },
                     //actions
                     {
@@ -431,10 +455,20 @@
                             params: {
                                 action: 'asNetwork'
                             }
+                        },
+                        editNetworkSummary: {
+                            method: 'POST',
+                            params: {
+                                subAction: 'summary'
+                            }
                         }
                     }
                 );
 
+                factory.editNetworkSummary = function(externalId, summary, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.editNetworkSummary({identifier: externalId}, summary, successHandler, errorHandler);
+                }
 
                  factory.getProvenance = function(externalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();

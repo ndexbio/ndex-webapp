@@ -87,7 +87,7 @@ ndexApp.controller('groupController',
 
     //              local functions
     var getMembership = function() {
-        ndexService.getMyMembership(groupController.displayedGroup.externalId, 
+        ndexService.getMyDirectMembership(groupController.displayedGroup.externalId, 
             function(membership) {
                 if(membership.permissions != null)
                     groupController.isAdmin = true;
