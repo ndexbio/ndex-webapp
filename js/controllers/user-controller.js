@@ -2,163 +2,170 @@ ndexApp.controller('userController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal) {
 
-    //              Process the URL to get application state
-    //-----------------------------------------------------------------------------------
-    var identifier = $routeParams.identifier;
+            //              Process the URL to get application state
+            //-----------------------------------------------------------------------------------
+            var identifier = $routeParams.identifier;
 
 
-    //              CONTROLLER INTIALIZATIONS
-    //------------------------------------------------------------------------------------
+            //              CONTROLLER INTIALIZATIONS
+            //------------------------------------------------------------------------------------
 
-    $scope.userController = {};
-    var userController = $scope.userController;
-    userController.isLoggedInUser = false;
-    userController.identifier = identifier;
-    userController.displayedUser = {};
+            $scope.userController = {};
+            var userController = $scope.userController;
+            userController.isLoggedInUser = false;
+            userController.identifier = identifier;
+            userController.displayedUser = {};
 
-    //groups
-    userController.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
-    userController.groupSearchMember = false;
-    userController.groupSearchResults = [];
+            //groups
+            userController.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
+            userController.groupSearchMember = false;
+            userController.groupSearchResults = [];
 
-    //networks
-    userController.networkQuery={};
-    userController.networkSearchResults = [];
-
-
-    //tasks
-    userController.pendingTasks = [];
-
-    //              scope functions
-
-    // change to use directive. setting of current network should occur controller initialization
-    userController.setAndDisplayCurrentNetwork = function (identifier) {
-        $location.path("/network/" + identifier);
-    };
+            //networks
+            userController.networkQuery = {};
+            userController.networkSearchResults = [];
 
 
-    userController.submitGroupSearch = function() {
-        userController.groupSearchResults = [];
+            //tasks
+            userController.pendingTasks = [];
 
-        var query = {};
+            //              scope functions
 
-        query.accountName = userController.displayedUser.accountName;
-        query.searchString = userController.groupSearchString
-        if(userController.groupSearchAdmin) query.permission = 'GROUPADMIN';
-        if(userController.groupSearchMember) query.permission = 'MEMBER';
-        
-        //pagination missing
-        ndexService.searchGroups(query, 0, 50,
-            function (groups) {
-                // Save the results
-                userController.groupSearchResults = groups;
-                
-            },
-            function (error) {
-                //TODO  
-            });
-    };
+            // change to use directive. setting of current network should occur controller initialization
+            userController.setAndDisplayCurrentNetwork = function (identifier) {
+                $location.path("/network/" + identifier);
+            };
 
-    userController.submitNetworkSearch = function() {
-        userController.networkSearchResults = [];
-        userController.networkQuery.accountName = userController.displayedUser.accountName;
 
-        ndexService.searchNetworks(userController.networkQuery, 0, 50,
-            function(networks) {
-                userController.networkSearchResults = networks;
+            userController.submitGroupSearch = function () {
+                userController.groupSearchResults = [];
 
-            //console.log(userController.networkSearchResults[0])
-            },
-            function(error){
-                //TODO
-            })
-    }
+                var query = {};
 
-     userController.markTaskForDeletion = function (taskUUID) {
+                query.accountName = userController.displayedUser.accountName;
+                query.searchString = userController.groupSearchString
+                if (userController.groupSearchAdmin) query.permission = 'GROUPADMIN';
+                if (userController.groupSearchMember) query.permission = 'MEMBER';
+
+                //pagination missing
+                ndexService.searchGroups(query, 0, 50,
+                    function (groups) {
+                        // Save the results
+                        userController.groupSearchResults = groups;
+
+                    },
+                    function (error) {
+                        //TODO
+                    });
+            };
+
+            userController.submitNetworkSearch = function () {
+                userController.networkSearchResults = [];
+                userController.networkQuery.accountName = userController.displayedUser.accountName;
+
+                ndexService.searchNetworks(userController.networkQuery, 0, 50,
+                    function (networks) {
+                        userController.networkSearchResults = networks;
+
+                        //console.log(userController.networkSearchResults[0])
+                    },
+                    function (error) {
+                        //TODO
+                    })
+            }
+
+            userController.markTaskForDeletion = function (taskUUID) {
                 ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
                     function () {
                         userController.refreshTasks();
                     })
-            };
-
-    userController.refreshTasks = function () {
-        ndexService.getUserTasks(
-            sharedProperties.getCurrentUserId(),
-            "ALL",
-            0,
-            100,
-            // Success
-            function (tasks) {
-                //console.log("Successfully retrieved tasks: " + tasks);
-                userController.pendingTasks = tasks;
-                //$.each(tasks, function (index, task) {
-                //    userController.pendingTasks.push(task);
-                //});
-                cTasks = userController.pendingTasks; // convenience variable
-            },
-            // Error
-            function (response) {
-                console.log("Failed to retrieve tasks: " + response);
-                //TBD
             }
-        )
 
-    }
+            userController.deleteTask = function (taskUUID) {
+                ndexService.deleteTask(taskUUID,
+                    function () {
+                        userController.refreshTasks();
+                    })
+            }
 
-    //              local functions
+            userController.refreshTasks = function () {
+                ndexService.getUserTasks(
+                    sharedProperties.getCurrentUserId(),
+                    "ALL",
+                    0,
+                    100,
+                    // Success
+                    function (tasks) {
+                        //console.log("Successfully retrieved tasks: " + tasks);
+                        userController.pendingTasks = tasks;
+                        //$.each(tasks, function (index, task) {
+                        //    userController.pendingTasks.push(task);
+                        //});
+                        cTasks = userController.pendingTasks; // convenience variable
+                    },
+                    // Error
+                    function (response) {
+                        console.log("Failed to retrieve tasks: " + response);
+                        //TBD
+                    }
+                )
 
-    var getRequests = function() {
-        ndexService.getPendingRequests(0, 20,
-            function(requests) {
-                userController.pendingRequests = requests;
-            },
-            function(error) {
-                console.log(error);
-            });
+            }
 
-        ndexService.getSentRequests(0, 20,
-            function(requests) {
-                userController.sentRequests = requests;
-                
-            },
-            function(error) {
-                console.log(error);
-            })
-    }
+            //              local functions
 
-    //                  PAGE INITIALIZATIONS/INITIAL API CALLS
-    //----------------------------------------------------------------------------
+            var getRequests = function () {
+                ndexService.getPendingRequests(0, 20,
+                    function (requests) {
+                        userController.pendingRequests = requests;
+                    },
+                    function (error) {
+                        console.log(error);
+                    });
 
-    ndexService.getUser(userController.identifier)
-    .success(
-        function(user) {
-            userController.displayedUser = user;
-            var loggedInUser = ndexUtility.getUserCredentials();
+                ndexService.getSentRequests(0, 20,
+                    function (requests) {
+                        userController.sentRequests = requests;
 
-            if( (user.externalId == loggedInUser.userId)
-             || (user.accountName == loggedInUser.accountName)) 
-                userController.isLoggedInUser = true;
+                    },
+                    function (error) {
+                        console.log(error);
+                    })
+            }
 
-            cUser = user;
-            // get requests
+            //                  PAGE INITIALIZATIONS/INITIAL API CALLS
+            //----------------------------------------------------------------------------
 
-            // get requests
-            getRequests();
+            ndexService.getUser(userController.identifier)
+                .success(
+                function (user) {
+                    userController.displayedUser = user;
+                    var loggedInUser = ndexUtility.getUserCredentials();
 
-            //get tasks
-            userController.refreshTasks();
+                    if ((user.externalId == loggedInUser.userId)
+                        || (user.accountName == loggedInUser.accountName))
+                        userController.isLoggedInUser = true;
 
-            // get groups
-            userController.submitGroupSearch();
+                    cUser = user;
+                    // get requests
 
-            // get networks
-            userController.submitNetworkSearch();
+                    // get requests
+                    getRequests();
 
-            
-        })
+                    //get tasks
+                    userController.refreshTasks();
+
+                    // get groups
+                    userController.submitGroupSearch();
+
+                    // get networks
+                    userController.submitNetworkSearch();
 
 
-}]);
+                })
+
+
+        }]);
 
 
 //------------------------------------------------------------------------------------//

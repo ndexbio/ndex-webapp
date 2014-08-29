@@ -39,6 +39,13 @@ ndexApp.controller('uploadController',
                     })
             }
 
+            $scope.deleteTask= function(taskUUID){
+                ndexService.deleteTask(taskUUID,
+                    function(){
+                        $scope.refreshTasks();
+                    })
+            }
+
             var uploader = $scope.uploader = new FileUploader({
                 url: ndexService.getNetworkUploadURI(),
                 alias: "fileUpload",
