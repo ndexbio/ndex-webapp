@@ -339,7 +339,7 @@
                     //paramDefaults
                     {
                         taskId: '@taskId',
-                        status: '@status'
+                        status: '@statusType'
                     },
                     //actions
                     {
@@ -368,13 +368,13 @@
                     TaskResource.delete({'taskId': taskUUID}, successHandler, errorHandler);
                 };
 
-                factory.setTaskStatus = function (taskUUID, status, successHandler, errorHandler) {
+                factory.setTaskStatus = function (taskUUID, statusType, successHandler, errorHandler) {
 
-                    console.log('updating status to ' + status + " for task " + taskUUID);
+                    console.log('updating status to ' + statusType + " for task " + taskUUID);
                     TaskResource.setStatus(
                         {
                             'taskId': taskUUID,
-                            'status': status
+                            'statusType': statusType
                         },
                         {},
                         successHandler,
