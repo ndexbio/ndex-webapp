@@ -1,6 +1,6 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
-    function(ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
+    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal',
+    function(ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -37,6 +37,8 @@ ndexApp.controller('networkController',
             "id": "3"
         }
     ];
+
+    //                  scope functions
 
     // queries within a network
     networkController.submitNetworkQuery = function() {
@@ -95,6 +97,22 @@ ndexApp.controller('networkController',
             //TODO
         }
     };
+
+    networkController.saveSubnetwork = function() {
+        ndexNavigation.openConfirmationModal(
+            'Save the current subnetwork for '+networkController.currentNetwork.name+' to your account?',
+            function() {
+                ndexService.saveSubnetwork(networkController.currentSubnetwork, 
+                    function(data){
+                        //TODO
+                    },
+                    function(error){
+                        //TODO
+                    })
+            });
+    }
+
+    //                  local functions
 
     var initialize = function() {
         // vars to keep references to http calls to allow aborts

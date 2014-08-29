@@ -417,6 +417,12 @@
                                 action: 'search'
                             },
                             isArray: true
+                        },
+                        saveSubnetwork: {
+                            method: 'POST',
+                            params: {
+                                action: 'asNetwork'
+                            }
                         }
                     }
                 );
@@ -440,6 +446,11 @@
                     if(ndexUtility.getLoggedInUserAccountName() != null)
                         $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.search({skipBlocks: skipBlocks, blockSize: blockSize}, query, successHandler, errorHandler);
+                 }
+
+                 factory.saveSubnetwork = function(subnetwork, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.saveSubnetwork({}, subnetwork, successHandler, errorHandler);
                  }
 
                 //old http calls below

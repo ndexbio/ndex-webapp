@@ -30,28 +30,25 @@
         
         <div class='row'>{{networkController.currentNetwork.description}}</div>
 
-        <div class="btn-group" dropdown is-open="status.isopen" ng-show='networkController.isAdmin'>
+        <div class="btn-group row" dropdown is-open="status.isopen">
             <button type="button" class="btn btn-primary dropdown-toggle">
                 Actions <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li><a>
+                <li ng-show='networkController.isAdmin'><a>
                     <create-export-network-task
                         ndex-data='networkController.currentNetwork'>
                         Export Network as File
                     </create-export-network-task>
                 </a></li>
+                <li ng-hide='networkController.isAdmin'><a>
+                    <create-request-network 
+                        ndex-data='networkController.currentNetwork'>
+                        Ask for Access!
+                    </create-request-network>
+                </a></li>
+                <li><a ng-click='networkController.saveSubnetwork()'>Save Current Subnetwork</a></li>
             </ul>
-        </div>
-
-        <div class='row'>
-            <create-request-network 
-                    ndex-data='networkController.currentNetwork'
-                    ng-hide='networkController.isAdmin'>
-                <button class='btn btn-primary'>
-                Ask for Access!
-                </button>
-            </create-request-network>
         </div>
 
         <hr>
