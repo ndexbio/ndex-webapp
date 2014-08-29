@@ -671,6 +671,9 @@
                         description: 'network export',
                         priority: 'MEDIUM',
                         format: 'XBEL',
+                        taskType: 'EXPORT_NETWORK_TO_FILE',
+                        status: 'QUEUED',
+                        progress: 0,
                         resource: $scope.externalId
                     }
                     
