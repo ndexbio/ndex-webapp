@@ -92,6 +92,7 @@
             <thead>
             <tr>
                 <th>Title</th>
+                <th>Visibility</th>
                 <th style="width: 10%;">Nodes</th>
                 <th style="width: 10%;">Edges</th>
             </tr>
@@ -101,6 +102,7 @@
             <tr ng-click="networkSearch.setAndDisplayCurrentNetwork(network.externalId)" style="cursor:pointer;">
                 <td>{{network.name}}</td>
                 </td>
+                <td class='text-success'>{{network.visibility}}</td>
                 <td class="AlignRight">{{network.nodeCount}}</td>
                 <td class="AlignRight">{{network.edgeCount}}</td>
             </tr>
