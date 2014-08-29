@@ -1,3 +1,4 @@
+
 <div id="divUser" class="row" >
 
     <div class="col-md-2">
@@ -38,9 +39,7 @@
                     </li>
                 </ul>
             </div>
-
         </div>
-
     </div>
 
     <!-- tabs -->
@@ -60,7 +59,6 @@
                         <tbody  ng-repeat="network in userController.networkSearchResults">
                         <tr ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)">
                             <td>{{network.name}}</td>
-                            </td>
                             <td class="AlignRight">{{network.nodeCount}}</td>
                             <td class="AlignRight">{{network.edgeCount}}</td>
                         </tr>
@@ -69,8 +67,8 @@
                     </table>
                 </div>
                 <div class='row' ng-hide='userController.networkSearchResults.length > 0'>
-                <br>
-                <p class='text-center text-muted'>No networks to display</p>
+                    <br>
+                    <p class='text-center text-muted'>No networks to display</p>
                 </div>
             </tab>
             <tab heading="Groups">
@@ -83,159 +81,135 @@
                                     <input type="text" class="form-control input-sm" placeholder="Search groups this account is in" 
                                             ng-model='userController.groupSearchString'>
                                     <div class="input-group-btn"><button type="submit" class="btn btn-default">
-                                        <span class="glyphicon glyphicon-search"></span></button></div>
+                                        <span class="glyphicon glyphicon-search"></span></button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
                         <div class='offset-col-md-2 col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='userController.groupSearchAdmin = !userController.groupSearchAdmin; 
-                                                userController.groupSearchMember = false; 
-                                                userController.submitGroupSearch()'
-                                    ng-model="userController.groupSearchAdmin">Admin</label>
+                                       ng-click='userController.groupSearchAdmin = !userController.groupSearchAdmin;
+                                                    userController.groupSearchMember = false; 
+                                                    userController.submitGroupSearch()'
+                                       ng-model="userController.groupSearchAdmin">Admin</label>
                             </div>
                         </div>
                         <div class='col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='userController.groupSearchMember = !userController.groupSearchMember;
-                                                userController.groupSearchAdmin = false; 
-                                                userController.submitGroupSearch()'
-                                    ng-model="userController.groupSearchMember">Member</label>
+                                       ng-click='userController.groupSearchMember = !userController.groupSearchMember;
+                                                    userController.groupSearchAdmin = false; 
+                                                    userController.submitGroupSearch()'
+                                       ng-model="userController.groupSearchMember">Member</label>
                             </div>
                         </div>
 
                     </div>
 
-                    <div> 
+                    <div>
                         <ul ng-repeat="group in userController.groupSearchResults">
                             <div class='row'>
-                            <ndex-navigation ndex-class="" ndex-url="'group/'+group.externalId">
-                                <ndex-account-image 
-                                  ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
-                                  ndex-src="group.image">
-                                </ndex-account-image>
-                                <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                                <h5><strong>{{group.organizationName}}</strong></h5>
-                                <p class="text-muted">{{group.accountName}}</p>
-                                </div>
-                            </ndex-navigation>
+                                <ndex-navigation ndex-class="" ndex-url="'group/'+group.externalId">
+                                    <ndex-account-image
+                                            ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'"
+                                            ndex-src="group.image">
+                                    </ndex-account-image>
+                                    <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                                        <h5><strong>{{group.organizationName}}</strong></h5>
+
+                                        <p class="text-muted">{{group.accountName}}</p>
+                                    </div>
+                                </ndex-navigation>
                             </div>
                         </ul>
                     </div>
-
                 </div>
                 <div class='row' ng-hide='userController.groupSearchResults.length > 0'>
-                <br>
-                <p class='text-center text-muted'>No groups to display</p>
+                    <br>
+                    <p class='text-center text-muted'>No groups to display</p>
                 </div>
             </tab>
         </tabset>
+    </div>
+
+<div class="col-md-3" ng-show='userController.isLoggedInUser'>
+
+    <div class="row panel panel-default"
+         ng-show='userController.pendingRequests.length > 0 || userController.sentRequests.length > 0'>
+        <div class="panel-heading">
+            <ol class="list-inline">
+                <li><strong>Requests</strong></li>
+                <li><a ng-click='sentTab = null'
+                       ng-class="{'text-primary': sentTab == null, 'text-muted': sentTab}"
+                       ng-show='userController.pendingRequests.length > 0'>
+                    Received</a></li>
+                <li><a ng-click='sentTab = true'
+                       ng-class="{'text-muted': sentTab == null, 'text-primary': sentTab}"
+                       ng-show='userController.sentRequests.length > 0'>
+                    Sent</a></li>
+            </ol>
+        </div>
+
+        <ul class="list-group"
+            ng-hide='sentTab'
+            ng-repeat='request in userController.pendingRequests'>
+            <li class="list-group-item">
+                <!-- destination names should be cut off -->
+                <received-request ndex-data='request'>
+                    {{request.sourceName}} requests
+                    <span class='text-info'>{{request.permission}}</span> access to {{request.destinationName}}
+                    <em class='text-muted'> - {{request.response}}</em>
+                </received-request>
+            </li>
+        </ul>
+        <ul class="list-group"
+            ng-show='(sentTab && (userController.sentRequests.length > 0))
+                    || (userController.sentRequests.length > 0 && userController.pendingRequests.length < 1)'
+            ng-repeat='request in userController.sentRequests'>
+            <li class="list-group-item">
+                <!-- destination names should be cut off -->
+                <sent-request ndex-data='request'>
+                    <span class='text-info'>{{request.permission}}</span> access to {{request.destinationName}}
+                    for {{request.sourceName}}
+                    <em class='text-muted'
+                        ng-class='{"text-danger":request.response=="DECLINED", "text-success":request.response=="ACCEPTED"}'>
+                        - {{request.response}}
+                    </em>
+                </sent-request>
+                <!--<button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button
+                -->
+            </li>
+        </ul>
 
     </div>
 
-    <div class="col-md-3" ng-show='userController.isLoggedInUser'>
+    <div class="row panel panel-default"
+         ng-show='userController.pendingTasks.length > 0'>
+        <div class="panel-heading">
+            <ol class="list-inline">
+                <li><strong>Tasks</strong></li>
+                <button type="button" class="btn btn-success btn-xs"
+                        ng-click="userController.refreshTasks()">
+                    Update
+                </button>
 
-        <div class="row panel panel-default" 
-             ng-show='userController.pendingRequests.length > 0 || userController.sentRequests.length > 0'>
-            <div class="panel-heading">
-                <ol class="list-inline">
-                  <li><strong>Requests</strong></li>
-                  <li><a ng-click='sentTab = null'
-                            ng-class="{'text-primary': sentTab == null, 'text-muted': sentTab}"
-                            ng-show='userController.pendingRequests.length > 0'>
-                            Received</a></li>
-                  <li><a ng-click='sentTab = true'
-                            ng-class="{'text-muted': sentTab == null, 'text-primary': sentTab}"
-                            ng-show='userController.sentRequests.length > 0'>
-                            Sent</a></li>
-                </ol>
-            </div>
+                <ul class="list-group"
+                    ng-repeat='task in userController.pendingTasks'>
+                    <li class="list-group-item">
+                        <span class='text-info'>{{task.description}}</span> : {{task.status}}
 
-            <ul class="list-group" 
-                ng-hide='sentTab'
-                ng-repeat='request in userController.pendingRequests'>
-                <li class="list-group-item">
-                    <!-- destination names should be cut off -->
-                    <received-request ndex-data='request'>
-                        {{request.sourceName}} requests
-                        <span class='text-info'>{{request.permission}}</span> access to {{request.destinationName}}
-                        <em class='text-muted'> - {{request.response}}</em>
-                    </received-request>
-                </li>
-            </ul>
-            <ul class="list-group" 
-                ng-show='(sentTab && (userController.sentRequests.length > 0)) 
-                    || (userController.sentRequests.length > 0 && userController.pendingRequests.length < 1)' 
-                ng-repeat='request in userController.sentRequests'>
-                <li class="list-group-item">
-                    <!-- destination names should be cut off -->
-                    <sent-request ndex-data='request'>
-                        <span class='text-info'>{{request.permission}}</span> access to {{request.destinationName}}
-                        for {{request.sourceName}}
-                        <em class='text-muted'
-                            ng-class='{"text-danger":request.response=="DECLINED", "text-success":request.response=="ACCEPTED"}'>
-                         - {{request.response}}
-                        </em>
-                    </sent-request>
-                    <!--<button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button-->
+                        <button type="button" class="btn btn-danger btn-xs"
+                                ng-click="userController.markTaskForDeletion(task.externalId)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+
                     </li>
-            </ul>
-
-        </div>
-
-        <div class="row panel panel-default" ng-show='userController.isLoggedInUser'>
-            <div class="panel-body">
-                <h5><strong>Tasks</strong></h5>
-            </div>
-            <!-- List group -->
-              <ul class="list-group">
-                <li class="list-group-item">Cras justo odio</li>
-                <li class="list-group-item">Dapibus ac facilisis in</li>
-                <li class="list-group-item">Morbi leo risus</li>
-                <li class="list-group-item">Porta ac consectetur ac</li>
-                <li class="list-group-item">Vestibulum at eros</li>
-              </ul>
+                </ul>
+            </ol>
         </div>
 
     </div>
 
 </div>
-
-<!--
-
-        TODO: Menu of actions
-
-<div class="span4 pull-right" style="position: relative;">
-<div class="dropdown">
-<a class="ndex-options dropdown-toggle Hand" data-toggle="dropdown">
-    <i class="icon-cog icon-large"></i>
-</a>
-
-<ul class="dropdown-menu">
-
-<li>
-<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.createGroup">Create Group</a>
-</li>
-<li>
-<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.createNetwork">Create Network</a>
-</li>
-<li>
-<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.changeProfileImage">Change Profile Image</a>
-</li>
-<li>
-<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.changeProfileImage">Change Background Image</a>
-</li>
-<li>
-<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.changePassword">Change Password</a>
-</li>
-
-<li>
-<a href="javascript:void()" class="accountMiniMenu" data-bind="click: User.inviteToGroup">Invite to Join...</a>
-</li>
-
-</ul>
 </div>
-
--->
