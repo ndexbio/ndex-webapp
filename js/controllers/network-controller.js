@@ -102,6 +102,9 @@ ndexApp.controller('networkController',
         ndexNavigation.openConfirmationModal(
             'Save the current subnetwork for '+networkController.currentNetwork.name+' to your account?',
             function() {
+                var d = new Date();
+                var timestamp = Date.UTC(d.getFullYear(), d.getDate());
+                networkController.currentSubnetwork.name = networkController.currentSubnetwork.name + ' - Subnetwork - ' + timestamp;
                 ndexService.saveSubnetwork(networkController.currentSubnetwork, 
                     function(data){
                         //TODO

@@ -449,6 +449,19 @@
                  }
 
                  factory.saveSubnetwork = function(subnetwork, successHandler, errorHandler) {
+                    var removeReferences = function(node) {
+                        for(var key in node) {
+                            if(key == 'network') {
+                                delete node[key];
+                            }
+                            if(typeof node[key] === 'object') {
+                                removeReferences(node[key]);
+                            }
+                        }
+                    }
+
+                    removeReferences(subnetwork);
+                    
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.saveSubnetwork({}, subnetwork, successHandler, errorHandler);
                  }
