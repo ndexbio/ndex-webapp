@@ -2,6 +2,7 @@
 
 <script type="text/ng-template" id="create-request-group-modal.html">
 	<div class='modal-content'>
+	</form>
 		<div class='modal-body' ng-hide='false'>
 			
 			<h5><strong>
@@ -29,8 +30,9 @@
 		</div>
 
 		<div class='modal-footer' ng-hide='false'>
-			<button class='btn btn-default' ng-click='close()'>Cancel</button>
-			<button class='btn btn-primary' ng-click='submitRequest()'>Send</button>
+			<a class='btn btn-default' ng-click='close()'>Cancel</a>
+			<button type='submit' class='btn btn-primary' ng-click='submitRequest()'>Send</button>
 		</div>
+		</form>
 	</div>
 </script>

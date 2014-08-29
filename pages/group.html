@@ -56,8 +56,8 @@
     <div id="divgroupTabs" class="col-md-7" ng-show="groupController.displayedGroup">
 
         <tabset justified="true">
-            <tab heading="Networks" ng-show='groupController.networkSearchResults'>
-                <div id="divNetworks">
+            <tab heading="Networks">
+                <div id="divNetworks" ng-show='groupController.networkSearchResults.length > 0'>
                     <table class="table table-hover" ng-show="groupController.networkSearchResults.length > 0">
                         <!--
                         <tbody ng-repeat="(index, network) in displayedGroup.networks">
@@ -68,7 +68,6 @@
                         -->
                         <thead>
                         <tr>
-                            <th>Source</th>
                             <th>Title</th>
                             <th style="width: 10%;">Nodes</th>
                             <th style="width: 10%;">Edges</th>
@@ -76,9 +75,7 @@
                         </thead>
                         <tbody  ng-repeat="network in groupController.networkSearchResults">
                         <tr ng-click="groupController.setAndDisplayCurrentNetwork(network.externalId)">
-                            <td>{{network.metadata["Source"]}}</td>
                             <td>{{network.name}}</td>
-                            </td>
                             <td class="AlignRight">{{network.nodeCount}}</td>
                             <td class="AlignRight">{{network.edgeCount}}</td>
                         </tr>
@@ -86,9 +83,13 @@
 
                     </table>
                 </div>
+                <div class='row' ng-hide='groupController.networkSearchResults.length > 0'>
+                    <br>
+                    <p class='text-center text-muted'>No networks to display</p>
+                </div>
             </tab>
-            <tab heading="Members" active='!groupController.networkSearchResults'>
-                <div id="divGroups">
+            <tab heading="Members">
+                <div id="divGroups" ng-show='groupController.userSearchResults.length > 0'>
                     <div class='row center-block'>
                         <hr>
                         <form class='form-inline col-md-6' role="form" ng-submit="groupController.submitUserSearch()">
@@ -140,6 +141,10 @@
                         </ul>
                     </div>
 
+                </div>
+                <div class='row' ng-hide='groupController.userSearchResults.length > 0'>
+                    <br>
+                    <p class='text-center text-muted'>No users to display</p>
                 </div>
             </tab>
         </tabset>

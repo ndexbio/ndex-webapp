@@ -13,11 +13,19 @@
 //angularjs suggested function closure
 (function () {
 
-    var ndexServiceApp = angular.module('ndexServiceApp', []);
+    var ndexServiceApp = angular.module('ndexServiceApp', ['ngResource', 'ngRoute']);
 
-    //ndexServiceApp.config(['$httpProvider', 'ndexConfigs', function($httpProvider, ndexConfigs) {
-     //  $httpProvider.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-    //}]);
+    /*ndexServiceApp.config(['$httpProvider', 'ndexUtility', function($httpProvider, ndexUtility) {
+       /*$httpProvider.interceptors.push(function($http, ndexUtility) {
+            return {
+                'request': function(config) {
+                    if(ndexUtility.getLoggedInUserAccountName() != null)
+                        config.headers['Authorization'] = "Basic " + ndexUtility.getEncodedUser();
+                    return config;
+                }
+            }
+       });*-/
+    }]);*/
 
     /****************************************************************************
      * NDEx HTTP Service
@@ -461,7 +469,7 @@
                     }
 
                     removeReferences(subnetwork);
-                    
+
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.saveSubnetwork({}, subnetwork, successHandler, errorHandler);
                  }
@@ -746,6 +754,13 @@
             var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
             if(!loggedInUser) loggedInUser = {};
             return loggedInUser.token;
+        };
+
+        factory.getEncodedUser = function () {
+            if (ndexUtility.getLoggedInUserAccountName)
+                return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
+            else
+                return null;
         };
 
         /*-----------------------------------------------------------------------*
