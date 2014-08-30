@@ -754,6 +754,8 @@
             if (factory.checkLocalStorage()) {
                 if (localStorage.loggedInUser) {
                     var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+                    if(loggedInUser == null)
+                        return null;
                     var userData = {
                         accountName: loggedInUser.accountName,
                         externalId: loggedInUser.externalId,

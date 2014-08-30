@@ -144,18 +144,20 @@ ndexApp.controller('userController',
                     userController.displayedUser = user;
                     var loggedInUser = ndexUtility.getUserCredentials();
 
-                    if ((user.externalId == loggedInUser.userId)
-                        || (user.accountName == loggedInUser.accountName))
+                    if ( loggedInUser &&
+                        ((user.externalId == loggedInUser.userId) || (user.accountName == loggedInUser.accountName)) )
                         userController.isLoggedInUser = true;
 
                     cUser = user;
                     // get requests
 
                     // get requests
-                    getRequests();
+                    if(userController.isLoggedIn)
+                        getRequests();
 
                     //get tasks
-                    userController.refreshTasks();
+                    if(userController.isLoggedIn)
+                        userController.refreshTasks();
 
                     // get groups
                     userController.submitGroupSearch();
