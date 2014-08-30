@@ -24,20 +24,21 @@
                 {{groupController.displayedGroup.description}}
             </div>
             <hr>
-            <div class="btn-group" dropdown is-open="status.isopen" ng-show='groupController.isAdmin'>
+            <div class="btn-group" dropdown is-open="status.isopen" 
+                ng-show='groupController.isAdmin || groupController.isMember'>
                 <button type="button" class="btn btn-primary dropdown-toggle">
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a><edit-group-modal 
+                    <li ng-show='groupController.isAdmin'><a><edit-group-modal 
                                 ndex-data='groupController.displayedGroup'>
                                 Edit Profile
                             </edit-group-modal></a></li>
-                    <li><a><invite-members-modal 
+                    <li ng-show='groupController.isAdmin'><a><invite-members-modal 
                                 ndex-data='groupController.displayedGroup.externalId'>
                                 Add Collaborators!
                             </invite-members-modal></a></li>
-                    <li class="divider"></li>
+                    <li class="divider" ng-show='groupController.isAdmin'></li>
                     <li><a ng-click='groupController.leaveGroup()'>Leave Group</a></li>
                 </ul>
             </div>
