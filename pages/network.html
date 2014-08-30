@@ -41,7 +41,10 @@
                         Edit Network
                     </edit-network-summary-modal>
                 </a></li>
-                <li ng-show='networkController.isAdmin'><a>
+                <li ng-show='networkController.isLoggedIn 
+                    && ((networkController.currentNetwork.visibility == "PUBLIC") 
+                        || networkController.isAdmin 
+                        || networkController.canRead)'><a>
                     <create-export-network-task
                         ndex-data='networkController.currentNetwork'>
                         Export Network as File

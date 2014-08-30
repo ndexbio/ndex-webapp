@@ -157,7 +157,8 @@ ndexApp.controller('networkController',
             function(membership) {
                 if((membership && membership.permissions == 'ADMIN') || (membership && membership.permissions == 'WRITE'))
                     networkController.isAdmin = true;
-
+                if(membership && membership.permissions == 'READ')
+                    networkController.canRead = true;
                 callback();
             },
             function(error){
@@ -219,6 +220,7 @@ ndexApp.controller('networkController',
         };
 
     networkController.isAdmin = false;
+    networkController.canRead = false;
     networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
     // Initialize the current network and current subnetwork
     initialize();
