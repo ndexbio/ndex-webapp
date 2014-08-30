@@ -219,7 +219,7 @@ ndexApp.controller('networkController',
         };
 
     networkController.isAdmin = false;
-
+    networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
     // Initialize the current network and current subnetwork
     initialize();
 

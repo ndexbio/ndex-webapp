@@ -136,6 +136,8 @@ ndexApp.controller('userController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
+            userController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
+
             ndexService.getUser(userController.identifier)
                 .success(
                 function (user) {

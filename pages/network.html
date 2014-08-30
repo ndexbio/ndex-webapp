@@ -30,7 +30,7 @@
         
         <div class='row'>{{networkController.currentNetwork.description}}</div>
 
-        <div class="btn-group row" dropdown is-open="status.isopen">
+        <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
             <button type="button" class="btn btn-primary dropdown-toggle">
                 Actions <span class="caret"></span>
             </button>
@@ -54,6 +54,15 @@
                     </create-request-network>
                 </a></li>
                 <li><a ng-click='networkController.saveSubnetwork()'>Save Current Subnetwork</a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group row" dropdown is-open="status2.isopen" ng-hide='networkController.isLoggedIn'>
+            <button type="button" class="btn btn-primary dropdown-toggle">
+                Actions <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href>You must be logged in to operate on network</a></li>
             </ul>
         </div>
 

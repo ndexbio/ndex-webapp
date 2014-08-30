@@ -99,6 +99,7 @@ ndexApp.controller('groupController',
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //----------------------------------------------------------------------------
+    groupController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
     ndexService.getGroup(groupController.identifier,
         function (group) {
