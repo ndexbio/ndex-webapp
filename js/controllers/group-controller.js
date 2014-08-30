@@ -12,7 +12,8 @@ ndexApp.controller('groupController',
 
     $scope.groupController = {};
     var groupController = $scope.groupController;
-    groupController.isAdmin = false;     
+    groupController.isAdmin = false;  
+    groupController.isMember = false;   
     groupController.identifier = identifier;
 
     // members
@@ -89,8 +90,10 @@ ndexApp.controller('groupController',
     var getMembership = function() {
         ndexService.getMyDirectMembership(groupController.displayedGroup.externalId, 
             function(membership) {
-                if(membership && membership.permissions != null)
+                if(membership && membership.permissions == 'GROUPADMIN')
                     groupController.isAdmin = true;
+                if(membership && membership.permissions == 'MEMBER')
+                    groupController.isMember = true;
             },
             function(error){
                 console.log(error);

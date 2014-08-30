@@ -43,7 +43,7 @@
             </div>
             <create-request-group 
                     ndex-data='groupController.displayedGroup'
-                    ng-hide='groupController.isAdmin'>
+                    ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedIn'>
                 <button class='btn btn-primary'>
                 Ask to Join!
                 </button>
