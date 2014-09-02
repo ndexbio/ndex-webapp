@@ -225,8 +225,9 @@ ndexApp.controller('networkController',
         ndexService.getProvenance(networkController.currentNetworkId,
             function(data) {
                 // fake data
-                provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
-               // provenanceVisualizerService.setProvenance(data);
+                // provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
+                // real data
+                provenanceVisualizerService.setProvenance(data);
             }, function(error) {
                 //TODO
             });

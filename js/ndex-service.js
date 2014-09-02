@@ -16,16 +16,16 @@
     var ndexServiceApp = angular.module('ndexServiceApp', ['ngResource', 'ngRoute']);
 
     /*ndexServiceApp.config(['$httpProvider', 'ndexUtility', function($httpProvider, ndexUtility) {
-       /*$httpProvider.interceptors.push(function($http, ndexUtility) {
-            return {
-                'request': function(config) {
-                    if(ndexUtility.getLoggedInUserAccountName() != null)
-                        config.headers['Authorization'] = "Basic " + ndexUtility.getEncodedUser();
-                    return config;
-                }
-            }
-       });*-/
-    }]);*/
+     /*$httpProvider.interceptors.push(function($http, ndexUtility) {
+     return {
+     'request': function(config) {
+     if(ndexUtility.getLoggedInUserAccountName() != null)
+     config.headers['Authorization'] = "Basic " + ndexUtility.getEncodedUser();
+     return config;
+     }
+     }
+     });*-/
+     }]);*/
 
     /****************************************************************************
      * NDEx HTTP Service
@@ -43,8 +43,7 @@
                 // This convention is useful, but we may later allow a
                 // site configuration to explicitly specify a different host
                 if (location.hostname.toLowerCase() != "localhost")
-                    ndexServerURI=  "http://" + location.host + "/rest";
-
+                    ndexServerURI = "http://" + location.host + "/rest";
 
 
                 factory.getNetworkUploadURI = function () {
@@ -133,7 +132,7 @@
                                 membershipDepth: 1
                             },
                             interceptor: {
-                                response: function(data) {
+                                response: function (data) {
                                     return data.data;
                                 }
                             }
@@ -145,7 +144,7 @@
                                 membershipDepth: 2
                             },
                             interceptor: {
-                                response: function(data) {
+                                response: function (data) {
                                     return data.data;
                                 }
                             }
@@ -167,47 +166,47 @@
                         }
                     })
 
-                factory.getSentRequests = function(skipBlocks, blockSize, successHandler, errorHandler) {
+                factory.getSentRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     UserResource.getSentRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
                         successHandler, errorHandler);
                 }
 
-                factory.getPendingRequests = function(skipBlocks, blockSize, successHandler, errorHandler) {
+                factory.getPendingRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     UserResource.getPendingRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
                         successHandler, errorHandler);
                 }
 
-                factory.editUserProfile = function(user, successHandler, errorHandler) {
+                factory.editUserProfile = function (user, successHandler, errorHandler) {
                     user.accountType = 'User';
                     var externalId = ndexUtility.getLoggedInUserExternalId();
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     UserResource.save({identifier: externalId}, user, successHandler, errorHandler);
                 }
 
-                factory.getDirectMembership = function(resourceExternalId, memberExternalId, successHandler, errorHandler) {
+                factory.getDirectMembership = function (resourceExternalId, memberExternalId, successHandler, errorHandler) {
                     UserResource.getDirectMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
                 }
 
-                factory.getMembership = function(resourceExternalId, memberExternalId, successHandler, errorHandler) {
+                factory.getMembership = function (resourceExternalId, memberExternalId, successHandler, errorHandler) {
                     UserResource.getMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
                 }
 
-                factory.getMyDirectMembership = function(resourceId, successHandler, errorHandler) {
+                factory.getMyDirectMembership = function (resourceId, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
-                    if(externalId == null) {
+                    if (externalId == null) {
                         successHandler(null);
                         return;
                     }
                     UserResource.getDirectMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
                 };
 
-                factory.getMyMembership = function(resourceId, successHandler, errorHandler) {
+                factory.getMyMembership = function (resourceId, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
-                    if(externalId == null) {
+                    if (externalId == null) {
                         successHandler(null);
                         return;
                     }
@@ -219,8 +218,8 @@
                     if (queryObject.searchString == null)
                         queryObject.searchString = '';
                     UserResource.search({
-                        'skipBlocks': skipBlocks,
-                        'blockSize': blockSize},
+                            'skipBlocks': skipBlocks,
+                            'blockSize': blockSize},
                         queryObject,
                         successHandler,
                         errorHandler);
@@ -236,7 +235,7 @@
 
                 // /user/{userUUID}/task/{status}/{skipBlocks}/{blockSize}
                 factory.getUserTasks = function (userUUID, taskStatus, skipBlocks, blockSize, successHandler, errorHandler) {
-                    if (!taskStatus){
+                    if (!taskStatus) {
                         taskStatus = "ALL";
                     }
                     console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
@@ -293,19 +292,19 @@
                     }
                 );
 
-                factory.removeGroupMember = function(groupExternalId, memberExternalId, successHandler, errorHandler){
+                factory.removeGroupMember = function (groupExternalId, memberExternalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, successHandler, errorHandler);
                 }
 
-                factory.updateGroupMember = function(membership, successHandler, errorHandler) {
+                factory.updateGroupMember = function (membership, successHandler, errorHandler) {
                     membership.membershipType = 'GROUP'
                     console.log(membership);
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    GroupResource.updateMembership({identifier:membership.resourceUUID}, membership, successHandler, errorHandler);
+                    GroupResource.updateMembership({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
                 }
 
-                factory.editGroupProfile = function(group, successHandler, errorHandler) {
+                factory.editGroupProfile = function (group, successHandler, errorHandler) {
                     group.accountType = 'Group';
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     GroupResource.save({identifier: group.externalId}, group, successHandler, errorHandler);
@@ -343,25 +342,25 @@
                  * Requests
                  *---------------------------------------------------------------------*/
 
-                 var RequestResource = $resource(ndexServerURI + '/request/:identifier');
+                var RequestResource = $resource(ndexServerURI + '/request/:identifier');
 
-                 factory.createRequest = function(request, successHandler, errorHandler) {
+                factory.createRequest = function (request, successHandler, errorHandler) {
                     request.type = 'Request';
 
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     RequestResource.save({}, request, successHandler, errorHandler);
-                 };
+                };
 
-                 factory.updateRequest = function(externalId, request, successHandler, errorHandler) {
+                factory.updateRequest = function (externalId, request, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     request.responder = ndexUtility.getLoggedInUserAccountName();
                     RequestResource.save({identifier: externalId}, request, successHandler, errorHandler);
-                 }
+                }
 
-                 factory.deleteRequest = function(externalId, successHandler, errorHandler){
+                factory.deleteRequest = function (externalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     RequestResource.delete({identifier: externalId}, successHandler, errorHandler);
-                 }
+                }
 
                 /*---------------------------------------------------------------------*
                  * Tasks
@@ -425,7 +424,7 @@
                  * Networks
                  *---------------------------------------------------------------------*/
 
-                 var NetworkResource = $resource(ndexServerURI + '/network/:identifier:action/:subResource/:permissionType:subId:subAction/:skipBlocks/:blockSize',
+                var NetworkResource = $resource(ndexServerURI + '/network/:identifier:action/:subResource/:permissionType:subId:subAction/:skipBlocks/:blockSize',
                     //paramDefaults
                     {
                         identifier: '@identifier',
@@ -473,38 +472,38 @@
                     }
                 );
 
-                factory.editNetworkSummary = function(externalId, summary, successHandler, errorHandler) {
+                factory.editNetworkSummary = function (externalId, summary, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.editNetworkSummary({identifier: externalId}, summary, successHandler, errorHandler);
                 }
 
-                 factory.getProvenance = function(externalId, successHandler, errorHandler) {
+                factory.getProvenance = function (externalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.getProvenance({identifier: externalId}, successHandler, errorHandler);
-                 }
+                }
 
-                 factory.updateNetworkMember = function(membership, successHandler, errorHandler) {
+                factory.updateNetworkMember = function (membership, successHandler, errorHandler) {
                     membership.membershipType = 'NETWORK';
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.updateMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
-                 }
+                }
 
-                 factory.searchNetworks = function(query, skipBlocks, blockSize, successHandler, errorHandler) {
+                factory.searchNetworks = function (query, skipBlocks, blockSize, successHandler, errorHandler) {
                     if (query.searchString == null)
                         query.searchString = '';
-                    
-                    if(ndexUtility.getLoggedInUserAccountName() != null)
+
+                    if (ndexUtility.getLoggedInUserAccountName() != null)
                         $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.search({skipBlocks: skipBlocks, blockSize: blockSize}, query, successHandler, errorHandler);
-                 }
+                }
 
-                 factory.saveSubnetwork = function(subnetwork, successHandler, errorHandler) {
-                    var removeReferences = function(node) {
-                        for(var key in node) {
-                            if(key == 'network') {
+                factory.saveSubnetwork = function (subnetwork, successHandler, errorHandler) {
+                    var removeReferences = function (node) {
+                        for (var key in node) {
+                            if (key == 'network') {
                                 delete node[key];
                             }
-                            if(typeof node[key] === 'object') {
+                            if (typeof node[key] === 'object') {
                                 removeReferences(node[key]);
                             }
                         }
@@ -514,7 +513,7 @@
 
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.saveSubnetwork({}, subnetwork, successHandler, errorHandler);
-                 }
+                }
 
                 //old http calls below
 
@@ -754,7 +753,7 @@
             if (factory.checkLocalStorage()) {
                 if (localStorage.loggedInUser) {
                     var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-                    if(loggedInUser == null)
+                    if (loggedInUser == null)
                         return null;
                     var userData = {
                         accountName: loggedInUser.accountName,
@@ -767,36 +766,36 @@
             }
         };
 
-        factory.setUserAuthToken = function(token) {
+        factory.setUserAuthToken = function (token) {
             var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-            if(!loggedInUser) loggedInUser = {};
+            if (!loggedInUser) loggedInUser = {};
             loggedInUser.token = token;
             localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
         };
 
-        factory.setUserInfo = function(accountName, externalId) {
+        factory.setUserInfo = function (accountName, externalId) {
             var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-            if(!loggedInUser) loggedInUser = {};
+            if (!loggedInUser) loggedInUser = {};
             loggedInUser.accountName = accountName;
             loggedInUser.externalId = externalId;
             localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
         };
 
-        factory.getLoggedInUserExternalId = function() {
+        factory.getLoggedInUserExternalId = function () {
             var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-            if(!loggedInUser) loggedInUser = {};
+            if (!loggedInUser) loggedInUser = {};
             return loggedInUser.externalId;
         };
 
-        factory.getLoggedInUserAccountName = function() {
+        factory.getLoggedInUserAccountName = function () {
             var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-            if(!loggedInUser) loggedInUser = {};
+            if (!loggedInUser) loggedInUser = {};
             return loggedInUser.accountName;
         };
 
-        factory.getLoggedInUserAuthToken = function() {
+        factory.getLoggedInUserAuthToken = function () {
             var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-            if(!loggedInUser) loggedInUser = {};
+            if (!loggedInUser) loggedInUser = {};
             return loggedInUser.token;
         };
 
@@ -862,7 +861,7 @@
         // This convention is useful, but we may later allow a
         // site configuration to explicitly specify a different host
         if (location.hostname.toLowerCase() != "localhost")
-            ndexServerURI=  "http://" + location.host + "/rest";
+            ndexServerURI = "http://" + location.host + "/rest";
 
         /*---------------------------------------------------------------------*
          * GET request configuration
@@ -1312,31 +1311,35 @@
             }
         };
 
-        factory.makeProvenanceEvent = function(eventType) {
+        factory.makeProvenanceEvent = function (eventType) {
             return {
                 eventType: eventType,
                 inputs: []
             }
         };
 
-        factory.createFakeProvenance = function(){
+        factory.createFakeProvenance = function () {
             var fakeRoot = this.makeProvenanceEntity("www.example.com/fakeThing");
             var fakeEvent1 = this.makeProvenanceEvent("Transform");
             fakeRoot.creationEvent = fakeEvent1;
-            var fakeThing2  = this.makeProvenanceEntity("www.example.com/fakeThing2");
+            var fakeThing2 = this.makeProvenanceEntity("www.example.com/fakeThing2");
             fakeEvent1.inputs.push(fakeThing2);
             var fakeEvent2 = this.makeProvenanceEvent("Copy");
             fakeThing2.creationEvent = fakeEvent2;
-            var fakeThing3  = this.makeProvenanceEntity("www.example.com/fakeThing3");
+            var fakeThing3 = this.makeProvenanceEntity("www.example.com/fakeThing3");
             fakeEvent2.inputs.push(fakeThing3);
             return fakeRoot;
 
         };
 
-        var processProvenanceEntity = function(pEntity, parentEventNode){
-
+        var processProvenanceEntity = function (pEntity, parentEventNode) {
             // Make the node for the entity
-            var entityLabel = pEntity.uri; //getProperty("dc:title", pEntity.properties);
+            var entityLabel;
+            if (null == pEntity) {
+                entityLabel = "Error: Null Entity";
+            } else {
+                entityLabel = pEntity.uri; //getProperty("dc:title", pEntity.properties);
+            }
             elementIndex = elementIndex + 1;
             var entityNode = {
                 data: {
@@ -1346,7 +1349,7 @@
             elements.nodes.push(entityNode);
 
             // if there is a parentEventNode, link it to the entityNode
-            if (parentEventNode != null){
+            if (parentEventNode != null) {
                 var eventToEntityEdge = {
                     data: {
                         target: parentEventNode.data.id,
@@ -1356,33 +1359,33 @@
             };
 
             // if there is a creation event:
-            if (pEntity.creationEvent){
-            // Create the node for the event
-            var eventLabel = pEntity.creationEvent.eventType;
-            elementIndex = elementIndex + 1;
-            var eventNode = {
-                data: {
-                    id: "n" + elementIndex,
-                    name: eventLabel
-                }};
+            if (pEntity && pEntity.creationEvent) {
+                // Create the node for the event
+                var eventLabel = pEntity.creationEvent.eventType;
+                elementIndex = elementIndex + 1;
+                var eventNode = {
+                    data: {
+                        id: "n" + elementIndex,
+                        name: eventLabel
+                    }};
 
-            // Link the entityNode to the eventNode
-            var entityToEventEdge = {
-                data: {
-                    target: entityNode.data.id,
-                    source: eventNode.data.id
-                }};
+                // Link the entityNode to the eventNode
+                var entityToEventEdge = {
+                    data: {
+                        target: entityNode.data.id,
+                        source: eventNode.data.id
+                    }};
 
-            elements.nodes.push(eventNode);
-            elements.edges.push(entityToEventEdge);
+                elements.nodes.push(eventNode);
+                elements.edges.push(entityToEventEdge);
 
-            // get the event inputs.
-            // for each input, call processProvenanceEntity and link the returned node to the event
-                if(pEntity.creationEvent.inputs) {
-                $.each(pEntity.creationEvent.inputs, function(index, inputEntity) {
-                    processProvenanceEntity(inputEntity, eventNode);
+                // get the event inputs.
+                // for each input, call processProvenanceEntity and link the returned node to the event
+                if (pEntity.creationEvent.inputs) {
+                    $.each(pEntity.creationEvent.inputs, function (index, inputEntity) {
+                        processProvenanceEntity(inputEntity, eventNode);
 
-                });
+                    });
                 }
             }
         };
@@ -1408,7 +1411,7 @@
                             'height': 10,
                             'width': 10,
                             'text-valign': 'center',
-                            'background-color': 'light-green',
+                            'background-color': 'green',
                             'font-size': 8,
                             //'text-outline-width': 2,
                             //'text-outline-color': 'blue',
@@ -1458,7 +1461,6 @@
 
             return deferred.promise;
         };
-
 
 
         return factory;

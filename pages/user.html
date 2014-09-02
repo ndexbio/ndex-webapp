@@ -199,7 +199,7 @@
                     <li class="list-group-item">
                         <span class='text-info'>{{task.description}}</span> : {{task.status}}
                         <div ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'">
-                            <a href="/exported-networks/{{task.externalId}}" download>download</a>
+                            <a href="/exported-networks/{{task.externalId}}.{{toLower(task.fileFormat)}}" download>download</a>
                         </div>
 
                         <button type="button" class="btn btn-danger btn-xs"
