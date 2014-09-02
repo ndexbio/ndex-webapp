@@ -17,7 +17,8 @@ ndexApp.controller('groupController',
     groupController.identifier = identifier;
 
     // members
-    groupController.userSearchAdmin = false; // this state needs to be saved to avoid browser refresh
+    // convert to query object?
+    groupController.userSearchAdmin = false; 
     groupController.userSearchMember = false;
     groupController.userSearchResults = [];
 

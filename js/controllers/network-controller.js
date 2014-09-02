@@ -17,6 +17,13 @@ ndexApp.controller('networkController',
     networkController.currentSubnetwork = {}; // subnetwork
     networkController.errors = []; // general page errors
 
+    networkController.isAdmin = false;
+    networkController.canEdit = false;
+    networkController.canRead = false;
+    networkController.directIsAdmin = false;
+    networkController.directCanEdit = false;
+    networkController.directCanRead = false;
+
     networkController.searchDepths = [
         {
             "name" : "1-step",
@@ -130,7 +137,10 @@ ndexApp.controller('networkController',
                     cn = network;
                     networkController.currentNetwork = network;
                     getMembership(function() {
-                        if(networkController.isAdmin || network.visibility == 'PUBLIC')
+                        if(network.visibility == 'PUBLIC' 
+                            || networkController.isAdmin 
+                            || networkController.canEdit
+                            || networkController.canRead)
                             getEdges(function(subnetwork){
                                 cytoscapeService.setNetwork(subnetwork);
                             })
@@ -149,16 +159,34 @@ ndexApp.controller('networkController',
                 }
             );
 
-        getProvenance();
     };
 
     var getMembership = function(callback) {
         ndexService.getMyMembership(networkController.currentNetworkId, 
             function(membership) {
-                if((membership && membership.permissions == 'ADMIN') || (membership && membership.permissions == 'WRITE'))
+                if(membership && membership.permissions == 'ADMIN')
                     networkController.isAdmin = true;
+                if(membership && membership.permissions == 'WRITE')
+                    networkController.canEdit = true;
                 if(membership && membership.permissions == 'READ')
                     networkController.canRead = true;
+                callback();
+            },
+            function(error){
+                console.log(error);
+            });
+
+    }
+
+    var getDirectMembership = function(callback) {
+        ndexService.getMyDirectMembership(networkController.currentNetworkId, 
+            function(membership) {
+                if(membership && membership.permissions == 'ADMIN')
+                    networkController.directIsAdmin = true;
+                if(membership && membership.permissions == 'WRITE')
+                    networkController.directCanEdit = true;
+                if(membership && membership.permissions == 'READ')
+                    networkController.directCanRead = true;
                 callback();
             },
             function(error){
@@ -219,11 +247,10 @@ ndexApp.controller('networkController',
             "id": "1"
         };
 
-    networkController.isAdmin = false;
-    networkController.canRead = false;
     networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
     // Initialize the current network and current subnetwork
     initialize();
+    getProvenance();
 
 }]);
 
