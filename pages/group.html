@@ -40,6 +40,12 @@
                             </invite-members-modal></a></li>
                     <li class="divider" ng-show='groupController.isAdmin'></li>
                     <li><a ng-click='groupController.leaveGroup()'>Leave Group</a></li>
+                    <li ng-show='groupController.isAdmin'><a>
+                        <delete-group
+                            ndex-data='groupController.displayedGroup.externalId'>
+                            Delete this Group
+                        </delete-group>
+                    </a></li>
                 </ul>
             </div>
             <create-request-group 

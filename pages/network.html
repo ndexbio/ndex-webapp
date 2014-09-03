@@ -38,7 +38,7 @@
                 <li ng-show='networkController.isAdmin'><a>
                     <edit-network-summary-modal
                         ndex-data='networkController.currentNetwork'>
-                        Edit Network
+                        Edit Network Profile
                     </edit-network-summary-modal>
                 </a></li>
                 <li ng-show='networkController.isLoggedIn 
@@ -57,6 +57,19 @@
                     </create-request-network>
                 </a></li>
                 <li><a ng-click='networkController.saveSubnetwork()'>Save Current Subnetwork</a></li>
+                <li class="divider" ng-show='networkController.isAdmin'></li>
+                <li ng-show='networkController.isAdmin'><a>
+                    <leave-network
+                        ndex-data='networkController.currentNetwork.externalId'>
+                        Disaffiliate this Network
+                    </leave-network>
+                </a></li>
+                <li ng-show='networkController.isAdmin'><a>
+                    <delete-network
+                        ndex-data='networkController.currentNetwork.externalId'>
+                        Delete this Network
+                    </delete-network>
+                </a></li>
             </ul>
         </div>
 

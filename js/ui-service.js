@@ -709,7 +709,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/editNetworkSummaryModal.html',
             transclude: true,
-            controller: function($scope, $attrs, $modal, $location, ndexService, $route) {
+            controller: function($scope, $modal, ndexService, $route) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.network = {}; 
@@ -750,6 +750,221 @@
                     $scope.network.version = $scope.ndexData.version;
                     $scope.network.visibility = $scope.ndexData.visibility;
                 }); 
+            }
+        }
+    });
+
+    uiServiceApp.directive('changePasswordModal', function() {
+        return {
+            scope: {},
+            restrict: 'E',
+            templateUrl: 'pages/directives/changePasswordModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $route, ndexService) {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.change = {};
+
+                $scope.openMe = function() {
+                   modalInstance = $modal.open({
+                        templateUrl: 'change-password-modal.html',
+                        scope: $scope
+                    });
+                };
+                
+                $scope.cancel = function() {
+                    $scope.change = {};
+                    modalInstance.close();
+                    modalInstance = null;
+                };
+
+                $scope.submit = function() {
+                    if($scope.change.newPassword != $scope.change.newPasswordConfirm) {
+                        $scope.errors = 'Passwords do not match';
+                        return;
+                    }
+                    ndexService.changeAccountPassword($scope.change.password, $scope.change.newPassword,
+                        function(data) {
+                            $route.reload();
+                            modalInstance.close();
+                            modalInstance = null;
+                        },
+                        function(error){
+                            $scope.errors =  error.data;
+                        })
+                };
+            }
+        }
+    });
+
+    uiServiceApp.directive('leaveNetwork', function(){
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $route, ndexService) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
+                            $scope.title = 'Disaffiliate this Network'
+                            $scope.message = 'You can lose access to this network!';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                            };
+
+                            $scope.confirm = function() {
+                                ndexService.removeNetworkMember($scope.externalId, ndexUtility.getLoggedInUserExternalId(),
+                                    function(data) {
+                                        $modalInstance.close();
+                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                    }, 
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                    });
+                            };
+                        }
+                    });
+                };
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.externalId = value
+                });
+                
+            }
+        }
+    });
+
+    uiServiceApp.directive('deleteNetwork', function(){
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $location, ndexService) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+                            $scope.title = 'Delete this Network'; //pass network name and add to title
+                            $scope.message = 'This network will be permanently deleted from NDEx. Are you sure you want to delete?';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                            };
+
+                            $scope.confirm = function() {
+                                ndexService.deleteNetwork($scope.externalId,
+                                    function(data) {
+                                        $modalInstance.close();
+                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                    }, 
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                    });
+                            };
+                        }
+                    });
+                };
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.externalId = value
+                });
+                
+            }
+        }
+    });
+
+    uiServiceApp.directive('deleteGroup', function(){
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $location, ndexService) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+                            $scope.title = 'Delete this Group'
+                            $scope.message = 'This group will be permanently deleted from NDEx. Are you sure you want to delete?';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                            };
+
+                            $scope.confirm = function() {
+                                ndexService.deleteGroup($scope.externalId,
+                                    function(data) {
+                                        $modalInstance.close();
+                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                    }, 
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                    });
+                            };
+                        }
+                    });
+                };
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.externalId = value
+                });
+                
+            }
+        }
+    });
+
+    uiServiceApp.directive('deleteUser', function(){
+        return {
+            scope: {},
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $location, ndexService) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
+                            $scope.title = 'Delete your Account'
+                            $scope.message = 'Your account will be permanently deleted from NDEx. Are you sure you want to delete?';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                            };
+
+                            $scope.confirm = function() {
+                                ndexService.deleteUser(
+                                    function(data) {
+                                        $modalInstance.close();
+                                        $scope.$emit('LOGGED_OUT'); //emit event to clear up variables in main controller scope, route refresh does not clear those variables, probably because they are probably of the rootscope
+                                        $location.path('/');
+                                        $route.reload();
+                                    }, 
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                    });
+                            };
+                        }
+                    });
+                };
+                
             }
         }
     });

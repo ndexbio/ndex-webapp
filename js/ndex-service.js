@@ -163,8 +163,36 @@
                                 status: 'pending'
                             },
                             isArray: true
+                        },
+                        changePassword: {
+                            method: 'POST',
+                            params: {
+                                action: 'password'
+                            }
                         }
                     })
+
+                factory.deleteUser = function(successHandler, errorHandler){
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    UserResource.delete({}, null,
+                        function(data) {
+                            ndexUtility.clearUserCredentials();
+                            successHandler(data);
+                        }, 
+                        errorHandler);
+                }
+
+                factory.changeAccountPassword = function(oldPassword, newPassword, successHandler, errorHandler) {
+                    // not using old password because api doesnt, but might be used in the future
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    UserResource.changePassword({}, newPassword, 
+                        function(data) {
+                            //intercepting here to use auth token provided by user
+                            ndexUtility.setUserAuthToken(newPassword);
+                            successHandler(data);
+                        }, 
+                        errorHandler)
+                }
 
                 factory.getSentRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
                     var externalId = ndexUtility.getLoggedInUserExternalId();
@@ -292,9 +320,14 @@
                     }
                 );
 
+                factory.deleteGroup = function(externalId, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    GroupResource.delete({identifier: externalId}, null, successHandler, errorHandler);
+                }
+
                 factory.removeGroupMember = function (groupExternalId, memberExternalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, successHandler, errorHandler);
+                    GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
                 }
 
                 factory.updateGroupMember = function (membership, successHandler, errorHandler) {
@@ -324,11 +357,6 @@
 
                     GroupResource.save({}, group, successHandler, errorHandler);
                 };
-
-                factory.deleteGroup = function (externalId, successHandler, errorHandler) {
-                    console.log("deleting group with UUID " + groupUUID);
-                    GroupResource.delete({'identifier': externalId}, successHandler, errorHandler);
-                }
 
                 factory.searchGroups = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
                     //an empty js object will cause the request to be canceled
@@ -403,7 +431,7 @@
 
                 factory.deleteTask = function (taskUUID, successHandler, errorHandler) {
                     console.log("deleting task with UUID " + taskUUID);
-                    TaskResource.delete({'taskId': taskUUID}, successHandler, errorHandler);
+                    TaskResource.delete({'taskId': taskUUID}, null, successHandler, errorHandler);
                 };
 
                 factory.setTaskStatus = function (taskUUID, statusType, successHandler, errorHandler) {
@@ -450,6 +478,12 @@
                                 subResource: 'member'
                             }
                         },
+                        deleteMember: {
+                            method: 'DELETE',
+                            params: {
+                                subResource: 'member'
+                            }
+                        },
                         search: {
                             method: 'POST',
                             params: {
@@ -472,6 +506,11 @@
                     }
                 );
 
+                factory.deleteNetwork = function(externalId, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.delete({identifier: externalId}, null, successHandler, errorHandler);
+                }
+
                 factory.editNetworkSummary = function (externalId, summary, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.editNetworkSummary({identifier: externalId}, summary, successHandler, errorHandler);
@@ -486,6 +525,11 @@
                     membership.membershipType = 'NETWORK';
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.updateMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
+                }
+
+                factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.deleteMember({identifier: networkExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
                 }
 
                 factory.searchNetworks = function (query, skipBlocks, blockSize, successHandler, errorHandler) {
