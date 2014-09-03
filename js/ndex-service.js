@@ -472,6 +472,12 @@
                                 subResource: 'provenance'
                             }
                         },
+                        setProvenance: {
+                            method: 'PUT',
+                            params: {
+                                subResource: 'provenance'
+                            }
+                        },
                         updateMember: {
                             method: 'POST',
                             params: {
@@ -518,7 +524,11 @@
 
                 factory.getProvenance = function (externalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    NetworkResource.getProvenance({identifier: externalId}, successHandler, errorHandler);
+                    return NetworkResource.getProvenance({identifier: externalId}, successHandler, errorHandler);
+                }
+                factory.setProvenance = function(externalId, provenance, successHandler, errorHandler){
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    return NetworkResource.setProvenance({identifier: externalId}, provenance, successHandler, errorHandler);
                 }
 
                 factory.updateNetworkMember = function (membership, successHandler, errorHandler) {
@@ -556,7 +566,7 @@
                     removeReferences(subnetwork);
 
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    NetworkResource.saveSubnetwork({}, subnetwork, successHandler, errorHandler);
+                    return NetworkResource.saveSubnetwork({}, subnetwork, successHandler, errorHandler);
                 }
 
                 //old http calls below

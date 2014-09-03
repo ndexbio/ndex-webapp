@@ -337,6 +337,7 @@
         }
     });
 
+    // modal to view request sent by user
     uiServiceApp.directive('sentRequest', function() {
         return {
             scope: {
@@ -381,7 +382,8 @@
             }
         }
     });
-
+    
+    // modal to view and act on received request
     uiServiceApp.directive('receivedRequest', function() {
         return {
             scope: {
@@ -479,6 +481,8 @@
         }
     });
 
+
+    // modal to request access to group
     uiServiceApp.directive('createRequestGroup', function() {
         return {
             scope: {
@@ -541,6 +545,7 @@
         }
     });
 
+    // modal to request access to network
     uiServiceApp.directive('createRequestNetwork', function() {
         return {
             scope: {
@@ -639,6 +644,7 @@
         }
     });
 
+    // modal to create network export task
     uiServiceApp.directive('createExportNetworkTask', function() {
         return {
             scope: {
@@ -701,6 +707,7 @@
         }
     });
 
+    // modal to edit network summary
     uiServiceApp.directive('editNetworkSummaryModal', function() {
         return {
             scope: {
@@ -754,6 +761,7 @@
         }
     });
 
+    // modal to change password
     uiServiceApp.directive('changePasswordModal', function() {
         return {
             scope: {},
@@ -797,6 +805,7 @@
         }
     });
 
+    // modal to remove own access to network
     uiServiceApp.directive('leaveNetwork', function(){
         return {
             scope: {
@@ -841,6 +850,7 @@
         }
     });
 
+    // modal to delete network
     uiServiceApp.directive('deleteNetwork', function(){
         return {
             scope: {
@@ -885,6 +895,7 @@
         }
     });
 
+    // modal to delete gorup
     uiServiceApp.directive('deleteGroup', function(){
         return {
             scope: {
@@ -929,6 +940,7 @@
         }
     });
 
+    // modal to delete user
     uiServiceApp.directive('deleteUser', function(){
         return {
             scope: {},
@@ -964,6 +976,94 @@
                         }
                     });
                 };
+                
+            }
+        }
+    });
+
+    uiServiceApp.directive('saveSubnetwork', function(){
+        return {
+            scope: {
+                ndexNetwork: '=',
+                ndexSubnetwork: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $location, ndexService) {
+                var network = {};
+                var subnetwork = {};
+
+                var saveSubnetwork = function() {
+                    var d = new Date();
+                    var timestamp = d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
+                    subnetwork.name = network.name + ' Subnetwork - ' + timestamp;
+
+                    // get the promise
+                    var promise = ndexService.saveSubnetwork(subnetwork).$promise;
+                    // return chained promise
+                    return promise.then(
+                        function(networkSummary) {
+                           var subPromise = ndexService.getProvenance(network.externalId).$promise;
+                           return subPromise.then(function(provenance) {
+                                return {provenance: provenance, networkSummary: networkSummary}
+                           })
+                        }).then(
+                        function(data) {
+
+                            var newProvenance = {
+                                uri: data.networkSummary.externalId,
+                                creationEvent: {
+                                    startDate: data.networkSummary.creationDate,
+                                    endDate: data.networkSummary.creationDate,
+                                    inputs: [data.provenance],
+                                    type: 'ProvenanceEvent',
+                                    eventType: 'Query'
+                                }
+
+                            };
+
+                            return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise;
+                        }).then(
+                        function(success) {
+                            $location.path('/network/'+success.uri);
+                        });
+                }
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $location, $route, ndexService) {
+                            $scope.title = 'Save Subnetwork?'
+                            $scope.message = 'The subnetwork for '+network.name+' will be saved to your account?';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                            };
+
+                            $scope.confirm = function() {
+                                $scope.progress = 'Save in progress....';
+                                saveSubnetwork().then(
+                                    function(success) {
+                                        $modalInstance.close();
+                                    },
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                    })
+                            };
+                        }
+                    });
+                };
+
+                $scope.$watch('ndexSubnetwork', function(value) {
+                    subnetwork = value
+                });
+
+                $scope.$watch('ndexNetwork', function(value) {
+                    network = value
+                });
+                
                 
             }
         }

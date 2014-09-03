@@ -26,6 +26,10 @@
             </div>
         </div>
 
+        <div class='row' ng-show='networkController.currentNetwork.version'>
+        Version: {{networkController.currentNetwork.version}}
+        </div>
+
         <div class='row text-success'>{{networkController.currentNetwork.visibility}}</div>
         
         <div class='row'>{{networkController.currentNetwork.description}}</div>
@@ -44,6 +48,7 @@
                 <li ng-show='networkController.isLoggedIn 
                     && ((networkController.currentNetwork.visibility == "PUBLIC") 
                         || networkController.isAdmin 
+                        || networkController.canEdit
                         || networkController.canRead)'><a>
                     <create-export-network-task
                         ndex-data='networkController.currentNetwork'>
@@ -56,9 +61,16 @@
                         Ask for Access!
                     </create-request-network>
                 </a></li>
-                <li><a ng-click='networkController.saveSubnetwork()'>Save Current Subnetwork</a></li>
+                <li><a>
+                    <save-subnetwork ndex-network='networkController.currentNetwork'
+                            ndex-subnetwork='networkController.currentSubnetwork'>
+                        Save Current Subnetwork
+                    </save-subnetwork>
+                </a></li>
                 <li class="divider" ng-show='networkController.isAdmin'></li>
-                <li ng-show='networkController.isAdmin'><a>
+                <li ng-show='networkController.directIsAdmin 
+                            || networkController.directCanEdit 
+                            || networkController.directCanRead'><a>
                     <leave-network
                         ndex-data='networkController.currentNetwork.externalId'>
                         Disaffiliate this Network
@@ -83,7 +95,9 @@
         </div>
 
         <hr>
-
+        <div class='row'>
+            <h5>Provenance</h5>
+        </div>
         <div class='row' id='provenanceCanvas'>
         </div>
     </div>
