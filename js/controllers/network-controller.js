@@ -1,6 +1,6 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal',
-    function(ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal) {
+    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$location',
+    function(ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $location) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ ndexApp.controller('networkController',
                 networkController.currentSubnetwork.name = networkController.currentNetwork.name + ' Subnetwork - ' + timestamp;
                 ndexService.saveSubnetwork(networkController.currentSubnetwork, 
                     function(data){
-                        //TODO
+                        $location.path('/network/'+data.externalId);
                     },
                     function(error){
                         //TODO
