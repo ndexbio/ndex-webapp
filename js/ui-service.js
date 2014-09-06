@@ -1012,10 +1012,10 @@
                         function(data) {
 
                             var newProvenance = {
-                                uri: data.networkSummary.externalId,
+                                uri: networkSummary.uri,
                                 creationEvent: {
-                                    startDate: data.networkSummary.creationDate,
-                                    endDate: data.networkSummary.creationDate,
+                                    startedAtTime: data.networkSummary.creationTime,
+                                    endedAtTime: data.networkSummary.creationTime,
                                     inputs: [data.provenance],
                                     type: 'ProvenanceEvent',
                                     eventType: 'Query'

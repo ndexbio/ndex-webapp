@@ -27,12 +27,16 @@
         </div>
 
         <div class='row' ng-show='networkController.currentNetwork.version'>
-        Version: {{networkController.currentNetwork.version}}
+            <p> Version: {{networkController.currentNetwork.version}} </p>
         </div>
 
-        <div class='row text-success'>{{networkController.currentNetwork.visibility}}</div>
+        <div class='row text-success'>
+            <p>{{networkController.currentNetwork.visibility}}</p>
+        </div>
         
-        <div class='row'>{{networkController.currentNetwork.description}}</div>
+        <div class='row'>
+            <p>{{networkController.currentNetwork.description}}</p>
+        </div>
 
         <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
             <button type="button" class="btn btn-primary dropdown-toggle">
@@ -94,8 +98,36 @@
             </ul>
         </div>
 
+        
+        <div class='row' 
+            ng-show='(networkController.currentNetwork.properties.length == 0) 
+                && (networkController.isAdmin || networkController.canEdit)'>
         <hr>
+            <h5>More Info</h5>
+            <p><a ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">Add custom info!</a></p>
+        </div>
+
+        <div class='row' 
+            ng-show='networkController.currentNetwork.properties.length > 0'>
+        <hr>
+            
+        <h5>
+            More Info
+            <a class='btn btn-link' 
+                ng-show='networkController.isAdmin || networkController.canEdit'
+                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
+                <span class="glyphicon glyphicon-edit"></span>
+            </a>
+        </h5>
+        
+        <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
+             <label>{{property.predicateString}}: </label>
+             <span>{{property.value}}</span>
+        </span>
+        </div>
+
         <div class='row'>
+        <hr>
             <h5>Provenance</h5>
         </div>
         <div class='row' id='provenanceCanvas'>
@@ -137,7 +169,7 @@
 
             <button type="submit" class="btn btn-default ">Run Query</button>
         </form>
-
+        <br><br><br>
     </div>
 
     <!-- begins tabbable section -->

@@ -78,11 +78,13 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'searchNetworksController'
         })
 
+        // route for searchUsers page
         .when('/searchUsers', {
             templateUrl: 'pages/searchUsers.html',
             controller: 'searchUsersController'
         })
 
+        //route for seatchGroups page
         .when('/searchGroups', {
             templateUrl: 'pages/searchGroups.html',
             controller: 'searchGroupsController'
@@ -116,6 +118,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         .when('/signIn', {
             templateUrl: 'pages/signIn.html',
             controller: 'signInController'
+        })
+
+        .when('/properties/network/:identifier', {
+            templateUrl: 'pages/editNetworkProperties.html',
+            controller: 'editNetworkPropertiesController'
         });
 }]);
 
@@ -199,6 +206,8 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         $scope.main.accountName = accountName;
         $scope.main.loggedIn = true;
     }
+
+   
 
 
 }]);

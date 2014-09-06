@@ -45,6 +45,9 @@
                 if (location.hostname.toLowerCase() != "localhost")
                     ndexServerURI = "http://" + location.host + "/rest";
 
+                factory.getServerURI = function() {
+                    return ndexServerURI;
+                }
 
                 factory.getNetworkUploadURI = function () {
                     return ndexServerURI + "/network/upload";
@@ -508,9 +511,20 @@
                             params: {
                                 subAction: 'summary'
                             }
+                        },
+                        setNetworkProperties: {
+                            method: 'PUT',
+                            params: {
+                                subResource: 'properties'
+                            }
                         }
                     }
                 );
+
+                factory.setNetworkProperties = function(externalId, properties, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.setNetworkProperties({identifier: externalId}, properties, successHandler, errorHandler);
+                }
 
                 factory.deleteNetwork = function(externalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
