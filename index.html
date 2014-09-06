@@ -4,6 +4,9 @@
 <html ng-app="ndexApp">
 
 <head>
+    <!-- Load script that may redirect to maint.html -->
+    <script src="checkMaintenance.js"></script>
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css"/>
@@ -14,8 +17,8 @@
     <!-- Scripts -->
 
     <!-- Fix for old browsers to support the angular-upload module-->
-    <script src="http://nervgh.github.io/js/es5-shim.min.js"></script>
-    <script src="http://nervgh.github.io/js/es5-sham.min.js"></script>
+    <script src="js/nervgh/es5-shim.min.js"></script>
+    <script src="js/nervgh//es5-sham.min.js"></script>
 
     <!-- it is important to load angular *after* jQuery if you want angular to have access
          to full jQuery functionality instead of angular's internal 'lite' version -->
