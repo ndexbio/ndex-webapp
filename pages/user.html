@@ -82,7 +82,7 @@
                 </div>
             </tab>
             <tab heading="Groups">
-                <div id="divGroups" ng-show='userController.groupSearchResults.length > 0'>
+                <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
                         <form class='form-inline col-md-6' role="form" ng-submit="userController.submitGroupSearch()">
@@ -117,7 +117,7 @@
 
                     </div>
 
-                    <div>
+                    <div ng-show='userController.groupSearchResults.length > 0'>
                         <ul ng-repeat="group in userController.groupSearchResults">
                             <div class='row'>
                                 <ndex-navigation ndex-class="" ndex-url="'group/'+group.externalId">
@@ -134,20 +134,21 @@
                             </div>
                         </ul>
                     </div>
+                    <div class='row' ng-hide='userController.groupSearchResults.length > 0'>
+                        <br>
+                        <p class='text-center text-muted'>No groups to display</p>
+                    </div>
                 </div>
-                <div class='row' ng-hide='userController.groupSearchResults.length > 0'>
-                    <br>
-                    <p class='text-center text-muted'>No groups to display</p>
-                </div>
+                
             </tab>
         </tabset>
     </div>
 
 <div class="col-md-3" ng-show='userController.isLoggedInUser'>
 
-    <div class="row panel panel-default"
-         ng-show='userController.pendingRequests.length > 0 || userController.sentRequests.length > 0'>
-        <div class="panel-heading">
+    <div class='row well well-sm' 
+        ng-show='userController.pendingRequests.length > 0 || userController.sentRequests.length > 0'>
+        <div class="">
             <ol class="list-inline">
                 <li><strong>Requests</strong></li>
                 <li><a ng-click='sentTab = null'
@@ -158,18 +159,23 @@
                        ng-class="{'text-muted': sentTab == null, 'text-primary': sentTab}"
                        ng-show='userController.sentRequests.length > 0'>
                     Sent</a></li>
+                <li><a ng-click='userController.refreshRequests()'>
+                    <span class='glyphicon glyphicon-refresh'></span>
+                    </a></li>
             </ol>
         </div>
-
+        <div class="panel panel-default">
         <ul class="list-group"
             ng-hide='sentTab'
             ng-repeat='request in userController.pendingRequests'>
             <li class="list-group-item">
                 <!-- destination names should be cut off -->
                 <received-request ndex-data='request'>
-                    {{request.sourceName}} requests
-                    <span class='text-info'>{{request.permission}}</span> access to {{request.destinationName}}
-                    <em class='text-muted'> - {{request.response}}</em>
+                    <span class='text-success'>{{request.sourceName}}</span> requests
+                    <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to 
+                    <span class='text-success'>{{request.destinationName}}</span>
+                    <br>
+                    <em class='text-muted'>{{request.response | requestStatusToLabel}}</em>
                 </received-request>
             </li>
         </ul>
@@ -180,46 +186,51 @@
             <li class="list-group-item">
                 <!-- destination names should be cut off -->
                 <sent-request ndex-data='request'>
-                    <span class='text-info'>{{request.permission}}</span> access to {{request.destinationName}}
-                    for {{request.sourceName}}
+                    <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to 
+                    <span class='text-success'>{{request.destinationName}}</span> for 
+                    <span class='text-success'>{{request.sourceName}}</span>
+                    <br>
                     <em class='text-muted'
                         ng-class='{"text-danger":request.response=="DECLINED", "text-success":request.response=="ACCEPTED"}'>
-                        - {{request.response}}
+                        {{request.response | requestStatusToLabel}}
                     </em>
                 </sent-request>
                 <!--<button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button
                 -->
             </li>
         </ul>
-
+        </div>
     </div>
 
-    <div class="row panel panel-default"
+    <div class="row well well-sm"
          ng-show='userController.pendingTasks.length > 0'>
-        <div class="panel-heading">
-            <ol class="list-inline">
-                <li><strong>Tasks</strong></li>
-                <button type="button" class="btn btn-success btn-xs"
-                        ng-click="userController.refreshTasks()">
-                    Update
-                </button>
+        
+        <ol class="list-inline">
+            <li><strong>Tasks</strong></li>
+            <a ng-click="userController.refreshTasks()">
+                <span class='glyphicon glyphicon-refresh'></span>
+            </a>
+        </ol>
+        <div class="panel panel-default">
+            <ul class="list-group"
+                ng-repeat='task in userController.pendingTasks'>
+                <li class="list-group-item">
+                    <div class='row'>
+                    <div class='col-sm-10'>
+                    <span class='text-info'>{{task.description}}</span>
+                    <span class='text-muted'>{{task.status | taskStatusToLabel}}</span>
+                    <div ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'">
+                        <a href="/exported-networks/{{task.externalId}}.{{toLower(task.fileFormat)}}" download>download</a>
+                    </div>
+                    </div>
+                    <a class='btn btn-xs btn-link'
+                            ng-click="userController.deleteTask(task.externalId)">
+                        <span class="text-danger glyphicon glyphicon-trash"></span>
+                    </a>
+                    </div>
 
-                <ul class="list-group"
-                    ng-repeat='task in userController.pendingTasks'>
-                    <li class="list-group-item">
-                        <span class='text-info'>{{task.description}}</span> : {{task.status}}
-                        <div ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'">
-                            <a href="/exported-networks/{{task.externalId}}.{{toLower(task.fileFormat)}}" download>download</a>
-                        </div>
-
-                        <button type="button" class="btn btn-danger btn-xs"
-                                ng-click="userController.deleteTask(task.externalId)">
-                            <span class="glyphicon glyphicon-trash"></span>
-                        </button>
-
-                    </li>
-                </ul>
-            </ol>
+                </li>
+            </ul>
         </div>
 
     </div>

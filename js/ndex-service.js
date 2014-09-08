@@ -334,8 +334,7 @@
                 }
 
                 factory.updateGroupMember = function (membership, successHandler, errorHandler) {
-                    membership.membershipType = 'GROUP'
-                    console.log(membership);
+                    membership.membershipType = 'GROUP';
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     GroupResource.updateMembership({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
                 }

@@ -89,7 +89,7 @@
                             $location.path('/group/'+groupData.externalId);
                         },
                         function(error){
-                            // do some error handling
+                            $scope.errors = error.data;
                         });
                 };
             }
@@ -895,6 +895,51 @@
         }
     });
 
+    // modal to remove own access to group
+    uiServiceApp.directive('leaveGroup', function(){
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $route, ndexService) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
+                            $scope.title = 'Leave '+$scope.group.accountName
+                            $scope.message = 'There must be other admin in the group';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                            };
+
+                            $scope.confirm = function() {
+                                ndexService.removeGroupMember($scope.group.externalId, ndexUtility.getLoggedInUserExternalId(),
+                                    function(data) {
+                                        $modalInstance.close();
+                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                    }, 
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                    });
+                            };
+                        }
+                    });
+                };
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.group = value
+                });
+                
+            }
+        }
+    });
+
     // modal to delete gorup
     uiServiceApp.directive('deleteGroup', function(){
         return {
@@ -1012,7 +1057,7 @@
                         function(data) {
 
                             var newProvenance = {
-                                uri: networkSummary.uri,
+                                uri: data.networkSummary.uri,
                                 creationEvent: {
                                     startedAtTime: data.networkSummary.creationTime,
                                     endedAtTime: data.networkSummary.creationTime,
@@ -1023,10 +1068,13 @@
 
                             };
 
-                            return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise;
+                            return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise.then(
+                                function(res){
+                                    return data.networkSummary
+                                });
                         }).then(
                         function(success) {
-                            $location.path('/network/'+success.uri);
+                            $location.path('/network/'+success.externalId);
                         });
                 }
 
@@ -1068,5 +1116,62 @@
             }
         }
     });
+
+    //----------------------------------------------------
+    //                  Filters
+    uiServiceApp.filter('permissionToLabel', function() {
+        return function(input) {
+            switch(input) {
+                case 'ADMIN':
+                    return 'Is Admin';
+                case 'WRITE':
+                    return 'Can Edit';
+                case 'READ':
+                    return 'Can Read';
+                case 'GROUPADMIN':
+                    return 'Is Admin';
+                case 'MEMBER':
+                    return 'Is Member';
+            }
+        }
+    })
+
+    uiServiceApp.filter('requestStatusToLabel', function() {
+        return function(input) {
+            switch(input) {
+                case 'PENDING':
+                    return 'pending';
+                case 'DECLINED':
+                    return 'declined';
+                case 'ACCEPTED':
+                    return 'accepted';
+            }
+        }
+    })
+
+    uiServiceApp.filter('taskStatusToLabel', function() {
+        return function(input) {
+            switch(input) {
+                case 'COMPLETED':
+                    return 'completed';
+                case 'QUEUED':
+                    return 'queued';
+                case 'STAGED' :
+                    return 'staged';
+                case 'PROCESSING':
+                    return 'processing';
+                case 'COMPLETED_WITH_WARNINGS':
+                    return 'completed with warnings';
+                case 'COMPLETED_WITH_ERRORS' :
+                    return 'completed with errors';
+                case 'FAILED':
+                    return 'failed';
+                case 'QUEUED_FOR_DELETION':
+                    return 'queued for deletion';
+                case 'ALL':
+                    return 'all';
+            }
+        }
+    })
 
 }) ()

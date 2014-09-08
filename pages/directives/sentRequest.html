@@ -5,11 +5,11 @@
 		<div class='modal-body' ng-hide='false'>
 			<h5>
 				<strong>
-				You requested <span class='text-success'>{{request.permission}}</span> access to {{request.destinationName}} for {{request.sourceName}}
+				You requested <span class='text-success'>{{request.permission | permissionToLabel}}</span> access to {{request.destinationName}} for {{request.sourceName}}
 				</strong>
 				<em class='text-muted' 
 					ng-class='{"text-danger":request.response=="DECLINED", "text-success":request.response=="ACCEPTED"}'>
-					 - {{request.response}}
+					 - {{request.response | requestStatusToLabel}}
 				</em>
 			</h5>
 			<hr ng-show='request.message'>

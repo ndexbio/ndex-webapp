@@ -55,23 +55,6 @@ ndexApp.controller('groupController',
             });
     };
 
-    groupController.leaveGroup = function() {
-        ndexNavigation.openConfirmationModal(
-            'Are you sure you want to leave this group?',
-            function() {
-                ndexService.removeGroupMember(
-                    groupController.displayedGroup.externalId,
-                    ndexUtility.getLoggedInUserExternalId(),
-                    function(data){
-                        //TODO
-                        $route.reload();
-                    },
-                    function(error){
-                        //TODO
-                    });
-            });
-    };
-
     groupController.submitNetworkSearch = function() {
         groupController.networkSearchResults = [];
 

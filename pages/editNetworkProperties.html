@@ -21,7 +21,11 @@
 				<ul class='list-group'>
 					<li class='list-group-item' ng-repeat='namespace in editor.ontologies'> 
 						{{namespace.prefix}}
-						{{namespace.uri}}
+						<span class="glyphicon glyphicon-remove text-muted pull-right"
+							style='cursor:pointer'
+							ng-click='editor.removeOntology($index)'>	
+						</span>
+						
 					</li>
 				</ul>
 		</div>
@@ -30,14 +34,17 @@
 		<br>
 
 		<h6><strong>Add an Ontology</strong></h6>
-		<form class='row' role="form">
+		<form class='row' role="form" ng-submit='editor.addOntology()'>
 		  <div class="form-group">
 		    <label>Prefix</label>
-		    <input type="text" class="form-control input-sm" placeholder="prefix">
+		    <input type="text" class="form-control input-sm" placeholder='e.g., GO'
+		    	ng-model='editor.newPrefix'
+		    	typeahead='ontology.prefix for ontology in editor.preloadedOntologies | filter:{prefix:$viewValue} | limitTo:20'
+		    	typeahead-on-select='editor.setURI($item, $model, $label)'>
 		  </div>
 		  <div class="form-group">
-		    <label>Reference URL</label>
-		    <input type="url" class="form-control input-sm" placeholder="link">
+		    <label>Reference URI</label>
+		    <input type="text" class="form-control input-sm" placeholder="e.g., http://identifiers.org/go/" ng-model='editor.newURI'>
 		  </div>
 		  <button type="submit" class="btn btn-sm btn-default pull-right">Add</button>
 		</form>
@@ -47,35 +54,67 @@
 	<div class='col-sm-9'>
 
 		<h5><em>Editing </em>{{editor.networkName}}</h5>
-		<p class='text-info'>Selected ontologies must be defined. However, they are not required.</p>
+		<p class='text-info'>Selected ontologies must be defined. However, they are not required. Select none if you do not wish to use an ontology.</p>
 		<br>
 
 		<form class="form-horizontal" role="form" ng-submit='editor.save()'>
 
 		  <div class="form-group" ng-repeat='property in editor.propertyValuePairs'>
-		    <div class="col-sm-offset-2 col-sm-4">
-		      <input class="form-control input-sm" placeholder="Label" 
-		      	ng-model='property.predicateString'
-		      	ng-change='editor.changed($index)'
-		      	ng-options='editor.existingTerms'
-		      	bs-typeahead>
+		    <div class="col-sm-offset-1 col-sm-4">
+		    	<div class='input-group'>
+			    	<div class='input-group-btn dropdown'>
+			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'>
+			    			{{property.predicatePrefix}}:
+			    		</button>
+			    		<ul class="dropdown-menu" role="menu">
+                            <li ng-repeat='ontology in editor.ontologies'>
+                            <a class ="dropdown-toggle" ng-click="property.predicatePrefix = ontology.prefix">
+                            {{ontology.prefix}}
+                            </a>
+                            </li>
+                        </ul>
+			    	</div>
+					<input class="form-control input-sm" placeholder="Label" 
+						ng-model='property.predicateString'
+						ng-change='editor.changed($index)'>
+				</div>
 		    </div>
+
 		    <div class="col-sm-4">
-		      <input class="form-control input-sm" placeholder="Value" 
-		      	ng-model='property.value'
-		      	ng-change='editor.changed($index)'>
+		    	<div class='input-group'>
+		    		<div class='input-group-btn dropdown'>
+			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'>
+			    			{{property.valuePrefix}}:
+			    		</button>
+			    		<ul class="dropdown-menu" role="menu">
+                            <li ng-repeat='ontology in editor.ontologies'>
+                            <a class ="dropdown-toggle" ng-click="property.valuePrefix = ontology.prefix">
+                            {{ontology.prefix}}
+                            </a>
+                            </li>
+                        </ul>
+			    	</div>
+			        <input class="form-control input-sm" placeholder="Value" 
+			      	  ng-model='property.value'
+			      	  ng-change='editor.changed($index)'>
+		      	</div>
 		    </div>
+
 		    <div class='' ng-hide='$last'>
-		    	<button class='btn btn-link' ng-click='editor.propertyValuePairs.splice($index,1)'>
+		    	<button type='button' class='btn btn-link' ng-click='editor.propertyValuePairs.splice($index,1)'>
 		    		<span class="glyphicon glyphicon-remove text-muted"></span>
 		    	</button>
 		    </div>
 		  </div>
 
 		  <hr>
-		  <div class="form-group">
-		    <div class="col-sm-offset-10 col-sm-2">
-		      <button type="submit" class="btn btn-default">Save</button>
+		  <div class="row">
+		  	<div class="col-sm-offset-8 col-sm-4">
+		      <button type="button" class="btn btn-danger">Discard</button>
+		    
+		      <button type="button" class="btn btn-warning">Cancel</button>
+		    
+		      <button type="submit" class="btn btn-success"> Save </button>
 		    </div>
 		  </div>
 		</form>

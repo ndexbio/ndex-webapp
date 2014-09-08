@@ -112,6 +112,10 @@ ndexApp.controller('userController',
 
             }
 
+            userController.refreshRequests = function() {
+                getRequests();
+            }
+
             //              local functions
 
             var getRequests = function () {

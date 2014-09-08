@@ -39,7 +39,11 @@
                                 Add Collaborators!
                             </invite-members-modal></a></li>
                     <li class="divider"></li>
-                    <li><a ng-click='groupController.leaveGroup()'>Leave Group</a></li>
+                    <li><a>
+                        <leave-group ndex-data='groupController.displayedGroup'>
+                        Leave Group
+                        </leave-group>
+                    </a></li>
                     <li ng-show='groupController.isAdmin'><a>
                         <delete-group
                             ndex-data='groupController.displayedGroup.externalId'>
@@ -96,7 +100,7 @@
                 </div>
             </tab>
             <tab heading="Members">
-                <div id="divGroups" ng-show='groupController.userSearchResults.length > 0'>
+                <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
                         <form class='form-inline col-md-6' role="form" ng-submit="groupController.submitUserSearch()">
@@ -130,7 +134,7 @@
 
                     </div>
 
-                    <div> 
+                    <div ng-show='groupController.userSearchResults.length > 0'> 
                         <ul ng-repeat="user in groupController.userSearchResults">
                             <div class='row'>
                             <ndex-navigation ndex-class="" ndex-url="'user/'+user.externalId">
@@ -148,11 +152,13 @@
                         </ul>
                     </div>
 
+                    <div class='row' ng-hide='groupController.userSearchResults.length > 0'>
+                        <br>
+                        <p class='text-center text-muted'>No users to display</p>
+                    </div>
+
                 </div>
-                <div class='row' ng-hide='groupController.userSearchResults.length > 0'>
-                    <br>
-                    <p class='text-center text-muted'>No users to display</p>
-                </div>
+                
             </tab>
         </tabset>
 

@@ -120,9 +120,20 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'signInController'
         })
 
+        // route to edit network custom properties
         .when('/properties/network/:identifier', {
             templateUrl: 'pages/editNetworkProperties.html',
             controller: 'editNetworkPropertiesController'
+        })
+
+        .when('/access/network/:identifier', {
+            templateUrl: 'pages/manageNetworkAccess.html',
+            controller: 'manageNetworkAccessController'
+        })
+
+        .when('/access/group/:identifier', {
+            templateUrl: 'pages/manangeGroupAccess.html',
+            controller: 'manageGroupAccessController'
         });
 }]);
 

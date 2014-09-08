@@ -4,7 +4,7 @@
   <div class="modal-header">
       <h4 class="modal-title">Create a Group</h4>
   </div>
-  <form class="form-create-group" role="form">
+  <form class="form-create-group" role="form" ng-submit='submit()'>
   <div class="modal-body">
     
           <div class="form-group">
@@ -17,6 +17,8 @@
                      placeholder="organization represented by group "
                      ng-model="group.organizationName">
           </div>
+
+          <p class='text-center text-danger'>{{errors}}</p>
       
   </div>
   <div class="modal-footer">
