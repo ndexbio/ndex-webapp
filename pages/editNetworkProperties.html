@@ -11,8 +11,37 @@
 
 <div class='row'>
 
-	<div class='col-sm-3'>
-	<h5>Ontologies</h5>
+	<div class='col-sm-3 well well-lg'>
+		<div class='row' >
+			<div class='col-sm-12'>
+				<h6><strong>Ontologies in This Network</strong></h6>
+			</div>
+
+			<div class='panel panel-default'>
+				<ul class='list-group'>
+					<li class='list-group-item' ng-repeat='namespace in editor.ontologies'> 
+						{{namespace.prefix}}
+						{{namespace.uri}}
+					</li>
+				</ul>
+		</div>
+		</div>
+
+		<br>
+
+		<h6><strong>Add an Ontology</strong></h6>
+		<form class='row' role="form">
+		  <div class="form-group">
+		    <label>Prefix</label>
+		    <input type="text" class="form-control input-sm" placeholder="prefix">
+		  </div>
+		  <div class="form-group">
+		    <label>Reference URL</label>
+		    <input type="url" class="form-control input-sm" placeholder="link">
+		  </div>
+		  <button type="submit" class="btn btn-sm btn-default pull-right">Add</button>
+		</form>
+
 	</div>
 
 	<div class='col-sm-9'>

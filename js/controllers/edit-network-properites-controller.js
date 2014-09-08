@@ -42,24 +42,24 @@ ndexApp.controller('editNetworkPropertiesController',
 
     editor.ontologies = [
     	{
-    		uri: '',
-    		prefix: ''
+    		uri: 'test.com',
+    		prefix: 'test'
     	},
     	{
-    		uri: '',
-    		prefix: ''
+    		uri: 'test.com',
+    		prefix: 'test'
     	},
     	{
-    		uri: '',
-    		prefix: ''
+    		uri: 'test.com',
+    		prefix: 'test'
     	},
     	{
-    		uri: '',
-    		prefix: ''
+    		uri: 'test.com',
+    		prefix: 'test'
     	},
     	{
-    		uri: '',
-    		prefix: ''
+    		uri: 'test.com',
+    		prefix: 'test'
     	}
     ]
 
