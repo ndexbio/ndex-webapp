@@ -120,6 +120,7 @@ ndexApp.controller('networkController',
                     cn = network;
                     networkController.currentNetwork = network;
                     getMembership(function() {
+                       
                         if(network.visibility == 'PUBLIC' 
                             || networkController.isAdmin 
                             || networkController.canEdit

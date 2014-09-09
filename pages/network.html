@@ -65,7 +65,7 @@
                         Ask for Access!
                     </create-request-network>
                 </a></li>
-                <li><a>
+                <li ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead' ><a>
                     <save-subnetwork ndex-network='networkController.currentNetwork'
                             ndex-subnetwork='networkController.currentSubnetwork'>
                         Save Current Subnetwork
@@ -135,7 +135,7 @@
         </div>
     </div>
 
-    <div class='col-md-9' ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin'>
+    <div class='col-md-9' ng-show= 'networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
 
     <div class='row text-center'>
         <h4>Retrieved Subnetwork</h4>
@@ -258,7 +258,7 @@
 
     </div>
 
-    <div class='col-md-9' ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin'>
+    <div class='col-md-9' ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
     <br>
     <br>
     <p class='text-center'>You do not have access to this network</p>

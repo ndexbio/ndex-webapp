@@ -219,11 +219,11 @@
                 }
 
                 factory.getDirectMembership = function (resourceExternalId, memberExternalId, successHandler, errorHandler) {
-                    UserResource.getDirectMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
+                    return UserResource.getDirectMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
                 }
 
                 factory.getMembership = function (resourceExternalId, memberExternalId, successHandler, errorHandler) {
-                    UserResource.getMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
+                    return UserResource.getMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
                 }
 
                 factory.getMyDirectMembership = function (resourceId, successHandler, errorHandler) {
@@ -248,7 +248,7 @@
                     console.log('searching for users with params: \n    ' + JSON.stringify(queryObject));
                     if (queryObject.searchString == null)
                         queryObject.searchString = '';
-                    UserResource.search({
+                    return UserResource.search({
                             'skipBlocks': skipBlocks,
                             'blockSize': blockSize},
                         queryObject,
@@ -319,9 +319,46 @@
                             params: {
                                 subResource: 'member'
                             }
+                        },
+                        getMemberships: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'user',
+                                skipBlocks: 0,
+                                blockSize: 1000
+                            },
+                            isArray: true
                         }
                     }
                 );
+
+                factory.getGroupMemberships = function(externalId, permission, successHandler, errorHandler) {
+
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+
+                    if(permission === 'ALL') {
+                        var memberships = [];
+
+                        $q.all([
+                            GroupResource.getMemberships({identifier: externalId, permissionType: 'GROUPADMIN'}).$promise,
+                            GroupResource.getMemberships({identifier: externalId, permissionType: 'MEMBER'}).$promise
+                            ]).then(
+                            function(arrays) {
+                                memberships = memberships.concat(arrays[0]);
+                                memberships = memberships.concat(arrays[1]);
+
+                                successHandler(memberships);
+                            },
+                            function(errors) {
+                                errorHandler(errors)
+                            });
+
+                    }
+                    else {
+                        GroupResource.getMemberships({identifer: externalId, permissionType: permission}, successHandler, errorHandler)
+                    }
+
+                }
 
                 factory.deleteGroup = function(externalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
@@ -336,7 +373,7 @@
                 factory.updateGroupMember = function (membership, successHandler, errorHandler) {
                     membership.membershipType = 'GROUP';
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    GroupResource.updateMembership({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
+                    return GroupResource.updateMembership({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
                 }
 
                 factory.editGroupProfile = function (group, successHandler, errorHandler) {

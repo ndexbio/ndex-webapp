@@ -57,7 +57,7 @@
 		<p class='text-info'>Selected ontologies must be defined. However, they are not required. Select none if you do not wish to use an ontology.</p>
 		<br>
 
-		<form class="form-horizontal" role="form" ng-submit='editor.save()'>
+		<form class="form-horizontal" role="form" ng-submit=''>
 
 		  <div class="form-group" ng-repeat='property in editor.propertyValuePairs'>
 		    <div class="col-sm-offset-1 col-sm-4">
@@ -109,12 +109,12 @@
 
 		  <hr>
 		  <div class="row">
-		  	<div class="col-sm-offset-8 col-sm-4">
-		      <button type="button" class="btn btn-danger">Discard</button>
+		  	<div class="col-sm-offset-6 col-sm-6">
+		      <button type="button" class="btn btn-sm btn-danger">Discard Changes</button>
 		    
-		      <button type="button" class="btn btn-warning">Cancel</button>
+		      <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
 		    
-		      <button type="submit" class="btn btn-success"> Save </button>
+		      <button type="button" class="btn btn-sm btn-default">Done</button>
 		    </div>
 		  </div>
 		</form>

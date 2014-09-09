@@ -492,55 +492,55 @@
             transclude: true,
             templateUrl: 'pages/directives/createRequestGroup.html',
             controller: function($scope, $modal, $route, ndexService, ndexUtility) {
-                var modalInstance;
-                $scope.errors = null;
-                $scope.request = {};
-                $scope.permissionLabel ='Is Member';
-
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    $modal.open({
                         templateUrl: 'create-request-group-modal.html',
                         scope: $scope,
-                        backdrop: 'static'
+                        backdrop: 'static',
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+                             $scope.request = {};
+                            $scope.request.permissionLabel ='Is member'; 
+                            $scope.close = function() {
+                                $scope.request = {};
+                                for(var key in $scope.ndexData) {
+                                    $scope.request.destinationName = $scope.ndexData.accountName;
+                                    $scope.request.destinationUUID = $scope.ndexData.externalId;
+                                    $scope.request.permissionLabel ='Is member';
+                                } 
+                                $modalInstance.close();
+                            };
+                            
+                            $scope.submitRequest = function() {
+                                if($scope.request.permissionLabel == 'Is member')
+                                    $scope.request.permission = 'MEMBER'
+                                else
+                                    $scope.request.permission = 'GROUPADMIN'
+
+                                $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
+                                $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+
+                                ndexService.createRequest($scope.request, 
+                                    function(request) {
+                                      //TODO some modal
+                                      $scope.close();
+                                    },
+                                    function(error){
+                                        console.log(error.data)
+                                        $scope.request.error = error.data;
+                                    });
+                            }
+
+                            $scope.$watch('ndexData', function(value) {
+                                $scope.request = {};
+                                $scope.request.destinationName = $scope.ndexData.accountName;
+                                $scope.request.destinationUUID = $scope.ndexData.externalId;
+                                $scope.request.permissionLabel ='Is member'; 
+                            });
+                        }
                     });
                 };
 
-                $scope.close = function() {
-                    $scope.request = {};
-                    for(var key in $scope.ndexData) {
-                        $scope.request.destinationName = $scope.ndexData.accountName;
-                        $scope.request.destinationUUID = $scope.ndexData.externalId;
-                        $scope.permissionLabel ='Is member';
-                    } 
-                    modalInstance.close();
-                };
-                
-                $scope.submitRequest = function() {
-                    if($scope.permissionLabel == 'Is member')
-                        $scope.request.permission = 'MEMBER'
-                    else
-                        $scope.request.permission = 'GROUPADMIN'
-
-                    $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
-                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
-
-                    ndexService.createRequest($scope.request, 
-                        function(request) {
-                          //TODO some modal
-                          $scope.close();
-                        },
-                        function(error){
-                          //TODO
-                          console.log('failed to send request');
-                        });
-                }
-
-                $scope.$watch('ndexData', function(value) {
-                    $scope.request = {};
-                    $scope.request.destinationName = $scope.ndexData.accountName;
-                    $scope.request.destinationUUID = $scope.ndexData.externalId;
-                    $scope.permissionLabel ='Is member'; 
-                }); 
+                 
             }
         }
     });
@@ -596,8 +596,7 @@
                           $scope.close();
                         },
                         function(error){
-                          //TODO
-                          console.log('failed to send request');
+                          $scope.request.error = error.data;
                         });
                 }
 

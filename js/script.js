@@ -132,7 +132,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         })
 
         .when('/access/group/:identifier', {
-            templateUrl: 'pages/manangeGroupAccess.html',
+            templateUrl: 'pages/manageGroupAccess.html',
             controller: 'manageGroupAccessController'
         });
 }]);

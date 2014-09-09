@@ -1,11 +1,132 @@
-<div class='row'>
 
-	<h5>Manage Members</h5>
-	<hr>
+<div class ='row'>
+	<div class='col-sm-offset-2 col-sm-8'>
+		<p class="alert alert-danger" ng-repeat='error in groupManager.errors'>
+			{{error}}
+			<span class="glyphicon glyphicon-remove pull-right"
+				style='cursor:pointer'
+				ng-click='groupManager.errors.splice($index,1)'>	
+			</span>
+		</p>
+	</div>
 </div>
 
 <div class='row'>
 
-	
+	<div class='col-sm-offset-2 col-sm-8'>
+
+		<div class='row'>
+			<h5>Manage Members for <strong>{{groupManager.group.accountName}}</strong></h5>
+			<br>
+			<p class='text-info'>All members inherit access to networks that this group has. Admin members can delete the group, manage members, and grant network access.</p>
+		</div>
+
+		<div class='row'>
+			<h6>Members</h6>
+			<hr>
+
+			<div ng-repeat='member in groupManager.memberships'>
+			<div class='row'>
+				<div class='col-sm-offset-1 col-sm-2'>
+					<div class='row'>
+					<ndex-account-image 
+		                    ndex-class="'col-sm-6'"
+		                    ndex-src="groupManager.group.image">
+		            </ndex-account-image>
+		            </div>
+				</div>
+				<div class='col-sm-2 text-muted'>
+					{{member.memberAccountName}}
+				</div>
+				<div class='col-sm-3'>
+					<span class="dropdown">
+				        <a href class="dropdown-toggle">
+				        	{{member.permissions | permissionToLabel}}<span class="caret"></span>
+				        </a>
+				        <ul class="dropdown-menu">
+				      		<li>
+				            	<a class="dropdown-toggle" 
+				            		ng-click='groupManager.memberships[$index].permissions = "GROUPADMIN"; groupManager.update.push(member)'>
+				            		<small>Is Admin</small>
+				            	</a>
+				        	</li>
+				        	<li>
+				            	<a class="dropdown-toggle" 
+				            		ng-click='groupManager.memberships[$index].permissions = "MEMBER"; groupManager.update.push(member)'>
+				            		<small>Is Member</small>
+				            	</a>
+				        	</li>
+				      </ul>
+				    </span>
+				</div>
+				<div class='col-sm-1'>
+					<span class="glyphicon glyphicon-remove text-muted"
+						style='cursor:pointer'
+						ng-click='groupManager.memberships.splice($index,1); groupManager.remove.push(member)'>	
+					</span>
+				</div>
+
+			</div>
+			<hr>
+			</div>
+
+			<div class='pull-right'>
+				<button type="button" class="btn btn-sm btn-danger" ng-click='groupManager.loadMemberships()'>
+					Discard Changes
+				</button>
+			    <button type="button" class="btn btn-sm btn-success" ng-click='groupManager.save()'>Save Changes</button>
+			    <a ng-href='{{"#/group/"+groupManager.externalId}}' class="btn btn-sm btn-default">Done</a>
+			</div>
+
+		</div>
+
+		<br><br>
+		<div class='row'>
+			<h6>Add members</h6>
+			<div class='col-sm-4'>
+				<div class='row'>
+					<form role='form' ng-submit='groupManager.findUsers()'>
+					<input type="text" class="form-control input-sm" placeholder="find a person" 
+						ng-model='groupManager.searchString'>
+					<span class="help-block">
+					Press enter to submit search.
+					</span>
+					</form>
+				</div>
+			
+				<div class='row' ng-repeat='user in groupManager.newUsers'>
+					<br>
+					<div class='col-sm-8'>
+						<div class='row'>
+							<div class='col-sm-6'>
+							<div class='row'>
+							<ndex-account-image 
+				                    ndex-class="'col-sm-10'"
+				                    ndex-src="user.image">
+				            </ndex-account-image>
+				            </div>
+				            </div>
+
+					        <div class='col-sm-6'>
+						        <br>
+								{{user.accountName}}
+							</div>
+
+						</div>
+					</div>
+					<div class='col-sm-4'>
+					<br>
+						<button class='btn btn-xs btn-primary pull-right' 
+							ng-disabled='user.member' 
+							ng-click='groupManager.addMember(user)'>
+							Add
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
 
 </div>
+

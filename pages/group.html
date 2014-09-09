@@ -30,20 +30,27 @@
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li ng-show='groupController.isAdmin'><a><edit-group-modal 
+                    <li ng-show='groupController.isAdmin'>
+                        <a>
+                        <edit-group-modal 
                                 ndex-data='groupController.displayedGroup'>
                                 Edit Profile
-                            </edit-group-modal></a></li>
-                    <li ng-show='groupController.isAdmin'><a><invite-members-modal 
-                                ndex-data='groupController.displayedGroup.externalId'>
-                                Add Collaborators!
-                            </invite-members-modal></a></li>
-                    <li class="divider"></li>
-                    <li><a>
+                            </edit-group-modal>
+                        </a>
+                    </li>
+                    <li ng-show='groupController.isAdmin'>
+                        <a ng-href='{{"/#/access/group/"+groupController.displayedGroup.externalId}}'>
+                            Manage Members
+                        </a>
+                    </li>
+                    <li class="divider" ng-show='groupController.isAdmin'></li>
+                    <li>
+                        <a>
                         <leave-group ndex-data='groupController.displayedGroup'>
                         Leave Group
                         </leave-group>
-                    </a></li>
+                        </a>
+                    </li>
                     <li ng-show='groupController.isAdmin'><a>
                         <delete-group
                             ndex-data='groupController.displayedGroup.externalId'>

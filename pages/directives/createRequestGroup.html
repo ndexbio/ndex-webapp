@@ -11,14 +11,14 @@
 
 			<span class="dropdown">
 		      <a href class="dropdown-toggle">
-		        {{permissionLabel}} <span class="caret"></span>
+		        {{request.permissionLabel}} <span class="caret"></span>
 		      </a>
 		      <ul class="dropdown-menu">
 		      	<li>
-		          <a class="dropdown-toggle" ng-click='permissionLabel = "Is admin"'><small>Is Admin</small></a>
+		          <a class="dropdown-toggle" ng-click='request.permissionLabel = "Is admin"'><small>Is Admin</small></a>
 		        </li>
 		        <li>
-		          <a class="dropdown-toggle" ng-click='permissionLabel = "Is member"'><small>Is Member</small></a>
+		          <a class="dropdown-toggle" ng-click='request.permissionLabel = "Is member"'><small>Is Member</small></a>
 		        </li>
 		      </ul>
 		    </span>
@@ -27,6 +27,12 @@
 			<strong>Message</strong>
 			<textarea class='form-control' rows='3' placeholder='' ng-model='request.message'></textarea>
 
+			<div class='text-danger text-center'>
+				<br>
+	            <strong>
+	            {{request.error}}
+	            </strong>
+	        </div>
 		</div>
 
 		<div class='modal-footer' ng-hide='false'>
