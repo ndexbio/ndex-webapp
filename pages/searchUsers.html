@@ -31,7 +31,15 @@
 
     </div>
     <div class=" col-sm-7 col-md-7 col-lg-7">
-
+    <div ng-show="userSearch.errors.length > 0">
+          <p class="alert alert-danger" ng-repeat='error in userSearch.errors'>
+            {{error}}
+            <span class="glyphicon glyphicon-remove pull-right"
+              style='cursor:pointer'
+              ng-click='userSearch.errors.splice($index,1)'>  
+            </span>
+          </p>
+      </div>
     <ul>
         <ul ng-repeat="user in userSearch.userSearchResults">
             <ndex-navigation ndex-class="'row'" ndex-url="'user/'+user.externalId">
@@ -49,6 +57,24 @@
             
         </ul>
     </ul>
+
+    <div class='row text-center' ng-hide='userSearch.userSearchResults.length == 0'>
+
+        <ul class="pager">
+          <li ng-class='{disabled : userSearch.skip == 0}' >
+            <a ng-click='userSearch.skip = userSearch.skip - 1; userSearch.submitUserSearch()'>
+              Previous
+            </a>
+          </li>
+          <li ng-class='{disabled : userSearch.userSearchResults.length < userSearch.skipSize}'>
+            <a ng-click='userSearch.skip = userSearch.skip + 1 ; userSearch.submitUserSearch()'>
+              Next
+            </a>
+          </li>
+        </ul>
+
+    </div>
+
     </div>
 
 </div>

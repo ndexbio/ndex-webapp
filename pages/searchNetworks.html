@@ -2,10 +2,6 @@
 
     <div class="Clear"></div>
 
-    <div ng-show="networkSearch.networkSearchResults.length == 0">
-        <strong>No results found that match your criteria.</strong>
-    </div>
-
     <!-- errors div needs recoding -->
     <div class=" col-sm-2 col-md-2 col-lg-2">  
         <h5>Refine By</h5>
@@ -54,11 +50,13 @@
     <div class=" col-sm-7 col-md-7 col-lg-7">
 
         <div ng-show="networkSearch.errors.length > 0">
-            <div class="row">
-                <div class="col-md-6 col-md-offset-2" ng-repeat="message in networkQuery.errors">
-                    <p><strong>{{message.label}}</strong> {{message.error}}</p>
-                </div>
-            </div>
+            <p class="alert alert-danger" ng-repeat='error in networkSearch.errors'>
+              {{error}}
+              <span class="glyphicon glyphicon-remove pull-right"
+                style='cursor:pointer'
+                ng-click='networkSearch.errors.splice($index,1)'>  
+              </span>
+            </p>
         </div>
 
         <table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null || networkSearch.networkSearchResults.length == 0">
@@ -81,6 +79,22 @@
             </tr>
             </tbody>
         </table>
+        <div class='row text-center' ng-hide='networkSearch.networkSearchResults.length == 0'>
+
+          <ul class="pager">
+            <li ng-class='{disabled : networkSearch.skip == 0}' >
+              <a ng-click='networkSearch.skip = networkSearch.skip - 1; networkSearch.submitNetworkSearch()'>
+                Previous
+              </a>
+            </li>
+            <li ng-class='{disabled : networkSearch.networkSearchResults.length < networkSearch.skipSize}'>
+              <a ng-click='networkSearch.skip = networkSearch.skip + 1 ; networkSearch.submitNetworkSearch()'>
+                Next
+              </a>
+            </li>
+          </ul>
+
+        </div>
     </div>
 
 </div>

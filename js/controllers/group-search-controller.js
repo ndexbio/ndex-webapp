@@ -1,28 +1,38 @@
-ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 
-    function (ndexService, sharedProperties, $scope, $location, $modal) {
+ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties', '$scope',  
+    function (ndexService, sharedProperties, $scope) {
     
+        //              Controller Declarations/Initializations
+        //---------------------------------------------------------------------
         $scope.groupSearch = {};
-        $scope.groupSearch.query = {};
-        $scope.groupSearch.groupSearchResults = [];
+        var searchController = $scope.groupSearch;
 
-        $scope.groupSearch.submitgroupSearch = function () {
+        searchController.query = {};
+        searchController.groupSearchResults = [];
+        searchController.errors = [];
+        searchController.skip = 0;
+        searchController.skipSize = 15;
 
-            ndexService.searchGroups($scope.groupSearch.query, 0, 50,
+        searchController.submitGroupSearch = function () {
+
+            ndexService.searchGroups(searchController.query, searchController.skip, searchController.skipSize,
                 function (groups) {
-                    // Save the results
-                    $scope.groupSearch.groupSearchResults = groups;
+
+                    if(groups.length == 0)
+                        searchController.errors.push('No results found that match your criteria')
+
+                    searchController.groupSearchResults = groups;
                     console.log("Set groupSearchResults");
                     
                 },
                 function (error) {
-                       
+                    searchController.errors.push(error.data);
                 });
         };
 
         //quick implementation for navbar search support
        if(sharedProperties.doSearch()) {
-            $scope.groupSearch.query.searchString = sharedProperties.getSearchString();
-            $scope.groupSearch.submitgroupSearch();
+            searchController.query.searchString = sharedProperties.getSearchString();
+            searchController.submitGroupSearch();
         }
 
 

@@ -1,23 +1,24 @@
-ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', function (ndexService, sharedProperties, $scope, $location, $modal) {
+ndexApp.controller('searchNetworksController', 
+    [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 
+        function (ndexService, sharedProperties, $scope, $location, $modal) {
 
+
+    //              Controller Declarations/Initializations
+    //---------------------------------------------------------------------
     $scope.networkSearch = {};
-    /* debugging...
-     $scope.networkSearchResults = [
-     {name: "fake network"}
-     ];
-     */
+    var searchController = $scope.networkSearch;
 
-    $scope.networkSearch.networkSearchResults = null;
+    searchController.errors = [];
+    searchController.networkSearchResults = [];
+    searchController.skip = 0;
+    searchController.skipSize = 30;
 
-    $scope.networkSearch.setAndDisplayCurrentNetwork = function (networkId) {
+    searchController.setAndDisplayCurrentNetwork = function (networkId) {
         $location.path("/network/" + networkId);
     };
 
 
-    $scope.networkSearch.submitNetworkSearch = function () {
-
-        // An array to hold our errors. ng-show and ng-hide relay on the length to toggle content.
-        $scope.networkSearch.errors = [];
+    searchController.submitNetworkSearch = function () {
 
         // We want to hold on to the request for the subnetwork query. The request contains the .abort method.
         // This way, we can call the method midstream and cancel the AJAX call.
@@ -31,53 +32,53 @@ ndexApp.controller('searchNetworksController', [ 'ndexService', 'sharedPropertie
             backdrop: 'static'
         });
 
-        // cancel
         // Close the modal and abort the AJAX request.
-        $scope.networkSearch.cancel = function () {
+        searchController.cancel = function () {
             modalInstance.close();
             request.abort();
         };
 
-        (request = ndexService.findNetworks($scope.networkSearch.searchString, 
-                                            $scope.networkSearch.accountName, 
-                                            $scope.networkSearch.permission,
-                                            $scope.networkSearch.includeGroups,
-                                            0, 50) )
+        (request = ndexService.findNetworks(searchController.searchString, 
+                                            searchController.accountName, 
+                                            searchController.permission,
+                                            searchController.includeGroups,
+                                            searchController.skip,
+                                            searchController.skipSize) )
             .success(
             function (networks) {
+                if(networks.length == 0)
+                    searchController.errors.push('No results found that match your criteria')
+
+                console.log('got results')
                 // Save the results
-                $scope.networkSearch.networkSearchResults = networks;
-                console.log("Set networkSearchResults");
-                //console.log("first network name = " + networks[0].name);
-                //$scope.networkSearch.message = "first network name = " + networks[0].name;
+                searchController.networkSearchResults = networks;
                 modalInstance.close();
-            }
-        )
+            })
             .error(
             function (error) {
                 // Save the error.
                 if (error) {
-                    $scope.networkSearch.networkSearchResults == null;
-                    $scope.networkSearch.errors.push({label: "Http request error", error: error});
+                    searchController.networkSearchResults = [];
+                    searchController.errors.push(error);
 
                     // close the modal.
                     modalInstance.close();
 
                 }
-            }
-        )
+            })
 
     };
 
 
+    //                  Initializations
+    //-----------------------------------------------------------------
+
     //quick implementation for navbar search support
     if(sharedProperties.doSearch()) {
-        $scope.networkSearch.searchString = sharedProperties.getSearchString();
-        $scope.networkSearch.submitNetworkSearch();
+        searchController.searchString = sharedProperties.getSearchString();
+        searchController.submitNetworkSearch();
     }
 
 
-}
-])
-;
+}]);
 

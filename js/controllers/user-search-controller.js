@@ -2,28 +2,39 @@
 ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 
     function (ndexService, sharedProperties, $scope, $location, $modal) {
     
+        //              Controller Declarations/Initializations
+        //---------------------------------------------------------------------
         $scope.userSearch = {};
-        $scope.userSearch.query = {};
-        $scope.userSearch.userSearchResults = [];
+
+        var searchController = $scope.userSearch = {};
+        searchController.query = {};
+        searchController.userSearchResults = [];
+        searchController.errors = [];
+        searchController.skip = 0;
+        searchController.skipSize = 15;
         
-        $scope.userSearch.submitUserSearch = function () {
+        searchController.submitUserSearch = function () {
             
-            ndexService.searchUsers($scope.userSearch.query, 0, 50,
+            ndexService.searchUsers(searchController.query, searchController.skip, searchController.skipSize,
                 function (users) {
-                    // Save the results
-                    $scope.userSearch.userSearchResults = users;
+                    if(users.length == 0)
+                        searchController.errors.push('No results found that match your criteria')
+                    searchController.userSearchResults = users;
                     console.log("Set userSearchResults");
                     
                 },
                 function (error) {
-                        
+                    searchController.errors.push(error.data);
                 });
         };
 
+
+        //              Initializations
+        //---------------------------------------------------------------------
         //quick implementation for navbar search support
        if(sharedProperties.doSearch()) {
-            $scope.userSearch.query.searchString = sharedProperties.getSearchString();
-            $scope.userSearch.submitUserSearch();
+            searchController.query.searchString = sharedProperties.getSearchString();
+            searchController.submitUserSearch();
         }
 
 
