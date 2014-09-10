@@ -16,26 +16,21 @@
 	<div class='col-sm-offset-2 col-sm-8'>
 
 		<div class='row'>
-			<h5>Manage Members for <strong>{{networkManager.network.name}}</strong></h5>
+			<h5>Manage who has access for <strong>{{networkManager.network.name}}</strong></h5>
 			<br>
-			<p class='text-info'>TODO</p>
+			<p class='text-info'>Users and groups with admin access modify and delete the network as well as manage who has access. Users and groups who can edit the network can only modify the network. Users and groups with read access can view the network even if it is private. </p>
+			<p class='text-info'>
+			Please note that granting access to a group is equivalent to granting access to all the members for the specified access.
+			</p>
 		</div>
 
 		<div class='row'>
-			<h6>Members</h6>
+			<h6>Who has access</h6>
 			<hr>
 
 			<div ng-repeat='member in networkManager.memberships'>
 			<div class='row'>
-				<div class='col-sm-offset-1 col-sm-2'>
-					<div class='row'>
-					<ndex-account-image 
-		                    ndex-class="'col-sm-6'"
-		                    ndex-src="networkManager.group.image">
-		            </ndex-account-image>
-		            </div>
-				</div>
-				<div class='col-sm-2 text-muted'>
+				<div class='col-sm-offset-1 col-sm-3 text-muted'>
 					{{member.memberAccountName}}
 				</div>
 				<div class='col-sm-3'>
@@ -46,14 +41,20 @@
 				        <ul class="dropdown-menu">
 				      		<li>
 				            	<a class="dropdown-toggle" 
-				            		ng-click='networkManager.memberships[$index].permissions = "GROUPADMIN"; networkManager.update.push(member)'>
+				            		ng-click='networkManager.memberships[$index].permissions = "ADMIN"; networkManager.update.push(member)'>
 				            		<small>Is Admin</small>
 				            	</a>
 				        	</li>
 				        	<li>
 				            	<a class="dropdown-toggle" 
-				            		ng-click='networkManager.memberships[$index].permissions = "MEMBER"; networkManager.update.push(member)'>
-				            		<small>Is Member</small>
+				            		ng-click='networkManager.memberships[$index].permissions = "WRITE"; networkManager.update.push(member)'>
+				            		<small>Can Edit</small>
+				            	</a>
+				        	</li>
+				        	<li>
+				            	<a class="dropdown-toggle" 
+				            		ng-click='networkManager.memberships[$index].permissions = "READ"; networkManager.update.push(member)'>
+				            		<small>Can Read</small>
 				            	</a>
 				        	</li>
 				      </ul>
@@ -75,15 +76,16 @@
 					Discard Changes
 				</button>
 			    <button type="button" class="btn btn-sm btn-success" ng-click='networkManager.save()'>Save Changes</button>
-			    <a ng-href='{{"#/group/"+networkManager.externalId}}' class="btn btn-sm btn-default">Done</a>
+			    <a ng-href='{{"#/network/"+networkManager.externalId}}' class="btn btn-sm btn-default">Done</a>
 			</div>
 
 		</div>
 
 		<br><br>
 		<div class='row'>
-			<h6>Add members</h6>
+
 			<div class='col-sm-4'>
+				<h6>Grant access to users</h6>
 				<div class='row'>
 					<form role='form' ng-submit='networkManager.findUsers()'>
 					<input type="text" class="form-control input-sm" placeholder="find a person" 
@@ -123,7 +125,53 @@
 						</button>
 					</div>
 				</div>
+
 			</div>
+
+			<div class='col-sm-offset-2 col-sm-4'>
+				<h6>Grant access to groups</h6>
+				<div class='row'>
+					<form role='form' ng-submit='networkManager.findGroups()'>
+					<input type="text" class="form-control input-sm" placeholder="find a group" 
+						ng-model='networkManager.groupSearchString'>
+					<span class="help-block">
+					Press enter to submit search.
+					</span>
+					</form>
+				</div>
+			
+				<div class='row' ng-repeat='group in networkManager.newGroups'>
+					<br>
+					<div class='col-sm-8'>
+						<div class='row'>
+							<div class='col-sm-6'>
+							<div class='row'>
+							<ndex-account-image 
+				                    ndex-class="'col-sm-10'"
+				                    ndex-src="group.image">
+				            </ndex-account-image>
+				            </div>
+				            </div>
+
+					        <div class='col-sm-6'>
+						        <br>
+								{{group.accountName}}
+							</div>
+
+						</div>
+					</div>
+					<div class='col-sm-4'>
+					<br>
+						<button class='btn btn-xs btn-primary pull-right' 
+							ng-disabled='group.member' 
+							ng-click='networkManager.addMember(group)'>
+							Add
+						</button>
+					</div>
+				</div>
+
+			</div>
+
 		</div>
 
 	</div>

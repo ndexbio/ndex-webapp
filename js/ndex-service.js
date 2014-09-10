@@ -328,9 +328,21 @@
                                 blockSize: 1000
                             },
                             isArray: true
+                        },
+                        getMembership: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'membership'
+                            }
                         }
                     }
                 );
+
+                factory.getMembershipToNetwork = function(networkExternalId, groupExternalId, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+
+                    return NetworkResource.getMembership({identifier: groupExternalId, subId: networkExternalId}, successHandler, errorHandler);
+                }
 
                 factory.getGroupMemberships = function(externalId, permission, successHandler, errorHandler) {
 
@@ -529,6 +541,15 @@
                                 subResource: 'member'
                             }
                         },
+                        getMemberships: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'user',
+                                skipBlocks: 0,
+                                blockSize: 1000
+                            },
+                            isArray: true
+                        },
                         search: {
                             method: 'POST',
                             params: {
@@ -557,6 +578,36 @@
                     }
                 );
 
+                factory.getNetworkMemberships = function(externalId, permission, successHandler, errorHandler) {
+
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+
+                    if(permission === 'ALL') {
+                        var memberships = [];
+
+                        $q.all([
+                            NetworkResource.getMemberships({identifier: externalId, permissionType: 'ADMIN'}).$promise,
+                            NetworkResource.getMemberships({identifier: externalId, permissionType: 'WRITE'}).$promise,
+                            NetworkResource.getMemberships({identifier: externalId, permissionType: 'READ'}).$promise
+                            ]).then(
+                            function(arrays) {
+                                memberships = memberships.concat(arrays[0]);
+                                memberships = memberships.concat(arrays[1]);
+                                memberships = memberships.concat(arrays[2]);
+
+                                successHandler(memberships);
+                            },
+                            function(errors) {
+                                errorHandler(errors)
+                            });
+
+                    }
+                    else {
+                        NetworkResource.getMemberships({identifer: externalId, permissionType: permission}, successHandler, errorHandler)
+                    }
+
+                }
+
                 factory.setNetworkProperties = function(externalId, properties, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.setNetworkProperties({identifier: externalId}, properties, successHandler, errorHandler);
@@ -584,7 +635,7 @@
                 factory.updateNetworkMember = function (membership, successHandler, errorHandler) {
                     membership.membershipType = 'NETWORK';
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    NetworkResource.updateMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
+                    return NetworkResource.updateMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
                 }
 
                 factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
