@@ -128,8 +128,9 @@
         </h5>
         
         <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
-             <label>{{property.predicateString}} </label>
-             <span>{{property.value}}</span>
+             <label>{{property.predicateString.toString()}} </label>
+             <span ng-hide='property.value.toString().length > 20'>{{property.value.toString()}}</span>
+             <span ng-show='property.value.toString().length > 20'><small>{{property.value.toString()}}</small></span>
              <br>
         </span>
         </div>

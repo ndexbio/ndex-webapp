@@ -379,7 +379,7 @@
 
                 factory.removeGroupMember = function (groupExternalId, memberExternalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
+                    return GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
                 }
 
                 factory.updateGroupMember = function (membership, successHandler, errorHandler) {
@@ -640,7 +640,7 @@
 
                 factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                    NetworkResource.deleteMember({identifier: networkExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
+                    return NetworkResource.deleteMember({identifier: networkExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
                 }
 
                 factory.searchNetworks = function (query, skipBlocks, blockSize, successHandler, errorHandler) {

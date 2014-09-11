@@ -1,6 +1,6 @@
 ndexApp.controller('manageGroupAccessController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams) {
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$q',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $q) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -22,28 +22,40 @@ ndexApp.controller('manageGroupAccessController',
 	groupManager.newUsers = {};
 
 	groupManager.save = function() {
+		//check out network version for info on promise implementation
+
+		var deferred = $q.defer();
+		var promise = deferred.promise;
+
 		var length = groupManager.update.length;
 		for(var ii=0; ii<length; ii++) {
-			ndexService.updateGroupMember(groupManager.update[ii],
-				function(membership) {
-					//TODO
-				},
-				function(error) {
-					groupManager.errors.push(error.data);
-				})
+			(function(m) {
+				promise = promise.then(
+					function(success) {
+						return ndexService.updateGroupMember(m).$promise;
+					});
+			})(groupManager.update[ii])
 		}
 
 		var length2 = groupManager.remove.length;
 		for(var ii=0; ii<length2; ii++){
-			ndexService.removeGroupMember(identifier, groupManager.remove[ii].memberUUID,
-				function(success){
-
-				},
-				function(error){
-					groupManager.errors.push(error.data);
-				})
+			(function(u) {
+				promise = promise.then(
+					function(success) {
+						return ndexService.removeGroupMember(identifier, u).$promise;
+					});
+			})(groupManager.remove[ii].memberUUID);
 		}
 
+		promise.then(
+			function(success){
+				groupManager.loadMemberships();
+			},
+			function(error) {
+				groupManager.errors.push(error.data);
+			});
+		
+		deferred.resolve('trigger the chain');
 	};
 
 

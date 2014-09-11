@@ -1,6 +1,6 @@
 ndexApp.controller('manageNetworkAccessController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams) {
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$q',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $q) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -22,28 +22,47 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.newUsers = {};
 
 	networkManager.save = function() {
+		// create a promise from the $q service
+		var deferred = $q.defer(); // save the instance to use the deferred API to resolve the promise
+		var promise = deferred.promise; // used to create a dynamic sequentail call of following api
+
 		var length = networkManager.update.length;
 		for(var ii=0; ii<length; ii++) {
-			ndexService.updateNetworkMember(networkManager.update[ii],
-				function(membership) {
-					//TODO
-				},
-				function(error) {
-					networkManager.errors.push(error.data);
-				})
+			 // use closure to capture current value in the scope of the promise
+			(function(m) {
+			//update reference to last promise in promise chaing
+				promise = promise.then(
+					function(success) {
+						// return the promise, once resolved, its value will be passed to next promise, we dont use it
+						return ndexService.updateNetworkMember(m).$promise
+					});
+			})(networkManager.update[ii]);
 		}
+
 
 		var length2 = networkManager.remove.length;
 		for(var ii=0; ii<length2; ii++){
-			ndexService.removeNetworkMember(identifier, networkManager.remove[ii].memberUUID,
-				function(success){
-
-				},
-				function(error){
-					networkManager.errors.push(error.data);
-				})
+			
+			(function(u) {
+				promise = promise.then(
+					function(success){
+						console.log(membership)
+						return ndexService.removeNetworkMember(identifier, uuid).$promise
+					});	
+			})(networkManager.remove[ii].memberUUID);
 		}
 
+		// last thing to do once chain of calls is completed
+		promise.then(
+			function(success) {
+				networkManager.loadMemberships();
+			},
+			function(error) {
+				networkManager.errors.push(error.data);
+			});
+
+		// fire the promise chain
+		deferred.resolve('resolve this promise and set off the promise chain')
 	};
 
 
@@ -115,9 +134,9 @@ ndexApp.controller('manageNetworkAccessController',
 			permissions: 'WRITE'
 		}
 
+		// using this for groups as well, didnt expect it to work. should have own check for group->network using group api call
 		ndexService.getDirectMembership(networkManager.network.externalId, member.externalId).$promise.then(
 			function(membership) {
-				console.log(membership)
 				if(membership != null && membership.permissions !=null)
 					networkManager.errors.push('User already has access to this network');
 				else
