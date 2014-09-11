@@ -46,8 +46,7 @@ ndexApp.controller('manageNetworkAccessController',
 			(function(u) {
 				promise = promise.then(
 					function(success){
-						console.log(membership)
-						return ndexService.removeNetworkMember(identifier, uuid).$promise
+						return ndexService.removeNetworkMember(identifier, u).$promise
 					});	
 			})(networkManager.remove[ii].memberUUID);
 		}

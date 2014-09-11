@@ -121,16 +121,20 @@
         <h5>
             More Info
             <a class='btn btn-link' 
-                ng-show='networkController.isAdmin || networkController.canEdit'
+                ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
                 ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
                 <span class="glyphicon glyphicon-edit"></span>
             </a>
         </h5>
         
         <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
-             <label>{{property.predicateString.toString()}} </label>
-             <span ng-hide='property.value.toString().length > 20'>{{property.value.toString()}}</span>
-             <span ng-show='property.value.toString().length > 20'><small>{{property.value.toString()}}</small></span>
+             <label>{{property.predicateString}} </label>
+             <span ng-hide='property.value.toString().length > 40'>{{property.value.toString()}}</span>
+             <span ng-show='property.value.toString().length > 40'>
+                {{ property.value.slice(0, 45 - property.predicateString.length) 
+                    +'&shy'+ 
+                    property.value.slice(45 - property.predicateString.length, property.value.length) }}     
+            </span>
              <br>
         </span>
         </div>

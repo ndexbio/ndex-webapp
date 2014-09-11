@@ -12,8 +12,12 @@ ndexApp.controller('editNetworkPropertiesController',
 
 	$scope.editor = {};
 	var editor = $scope.editor;
+    editor.networkExternalId = networkExternalId;
 	editor.propertyValuePairs = [];
-	editor.networkExternalId = networkExternalId;
+	editor.errors = [];
+    editor.isAdmin = false;
+    editor.canEdit = false;
+    editor.canRead = false;
 
 	editor.changed = function(index) {
 		if(index == (editor.propertyValuePairs.length - 1))
@@ -39,46 +43,36 @@ ndexApp.controller('editNetworkPropertiesController',
 				$route.reload();
 			},
 			function(error) {
-				console.log(error)
+				editor.errors.push(error)
 			})
 	}
 
-	editor.removeOntology = function(index) {
+	editor.removeNamespace = function(index) {
 		editor.ontologies.splice(index,1);
 		//TODO api call
 	}
 
-	editor.addOntology = function() {
-		//api call
-		//add to array
+	editor.addNamespace = function() {
+        var namespace = {
+            prefix : editor.newPrefix,
+            uri : editor.newURI
+        }
+		ndexService.addNamespaceToNetwork(networkExternalId, namespace,
+            function(success) {
+                editor.namespaces.push(namespace);
+                editor.newPrefix = null;
+                editor.newURI = null;
+            },
+            function(error) {
+                editor.errors.push(error.data)
+            })
 	}
 
 	editor.setURI = function(item, mode, label) {
 		editor.newURI = item.uri;
 	}
 
-    editor.ontologies = [
-    	{
-    		uri: 'test.com',
-    		prefix: 'GO'
-    	},
-    	{
-    		uri: 'test.com',
-    		prefix: 'test'
-    	},
-    	{
-    		uri: 'test.com',
-    		prefix: 'test'
-    	},
-    	{
-    		uri: 'test.com',
-    		prefix: 'test'
-    	},
-    	{
-    		uri: 'test.com',
-    		prefix: 'test'
-    	}
-    ]
+    editor.refresh = $route.reload;
 
     editor.preloadedOntologies = [
         {
@@ -175,7 +169,7 @@ ndexApp.controller('editNetworkPropertiesController',
                 	var pair = editor.propertyValuePairs[ii];
 
                 	var arr = pair.predicateString.split(':');
-                	if(arr.length > 1) {
+                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www') {
                 		pair.predicateString = arr[1];
                 		pair.predicatePrefix = arr[0]
                 	}
@@ -184,7 +178,7 @@ ndexApp.controller('editNetworkPropertiesController',
 	                }
 
                 	var arr = pair.value.split(':');
-                	if(arr.length > 1) {
+                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www') {
                 		pair.value = arr[1];
                 		pair.valuePrefix = arr[0]
                 	}
@@ -200,8 +194,30 @@ ndexApp.controller('editNetworkPropertiesController',
         )
         .error(
             function(error) {
-                // TODO
+                editor.errors.push(error)
             }
         );
+
+    ndexService.getMyMembership(networkExternalId, 
+        function(membership) {
+            if(membership && membership.permissions == 'ADMIN')
+                editor.isAdmin = true;
+            if(membership && membership.permissions == 'WRITE')
+                editor.canEdit = true;
+            if(membership && membership.permissions == 'READ')
+                editor.canRead = true;
+            
+        },
+        function(error){
+            editor.errors.push(error)
+        });
+
+    ndexService.getNetworkNamespaces(networkExternalId, 
+        function(namespaces) {
+            editor.namespaces = namespaces;
+        },
+        function(error) {
+            editor.errors.push(error)
+        });
 
 }]);

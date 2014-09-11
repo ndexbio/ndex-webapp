@@ -574,9 +574,32 @@
                             params: {
                                 subResource: 'properties'
                             }
+                        },
+                        getNamespaces: {
+                            method: 'GET',
+                            params: {
+                                subResource: 'namespace'
+                            },
+                            isArray: true
+                        },
+                        addNamespace: {
+                            method: 'POST',
+                            params: {
+                                subResource: 'namespace'
+                            }
                         }
                     }
                 );
+
+                
+                factory.addNamespaceToNetwork = function(externalId, namespace, successHandler, errorHandler) {
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    NetworkResource.addNamespace({identifier: externalId}, namespace, successHandler, errorHandler)
+                }
+
+                factory.getNetworkNamespaces = function(externalId, successHandler, errorHandler) {
+                    NetworkResource.getNamespaces({identifier: externalId, skipBlocks: 0, blockSize: 500}, successHandler, errorHandler)
+                }
 
                 factory.getNetworkMemberships = function(externalId, permission, successHandler, errorHandler) {
 

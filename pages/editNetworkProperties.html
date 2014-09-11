@@ -1,7 +1,19 @@
+<div class ='row'>
+	<div class='col-sm-offset-2 col-sm-8'>
+		<p class="alert alert-danger" ng-repeat='error in editor.errors'>
+			{{error}}
+			<span class="glyphicon glyphicon-remove pull-right"
+				style='cursor:pointer'
+				ng-click='editor.errors.splice($index,1)'>	
+			</span>
+		</p>
+	</div>
+</div>
+
 <div class='row'>
-	<h4>Custom Network Properties Editor</h4>
-	
-	<p>
+	<h4 ng-show='editor.isAdmin || editor.canEdit'>Custom Network Properties Editor</h4>
+	<h4 ng-hide='editor.isAdmin || editor.canEdit'>Custom Network Properties</h4>
+	<p ng-show='editor.isAdmin || editor.canEdit'>
 		Borrow from the Open Biomedical Ontologies or any ontology. 
 	</p>
 	<hr>
@@ -19,11 +31,12 @@
 
 			<div class='panel panel-default'>
 				<ul class='list-group'>
-					<li class='list-group-item' ng-repeat='namespace in editor.ontologies'> 
-						{{namespace.prefix}}
+					<li class='list-group-item' ng-repeat='namespace in editor.namespaces'> 
+						<a ng-href='{{namespace.uri}}' target='_blank'>{{namespace.prefix || namespace.uri}}</a>
 						<span class="glyphicon glyphicon-remove text-muted pull-right"
 							style='cursor:pointer'
-							ng-click='editor.removeOntology($index)'>	
+							ng-click='editor.removeOntology($index)'
+							ng-show='false'>	
 						</span>
 						
 					</li>
@@ -33,8 +46,9 @@
 
 		<br>
 
+		<div ng-show='editor.isAdmin || editor.canEdit'>
 		<h6><strong>Add an Ontology</strong></h6>
-		<form class='row' role="form" ng-submit='editor.addOntology()'>
+		<form class='row' role="form" ng-submit='editor.addNamespace()'>
 		  <div class="form-group">
 		    <label>Prefix</label>
 		    <input type="text" class="form-control input-sm" placeholder='e.g., GO'
@@ -48,59 +62,72 @@
 		  </div>
 		  <button type="submit" class="btn btn-sm btn-default pull-right">Add</button>
 		</form>
+		</div>
 
 	</div>
 
 	<div class='col-sm-9'>
 
-		<h5><em>Editing </em>{{editor.networkName}}</h5>
-		<p class='text-info'>Selected ontologies must be defined. However, they are not required. Select none if you do not wish to use an ontology.</p>
+		<h5><em ng-show='editor.isAdmin || editor.canEdit'>Editing </em>{{editor.networkName}}</h5>
+		<p class='text-info' ng-show='editor.isAdmin || editor.canEdit'>Selected ontologies must be defined. However, they are not required. Select none if you do not wish to use an ontology.</p>
 		<br>
 
-		<form class="form-horizontal" role="form" ng-submit=''>
+		<div class='row'>
+			<div class='col-sm-offset-1 col-sm-5'>
+				<label>Predicate</label>
+			</div>
+			<div class='col-sm-5'>
+				<label>Value</label>
+			</div>
+		</div>
+		<form class="form-horizontal" role="form" ng-submit='editor.save()'>
 
 		  <div class="form-group" ng-repeat='property in editor.propertyValuePairs'>
-		    <div class="col-sm-offset-1 col-sm-4">
+		    <div class="col-sm-offset-1 col-sm-5">
 		    	<div class='input-group'>
 			    	<div class='input-group-btn dropdown'>
-			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'>
+			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle' 
+			    				ng-disabled='!(editor.isAdmin || editor.canEdit)'>
 			    			{{property.predicatePrefix}}:
 			    		</button>
 			    		<ul class="dropdown-menu" role="menu">
-                            <li ng-repeat='ontology in editor.ontologies'>
-                            <a class ="dropdown-toggle" ng-click="property.predicatePrefix = ontology.prefix">
-                            {{ontology.prefix}}
+                            <li ng-repeat='namespace in editor.namespaces'>
+                            <a class ="dropdown-toggle" ng-click="property.predicatePrefix = namespace.prefix">
+                            {{namespace.prefix || namespace.uri}}
                             </a>
                             </li>
                         </ul>
 			    	</div>
 					<input class="form-control input-sm" placeholder="Label" 
 						ng-model='property.predicateString'
-						ng-change='editor.changed($index)'>
+						ng-change='editor.changed($index)'
+						ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 				</div>
 		    </div>
 
-		    <div class="col-sm-4">
+		    <div class="col-sm-5">
 		    	<div class='input-group'>
 		    		<div class='input-group-btn dropdown'>
-			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'>
+			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'
+			    				ng-disabled='!(editor.isAdmin || editor.canEdit)'>
 			    			{{property.valuePrefix}}:
 			    		</button>
 			    		<ul class="dropdown-menu" role="menu">
-                            <li ng-repeat='ontology in editor.ontologies'>
-                            <a class ="dropdown-toggle" ng-click="property.valuePrefix = ontology.prefix">
-                            {{ontology.prefix}}
+                            <li ng-repeat='namespace in editor.namespaces'>
+                            <a class ="dropdown-toggle" ng-click="property.valuePrefix = namespace.prefix || namespace.uri">
+                            {{namespace.prefix || namespace.uri}}
                             </a>
                             </li>
                         </ul>
 			    	</div>
 			        <input class="form-control input-sm" placeholder="Value" 
 			      	  ng-model='property.value'
-			      	  ng-change='editor.changed($index)'>
+			      	  ng-change='editor.changed($index)'
+			      	  ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 		      	</div>
 		    </div>
 
-		    <div class='' ng-hide='$last'>
+		    <div class='' ng-hide='$last || !(editor.isAdmin || editor.canEdit)'>
 		    	<button type='button' class='btn btn-link' ng-click='editor.propertyValuePairs.splice($index,1)'>
 		    		<span class="glyphicon glyphicon-remove text-muted"></span>
 		    	</button>
@@ -108,13 +135,13 @@
 		  </div>
 
 		  <hr>
-		  <div class="row">
+		  <div class="row" ng-show='editor.isAdmin || editor.canEdit'>
 		  	<div class="col-sm-offset-6 col-sm-6">
-		      <button type="button" class="btn btn-sm btn-danger">Discard Changes</button>
+		      <button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
 		    
 		      <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
 		    
-		      <button type="button" class="btn btn-sm btn-default">Done</button>
+		      <a class="btn btn-sm btn-default" ng-href='{{"#/network/"+editor.networkExternalId}}'>Done</a>
 		    </div>
 		  </div>
 		</form>
