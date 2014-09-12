@@ -173,6 +173,27 @@ textarea
     background-color:#FFFFFF;
 }
 
+/******************************************************************************
+ * About page styles  ...
+ ******************************************************************************/
+.about-section
+{
+    font-weight: 200;
+    font-size: 18px;
+    background-color:#FFFFFF;
+}
+
+.slide {
+    max-width: 80%;
+    max-height: 300px;
+}
+
+.slide-div {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    text-align: center;
+}
+
 
 /******************************************************************************
  * wrap and footer styling
@@ -534,6 +555,9 @@ dl.Accordion > dd
     display: none;
     height: 0;
 }
+
+
+
 
 /******************************************************************************
  * Windows-like icon styling
