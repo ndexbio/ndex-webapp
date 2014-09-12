@@ -62,8 +62,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
 
         // route for the about page
         .when('/about', {
-            templateUrl: 'pages/about.html',
-            controller: 'aboutController'
+            templateUrl: 'pages/about.html'
         })
 
         // route for the contact page
