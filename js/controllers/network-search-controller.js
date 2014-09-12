@@ -55,7 +55,7 @@ ndexApp.controller('searchNetworksController',
                 modalInstance.close();
             })
             .error(
-            function (error) {
+            function (error, data) {
                 // Save the error.
                 if (error) {
                     searchController.networkSearchResults = [];

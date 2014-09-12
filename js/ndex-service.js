@@ -15,17 +15,19 @@
 
     var ndexServiceApp = angular.module('ndexServiceApp', ['ngResource', 'ngRoute']);
 
-    /*ndexServiceApp.config(['$httpProvider', 'ndexUtility', function($httpProvider, ndexUtility) {
-     /*$httpProvider.interceptors.push(function($http, ndexUtility) {
-     return {
-     'request': function(config) {
-     if(ndexUtility.getLoggedInUserAccountName() != null)
-     config.headers['Authorization'] = "Basic " + ndexUtility.getEncodedUser();
-     return config;
-     }
-     }
-     });*-/
-     }]);*/
+    ndexServiceApp.config(['$httpProvider', function($httpProvider){
+        $httpProvider.interceptors.push(function($q) {
+            return {
+                'responseError' : function(rejection) {
+                    if(rejection.status == 503) {
+                        rejection.data = 'The server is temporarily unable to service your request due to maintenance downtime or capacity problems. Please try again later.';
+                    }
+                    return $q.reject(rejection);
+                }
+            }
+        });
+    }])
+    
 
     /****************************************************************************
      * NDEx HTTP Service
