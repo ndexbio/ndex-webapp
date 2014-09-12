@@ -220,7 +220,7 @@
                     <span class='text-info'>{{task.description}}</span>
                     <span class='text-muted'>{{task.status | taskStatusToLabel}}</span>
                     <div ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'">
-                        <a href="/exported-networks/{{task.externalId}}.{{toLower(task.fileFormat)}}" download>download</a>
+                        <a href="/exported-networks/{{task.externalId}}.{{toLower(task.format)}}" download>download</a>
                     </div>
                     </div>
                     <a class='btn btn-xs btn-link'
