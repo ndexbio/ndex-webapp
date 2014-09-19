@@ -656,6 +656,15 @@
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
+                $scope.task = {
+                    description: 'network export',
+                    priority: 'MEDIUM',
+                    format: 'XGMML',
+                    taskType: 'EXPORT_NETWORK_TO_FILE',
+                    status: 'QUEUED',
+                    progress: 0,
+                    resource: $scope.externalId
+                }
 
                 $scope.openMe = function() {
                     intialize();
@@ -672,17 +681,8 @@
                 };
                 
                 $scope.createTask = function() {
-                    var task = {
-                        description: 'network export',
-                        priority: 'MEDIUM',
-                        format: 'XBEL',
-                        taskType: 'EXPORT_NETWORK_TO_FILE',
-                        status: 'QUEUED',
-                        progress: 0,
-                        resource: $scope.externalId
-                    }
-                    
-                    ndexService.createTask(task, 
+
+                    ndexService.createTask($scope.task,
                         function(data) {
                             console.log(data);
                             modalInstance.close();
