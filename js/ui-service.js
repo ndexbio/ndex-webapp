@@ -695,6 +695,7 @@
 
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = $scope.ndexData.externalId;
+                    $scope.name = $scope.ndexData.name;
                 }); 
 
 
