@@ -1,28 +1,39 @@
-<div class="jumbotron text-center">
-    <div>
-        <img src='img/NDEx-horizontal-transparent.png' style="width:70%; max-height:300; align=center"></img>
+<div class="row">
+    <div class='col-md-2'></div>
+    <div class='col-md-8 AlignCenter'>
+        <img src='img/NDEx-horizontal-transparent.png'
+             style="width:100%; max-height:300; align:center"/>
+
+        <p>
+            <span ng-show="main.accountName"><a ng-href="#myAccount">My Account</a></span>
+        <span ng-show="!main.accountName">
+            <a ng-href="#signIn">Click Here to Sign In</a>
+        </span> |
+        <span>
+            <a ng-href="#about">About NDEx</a>
+        </span>
+            | <span><a target="_blank" href="https://github.com/cytoscape/ndex/wiki">NDEx Documentation</a></span>
+        </p>
     </div>
-	<p ng-show="main.accountName">Welcome {{ main.accountName }}!</p>
-    <p ng-show="!main.accountName">
-        <a ng-href="#signIn">Click Here Sign In</a>
-    </p>
-    <p>
-        <a ng-href="#about">About NDEx</a>
-    </p>
-    <p><a target="_blank" href="https://github.com/cytoscape/ndex/wiki">NDEx Documentation</a></p>
-    <div>
-        <h3>Support for NDEx</h3>
+    <div class='col-md-8'></div>
+</div>
+<div class="row">
+    <div class='col-md-3'></div>
+    <div class='col-md-6'>
+        <h4>Support for NDEx</h4>
+
         <p>Primary support for NDEx is from
         <ul>
-        <li><a href="http://www.cancer.gov/">The National Cancer Institute</a> (U24 CA-184427)
-        </li>
-        <li>F. Hoffmann-La Roche Ltd</li>
-        <li>Janssen Research and Development, LLC</li>
-        <li></li>Pfizer, Inc.</li>
-        </ul></p>
-        <p>NDEx is also supported by the <a href="http://nrnb.org">National Resource for Network
+            <li><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> (U24 CA-184427)
+            </li>
+            <li>F. Hoffmann-La Roche Ltd</li>
+            <li>Janssen Research and Development, LLC</li>
+            <li>Pfizer, Inc.</li>
+        </ul>
+        </p>
+        <p>NDEx is also supported by the <a href="http://nrnb.org"  target="_blank">National Resource for Network
             Biology</a> (P41 GM103504).</p>
     </div>
+    <div class='col-md-3'></div>
 </div>
 
-<hr>
