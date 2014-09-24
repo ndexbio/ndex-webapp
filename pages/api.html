@@ -1,0 +1,11 @@
+<div ng-show="api.network">
+    <div ng-repeat="method in api.network">
+        <h4>{{method.methodName}}</h4>
+        <p>{{method.path}}</p>
+        <p>{method.apiDoc}}</p>
+    </div>
+</div>
+
+<div show="api.error">
+    {{api.error}}
+</div>

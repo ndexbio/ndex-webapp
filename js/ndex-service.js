@@ -519,6 +519,13 @@
                     },
                     //actions
                     {
+                        getApi: {
+                            method: 'GET',
+                            params:{
+                                action: 'api'
+                            }
+                        },
+
                         getProvenance: {
                             method: 'GET',
                             params: {
@@ -593,6 +600,10 @@
                     }
                 );
 
+                factory.getNetworkApi = function(successHandler, errorHandler)
+                {
+                    NetworkResource.getApi({}, successHandler, errorHandler);
+                }
                 
                 factory.addNamespaceToNetwork = function(externalId, namespace, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();

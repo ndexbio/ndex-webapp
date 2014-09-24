@@ -65,10 +65,10 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             templateUrl: 'pages/about.html'
         })
 
-        // route for the contact page
-        .when('/contact', {
-            templateUrl: 'pages/contact.html',
-            controller: 'contactController'
+        // route for the api page
+        .when('/api', {
+            templateUrl: 'pages/api.html',
+            controller: 'apiController'
         })
 
         // route for the searchNetworks page
