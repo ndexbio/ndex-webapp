@@ -2,22 +2,26 @@ ndexApp.controller('apiController',
     [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal',
         function (ndexService, sharedProperties, $scope, $location, $modal) {
             $scope.api = {};
+            var api = $scope.api;
 
-            $scope.api.network = null;
-            $scope.api.error = null;
-
-            $scope.api.getNetworkApi = function()
+            api.network = false;
+            api.error = false;
+            console.log("about to call api method");
+            api.getNetworkApi = function()
             {
-                (request = ndexService.getNetworkApi()
-                    .success( function(methods)
+                console.log("invoking api method");
+                ndexService.getNetworkApi(
+                    function(methods)
                     {
+                        console.log("got methods");
                         api.network = methods;
-                    })
-                    .failure( function(error, data)
+                    },
+                    function(error, data)
                     {
+                        console.log("got error");
                         api.error = "Error while retrieving Network API";
-                    }
-                ))
+                    })
             }
+            api.getNetworkApi();
         }
     ]);

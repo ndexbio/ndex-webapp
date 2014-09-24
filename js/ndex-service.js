@@ -523,7 +523,8 @@
                             method: 'GET',
                             params:{
                                 action: 'api'
-                            }
+                            },
+                            isArray: true
                         },
 
                         getProvenance: {
