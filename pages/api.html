@@ -1,11 +1,71 @@
-<div ng-show="api.network">
-    <div ng-repeat="method in api.network">
-        <h4>{{method.methodName}}</h4>
-        <p>{{method.path}}</p>
-        <p>{{method.apiDoc}}</p>
-    </div>
+<div id="divUserTabs" class="col-md-7">
+
+    <tabset justified="true">
+        <tab heading="Network API">
+            <div ng-show="api.network">
+                <div ng-repeat="networkMethod in api.network">
+                    <h4>{{networkMethod.methodName}}</h4>
+                    <p>{{networkMethod.path}}</p>
+                    <p>{{networkMethod.apiDoc}}</p>
+                </div>
+            </div>
+
+            <div ng-show="api.networkApiError">
+                {{api.networkApiError}}
+            </div>
+        </tab>
+        <tab heading="User API">
+            <div ng-show="api.user">
+                <div ng-repeat="userMethod in api.user">
+                    <h4>{{userMethod.methodName}}</h4>
+                    <p>{{userMethod.path}}</p>
+                    <p>{{userMethod.apiDoc}}</p>
+                </div>
+            </div>
+
+            <div ng-show="api.userApiError">
+                {{api.userApiError}}
+            </div>
+        </tab>
+        <tab heading="Group API">
+            <div ng-show="api.group">
+                <div ng-repeat="groupMethod in api.group">
+                    <h4>{{groupMethod.methodName}}</h4>
+                    <p>{{groupMethod.path}}</p>
+                    <p>{{groupMethod.apiDoc}}</p>
+                </div>
+            </div>
+
+            <div ng-show="api.groupApiError">
+                {{api.groupApiError}}
+            </div>
+        </tab>
+        <tab heading="Request API">
+            <div ng-show="api.request">
+                <div ng-repeat="requestMethod in api.request">
+                    <h4>{{requestMethod.methodName}}</h4>
+                    <p>{{requestMethod.path}}</p>
+                    <p>{{requestMethod.apiDoc}}</p>
+                </div>
+            </div>
+
+            <div ng-show="api.requestError">
+                {{api.requestError}}
+            </div>
+        </tab>
+        <tab heading="Task API">
+            <div ng-show="api.task">
+                <div ng-repeat="taskMethod in api.task">
+                    <h4>{{taskMethod.methodName}}</h4>
+                    <p>{{taskMethod.path}}</p>
+                    <p>{{taskMethod.apiDoc}}</p>
+                </div>
+            </div>
+
+            <div ng-show="api.taskError">
+                {{api.taskError}}
+            </div>
+        </tab>
+    </tabset>
 </div>
 
-<div ng-show="api.error">
-    {{api.error}}
-</div>

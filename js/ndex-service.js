@@ -110,6 +110,14 @@
                     },
                     //actions
                     {
+                        getApi: {
+                            method: 'GET',
+                            params:{
+                                action: 'api'
+                            },
+                            isArray: true
+                        },
+
                         search: {
                             method: 'POST',
                             params: {
@@ -176,6 +184,11 @@
                             }
                         }
                     })
+
+                factory.getUserApi = function(successHandler, errorHandler)
+                {
+                    UserResource.getApi({}, successHandler, errorHandler);
+                }
 
                 factory.deleteUser = function(successHandler, errorHandler){
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
@@ -303,6 +316,14 @@
                     },
                     //actions
                     {
+                        getApi: {
+                            method: 'GET',
+                            params:{
+                                action: 'api'
+                            },
+                            isArray: true
+                        },
+
                         search: {
                             method: 'POST',
                             params: {
@@ -339,6 +360,11 @@
                         }
                     }
                 );
+
+                factory.getGroupApi = function(successHandler, errorHandler)
+                {
+                    UserResource.getApi({}, successHandler, errorHandler);
+                }
 
                 factory.getMembershipToNetwork = function(networkExternalId, groupExternalId, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
@@ -423,7 +449,26 @@
                  * Requests
                  *---------------------------------------------------------------------*/
 
-                var RequestResource = $resource(ndexServerURI + '/request/:identifier');
+                var RequestResource = $resource(ndexServerURI + '/request/:action:identifier',
+                    //paramDefaults
+                    {
+                    },
+                    //actions
+                    {
+                        getApi: {
+                            method: 'GET',
+                            params:{
+                                action: 'api'
+                            },
+                            isArray: true
+                        }
+                    }
+                );
+
+                factory.getRequestApi = function(successHandler, errorHandler)
+                {
+                    RequestResource.getApi({}, successHandler, errorHandler);
+                }
 
                 factory.createRequest = function (request, successHandler, errorHandler) {
                     request.type = 'Request';
@@ -462,6 +507,15 @@
                     },
                     //actions
                     {
+                        getApi: {
+                            method: 'GET',
+                            params:{
+                                action: 'api'
+                            },
+                            isArray: true
+                        },
+
+
                         setStatus: {
                             method: 'PUT',
                             params: {
@@ -470,6 +524,11 @@
                         }
                     }
                 );
+
+                factory.getTaskApi = function(successHandler, errorHandler)
+                {
+                    TaskResource.getApi({}, successHandler, errorHandler);
+                }
 
                 factory.getTask = function (taksUUID, successHandler, errorHandler) {
                     console.log("retrieving task with UUID " + taskUUID);
@@ -605,7 +664,7 @@
                 {
                     NetworkResource.getApi({}, successHandler, errorHandler);
                 }
-                
+
                 factory.addNamespaceToNetwork = function(externalId, namespace, successHandler, errorHandler) {
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     NetworkResource.addNamespace({identifier: externalId}, namespace, successHandler, errorHandler)
