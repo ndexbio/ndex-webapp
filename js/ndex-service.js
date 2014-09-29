@@ -363,7 +363,7 @@
 
                 factory.getGroupApi = function(successHandler, errorHandler)
                 {
-                    UserResource.getApi({}, successHandler, errorHandler);
+                    GroupResource.getApi({}, successHandler, errorHandler);
                 }
 
                 factory.getMembershipToNetwork = function(networkExternalId, groupExternalId, successHandler, errorHandler) {

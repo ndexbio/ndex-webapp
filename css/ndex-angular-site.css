@@ -614,3 +614,9 @@ dl.Accordion > dd
 /*angular ui fix for cursor*/
 a { cursor: pointer; }
 
+/* Added by David Welker, September 26, 2014 */
+.indent
+{
+    margin-left: 20px;
+}
+
