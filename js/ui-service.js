@@ -57,7 +57,7 @@
 
     //----------------------------------------------------
     //                  Attributes
-    
+
     // First shot at directives, using a service to invoke modals presents unknown problems
     uiServiceApp.directive('triggerCreateGroupModal', function() {
         return {
@@ -71,12 +71,12 @@
                 $scope.text = $attrs.triggerCreateGroupModal;
 
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'modal.html',
                         scope: $scope
                     });
                 };
-                
+
                 $scope.cancel = function() {
                     modalInstance.dismiss();
                 };
@@ -109,7 +109,7 @@
             templateUrl: 'pages/directives/accountImage.html',
             link: function($attrs) {
                 if ($attrs.ndexSrc == null) $attrs.ndexSrc = 'img/no-pic.jpg';
-            } 
+            }
         }
     });
 
@@ -144,18 +144,18 @@
                 $scope.errors = null;
 
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'edit-user-modal.html',
                         scope: $scope
                     });
                 };
-                
+
                 $scope.cancel = function() {
                     for(var key in $scope.ndexData) {
                         $scope.user[key] = $scope.ndexData[key];
                     }
-                   modalInstance.close();
-                   modalInstance = null;
+                    modalInstance.close();
+                    modalInstance = null;
                 };
 
                 $scope.submit = function() {
@@ -181,7 +181,7 @@
                     // and use {{value}} in invoking html. 
                     for(var key in value) {
                         $scope.user[key] = value[key];
-                    }             
+                    }
                 });
             }
         }
@@ -202,18 +202,18 @@
                 var modalInstance;
                 $scope.errors = null;
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'edit-group-modal.html',
                         scope: $scope
                     });
                 };
-                
+
                 $scope.cancel = function() {
                     for(var key in $scope.ndexData) {
                         $scope.group[key] = $scope.ndexData[key];
                     }
-                   modalInstance.close();
-                   modalInstance = null;
+                    modalInstance.close();
+                    modalInstance = null;
                 };
 
                 $scope.submit = function() {
@@ -238,8 +238,8 @@
                     // and use {{value}} in invoking html. 
                     for(var key in value) {
                         $scope.group[key] = value[key];
-                    }  
-                }); 
+                    }
+                });
             }
         }
     });
@@ -260,17 +260,17 @@
                 $scope.query = {};
 
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'invite-members-modal.html',
                         scope: $scope
                     });
                 };
-                
+
                 $scope.close = function() {
-                   $scope.externalId = $scope.ndexData;
-                   $route.reload();
-                   modalInstance.close();
-                   modalInstance = null;
+                    $scope.externalId = $scope.ndexData;
+                    $route.reload();
+                    modalInstance.close();
+                    modalInstance = null;
                 };
 
                 $scope.addUser = function(externalId) {
@@ -280,7 +280,7 @@
                         memberUUID: externalId
                     }
 
-                    ndexService.updateGroupMember(membership, 
+                    ndexService.updateGroupMember(membership,
                         function(){
                             //TODO
                         },
@@ -324,7 +324,7 @@
                         } else {
                             $scope.userSearchResults = [];
                         }
-                        
+
                     }
                 }, true)
 
@@ -332,7 +332,7 @@
                 // most likey we aren't doing something the angular way, quick fix below
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = value;
-                }); 
+                });
             }
         }
     });
@@ -351,7 +351,7 @@
                 $scope.errors = null;
 
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'sent-request-modal.html',
                         scope: $scope,
                         backdrop: 'static'
@@ -367,7 +367,7 @@
                         function(data) {
                             modalInstance.close();
                             $route.reload();
-                        }, 
+                        },
                         function(error){
                             //TODO
                         })
@@ -377,12 +377,12 @@
                     $scope.request = {};
                     for(var key in value) {
                         $scope.request[key] = value[key];
-                    }  
-                }); 
+                    }
+                });
             }
         }
     });
-    
+
     // modal to view and act on received request
     uiServiceApp.directive('receivedRequest', function() {
         return {
@@ -397,7 +397,7 @@
                 $scope.errors = null;
 
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'received-request-modal.html',
                         scope: $scope,
                         backdrop: 'static'
@@ -407,7 +407,7 @@
                 $scope.close = function() {
                     for(var key in $scope.ndexData) {
                         $scope.request[key] = $scope.ndexData[key];
-                    } 
+                    }
                     modalInstance.close();
                 };
 
@@ -420,12 +420,12 @@
                     }
 
                     if($scope.request.permission == 'MEMBER' || $scope.request.permission == 'GROUPADMIN') {
-                        
-                        ndexService.updateGroupMember(membership, 
+
+                        ndexService.updateGroupMember(membership,
                             function(data){
-                                
+
                                 $scope.request.response = 'ACCEPTED'
-                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request, 
+                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
                                     function(data) {
                                         console.log($scope.request)
                                         modalInstance.close();
@@ -443,7 +443,7 @@
                             function(data){
                                 //TODO
                                 $scope.request.response = 'ACCEPTED'
-                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request, 
+                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
                                     function(data) {
                                         modalInstance.close();
                                         $route.reload();
@@ -461,7 +461,7 @@
 
                 $scope.decline = function() {
                     $scope.request.response = 'DECLINED'
-                    ndexService.updateRequest($scope.ndexData.externalId, $scope.request, 
+                    ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
                         function(data) {
                             modalInstance.close();
                             $route.reload();
@@ -475,8 +475,8 @@
                     $scope.request = {};
                     for(var key in value) {
                         $scope.request[key] = value[key];
-                    }  
-                }); 
+                    }
+                });
             }
         }
     });
@@ -498,18 +498,18 @@
                         scope: $scope,
                         backdrop: 'static',
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
-                             $scope.request = {};
-                            $scope.request.permissionLabel ='Is member'; 
+                            $scope.request = {};
+                            $scope.request.permissionLabel ='Is member';
                             $scope.close = function() {
                                 $scope.request = {};
                                 for(var key in $scope.ndexData) {
                                     $scope.request.destinationName = $scope.ndexData.accountName;
                                     $scope.request.destinationUUID = $scope.ndexData.externalId;
                                     $scope.request.permissionLabel ='Is member';
-                                } 
+                                }
                                 $modalInstance.close();
                             };
-                            
+
                             $scope.submitRequest = function() {
                                 if($scope.request.permissionLabel == 'Is member')
                                     $scope.request.permission = 'MEMBER'
@@ -519,10 +519,10 @@
                                 $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
                                 $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
 
-                                ndexService.createRequest($scope.request, 
+                                ndexService.createRequest($scope.request,
                                     function(request) {
-                                      //TODO some modal
-                                      $scope.close();
+                                        //TODO some modal
+                                        $scope.close();
                                     },
                                     function(error){
                                         console.log(error.data)
@@ -534,13 +534,13 @@
                                 $scope.request = {};
                                 $scope.request.destinationName = $scope.ndexData.accountName;
                                 $scope.request.destinationUUID = $scope.ndexData.externalId;
-                                $scope.request.permissionLabel ='Is member'; 
+                                $scope.request.permissionLabel ='Is member';
                             });
                         }
                     });
                 };
 
-                 
+
             }
         }
     });
@@ -562,8 +562,8 @@
                 $scope.accounts = [];
 
                 $scope.openMe = function() {
-                intialize();
-                   modalInstance = $modal.open({
+                    intialize();
+                    modalInstance = $modal.open({
                         templateUrl: 'create-request-network-modal.html',
                         scope: $scope,
                         backdrop: 'static'
@@ -571,10 +571,10 @@
                 };
 
                 $scope.close = function() {
-                    
+
                     modalInstance.close();
                 };
-                
+
                 $scope.submitRequest = function() {
 
                     if($scope.modal.permissionLabel == 'Can edit')
@@ -590,20 +590,20 @@
                             $scope.request.sourceUUID = $scope.accounts[ii].externalId;
                     }
 
-                    ndexService.createRequest($scope.request, 
+                    ndexService.createRequest($scope.request,
                         function(request) {
-                          //TODO some modal
-                          $scope.close();
+                            //TODO some modal
+                            $scope.close();
                         },
                         function(error){
-                          $scope.request.error = error.data;
+                            $scope.request.error = error.data;
                         });
                 }
 
                 $scope.$watch('ndexData', function(value) {
                     $scope.request.destinationName = $scope.ndexData.name;
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
-                }); 
+                });
 
 
                 var intialize = function() {
@@ -621,7 +621,7 @@
 
                     query.accountName = ndexUtility.getLoggedInUserAccountName();
                     query.permission = 'GROUPADMIN';
-                    
+
                     // TODO 0,50 shouldnt be a set number
                     ndexService.searchGroups(query, 0, 50,
                         function (groups) {
@@ -635,7 +635,7 @@
                             });
                         },
                         function (error) {
-                                   
+
                         });
                 }
 
@@ -656,6 +656,7 @@
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
+
                 $scope.task = {
                     description: 'network export',
                     priority: 'MEDIUM',
@@ -663,7 +664,12 @@
                     taskType: 'EXPORT_NETWORK_TO_FILE',
                     status: 'QUEUED',
                     progress: 0,
-                    resource: $scope.externalId
+                    //This old approach doesn't work, because at this point, externalId is undefined.
+                    //We are making resource undefined explicitly and we set it equal to the UUID of the network
+                    //in createTask() function below...
+                    //old - resource: $scope.externalId
+                    //new - resource: undefined
+                    resource: undefined
                 }
 
                 $scope.openMe = function() {
@@ -676,13 +682,17 @@
                 };
 
                 $scope.close = function() {
-                    
+
                     modalInstance.close();
                 };
-                
-                $scope.createTask = function() {
 
-                    ndexService.createTask($scope.task,
+                $scope.createTask = function() {
+                    //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
+                    // UUID wasn't yet available.
+                    myTask = $scope.task;
+                    myTask.resource = $scope.externalId;
+
+                    ndexService.createTask(myTask,
                         function(data) {
                             console.log(data);
                             modalInstance.close();
@@ -696,11 +706,11 @@
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = $scope.ndexData.externalId;
                     $scope.name = $scope.ndexData.name;
-                }); 
+                });
 
 
                 var intialize = function() {
-                    
+
                 }
 
             }
@@ -719,15 +729,15 @@
             controller: function($scope, $modal, ndexService, $route) {
                 var modalInstance;
                 $scope.errors = null;
-                $scope.network = {}; 
+                $scope.network = {};
 
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'edit-network-summary-modal.html',
                         scope: $scope
                     });
                 };
-                
+
                 $scope.cancel = function() {
                     $scope.network.name = $scope.ndexData.name;
                     $scope.network.description = $scope.ndexData.description;
@@ -756,7 +766,7 @@
                     $scope.network.description = $scope.ndexData.description;
                     $scope.network.version = $scope.ndexData.version;
                     $scope.network.visibility = $scope.ndexData.visibility;
-                }); 
+                });
             }
         }
     });
@@ -774,12 +784,12 @@
                 $scope.change = {};
 
                 $scope.openMe = function() {
-                   modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'change-password-modal.html',
                         scope: $scope
                     });
                 };
-                
+
                 $scope.cancel = function() {
                     $scope.change = {};
                     modalInstance.close();
@@ -833,7 +843,7 @@
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
-                                    }, 
+                                    },
                                     function(error) {
                                         $scope.errors = error.data;
                                     });
@@ -845,7 +855,7 @@
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = value
                 });
-                
+
             }
         }
     });
@@ -878,7 +888,7 @@
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
-                                    }, 
+                                    },
                                     function(error) {
                                         $scope.errors = error.data;
                                     });
@@ -890,7 +900,7 @@
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = value
                 });
-                
+
             }
         }
     });
@@ -923,7 +933,7 @@
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
-                                    }, 
+                                    },
                                     function(error) {
                                         $scope.errors = error.data;
                                     });
@@ -935,7 +945,7 @@
                 $scope.$watch('ndexData', function(value) {
                     $scope.group = value
                 });
-                
+
             }
         }
     });
@@ -968,7 +978,7 @@
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
-                                    }, 
+                                    },
                                     function(error) {
                                         $scope.errors = error.data;
                                     });
@@ -980,7 +990,7 @@
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = value
                 });
-                
+
             }
         }
     });
@@ -1013,7 +1023,7 @@
                                         $scope.$emit('LOGGED_OUT'); //emit event to clear up variables in main controller scope, route refresh does not clear those variables, probably because they are probably of the rootscope
                                         $location.path('/');
                                         $route.reload();
-                                    }, 
+                                    },
                                     function(error) {
                                         $scope.errors = error.data;
                                     });
@@ -1021,7 +1031,7 @@
                         }
                     });
                 };
-                
+
             }
         }
     });
@@ -1049,10 +1059,10 @@
                     // return chained promise
                     return promise.then(
                         function(networkSummary) {
-                           var subPromise = ndexService.getProvenance(network.externalId).$promise;
-                           return subPromise.then(function(provenance) {
+                            var subPromise = ndexService.getProvenance(network.externalId).$promise;
+                            return subPromise.then(function(provenance) {
                                 return {provenance: provenance, networkSummary: networkSummary}
-                           })
+                            })
                         }).then(
                         function(data) {
 
@@ -1111,8 +1121,8 @@
                 $scope.$watch('ndexNetwork', function(value) {
                     network = value
                 });
-                
-                
+
+
             }
         }
     });
