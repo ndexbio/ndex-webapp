@@ -1311,7 +1311,7 @@
                 var functionLabel = factory.getTermLabel(functionTerm, network);
                 functionLabel = factory.lookupFunctionAbbreviation(functionLabel);
 
-                var sortedParameters = factory.getDictionaryKeysSorted(term.parameters);
+                var sortedParameters = factory.getDictionaryKeysSorted(term.parameterIds);
                 var parameterList = [];
 
                 for (var parameterIndex = 0; parameterIndex < sortedParameters.length; parameterIndex++) {
