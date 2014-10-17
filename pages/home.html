@@ -5,7 +5,7 @@
              style="width:100%; max-height:300; align:center"/>
 
         <p>
-            <span ng-show="main.accountName"><a ng-href="#myAccount">My Account</a></span>
+            <span ng-show="main.accountName"><a ng-href="{{'#user/' + main.getCurrentUser()}}">My Account</a></span>
         <span ng-show="!main.accountName">
             <a ng-href="#signIn">Click Here to Sign In</a>
         </span> |

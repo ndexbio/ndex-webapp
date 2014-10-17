@@ -200,7 +200,7 @@
                             <strong>{{networkController.currentSubnetwork.nodeLabelMap[edge.subjectId]}}</strong>
                             <em>{{networkController.currentSubnetwork.terms[edge.predicateId].name}}</em>
                             <strong>{{networkController.currentSubnetwork.nodeLabelMap[edge.objectId]}}</strong>
-                            <span ng-repeat='citation in edge.citations'>
+                            <span ng-repeat='citation in edge.citationIds'>
                             <a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>
                             <span class='glyphicon glyphicon-book'></span>
                             </sup></a>
@@ -231,7 +231,7 @@
                     <ul id="ulSubnetwork" ng-repeat="node in networkController.currentSubnetwork.nodes">
                         <li style="cursor:pointer" ng-click="node.showAliases = !node.showAliases">
                             <strong>{{networkController.currentSubnetwork.nodeLabelMap[node.id]}}</strong>
-                            <span ng-repeat='citation in node.citations'>
+                            <span ng-repeat='citation in node.citationIds'>
                             <a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>
                             <span class='glyphicon glyphicon-book'></span>
                             </sup></a>

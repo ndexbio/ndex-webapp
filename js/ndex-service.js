@@ -1263,8 +1263,8 @@
         };
 
         factory.getTermBase = function (term, network) {
-            if (term.namespace) {
-                var namespace = network.namespaces[term.namespace];
+            if (term.namespaceId) {
+                var namespace = network.namespaces[term.namespaceId];
 
                 if (!namespace || namespace.prefix === "LOCAL")
                     return {prefix: 'none', name: term.name};
@@ -1288,8 +1288,8 @@
         factory.getTermLabel = function (term, network) {
             //if (!network) network = factory.getTermNetwork(term);
             if (term.termType === "BaseTerm") {
-                if (term.namespace) {
-                    var namespace = network.namespaces[term.namespace];
+                if (term.namespaceId) {
+                    var namespace = network.namespaces[term.namespaceId];
 
                     if (!namespace || namespace.prefix === "LOCAL")
                         return term.name;
@@ -1315,7 +1315,7 @@
                 var parameterList = [];
 
                 for (var parameterIndex = 0; parameterIndex < sortedParameters.length; parameterIndex++) {
-                    var parameterId = term.parameters[sortedParameters[parameterIndex]];
+                    var parameterId = term.parameterIds[sortedParameters[parameterIndex]];
                     var parameterTerm = network.terms[parameterId];
 
                     if (parameterTerm)

@@ -41,13 +41,13 @@
           </p>
       </div>
       <ul>
-        <ul ng-repeat="group in groupSearch.groupSearchResults">
+        <ul class ='row' ng-repeat="group in groupSearch.groupSearchResults">
             <ndex-navigation ndex-class="'row'" ndex-url="'group/'+group.externalId">
                 <ndex-account-image 
                   ndex-class="'col-xs-2 col-sm-2 col-md-2 col-lg-2'" 
                   ndex-src="group.image">
                 </ndex-account-image>
-                <div class="'col-xs-10 col-sm-10 col-md-10 col-lg-10'">
+                <div class="'col-xs-9 col-sm-9 col-md-9 col-lg-9'">
                 <h5><strong>{{group.organizationName}}</strong></h5>
                 <p class="text-muted">{{group.accountName}}</p>
                 <p class="">{{group.description.substring(0,30)}}</p>
