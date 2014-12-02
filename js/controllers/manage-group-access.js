@@ -106,7 +106,7 @@ ndexApp.controller('manageGroupAccessController',
 
 		ndexService.getDirectMembership(groupManager.group.externalId, member.externalId).$promise.then(
 			function(membership) {
-				console.log(membership)
+				//console.log(membership)
 				if(membership != null && membership.permissions !=null)
 					groupManager.errors.push('User already member in this group');
 				else

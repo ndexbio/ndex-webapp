@@ -10,7 +10,7 @@ ndexApp.controller('requestController',
             };
 
             $scope.create = function () {
-                console.log("Attempting to call ndexService.createRequest")
+                //console.log("Attempting to call ndexService.createRequest")
                 ndexService.createRequest($scope.request,
                     // Success Handler
                     (function (requestData) {
@@ -24,7 +24,7 @@ ndexApp.controller('requestController',
             };
 
             $scope.respond = function () {
-                console.log("Attempting to call ndexService.updateRequest")
+                //console.log("Attempting to call ndexService.updateRequest")
                 ndexService.updateRequest($scope.request,
                     // Success Handler
                     (function (requestData) {

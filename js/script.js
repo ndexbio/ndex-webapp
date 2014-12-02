@@ -7,6 +7,24 @@ var cn, csn;
 var cUser;
 var cTasks;
 
+//Internet Explorer solution???
+ndexApp.config(['$httpProvider', function($httpProvider) {
+
+    //First, test if this is IE. If it is not, don't mess with caching.
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+
+    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer, return version number
+    {
+        //initialize get if not there
+        if (!$httpProvider.defaults.headers.get) {
+            $httpProvider.defaults.headers.get = {};
+        }
+        //disable IE ajax request caching
+        $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+    }
+}]);
+
 ndexApp.service('sharedProperties', function () {
     // this service is going to act as a general global variable throughout the application
     // should consider implementing some degree of relationship with localStorage to guard against
@@ -175,7 +193,7 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.main.searchType = 'Networks';
     $scope.main.searchString = '';
     $scope.main.search = function(){
-        console.log("navbar search");
+        ////console.log("navbar search");
         sharedProperties.setDoSearch();
         //could user url instead, good for refresh
         sharedProperties.setSearchString($scope.main.searchString);

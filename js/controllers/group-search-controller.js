@@ -21,7 +21,7 @@ ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties'
                         searchController.errors.push('No results found that match your criteria')
 
                     searchController.groupSearchResults = groups;
-                    console.log("Set groupSearchResults");
+                    //console.log("Set groupSearchResults");
                     
                 },
                 function (error) {

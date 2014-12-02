@@ -49,7 +49,7 @@ ndexApp.controller('searchNetworksController',
                 if(networks.length == 0)
                     searchController.errors.push('No results found that match your criteria')
 
-                console.log('got results')
+                //console.log('got results')
                 // Save the results
                 searchController.networkSearchResults = networks;
                 modalInstance.close();

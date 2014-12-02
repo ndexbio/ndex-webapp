@@ -73,7 +73,7 @@ ndexApp.controller('networkController',
         (request = ndexService.queryNetwork( networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value) )
             .success(
                 function(network) {
-                    console.log("got query results for : " + networkController.searchString);
+                    //console.log("got query results for : " + networkController.searchString);
                     csn = network;
                     networkController.currentSubnetwork = network;
                     cytoscapeService.setNetwork(network);
@@ -157,7 +157,7 @@ ndexApp.controller('networkController',
                 callback();
             },
             function(error){
-                console.log(error);
+                //console.log(error);
             });
 
     }
@@ -174,7 +174,7 @@ ndexApp.controller('networkController',
                 callback();
             },
             function(error){
-                console.log(error);
+                //console.log(error);
             });
 
     }

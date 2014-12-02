@@ -41,7 +41,9 @@
                 // define and initialize factory object
                 var factory = {};
 
+                //Windows http://192.168.80.1:8080/
                 var ndexServerURI = "http://localhost:8080/ndexbio-rest";
+                //var ndexServerURI = "http://192.168.80.1:8080/ndexbio-rest";
                 // This convention is useful, but we may later allow a
                 // site configuration to explicitly specify a different host
                 if (location.hostname.toLowerCase() != "localhost")
@@ -63,7 +65,7 @@
                 //
                 factory.signIn = function (accountName, password) {
                     ndexUtility.clearUserCredentials();
-                    console.log("submitting user credentials for user: " + accountName);
+                    ////console.log("submitting user credentials for user: " + accountName);
                     var config = ndexConfigs.getSubmitUserCredentialsConfig(accountName, password);
                     return $http(config).success(function (userData) {
                         ndexUtility.setUserCredentials(userData.accountName, userData.externalId, password);
@@ -90,7 +92,7 @@
                 //getUserQuery
                 //
                 factory.getUser = function (userId) {
-                    console.log("retrieving user with id " + userId);
+                    ////console.log("retrieving user with id " + userId);
                     var config = ndexConfigs.getUserConfig(userId);
                     return $http(config);
                 };
@@ -260,7 +262,7 @@
                 };
 
                 factory.searchUsers = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
-                    console.log('searching for users with params: \n    ' + JSON.stringify(queryObject));
+                    ////console.log('searching for users with params: \n    ' + JSON.stringify(queryObject));
                     if (queryObject.searchString == null)
                         queryObject.searchString = '';
                     return UserResource.search({
@@ -272,7 +274,7 @@
                 }
 
                 factory.createUser = function (user, successHandler, errorHandler) {
-                    console.log('creating user with params:\n    ' + JSON.stringify(user));
+                    ////console.log('creating user with params:\n    ' + JSON.stringify(user));
                     user.accountType = 'User';
                     ndexUtility.setUserAuthToken(user.password);
 
@@ -284,7 +286,7 @@
                     if (!taskStatus) {
                         taskStatus = "ALL";
                     }
-                    console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
+                    ////console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
 
 
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
@@ -423,7 +425,7 @@
                 }
 
                 factory.getGroup = function (groupUUID, successHandler, errorHandler) {
-                    console.log("retrieving group with UUID " + groupUUID);
+                    ////console.log("retrieving group with UUID " + groupUUID);
                     GroupResource.get({'identifier': groupUUID}, successHandler, errorHandler);
                 };
 
@@ -441,7 +443,7 @@
                     //an empty js object will cause the request to be canceled
                     if (queryObject.searchString == null)
                         queryObject.searchString = '';
-                    console.log('searching for groups');
+                    ////console.log('searching for groups');
                     GroupResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
                 }
 
@@ -531,24 +533,24 @@
                 }
 
                 factory.getTask = function (taksUUID, successHandler, errorHandler) {
-                    console.log("retrieving task with UUID " + taskUUID);
+                    ////console.log("retrieving task with UUID " + taskUUID);
                     TaskResource.get({'taskId': taskUUID}, successHandler, errorHandler);
                 };
 
                 factory.createTask = function (task, successHandler, errorHandler) {
-                    console.log("creating task with task = " + task.taskType);
+                    ////console.log("creating task with task = " + task.taskType);
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                     TaskResource.save({}, task, successHandler, errorHandler);
                 };
 
                 factory.deleteTask = function (taskUUID, successHandler, errorHandler) {
-                    console.log("deleting task with UUID " + taskUUID);
+                    ////console.log("deleting task with UUID " + taskUUID);
                     TaskResource.delete({'taskId': taskUUID}, null, successHandler, errorHandler);
                 };
 
                 factory.setTaskStatus = function (taskUUID, statusType, successHandler, errorHandler) {
 
-                    console.log('updating status to ' + statusType + " for task " + taskUUID);
+                    ////console.log('updating status to ' + statusType + " for task " + taskUUID);
                     TaskResource.setStatus(
                         {
                             'taskId': taskUUID,
@@ -772,7 +774,7 @@
                 // getNetwork
                 //
                 factory.getNetwork = function (networkId) {
-                    console.log("retrieving network " + networkId);
+                    ////console.log("retrieving network " + networkId);
 
                     // The $http timeout property takes a deferred value that can abort AJAX request
                     var deferredAbort = $q.defer();
@@ -806,7 +808,7 @@
                 //
                 // Get a block of edges
                 factory.getNetworkByEdges = function (networkId, skipBlocks, blockSize) {
-                    console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
+                    ////console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
 
                     // The $http timeout property takes a deferred value that can abort AJAX request
                     var deferredAbort = $q.defer();
@@ -867,7 +869,7 @@
                 //
                 // Simple network search
                 factory.findNetworks = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
-                    console.log("searching for networks");
+                    ////console.log("searching for networks");
 
                     // The $http timeout property takes a deferred value that can abort AJAX request
                     var deferredAbort = $q.defer();
@@ -902,7 +904,7 @@
                 //
                 // search the network for a subnetwork via search terms and depth
                 factory.queryNetwork = function (networkId, terms, searchDepth) {
-                    console.log("searching for subnetworks");
+                    ////console.log("searching for subnetworks");
 
                     // REMOVED: we pass a simple string.  It is processed on the server, not here on the client
                     // Split the string into an array of strings for the $http request
@@ -1201,10 +1203,10 @@
 
         factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, skipBlocks, blockSize) {
             // POST to NetworkAService
-            console.log("searchType = " + "NEIGHBORHOOD");
-            console.log("searchDepth = " + searchDepth);
+            ////console.log("searchType = " + "NEIGHBORHOOD");
+            ////console.log("searchDepth = " + searchDepth);
             /*for (index in startingTerms){
-             console.log("searchTerm " + index + " : " + startingTerms[index]);
+             //console.log("searchTerm " + index + " : " + startingTerms[index]);
              }*/
             var url = "/network/" + networkId + "/asNetwork/query/";
             var postData = {
@@ -1237,7 +1239,7 @@
         factory.getNodeLabel = function (node, network) {
             //if (!network) network = factory.getNodeNetwork(node);
             if ("name" in node && node.name && node.name != "") {
-                //console.log(node.name);
+                ////console.log(node.name);
                 return node.name;
             }
             else if ("represents" in node && node.represents && network.terms[node.represents])
@@ -1304,7 +1306,7 @@
             else if (term.termType === "FunctionTerm") {
                 var functionTerm = network.terms[term.functionTermId];
                 if (!functionTerm) {
-                    console.log("no functionTerm by id " + term.functionTermId);
+                    ////console.log("no functionTerm by id " + term.functionTermId);
                     return;
                 }
 
@@ -1320,8 +1322,8 @@
 
                     if (parameterTerm)
                         var parameterLabel = factory.getTermLabel(parameterTerm, network);
-                    else
-                        console.log("no parameterTerm by id " + parameterId);
+                    //else
+                    //    //console.log("no parameterTerm by id " + parameterId);
 
                     parameterList.push(parameterLabel);
                 }

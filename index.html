@@ -1,9 +1,30 @@
 <!DOCTYPE html>
 
 <!-- define angular app -->
-<html ng-app="ndexApp">
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="ndexApp">
 
 <head>
+
+    <!-- This CODE is to help with IE Explorer problems... -->
+    <!--[if lte IE 7]>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+    <![endif]-->
+
+    <!--[if lte IE 8]>
+    <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+
+        // Optionally these for CSS
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+    </script>
+    <![endif]-->
+    <!-- End IE Explorer problem code. -->
+
+
     <!-- Load script that may redirect to maint.html -->
     <script src="checkMaintenance.js"></script>
 

@@ -67,7 +67,7 @@ ndexApp.controller('userController',
                     function (networks) {
                         userController.networkSearchResults = networks;
 
-                        //console.log(userController.networkSearchResults[0])
+                        ////console.log(userController.networkSearchResults[0])
                     },
                     function (error) {
                         //TODO
@@ -96,7 +96,7 @@ ndexApp.controller('userController',
                     100,
                     // Success
                     function (tasks) {
-                        //console.log("Successfully retrieved tasks: " + tasks);
+                        ////console.log("Successfully retrieved tasks: " + tasks);
                         userController.pendingTasks = tasks;
                         //$.each(tasks, function (index, task) {
                         //    userController.pendingTasks.push(task);
@@ -105,7 +105,7 @@ ndexApp.controller('userController',
                     },
                     // Error
                     function (response) {
-                        console.log("Failed to retrieve tasks: " + response);
+                        //console.log("Failed to retrieve tasks: " + response);
                         //TBD
                     }
                 )
@@ -124,7 +124,7 @@ ndexApp.controller('userController',
                         userController.pendingRequests = requests;
                     },
                     function (error) {
-                        console.log(error);
+                        //console.log(error);
                     });
 
                 ndexService.getSentRequests(0, 20,
@@ -133,7 +133,7 @@ ndexApp.controller('userController',
 
                     },
                     function (error) {
-                        console.log(error);
+                        //console.log(error);
                     })
             }
 

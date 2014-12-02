@@ -45,7 +45,7 @@ ndexApp.controller('signInController',
             },
             function(error) {
                 $scope.signIn.signUpErrors = error.data;
-                console.log(error)
+                //console.log(error)
             });
 
     }

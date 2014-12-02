@@ -80,7 +80,7 @@ ndexApp.controller('groupController',
                     groupController.isMember = true;
             },
             function(error){
-                console.log(error);
+                //console.log(error);
             });
     }
 

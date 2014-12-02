@@ -26,7 +26,11 @@
             </strong></h5>
 
             <div ng-show = "task.format == 'XBEL'"><strong>XBEL export is only for BEL format networks.
-                Be sure this network is in BEL format.</strong>
+                Be sure this network is in BEL.</strong>
+            </div>
+
+            <div ng-show = "task.format == 'XGMML'"><strong>XGMML export is only for XGMML format networks.
+                Be sure this network is in XGMML.</strong>
             </div>
 
             <div>This will create a background task to export the network as a file.

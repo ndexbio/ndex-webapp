@@ -14,7 +14,7 @@ ndexApp.controller('uploadController',
                     $scope.taskBlockSize,
                     // Success
                     function(tasks){
-                        //console.log("Successfully retrieved tasks: " + tasks);
+                        ////console.log("Successfully retrieved tasks: " + tasks);
                         $scope.tasks = [];
                         $.each(tasks, function(index, task){
                             if (task.taskType == "PROCESS_UPLOADED_NETWORK"){
@@ -25,7 +25,7 @@ ndexApp.controller('uploadController',
                     },
                     // Error
                     function(response){
-                        console.log("Failed to retrieve tasks: " + response);
+                        //console.log("Failed to retrieve tasks: " + response);
                        //TBD
                     }
                 )
@@ -67,45 +67,45 @@ ndexApp.controller('uploadController',
 
             // /*{File|FileLikeObject}*/
             uploader.onWhenAddingFileFailed = function(item, filter, options) {
-                console.info('onWhenAddingFileFailed', item, filter, options);
+                //console.info('onWhenAddingFileFailed', item, filter, options);
             };
             uploader.onAfterAddingFile = function(fileItem) {
-                console.info('onAfterAddingFile', fileItem);
+                //console.info('onAfterAddingFile', fileItem);
             };
             uploader.onAfterAddingAll = function(addedFileItems) {
-                console.info('onAfterAddingAll', addedFileItems);
+                //console.info('onAfterAddingAll', addedFileItems);
             };
             uploader.onBeforeUploadItem = function(item) {
                 item.formData.push({filename: item.file.name});
-                console.log('onBeforeUploadItem', item);
-                console.info('onBeforeUploadItem', item);
+                //console.log('onBeforeUploadItem', item);
+                //console.info('onBeforeUploadItem', item);
             };
             uploader.onProgressItem = function(fileItem, progress) {
-                console.info('onProgressItem', fileItem, progress);
+                //console.info('onProgressItem', fileItem, progress);
             };
             uploader.onProgressAll = function(progress) {
-                console.info('onProgressAll', progress);
+                //console.info('onProgressAll', progress);
             };
             uploader.onSuccessItem = function(fileItem, response, status, headers) {
-                console.info('onSuccessItem', fileItem, response, status, headers);
+                //console.info('onSuccessItem', fileItem, response, status, headers);
             };
             uploader.onErrorItem = function(fileItem, response, status, headers) {
-                console.info('onErrorItem', fileItem, response, status, headers);
+                //console.info('onErrorItem', fileItem, response, status, headers);
             };
             uploader.onCancelItem = function(fileItem, response, status, headers) {
-                console.info('onCancelItem', fileItem, response, status, headers);
+                //console.info('onCancelItem', fileItem, response, status, headers);
             };
             uploader.onCompleteItem = function(fileItem, response, status, headers) {
-                console.log('onCompleteItem', fileItem, response, status, headers);
-                console.info('onCompleteItem', fileItem, response, status, headers);
+                //console.log('onCompleteItem', fileItem, response, status, headers);
+                //console.info('onCompleteItem', fileItem, response, status, headers);
             };
             uploader.onCompleteAll = function() {
-                console.info('onCompleteAll');
-                console.log('onCompleteAll');
+                //console.info('onCompleteAll');
+                //console.log('onCompleteAll');
                 $scope.refreshTasks();
             };
 
-            console.info('uploader', uploader);
+            //console.info('uploader', uploader);
 
             $scope.refreshTasks();
         }]);

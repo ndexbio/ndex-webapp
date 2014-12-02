@@ -13,25 +13,25 @@
                  *-----------------------------------------------------------------------*/
 
                 factory.setAndDisplayCurrentNetwork = function (networkId) {
-                    console.log("attempting to set and display current network: " + networkId);
+                    ////console.log("attempting to set and display current network: " + networkId);
                     sharedProperties.setCurrentNetworkId(networkId);
                     $location.path("/networkQuery/" + networkId);
                 };
 
                 factory.setAndDisplayCurrentGroup = function (groupId) {
-                    console.log("attempting to set and display current group " + groupId);
+                    ////console.log("attempting to set and display current group " + groupId);
                     sharedProperties.setCurrentGroupId(groupId);
                     $location.path("/group/" + groupId);
                 };
 
                 factory.setAndDisplayCurrentUser = function (userId) {
-                    console.log("attempting to set and display current user " + userId);
+                    ////console.log("attempting to set and display current user " + userId);
                     sharedProperties.setCurrentUserId(userId);
                     $location.path("/user/" + userId);
                 };
 
                 factory.openConfirmationModal = function(message, confirmHandler){
-                    console.log("attempting to open confirmationModal");
+                    ////console.log("attempting to open confirmationModal");
                     var ConfirmCtrl = function($scope, $modalInstance) {
                         $scope.input = {};
                         $scope.message = message;
@@ -85,7 +85,7 @@
                     ndexService.createGroup($scope.group,
                         function(groupData){
                             modalInstance.close();
-                            console.log(groupData);
+                            ////console.log(groupData);
                             $location.path('/group/'+groupData.externalId);
                         },
                         function(error){
@@ -294,7 +294,7 @@
                         if(query.searchString.length > 0) {
                             ndexService.searchUsers(query, 0, 5,
                                 function (users) {
-                                    console.log('got '+users.length+' user search results')
+                                    ////console.log('got '+users.length+' user search results')
                                     var key = 0;
                                     var length = users.length;
 
@@ -427,7 +427,7 @@
                                 $scope.request.response = 'ACCEPTED'
                                 ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
                                     function(data) {
-                                        console.log($scope.request)
+                                        ////console.log($scope.request)
                                         modalInstance.close();
                                         $route.reload();
                                     },
@@ -525,7 +525,7 @@
                                         $scope.close();
                                     },
                                     function(error){
-                                        console.log(error.data)
+                                        ////console.log(error.data)
                                         $scope.request.error = error.data;
                                     });
                             }
@@ -694,11 +694,11 @@
 
                     ndexService.createTask(myTask,
                         function(data) {
-                            console.log(data);
+                            ////console.log(data);
                             modalInstance.close();
                         },
                         function(error) {
-                            console.log(error);
+                            //console.log(error);
                             //TODO error handling
                         });
                 }
@@ -757,7 +757,7 @@
 
                         },
                         function(error) {
-                            console.log('error' + error);
+                            //console.log('error' + error);
                         })
                 };
 
@@ -1102,11 +1102,14 @@
 
                             $scope.confirm = function() {
                                 $scope.progress = 'Save in progress....';
+                                $scope.isProcessing = true;
                                 saveSubnetwork().then(
                                     function(success) {
+                                        $scope.isProcessing = false;
                                         $modalInstance.close();
                                     },
                                     function(error) {
+                                        $scope.isProcessing = false;
                                         $scope.errors = error.data;
                                     })
                             };

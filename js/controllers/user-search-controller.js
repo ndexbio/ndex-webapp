@@ -20,7 +20,7 @@ ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties',
                     if(users.length == 0)
                         searchController.errors.push('No results found that match your criteria')
                     searchController.userSearchResults = users;
-                    console.log("Set userSearchResults");
+                    //console.log("Set userSearchResults");
                     
                 },
                 function (error) {
