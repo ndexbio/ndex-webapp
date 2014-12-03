@@ -178,6 +178,7 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
     $scope.main.signout = function () {
         ndexService.signOut();
         $scope.main.loggedIn = false;
+        sharedProperties.currentNetworkId = null;
         delete $scope.main.accountName;
         $location.path("/signIn");
     };

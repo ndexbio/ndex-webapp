@@ -689,6 +689,7 @@
                 $scope.createTask = function() {
                     //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
                     // UUID wasn't yet available.
+                    $scope.isProcessing = true;
                     myTask = $scope.task;
                     myTask.resource = $scope.externalId;
 
@@ -699,6 +700,7 @@
                         },
                         function(error) {
                             //console.log(error);
+                            $scope.isProcessing = false;
                             //TODO error handling
                         });
                 }
@@ -748,6 +750,7 @@
                 };
 
                 $scope.submit = function() {
+                    $scope.isProcessing = true;
                     ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
                         function(data) {
                             modalInstance.close();
@@ -757,6 +760,7 @@
 
                         },
                         function(error) {
+                            $scope.isProcessing = false;
                             //console.log('error' + error);
                         })
                 };
