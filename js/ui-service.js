@@ -140,6 +140,7 @@
             templateUrl: 'pages/directives/editUserModal.html',
             transclude: true,
             controller: function($scope, $modal, $location, ndexService, $route) {
+
                 var modalInstance;
                 $scope.errors = null;
 
@@ -159,14 +160,17 @@
                 };
 
                 $scope.submit = function() {
+                    $scope.isProcessing = true
                     ndexService.editUserProfile($scope.user,
                         function(userData){
+                            $scope.isProcessing = false;
                             $scope.user = {};
                             modalInstance.close();
                             $route.reload();
                             $location.path('/user/'+userData.externalId);
                         },
                         function(error){
+                            $scope.isProcessing = false;
                             $scope.errors = error;
                         });
                 };
@@ -696,6 +700,7 @@
                     ndexService.createTask(myTask,
                         function(data) {
                             ////console.log(data);
+                            $scope.false = true;
                             modalInstance.close();
                         },
                         function(error) {
