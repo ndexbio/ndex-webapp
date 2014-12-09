@@ -1,6 +1,6 @@
 ndexApp.controller('editNetworkPropertiesController', 
-	['$scope', '$routeParams', '$route', 'ndexService', 
-		function($scope, $routeParams, $route, ndexService){
+	['$scope', '$location', '$routeParams', '$route', 'ndexService',
+		function($scope, $location, $routeParams, $route, ndexService){
 	 //testing
 
 	//              Process the URL to get application state
