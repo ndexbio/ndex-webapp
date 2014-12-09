@@ -82,14 +82,17 @@
                 };
 
                 $scope.submit = function() {
+                    isProcessing = true;
                     ndexService.createGroup($scope.group,
                         function(groupData){
                             modalInstance.close();
                             ////console.log(groupData);
                             $location.path('/group/'+groupData.externalId);
+                            isProcessing = false;
                         },
                         function(error){
                             $scope.errors = error.data;
+                            isProcessing = false;
                         });
                 };
             }
@@ -160,6 +163,8 @@
                 };
 
                 $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
                     $scope.isProcessing = true
                     ndexService.editUserProfile($scope.user,
                         function(userData){
@@ -221,15 +226,20 @@
                 };
 
                 $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
                     ndexService.editGroupProfile($scope.group,
                         function(group){
                             $scope.group = {};
                             modalInstance.close();
                             $route.reload();
                             $location.path('/group/'+group.externalId);
+                            $scope.isProcessing = false;
                         },
                         function(error){
                             $scope.errors = error;
+                            $scope.isProcessing = false;
                         });
                 };
                 // ndexData is undefined at first pass. This seems to be a common problem
@@ -691,9 +701,12 @@
                 };
 
                 $scope.createTask = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
                     //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
                     // UUID wasn't yet available.
-                    $scope.isProcessing = true;
+
                     myTask = $scope.task;
                     myTask.resource = $scope.externalId;
 
@@ -755,6 +768,8 @@
                 };
 
                 $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
                     $scope.isProcessing = true;
                     ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
                         function(data) {
@@ -806,8 +821,13 @@
                 };
 
                 $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
                     if($scope.change.newPassword != $scope.change.newPasswordConfirm) {
+
                         $scope.errors = 'Passwords do not match';
+                        $scope.isProcessing = false;
                         return;
                     }
                     ndexService.changeAccountPassword($scope.change.password, $scope.change.newPassword,
@@ -815,9 +835,11 @@
                             $route.reload();
                             modalInstance.close();
                             modalInstance = null;
+                            $scope.isProcessing = false;
                         },
                         function(error){
                             $scope.errors =  error.data;
+                            $scope.isProcessing = false;
                         })
                 };
             }
@@ -848,13 +870,18 @@
                             };
 
                             $scope.confirm = function() {
+                                if( $scope.isProcessing )
+                                    return;
+                                $scope.isProcessing = true;
                                 ndexService.removeNetworkMember($scope.externalId, ndexUtility.getLoggedInUserExternalId(),
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $scope.isProcessing = false;
                                     },
                                     function(error) {
                                         $scope.errors = error.data;
+                                        $scope.isProcessing = false;
                                     });
                             };
                         }
@@ -885,21 +912,28 @@
                         templateUrl: 'confirmation-modal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+
                             $scope.title = 'Delete this Network'; //pass network name and add to title
                             $scope.message = 'This network will be permanently deleted from NDEx. Are you sure you want to delete?';
 
                             $scope.cancel = function() {
                                 $modalInstance.dismiss();
+                                $scope.isProcessing = true;
                             };
 
                             $scope.confirm = function() {
+                                if( $scope.isProcessing )
+                                    return;
+                                $scope.isProcessing = true;
                                 ndexService.deleteNetwork($scope.externalId,
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $scope.isProcessing = false;
                                     },
                                     function(error) {
                                         $scope.errors = error.data;
+                                        $scope.isProcessing = false;
                                     });
                             };
                         }
@@ -938,13 +972,18 @@
                             };
 
                             $scope.confirm = function() {
+                                if( $scope.isProcessing )
+                                    return;
+                                $scope.isProcessing = true;
                                 ndexService.removeGroupMember($scope.group.externalId, ndexUtility.getLoggedInUserExternalId(),
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $scope.isProcessing = false;
                                     },
                                     function(error) {
                                         $scope.errors = error.data;
+                                        $scope.isProcessing = false;
                                     });
                             };
                         }
@@ -983,13 +1022,18 @@
                             };
 
                             $scope.confirm = function() {
+                                if( $scope.isProcessing )
+                                    return;
+                                $scope.isProcessing = true;
                                 ndexService.deleteGroup($scope.externalId,
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $scope.isProcessing = false;
                                     },
                                     function(error) {
                                         $scope.errors = error.data;
+                                        $scope.isProcessing = false;
                                     });
                             };
                         }
@@ -1026,15 +1070,20 @@
                             };
 
                             $scope.confirm = function() {
+                                if( $scope.isProcessing )
+                                    return;
+                                $scope.isProcessing = true;
                                 ndexService.deleteUser(
                                     function(data) {
                                         $modalInstance.close();
                                         $scope.$emit('LOGGED_OUT'); //emit event to clear up variables in main controller scope, route refresh does not clear those variables, probably because they are probably of the rootscope
                                         $location.path('/');
                                         $route.reload();
+                                        $scope.isProcessing = false;
                                     },
                                     function(error) {
                                         $scope.errors = error.data;
+                                        $scope.isProcessing = false;
                                     });
                             };
                         }
@@ -1110,16 +1159,19 @@
                             };
 
                             $scope.confirm = function() {
-                                $scope.progress = 'Save in progress....';
+                                if( $scope.isProcessing )
+                                    return;
                                 $scope.isProcessing = true;
+                                $scope.progress = 'Save in progress....';
+
                                 saveSubnetwork().then(
                                     function(success) {
-                                        $scope.isProcessing = false;
                                         $modalInstance.close();
+                                        $scope.isProcessing = false;
                                     },
                                     function(error) {
-                                        $scope.isProcessing = false;
                                         $scope.errors = error.data;
+                                        $scope.isProcessing = false;
                                     })
                             };
                         }

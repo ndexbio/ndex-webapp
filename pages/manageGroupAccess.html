@@ -66,8 +66,9 @@
 				<button type="button" class="btn btn-sm btn-danger" ng-click='groupManager.loadMemberships()'>
 					Discard Changes
 				</button>
-			    <button type="button" class="btn btn-sm btn-success" ng-click='groupManager.save()'>Save Changes</button>
-			    <a ng-href='{{"#/group/"+groupManager.externalId}}' class="btn btn-sm btn-default">Done</a>
+			    <button type="button" class="btn btn-sm btn-success" ng-click='groupManager.save()'
+						ng-disabled="isProcessing">
+					Save Changes</button>
 			</div>
 
 		</div>

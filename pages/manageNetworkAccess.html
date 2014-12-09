@@ -75,8 +75,9 @@
 				<button type="button" class="btn btn-sm btn-danger" ng-click='networkManager.loadMemberships()'>
 					Discard Changes
 				</button>
-			    <button type="button" class="btn btn-sm btn-success" ng-click='networkManager.save()'>Save Changes</button>
-			    <a ng-href='{{"#/network/"+networkManager.externalId}}' class="btn btn-sm btn-default">Done</a>
+			    <button type="button" class="btn btn-sm btn-success" ng-click='networkManager.save()'
+						ng-disabled="isProcessing">
+					Save Changes</button>
 			</div>
 
 		</div>

@@ -1,15 +1,17 @@
     <div class="row-fluid">
         <div class="col-md-4 col-md-offset-4">
-            <form class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
+            <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
                 <hr>
                 <div class="form-group">
-                <input type="accountName" class="form-control" placeholder="Account Name" required autofocus ng-model="signIn.accountName">
+                <input name="accountName" type="accountName" class="form-control" placeholder="Account Name" required autofocus ng-model="signIn.accountName">
                 </div>
                 <div class="form-group">
-                <input type="password" class="form-control" placeholder="Password" required ng-model="signIn.password">
+                <input name="password" type="password" class="form-control" placeholder="Password" required ng-model="signIn.password">
                 </div>
                
-                <button class="btn btn-default btn-block" type="submit">Sign in</button>
+                <button class="btn btn-default btn-block" type="submit"
+                        ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
+                    Sign in</button>
             </form>
             <span class="text-danger">{{signIn.message}}</span>
 
@@ -20,7 +22,7 @@
 
 <script type="text/ng-template" id="signUp.html">
     <div class="modal-content">
-        <form role="form" ng-submit="signIn.signUp()">
+        <form name="signUpForm" role="form" ng-submit="signIn.signUp()">
             <div class="modal-header">
             <h4>Sign Up for NDEx</h4>
             </div>
@@ -29,29 +31,29 @@
                 
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <input type="text" class="form-control" ng-model="signIn.newUser.firstName" 
-                                placeholder="First Name">
+                            <input name="firstName" type="text" class="form-control" ng-model="signIn.newUser.firstName"
+                                placeholder="First Name" required>
                         </div>
                         <div class="form-group col-md-6">
-                            <input type="text" class="form-control" ng-model="signIn.newUser.lastName" 
-                                placeholder="Last Name">
+                            <input name="lastName" type="text" class="form-control" ng-model="signIn.newUser.lastName"
+                                placeholder="Last Name" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" ng-model="signIn.newUser.accountName" 
-                            placeholder="Account Name (e.g. dexterpratt)">
+                        <input name="accountName" type="text" class="form-control" ng-model="signIn.newUser.accountName"
+                            placeholder="Account Name (e.g. dexterpratt)" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" class="form-control" ng-model="signIn.newUser.emailAddress" 
-                            placeholder="Email Address">
+                        <input name="email" type="email" class="form-control" ng-model="signIn.newUser.emailAddress"
+                            placeholder="Email Address" required>
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" ng-model="signIn.newUser.password" 
-                            placeholder="Password">
+                        <input name="password" type="password" class="form-control" ng-model="signIn.newUser.password"
+                            placeholder="Password" required>
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" ng-model="signIn.newUser.passwordConfirm" 
-                            placeholder="Confirm Password">
+                        <input name="confirmPassword" type="password" class="form-control" ng-model="signIn.newUser.passwordConfirm"
+                            placeholder="Confirm Password" required>
                     </div>
                 
                 <div class='text-danger'>
@@ -62,7 +64,12 @@
             </div>
             <div class="modal-footer">
                 <a class="btn btn-sm btn-danger" ng-click="signIn.cancelSignUp()">Cancel</a>
-                <button class="btn btn-sm btn-default" type ="submit" >Sign Up</button>
+                <button class="btn btn-sm btn-default" type ="submit"
+                        ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
+                        || !signUpForm.accountName.$valid  || !signUpForm.email.$valid
+                        || !signUpForm.password.$valid || !signUpForm.confirmPassword.$valid
+                        || isProcessing" >
+                    Sign Up</button>
             </div>
         </form>
     </div>

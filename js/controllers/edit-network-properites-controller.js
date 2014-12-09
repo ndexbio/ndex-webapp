@@ -169,7 +169,8 @@ ndexApp.controller('editNetworkPropertiesController',
                 	var pair = editor.propertyValuePairs[ii];
 
                 	var arr = pair.predicateString.split(':');
-                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www') {
+
+                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www' && isNaN( parseInt(arr[0].slice(-1)) )) {
                 		pair.predicateString = arr[1];
                 		pair.predicatePrefix = arr[0]
                 	}
@@ -178,7 +179,7 @@ ndexApp.controller('editNetworkPropertiesController',
 	                }
 
                 	var arr = pair.value.split(':');
-                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www') {
+                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www' && isNaN( parseInt(arr[0].slice(-1)) )) {
                 		pair.value = arr[1];
                 		pair.valuePrefix = arr[0]
                 	}

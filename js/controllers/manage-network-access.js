@@ -22,6 +22,9 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.newUsers = {};
 
 	networkManager.save = function() {
+		if( $scope.isProcessing )
+			return;
+		$scope.isProcessing = false;
 		// create a promise from the $q service
 		var deferred = $q.defer(); // save the instance to use the deferred API to resolve the promise
 		var promise = deferred.promise; // used to create a dynamic sequentail call of following api
@@ -62,6 +65,8 @@ ndexApp.controller('manageNetworkAccessController',
 
 		// fire the promise chain
 		deferred.resolve('resolve this promise and set off the promise chain')
+		$location.path("network/"+ $scope.networkManager.externalId);
+		$scope.isProcessing = false;
 	};
 
 

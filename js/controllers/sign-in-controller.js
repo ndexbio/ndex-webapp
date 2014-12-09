@@ -30,9 +30,13 @@ ndexApp.controller('signInController',
     }
 
     $scope.signIn.signUp = function(){
+        if( $scope.isProcessing )
+            return;
+        $scope.isProcessing = true;
         //check if passwords match, else throw error
         if($scope.signIn.newUser.password != $scope.signIn.newUser.passwordConfirm) {
             $scope.signIn.signUpErrors = 'Passwords do not match';
+            $scope.isProcessing = false;
             return;
         }
 
@@ -42,9 +46,11 @@ ndexApp.controller('signInController',
                 $scope.$emit('LOGGED_IN');
                 $scope.signIn.cancelSignUp();// doesnt really cancel
                 $location.path('user/'+userData.accountName);
+                $scope.isProcessing = false;
             },
             function(error) {
                 $scope.signIn.signUpErrors = error.data;
+                $scope.isProcessing = false;
                 //console.log(error)
             });
 

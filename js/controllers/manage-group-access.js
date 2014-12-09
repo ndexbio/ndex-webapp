@@ -22,6 +22,9 @@ ndexApp.controller('manageGroupAccessController',
 	groupManager.newUsers = {};
 
 	groupManager.save = function() {
+		if( $scope.isProcessing )
+			return;
+		$scope.isProcessing = true;
 		//check out network version for info on promise implementation
 
 		var deferred = $q.defer();
@@ -56,6 +59,8 @@ ndexApp.controller('manageGroupAccessController',
 			});
 		
 		deferred.resolve('trigger the chain');
+		$location.path("group/"+$scope.groupManager.externalId);
+		$scope.isProcessing = false;
 	};
 
 
