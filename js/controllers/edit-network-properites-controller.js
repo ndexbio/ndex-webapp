@@ -26,6 +26,9 @@ ndexApp.controller('editNetworkPropertiesController',
 	}
 
 	editor.save = function() {
+        if( $scope.isProcessing )
+            return;
+        $scope.isProcessing = true;
 		editor.propertyValuePairs.splice(editor.propertyValuePairs.length - 1, 1);
 
 		var length = editor.propertyValuePairs.length;
@@ -40,10 +43,13 @@ ndexApp.controller('editNetworkPropertiesController',
 
 		ndexService.setNetworkProperties(networkExternalId, editor.propertyValuePairs,
 			function(data) {
-				$route.reload();
+				//$route.reload();
+                $location.path("network/"+networkExternalId);
+                $scope.isProcessing = false;
 			},
 			function(error) {
-				editor.errors.push(error)
+				editor.errors.push(error);
+                $scope.isProcessing = false;
 			})
 	}
 
