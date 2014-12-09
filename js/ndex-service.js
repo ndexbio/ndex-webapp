@@ -1446,7 +1446,7 @@
                     layout: {
                         //name : 'circle',
                         //padding: 10
-
+ /*
                         name: 'arbor',
                         liveUpdate: true, // whether to show the layout as it's running
                         ready: undefined, // callback on layoutready
@@ -1478,9 +1478,9 @@
                             var e = energy;
                             return (e.max <= 0.5) || (e.mean <= 0.3);
                         }
-
-                        //name: 'cose',
-                        //padding: 10
+ */
+                        name: 'cose',
+                        padding: 10
                     },
 
                     elements: eles,
