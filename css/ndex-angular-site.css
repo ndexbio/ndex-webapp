@@ -172,13 +172,27 @@ textarea
  Home / Sign-in Styles
  ******************************************************************************/
 
+.home-margins
+{
+    margin: 20px;
+    padding: 10px;
+}
 .home-box
 {
     border-radius: 20px;
     border: 3px solid cornflowerblue;
-    height: 300px;
-    margin: 20px;
-    padding: 10px;
+    min-height: 300px;
+}
+
+.home-text
+{
+    font-weight: 150;
+    font-size: 18px;
+}
+
+.home-support
+{
+
 }
 
 /******************************************************************************
@@ -227,6 +241,7 @@ textarea
 /******************************************************************************
  * Navigation styling
  ******************************************************************************/
+
 .navbar-fixed-top
 {
     font-size: 1.2em;

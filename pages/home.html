@@ -7,40 +7,74 @@
     <div class='col-md-8'></div>
 </div>
 <div class="row">
-    <div class='col-md-6 AlignCenter '>
-        <div class="home-box">
-        <p ng-show="main.site=='local'">
-            NDEx Web User Interface deployed at localhost on port {{main.port}}
-        </p>
-        <p ng-show="main.site=='production'">
-            Welcome to the NDEx Public Website
-        </p>
-        <p ng-show="main.site=='test'">
-            Welcome to the NDEx Test Website at {{main.host}}<br>
-            This is a stable but <b>pre-release</b> version of NDEx for testing purposes.<br>
-            Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.
-        </p>
-        <p ng-show="main.site=='default'">
-            Welcome to NDEx at {{main.host}}
-        </p>
+    <div class='col-md-7'>
+        <div class="home-margins">
+            <div class="home-text">
+                <p ng-show="main.site=='local1'">
+                    NDEx Web App deployed at localhost on port {{main.port}}
+                </p>
+
+                <p ng-show="main.site=='production'">
+                    Welcome to the NDEx Public Website
+                </p>
+
+                <p ng-show="main.site=='local'">
+                    <p>Welcome to the NDEx Test Website at {{main.host}}</p>
+                    This is a stable but <b>pre-release</b> version of NDEx for testing purposes.
+                    Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.
+                </p>
+
+                <p ng-show="main.site=='default'">
+                    Welcome to NDEx at {{main.host}}
+                </p>
+            </div>
+            <div class="home-support">
+                <hr>
+                <p>Primary support for NDEx is from:</p>
+                <ul>
+                    <li><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> (U24
+                        CA-184427)
+                    </li>
+                    <li>F. Hoffmann-La Roche Ltd</li>
+                    <li>Janssen Research and Development, LLC</li>
+                    <li>Pfizer, Inc.</li>
+                </ul>
+                <p>NDEx is also supported by the <a href="http://nrnb.org" target="_blank">National Resource for Network
+                    Biology</a> (P41 GM103504).</p>
+            </div>
         </div>
     </div>
-    <div class='col-md-6'>
-        <div class="home-box">
+    <div class='col-md-5'>
+        <div class="home-box home-margins">
             <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
-                <p>You can search and browse public networks in NDEx without signing in. Use the search box at the top of the page to get started</p>
-                <p>To take advantage of Don't have an account? <a ng-click="signIn.openSignUp()">Sign Up</a></p>
+                <p>You can search and browse public networks in NDEx without signing in. Use the search box at the top
+                    of the page to get started</p>
                 <hr>
+                <p>Sign in to your NDEx account to use all the features.</p>
+
+
                 <div class="form-group">
-                    <input name="accountName" type="accountName" class="form-control" placeholder="Account Name" required autofocus ng-model="signIn.accountName">
+                    <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
+                           required autofocus ng-model="signIn.accountName">
                 </div>
                 <div class="form-group">
-                    <input name="password" type="password" class="form-control" placeholder="Password" required ng-model="signIn.password">
+                    <input name="password" type="password" class="form-control" placeholder="Password" required
+                           ng-model="signIn.password">
                 </div>
                 <div class="AlignRight">
-                <button class="btn btn btn-primary" type="submit"
-                        ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
-                    Sign in</button>
+                    <button class="btn btn btn-primary" type="submit"
+                            ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
+                        Sign in
+                    </button>
+                </div>
+                <hr>
+                <div class="AlignLeft">
+                    Need an account?
+                </div>
+                <div class="AlignRight">
+                    <button class="btn btn btn-primary" ng-click="signIn.openSignUp()">
+                        Sign Up
+                    </button>
                 </div>
             </form>
             <span class="text-danger">{{signIn.message}}</span>
@@ -48,22 +82,6 @@
     </div>
 </div>
 
-<div class="row">
-    <div class='col-md-3'></div>
-    <div class='col-md-6'>
-        <h4>Primary support for NDEx is from:</h4>
-        <ul>
-            <li><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> (U24 CA-184427)
-            </li>
-            <li>F. Hoffmann-La Roche Ltd</li>
-            <li>Janssen Research and Development, LLC</li>
-            <li>Pfizer, Inc.</li>
-        </ul>
-        <p>NDEx is also supported by the <a href="http://nrnb.org"  target="_blank">National Resource for Network
-            Biology</a> (P41 GM103504).</p>
-    </div>
-    <div class='col-md-3'></div>
-</div>
 
 <script type="text/ng-template" id="signUp.html">
     <div class="modal-content">
@@ -72,6 +90,7 @@
                 <h4>Sign Up for NDEx</h4>
             </div>
             <span style="position: relative; left: 20px;"> All fields are required.</span>
+
             <div class="modal-body text-center">
 
                 <div class="row">
@@ -97,7 +116,8 @@
                            placeholder="Password" required>
                 </div>
                 <div class="form-group">
-                    <input name="confirmPassword" type="password" class="form-control" ng-model="signIn.newUser.passwordConfirm"
+                    <input name="confirmPassword" type="password" class="form-control"
+                           ng-model="signIn.newUser.passwordConfirm"
                            placeholder="Confirm Password" required>
                 </div>
 
@@ -109,12 +129,13 @@
             </div>
             <div class="modal-footer">
                 <a class="btn btn-sm btn-danger" ng-click="signIn.cancelSignUp()">Cancel</a>
-                <button class="btn btn-sm btn-default" type ="submit"
+                <button class="btn btn-sm btn-default" type="submit"
                         ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
                         || !signUpForm.accountName.$valid  || !signUpForm.email.$valid
                         || !signUpForm.password.$valid || !signUpForm.confirmPassword.$valid
-                        || isProcessing" >
-                    Sign Up</button>
+                        || isProcessing">
+                    Sign Up
+                </button>
             </div>
         </form>
     </div>
