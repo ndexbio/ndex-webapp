@@ -10,15 +10,15 @@
     <div class='col-md-7'>
         <div class="home-margins">
             <div class="home-text">
-                <p ng-show="main.site=='local1'">
+                <p ng-show="main.site=='local'">
                     NDEx Web App deployed at localhost on port {{main.port}}
                 </p>
 
                 <p ng-show="main.site=='production'">
-                    Welcome to the NDEx Public Website
+                    <h4>Welcome to the NDEx Public Website</h4>
                 </p>
 
-                <p ng-show="main.site=='local'">
+                <p ng-show="main.site=='test'">
                     <p>Welcome to the NDEx Test Website at {{main.host}}</p>
                     This is a stable but <b>pre-release</b> version of NDEx for testing purposes.
                     Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.
