@@ -2,28 +2,56 @@
     <div class='col-md-2'></div>
     <div class='col-md-8 AlignCenter'>
         <img src='img/NDEx-horizontal-transparent.png'
-             style="width:100%; max-height:300; align:center"/>
-
-        <p>
-            <span ng-show="main.accountName"><a ng-href="{{'#user/' + main.getCurrentUser()}}">My Account</a></span>
-        <span ng-show="!main.accountName">
-            <a ng-href="#signIn">Click Here to Sign In</a>
-        </span> |
-        <span>
-            <a ng-href="#about">About NDEx</a>
-        </span>
-            | <span><a target="_blank" href="https://github.com/cytoscape/ndex/wiki">NDEx Documentation</a></span>
-            | <span><a ng-href="#api">API</a></span>
-        </p>
+             style="width:100%; max-height:200; align:center"/>
     </div>
     <div class='col-md-8'></div>
 </div>
 <div class="row">
+    <div class='col-md-6 AlignCenter '>
+        <div class="home-box">
+        <p ng-show="main.site=='local'">
+            NDEx Web User Interface deployed at localhost on port {{main.port}}
+        </p>
+        <p ng-show="main.site=='production'">
+            Welcome to the NDEx Public Website
+        </p>
+        <p ng-show="main.site=='test'">
+            Welcome to the NDEx Test Website at {{main.host}}<br>
+            This is a stable but <b>pre-release</b> version of NDEx for testing purposes.<br>
+            Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.
+        </p>
+        <p ng-show="main.site=='default'">
+            Welcome to NDEx at {{main.host}}
+        </p>
+        </div>
+    </div>
+    <div class='col-md-6'>
+        <div class="home-box">
+            <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
+                <p>You can search and browse public networks in NDEx without signing in. Use the search box at the top of the page to get started</p>
+                <p>To take advantage of Don't have an account? <a ng-click="signIn.openSignUp()">Sign Up</a></p>
+                <hr>
+                <div class="form-group">
+                    <input name="accountName" type="accountName" class="form-control" placeholder="Account Name" required autofocus ng-model="signIn.accountName">
+                </div>
+                <div class="form-group">
+                    <input name="password" type="password" class="form-control" placeholder="Password" required ng-model="signIn.password">
+                </div>
+                <div class="AlignRight">
+                <button class="btn btn btn-primary" type="submit"
+                        ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
+                    Sign in</button>
+                </div>
+            </form>
+            <span class="text-danger">{{signIn.message}}</span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class='col-md-3'></div>
     <div class='col-md-6'>
-        <h4>Support for NDEx</h4>
-
-        <p>Primary support for NDEx is from
+        <h4>Primary support for NDEx is from:</h4>
         <ul>
             <li><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> (U24 CA-184427)
             </li>
@@ -31,10 +59,64 @@
             <li>Janssen Research and Development, LLC</li>
             <li>Pfizer, Inc.</li>
         </ul>
-        </p>
         <p>NDEx is also supported by the <a href="http://nrnb.org"  target="_blank">National Resource for Network
             Biology</a> (P41 GM103504).</p>
     </div>
     <div class='col-md-3'></div>
 </div>
+
+<script type="text/ng-template" id="signUp.html">
+    <div class="modal-content">
+        <form name="signUpForm" role="form" ng-submit="signIn.signUp()">
+            <div class="modal-header">
+                <h4>Sign Up for NDEx</h4>
+            </div>
+            <span style="position: relative; left: 20px;"> All fields are required.</span>
+            <div class="modal-body text-center">
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <input name="firstName" type="text" class="form-control" ng-model="signIn.newUser.firstName"
+                               placeholder="First Name" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <input name="lastName" type="text" class="form-control" ng-model="signIn.newUser.lastName"
+                               placeholder="Last Name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input name="accountName" type="text" class="form-control" ng-model="signIn.newUser.accountName"
+                           placeholder="Account Name (e.g. dexterpratt)" required>
+                </div>
+                <div class="form-group">
+                    <input name="email" type="email" class="form-control" ng-model="signIn.newUser.emailAddress"
+                           placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <input name="password" type="password" class="form-control" ng-model="signIn.newUser.password"
+                           placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <input name="confirmPassword" type="password" class="form-control" ng-model="signIn.newUser.passwordConfirm"
+                           placeholder="Confirm Password" required>
+                </div>
+
+                <div class='text-danger'>
+                    <strong>
+                        {{signIn.signUpErrors}}
+                    </strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-sm btn-danger" ng-click="signIn.cancelSignUp()">Cancel</a>
+                <button class="btn btn-sm btn-default" type ="submit"
+                        ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
+                        || !signUpForm.accountName.$valid  || !signUpForm.email.$valid
+                        || !signUpForm.password.$valid || !signUpForm.confirmPassword.$valid
+                        || isProcessing" >
+                    Sign Up</button>
+            </div>
+        </form>
+    </div>
+</script>
 

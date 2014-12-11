@@ -63,7 +63,6 @@
     <script src="js/script.js"></script>
 
     <!-- page controllers -->
-    <script src="js/controllers/sign-in-controller.js"></script>
     <script src="js/controllers/network-search-controller.js"></script>
     <script src="js/controllers/network-controller.js"></script>
     <script src="js/controllers/user-controller.js"></script>
@@ -91,7 +90,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#" style="max-height: 40px; padding-top: 0; padding-bottom: 0;"> 
+            <a class="navbar-brand" href="http://home.ndexbio.org" target="NDEx Home" style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
             <div style="
                 background-image: url('img/NDEx-horizontal-transparent.png');
                 background-repeat: no-repeat;
@@ -128,33 +127,49 @@
                 </form>
             </div>
         <ul class="nav navbar-nav navbar-right">
+
             <li ng-show="main.getCurrentNetwork() != null"
                 ng-class="{active:main.url.url().search('/network') != -1}">
-                <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a></li>
+                <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a>
+            </li>
+
             <li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}">
-                <a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a></li>
+                <a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a>
+            </li>
+
             <li ng-show="main.loggedIn" class="dropdown"><a href class="dropdown-toggle"><span class="caret"></span></a>
                  <ul class="dropdown-menu" role="menu">
-                    <li><a ng-href="#upload">Upload</a></li>
-                    <li class="divider"></li>
                     <li><a ng-href="#" ng-click="main.signout()">Sign out</a></li>
                   </ul>
             </li>
             <!-- Show sign in if no user, sign out otherwise -->
-            <li ng-show="!main.loggedIn"
-                ng-class="{active:main.url.url() == '/signIn'}">
-                <a ng-href="#signIn">Sign in</a>
+            <li ng-hide="main.loggedIn"
+                ng-class="{active:main.url.url() == '/'}">
+                <a ng-href="#">Sign in</a>
             </li>
         </ul>
         </div>
     </div>
 </nav>
+
 <!-- the footer as a fixed bottom nav bar -->
-<nav class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
-        <!-- <span class="pull-right">&copy; Cytoscape Consortium 2014</span>    -->
-        <a href="mailto:support@ndexbio.org" class="pull-left">Support</a>
+<nav class="navbar navbar-default navbar-fixed-bottom footer-bar AlignCenter">
+    <div class='footer-content'>
+        <span>
+            <a href="http://home.ndexbio.org/about-ndex-2/" target="NDEx Home">About NDEx</a>
+        </span>
+        |
+        <span>
+            <a href="http://home.ndexbio.org/tutorials/" target="NDEx Home">Documentation</a>
+        </span>
+        |
+        <span><a ng-href="#api">API</a></span>
+        |
+        <span>
+            <a href="http://home.ndexbio.org/report-a-bug/" target="NDEx Home">Report a Bug</a>
+        </span>
     </div>
+
 </nav>
 
 <div id="main" class="container">
@@ -163,9 +178,11 @@
     <div ng-view></div>
 </div>
 
+<!--
 <footer class="text-center">
 
 </footer>
+-->
 
 </body>
 

@@ -72,15 +72,10 @@ ndexApp.service('sharedProperties', function () {
 ndexApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
 
-        // route for the home page
+        // route for the home page (where sign-in is handled)
         .when('/', {
             templateUrl: 'pages/home.html',
             controller: ''
-        })
-
-        // route for the about page
-        .when('/about', {
-            templateUrl: 'pages/about.html'
         })
 
         // route for the api page
@@ -131,12 +126,6 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'uploadController'
         })
 
-        // route for the signIn page
-        .when('/signIn', {
-            templateUrl: 'pages/signIn.html',
-            controller: 'signInController'
-        })
-
         // route to edit network custom properties
         .when('/properties/network/:identifier', {
             templateUrl: 'pages/editNetworkProperties.html',
@@ -155,7 +144,8 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', function(ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route) {
+ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route',
+    function(ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route) {
 
     $scope.main = {};
 
@@ -175,12 +165,34 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         delete $scope.main.accountName;
     })
 
+    // This checks for a successful transition to the home page.
+    // If the user is logged in, then redirect to their account page
+    //$scope.$on('$routeChangeSuccess', function(){
+    //    if($scope.main.loggedIn){
+    //        var externalId = ndexUtility.getLoggedInUserExternalId();
+    //        if (externalId)
+    //            $location.path("/user/"+externalId);
+    //    }
+    //})
+
+    $scope.main.host = $location.host();
+    $scope.main.port = $location.port();
+    if($scope.main.host == 'localhost')
+        $scope.main.site = 'local';
+    else if($scope.main.host == 'www.ndexbio.org')
+        $scope.main.site = 'production';
+    else if($scope.main.host == 'test.ndexbio.org')
+        scope.main.site = 'test';
+    else
+        scope.main.site = 'default';
+
+
     $scope.main.signout = function () {
-        ndexService.signOut();
+        ndexUtility.clearUserCredentials();
         $scope.main.loggedIn = false;
         sharedProperties.currentNetworkId = null;
         delete $scope.main.accountName;
-        $location.path("/signIn");
+        $location.path("/home");
     };
 
     //navbar
@@ -236,8 +248,63 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         $scope.main.loggedIn = true;
     }
 
-   
+    //---------------------------------------------
+    // SignIn / SignUp Handler
+    //---------------------------------------------
 
+    $scope.signIn = {};
+    $scope.signIn.newUser = {};
+
+    $scope.signIn.submitSignIn = function () {
+        ndexService.signIn($scope.signIn.accountName, $scope.signIn.password).success(function(userData) {
+            sharedProperties.setCurrentUser(userData.externalId, userData.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+            $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
+            $location.path("/user/"+userData.externalId);
+        }).error(function(error) {
+            $scope.signIn.message = error;
+        });
+    };
+
+    $scope.signIn.openSignUp = function(){
+        $scope.signIn.modalInstance = $modal.open({
+            templateUrl: 'signUp.html',
+            scope: $scope,
+            backdrop: 'static'
+        });
+    }
+
+    $scope.signIn.cancelSignUp = function(){
+        $scope.signIn.newUser = {};
+        $scope.signIn.modalInstance.close();
+        $scope.signIn.modalInstance = null;
+    }
+
+    $scope.signIn.signUp = function(){
+        if( $scope.isProcessing )
+            return;
+        $scope.isProcessing = true;
+        //check if passwords match, else throw error
+        if($scope.signIn.newUser.password != $scope.signIn.newUser.passwordConfirm) {
+            $scope.signIn.signUpErrors = 'Passwords do not match';
+            $scope.isProcessing = false;
+            return;
+        }
+
+        ndexService.createUser($scope.signIn.newUser,
+            function(userData) {
+                sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
+                $scope.$emit('LOGGED_IN');
+                $scope.signIn.cancelSignUp();// doesnt really cancel
+                $location.path('user/'+userData.accountName);
+                $scope.isProcessing = false;
+            },
+            function(error) {
+                $scope.signIn.signUpErrors = error.data;
+                $scope.isProcessing = false;
+                //console.log(error)
+            });
+
+    }
 
 }]);
 

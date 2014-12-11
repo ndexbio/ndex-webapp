@@ -30,14 +30,21 @@
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a trigger-create-group-modal="Create Group"></a></li>
-                    <li><a><edit-user-modal 
+                    <li>
+                        <a ng-href="#upload">Upload Networks</a>
+                    </li>
+                    <li>
+                        <a trigger-create-group-modal="Create Group"></a>
+                    </li>
+                    <li>
+                        <a><edit-user-modal
                                 ndex-data='userController.displayedUser'>
                                 Edit Profile
                             </edit-user-modal>
                         </a>
                     </li>
-                    <li><a><change-password-modal>
+                    <li>
+                        <a><change-password-modal>
                                 Change Password
                             </change-password-modal>
                         </a>
