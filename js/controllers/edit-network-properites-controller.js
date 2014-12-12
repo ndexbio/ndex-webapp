@@ -185,19 +185,15 @@ ndexApp.controller('editNetworkPropertiesController',
 
 
 
+                        indicesToRemove = [];
 
                         for(var ii=0; ii<editor.propertyValuePairs.length; ii++) {
                             var pair = editor.propertyValuePairs[ii];
 
                             while (pair.predicateString == null || pair.value == null) {
-                                propertyValuePairs.splice(ii, 1);
-                                if( ii < editor.propertyValuePairs.length )
-                                    pair = editor.propertyValuePairs[ii];
-                                else
-                                    continue;
+                                indicesToRemove.push(ii);
+                                continue;
                             }
-
-                            editor.propertyValuePairs.
 
                             var colonIndex = pair.predicateString.indexOf(':');
 
@@ -223,6 +219,9 @@ ndexApp.controller('editNetworkPropertiesController',
                                 pair.valuePrefix = 'none';
                             }
                         }
+
+                        for( var i = indicesToRemove.length - 1; i >= 0; i-- )
+                            editor.propertyValuePairs.splice(i, 1);
 
                         editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
                         // todo add local to list
