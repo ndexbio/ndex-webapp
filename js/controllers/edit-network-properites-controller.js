@@ -170,33 +170,57 @@ ndexApp.controller('editNetworkPropertiesController',
             function(network) {
                 editor.propertyValuePairs = network.properties;
 
-                var length = editor.propertyValuePairs.length;
-                for(var ii=0; ii<length; ii++) {
-                	var pair = editor.propertyValuePairs[ii];
+                ndexService.getNetworkNamespaces(networkExternalId,
+                    function(namespaces) {
 
-                	var arr = pair.predicateString.split(':');
+                        editor.namespaces = namespaces;
 
-                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www' && isNaN( parseInt(arr[0].slice(-1)) )) {
-                		pair.predicateString = arr[1];
-                		pair.predicatePrefix = arr[0]
-                	}
-                	else {
-	                	pair.predicatePrefix = 'none';
-	                }
+                        var namespaceSet = {}
+                        for( var i = 0; i < namespaces.length; i++ )
+                        {
+                            namespace = namespaces[i];
+                            namespaceSet[namespace.prefix] = true;
+                        }
 
-                	var arr = pair.value.split(':');
-                	if(arr.length > 1 && arr[0] != 'http' && arr[0] != 'www' && isNaN( parseInt(arr[0].slice(-1)) )) {
-                		pair.value = arr[1];
-                		pair.valuePrefix = arr[0]
-                	}
-                	else {
-	                	pair.valuePrefix = 'none';
-	                }
-                }
 
-                editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
-                // todo add local to list
-                editor.networkName = network.name;
+
+
+                        var length = editor.propertyValuePairs.length;
+                        for(var ii=0; ii<length; ii++) {
+                            var pair = editor.propertyValuePairs[ii];
+
+                            var colonIndex = pair.predicateString.indexOf(':');
+
+                            if( colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet )
+                            {
+                                pair.predicatePrefix = pair.predicateString.substring(0, colonIndex);
+                                pair.predicateString = pair.predicateString.substring(colonIndex + 1);
+                            }
+                            else
+                            {
+                                pair.predicatePrefix = 'none';
+                            }
+
+
+                            colonIndex = pair.value.indexOf(':');
+
+                            if( colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet )
+                            {
+                                pair.valuePrefix = pair.value.substring(0, colonIndex);
+                                pair.value = pair.value.substring(colonIndex + 1);
+                            }
+                            else {
+                                pair.valuePrefix = 'none';
+                            }
+                        }
+
+                        editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
+                        // todo add local to list
+                        editor.networkName = network.name;
+                    },
+                    function(error) {
+                        editor.errors.push(error)
+                    });
             }
         )
         .error(
@@ -216,14 +240,6 @@ ndexApp.controller('editNetworkPropertiesController',
             
         },
         function(error){
-            editor.errors.push(error)
-        });
-
-    ndexService.getNetworkNamespaces(networkExternalId, 
-        function(namespaces) {
-            editor.namespaces = namespaces;
-        },
-        function(error) {
             editor.errors.push(error)
         });
 
