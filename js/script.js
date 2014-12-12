@@ -8,7 +8,7 @@ var cUser;
 var cTasks;
 
 //Internet Explorer solution???
-ndexApp.config(['$httpProvider', function($httpProvider) {
+ndexApp.config(['$httpProvider', function ($httpProvider) {
 
     //First, test if this is IE. If it is not, don't mess with caching.
     var ua = window.navigator.userAgent;
@@ -50,18 +50,18 @@ ndexApp.service('sharedProperties', function () {
             this.currentUserId = value;
             this.accountName = accountName;
         },
-        setDoSearch: function() {
+        setDoSearch: function () {
             this.Search = true;
         },
-        doSearch: function() {
+        doSearch: function () {
             var val = this.Search
             this.Search = false;
             return val;
         },
-        setSearchString: function(searchString) {
+        setSearchString: function (searchString) {
             this.searchString = searchString
         },
-        getSearchString: function() {
+        getSearchString: function () {
             return this.searchString;
         }
     }
@@ -145,168 +145,172 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
 
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route',
-    function(ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route) {
+    function (ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route) {
 
-    $scope.main = {};
+        $scope.main = {};
 
-    $scope.main.url = $location; //expose the service to the scope for nav
-    $scope.main.isCollapsed = true;  //angular-ui bootstrap collapse implementation
+        $scope.main.url = $location; //expose the service to the scope for nav
+        $scope.main.isCollapsed = true;  //angular-ui bootstrap collapse implementation
 
-    $scope.main.loggedIn = false;
-
-    $scope.$on('LOGGED_IN', function() {
-        //listener for changes in log in.
-        $scope.main.loggedIn = true;
-        $scope.main.accountName = sharedProperties.getCurrentUserAccountName();
-    });
-
-    $scope.$on('LOGGED_OUT', function() {
         $scope.main.loggedIn = false;
-        delete $scope.main.accountName;
-    })
 
-    // This checks for a successful transition to the home page.
-    // If the user is logged in, then redirect to their account page
-    //$scope.$on('$routeChangeSuccess', function(){
-    //    if($scope.main.loggedIn){
-    //        var externalId = ndexUtility.getLoggedInUserExternalId();
-    //        if (externalId)
-    //            $location.path("/user/"+externalId);
-    //    }
-    //})
+        $scope.$on('LOGGED_IN', function () {
+            //listener for changes in log in.
+            $scope.main.loggedIn = true;
+            $scope.main.accountName = sharedProperties.getCurrentUserAccountName();
+        });
 
-    $scope.main.host = $location.host();
-    $scope.main.port = $location.port();
-    if($scope.main.host == 'localhost')
-        $scope.main.site = 'local';
-    else if($scope.main.host == 'www.ndexbio.org')
-        $scope.main.site = 'production';
-    else if($scope.main.host == 'test.ndexbio.org')
-        scope.main.site = 'test';
-    else
-        scope.main.site = 'default';
+        $scope.$on('LOGGED_OUT', function () {
+            $scope.main.loggedIn = false;
+            delete $scope.main.accountName;
+        })
+
+        // This checks for a successful transition to the home page.
+        // If the user is logged in, then redirect to their account page
+        //$scope.$on('$routeChangeSuccess', function(){
+        //    if($scope.main.loggedIn){
+        //        var externalId = ndexUtility.getLoggedInUserExternalId();
+        //        if (externalId)
+        //            $location.path("/user/"+externalId);
+        //    }
+        //})
+
+        $scope.main.host = $location.host();
+        $scope.main.port = $location.port();
+        $scope.main.defaultSite = false;
+        $scope.main.localSite = false;
+        $scope.main.testSite = false;
+        $scope.main.productionSite = false;
+        if ($scope.main.host == 'localhost')
+            $scope.main.localSite = true;
+        else if ($scope.main.host == 'www.ndexbio.org')
+            $scope.main.productionSite = true;
+        else if ($scope.main.host == 'test.ndexbio.org')
+            $scope.main.testSite = true;
+        else
+            $scope.main.defaultSite = true;
 
 
-    $scope.main.signout = function () {
-        ndexUtility.clearUserCredentials();
-        $scope.main.loggedIn = false;
-        sharedProperties.currentNetworkId = null;
-        delete $scope.main.accountName;
-        $location.path("/home");
-    };
+        $scope.main.signout = function () {
+            ndexUtility.clearUserCredentials();
+            $scope.main.loggedIn = false;
+            sharedProperties.currentNetworkId = null;
+            delete $scope.main.accountName;
+            $location.path("/home");
+        };
 
-    //navbar
-    $scope.main.getCurrentNetwork = function() {
-        return sharedProperties.getCurrentNetworkId();
-    };
-    $scope.main.getCurrentUser = function() {
-        return sharedProperties.getCurrentUserAccountName();
-    };
-  
-    $scope.main.searchType = 'Networks';
-    $scope.main.searchString = '';
-    $scope.main.search = function(){
-        ////console.log("navbar search");
-        sharedProperties.setDoSearch();
-        //could user url instead, good for refresh
-        sharedProperties.setSearchString($scope.main.searchString);
-        
-        if($scope.main.searchType == 'Networks') {
-            if($location.path() == '/searchNetworks')
-                $route.reload();
-            else
-                $location.path("/searchNetworks");
-        } else if($scope.main.searchType == 'Users') {
-            if($location.path() == '/searchUsers')
-                $route.reload();
-            else
-                $location.path("/searchUsers");
-        } else if($scope.main.searchType == 'Groups') {
-            if($location.path() == '/searchGroups')
-                $route.reload();
-            else
-                $location.path("/searchGroups");
-        } 
+        //navbar
+        $scope.main.getCurrentNetwork = function () {
+            return sharedProperties.getCurrentNetworkId();
+        };
+        $scope.main.getCurrentUser = function () {
+            return sharedProperties.getCurrentUserAccountName();
+        };
 
-    }
-
-    //navbar initializations
-    if($location.path() == '/searchNetworks')
         $scope.main.searchType = 'Networks';
-    if($location.path() == '/searchUsers')
-        $scope.main.searchType = 'Users';
-    if($location.path() == '/searchGroups')
-        $scope.main.searchType = 'Groups';
+        $scope.main.searchString = '';
+        $scope.main.search = function () {
+            ////console.log("navbar search");
+            sharedProperties.setDoSearch();
+            //could user url instead, good for refresh
+            sharedProperties.setSearchString($scope.main.searchString);
 
-    //end navbar code
+            if ($scope.main.searchType == 'Networks') {
+                if ($location.path() == '/searchNetworks')
+                    $route.reload();
+                else
+                    $location.path("/searchNetworks");
+            } else if ($scope.main.searchType == 'Users') {
+                if ($location.path() == '/searchUsers')
+                    $route.reload();
+                else
+                    $location.path("/searchUsers");
+            } else if ($scope.main.searchType == 'Groups') {
+                if ($location.path() == '/searchGroups')
+                    $route.reload();
+                else
+                    $location.path("/searchGroups");
+            }
 
-    //initializions for page refresh
-    var accountName = ndexUtility.getLoggedInUserAccountName();
-    if(accountName) {
-        sharedProperties.setCurrentUser(ndexUtility.getLoggedInUserExternalId(), accountName);
-        $scope.main.accountName = accountName;
-        $scope.main.loggedIn = true;
-    }
-
-    //---------------------------------------------
-    // SignIn / SignUp Handler
-    //---------------------------------------------
-
-    $scope.signIn = {};
-    $scope.signIn.newUser = {};
-
-    $scope.signIn.submitSignIn = function () {
-        ndexService.signIn($scope.signIn.accountName, $scope.signIn.password).success(function(userData) {
-            sharedProperties.setCurrentUser(userData.externalId, userData.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-            $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
-            $location.path("/user/"+userData.externalId);
-        }).error(function(error) {
-            $scope.signIn.message = error;
-        });
-    };
-
-    $scope.signIn.openSignUp = function(){
-        $scope.signIn.modalInstance = $modal.open({
-            templateUrl: 'signUp.html',
-            scope: $scope,
-            backdrop: 'static'
-        });
-    }
-
-    $scope.signIn.cancelSignUp = function(){
-        $scope.signIn.newUser = {};
-        $scope.signIn.modalInstance.close();
-        $scope.signIn.modalInstance = null;
-    }
-
-    $scope.signIn.signUp = function(){
-        if( $scope.isProcessing )
-            return;
-        $scope.isProcessing = true;
-        //check if passwords match, else throw error
-        if($scope.signIn.newUser.password != $scope.signIn.newUser.passwordConfirm) {
-            $scope.signIn.signUpErrors = 'Passwords do not match';
-            $scope.isProcessing = false;
-            return;
         }
 
-        ndexService.createUser($scope.signIn.newUser,
-            function(userData) {
-                sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
-                $scope.$emit('LOGGED_IN');
-                $scope.signIn.cancelSignUp();// doesnt really cancel
-                $location.path('user/'+userData.accountName);
-                $scope.isProcessing = false;
-            },
-            function(error) {
-                $scope.signIn.signUpErrors = error.data;
-                $scope.isProcessing = false;
-                //console.log(error)
+        //navbar initializations
+        if ($location.path() == '/searchNetworks')
+            $scope.main.searchType = 'Networks';
+        if ($location.path() == '/searchUsers')
+            $scope.main.searchType = 'Users';
+        if ($location.path() == '/searchGroups')
+            $scope.main.searchType = 'Groups';
+
+        //end navbar code
+
+        //initializions for page refresh
+        var accountName = ndexUtility.getLoggedInUserAccountName();
+        if (accountName) {
+            sharedProperties.setCurrentUser(ndexUtility.getLoggedInUserExternalId(), accountName);
+            $scope.main.accountName = accountName;
+            $scope.main.loggedIn = true;
+        }
+
+        //---------------------------------------------
+        // SignIn / SignUp Handler
+        //---------------------------------------------
+
+        $scope.signIn = {};
+        $scope.signIn.newUser = {};
+
+        $scope.signIn.submitSignIn = function () {
+            ndexService.signIn($scope.signIn.accountName, $scope.signIn.password).success(function (userData) {
+                sharedProperties.setCurrentUser(userData.externalId, userData.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
+                $location.path("/user/" + userData.externalId);
+            }).error(function (error) {
+                $scope.signIn.message = error;
             });
+        };
 
-    }
+        $scope.signIn.openSignUp = function () {
+            $scope.signIn.modalInstance = $modal.open({
+                templateUrl: 'signUp.html',
+                scope: $scope,
+                backdrop: 'static'
+            });
+        }
 
-}]);
+        $scope.signIn.cancelSignUp = function () {
+            $scope.signIn.newUser = {};
+            $scope.signIn.modalInstance.close();
+            $scope.signIn.modalInstance = null;
+        }
+
+        $scope.signIn.signUp = function () {
+            if ($scope.isProcessing)
+                return;
+            $scope.isProcessing = true;
+            //check if passwords match, else throw error
+            if ($scope.signIn.newUser.password != $scope.signIn.newUser.passwordConfirm) {
+                $scope.signIn.signUpErrors = 'Passwords do not match';
+                $scope.isProcessing = false;
+                return;
+            }
+
+            ndexService.createUser($scope.signIn.newUser,
+                function (userData) {
+                    sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
+                    $scope.$emit('LOGGED_IN');
+                    $scope.signIn.cancelSignUp();// doesnt really cancel
+                    $location.path('user/' + userData.accountName);
+                    $scope.isProcessing = false;
+                },
+                function (error) {
+                    $scope.signIn.signUpErrors = error.data;
+                    $scope.isProcessing = false;
+                    //console.log(error)
+                });
+
+        }
+
+    }]);
 
 
 

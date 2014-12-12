@@ -2,7 +2,7 @@
     <div class='col-md-2'></div>
     <div class='col-md-8 AlignCenter'>
         <img src='img/NDEx-horizontal-transparent.png'
-             style="width:100%; max-height:200; align:center"/>
+             style="width:100%; max-height:200px; align:center"/>
     </div>
     <div class='col-md-8'></div>
 </div>
@@ -10,23 +10,25 @@
     <div class='col-md-7'>
         <div class="home-margins">
             <div class="home-text">
-                <p ng-show="main.site=='local'">
+                <!-- local = {{main.localSite}}, test = {{main.testSite}} , default = {{main.defaultSite}}, production = {{main.productionSite} -->
+                <div ng-show="main.localSite">
                     NDEx Web App deployed at localhost on port {{main.port}}
-                </p>
+                </div>
 
-                <p ng-show="main.site=='production'">
-                    <h4>Welcome to the NDEx Public Website</h4>
-                </p>
+                <div ng-show="main.productionSite">
+                    Welcome to the NDEx Public Website
+                </div>
 
-                <p ng-show="main.site=='test'">
-                    <p>Welcome to the NDEx Test Website at {{main.host}}</p>
-                    This is a stable but <b>pre-release</b> version of NDEx for testing purposes.
-                    Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.
-                </p>
+                <div ng-show="main.testSite">
 
-                <p ng-show="main.site=='default'">
+                <p>Welcome to the NDEx Test Website at {{main.host}}</p>
+                This is a stable but <b>pre-release</b> version of NDEx for testing purposes.
+                Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.
+                </div>
+
+                <div ng-show="main.defaultSite">
                     Welcome to NDEx at {{main.host}}
-                </p>
+                </div>
             </div>
             <div class="home-support">
                 <hr>
@@ -68,13 +70,8 @@
                     </button>
                 </div>
                 <hr>
-                <div class="AlignLeft">
-                    Need an account?
-                </div>
-                <div class="AlignRight">
-                    <button class="btn btn btn-primary" ng-click="signIn.openSignUp()">
-                        Sign Up
-                    </button>
+                <div class="AlignCenter">
+                    Need an account? <a ng-click="signIn.openSignUp()">Click here to sign up!</a>
                 </div>
             </form>
             <span class="text-danger">{{signIn.message}}</span>
