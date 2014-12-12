@@ -7,7 +7,7 @@
     <div class='col-md-8'></div>
 </div>
 <div class="row">
-    <div class='col-md-7'>
+    <div class='col-md-8'>
         <div class="home-margins">
             <div class="home-text">
                 <!-- local = {{main.localSite}}, test = {{main.testSite}} , default = {{main.defaultSite}}, production = {{main.productionSite} -->
@@ -32,7 +32,12 @@
             </div>
             <div class="home-support">
                 <hr>
-                <p>Primary support for NDEx is from:</p>
+                Browse public networks on this NDEx site using the search box at the top
+                of the page, or sign in to your account to store and manage your networks.
+            </div>
+            <div class="home-support">
+                <hr>
+                <div>Primary support for NDEx is from:</div>
                 <ul>
                     <li><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> (U24
                         CA-184427)
@@ -41,20 +46,20 @@
                     <li>Janssen Research and Development, LLC</li>
                     <li>Pfizer, Inc.</li>
                 </ul>
-                <p>NDEx is also supported by the <a href="http://nrnb.org" target="_blank">National Resource for Network
-                    Biology</a> (P41 GM103504).</p>
+                <div>
+                    NDEx is also supported by the <a href="http://nrnb.org" target="_blank">National Resource for Network
+                    Biology</a> (P41 GM103504).
+                </div>
             </div>
         </div>
     </div>
-    <div class='col-md-5'>
+    <div class='col-md-4'>
         <div class="home-box home-margins">
             <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
-                <p>You can search and browse public networks in NDEx without signing in. Use the search box at the top
-                    of the page to get started</p>
-                <hr>
-                <p>Sign in to your NDEx account to use all the features.</p>
-
-
+                <div class="AlignCenter">
+                    Sign in to your NDEx account
+                    <hr>
+                </div>
                 <div class="form-group">
                     <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
                            required autofocus ng-model="signIn.accountName">
