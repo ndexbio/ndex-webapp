@@ -185,12 +185,19 @@ ndexApp.controller('editNetworkPropertiesController',
 
 
 
-                        var length = editor.propertyValuePairs.length;
-                        for(var ii=0; ii<length; ii++) {
+
+                        for(var ii=0; ii<editor.propertyValuePairs.length; ii++) {
                             var pair = editor.propertyValuePairs[ii];
 
-                            if( pair.predicateString == null || pair.value == null )
-                                continue;
+                            while (pair.predicateString == null || pair.value == null) {
+                                propertyValuePairs.splice(ii, 1);
+                                if( ii < editor.propertyValuePairs.length )
+                                    pair = editor.propertyValuePairs[ii];
+                                else
+                                    continue;
+                            }
+
+                            editor.propertyValuePairs.
 
                             var colonIndex = pair.predicateString.indexOf(':');
 
