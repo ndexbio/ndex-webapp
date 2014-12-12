@@ -143,13 +143,13 @@
                   </ul>
             </li>
             -->
-            <li ng-show="main.loggedIn"
-                ng-class="{active:main.url.url() == '/'}">
+
+            <!-- Show sign out if user is logged in -->
+            <li ng-show="main.loggedIn">
                 <a ng-href="#" ng-click="main.signout()">Sign Out</a>
             </li>
-            <!-- Show sign in if no user, sign out otherwise -->
-            <li ng-hide="main.loggedIn"
-                ng-class="{active:main.url.url() == '/'}">
+            <!-- Hide sign in if user is logged in OR if we are on the home page-->
+            <li ng-hide="main.loggedIn || main.url.url() == '/'">
                 <a ng-href="#">Sign in</a>
             </li>
         </ul>
