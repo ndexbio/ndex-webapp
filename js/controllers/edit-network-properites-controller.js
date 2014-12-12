@@ -189,6 +189,9 @@ ndexApp.controller('editNetworkPropertiesController',
                         for(var ii=0; ii<length; ii++) {
                             var pair = editor.propertyValuePairs[ii];
 
+                            if( pair.predicateString == null || pair.value == null )
+                                continue;
+
                             var colonIndex = pair.predicateString.indexOf(':');
 
                             if( colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet )
