@@ -89,11 +89,9 @@
 				<h6>Grant access to users</h6>
 				<div class='row'>
 					<form role='form' ng-submit='networkManager.findUsers()'>
-					<input type="text" class="form-control input-sm" placeholder="find a person" 
+					<input type="text" class="input-sm" placeholder="find a person"
 						ng-model='networkManager.searchString'>
-					<span class="help-block">
-					Press enter to submit search.
-					</span>
+						<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
 					</form>
 				</div>
 			
@@ -133,11 +131,9 @@
 				<h6>Grant access to groups</h6>
 				<div class='row'>
 					<form role='form' ng-submit='networkManager.findGroups()'>
-					<input type="text" class="form-control input-sm" placeholder="find a group" 
+					<input type="text" class="input-sm" placeholder="find a group"
 						ng-model='networkManager.groupSearchString'>
-					<span class="help-block">
-					Press enter to submit search.
-					</span>
+						<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
 					</form>
 				</div>
 			
