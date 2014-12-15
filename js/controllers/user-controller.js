@@ -62,6 +62,7 @@ ndexApp.controller('userController',
             userController.submitNetworkSearch = function () {
                 userController.networkSearchResults = [];
                 userController.networkQuery.accountName = userController.displayedUser.accountName;
+                userController.networkQuery.permission = "ADMIN";
 
                 ndexService.searchNetworks(userController.networkQuery, 0, 50,
                     function (networks) {

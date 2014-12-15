@@ -201,6 +201,27 @@ textarea
     font-size: 11px;
 }
 
+.home-signed-in-user
+{
+    border-radius: 20px;
+    border: 3px solid cornflowerblue;
+    min-height: 40px;
+    max-width: 250px;
+    margin-top: 100px;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: 10px;
+    font-weight: 150;
+    font-size: 18px;
+    text-align: center;
+}
+
+.home-account
+{
+    margin-top:10px;
+    font-size: 22px;
+}
+
 /******************************************************************************
  Footer Bar
  ******************************************************************************/
