@@ -182,11 +182,6 @@ ndexApp.controller('editNetworkPropertiesController',
                             namespaceSet[namespace.prefix] = true;
                         }
 
-
-
-
-                        indicesToRemove = [];
-
                         for(var ii=0; ii<editor.propertyValuePairs.length; ii++) {
                             var pair = editor.propertyValuePairs[ii];
 
@@ -197,31 +192,34 @@ ndexApp.controller('editNetworkPropertiesController',
 
                             var colonIndex = pair.predicateString.indexOf(':');
 
-                            if( colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet )
-                            {
+                            if (colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet) {
                                 pair.predicatePrefix = pair.predicateString.substring(0, colonIndex);
                                 pair.predicateString = pair.predicateString.substring(colonIndex + 1);
                             }
-                            else
-                            {
+                            else {
                                 pair.predicatePrefix = 'none';
                             }
 
 
-                            colonIndex = pair.value.indexOf(':');
-
-                            if( colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet )
+                            if( pair.value == null )
                             {
-                                pair.valuePrefix = pair.value.substring(0, colonIndex);
-                                pair.value = pair.value.substring(colonIndex + 1);
+                                pair.valuePrefix = "none";
                             }
-                            else {
-                                pair.valuePrefix = 'none';
-                            }
-                        }
+                            else
+                            {
+                                colonIndex = pair.value.indexOf(':');
 
-                        for( var i = indicesToRemove.length - 1; i >= 0; i-- )
-                            editor.propertyValuePairs.splice(i, 1);
+                                if (colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet) {
+                                    pair.valuePrefix = pair.value.substring(0, colonIndex);
+                                    pair.value = pair.value.substring(colonIndex + 1);
+                                }
+                                else {
+                                    pair.valuePrefix = 'none';
+                                }
+                            }
+
+
+                        }
 
                         editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
                         // todo add local to list
