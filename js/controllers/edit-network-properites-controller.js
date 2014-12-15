@@ -243,4 +243,12 @@ ndexApp.controller('editNetworkPropertiesController',
             editor.errors.push(error)
         });
 
+    ndexService.getNetworkNamespaces(networkExternalId,
+        function(namespaces) {
+            editor.namespaces = namespaces;
+        },
+        function(error) {
+            editor.errors.push(error)
+        });
+
 }]);
