@@ -654,3 +654,9 @@ a { cursor: pointer; }
     max-height: 250px;
 }
 
+.user-tasks-panel
+{
+    overflow: scroll;
+    max-width: 100%;
+}
+
