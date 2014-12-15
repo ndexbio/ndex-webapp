@@ -646,3 +646,11 @@ a { cursor: pointer; }
     margin-left: 20px;
 }
 
+.network-property-preview
+{
+    overflow: scroll;
+    margin-right: 10px;
+    margin-top: 5px;
+    max-height: 250px;
+}
+
