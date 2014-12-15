@@ -175,15 +175,12 @@ ndexApp.controller('editNetworkPropertiesController',
 
                         editor.namespaces = namespaces;
 
-                        var namespaceSet = {}
+                        var namespaceSet = {};
                         for( var i = 0; i < namespaces.length; i++ )
                         {
                             namespace = namespaces[i];
                             namespaceSet[namespace.prefix] = true;
                         }
-
-
-
 
                         var length = editor.propertyValuePairs.length;
                         for(var ii=0; ii<length; ii++) {
@@ -191,26 +188,32 @@ ndexApp.controller('editNetworkPropertiesController',
 
                             var colonIndex = pair.predicateString.indexOf(':');
 
-                            if( colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet )
-                            {
+                            if (colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet) {
                                 pair.predicatePrefix = pair.predicateString.substring(0, colonIndex);
                                 pair.predicateString = pair.predicateString.substring(colonIndex + 1);
                             }
-                            else
-                            {
+                            else {
                                 pair.predicatePrefix = 'none';
                             }
 
 
-                            colonIndex = pair.value.indexOf(':');
-
-                            if( colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet )
+                            if (pair.value == null)
                             {
-                                pair.valuePrefix = pair.value.substring(0, colonIndex);
-                                pair.value = pair.value.substring(colonIndex + 1);
-                            }
-                            else {
                                 pair.valuePrefix = 'none';
+                            }
+                            else
+                            {
+                                colonIndex = pair.value.indexOf(':');
+
+                                if (colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet)
+                                {
+                                    pair.valuePrefix = pair.value.substring(0, colonIndex);
+                                    pair.value = pair.value.substring(colonIndex + 1);
+                                }
+                                else
+                                {
+                                    pair.valuePrefix = 'none';
+                                }
                             }
                         }
 
@@ -240,14 +243,6 @@ ndexApp.controller('editNetworkPropertiesController',
             
         },
         function(error){
-            editor.errors.push(error)
-        });
-
-    ndexService.getNetworkNamespaces(networkExternalId,
-        function(namespaces) {
-            editor.namespaces = namespaces;
-        },
-        function(error) {
             editor.errors.push(error)
         });
 
