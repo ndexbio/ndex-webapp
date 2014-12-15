@@ -182,43 +182,36 @@ ndexApp.controller('editNetworkPropertiesController',
                             namespaceSet[namespace.prefix] = true;
                         }
 
-                        for(var ii=0; ii<editor.propertyValuePairs.length; ii++) {
-                            var pair = editor.propertyValuePairs[ii];
 
-                            while (pair.predicateString == null || pair.value == null) {
-                                indicesToRemove.push(ii);
-                                continue;
-                            }
+
+
+                        var length = editor.propertyValuePairs.length;
+                        for(var ii=0; ii<length; ii++) {
+                            var pair = editor.propertyValuePairs[ii];
 
                             var colonIndex = pair.predicateString.indexOf(':');
 
-                            if (colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet) {
+                            if( colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet )
+                            {
                                 pair.predicatePrefix = pair.predicateString.substring(0, colonIndex);
                                 pair.predicateString = pair.predicateString.substring(colonIndex + 1);
                             }
-                            else {
+                            else
+                            {
                                 pair.predicatePrefix = 'none';
                             }
 
 
-                            if( pair.value == null )
+                            colonIndex = pair.value.indexOf(':');
+
+                            if( colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet )
                             {
-                                pair.valuePrefix = "none";
+                                pair.valuePrefix = pair.value.substring(0, colonIndex);
+                                pair.value = pair.value.substring(colonIndex + 1);
                             }
-                            else
-                            {
-                                colonIndex = pair.value.indexOf(':');
-
-                                if (colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet) {
-                                    pair.valuePrefix = pair.value.substring(0, colonIndex);
-                                    pair.value = pair.value.substring(colonIndex + 1);
-                                }
-                                else {
-                                    pair.valuePrefix = 'none';
-                                }
+                            else {
+                                pair.valuePrefix = 'none';
                             }
-
-
                         }
 
                         editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
