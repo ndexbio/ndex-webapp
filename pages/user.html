@@ -222,9 +222,9 @@
             <ul class="list-group"
                 ng-repeat='task in userController.pendingTasks'>
                 <li class="list-group-item">
-                    <div class='row'>
+                    <div class='row' data-toggle="tooltip" data-placement="left" tooltip="{{task.description}}">
                     <div class='col-sm-10 user-tasks-panel'>
-                    <span class='text-info '>{{task.description}}</span>
+                    <span class='text-info' >{{task.description}}</span>
                     <span class='text-muted'>{{task.status | taskStatusToLabel}}</span>
                     <div ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'">
                         <a href="/exported-networks/{{task.externalId}}.{{task.format.toLowerCase()}}" download>download</a>

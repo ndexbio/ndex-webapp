@@ -669,7 +669,8 @@ a { cursor: pointer; }
 
 .network-property-preview
 {
-    overflow: scroll;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-right: 10px;
     margin-top: 5px;
     max-height: 250px;
@@ -677,7 +678,12 @@ a { cursor: pointer; }
 
 .user-tasks-panel
 {
-    overflow: scroll;
+    overflow: hidden;
+    text-overflow: ellipsis;
     max-width: 100%;
+}
+
+.tooltip-inner {
+    max-width: 500px;
 }
 
