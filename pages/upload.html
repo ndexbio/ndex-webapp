@@ -15,7 +15,7 @@
 
         Browse Network Files
 -->
-        <input type="file" class="btn btn-success btn-xs" nv-file-select="" uploader="uploader"/>
+        <input type="file" class="btn btn-success btn-xs" nv-file-select="" uploader="uploader" />
 
         <h3>How It Works:</h3>
 
@@ -35,6 +35,7 @@
 
         <p>Queue length: {{ uploader.queue.length }}</p>
 
+        <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file larger than 10 MB.</div>
         <table class="table">
             <thead>
             <tr>

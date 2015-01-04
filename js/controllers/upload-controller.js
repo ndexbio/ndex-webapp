@@ -6,6 +6,11 @@ ndexApp.controller('uploadController',
             $scope.taskSkipBlocks = 0;
             $scope.taskBlockSize = 100;
 
+            $scope.uploadController = {};
+            var uploadController = $scope.uploadController;
+            uploadController.fileSizeError = false;
+
+
             $scope.refreshTasks = function(){
                 ndexService.getUserTasks(
                     sharedProperties.getCurrentUserId(),
@@ -63,13 +68,24 @@ ndexApp.controller('uploadController',
                 }
             });
 
+            uploader.filters.push({
+                name: 'fileSizeFilter',
+                fn: function(item, options) {
+                    return item.size < 10000000;
+                }
+            });
+
+
             // CALLBACKS
 
             // /*{File|FileLikeObject}*/
             uploader.onWhenAddingFileFailed = function(item, filter, options) {
+                if( filter.name === 'fileSizeFilter' )
+                    uploadController.fileSizeError = true;
                 //console.info('onWhenAddingFileFailed', item, filter, options);
             };
             uploader.onAfterAddingFile = function(fileItem) {
+                uploadController.fileSizeError = false;
                 //console.info('onAfterAddingFile', fileItem);
             };
             uploader.onAfterAddingAll = function(addedFileItems) {
