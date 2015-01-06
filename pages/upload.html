@@ -31,11 +31,13 @@
 
     <div class="col-md-9" style="margin-bottom: 40px">
 
-        <h3>My Network Files to Upload</h3>
+        <h3>List of Files to Upload</h3>
+        <p>Files in list limited to 10 MB total.</p>
+        <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file that makes the list larger than 10 MB.</div>
+        <p style="color:red" ng-show="uploadController.fileExtensionError">Sorry. Any file you upload must have a .sif, .xbel, or .xgmml extension.</p>
+        <p></p>
 
-        <p>Queue length: {{ uploader.queue.length }}</p>
 
-        <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file larger than 10 MB.</div>
         <table class="table">
             <thead>
             <tr>
@@ -69,7 +71,7 @@
                             ng-disabled="!item.isUploading">
                         <span class="glyphicon glyphicon-ban-circle"></span> Cancel
                     </button>
-                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                    <button type="button" class="btn btn-danger btn-xs" ng-click="removeItemFromQueue(item)">
                         <span class="glyphicon glyphicon-trash"></span> Remove
                     </button>
                 </td>
@@ -92,7 +94,7 @@
                     ng-disabled="!uploader.isUploading">
                 <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
             </button>
-            <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()"
+            <button type="button" class="btn btn-danger btn-s" ng-click="removeAllFromQueue(uploader)"
                     ng-disabled="!uploader.queue.length">
                 <span class="glyphicon glyphicon-trash"></span> Remove all
             </button>
@@ -101,7 +103,7 @@
 
     </div>
 
-    <div class="col-md-9" style="margin-bottom: 40px">
+    <div class="col-md-9 pull-right" style="margin-bottom: 40px">
 
         <h3>My Network Loading Tasks on NDEx</h3>
         <button type="button" class="btn btn-success btn-xs"
