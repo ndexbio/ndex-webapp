@@ -1,13 +1,38 @@
 ndexApp.controller('uploadController',
-    ['FileUploader', 'ndexService',  'ndexConfigs', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal',
-        function(FileUploader, ndexService, ndexConfigs, ndexUtility, sharedProperties, $scope, $routeParams, $modal) {
+    ['FileUploader', 'ndexService',  'ndexConfigs', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal', '$location',
+        function(FileUploader, ndexService, ndexConfigs, ndexUtility, sharedProperties, $scope, $routeParams, $modal, $location) {
 
             $scope.tasks = null;
             $scope.taskSkipBlocks = 0;
             $scope.taskBlockSize = 100;
 
             $scope.uploadController = {};
+
             var uploadController = $scope.uploadController;
+
+
+            uploadController.host = $location.host();
+            uploadController.port = $location.port();
+            uploadController.defaultSite = false;
+            uploadController.localSite = false;
+            uploadController.testSite = false;
+            uploadController.productionSite = false;
+
+            if (uploadController.host == 'localhost')
+                uploadController.localSite = true;
+            else if (uploadController.host == 'www.ndexbio.org')
+                uploadController.productionSite = true;
+            else if (uploadController.host == 'test.ndexbio.org')
+                uploadController.testSite = true;
+            else
+                uploadController.defaultSite = true;
+
+            uploadController.hasSizeLimit = uploadController.testSite || uploadController.productionSite;
+
+
+
+
+
             uploadController.fileSizeError = false;
             uploadController.fileExtensionError = false;
 
@@ -102,6 +127,8 @@ ndexApp.controller('uploadController',
                 name: 'fileSizeFilter',
                 fn: function(item, options)
                 {
+                    if( !uploadController.hasSizeLimit )
+                        return true;
                     this.queueSize = 0;
                     for( var i = 0; i < this.queue.length; i++ )
                     {

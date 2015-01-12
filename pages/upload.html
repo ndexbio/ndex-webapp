@@ -32,7 +32,7 @@
     <div class="col-md-9" style="margin-bottom: 40px">
 
         <h3>List of Files to Upload</h3>
-        <p>Files in list limited to 10 MB total.</p>
+        <div ng-show="uploadController.hasSizeLimit">Files in list limited to 10 MB total.</div>
         <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file that makes the list larger than 10 MB.</div>
         <p style="color:red" ng-show="uploadController.fileExtensionError">Sorry. Any file you upload must have a .sif, .xbel, or .xgmml extension.</p>
         <p></p>
