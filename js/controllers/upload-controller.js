@@ -135,7 +135,7 @@ ndexApp.controller('uploadController',
                         this.queueSize += this.queue[i].file.size;
                     }
                     var maxSize = this.queueSize + item.size;
-                    return maxSize < 10000000;
+                    return maxSize < 20971520;
                 }
             });
 

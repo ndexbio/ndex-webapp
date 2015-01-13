@@ -81,18 +81,22 @@
                     modalInstance.dismiss();
                 };
 
+                $scope.isProcessing = false;
+
                 $scope.submit = function() {
-                    isProcessing = true;
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
                     ndexService.createGroup($scope.group,
                         function(groupData){
                             modalInstance.close();
                             ////console.log(groupData);
                             $location.path('/group/'+groupData.externalId);
-                            isProcessing = false;
+                            $scope.isProcessing = false;
                         },
                         function(error){
                             $scope.errors = error.data;
-                            isProcessing = false;
+                            $scope.isProcessing = false;
                         });
                 };
             }
