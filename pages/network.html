@@ -8,7 +8,7 @@
     <div class='col-md-3'>
 
         <div id="divNetworkHeadline" class="row">
-                <h4><label>{{networkController.currentNetwork.name}}</label</h4>
+                <h4><label>{{networkController.currentNetwork.name}}</label></h4>
         </div>
 
         <div class="row">
@@ -181,8 +181,17 @@
             </span>
             </div>
 
-            <button type="submit" class="btn btn-default ">Run Query</button>
+            <button type="submit" class="btn btn-default btn-primary">Run Query</button>
+
         </form>
+        <button type="button"
+                class="btn btn-primary pull-right"
+                ng-click="networkController.backToOriginalNetwork()"
+                ng-show="networkController.successfullyQueried">
+            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+            Back To Original Network {{networkController.networkSearch}}
+        </button>
+
         <br><br><br>
     </div>
 
