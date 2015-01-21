@@ -929,6 +929,7 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
+                                $scope.progress = 'Delete in progress....';
                                 ndexService.deleteNetwork($scope.externalId,
                                     function(data) {
                                         $modalInstance.close();
