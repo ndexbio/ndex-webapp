@@ -16,6 +16,7 @@ ndexApp.controller('networkController',
     networkController.currentNetwork = {}; // network summary
     networkController.currentSubnetwork = {}; // subnetwork
     networkController.errors = []; // general page errors
+    networkController.queryErrors = [];
 
     networkController.isAdmin = false;
     networkController.canEdit = false;
@@ -75,6 +76,7 @@ ndexApp.controller('networkController',
                 function(network) {
                     //console.log("got query results for : " + networkController.searchString);
                     csn = network;
+                    networkController.queryErrors = []
                     networkController.currentSubnetwork = network;
                     cytoscapeService.setNetwork(network);
                     // close the modal
@@ -84,7 +86,7 @@ ndexApp.controller('networkController',
             .error(
                 function(error) {
                     if(error.status != 0) {
-                        networkController.errors.push({label: "Http request error", error: error});
+                        networkController.queryErrors.push(error.data);
                         // close the modal.
                         modalInstance.close();
                     }

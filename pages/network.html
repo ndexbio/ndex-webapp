@@ -167,6 +167,7 @@
     <div class="row">
 
         <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()" class="form-inline pull-left">
+            
             <div class="form-group">
             <input class="form-control" type="search" ng-model="networkController.searchString" placeholder="Network Terms" required />
             </div>
@@ -187,7 +188,15 @@
 
     <!-- begins tabbable section -->
     <div id="divNetworkTabs" class="row">
-
+        <div ng-show="networkController.queryErrors.length > 0">
+            <p class="alert alert-danger" ng-repeat='error in networkController.queryErrors'>
+                {{error}}
+              <span class="glyphicon glyphicon-remove pull-right"
+                    style='cursor:pointer'
+                    ng-click='networkController.queryErrors.splice($index,1)'>
+              </span>
+            </p>
+        </div>
         <div ng-show="networkController.currentSubnetwork.edgeCount == 0">
             <strong>No results found that match your criteria.</strong>
         </div>
