@@ -167,7 +167,7 @@
     <div class="row">
 
         <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()" class="form-inline pull-left">
-            
+
             <div class="form-group">
             <input class="form-control" type="search" ng-model="networkController.searchString" placeholder="Network Terms" required />
             </div>
@@ -188,6 +188,7 @@
 
     <!-- begins tabbable section -->
     <div id="divNetworkTabs" class="row">
+        Errors are us.
         <div ng-show="networkController.queryErrors.length > 0">
             <p class="alert alert-danger" ng-repeat='error in networkController.queryErrors'>
                 {{error}}
