@@ -79,7 +79,7 @@
             </tr>
             </tbody>
         </table>
-        <div class='row text-center' ng-hide='networkSearch.networkSearchResults.length == 0'>
+        <div class='row text-center' ng-hide='networkSearch.networkSearchResults.length < networkSearch.skipSize'>
 
           <ul class="pager">
             <li ng-class='{disabled : networkSearch.skip == 0}' >
@@ -93,7 +93,6 @@
               </a>
             </li>
           </ul>
-
         </div>
     </div>
 

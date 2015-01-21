@@ -30,9 +30,6 @@ ndexApp.controller('uploadController',
             uploadController.hasSizeLimit = uploadController.testSite || uploadController.productionSite;
 
 
-
-
-
             uploadController.fileSizeError = false;
             uploadController.fileExtensionError = false;
 
@@ -99,7 +96,7 @@ ndexApp.controller('uploadController',
             });
 
             //uploader.autoUpload = true;
-            uploader.removeAfterUpload = true;
+            uploader.removeAfterUpload = false;
 
 
             //Queue size is the amount of data in the queue.

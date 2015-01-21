@@ -11,7 +11,7 @@ ndexApp.controller('searchNetworksController',
     searchController.errors = [];
     searchController.networkSearchResults = [];
     searchController.skip = 0;
-    searchController.skipSize = 30;
+    searchController.skipSize = 25;
 
     searchController.setAndDisplayCurrentNetwork = function (networkId) {
         $location.path("/network/" + networkId);

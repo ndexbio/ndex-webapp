@@ -24,6 +24,8 @@ ndexApp.controller('userController',
             //networks
             userController.networkQuery = {};
             userController.networkSearchResults = [];
+            userController.skip = 0;
+            userController.skipSize = 25;
 
 
             //tasks
@@ -64,7 +66,7 @@ ndexApp.controller('userController',
                 userController.networkQuery.accountName = userController.displayedUser.accountName;
                 userController.networkQuery.permission = "ADMIN";
 
-                ndexService.searchNetworks(userController.networkQuery, 0, 50,
+                ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks) {
                         userController.networkSearchResults = networks;
 
