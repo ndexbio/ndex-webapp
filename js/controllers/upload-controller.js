@@ -105,13 +105,6 @@ ndexApp.controller('uploadController',
             // FILTERS
             // item is {File|FileLikeObject}
             uploader.filters.push({
-                name: 'customFilter',
-                fn: function(item , options) {
-                    return this.queue.length < 10;
-                }
-            });
-
-            uploader.filters.push({
                 name: 'fileExtensionFilter',
                 fn: function(item, options){
                     var allowed = ['xgmml', 'xbel', 'sif'];

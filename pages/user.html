@@ -56,6 +56,12 @@
                     </a></li>
                 </ul>
             </div>
+            <div class="spacer">
+                <button type="button" class="btn btn-primary pull-down" ng-show="userController.atLeastOneSelected"
+                        ng-click="userController.deleteSelectedNetworks()">
+                    Delete Selected Networks
+                </button>
+            </div>
         </div>
     </div>
 
@@ -68,16 +74,19 @@
                     <table class="table table-hover" ng-show="userController.networkSearchResults.length > 0">
                         <thead>
                         <tr>
+                            <th width="28"><input type="checkbox" ng-model="userController.allSelected" ng-click="userController.selectedAll()"/></th>
                             <th>Title</th>
                             <th style="width: 10%;">Nodes</th>
                             <th style="width: 10%;">Edges</th>
                         </tr>
                         </thead>
                         <tbody  ng-repeat="network in userController.networkSearchResults">
-                        <tr ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)">
-                            <td>{{network.name}}</td>
-                            <td class="AlignRight">{{network.nodeCount}}</td>
-                            <td class="AlignRight">{{network.edgeCount}}</td>
+                        <tr >
+                            <td><input type="checkbox" ng-model="network.selected" ng-click="userController.selectNetwork(network)"/></td>
+                            <td ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)">{{network.name}}</td>
+                            <td ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)" class="AlignRight">{{network.nodeCount}}</td>
+                            <td ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)" class="AlignRight">{{network.edgeCount}}</td>
+                            </span>
                         </tr>
                         </tbody>
 
