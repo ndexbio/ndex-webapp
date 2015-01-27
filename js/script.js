@@ -5,7 +5,6 @@ var ndexApp = angular.module('ndexApp',
 var net1, net2;
 var cn, csn;
 var cUser;
-var cTasks;
 
 //Internet Explorer solution???
 ndexApp.config(['$httpProvider', function ($httpProvider) {

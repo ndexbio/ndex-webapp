@@ -1,6 +1,6 @@
 ndexApp.controller('userController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $modal)
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$route',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $route)
         {
 
             //              Process the URL to get application state
@@ -34,9 +34,18 @@ ndexApp.controller('userController',
             //tasks
             userController.pendingTasks = [];
 
+            userController.deleteAllTasks = function()
+            {
+                for( var i = 0; i < userController.pendingTasks.length; i++ )
+                {
+                    var task = userController.pendingTasks[i];
+                    userController.deleteTask(task.externalId);
+                }
+            }
+
 
             // gui control
-            userController.selectedAll = function ()
+            userController.selectAll = function ()
             {
                 //Note that userController.allSelected lags behind ng-model. That is why we seem to be testing for
                 //values opposite of what you would expect here.
@@ -202,10 +211,16 @@ ndexApp.controller('userController',
                     {
                         ////console.log("Successfully retrieved tasks: " + tasks);
                         userController.pendingTasks = tasks;
-                        //$.each(tasks, function (index, task) {
-                        //    userController.pendingTasks.push(task);
-                        //});
-                        cTasks = userController.pendingTasks; // convenience variable
+                        for (var i = userController.pendingTasks.length - 1; i >= 0; i--)
+                        {
+                            var task = userController.pendingTasks[i];
+                            if( task.status == 'COMPLETED' && task.taskType != 'EXPORT_NETWORK_TO_FILE' )
+                            {
+                                userController.pendingTasks.splice(i,1);
+                            }
+                        }
+
+
                     },
                     // Error
                     function (response)

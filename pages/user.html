@@ -74,7 +74,7 @@
                     <table class="table table-hover" ng-show="userController.networkSearchResults.length > 0">
                         <thead>
                         <tr>
-                            <th width="28"><input type="checkbox" ng-model="userController.allSelected" ng-click="userController.selectedAll()"/></th>
+                            <th width="28"><input type="checkbox" ng-model="userController.allSelected" ng-click="userController.selectAll()"/></th>
                             <th>Title</th>
                             <th style="width: 10%;">Nodes</th>
                             <th style="width: 10%;">Edges</th>
@@ -242,10 +242,12 @@
             <a ng-click="userController.refreshTasks()">
                 <span class='glyphicon glyphicon-refresh'></span>
             </a>
+            <button type="button" class="pull-right" ng-click="userController.deleteAllTasks()">Delete All</button>
         </ol>
         <div class="panel panel-default">
             <ul class="list-group"
                 ng-repeat='task in userController.pendingTasks'>
+                <!--ng-hide="task.status == 'COMPLETED' && task.taskType != 'EXPORT_NETWORK_TO_FILE'"-->
                 <li class="list-group-item">
                     <div class='row' data-toggle="tooltip" data-placement="left" tooltip="{{task.description}}">
                     <div class='col-sm-10 user-tasks-panel'>

@@ -62,7 +62,6 @@ ndexApp.controller('uploadController',
                                 $scope.tasks.push(task);
                             }
                         });
-                        cTasks = $scope.tasks; // convenience variable
                     },
                     // Error
                     function(response){
@@ -71,6 +70,21 @@ ndexApp.controller('uploadController',
                     }
                 )
 
+            };
+
+            $scope.deleteAllTasks = function()
+            {
+                if( $scope.tasks == undefined )
+                    return;
+                for(var i = $scope.tasks.length - 1; i >= 0; i-- )
+                {
+                    var task = $scope.tasks[i];
+                    ndexService.deleteTask(task.externalId,
+                        function()
+                        {
+                        });
+                }
+                $scope.tasks = [];
             }
 
             $scope.markTaskForDeletion= function(taskUUID){
