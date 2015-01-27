@@ -96,12 +96,12 @@
 
                         <ul class="pager">
                             <li ng-class='{disabled : userController.skip == 0}' >
-                                <a ng-click='userController.skip = userController.skip - 1; userController.submitNetworkSearch()'>
+                                <a ng-click='userController.skip || userController.skip = userController.skip - 1; userController.submitNetworkSearch()'>
                                     Previous
                                 </a>
                             </li>
                             <li ng-class='{disabled : userController.networkSearchResults.length < userController.skipSize}'>
-                                <a ng-click='userController.skip = userController.skip + 1 ; userController.submitNetworkSearch()'>
+                                <a ng-click='userController.networkSearchResults.length < userController.skipSize || userController.skip = userController.skip + 1 ; userController.submitNetworkSearch()'>
                                     Next
                                 </a>
                             </li>
