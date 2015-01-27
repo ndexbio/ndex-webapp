@@ -92,7 +92,7 @@
 
 
                     </table>
-                    <div class='row text-center' ng-hide='userController.networkSearchResults.length < userController.skipSize'>
+                    <div class='row text-center' ng-hide='userController.skip == 0 && userController.networkSearchResults.length < userController.skipSize'>
 
                         <ul class="pager">
                             <li ng-class='{disabled : userController.skip == 0}' >
