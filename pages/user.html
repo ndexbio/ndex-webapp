@@ -242,7 +242,9 @@
             <a ng-click="userController.refreshTasks()">
                 <span class='glyphicon glyphicon-refresh'></span>
             </a>
-            <button type="button" class="pull-right" ng-click="userController.deleteAllTasks()">Delete All</button>
+            <li class='pull-right' style='vertical-align: top'>
+                <button class="btn-link" ng-click="userController.deleteAllTasks()">Delete All</button>
+            </li>
         </ol>
         <div class="panel panel-default">
             <ul class="list-group"

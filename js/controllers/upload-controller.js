@@ -121,7 +121,7 @@ ndexApp.controller('uploadController',
             uploader.filters.push({
                 name: 'fileExtensionFilter',
                 fn: function(item, options){
-                    var allowed = ['xgmml', 'xbel', 'sif'];
+                    var allowed = ['xgmml', 'xbel', 'sif', 'owl'];
                     var ext = item.name.split(".").pop().toLowerCase();
                     return $.inArray(ext, allowed) != -1;
                 }
