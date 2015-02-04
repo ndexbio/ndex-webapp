@@ -188,7 +188,7 @@ ndexApp.controller('userController',
                     {
                         userController.refreshTasks();
                     })
-            }
+            };
 
             userController.deleteTask = function (taskUUID)
             {
@@ -197,10 +197,16 @@ ndexApp.controller('userController',
                     {
                         userController.refreshTasks();
                     })
-            }
+            };
+
+            userController.refreshPage = function()
+            {
+                $route.reload();
+            };
 
             userController.refreshTasks = function ()
             {
+
                 ndexService.getUserTasks(
                     sharedProperties.getCurrentUserId(),
                     "ALL",
@@ -230,12 +236,12 @@ ndexApp.controller('userController',
                     }
                 )
 
-            }
+            };
 
             userController.refreshRequests = function ()
             {
                 getRequests();
-            }
+            };
 
             //              local functions
 
