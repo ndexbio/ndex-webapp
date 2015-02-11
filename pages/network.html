@@ -143,7 +143,8 @@
         <hr>
             <h5>Provenance</h5>
         </div>
-        <div class='row' id='provenanceCanvas'>
+        <br/>
+        <div class='row bordered' id='provenanceCanvas'>
         </div>
     </div>
 
@@ -160,10 +161,23 @@
                  <span>{{networkController.currentSubnetwork.edgeCount}}</span>
             </span>
     </div>
-
-    <div class="row" id="canvas">
+        <br/>
+    <div ng-show="networkController.currentSubnetwork.edgeCount < 10 || networkController.displayAnyway" class="row bordered" id="canvas">
     </div>
-
+    <div class="bordered padded" ng-show="networkController.currentSubnetwork.edgeCount > 10 && !networkController.displayAnyway">
+        <h4><span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+            The retrieved subnetwork is too large to display because it has more than 250 edges.
+            However, retrieved edges and nodes can be inspected in the table below.
+            You can also save this subnetwork to your account for further analysis.
+            <br/>
+            <br/>
+            <button type="button" class="pull-right btn btn-danger btn-sm" ng-click="networkController.shouldDisplayAnyway()">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Display Anyway
+            </button>
+            <br/>
+        </h4>
+    </div>
+    <br/><br/>
     <div class="row">
 
         <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()" class="form-inline pull-left">

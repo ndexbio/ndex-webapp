@@ -26,6 +26,14 @@ ndexApp.controller('networkController',
             networkController.directCanRead = false;
 
             networkController.successfullyQueried = false;
+            networkController.displayAnyway = false;
+
+            networkController.shouldDisplayAnyway = function()
+            {
+                networkController.displayAnyway = true;
+                cytoscapeService.setNetwork(csn);
+
+            };
 
 
             networkController.searchDepths = [
@@ -79,10 +87,11 @@ ndexApp.controller('networkController',
                     function (network) {
                         //console.log("got query results for : " + networkController.searchString);
                         csn = network;
-                        networkController.queryErrors = []
+                        networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);
                         // close the modal
+                        networkController.displayAnyway = false;
                         networkController.successfullyQueried = true;
                         modalInstance.close();
                     }

@@ -687,5 +687,9 @@ a { cursor: pointer; }
     max-width: 500px;
 }
 
+.padded { padding: 10px; }
+
+.bordered { border: 1px solid; }
+
 .spacer {  margin-top: 5px; }
 
