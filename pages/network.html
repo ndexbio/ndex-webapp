@@ -162,9 +162,9 @@
             </span>
     </div>
         <br/>
-    <div ng-show="networkController.currentSubnetwork.edgeCount <= 10 || networkController.displayAnyway" class="row bordered" id="canvas">
+    <div ng-show="networkController.currentSubnetwork.edgeCount <= 250 || networkController.displayAnyway" class="row bordered" id="canvas">
     </div>
-    <div class="bordered padded" ng-show="networkController.currentSubnetwork.edgeCount > 10 && !networkController.displayAnyway">
+    <div class="bordered padded" ng-show="networkController.currentSubnetwork.edgeCount > 250 && !networkController.displayAnyway">
         <h4><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
             The retrieved subnetwork is too large to display because it has more than 250 edges.
             However, retrieved edges and nodes can be inspected in the table below.
