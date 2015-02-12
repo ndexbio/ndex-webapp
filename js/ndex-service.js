@@ -1664,7 +1664,7 @@
                             'height': 10,
                             'width': 10,
                             'text-valign': 'center',
-                            'background-color': 'green',
+                            'background-color': 'lightgreen',
                             'font-size': 8,
                             //'text-outline-width': 2,
                             //'text-outline-color': 'blue',

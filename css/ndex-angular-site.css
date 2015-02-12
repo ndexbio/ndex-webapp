@@ -689,7 +689,8 @@ a { cursor: pointer; }
 
 .padded { padding: 10px; }
 
-.bordered { border: 1px solid; }
+.bordered { border: 1px solid;
+    border-color: lightgray;}
 
 .spacer {  margin-top: 5px; }
 
