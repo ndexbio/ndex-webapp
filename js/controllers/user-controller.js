@@ -34,6 +34,14 @@ ndexApp.controller('userController',
             //tasks
             userController.pendingTasks = [];
 
+            userController.getTaskFileExt = function(task)
+            {
+                if( task.format.toUpperCase() == 'BIOPAX' )
+                    return 'owl';
+                else
+                    return task.format.toLowerCase();
+            };
+
             userController.deleteAllTasks = function()
             {
                 for( var i = 0; i < userController.pendingTasks.length; i++ )
