@@ -679,6 +679,7 @@
                     description: 'network export',
                     priority: 'MEDIUM',
                     format: 'XGMML',
+                    fileExt: 'xgmml',
                     taskType: 'EXPORT_NETWORK_TO_FILE',
                     status: 'QUEUED',
                     progress: 0,

@@ -8,7 +8,7 @@
 
         <h3>How It Works:</h3>
 
-        <p>First select network files for uploading in SIF, XBEL, or XGMML format</p>
+        <p>First select network files for uploading in BioPAX, SIF, XBEL, or XGMML format</p>
 
         <p>Then upload the files - they will be temporarily stored on NDEx for processing</p>
 
@@ -23,7 +23,7 @@
         <h3>List of Files to Upload</h3>
         <div ng-show="uploadController.hasSizeLimit">Files in list limited to 20 MB total.</div>
         <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file that makes the list larger than 10 MB.</div>
-        <p style="color:red" ng-show="uploadController.fileExtensionError">Sorry. Any file you upload must have a .sif, .xbel, or .xgmml extension.</p>
+        <p style="color:red" ng-show="uploadController.fileExtensionError">Sorry. Any file you upload must have an .owl, .sif, .xbel, or .xgmml extension.</p>
         <p></p>
 
 
