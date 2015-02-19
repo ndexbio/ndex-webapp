@@ -8,7 +8,7 @@
     <div class='col-md-3'>
 
         <div id="divNetworkHeadline" class="row">
-                <h4><label>{{networkController.currentNetwork.name}}</label></h4>
+            <h4><label>{{networkController.currentNetwork.name}}</label></h4>
         </div>
 
         <div class="row">
@@ -33,7 +33,7 @@
         <div class='row text-success'>
             <p>{{networkController.currentNetwork.visibility}}</p>
         </div>
-        
+
         <div class='row'>
             <p>{{networkController.currentNetwork.description}}</p>
         </div>
@@ -45,7 +45,7 @@
             <ul class="dropdown-menu" role="menu">
                 <li ng-show='networkController.isAdmin'><a>
                     <edit-network-summary-modal
-                        ndex-data='networkController.currentNetwork'>
+                            ndex-data='networkController.currentNetwork'>
                         Edit Network Profile
                     </edit-network-summary-modal>
                 </a></li>
@@ -55,16 +55,16 @@
                         || networkController.canEdit
                         || networkController.canRead)'><a>
                     <create-export-network-task
-                        ndex-data='networkController.currentNetwork'>
+                            ndex-data='networkController.currentNetwork'>
                         Export Network as File
                     </create-export-network-task>
                 </a></li>
                 <li ng-hide='networkController.isAdmin'>
                     <a>
-                    <create-request-network 
-                        ndex-data='networkController.currentNetwork'>
-                        Ask for Access!
-                    </create-request-network>
+                        <create-request-network
+                                ndex-data='networkController.currentNetwork'>
+                            Ask for Access!
+                        </create-request-network>
                     </a>
                 </li>
                 <li ng-show='networkController.isAdmin'>
@@ -72,24 +72,25 @@
                         Manage Access
                     </a>
                 </li>
-                <li ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead' ><a>
-                    <save-subnetwork ndex-network='networkController.currentNetwork'
-                            ndex-subnetwork='networkController.currentSubnetwork'>
-                        Save Current Subnetwork
-                    </save-subnetwork>
-                </a></li>
+                <li ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+                    <a>
+                        <save-subnetwork ndex-network='networkController.currentNetwork'
+                                         ndex-subnetwork='networkController.currentSubnetwork'>
+                            Save Current Subnetwork
+                        </save-subnetwork>
+                    </a></li>
                 <li class="divider" ng-show='networkController.isAdmin'></li>
                 <li ng-show='networkController.directIsAdmin 
                             || networkController.directCanEdit 
                             || networkController.directCanRead'><a>
                     <leave-network
-                        ndex-data='networkController.currentNetwork.externalId'>
+                            ndex-data='networkController.currentNetwork.externalId'>
                         Disaffiliate this Network
                     </leave-network>
                 </a></li>
                 <li ng-show='networkController.isAdmin'><a>
                     <delete-network
-                        ndex-data='networkController.currentNetwork.externalId'>
+                            ndex-data='networkController.currentNetwork.externalId'>
                         Delete this Network
                     </delete-network>
                 </a></li>
@@ -104,28 +105,30 @@
                 <li><a href>You must be logged in to operate on network</a></li>
             </ul>
         </div>
-
-        
-        <div class='row' 
-            ng-show='(networkController.currentNetwork.properties.length == 0) 
-                && (networkController.isAdmin || networkController.canEdit)'>
         <hr>
+        <span ng-show='(networkController.currentNetwork.properties.length == 0)
+                && (networkController.isAdmin || networkController.canEdit)'>
+
+        <div class='row'>
             <h5>More Info</h5>
-            <p><a ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">Add custom info!</a></p>
+
+            <p><a ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">Add custom info!</a>
+            </p>
         </div>
+        </span>
 
         <div class='row network-property-preview'
-            ng-show='networkController.currentNetwork.properties.length > 0'>
-        <hr>
-            
-        <h5>
-            More Info
-            <a class='btn btn-link' 
-                ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
-                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
-                <span class="glyphicon glyphicon-edit"></span>
-            </a>
-        </h5>
+             ng-show='networkController.currentNetwork.properties.length > 0'>
+
+
+            <h5>
+                More Info
+                <a class='btn btn-link'
+                   ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
+                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
+                    <span class="glyphicon glyphicon-edit"></span>
+                </a>
+            </h5>
         
         <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
              <label>{{property.predicateString}} </label>
@@ -139,19 +142,22 @@
         </span>
         </div>
 
-        <div class='row'>
         <hr>
+        <div class='row'>
+
             <h5>Provenance</h5>
         </div>
         <br/>
+
         <div class='row bordered' id='provenanceCanvas'>
         </div>
     </div>
 
-    <div class='col-md-9' ng-show= 'networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+    <div class='col-md-9'
+         ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
 
-    <div class='row text-center'>
-        <h4>Retrieved Subnetwork</h4>
+        <div class='row text-center'>
+            <h4>Retrieved Subnetwork</h4>
             <span>
                  <label>nodes:</label>
                 <span>{{networkController.currentSubnetwork.nodeCount}}</span>
@@ -160,157 +166,200 @@
                  <label>edges:</label>
                  <span>{{networkController.currentSubnetwork.edgeCount}}</span>
             </span>
-    </div>
+        </div>
         <br/>
-    <div ng-show="networkController.currentSubnetwork.edgeCount <= 250 || networkController.displayAnyway" class="row bordered" id="canvas">
-    </div>
-    <div class="bordered padded" ng-show="networkController.currentSubnetwork.edgeCount > 250 && !networkController.displayAnyway">
-        <h4><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
-            The retrieved subnetwork is too large to display because it has more than 250 edges.
-            However, retrieved edges and nodes can be inspected in the table below.
-            You can also save this subnetwork to your account for further analysis.
-            <br/>
-            <br/>
-            <button type="button" class="pull-right btn btn-danger btn-sm" ng-click="networkController.shouldDisplayAnyway()">
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Display Anyway
-            </button>
-            <br/>
-        </h4>
-    </div>
-    <br/><br/>
-    <div class="row">
 
-        <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()" class="form-inline pull-left">
+        <div ng-show="networkController.currentSubnetwork.edgeCount <= 250 || networkController.displayAnyway"
+             class="row bordered" id="canvas">
+        </div>
+        <div class="bordered padded"
+             ng-show="networkController.currentSubnetwork.edgeCount > 250 && !networkController.displayAnyway">
+            <h4><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                The retrieved subnetwork is too large to display because it has more than 250 edges.
+                However, retrieved edges and nodes can be inspected in the table below.
+                You can also save this subnetwork to your account for further analysis.
+                <br/>
+                <br/>
+                <button type="button" class="pull-right btn btn-danger btn-sm"
+                        ng-click="networkController.shouldDisplayAnyway()">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Display Anyway
+                </button>
+                <br/>
+            </h4>
+        </div>
+        <br/><br/>
 
-            <div class="form-group">
-            <input class="form-control" type="search" ng-model="networkController.searchString" placeholder="Network Terms" required />
-            </div>
-            <div class="form-group">
-            <label>Depth:</label>
+        <div class="row">
+
+            <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()"
+                  class="form-inline pull-left">
+
+                <div class="form-group">
+                    <input class="form-control" type="search" ng-model="networkController.searchString"
+                           placeholder="Network Terms" required/>
                 </div>
-            <div class="form-group">
+                <div class="form-group">
+                    <label>Depth:</label>
+                </div>
+                <div class="form-group">
             <span>
                 <select class="form-control" id="" ng-model="networkController.searchDepth.value" ng-selected="1"
-                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"required></select>
+                        ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                        required></select>
             </span>
-            </div>
+                </div>
 
-            <button type="submit" class="btn btn-default btn-primary">Run Query</button>
+                <button type="submit" class="btn btn-default btn-primary">Run Query</button>
 
-        </form>
-        <button type="button"
-                class="btn btn-primary pull-right"
-                ng-click="networkController.backToOriginalNetwork()"
-                ng-show="networkController.successfullyQueried">
-            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-            Back To Original Network {{networkController.networkSearch}}
-        </button>
+            </form>
+            <button type="button"
+                    class="btn btn-primary pull-right"
+                    ng-click="networkController.backToOriginalNetwork()"
+                    ng-show="networkController.successfullyQueried">
+                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                Back To Original Network {{networkController.networkSearch}}
+            </button>
 
-        <br><br><br>
-    </div>
+            <br><br><br>
+        </div>
 
-    <!-- begins tabbable section -->
-    <div id="divNetworkTabs" class="row">
-        <div ng-show="networkController.queryErrors.length > 0">
-            <p class="alert alert-danger" ng-repeat='error in networkController.queryErrors'>
-                {{error}}
+        <!-- begins tabbable section -->
+        <div id="divNetworkTabs" class="row">
+            <div ng-show="networkController.queryErrors.length > 0">
+                <p class="alert alert-danger" ng-repeat='error in networkController.queryErrors'>
+                    {{error}}
               <span class="glyphicon glyphicon-remove pull-right"
                     style='cursor:pointer'
                     ng-click='networkController.queryErrors.splice($index,1)'>
               </span>
-            </p>
-        </div>
-        <div ng-show="networkController.currentSubnetwork.edgeCount == 0">
-            <strong>No results found that match your criteria.</strong>
-        </div>
-        <tabset ng-hide="networkController.currentSubnetwork.edgeCount == 0">
-            <tab heading="Edges">
-                <div id="divEdges">
-                    <ul id="ulSubnetwork" ng-repeat="(id, edge) in networkController.currentSubnetwork.edges">
+                </p>
+            </div>
+            <div ng-show="networkController.currentSubnetwork.edgeCount == 0">
+                <strong>No results found that match your criteria.</strong>
+            </div>
+            <tabset ng-hide="networkController.currentSubnetwork.edgeCount == 0">
+                <tab heading="Edges">
 
-                        <li>
-                            <strong>{{networkController.currentSubnetwork.nodeLabelMap[edge.subjectId]}}</strong>
-                            <em>{{networkController.currentSubnetwork.terms[edge.predicateId].name}}</em>
-                            <strong>{{networkController.currentSubnetwork.nodeLabelMap[edge.objectId]}}</strong>
-                            <span ng-repeat='citation in edge.citationIds'>
+                    <pagination total-items="networkController.currentSubnetwork.edgeCount"
+                                items-per-page="itemsPerPage"
+                                ng-model="currentEdgePage" max-size="paginationMaxSize" boundary-links="true"
+                                direction-links="false" rotate="false" class="pull-right"
+                                num-pages="numEdgePages" first-text="First"
+                                last-text="Last ({{numEdgePages}})"></pagination>
+                    <br/><br/><br/>
+
+                    <div id="divEdges">
+                        <ul id="ulSubnetwork"
+                            ng-repeat="edgeKey in networkController.getEdgeKeys().slice((currentEdgePage-1)*itemsPerPage) | limitTo:itemsPerPage">
+
+                            <li>
+                                <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.edges[edgeKey].subjectId]}}</strong>
+                                <em>{{networkController.currentSubnetwork.terms[networkController.currentSubnetwork.edges[edgeKey].predicateId].name}}</em>
+                                <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.edges[edgeKey].objectId]}}</strong>
+                            <span ng-repeat='citation in networkController.currentSubnetwork.edges[edgeKey].citationIds'>
+                            <!--<a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>-->
+                            <!--<span class='glyphicon glyphicon-book'></span>-->
+                            <!--</sup></a>-->
+                            </span>
+                                <!--<sup rel="tooltip">{{edgeFootnotes[edge]}}
+                                </sup>-->
+
+                            </li>
+                            <!-- todo: aliases
+                            <li class="TermAliases" ng-show="hasAliases">
+
+                                <div>
+                                    Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                                </div>
+
+                                <div>
+                                    Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                                </div>
+
+                            </li>-->
+
+                        </ul>
+
+                    </div>
+                    <br/>
+                    <pagination total-items="networkController.currentSubnetwork.edgeCount"
+                                items-per-page="itemsPerPage"
+                                ng-model="currentEdgePage" max-size="paginationMaxSize" boundary-links="true"
+                                direction-links="false" rotate="false" class="pull-right"
+                                num-pages="numEdgePages" first-text="First"
+                                last-text="Last ({{numEdgePages}})"></pagination>
+                </tab>
+                <tab heading="Nodes">
+                    <pagination total-items="networkController.currentSubnetwork.nodeCount"
+                                items-per-page="itemsPerPage"
+                                ng-model="currentNodePage" max-size="paginationMaxSize" boundary-links="true"
+                                direction-links="false" rotate="false" class="pull-right"
+                                num-pages="numNodePages" first-text="First"
+                                last-text="Last ({{numNodePages}})"></pagination>
+                    <br/><br/><br/>
+
+                    <div id="divNodes">
+                        <ul id="ulSubnetwork"
+                            ng-repeat="nodeKey in networkController.getNodeKeys().slice((currentNodePage-1)*itemsPerPage) | limitTo:itemsPerPage">
+                            <li style="cursor:pointer"
+                                ng-click="networkController.currentSubnetwork.nodes[nodeKey].showAliases = !networkController.currentSubnetwork.nodes[nodeKey].showAliases">
+                                <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id]}}</strong>
+                            <span ng-repeat='citation in networkController.currentSubnetwork.nodes[nodeKey].citationIds'>
                             <a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>
-                            <span class='glyphicon glyphicon-book'></span>
+                                <span class='glyphicon glyphicon-book'></span>
                             </sup></a>
                             </span>
-
-                            <!--<sup rel="tooltip">{{edgeFootnotes[edge]}}
-                            </sup>-->
-
-                        </li>
-                        <!-- todo: aliases
-                        <li class="TermAliases" ng-show="hasAliases">
-
-                            <div>
-                                Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
+                            </li>
+                            <li style="background : white"
+                                ng-show="networkController.currentSubnetwork.nodes[nodeKey].showAliases && (networkController.currentSubnetwork.nodes[nodeKey].aliases.length > 0)">
+                                <span>Aliases:</span>
+                                <em ng-repeat='(key,alias) in networkController.currentSubnetwork.nodes[nodeKey].aliases'>
+                                    {{networkController.currentSubnetwork.baseTerms[alias].name}}
+                                    <span ng-show='(networkController.currentSubnetwork.nodes[nodeKey].aliases.length > 1) && (key < networkController.currentSubnetwork.nodes[nodeKey].aliases.length-1)'>,</span>
+                                </em>
+                            </li>
+                        </ul>
+                    </div>
+                    <br/>
+                    <pagination total-items="networkController.currentSubnetwork.nodeCount"
+                                items-per-page="itemsPerPage"
+                                ng-model="currentNodePage" max-size="paginationMaxSize" boundary-links="true"
+                                direction-links="false" rotate="false" class="pull-right"
+                                num-pages="numNodePages" first-text="First"
+                                last-text="Last ({{numNodePages}})"></pagination>
+                </tab>
+                <!--<tab heading="Terms">
+                    <ul>
+                        <li class="row">
+                            <div class="col-md-3 col-md-offset-3">
+                                <strong>Prefix</strong>
                             </div>
-
-                            <div>
-                                Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
-                            </div>
-
-                        </li>-->
-
-                    </ul>
-
-                </div>
-                <pagination total-items="30" ng-model="foobar" max-size="4" class="pagination-sm" boundary-links="true"></pagination>
-            </tab>
-            <tab heading="Nodes">
-                <div id="divNodes">
-                    <ul id="ulSubnetwork" ng-repeat="node in networkController.currentSubnetwork.nodes">
-                        <li style="cursor:pointer" ng-click="node.showAliases = !node.showAliases">
-                            <strong>{{networkController.currentSubnetwork.nodeLabelMap[node.id]}}</strong>
-                            <span ng-repeat='citation in node.citationIds'>
-                            <a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>
-                            <span class='glyphicon glyphicon-book'></span>
-                            </sup></a>
-                            </span>
-                        </li>
-                        <li style="background : white" ng-show="node.showAliases && (node.aliases.length > 0)">
-                            <span>Aliases:</span>
-                            <em ng-repeat='(key,alias) in node.aliases'>
-                                {{networkController.currentSubnetwork.baseTerms[alias].name}}
-                                <span ng-show='(node.aliases.length > 1) && (key < node.aliases.length-1)'>,</span>
-                            </em>
+                            <div class="col-md-3"><strong>Base Terms</strong></div>
                         </li>
                     </ul>
-                </div>
-            </tab>
-            <!--<tab heading="Terms">
-                <ul>
-                    <li class="row">
-                        <div class="col-md-3 col-md-offset-3">
-                            <strong>Prefix</strong>
-                        </div>
-                        <div class="col-md-3"><strong>Base Terms</strong></div>
-                    </li>
-                </ul>
-                <ul id="ulSubnetwork" ng-repeat="(index, term) in networkController.currentSubnetwork.termLabelMap">
-                    <li class="row">
-                        <div class="col-md-3 col-md-offset-3">
-                        <strong>{{term.prefix}}</strong></div>
-                        <div class="col-md-3">{{term.name}}</div>
-                    </li>
-                </ul>
-            </tab>-->
-        </tabset>
+                    <ul id="ulSubnetwork" ng-repeat="(index, term) in networkController.currentSubnetwork.termLabelMap">
+                        <li class="row">
+                            <div class="col-md-3 col-md-offset-3">
+                            <strong>{{term.prefix}}</strong></div>
+                            <div class="col-md-3">{{term.name}}</div>
+                        </li>
+                    </ul>
+                </tab>-->
+            </tabset>
+
+        </div>
 
     </div>
 
+    <div class='col-md-9'
+         ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+        <br>
+        <br>
+
+        <p class='text-center'>You do not have access to this network</p>
     </div>
 
-    <div class='col-md-9' ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
-    <br>
-    <br>
-    <p class='text-center'>You do not have access to this network</p>
-    </div>
-
-<!-- end tab content -->
+    <!-- end tab content -->
 </div>
 
 <div class="container-fluid" ng-hide="networkController.validRequest.length == 0">

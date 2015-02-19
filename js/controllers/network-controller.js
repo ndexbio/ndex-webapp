@@ -28,6 +28,40 @@ ndexApp.controller('networkController',
             networkController.successfullyQueried = false;
             networkController.displayAnyway = false;
 
+            networkController.getEdgeKeys = function()
+            {
+                var keys = [];
+                for( var key in networkController.currentSubnetwork.edges )
+                {
+                    if( networkController.currentSubnetwork.edges.hasOwnProperty(key) )
+                        keys.push(key);
+                }
+                return keys;
+            };
+
+            networkController.getNodeKeys = function()
+            {
+                var keys = [];
+                for( var key in networkController.currentSubnetwork.nodes )
+                {
+                    if( networkController.currentSubnetwork.nodes.hasOwnProperty(key) )
+                        keys.push(key);
+                }
+                return keys;
+            };
+
+            //Used for pagination
+            $scope.currentEdgePage = 0;
+            $scope.currentNodePage = 0;
+            $scope.itemsPerPage = 30;
+            $scope.paginationMaxSize = 5;
+
+            $scope.numberOfPages=function(){
+                length = networkController.currentSubnetwork.edges.length;
+                return Math.ceil(length/$scope.pageSize);
+            };
+
+
             networkController.shouldDisplayAnyway = function()
             {
                 networkController.displayAnyway = true;
@@ -109,7 +143,7 @@ ndexApp.controller('networkController',
 
             networkController.backToOriginalNetwork = function () {
                 $route.reload();
-            }
+            };
 
 
             networkController.getCitation = function (citation) {
@@ -182,7 +216,7 @@ ndexApp.controller('networkController',
                         //console.log(error);
                     });
 
-            }
+            };
 
             var getDirectMembership = function (callback) {
                 ndexService.getMyDirectMembership(networkController.currentNetworkId,
@@ -199,7 +233,7 @@ ndexApp.controller('networkController',
                         //console.log(error);
                     });
 
-            }
+            };
 
             var getEdges = function (callback) {
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
@@ -228,7 +262,7 @@ ndexApp.controller('networkController',
                         }
                     }
                 );
-            }
+            };
 
             var getProvenance = function () {
                 ndexService.getProvenance(networkController.currentNetworkId,
@@ -241,7 +275,7 @@ ndexApp.controller('networkController',
                     }, function (error) {
                         //TODO
                     });
-            }
+            };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
