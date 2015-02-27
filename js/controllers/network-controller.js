@@ -131,7 +131,7 @@ ndexApp.controller('networkController',
                 // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
                 // reference and lose access to the .abort method.
                 // David says: The last parameter is the edgeLimit. We are using this in the Web App temporarily.
-                (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, 50) )
+                (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, 1500) )
                     .success(
                     function (network) {
                         //console.log("got query results for : " + networkController.searchString);
