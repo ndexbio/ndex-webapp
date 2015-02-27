@@ -252,7 +252,7 @@ ndexApp.controller('networkController',
 
             var getEdges = function (callback) {
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
-                var blockSize = 1500;
+                var blockSize = 250;
                 var skipBlocks = 0;
 
                 // get first convenienceuple of edges
