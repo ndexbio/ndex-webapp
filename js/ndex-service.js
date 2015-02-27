@@ -903,7 +903,7 @@
                 // queryNetwork
                 //
                 // search the network for a subnetwork via search terms and depth
-                factory.queryNetwork = function (networkId, terms, searchDepth) {
+                factory.queryNetwork = function (networkId, terms, searchDepth, edgeLimit) {
                     ////console.log("searching for subnetworks");
 
                     // REMOVED: we pass a simple string.  It is processed on the server, not here on the client
@@ -916,7 +916,7 @@
                     // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
                     // the first pass. We modify the config to allow for $http request aborts. This may become standard in
                     // the client.
-                    var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth, 0, 500);
+                    var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth, edgeLimit, 0, 500);
                     config.timeout = deferredAbort.promise;
 
                     // We want to perform some operations on the response from the $http request. We can simply wrap the
@@ -1201,7 +1201,7 @@
             return this.getPostConfig(url, postData);
         };
 
-        factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, skipBlocks, blockSize) {
+        factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, edgeLimit, skipBlocks, blockSize) {
             // POST to NetworkAService
             ////console.log("searchType = " + "NEIGHBORHOOD");
             ////console.log("searchDepth = " + searchDepth);
@@ -1211,7 +1211,8 @@
             var url = "/network/" + networkId + "/asNetwork/query/";
             var postData = {
                 searchString: startingTerms,
-                searchDepth: searchDepth
+                searchDepth: searchDepth,
+                edgeLimit: edgeLimit
             };
             return this.getPostConfig(url, postData);
         };

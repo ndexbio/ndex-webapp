@@ -718,3 +718,28 @@ hr {
     border-color: #d3d3d3;
 }
 
+.black-border
+{
+    border: 1px solid black;
+}
+
+.red-border
+{
+    border: 1px solid red;
+}
+
+.green
+{
+    background-color: green;
+}
+
+.orange
+{
+    background-color: orange;
+}
+
+.red
+{
+    background-color: red;
+}
+

@@ -28,6 +28,20 @@ ndexApp.controller('networkController',
             networkController.successfullyQueried = false;
             networkController.displayAnyway = false;
 
+            $scope.provenance = [];
+
+
+            $scope.tree = [{name: "Node", nodes: []}];
+
+            $scope.delete = function(data) {
+                data.nodes = [];
+            };
+            $scope.add = function(data) {
+                var post = data.nodes.length + 1;
+                var newName = data.name + '-' + post;
+                data.nodes.push({name: newName,nodes: []});
+            };
+
             networkController.getEdgeKeys = function()
             {
                 var keys = [];
@@ -116,7 +130,8 @@ ndexApp.controller('networkController',
 
                 // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
                 // reference and lose access to the .abort method.
-                (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value) )
+                // David says: The last parameter is the edgeLimit. We are using this in the Web App temporarily.
+                (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, 50) )
                     .success(
                     function (network) {
                         //console.log("got query results for : " + networkController.searchString);
@@ -237,7 +252,7 @@ ndexApp.controller('networkController',
 
             var getEdges = function (callback) {
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
-                var blockSize = 50;
+                var blockSize = 1500;
                 var skipBlocks = 0;
 
                 // get first convenienceuple of edges
@@ -271,6 +286,8 @@ ndexApp.controller('networkController',
                         // provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
                         // real data
                         provenanceVisualizerService.setProvenance(data);
+                        $scope.provenance = data;
+                        var x = 10;
 
                     }, function (error) {
                         //TODO

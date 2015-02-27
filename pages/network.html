@@ -191,7 +191,7 @@
 
         <div class="row">
 
-            <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()"
+            <form ng-show="!networkController.successfullyQueried" id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()"
                   class="form-inline pull-left">
 
                 <div class="form-group">
@@ -213,7 +213,7 @@
 
             </form>
             <button type="button"
-                    class="btn btn-primary pull-right"
+                    class="btn btn-primary"
                     ng-click="networkController.backToOriginalNetwork()"
                     ng-show="networkController.successfullyQueried">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
@@ -257,27 +257,9 @@
                                 <em>{{networkController.currentSubnetwork.terms[networkController.currentSubnetwork.edges[edgeKey].predicateId].name}}</em>
                                 <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.edges[edgeKey].objectId]}}</strong>
                             <span ng-repeat='citation in networkController.currentSubnetwork.edges[edgeKey].citationIds'>
-                            <!--<a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>-->
-                            <!--<span class='glyphicon glyphicon-book'></span>-->
-                            <!--</sup></a>-->
                             </span>
-                                <!--<sup rel="tooltip">{{edgeFootnotes[edge]}}
-                                </sup>-->
 
                             </li>
-                            <!-- todo: aliases
-                            <li class="TermAliases" ng-show="hasAliases">
-
-                                <div>
-                                    Alias: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
-                                </div>
-
-                                <div>
-                                    Related: <a target="_blank" data-bind="termAlias: $root.Network().terms()[$data]"></a>
-                                </div>
-
-                            </li>-->
-
                         </ul>
 
                     </div>
@@ -328,23 +310,59 @@
                                 num-pages="numNodePages" first-text="First"
                                 last-text="Last ({{numNodePages}})"></pagination>
                 </tab>
-                <!--<tab heading="Terms">
-                    <ul>
-                        <li class="row">
-                            <div class="col-md-3 col-md-offset-3">
-                                <strong>Prefix</strong>
-                            </div>
-                            <div class="col-md-3"><strong>Base Terms</strong></div>
-                        </li>
-                    </ul>
-                    <ul id="ulSubnetwork" ng-repeat="(index, term) in networkController.currentSubnetwork.termLabelMap">
-                        <li class="row">
-                            <div class="col-md-3 col-md-offset-3">
-                            <strong>{{term.prefix}}</strong></div>
-                            <div class="col-md-3">{{term.name}}</div>
-                        </li>
-                    </ul>
-                </tab>-->
+                <!--<tab heading="Provenance">-->
+                    <!--<script type="text/ng-template"  id="provenance_renderer.html">-->
+                        <!--<div class="black-border padded">-->
+                        <!--Type: {{provenance.type}} <br>-->
+                        <!--URI: {{provenance.uri}} <br>-->
+                        <!--Entity Properties ({{provenance.properties.length}})-->
+                        <!--<ul>-->
+                            <!--<li ng-repeat="property in provenance.properties">{{property.name}}</li>-->
+                        <!--</ul>-->
+                        <!--<br>-->
+                        <!--Creation Event:-->
+                        <!--{{provenance.creationEvent.eventType}}<br>-->
+                        <!--Started: {{provenance.creationEvent.startedAtTime | date:'medium' }} <br>-->
+                        <!--Ended: {{provenance.creationEvent.endedAtTime | date:'medium' }} <br>-->
+                        <!--Event Properties ({{provenance.creationEvent.properties.length}}) <br>-->
+                        <!--<ul>-->
+                            <!--<li ng-repeat="property in provenance.creationEvent.properties">{{'&nbsp;&nbsp;&nbsp;&nbsp;' + property.name + ': ' + property.value}}</li>-->
+                        <!--</ul>-->
+                        <!--</div>-->
+
+                        <!--&lt;!&ndash;<button ng-click="add(data)">Add node</button>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<button ng-click="delete(data)" ng-show="data.nodes.length > 0">Delete nodes</button>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<ul>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<li ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></li>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</ul>&ndash;&gt;-->
+                    <!--</script>-->
+
+                    <!--&lt;!&ndash;<span ng-show="provenance.type==ProvenenceEntity">&ndash;&gt;-->
+                        <!--<ul>-->
+                            <!--<li ng-include="'provenance_renderer.html'"></li>-->
+                        <!--</ul>-->
+                    <!--&lt;!&ndash;</span>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<div class="black-border green" >&ndash;&gt;-->
+                        <!--&lt;!&ndash;<span ng-click="showBC=!showBC">&ndash;&gt;-->
+                            <!--&lt;!&ndash;A<br>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</span>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<span ng-show="showBC">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div class="black-border orange" ng-click="showE=!showE">&ndash;&gt;-->
+                            <!--&lt;!&ndash;B&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="black-border red" ng-show="showE">&ndash;&gt;-->
+                                <!--&lt;!&ndash;E&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div class="black-border orange" ng-click="showD=!showD">&ndash;&gt;-->
+                            <!--&lt;!&ndash;C+&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="black-border red" ng-show="showD">&ndash;&gt;-->
+                                <!--&lt;!&ndash;D&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</span>&ndash;&gt;-->
+
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--</tab>-->
             </tabset>
 
         </div>
