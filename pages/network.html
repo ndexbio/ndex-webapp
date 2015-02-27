@@ -73,7 +73,7 @@
                     </a>
                 </li>
                 <li ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
-                    networkController.canEdit || networkController.canRead && networkController.successfullyQueried)'>
+                    networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
                     <a>
                         <save-subnetwork ndex-network='networkController.currentNetwork'
                                          ndex-subnetwork='networkController.currentSubnetwork'>
