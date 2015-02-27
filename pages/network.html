@@ -156,8 +156,8 @@
     <div class='col-md-9'
          ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
 
-        <div class='row text-center'>
-            <h4>Retrieved Subnetwork</h4>
+        <div ng-show="networkController.successfullyQueried" class='row text-center'>
+            <h4>Query Result</h4>
             <span>
                  <label>nodes:</label>
                 <span>{{networkController.currentSubnetwork.nodeCount}}</span>
@@ -176,7 +176,7 @@
              ng-show="networkController.currentSubnetwork.edgeCount > 250 && !networkController.displayAnyway">
             <h4><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
                 The retrieved subnetwork is too large to display because it has more than 250 edges.
-                However, retrieved edges and nodes can be inspected in the table below.
+                However, <span ng-show="!networkController.successfullyQueried"> a sample of 250</span> retrieved edges and associated nodes can be inspected in the table below.
                 You can also save this subnetwork to your account for further analysis.
                 <br/>
                 <br/>
