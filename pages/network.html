@@ -181,17 +181,10 @@
         </div>
         <div class="bordered padded"
              ng-show="networkController.currentSubnetwork.edgeCount > 250 && !networkController.displayAnyway">
-            <h4><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+            <h4>
                 This <span ng-show="!networkController.successfullyQueried"> network</span><span ng-show="networkController.successfullyQueried">query result</span> is too large to display.
-                <span ng-show="!networkController.successfullyQueried">A sample of 300</span><span ng-show="!networkController.successfullyQueried">The complete list of</span> edges and associated nodes can be inspected in the table below.
+                <span ng-show="!networkController.successfullyQueried">A sample of 300</span><span ng-show="networkController.successfullyQueried">The complete list of</span> edges and associated nodes can be inspected in the table below.
                 <span ng-show="networkController.successfullyQueried">You can also save this query result to your account for further analysis.</span>
-                <br/>
-                <br/>
-                <button type="button" class="pull-right btn btn-danger btn-sm"
-                        ng-click="networkController.shouldDisplayAnyway()">
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Display Anyway
-                </button>
-                <br/>
             </h4>
         </div>
         <br/><br/>
