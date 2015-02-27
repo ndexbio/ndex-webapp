@@ -26,7 +26,6 @@ ndexApp.controller('networkController',
             networkController.directCanRead = false;
 
             networkController.successfullyQueried = false;
-            networkController.displayAnyway = false;
 
             $scope.provenance = [];
 
@@ -74,15 +73,6 @@ ndexApp.controller('networkController',
                 length = networkController.currentSubnetwork.edges.length;
                 return Math.ceil(length/$scope.pageSize);
             };
-
-
-            networkController.shouldDisplayAnyway = function()
-            {
-                networkController.displayAnyway = true;
-                cytoscapeService.setNetwork(csn);
-
-            };
-
 
             networkController.searchDepths = [
                 {
@@ -140,7 +130,6 @@ ndexApp.controller('networkController',
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);
                         // close the modal
-                        networkController.displayAnyway = false;
                         networkController.successfullyQueried = true;
                         modalInstance.close();
                     }
