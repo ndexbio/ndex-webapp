@@ -257,6 +257,9 @@
                                 <em>{{networkController.currentSubnetwork.terms[networkController.currentSubnetwork.edges[edgeKey].predicateId].name}}</em>
                                 <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.edges[edgeKey].objectId]}}</strong>
                             <span ng-repeat='citation in networkController.currentSubnetwork.edges[edgeKey].citationIds'>
+                                <a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>
+                                    <span class='glyphicon glyphicon-book'></span>
+                                </sup></a>
                             </span>
 
                             </li>
