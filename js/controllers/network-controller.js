@@ -1,6 +1,6 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route',
-        function (ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route) {
+    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter',
+        function (ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter) {
 
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -28,6 +28,7 @@ ndexApp.controller('networkController',
             networkController.successfullyQueried = false;
 
             $scope.provenance = [];
+            $scope.displayProvenance = []
 
 
             $scope.tree = [{name: "Node", nodes: []}];
@@ -39,6 +40,166 @@ ndexApp.controller('networkController',
                 var post = data.nodes.length + 1;
                 var newName = data.name + '-' + post;
                 data.nodes.push({name: newName,nodes: []});
+            };
+
+            $scope.getProvenanceTitle = function(provenance)
+            {
+                if( typeof provenance == 'undefined' )
+                    return "";
+                if( provenance.properties == null )
+                    return provenance.uri;
+                for( var i = 0; i < provenance.properties.length; i++ )
+                {
+                    var p = provenance.properties[i];
+                    if(p.name == "dc:title")
+                        return p.value;
+                }
+                return provenance.uri;
+            };
+
+            $scope.buildGraph = function(prov, level, parent_node, edge_label, merge, nodes, edges, provMap)
+            {
+                var node_id = nodes.length;
+
+                var node = {
+                    id: node_id,
+                    label: $scope.getProvenanceTitle(prov),
+                    level: level
+                };
+
+                nodes.push(node);
+                provMap[node_id] = prov;
+
+                if( parent_node != -1 )
+                {
+                    if( !merge )
+                    {
+                        var edge = {
+                            to: parent_node,
+                            from: node_id,
+                            label: edge_label
+                        };
+                        edges.push(edge);
+                    }
+                    else
+                    {
+                        var edge = {
+                            to: parent_node,
+                            from: node_id
+                        };
+                        edges.push(edge);
+                    }
+                }
+
+                var inputs = prov.creationEvent.inputs;
+                if( inputs != null )
+                {
+                    if( inputs.length > 1 )
+                    {
+                        var join_id = node_id + 1;
+                        level++;
+                        var join_node = {
+                            id: join_id,
+                            label: "",
+                            level: level
+                        };
+                        nodes.push(join_node);
+                        var join_edge = {
+                            to: node_id,
+                            from: join_id,
+                            label: prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
+                        };
+                        edges.push(join_edge);
+                        node_id = join_id;
+                        merge = true;
+                    }
+                    else
+                    {
+                        merge = false;
+                    }
+
+                    for(var i = 0; i < inputs.length; i++ )
+                    {
+                        var edgeLabel = prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
+                        $scope.buildGraph(inputs[i], level+1, node_id, edgeLabel, merge, nodes, edges, provMap);
+                    }
+                }
+                else
+                {
+
+                    var start_node = {
+                        id: node_id+1,
+                        label: 'Start',
+                        level: level+1
+                    };
+                    nodes.push(start_node);
+
+                    var edge = {
+                        to: node_id,
+                        from: node_id+1,
+                        label: prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
+                    }
+
+                    edges.push(edge)
+                }
+
+            };
+
+            $scope.build_provenance_view = function()
+            {
+                var nodes = [];
+                var edges = [];
+                var provMap = [];
+
+
+
+
+                $scope.buildGraph($scope.provenance, 1, -1, '', false, nodes, edges, provMap);
+
+                // create a network
+                var container = document.getElementById('provenanceNetwork');
+                var data = {
+                    nodes: nodes,
+                    edges: edges
+                };
+                var options = {
+                    width: '100%',
+                    height: '600px',
+                    stabilize: false,
+                    smoothCurves: false,
+                    hierarchicalLayout: {
+                        direction: 'UD'
+                    },
+                    edges: {
+                        width: 2,
+                        style: 'arrow',
+                        color: 'silver',
+                        fontColor: 'black'
+                    },
+                    nodes: {
+                        // default for all nodes
+                        fontFace: 'times',
+                        shape: 'box',
+                        color: {
+                            border: 'green',
+                            background: 'lightgreen'
+                        }
+                    }
+                };
+
+                $scope.displayProvenance = $scope.provenance;
+
+                var network = new vis.Network(container, data, options);
+
+                network.on('select', function (properties) {
+                    var node_id = properties.nodes[0];
+                    if (typeof provMap[node_id] == 'undefined')
+                        return;
+                    $scope.$apply(function(){
+                        $scope.displayProvenance = provMap[node_id];
+                    });
+
+                });
             };
 
             networkController.getEdgeKeys = function()

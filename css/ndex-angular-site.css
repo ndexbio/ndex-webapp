@@ -683,7 +683,7 @@ a { cursor: pointer; }
     max-width: 500px;
 }
 
-.padded { padding: 10px; }
+.padded { padding: 5px; }
 
 .bordered { border: 1px solid;
     border-color: lightgray;}
@@ -728,6 +728,16 @@ hr {
     border: 1px solid red;
 }
 
+.gold-border
+{
+    border: 1px solid gold;
+}
+
+.lightgrey-border
+{
+    border: 1px solid lightgrey;
+}
+
 .green
 {
     background-color: green;
@@ -742,4 +752,6 @@ hr {
 {
     background-color: red;
 }
+
+
 

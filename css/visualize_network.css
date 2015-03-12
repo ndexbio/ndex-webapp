@@ -3,7 +3,7 @@
     font: 24px helvetica neue, helvetica, arial, sans-serif;
     height: 400px;
     width: 600px;
-    background-color:fff;
+    background-color:#fff;
 
 }
 
@@ -12,7 +12,7 @@
     height: 250px;
     width: 100%;
     min-width: 800px;
-    background-color:fff;
+    background-color:#fff;
 
 }
 
@@ -20,7 +20,7 @@
     font: 9px helvetica neue, helvetica, arial, sans-serif;
     height: 250px;
     width: 100%;
-    background-color:fff;
+    background-color:#fff;
 }
 
 #compareCanvas {
@@ -28,7 +28,7 @@
     height: 800px;
     width: 100%;
     min-width: 800px;
-    background-color:fff;
+    background-color:#fff;
 
 }
 
