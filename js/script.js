@@ -28,6 +28,15 @@ ndexApp.service('sharedProperties', function () {
     // this service is going to act as a general global variable throughout the application
     // should consider implementing some degree of relationship with localStorage to guard against
     // refreshes. In fact, we might just use cookies or something else because we may not want this to be permanent
+
+    //$http.get("config.json").
+    //    success(function(response)
+    //    {
+    //        this.config = response;
+    //    }
+    //);
+
+
     return {
         getCurrentNetworkId: function () {
             //if (!this.currentNetworkId) this.currentNetworkId = "C25R1174";   // hardwired for testing
@@ -60,9 +69,15 @@ ndexApp.service('sharedProperties', function () {
         setSearchString: function (searchString) {
             this.searchString = searchString
         },
-        getSearchString: function () {
+        getSearchString: function ()
+        {
             return this.searchString;
         }
+        //,
+        //getConfig: function(configName)
+        //{
+        //    return config[configName];
+        //}
     }
 });
 

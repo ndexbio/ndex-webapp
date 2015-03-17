@@ -1124,9 +1124,13 @@
                 method: 'GET',
                 url: ndexServerURI + url,
                 headers: {
-                    Authorization: "Basic " + factory.getEncodedUser()
+                    //Authorization: "Basic " + factory.getEncodedUser()
                 }
             };
+            if( factory.getEncodedUser() )
+            {
+                config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+            }
             if (queryArgs) {
                 config.data = JSON.stringify(queryArgs);
             }
@@ -1153,7 +1157,7 @@
          * encoded.
          *---------------------------------------------------------------------*/
         factory.getEncodedUser = function () {
-            if (ndexUtility.getLoggedInUserAccountName)
+            if (ndexUtility.getLoggedInUserAccountName() != undefined && ndexUtility.getLoggedInUserAccountName() != null)
                 return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
             else
                 return null;
