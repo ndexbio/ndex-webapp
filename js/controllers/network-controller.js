@@ -171,6 +171,7 @@ ndexApp.controller('networkController',
                         direction: 'UD'
                     },
                     edges: {
+                        fontFace: 'helvetica',
                         width: 2,
                         style: 'arrow',
                         color: 'silver',
@@ -178,10 +179,10 @@ ndexApp.controller('networkController',
                     },
                     nodes: {
                         // default for all nodes
-                        fontFace: 'times',
+                        fontFace: 'helvetica',
                         shape: 'box',
                         color: {
-                            border: 'green',
+                            border: 'lightgreen',
                             background: 'lightgreen'
                         }
                     }
@@ -190,6 +191,16 @@ ndexApp.controller('networkController',
                 $scope.displayProvenance = $scope.provenance;
 
                 var network = new vis.Network(container, data, options);
+
+                network.moveTo(
+                    {
+                        position: {
+                            x: '0',
+                            y: '400'
+                        },
+                        scale: '1'
+                    }
+                );
 
                 network.on('select', function (properties) {
                     var node_id = properties.nodes[0];
