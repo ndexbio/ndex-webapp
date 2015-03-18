@@ -77,8 +77,6 @@
 
     <!-- newer third party libraries -->
     <script type="text/javascript" src="lib/vis/dist/vis.js"></script>
-    <link rel="styleSheet" href="lib/ui-grid/ui-grid-unstable.css">
-    <script src="lib/ui-grid/ui-grid-unstable.js"></script>
 
 </head>
 
@@ -108,7 +106,7 @@
         </div>
         <div class="collapse navbar-collapse" collapse="main.isCollapsed">
             <div class="col-sm-6 col-md-7 col-lg-8">
-                <form class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
+                <form ng-show="!config.requireAuthentication||main.loggedIn" class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
                     <div class="input-group" >
                         <div class="input-group-btn dropdown">
                           <button type="button" class="btn btn-default dropdown-toggle">
@@ -184,7 +182,8 @@
         </span>
         |
         <span>
-            <a href="http://home.ndexbio.org/contact-us" target="NDEx Home">Contact Us</a>
+            <a href="{{config.contactUs.href}}" target="{{config.contactUs.target}}">{{config.contactUs.name}}</a>
+            <!--<a href="http://home.ndexbio.org/contact-us" target="NDEx Home">Contact Us</a>-->
         </span>
     </div>
 

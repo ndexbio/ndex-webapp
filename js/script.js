@@ -24,17 +24,12 @@ ndexApp.config(['$httpProvider', function ($httpProvider) {
     }
 }]);
 
-ndexApp.service('sharedProperties', function () {
+ndexApp.service('sharedProperties', function ($http) {
     // this service is going to act as a general global variable throughout the application
     // should consider implementing some degree of relationship with localStorage to guard against
     // refreshes. In fact, we might just use cookies or something else because we may not want this to be permanent
 
-    //$http.get("config.json").
-    //    success(function(response)
-    //    {
-    //        this.config = response;
-    //    }
-    //);
+
 
 
     return {
@@ -72,12 +67,15 @@ ndexApp.service('sharedProperties', function () {
         getSearchString: function ()
         {
             return this.searchString;
+        },
+        setConfig: function(config)
+        {
+            this.config = cofig;
+        },
+        getConfig: function()
+        {
+            return this.config;
         }
-        //,
-        //getConfig: function(configName)
-        //{
-        //    return config[configName];
-        //}
     }
 });
 
@@ -158,8 +156,10 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route',
-    function (ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route) {
+ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http',
+    function (ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http) {
+
+
 
         $scope.main = {};
 
@@ -177,7 +177,23 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         $scope.$on('LOGGED_OUT', function () {
             $scope.main.loggedIn = false;
             delete $scope.main.accountName;
-        })
+        });
+
+        //$scope.config = {};
+
+        $scope.main.config = "bar";
+        $scope.main.config.msg1 = 'punk';
+
+        $http.get('config.json').
+            success(function(data, status, headers, config) {
+                $scope.config = data;
+                $rootScope.$broadcast('READ_CONFIG_JSON', data);
+            }).
+            error(function(data, status, headers, config) {
+                //Do nothing
+
+            });
+
 
         // This checks for a successful transition to the home page.
         // If the user is logged in, then redirect to their account page

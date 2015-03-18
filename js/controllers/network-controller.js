@@ -9,6 +9,8 @@ ndexApp.controller('networkController',
 
             //              CONTROLLER INTIALIZATIONS
             //------------------------------------------------------------------------------------
+
+
             $scope.networkController = {};
             var networkController = $scope.networkController;
 
@@ -28,7 +30,7 @@ ndexApp.controller('networkController',
             networkController.successfullyQueried = false;
 
             $scope.provenance = [];
-            $scope.displayProvenance = []
+            $scope.displayProvenance = [];
 
 
             $scope.tree = [{name: "Node", nodes: []}];
@@ -270,7 +272,7 @@ ndexApp.controller('networkController',
             //                  scope functions
 
             // queries within a network
-            networkController.submitNetworkQuery = function () {
+            networkController.submitNetworkQuery = function (networkQueryLimit) {
 
                 // var to keep the reference to http call to call abort method;
                 var request = null;
@@ -293,7 +295,7 @@ ndexApp.controller('networkController',
                 // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
                 // reference and lose access to the .abort method.
                 // David says: The last parameter is the edgeLimit. We are using this in the Web App temporarily.
-                (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, 1500) )
+                (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, networkQueryLimit) )
                     .success(
                     function (network) {
                         //console.log("got query results for : " + networkController.searchString);
@@ -309,7 +311,15 @@ ndexApp.controller('networkController',
                     .error(
                     function (error) {
                         if (error.status != 0) {
-                            networkController.queryErrors.push(error.data);
+                            if( error.data == "Error in queryForSubnetwork: Result set is too large for this query.")
+                            {
+                                networkController.queryErrors.push("Error Querying: The maximum query size is " + networkQueryLimit);
+                            }
+                            else
+                            {
+                                networkController.queryErrors.push(error.data);
+                            }
+
                             // close the modal.
                             modalInstance.close();
                         }

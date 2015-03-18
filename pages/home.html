@@ -10,25 +10,29 @@
     <div class='col-md-8'>
         <div class="home-margins">
             <div class="home-text">
+
+                <div>
+                    {{config.welcome}}
+                </div>
                 <!-- local = {{main.localSite}}, test = {{main.testSite}} , default = {{main.defaultSite}}, production = {{main.productionSite} -->
-                <div ng-show="main.localSite">
-                    NDEx Web App deployed at localhost on port {{main.port}}
-                </div>
+                <!--<div ng-show="main.localSite">-->
+                    <!--NDEx Web App deployed at localhost on port {{main.port}}-->
+                <!--</div>-->
 
-                <div ng-show="main.productionSite">
-                    Welcome to the NDEx Public Website
-                </div>
+                <!--<div ng-show="main.productionSite">-->
+                    <!--Welcome to the NDEx Public Website-->
+                <!--</div>-->
 
-                <div ng-show="main.testSite">
+                <!--<div ng-show="main.testSite">-->
 
-                <p>Welcome to the NDEx Test Website at {{main.host}}</p>
-                This is a stable but <b>pre-release</b> version of NDEx for testing purposes.
-                Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.
-                </div>
+                <!--<p>Welcome to the NDEx Test Website at {{main.host}}</p>-->
+                <!--This is a stable but <b>pre-release</b> version of NDEx for testing purposes.-->
+                <!--Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.-->
+                <!--</div>-->
 
-                <div ng-show="main.defaultSite">
-                    Welcome to NDEx at {{main.host}}
-                </div>
+                <!--<div ng-show="main.defaultSite">-->
+                    <!--Welcome to NDEx at {{main.host}}-->
+                <!--</div>-->
             </div>
             <div class="home-advice">
                 <hr>

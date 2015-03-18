@@ -123,7 +123,6 @@
 
 
             <h5>
-                More Info
                 <a class='btn btn-link'
                    ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
                    ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
@@ -167,13 +166,13 @@
         </div>
         <br/>
 
-        <div ng-show="networkController.currentSubnetwork.edgeCount <= 250 || networkController.displayAnyway"
+        <div ng-show="networkController.currentSubnetwork.edgeCount <= config.networkDisplayLimit || networkController.displayAnyway"
              class="row bordered" id="canvas">
         </div>
         <div class="bordered padded"
-             ng-show="networkController.currentSubnetwork.edgeCount > 250 && !networkController.displayAnyway">
+             ng-show="networkController.currentSubnetwork.edgeCount > config.networkDisplayLimit && !networkController.displayAnyway">
             <h4>
-                This <span ng-show="!networkController.successfullyQueried"> network</span><span ng-show="networkController.successfullyQueried">query result</span> is too large to display.
+                This <span ng-show="!networkController.successfullyQueried"> network</span><span ng-show="networkController.successfullyQueried">query result</span> is too large to display {{config.networkDisplayLimit}}.
                 <span ng-show="!networkController.successfullyQueried">A sample of 300</span><span ng-show="networkController.successfullyQueried">The complete list of</span> edges and associated nodes can be inspected in the table below.
                 <span ng-show="!networkController.successfullyQueried">However, any queries will be executed on the full network.</span><span ng-show="networkController.successfullyQueried">You can also save this query result to your account for further analysis.</span>
             </h4>
@@ -182,7 +181,7 @@
 
         <div class="row">
 
-            <form ng-show="!networkController.successfullyQueried" id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()"
+            <form ng-show="!networkController.successfullyQueried" id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
                   class="form-inline pull-left">
 
                 <div class="form-group">
