@@ -184,7 +184,7 @@ ndexApp.controller('mainController', ['ndexService', 'ndexUtility', 'sharedPrope
         $scope.main.config = "bar";
         $scope.main.config.msg1 = 'punk';
 
-        $http.get('config.json').
+        $http.get('ndex-webapp-config.json').
             success(function(data, status, headers, config) {
                 $scope.config = data;
                 $rootScope.$broadcast('READ_CONFIG_JSON', data);
