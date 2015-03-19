@@ -1075,14 +1075,14 @@ ndexServiceApp.factory('ndexUtility', function () {
 /****************************************************************************
  * $http configuration service
  ****************************************************************************/
-ndexServiceApp.factory('ndexConfigs', function (ndexUtility) {
+ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     var factory = {};
 
-    var ndexServerURI = "http://localhost:8080/ndexbio-rest";
+    var ndexServerURI = config.protocol + "://localhost:8080/ndexbio-rest";
     // This convention is useful, but we may later allow a
     // site configuration to explicitly specify a different host
     if (location.hostname.toLowerCase() != "localhost")
-        ndexServerURI = "http://" + location.host + "/rest";
+        ndexServerURI = config.protocol + "://" + location.host + "/rest";
 
     /*---------------------------------------------------------------------*
      * GET request configuration
