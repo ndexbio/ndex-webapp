@@ -101,7 +101,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                     $location.path("/searchGroups");
             }
 
-        }
+        };
 
         //navbar initializations
         if ($location.path() == '/searchNetworks')

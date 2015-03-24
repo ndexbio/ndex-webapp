@@ -1109,14 +1109,26 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
      * POST request configuration
      *---------------------------------------------------------------------*/
     factory.getPostConfig = function (url, postData) {
-        var config = {
-            method: 'POST',
-            url: ndexServerURI + url,
-            data: JSON.stringify(postData),
-            headers: {
-                Authorization: "Basic " + factory.getEncodedUser()
-            }
-        };
+        var config = {};
+        if( factory.getEncodedUser() )
+        {
+            config = {
+                method: 'POST',
+                url: ndexServerURI + url,
+                data: JSON.stringify(postData),
+                headers: {
+                    Authorization: "Basic " + factory.getEncodedUser()
+                }
+            };
+        }
+        else
+        {
+            config = {
+                method: 'POST',
+                url: ndexServerURI + url,
+                data: JSON.stringify(postData)
+            };
+        }
         return config;
     };
 
@@ -1162,10 +1174,20 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
     factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
         var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
-        var postData = {
-            searchString: searchString,
-            accountName: accountName
-        };
+        var postData = {};
+        if( accountName )
+        {
+            postData = {
+                searchString: searchString,
+                accountName: accountName
+            };
+        }
+        else
+        {
+            postData = {
+                searchString: searchString
+            };
+        }
 
         if (permission) postData.permission = permission;
         if (includeGroups) postData.includeGroups = includeGroups;
