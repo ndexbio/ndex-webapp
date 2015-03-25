@@ -1126,7 +1126,10 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             config = {
                 method: 'POST',
                 url: ndexServerURI + url,
-                data: JSON.stringify(postData)
+                data: JSON.stringify(postData),
+                headers: {
+                    Authorization: null
+                }
             };
         }
         return config;
