@@ -8,8 +8,8 @@
 var ndexServiceApp = angular.module('ndexServiceApp');
 
 ndexServiceApp.factory('ndexService',
-    ['config', 'ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q', '$resource',
-        function (config, ndexConfigs, ndexUtility, ndexHelper, $http, $q, $resource) {
+    ['sharedProperties', 'config', 'ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q', '$resource',
+        function (sharedProperties, config, ndexConfigs, ndexUtility, ndexHelper, $http, $q, $resource) {
             // define and initialize factory object
             var factory = {};
 
@@ -897,6 +897,8 @@ ndexServiceApp.factory('ndexService',
                 promise.success = function (handler) {
                     request.success(
                         function (network) {
+                            //sharedProperties.setCurrentQueryTerms(terms);
+                            //sharedProperties.setCurrentQueryDepth(searchDepth);
                             ndexUtility.setNetwork(network);
                             ndexHelper.updateNodeLabels(network);
                             ndexHelper.updateTermLabels(network);
@@ -1114,6 +1116,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             method: 'POST',
             url: ndexServerURI + url,
             data: JSON.stringify(postData),
+            headers: {}
         };
         if( factory.getEncodedUser() )
         {
