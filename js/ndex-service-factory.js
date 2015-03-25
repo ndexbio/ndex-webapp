@@ -165,6 +165,7 @@ ndexServiceApp.factory('ndexService',
                 UserResource.delete({}, null,
                     function(data) {
                         ndexUtility.clearUserCredentials();
+                        delete $http.defaults.headers.common['Authorization'];
                         successHandler(data);
                     },
                     errorHandler);
@@ -1109,28 +1110,14 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
      * POST request configuration
      *---------------------------------------------------------------------*/
     factory.getPostConfig = function (url, postData) {
-        var config = {};
+        var config = {
+            method: 'POST',
+            url: ndexServerURI + url,
+            data: JSON.stringify(postData),
+        };
         if( factory.getEncodedUser() )
         {
-            config = {
-                method: 'POST',
-                url: ndexServerURI + url,
-                data: JSON.stringify(postData),
-                headers: {
-                    Authorization: "Basic " + factory.getEncodedUser()
-                }
-            };
-        }
-        else
-        {
-            config = {
-                method: 'POST',
-                url: ndexServerURI + url,
-                data: JSON.stringify(postData),
-                headers: {
-                    Authorization: null
-                }
-            };
+            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
         }
         return config;
     };
