@@ -1109,14 +1109,16 @@
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function($scope, $modal, $location, ndexService) {
+            controller: function(sharedProperties, $scope, $modal, $location, ndexService) {
                 var network = {};
                 var subnetwork = {};
 
                 var saveSubnetwork = function() {
                     var d = new Date();
-                    var timestamp = d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
-                    subnetwork.name = network.name + ' Subnetwork - ' + timestamp;
+
+                    var terms = sharedProperties.getCurrentQueryTerms();
+                    var depth = sharedProperties.getCurrentQueryDepth();
+                    subnetwork.name = network.name + ' Query Result - ' + terms;
 
                     // get the promise
                     var promise = ndexService.saveSubnetwork(subnetwork).$promise;
@@ -1137,9 +1139,12 @@
                                     endedAtTime: data.networkSummary.creationTime,
                                     inputs: [data.provenance],
                                     type: 'ProvenanceEvent',
-                                    eventType: 'Query'
+                                    eventType: 'Query',
+                                    properties: {
+                                        queryTerms: terms,
+                                        queryDepth: depth
+                                    }
                                 }
-
                             };
 
                             return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise.then(

@@ -68,13 +68,21 @@ ndexApp.service('sharedProperties', function ($http) {
         {
             return this.searchString;
         },
-        setConfig: function(config)
+        setCurrentQueryTerms: function(currentQueryTerms)
         {
-            this.config = cofig;
+            this.currentQueryTerms = currentQueryTerms;
         },
-        getConfig: function()
+        getCurrentQueryTerms: function()
         {
-            return this.config;
+            return this.currentQueryTerms;
+        },
+        setCurrentQueryDepth: function(currentQueryDepth)
+        {
+            this.currentQueryDepth = currentQueryDepth;
+        },
+        getCurrentQueryDepth: function()
+        {
+            return this.currentQueryDepth;
         }
     }
 });
