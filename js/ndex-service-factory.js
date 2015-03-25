@@ -897,8 +897,8 @@ ndexServiceApp.factory('ndexService',
                 promise.success = function (handler) {
                     request.success(
                         function (network) {
-                            //sharedProperties.setCurrentQueryTerms(terms);
-                            //sharedProperties.setCurrentQueryDepth(searchDepth);
+                            sharedProperties.setCurrentQueryTerms(terms);
+                            sharedProperties.setCurrentQueryDepth(searchDepth);
                             ndexUtility.setNetwork(network);
                             ndexHelper.updateNodeLabels(network);
                             ndexHelper.updateTermLabels(network);
