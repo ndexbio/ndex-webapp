@@ -1134,18 +1134,52 @@
 
                             var newProvenance = {
                                 uri: data.networkSummary.uri,
+                                properties: [
+                                    {
+                                        name: 'edge count',
+                                        value: data.networkSummary.edgeCount,
+                                        type: 'SimpleValuePropertyPair'
+                                    },
+                                    {
+                                        name: 'node count',
+                                        value: data.networkSummary.nodeCount,
+                                        type: 'SimpleValuePropertyPair'
+                                    },
+                                    {
+                                        name: 'dc:title',
+                                        value: data.networkSummary.name,
+                                        type: 'SimpleValuePropertyPair'
+                                    }
+                                ],
                                 creationEvent: {
                                     startedAtTime: data.networkSummary.creationTime,
                                     endedAtTime: data.networkSummary.creationTime,
                                     inputs: [data.provenance],
                                     type: 'ProvenanceEvent',
                                     eventType: 'Query',
-                                    properties: {
-                                        queryTerms: terms,
-                                        queryDepth: depth
-                                    }
+                                    properties: [
+                                        {
+                                            name: 'query terms',
+                                            value: terms,
+                                            type: 'SimpleValuePropertyPair'
+                                        },
+                                        {
+                                            name: 'query depth',
+                                            value: depth,
+                                            type: 'SimpleValuePropertyPair'
+                                        }
+                                    ]
                                 }
                             };
+
+                            if( data.networkSummary.description )
+                            {
+                                newProvenance.properties.push( {name:'description', value:data.networkSummary.description, type:'SimpleValuePropertyPair'}  )
+                            }
+                            if( data.networkSummary.version )
+                            {
+                                newProvenance.properties.push( {name:'version', value:data.networkSummary.version, type:'SimpleValuePropertyPair'}  )
+                            }
 
                             return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise.then(
                                 function(res){
