@@ -38,7 +38,7 @@
                         $scope.confirm = function(){
                             $modalInstance.dismiss();
                             confirmHandler();
-                        }
+                        };
 
                         $scope.cancel = function(){
                             $modalInstance.dismiss();
