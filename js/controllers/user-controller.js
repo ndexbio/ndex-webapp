@@ -57,18 +57,20 @@ ndexApp.controller('userController',
             {
                 //Note that userController.allSelected lags behind ng-model. That is why we seem to be testing for
                 //values opposite of what you would expect here.
+                //UPDATE: This test has been reversed, because after upgrading Angular, there is no longer a lag.
                 for (var i = 0; i < userController.networkSearchResults.length; i++)
                 {
-                    userController.networkSearchResults[i].selected = !userController.allSelected;
+                    userController.networkSearchResults[i].selected = userController.allSelected;
                 }
-                userController.atLeastOneSelected = !userController.allSelected;
+                userController.atLeastOneSelected = userController.allSelected;
             };
 
             userController.selectNetwork = function (network)
             {
                 //This test is the opposite of what you think, because this method is called before this value is
                 //changed by the ng-model.
-                if (!network.selected)
+                //UPDATE: This test has been reversed, because after upgrading Angular, there is no longer a lag.
+                if (network.selected)
                 {
                     userController.atLeastOneSelected = true;
                     return;
