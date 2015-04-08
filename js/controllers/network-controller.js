@@ -11,6 +11,27 @@ ndexApp.controller('networkController',
             //------------------------------------------------------------------------------------
 
 
+            $scope.edgeGridOptions = {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                onRegisterApi: function( gridApi ) {
+                    $scope.edgeGridApi = gridApi;
+
+                }
+            };
+
+            $scope.nodeGridOptions = {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                onRegisterApi: function( gridApi ) {
+                    $scope.nodeGridApi = gridApi;
+
+                }
+            };
+
+
             $scope.networkController = {};
             var networkController = $scope.networkController;
 
@@ -140,7 +161,7 @@ ndexApp.controller('networkController',
                         to: node_id,
                         from: node_id+1,
                         label: prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
-                    }
+                    };
 
                     edges.push(edge)
                 }
@@ -152,9 +173,6 @@ ndexApp.controller('networkController',
                 var nodes = [];
                 var edges = [];
                 var provMap = [];
-
-
-
 
                 $scope.buildGraph($scope.provenance, 1, -1, '', false, nodes, edges, provMap);
 
@@ -366,6 +384,8 @@ ndexApp.controller('networkController',
                                 || networkController.canRead)
                                 getEdges(function (subnetwork) {
                                     cytoscapeService.setNetwork(subnetwork);
+                                    populateEdgeTable();
+                                    populateNodeTable();
                                 })
                         })
                     }
@@ -463,6 +483,174 @@ ndexApp.controller('networkController',
                     }, function (error) {
                         //TODO
                     });
+            };
+
+            var calcColumnWidth = function(header, isLastColumn)
+            {
+
+                var result = header.length * 10;
+                result = result > 100 ? result : 100;
+                if( isLastColumn )
+                    result += 40;
+                return result > 300 ? 300 : result;
+            };
+
+            var populateEdgeTable = function()
+            {
+                var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
+                var edges = networkController.currentSubnetwork.edges;
+                var terms = networkController.currentSubnetwork.terms;
+                var edgeKeys = $scope.networkController.getEdgeKeys();
+
+                var edgePropertyKeys = {};
+
+                var longestSubject = "";
+                var longestPredicate = "";
+                var longestObject = "";
+
+                //The primary task performed by this loop is to determine all properties.
+                for( var i = 0; i < edgeKeys.length; i++ )
+                {
+                    //Primary task determine keys in this row.
+                    var edgeKey = edgeKeys[i];
+                    var properties = edges[edgeKey].properties;
+                    for( var j = 0; j < properties.length; j++ )
+                    {
+                        var key = properties[j].predicateString;
+                        edgePropertyKeys[key] = true;
+                    }
+
+                    //Determine the length of
+                    var subject = nodeLabelMap[edges[edgeKey].subjectId];
+                    var predicate = terms[edges[edgeKey].predicateId].name;
+                    var object = nodeLabelMap[edges[edgeKey].objectId];
+
+                    longestSubject = longestSubject < subject ? subject : longestSubject;
+                    longestPredicate = longestPredicate < predicate ? predicate : longestPredicate;
+                    longestObject = longestObject < object ? object : longestObject;
+                }
+
+                var columnDefs = [{ field: 'Subject', cellTooltip: true, minWidth: calcColumnWidth(longestSubject) },{ field: 'Predicate', cellTooltip: true, minWidth: calcColumnWidth(longestPredicate) },{ field: 'Object', cellTooltip: true, minWidth: calcColumnWidth(longestObject) }];
+                var headers = Object.keys(edgePropertyKeys);
+                for (i = 0; i < headers.length - 1; i++)
+                {
+                    var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                    columnDefs.push(columnDef);
+                }
+                //Special width for the last column
+                var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
+                columnDefs.push(columnDef);
+
+
+
+
+                for( i = 0; i < edgeKeys.length; i++ )
+                {
+                    var edgeKey = edgeKeys[i];
+                    var subject = nodeLabelMap[edges[edgeKey].subjectId];
+                    var predicate = terms[edges[edgeKey].predicateId].name;
+                    var object = nodeLabelMap[edges[edgeKey].objectId];
+
+                    var row = {"Subject": subject, "Predicate": predicate, "Object": object};
+
+                    for (var j = 0; j < headers.length; j++)
+                    {
+                        var header = headers[j];
+                        row[header] = "";
+                    }
+
+                    var properties = edges[edgeKey].properties;
+                    for( j = 0; j < properties.length; j++ )
+                    {
+                        var key = properties[j].predicateString;
+                        row[key] = properties[j].value;
+                    }
+
+                    $scope.edgeGridOptions.data.push( row );
+                }
+                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+            };
+
+            var populateNodeTable = function()
+            {
+                var nodes = networkController.currentSubnetwork.nodes;
+                var nodeKeys = $scope.networkController.getNodeKeys();
+
+                var nodePropertyKeys = {};
+
+                var longestName = "";
+
+                //The primary task performed by this loop is to determine all properties.
+                for( var i = 0; i < nodeKeys.length; i++ )
+                {
+                    //Primary task determine keys in this row.
+                    var nodeKey = nodeKeys[i];
+                    var properties = nodes[nodeKey].properties;
+                    for( var j = 0; j < properties.length; j++ )
+                    {
+                        var key = properties[j].predicateString;
+                        nodePropertyKeys[key] = true;
+                    }
+
+                    //Determine the length of
+                    var name = nodes[nodeKey].name;
+
+                    longestName = longestName < name ? name : longestName;
+                }
+
+                var columnDefs = [{ field: 'Name', cellTooltip: true, minWidth: calcColumnWidth(longestName) }];
+                var headers = Object.keys(nodePropertyKeys);
+                for (i = 0; i < headers.length - 1; i++)
+                {
+                    var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                    columnDefs.push(columnDef);
+                }
+                //Special width for the last column
+                var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
+                columnDefs.push(columnDef);
+
+
+                for( i = 0; i < nodeKeys.length; i++ )
+                {
+                    var nodeKey = nodeKeys[i];
+                    var name = nodes[nodeKey].name;
+
+
+                    var row = {"Name": name};
+
+                    for (var j = 0; j < headers.length; j++)
+                    {
+                        var header = headers[j];
+                        row[header] = "";
+                    }
+
+                    var properties = nodes[nodeKey].properties;
+                    for( j = 0; j < properties.length; j++ )
+                    {
+                        var key = properties[j].predicateString;
+                        row[key] = properties[j].value;
+                    }
+
+                    $scope.nodeGridOptions.data.push( row );
+                }
+                $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+            };
+
+            $scope.foo = function()
+            {
+                edgePropertyKeys = [];
+
+                //console.log("Start Foo");
+                //console.log($scope.edgeGridApi.core);
+                //$scope.edgeGridApi.core.handleWindowResize();
+                //console.log("Stop Foo");
+
+
+                ////$scope.edgeGridApi.core.refresh();
+                //$scope.edgeGridApi.handleWindowResize();
+                //x = 5;
             };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS

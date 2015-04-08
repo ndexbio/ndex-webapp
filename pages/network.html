@@ -228,80 +228,11 @@
                 <strong>No results found that match your criteria.</strong>
             </div>
             <tabset ng-hide="networkController.currentSubnetwork.edgeCount == 0">
-                <tab heading="Edges">
-
-                    <pagination total-items="networkController.currentSubnetwork.edgeCount"
-                                items-per-page="itemsPerPage"
-                                ng-model="currentEdgePage" max-size="paginationMaxSize" boundary-links="true"
-                                direction-links="false" rotate="false" class="pull-right"
-                                num-pages="numEdgePages" first-text="First"
-                                last-text="Last ({{numEdgePages}})"></pagination>
-                    <br/><br/><br/>
-
-                    <div id="divEdges">
-                        <ul id="ulSubnetwork"
-                            ng-repeat="edgeKey in networkController.getEdgeKeys().slice((currentEdgePage-1)*itemsPerPage) | limitTo:itemsPerPage">
-
-                            <li>
-                                <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.edges[edgeKey].subjectId]}}</strong>
-                                <em>{{networkController.currentSubnetwork.terms[networkController.currentSubnetwork.edges[edgeKey].predicateId].name}}</em>
-                                <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.edges[edgeKey].objectId]}}</strong>
-                            <span ng-repeat='citation in networkController.currentSubnetwork.edges[edgeKey].citationIds'>
-                                <a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>
-                                    <span class='glyphicon glyphicon-book'></span>
-                                </sup></a>
-                            </span>
-
-                            </li>
-                        </ul>
-
-                    </div>
-                    <br/>
-                    <pagination total-items="networkController.currentSubnetwork.edgeCount"
-                                items-per-page="itemsPerPage"
-                                ng-model="currentEdgePage" max-size="paginationMaxSize" boundary-links="true"
-                                direction-links="false" rotate="false" class="pull-right"
-                                num-pages="numEdgePages" first-text="First"
-                                last-text="Last ({{numEdgePages}})"></pagination>
+                <tab heading="Edges" select="foo()">
+                    <div id="edgeGrid" ui-grid="edgeGridOptions" ui-grid-resize-columns></div>
                 </tab>
                 <tab heading="Nodes">
-                    <pagination total-items="networkController.currentSubnetwork.nodeCount"
-                                items-per-page="itemsPerPage"
-                                ng-model="currentNodePage" max-size="paginationMaxSize" boundary-links="true"
-                                direction-links="false" rotate="false" class="pull-right"
-                                num-pages="numNodePages" first-text="First"
-                                last-text="Last ({{numNodePages}})"></pagination>
-                    <br/><br/><br/>
-
-                    <div id="divNodes">
-                        <ul id="ulSubnetwork"
-                            ng-repeat="nodeKey in networkController.getNodeKeys().slice((currentNodePage-1)*itemsPerPage) | limitTo:itemsPerPage">
-                            <li style="cursor:pointer"
-                                ng-click="networkController.currentSubnetwork.nodes[nodeKey].showAliases = !networkController.currentSubnetwork.nodes[nodeKey].showAliases">
-                                <strong>{{networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id]}}</strong>
-                            <span ng-repeat='citation in networkController.currentSubnetwork.nodes[nodeKey].citationIds'>
-                            <a ng-href="{{networkController.getCitation(citation)}}" target="_blank"><sup>
-                                <span class='glyphicon glyphicon-book'></span>
-                            </sup></a>
-                            </span>
-                            </li>
-                            <li style="background : white"
-                                ng-show="networkController.currentSubnetwork.nodes[nodeKey].showAliases && (networkController.currentSubnetwork.nodes[nodeKey].aliases.length > 0)">
-                                <span>Aliases:</span>
-                                <em ng-repeat='(key,alias) in networkController.currentSubnetwork.nodes[nodeKey].aliases'>
-                                    {{networkController.currentSubnetwork.baseTerms[alias].name}}
-                                    <span ng-show='(networkController.currentSubnetwork.nodes[nodeKey].aliases.length > 1) && (key < networkController.currentSubnetwork.nodes[nodeKey].aliases.length-1)'>,</span>
-                                </em>
-                            </li>
-                        </ul>
-                    </div>
-                    <br/>
-                    <pagination total-items="networkController.currentSubnetwork.nodeCount"
-                                items-per-page="itemsPerPage"
-                                ng-model="currentNodePage" max-size="paginationMaxSize" boundary-links="true"
-                                direction-links="false" rotate="false" class="pull-right"
-                                num-pages="numNodePages" first-text="First"
-                                last-text="Last ({{numNodePages}})"></pagination>
+                    <div id="nodeGrid" ui-grid="nodeGridOptions" ui-grid-resize-columns></div>
                 </tab>
                 <tab heading="Provenance" ng-click="build_provenance_view()">
 
@@ -321,75 +252,17 @@
 
                         Generated By:
                         <b>{{displayProvenance.creationEvent.eventType}}</b>
-                            <table style="width:100%">
-                                <!--<caption>Event Properties</caption>-->
-                                <tr><th>Name</th><th>Value</th></tr>
-                                <tr ng-show="displayProvenance.creationEvent.startedAtTime == displayProvenance.creationEvent.endedAtTime"><td>event time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
-                                <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>start time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
-                                <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>end time</td><td>{{displayProvenance.creationEvent.endedAtTime | date:'medium' }}</td></tr>
-                                <tr ng-repeat="property in displayProvenance.creationEvent.properties"><td>{{property.name}}</td><td>{{property.value}}</td></tr>
-                            </table>
+                        <table style="width:100%">
+                            <!--<caption>Event Properties</caption>-->
+                            <tr><th>Name</th><th>Value</th></tr>
+                            <tr ng-show="displayProvenance.creationEvent.startedAtTime == displayProvenance.creationEvent.endedAtTime"><td>event time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
+                            <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>start time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
+                            <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>end time</td><td>{{displayProvenance.creationEvent.endedAtTime | date:'medium' }}</td></tr>
+                            <tr ng-repeat="property in displayProvenance.creationEvent.properties"><td>{{property.name}}</td><td>{{property.value}}</td></tr>
+                        </table>
 
 
                     </div>
-
-                    <!--<div style="border-top:medium solid black;"/>-->
-                    <!--<script type="text/ng-template"  id="provenance_renderer.html">-->
-                        <!--<!--<div class="black-border padded">-->
-                        <!--<accordion>-->
-                            <!--<!--<accordion-group heading="Provenance" is-open="true" is-disabled="false">-->
-                            <!--<div class="padded">-->
-
-                            <!--<span ng-show="provenance.creationEvent.inputs.length > 0">-->
-                            <!--<br>-->
-                            <!--<accordion-group>-->
-                                <!--<accordion-heading>-->
-                                    <!--Inputs-->
-                                    <!--<i class="pull-right glyphicon" ng-class="{'glyphicon-search': true}"></i>-->
-                                <!--</accordion-heading>-->
-                                <!--<ul>-->
-                                    <!--<li ng-repeat="provenance in provenance.creationEvent.inputs" ng-include="'provenance_renderer.html'">></li>-->
-                                <!--</ul>-->
-                            <!--</accordion-group>-->
-                            <!--</span>-->
-                            <!--<!--</accordion-group>-->
-                            <!--</div>-->
-
-                        <!--</accordion>-->
-                        <!--<!--</div>-->
-
-                        <!--<!--<button ng-click="add(data)">Add node</button>-->
-                        <!--<!--<button ng-click="delete(data)" ng-show="data.nodes.length > 0">Delete nodes</button>-->
-                        <!--<!--<ul>-->
-                            <!--<!--<li ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></li>-->
-                        <!--<!--</ul>-->
-                    <!--</script>-->
-
-                    <!--<!--<span ng-show="provenance.type==ProvenenceEntity">-->
-                        <!--<ul>-->
-                            <!--<li ng-include="'provenance_renderer.html'" onload="item = 1"></li>-->
-                        <!--</ul>-->
-                    <!--</span>-->
-                    <!--<div class="black-border green" >-->
-                        <!--<span ng-click="showBC=!showBC">-->
-                            <!--A<br>-->
-                        <!--</span>-->
-                        <!--<span ng-show="showBC">-->
-                        <!--<div class="black-border orange" ng-click="showE=!showE">-->
-                            <!--B-->
-                            <!--<div class="black-border red" ng-show="showE">-->
-                                <!--E-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="black-border orange" ng-click="showD=!showD">-->
-                            <!--C+-->
-                            <!--<div class="black-border red" ng-show="showD">-->
-                                <!--D-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--</span>-->
-
-                    <!--</div>-->
                 </tab>
             </tabset>
 
