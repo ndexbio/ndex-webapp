@@ -375,8 +375,8 @@ ndexApp.controller('networkController',
                     function (network) {
                         cn = network;
                         networkController.currentNetwork = network;
-                        getMembership(function () {
-
+                        getMembership(function ()
+                        {
                             if (network.visibility == 'PUBLIC'
                                 || networkController.isAdmin
                                 || networkController.canEdit
@@ -386,7 +386,8 @@ ndexApp.controller('networkController',
                                     populateEdgeTable();
                                     populateNodeTable();
                                 })
-                        })
+                        });
+                        $scope.readOnlyChecked = cn.readOnlyCommitId > 0;
                     }
                 )
                     .error(
@@ -541,10 +542,6 @@ ndexApp.controller('networkController',
                     columnDefs.push(columnDef);
                 }
 
-
-
-
-
                 for( i = 0; i < edgeKeys.length; i++ )
                 {
                     var edgeKey = edgeKeys[i];
@@ -644,7 +641,7 @@ ndexApp.controller('networkController',
 
             $scope.readOnlyChanged = function(readOnlyChecked)
             {
-
+                ndexService.setReadOnly(networkController.currentNetworkId, readOnlyChecked);
             };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS

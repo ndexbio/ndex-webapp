@@ -34,6 +34,12 @@
             <p>{{networkController.currentNetwork.visibility}}</p>
         </div>
 
+        <div class="row">
+            <input type="checkbox"
+                   ng-model="readOnlyChecked"
+                   ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
+        </div>
+
         <div class='row'>
             <p>{{networkController.currentNetwork.description}}</p>
         </div>

@@ -936,9 +936,31 @@ ndexServiceApp.factory('ndexService',
                 return promise;
             };
 
+
+            factory.setReadOnly = function (networkId, value)
+            {
+                var config = ndexConfigs.getNetworkSetReadOnlyConfig(networkId, value);
+                $http(config)
+                    .success(function()
+                    {
+                        var x = 1;
+                    })
+                    .error(function()
+                    {
+                        var x = 2;
+                    });
+            };
+
+
+
+
+
+
             // return factory object
             return factory;
         }]);
+
+
 
 
 /****************************************************************************
@@ -1203,6 +1225,13 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         };
         return this.getPostConfig(url, postData);
     };
+
+    factory.getNetworkSetReadOnlyConfig = function (networkId, value)
+    {
+        var url = "/network/" + networkId + "/setFlag/readOnly=" + value;
+        return this.getGetConfig(url, null);
+    };
+
 
     return factory;
 
