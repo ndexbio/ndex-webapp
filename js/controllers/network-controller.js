@@ -10,7 +10,6 @@ ndexApp.controller('networkController',
             //              CONTROLLER INTIALIZATIONS
             //------------------------------------------------------------------------------------
 
-
             $scope.edgeGridOptions = {
                 enableSorting: true,
                 enableFiltering: true,
@@ -394,8 +393,6 @@ ndexApp.controller('networkController',
                     function (error) {
                         if (error.status != 0) {
                             networkController.errors.push({label: "Get Network Info Request: ", error: error});
-                            //modalInstance.close();
-                            //modalInstance.closed = true;
                         } else {
                             networkController.errors.push({
                                 label: "Get Network Info Request: ",
@@ -532,14 +529,18 @@ ndexApp.controller('networkController',
 
                 var columnDefs = [{ field: 'Subject', cellTooltip: true, minWidth: calcColumnWidth(longestSubject) },{ field: 'Predicate', cellTooltip: true, minWidth: calcColumnWidth(longestPredicate) },{ field: 'Object', cellTooltip: true, minWidth: calcColumnWidth(longestObject) }];
                 var headers = Object.keys(edgePropertyKeys);
-                for (i = 0; i < headers.length - 1; i++)
+                if(  headers.length > 0 )
                 {
-                    var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                    for (i = 0; i < headers.length - 1; i++)
+                    {
+                        var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        columnDefs.push(columnDef);
+                    }
+                    //Special width for the last column
+                    var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
                     columnDefs.push(columnDef);
                 }
-                //Special width for the last column
-                var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
-                columnDefs.push(columnDef);
+
 
 
 
@@ -601,14 +602,17 @@ ndexApp.controller('networkController',
 
                 var columnDefs = [{ field: 'Name', cellTooltip: true, minWidth: calcColumnWidth(longestName) }];
                 var headers = Object.keys(nodePropertyKeys);
-                for (i = 0; i < headers.length - 1; i++)
+                if( headers.length > 0 )
                 {
-                    var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                    for (i = 0; i < headers.length - 1; i++)
+                    {
+                        var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        columnDefs.push(columnDef);
+                    }
+                    //Special width for the last column
+                    var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
                     columnDefs.push(columnDef);
                 }
-                //Special width for the last column
-                var columnDef = { field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
-                columnDefs.push(columnDef);
 
 
                 for( i = 0; i < nodeKeys.length; i++ )
@@ -638,19 +642,9 @@ ndexApp.controller('networkController',
                 $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
             };
 
-            $scope.foo = function()
+            $scope.readOnlyChanged = function(readOnlyChecked)
             {
-                edgePropertyKeys = [];
 
-                //console.log("Start Foo");
-                //console.log($scope.edgeGridApi.core);
-                //$scope.edgeGridApi.core.handleWindowResize();
-                //console.log("Stop Foo");
-
-
-                ////$scope.edgeGridApi.core.refresh();
-                //$scope.edgeGridApi.handleWindowResize();
-                //x = 5;
             };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
