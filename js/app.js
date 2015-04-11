@@ -1,7 +1,7 @@
 //function () {
 // create the module and name it ndexApp
 var ndexApp = angular.module('ndexApp',
-    ['ngRoute', 'ngResource', 'ngTouch', 'ndexServiceApp', 'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns']);
+    ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp', 'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns']);
 //'ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.resizeColumns'
 var net1, net2;
 var cn, csn;

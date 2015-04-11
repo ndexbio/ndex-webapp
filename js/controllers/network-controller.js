@@ -51,6 +51,7 @@ ndexApp.controller('networkController',
 
             $scope.provenance = [];
             $scope.displayProvenance = [];
+            $scope.hideProvTable = true;
 
 
             $scope.tree = [{name: "Node", nodes: []}];
@@ -189,12 +190,15 @@ ndexApp.controller('networkController',
                     hierarchicalLayout: {
                         direction: 'UD'
                     },
+                    hover: true,
+                    selectable: false,
                     edges: {
                         fontFace: 'helvetica',
                         width: 2,
                         style: 'arrow',
                         color: 'silver',
-                        fontColor: 'black'
+                        fontColor: 'black',
+                        widthSelectionMultiplier: 1
                     },
                     nodes: {
                         // default for all nodes
@@ -202,8 +206,13 @@ ndexApp.controller('networkController',
                         shape: 'box',
                         color: {
                             border: 'lightgreen',
-                            background: 'lightgreen'
+                            background: 'lightgreen',
+                            hover: {
+                                border: 'lightblue',
+                                background: 'lightblue'
+                            }
                         }
+
                     }
                 };
 
@@ -221,13 +230,19 @@ ndexApp.controller('networkController',
                     }
                 );
 
-                network.on('select', function (properties) {
-                    var node_id = properties.nodes[0];
+                network.on('hoverNode', function (properties) {
+                    var node_id = properties.node;
                     if (typeof provMap[node_id] == 'undefined')
                         return;
+                    $scope.hideProvTable = false;
                     $scope.$apply(function(){
                         $scope.displayProvenance = provMap[node_id];
                     });
+
+                });
+
+                network.on('blurNode', function (properties) {
+                    $scope.hideProvTable = true;
 
                 });
             };
@@ -485,12 +500,39 @@ ndexApp.controller('networkController',
 
             var calcColumnWidth = function(header, isLastColumn)
             {
-
                 var result = header.length * 10;
-                result = result > 100 ? result : 100;
+                result = result < 100 ? 100 : result;
                 if( isLastColumn )
                     result += 40;
-                return result > 300 ? 300 : result;
+                return result > 250 ? 250 : result;
+            };
+
+
+            $scope.getEdgeCitationLinks = function(edgeKey)
+            {
+                var citationIds = networkController.currentSubnetwork.edges[edgeKey].citationIds;
+                return $scope.getCitationLinks(citationIds);
+            };
+
+            $scope.getNodeCitationLinks = function(nodeKey)
+            {
+                var citationIds = networkController.currentSubnetwork.nodes[nodeKey].citationIds;
+                return $scope.getCitationLinks(citationIds);
+            };
+
+            $scope.getCitationLinks = function(citationIds)
+            {
+                var links = "";
+                for( var i = 0; i < citationIds.length; i++ )
+                {
+                    var citation = citationIds[i];
+                    links += "<a href='"+networkController.getCitation(citation)+"' target='_blank'>";
+                    links += "  <sup>";
+                    links += "      <span class='glyphicon glyphicon-book'></span>";
+                    links += "  </sup>";
+                    links += "</a>";
+                }
+                return links;
             };
 
             var populateEdgeTable = function()
@@ -523,12 +565,35 @@ ndexApp.controller('networkController',
                     var predicate = terms[edges[edgeKey].predicateId].name;
                     var object = nodeLabelMap[edges[edgeKey].objectId];
 
-                    longestSubject = longestSubject < subject ? subject : longestSubject;
-                    longestPredicate = longestPredicate < predicate ? predicate : longestPredicate;
-                    longestObject = longestObject < object ? object : longestObject;
+                    longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
+                    longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
+                    longestObject = longestObject.length < object.length ? object : longestObject;
                 }
 
-                var columnDefs = [{ field: 'Subject', cellTooltip: true, minWidth: calcColumnWidth(longestSubject) },{ field: 'Predicate', cellTooltip: true, minWidth: calcColumnWidth(longestPredicate) },{ field: 'Object', cellTooltip: true, minWidth: calcColumnWidth(longestObject) }];
+                var columnDefs = [
+                    {
+                        field: 'Subject',
+                        cellTooltip: true,
+                        minWidth: calcColumnWidth(longestSubject)
+                    },
+                    {
+                        field: 'Predicate',
+                        cellTooltip: true,
+                        minWidth: calcColumnWidth(longestPredicate)
+                    },
+                    {
+                        field: 'Object',
+                        cellTooltip: true,
+                        minWidth: calcColumnWidth(longestObject)
+                    },
+                    {
+                        field: 'Citations',
+                        cellToolTip: false,
+                        minWidth: calcColumnWidth('Citations'),
+                        enableFiltering: false,
+                        cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getEdgeCitationLinks(COL_FIELD)"></span></div>'
+                    }
+                ];
                 var headers = Object.keys(edgePropertyKeys);
                 if(  headers.length > 0 )
                 {
@@ -549,7 +614,7 @@ ndexApp.controller('networkController',
                     var predicate = terms[edges[edgeKey].predicateId].name;
                     var object = nodeLabelMap[edges[edgeKey].objectId];
 
-                    var row = {"Subject": subject, "Predicate": predicate, "Object": object};
+                    var row = {"Subject": subject, "Predicate": predicate, "Object": object, "Citations": edgeKey};
 
                     for (var j = 0; j < headers.length; j++)
                     {
@@ -592,12 +657,25 @@ ndexApp.controller('networkController',
                     }
 
                     //Determine the length of
-                    var name = nodes[nodeKey].name;
+                    var name = networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id];
 
                     longestName = longestName < name ? name : longestName;
                 }
 
-                var columnDefs = [{ field: 'Name', cellTooltip: true, minWidth: calcColumnWidth(longestName) }];
+                var columnDefs = [
+                    {
+                        field: 'Label',
+                        cellTooltip: true,
+                        minWidth: calcColumnWidth(longestName),
+                    },
+                    {
+                        field: 'Citations',
+                        cellToolTip: false,
+                        minWidth: calcColumnWidth('Citations'),
+                        enableFiltering: false,
+                        cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getNodeCitationLinks(COL_FIELD)"></span></div>'
+                    }
+                ];
                 var headers = Object.keys(nodePropertyKeys);
                 if( headers.length > 0 )
                 {
@@ -615,10 +693,9 @@ ndexApp.controller('networkController',
                 for( i = 0; i < nodeKeys.length; i++ )
                 {
                     var nodeKey = nodeKeys[i];
-                    var name = nodes[nodeKey].name;
+                    var label = networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id];
 
-
-                    var row = {"Name": name};
+                    var row = {"Label": label, "Citations": nodeKey};
 
                     for (var j = 0; j < headers.length; j++)
                     {

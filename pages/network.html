@@ -245,7 +245,7 @@
                     <div class="col-sm-6 bordered">
                         <div id="provenanceNetwork"></div>
                     </div>
-                    <div class="col-sm-6">
+                    <div ng-hide="hideProvTable" class="col-sm-6">
                         <a target="_blank" href="{{displayProvenance.uri}}"><span ng-bind="getProvenanceTitle(displayProvenance)"></span></a><br>
                             <span ng-show="(displayProvenance.properties == null ? 0 : displayProvenance.properties.length) > 0">
                             <table style="width:100%">
