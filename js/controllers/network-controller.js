@@ -51,7 +51,7 @@ ndexApp.controller('networkController',
 
             $scope.provenance = [];
             $scope.displayProvenance = [];
-            $scope.hideProvTable = true;
+
 
 
             $scope.tree = [{name: "Node", nodes: []}];
@@ -208,17 +208,18 @@ ndexApp.controller('networkController',
                             border: 'lightgreen',
                             background: 'lightgreen',
                             hover: {
-                                border: 'lightblue',
-                                background: 'lightblue'
+                                border: 'orange',
+                                background: 'orange'
                             }
                         }
 
                     }
                 };
 
-                $scope.displayProvenance = $scope.provenance;
+                $scope.displayProvenance = provMap[0];
 
                 var network = new vis.Network(container, data, options);
+                network.lastHover = 0;
 
                 network.moveTo(
                     {
@@ -231,10 +232,22 @@ ndexApp.controller('networkController',
                 );
 
                 network.on('hoverNode', function (properties) {
+
                     var node_id = properties.node;
+                    var node = this.nodes[node_id];
+                    //This is the start node. Don't highlight it.
+                    if( node.label == "Start" )
+                    {
+                        node.hover=false;
+                        return;
+                    }
+                    var hover_id = this.lastHover;
+                    var lastHoverNode = this.nodes[hover_id];
+                    lastHoverNode.hover=false;
+                    node.hover=true;
+                    this.lastHover = node_id;
                     if (typeof provMap[node_id] == 'undefined')
                         return;
-                    $scope.hideProvTable = false;
                     $scope.$apply(function(){
                         $scope.displayProvenance = provMap[node_id];
                     });
@@ -242,9 +255,12 @@ ndexApp.controller('networkController',
                 });
 
                 network.on('blurNode', function (properties) {
-                    $scope.hideProvTable = true;
-
+                    var node_id = properties.node;
+                    var node = this.nodes[node_id];
+                    node.hover=true;
                 });
+
+                network.nodes[0].hover = true;
             };
 
             networkController.getEdgeKeys = function()
@@ -510,13 +526,23 @@ ndexApp.controller('networkController',
 
             $scope.getEdgeCitationLinks = function(edgeKey)
             {
-                var citationIds = networkController.currentSubnetwork.edges[edgeKey].citationIds;
+                if( !edgeKey )
+                    return "";
+                var edge = networkController.currentSubnetwork.edges[edgeKey];
+                if( !edge )
+                    return "";
+                var citationIds = edge.citationIds;
                 return $scope.getCitationLinks(citationIds);
             };
 
             $scope.getNodeCitationLinks = function(nodeKey)
             {
-                var citationIds = networkController.currentSubnetwork.nodes[nodeKey].citationIds;
+                if( !nodeKey )
+                    return "";
+                var node = networkController.currentSubnetwork.nodes[nodeKey];
+                if( !node )
+                    return "";
+                var citationIds = node.citationIds;
                 return $scope.getCitationLinks(citationIds);
             };
 
