@@ -49,7 +49,7 @@ ndexApp.controller('userController',
                     var task = userController.pendingTasks[i];
                     userController.deleteTask(task.externalId);
                 }
-            }
+            };
 
 
             // gui control

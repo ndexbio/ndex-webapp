@@ -1125,7 +1125,7 @@
                     // return chained promise
                     return promise.then(
                         function(networkSummary) {
-                            var subPromise = ndexService.getProvenance(network.externalId).$promise;
+                            var subPromise = ndexService.getProvenance(sharedProperties.currentNetworkId).$promise;
                             return subPromise.then(function(provenance) {
                                 return {provenance: provenance, networkSummary: networkSummary}
                             })
@@ -1223,13 +1223,13 @@
                     });
                 };
 
-                //$scope.$watch('ndexSubnetwork', function(value) {
-                //    subnetwork = value
-                //});
-                //
-                //$scope.$watch('ndexNetwork', function(value) {
-                //    network = value
-                //});
+                $scope.$watch('ndexSubnetwork', function(value) {
+                    subnetwork = value
+                });
+
+                $scope.$watch('ndexNetwork', function(value) {
+                    network = value
+                });
 
 
             }
