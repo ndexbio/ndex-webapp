@@ -1223,13 +1223,13 @@
                     });
                 };
 
-                $scope.$watch('ndexSubnetwork', function(value) {
-                    subnetwork = value
-                });
-
-                $scope.$watch('ndexNetwork', function(value) {
-                    network = value
-                });
+                //$scope.$watch('ndexSubnetwork', function(value) {
+                //    subnetwork = value
+                //});
+                //
+                //$scope.$watch('ndexNetwork', function(value) {
+                //    network = value
+                //});
 
 
             }
