@@ -1110,18 +1110,16 @@
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
             controller: function(sharedProperties, $scope, $modal, $location, ndexService) {
-                var network = {};
-                var subnetwork = {};
 
                 var saveSubnetwork = function() {
                     var d = new Date();
 
                     var terms = sharedProperties.getCurrentQueryTerms();
                     var depth = sharedProperties.getCurrentQueryDepth();
-                    subnetwork.name = network.name + ' Query Result - ' + terms;
+                    csn.name = cn.name + ' Query Result - ' + terms;
 
                     // get the promise
-                    var promise = ndexService.saveSubnetwork(subnetwork).$promise;
+                    var promise = ndexService.saveSubnetwork(csn).$promise;
                     // return chained promise
                     return promise.then(
                         function(networkSummary) {
@@ -1189,7 +1187,7 @@
                         function(success) {
                             $location.path('/network/'+success.externalId);
                         });
-                }
+                };
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
@@ -1197,7 +1195,7 @@
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService) {
                             $scope.title = 'Save Subnetwork?'
-                            $scope.message = 'The subnetwork for '+network.name+' will be saved to your account?';
+                            $scope.message = 'The subnetwork for '+cn.name+' will be saved to your account?';
 
                             $scope.cancel = function() {
                                 $modalInstance.dismiss();
@@ -1223,13 +1221,13 @@
                     });
                 };
 
-                $scope.$watch('ndexSubnetwork', function(value) {
-                    subnetwork = value
-                });
-
-                $scope.$watch('ndexNetwork', function(value) {
-                    network = value
-                });
+                //$scope.$watch('ndexSubnetwork', function(value) {
+                //    subnetwork = value
+                //});
+                //
+                //$scope.$watch('ndexNetwork', function(value) {
+                //    network = value
+                //});
 
 
             }
