@@ -1110,6 +1110,8 @@
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
             controller: function(sharedProperties, $scope, $modal, $location, ndexService) {
+                var network = {};
+                var subnetwork = {};
 
                 var saveSubnetwork = function() {
                     var d = new Date();
