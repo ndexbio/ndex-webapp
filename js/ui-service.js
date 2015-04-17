@@ -1221,8 +1221,18 @@
 
                                 removeReferences(csn);
 
+                                var doneReadOnly = function()
+                                {
+                                    $modalInstance.close();
+                                    $scope.isProcessing = false;
+                                };
 
-                                ndexService.saveSubnetwork2(csn);
+
+                                ndexService.setReadOnly(cn.externalId, true, doneReadOnly);
+
+
+
+                                //ndexService.saveSubnetwork2(csn);
 
                                 //saveSubnetwork().then(
                                 //    function(success) {

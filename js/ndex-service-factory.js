@@ -937,13 +937,13 @@ ndexServiceApp.factory('ndexService',
             };
 
 
-            factory.setReadOnly = function (networkId, value)
+            factory.setReadOnly = function (networkId, value, callback)
             {
                 var config = ndexConfigs.getNetworkSetReadOnlyConfig(networkId, value);
                 $http(config)
                     .success(function()
                     {
-
+                        callback();
                     });
             };
 
@@ -1240,7 +1240,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     {
         var url = "/network/asNetwork";
         return this.getPostConfig(url, subnetworkJson);
-    }
+    };
 
 
     return factory;
