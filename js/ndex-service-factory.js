@@ -937,24 +937,23 @@ ndexServiceApp.factory('ndexService',
             };
 
 
-            factory.setReadOnly = function (networkId, value, callback)
+            factory.setReadOnly = function (networkId, value)
             {
                 var config = ndexConfigs.getNetworkSetReadOnlyConfig(networkId, value);
                 $http(config)
                     .success(function()
                     {
-                        callback();
                     });
             };
 
 
-            factory.saveSubnetwork2 = function(subnetworkJson)
+            factory.saveSubnetwork2 = function(subnetworkJson, callback)
             {
                 var config = ndexConfigs.getSaveSubnetworkConfig(subnetworkJson);
                 $http(config)
                     .success(function()
                     {
-                        var x = 5;
+                        callback();
                     });
             };
 

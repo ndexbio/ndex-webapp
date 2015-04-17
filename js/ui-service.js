@@ -1221,14 +1221,14 @@
 
                                 removeReferences(csn);
 
-                                var doneReadOnly = function()
+                                var doneSaveSubnetwork = function()
                                 {
                                     $modalInstance.close();
                                     $scope.isProcessing = false;
                                 };
 
 
-                                ndexService.setReadOnly(cn.externalId, true, doneReadOnly);
+                                ndexService.saveSubnetwork2(csn, doneSaveSubnetwork);
 
 
 
