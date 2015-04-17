@@ -1208,53 +1208,28 @@
                                 $scope.isProcessing = true;
                                 $scope.progress = 'Save in progress....';
 
-                                var removeReferences = function (node) {
-                                    for (var key in node) {
-                                        if (key == 'network') {
-                                            delete node[key];
-                                        }
-                                        if (typeof node[key] === 'object') {
-                                            removeReferences(node[key]);
-                                        }
-                                    }
-                                };
 
-                                removeReferences(csn);
-
-                                var doneSaveSubnetwork = function()
-                                {
-                                    $modalInstance.close();
-                                    $scope.isProcessing = false;
-                                };
-
-
-                                ndexService.saveSubnetwork2(csn, doneSaveSubnetwork);
-
-
-
-                                //ndexService.saveSubnetwork2(csn);
-
-                                //saveSubnetwork().then(
-                                //    function(success) {
-                                //        $modalInstance.close();
-                                //        $scope.isProcessing = false;
-                                //    },
-                                //    function(error) {
-                                //        $scope.errors = error.data;
-                                //        $scope.isProcessing = false;
-                                //    })
+                                saveSubnetwork().then(
+                                    function(success) {
+                                        $modalInstance.close();
+                                        $scope.isProcessing = false;
+                                    },
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                        $scope.isProcessing = false;
+                                    })
                             };
                         }
                     });
                 };
 
-                //$scope.$watch('ndexSubnetwork', function(value) {
-                //    subnetwork = value
-                //});
-                //
-                //$scope.$watch('ndexNetwork', function(value) {
-                //    network = value
-                //});
+                $scope.$watch('ndexSubnetwork', function(value) {
+                    subnetwork = value
+                });
+
+                $scope.$watch('ndexNetwork', function(value) {
+                    network = value
+                });
 
 
             }
