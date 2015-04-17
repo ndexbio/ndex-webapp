@@ -943,16 +943,20 @@ ndexServiceApp.factory('ndexService',
                 $http(config)
                     .success(function()
                     {
-                        var x = 1;
-                    })
-                    .error(function()
-                    {
-                        var x = 2;
+
                     });
             };
 
 
-
+            factory.saveSubnetwork2 = function(subnetworkJson)
+            {
+                var config = ndexConfigs.getSaveSubnetworkConfig(subnetworkJson);
+                $http(config)
+                    .success(function()
+                    {
+                        var x = 5;
+                    });
+            };
 
 
 
@@ -1231,6 +1235,12 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var url = "/network/" + networkId + "/setFlag/readOnly=" + value;
         return this.getGetConfig(url, null);
     };
+
+    factory.getSaveSubnetworkConfig = function(subnetworkJson)
+    {
+        var url = "/network/asNetwork";
+        return this.getPostConfig(url, subnetworkJson);
+    }
 
 
     return factory;

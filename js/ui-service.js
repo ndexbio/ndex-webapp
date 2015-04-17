@@ -1119,6 +1119,7 @@
                     csn.name = cn.name + ' Query Result - ' + terms;
 
                     // get the promise
+
                     var promise = ndexService.saveSubnetwork(csn).$promise;
                     // return chained promise
                     return promise.then(
@@ -1207,15 +1208,31 @@
                                 $scope.isProcessing = true;
                                 $scope.progress = 'Save in progress....';
 
-                                saveSubnetwork().then(
-                                    function(success) {
-                                        $modalInstance.close();
-                                        $scope.isProcessing = false;
-                                    },
-                                    function(error) {
-                                        $scope.errors = error.data;
-                                        $scope.isProcessing = false;
-                                    })
+                                var removeReferences = function (node) {
+                                    for (var key in node) {
+                                        if (key == 'network') {
+                                            delete node[key];
+                                        }
+                                        if (typeof node[key] === 'object') {
+                                            removeReferences(node[key]);
+                                        }
+                                    }
+                                };
+
+                                removeReferences(csn);
+
+
+                                ndexService.saveSubnetwork2(csn);
+
+                                //saveSubnetwork().then(
+                                //    function(success) {
+                                //        $modalInstance.close();
+                                //        $scope.isProcessing = false;
+                                //    },
+                                //    function(error) {
+                                //        $scope.errors = error.data;
+                                //        $scope.isProcessing = false;
+                                //    })
                             };
                         }
                     });
