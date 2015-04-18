@@ -1109,87 +1109,113 @@
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function(sharedProperties, $scope, $modal, $location, ndexService) {
+            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, ndexConfigs) {
                 //var network = {};
                 //var subnetwork = {};
 
-                var saveSubnetwork = function() {
+                var saveSubnetwork = function(modal) {
                     var d = new Date();
 
                     var terms = sharedProperties.getCurrentQueryTerms();
                     var depth = sharedProperties.getCurrentQueryDepth();
                     csn.name = cn.name + ' Query Result - ' + terms;
 
-                    // get the promise
-
-                    var promise = ndexService.saveSubnetwork(csn).$promise;
-                    // return chained promise
-                    return promise.then(
-                        function(networkSummary) {
-                            var subPromise = ndexService.getProvenance(sharedProperties.currentNetworkId).$promise;
-                            return subPromise.then(function(provenance) {
-                                return {provenance: provenance, networkSummary: networkSummary}
-                            })
-                        }).then(
-                        function(data) {
-
-                            var newProvenance = {
-                                uri: data.networkSummary.uri,
-                                properties: [
-                                    {
-                                        name: 'edge count',
-                                        value: data.networkSummary.edgeCount,
-                                        type: 'SimpleValuePropertyPair'
-                                    },
-                                    {
-                                        name: 'node count',
-                                        value: data.networkSummary.nodeCount,
-                                        type: 'SimpleValuePropertyPair'
-                                    },
-                                    {
-                                        name: 'dc:title',
-                                        value: data.networkSummary.name,
-                                        type: 'SimpleValuePropertyPair'
-                                    }
-                                ],
-                                creationEvent: {
-                                    startedAtTime: data.networkSummary.creationTime,
-                                    endedAtTime: data.networkSummary.creationTime,
-                                    inputs: [data.provenance],
-                                    type: 'ProvenanceEvent',
-                                    eventType: 'Query',
-                                    properties: [
-                                        {
-                                            name: 'query terms',
-                                            value: terms,
-                                            type: 'SimpleValuePropertyPair'
-                                        },
-                                        {
-                                            name: 'query depth',
-                                            value: depth,
-                                            type: 'SimpleValuePropertyPair'
-                                        }
-                                    ]
-                                }
-                            };
-
-                            if( data.networkSummary.description )
-                            {
-                                newProvenance.properties.push( {name:'description', value:data.networkSummary.description, type:'SimpleValuePropertyPair'}  )
+                    var removeReferences = function (node) {
+                        for (var key in node) {
+                            if (key == 'network') {
+                                delete node[key];
                             }
-                            if( data.networkSummary.version )
-                            {
-                                newProvenance.properties.push( {name:'version', value:data.networkSummary.version, type:'SimpleValuePropertyPair'}  )
+                            if (typeof node[key] === 'object') {
+                                removeReferences(node[key]);
                             }
+                        }
+                    };
 
-                            return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise.then(
-                                function(res){
-                                    return data.networkSummary
-                                });
-                        }).then(
-                        function(success) {
-                            $location.path('/network/'+success.externalId);
+                    removeReferences(csn);
+
+                    var config = ndexConfigs.getSaveSubnetworkConfig(csn);
+
+                    //$http.post('/network/asNetwork', JSON.stringify(csn)).
+                    $http(config).
+                        success(function(data, status, headers, config) {
+                            modal.close();
+                            $scope.isProcessing = false;
+                            $location.path('/network/'+data.externalId);
+                        }).
+                        error(function(data, status, headers, config) {
+                            // called asynchronously if an error occurs
+                            // or server returns response with an error status.
                         });
+
+                    //// get the promise
+                    //var promise = ndexService.saveSubnetwork(csn).$promise;
+                    //// return chained promise
+                    //return promise.then(
+                    //    function(networkSummary) {
+                    //        var subPromise = ndexService.getProvenance(sharedProperties.currentNetworkId).$promise;
+                    //        return subPromise.then(function(provenance) {
+                    //            return {provenance: provenance, networkSummary: networkSummary}
+                    //        })
+                    //    }).then(
+                    //    function(data) {
+                    //
+                    //        var newProvenance = {
+                    //            uri: data.networkSummary.uri,
+                    //            properties: [
+                    //                {
+                    //                    name: 'edge count',
+                    //                    value: data.networkSummary.edgeCount,
+                    //                    type: 'SimpleValuePropertyPair'
+                    //                },
+                    //                {
+                    //                    name: 'node count',
+                    //                    value: data.networkSummary.nodeCount,
+                    //                    type: 'SimpleValuePropertyPair'
+                    //                },
+                    //                {
+                    //                    name: 'dc:title',
+                    //                    value: data.networkSummary.name,
+                    //                    type: 'SimpleValuePropertyPair'
+                    //                }
+                    //            ],
+                    //            creationEvent: {
+                    //                startedAtTime: data.networkSummary.creationTime,
+                    //                endedAtTime: data.networkSummary.creationTime,
+                    //                inputs: [data.provenance],
+                    //                type: 'ProvenanceEvent',
+                    //                eventType: 'Query',
+                    //                properties: [
+                    //                    {
+                    //                        name: 'query terms',
+                    //                        value: terms,
+                    //                        type: 'SimpleValuePropertyPair'
+                    //                    },
+                    //                    {
+                    //                        name: 'query depth',
+                    //                        value: depth,
+                    //                        type: 'SimpleValuePropertyPair'
+                    //                    }
+                    //                ]
+                    //            }
+                    //        };
+                    //
+                    //        if( data.networkSummary.description )
+                    //        {
+                    //            newProvenance.properties.push( {name:'description', value:data.networkSummary.description, type:'SimpleValuePropertyPair'}  )
+                    //        }
+                    //        if( data.networkSummary.version )
+                    //        {
+                    //            newProvenance.properties.push( {name:'version', value:data.networkSummary.version, type:'SimpleValuePropertyPair'}  )
+                    //        }
+                    //
+                    //        return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise.then(
+                    //            function(res){
+                    //                return data.networkSummary
+                    //            });
+                    //    }).then(
+                    //    function(success) {
+                    //        $location.path('/network/'+success.externalId);
+                    //    });
                 };
 
                 $scope.openMe = function() {
@@ -1210,16 +1236,17 @@
                                 $scope.isProcessing = true;
                                 $scope.progress = 'Save in progress....';
 
+                                saveSubnetwork($modalInstance);
 
-                                saveSubnetwork().then(
-                                    function(success) {
-                                        $modalInstance.close();
-                                        $scope.isProcessing = false;
-                                    },
-                                    function(error) {
-                                        $scope.errors = error.data;
-                                        $scope.isProcessing = false;
-                                    })
+                                //saveSubnetwork().then(
+                                //    function(success) {
+                                //        $modalInstance.close();
+                                //        $scope.isProcessing = false;
+                                //    },
+                                //    function(error) {
+                                //        $scope.errors = error.data;
+                                //        $scope.isProcessing = false;
+                                //    })
                             };
                         }
                     });
