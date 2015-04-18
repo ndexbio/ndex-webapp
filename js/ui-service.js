@@ -1109,7 +1109,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, ndexConfigs) {
+            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, config, ndexConfigs) {
                 //var network = {};
                 //var subnetwork = {};
 
@@ -1133,10 +1133,16 @@
 
                     removeReferences(csn);
 
-                    var config = ndexConfigs.getSaveSubnetworkConfig(csn);
+                    var ndexServerURI = config.protocol + "://localhost:8080/ndexbio-rest";
+                    // This convention is useful, but we may later allow a
+                    // site configuration to explicitly specify a different host
+                    if (location.hostname.toLowerCase() != "localhost")
+                        ndexServerURI = config.protocol + "://" + location.host + "/rest";
 
-                    //$http.post('/network/asNetwork', JSON.stringify(csn)).
-                    $http(config).
+                    //var config = ndexConfigs.getSaveSubnetworkConfig(csn);
+
+                    $http.post(ndexServerURI + '/network/asNetwork', JSON.stringify(csn)).
+                    //$http(config).
                         success(function(data, status, headers, config) {
                             modal.close();
                             $scope.isProcessing = false;
