@@ -1113,6 +1113,78 @@
                 //var network = {};
                 //var subnetwork = {};
 
+                var saveSubnetworkProvenance = function(networkSummary, modal)
+                {
+                    var terms = sharedProperties.getCurrentQueryTerms();
+                    var depth = sharedProperties.getCurrentQueryDepth();
+                    
+                    var subPromise = ndexService.getProvenance(sharedProperties.currentNetworkId).$promise;
+                    return subPromise.then(
+                        function(provenance)
+                        {
+                            var newProvenance =
+                            {
+                                uri: networkSummary.uri,
+                                properties:
+                                [
+                                    {
+                                        name: 'edge count',
+                                        value: networkSummary.edgeCount,
+                                        type: 'SimpleValuePropertyPair'
+                                    },
+                                    {
+                                        name: 'node count',
+                                        value: networkSummary.nodeCount,
+                                        type: 'SimpleValuePropertyPair'
+                                    },
+                                    {
+                                        name: 'dc:title',
+                                        value: networkSummary.name,
+                                        type: 'SimpleValuePropertyPair'
+                                    }
+                                ],
+                                creationEvent:
+                                {
+                                    startedAtTime: networkSummary.creationTime,
+                                    endedAtTime: networkSummary.creationTime,
+                                    inputs: [provenance],
+                                    type: 'ProvenanceEvent',
+                                    eventType: 'Query',
+                                    properties:
+                                    [
+                                        {
+                                            name: 'query terms',
+                                            value: terms,
+                                            type: 'SimpleValuePropertyPair'
+                                        },
+                                        {
+                                            name: 'query depth',
+                                            value: depth,
+                                            type: 'SimpleValuePropertyPair'
+                                        }
+                                    ]
+                                }
+                            };
+
+                            if( networkSummary.description )
+                            {
+                                newProvenance.properties.push( {name:'description', value:networkSummary.description, type:'SimpleValuePropertyPair'}  )
+                            }
+                            if( networkSummary.version )
+                            {
+                                newProvenance.properties.push( {name:'version', value:networkSummary.version, type:'SimpleValuePropertyPair'}  )
+                            }
+
+                            ndexService.setProvenance(networkSummary.externalId, newProvenance).$promise.then(
+                                function(res)
+                                {
+                                    modal.close();
+                                    $scope.isProcessing = false;
+                                    $location.path('/network/'+networkSummary.externalId);
+                                });
+                        })
+                };
+
                 var saveSubnetwork = function(modal) {
                     var d = new Date();
 
@@ -1144,84 +1216,14 @@
                     $http.post(ndexServerURI + '/network/asNetwork', JSON.stringify(csn)).
                     //$http(config).
                         success(function(data, status, headers, config) {
-                            modal.close();
-                            $scope.isProcessing = false;
-                            $location.path('/network/'+data.externalId);
+                            saveSubnetworkProvenance(data, modal);
                         }).
                         error(function(data, status, headers, config) {
                             // called asynchronously if an error occurs
                             // or server returns response with an error status.
                         });
 
-                    //// get the promise
-                    //var promise = ndexService.saveSubnetwork(csn).$promise;
-                    //// return chained promise
-                    //return promise.then(
-                    //    function(networkSummary) {
-                    //        var subPromise = ndexService.getProvenance(sharedProperties.currentNetworkId).$promise;
-                    //        return subPromise.then(function(provenance) {
-                    //            return {provenance: provenance, networkSummary: networkSummary}
-                    //        })
-                    //    }).then(
-                    //    function(data) {
-                    //
-                    //        var newProvenance = {
-                    //            uri: data.networkSummary.uri,
-                    //            properties: [
-                    //                {
-                    //                    name: 'edge count',
-                    //                    value: data.networkSummary.edgeCount,
-                    //                    type: 'SimpleValuePropertyPair'
-                    //                },
-                    //                {
-                    //                    name: 'node count',
-                    //                    value: data.networkSummary.nodeCount,
-                    //                    type: 'SimpleValuePropertyPair'
-                    //                },
-                    //                {
-                    //                    name: 'dc:title',
-                    //                    value: data.networkSummary.name,
-                    //                    type: 'SimpleValuePropertyPair'
-                    //                }
-                    //            ],
-                    //            creationEvent: {
-                    //                startedAtTime: data.networkSummary.creationTime,
-                    //                endedAtTime: data.networkSummary.creationTime,
-                    //                inputs: [data.provenance],
-                    //                type: 'ProvenanceEvent',
-                    //                eventType: 'Query',
-                    //                properties: [
-                    //                    {
-                    //                        name: 'query terms',
-                    //                        value: terms,
-                    //                        type: 'SimpleValuePropertyPair'
-                    //                    },
-                    //                    {
-                    //                        name: 'query depth',
-                    //                        value: depth,
-                    //                        type: 'SimpleValuePropertyPair'
-                    //                    }
-                    //                ]
-                    //            }
-                    //        };
-                    //
-                    //        if( data.networkSummary.description )
-                    //        {
-                    //            newProvenance.properties.push( {name:'description', value:data.networkSummary.description, type:'SimpleValuePropertyPair'}  )
-                    //        }
-                    //        if( data.networkSummary.version )
-                    //        {
-                    //            newProvenance.properties.push( {name:'version', value:data.networkSummary.version, type:'SimpleValuePropertyPair'}  )
-                    //        }
-                    //
-                    //        return ndexService.setProvenance(data.networkSummary.externalId, newProvenance).$promise.then(
-                    //            function(res){
-                    //                return data.networkSummary
-                    //            });
-                    //    }).then(
-                    //    function(success) {
-                    //        $location.path('/network/'+success.externalId);
-                    //    });
+
                 };
 
                 $scope.openMe = function() {
@@ -1244,28 +1246,10 @@
 
                                 saveSubnetwork($modalInstance);
 
-                                //saveSubnetwork().then(
-                                //    function(success) {
-                                //        $modalInstance.close();
-                                //        $scope.isProcessing = false;
-                                //    },
-                                //    function(error) {
-                                //        $scope.errors = error.data;
-                                //        $scope.isProcessing = false;
-                                //    })
                             };
                         }
                     });
                 };
-
-                //$scope.$watch('ndexSubnetwork', function(value) {
-                //    subnetwork = value
-                //});
-                //
-                //$scope.$watch('ndexNetwork', function(value) {
-                //    network = value
-                //});
-
 
             }
         }
