@@ -1102,22 +1102,16 @@
 
     uiServiceApp.directive('saveSubnetwork', function(){
         return {
-            scope: {
-                ndexNetwork: '=',
-                ndexSubnetwork: '='
-            },
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, config, ndexConfigs) {
-                //var network = {};
-                //var subnetwork = {};
+            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, config) {
 
                 var saveSubnetworkProvenance = function(networkSummary, modal)
                 {
                     var terms = sharedProperties.getCurrentQueryTerms();
                     var depth = sharedProperties.getCurrentQueryDepth();
-                    
+
                     var subPromise = ndexService.getProvenance(sharedProperties.currentNetworkId).$promise;
                     return subPromise.then(
                         function(provenance)
