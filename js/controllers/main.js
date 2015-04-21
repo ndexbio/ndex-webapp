@@ -64,17 +64,19 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             ndexUtility.clearUserCredentials();
             $scope.main.loggedIn = false;
             sharedProperties.currentNetworkId = null;
-            delete $scope.main.accountName;
-            $location.path("/home");
+            //delete $scope.main.accountName;
+            $location.path("/");
+            $window.location.reload();
         };
 
         //navbar
         $scope.main.getCurrentNetwork = function () {
             return sharedProperties.getCurrentNetworkId();
         };
-        $scope.main.getCurrentUser = function () {
-            return sharedProperties.getCurrentUserAccountName();
+        $scope.main.getCurrentUserId = function () {
+            return sharedProperties.getCurrentUserId();
         };
+
 
         $scope.main.searchType = 'Networks';
         $scope.main.searchString = '';
@@ -171,7 +173,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                     sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
                     $scope.$emit('LOGGED_IN');
                     $scope.signIn.cancelSignUp();// doesnt really cancel
-                    $location.path('user/' + userData.accountName);
+                    $location.path('user/' + userData.externalId);
                     $scope.isProcessing = false;
                 },
                 function (error) {

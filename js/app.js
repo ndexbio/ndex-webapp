@@ -7,6 +7,10 @@ var net1, net2;
 var cn, csn;
 var cUser;
 
+ndexApp.filter('encodeURIComponent', function() {
+    return window.encodeURIComponent;
+});
+
 //Internet Explorer solution???
 ndexApp.config(['$httpProvider', function ($httpProvider) {
 

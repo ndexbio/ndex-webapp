@@ -1161,12 +1161,19 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             return null;
     };
 
+    factory.encodeCredentials = function(username, token)
+    {
+        return btoa(username + ":" + token);
+    };
+
     /*---------------------------------------------------------------------*
      * Users
      *---------------------------------------------------------------------*/
     factory.getSubmitUserCredentialsConfig = function (accountName, password) {
-        var url = "/user/authenticate/" + encodeURIComponent(accountName) + "/" + encodeURIComponent(password);
-        return this.getGetConfig(url);
+        var url = "/user/authenticate/";
+        var config = this.getGetConfig(url);
+        config['headers']['Authorization'] = "Basic " + factory.encodeCredentials(accountName, password);
+        return config;
     };
 
     factory.getUserConfig = function (userId) {
@@ -1214,12 +1221,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     };
 
     factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, edgeLimit, skipBlocks, blockSize) {
-        // POST to NetworkAService
-        ////console.log("searchType = " + "NEIGHBORHOOD");
-        ////console.log("searchDepth = " + searchDepth);
-        /*for (index in startingTerms){
-         //console.log("searchTerm " + index + " : " + startingTerms[index]);
-         }*/
         var url = "/network/" + networkId + "/asNetwork/query/";
         var postData = {
             searchString: startingTerms,

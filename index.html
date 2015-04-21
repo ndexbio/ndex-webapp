@@ -79,6 +79,9 @@
     <script src="js/controllers/manage-group-access.js"></script>
     <script src="js/controllers/api-controller.js"></script>
 
+
+
+
     <!-- newer third party libraries -->
     <script type="text/javascript" src="lib/vis/3.10/vis.js"></script>
     <script src="lib/ui-grid/3.0.0-rc.20/ui-grid-unstable.js"></script>
@@ -141,8 +144,9 @@
                 <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a>
             </li>
 
-            <li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}">
-                <a ng-href="{{'#user/' + main.getCurrentUser()}}">MyAccount</a>
+            <!--<li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}">-->
+            <li ng-show="main.loggedIn">
+                <a href="#/user/{{main.getCurrentUserId()}}">MyAccount</a>
             </li>
             <!--
             <li ng-show="main.loggedIn" class="dropdown"><a href class="dropdown-toggle"><span class="caret"></span></a>
@@ -156,10 +160,7 @@
             <li ng-show="main.loggedIn">
                 <a ng-href="#" ng-click="main.signout()">Sign Out</a>
             </li>
-            <!-- Hide sign in if user is logged in OR if we are on the home page-->
-            <li ng-hide="main.loggedIn || main.url.url() == '/'">
-                <a ng-href="#">Sign in</a>
-            </li>
+
         </ul>
         </div>
     </div>
