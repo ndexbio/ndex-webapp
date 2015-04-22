@@ -187,7 +187,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                     $scope.isProcessing = false;
                 },
                 function (error) {
-                    $scope.signIn.signUpErrors = error.data;
+                    $scope.signIn.signUpErrors = error.data.message;
                     $scope.isProcessing = false;
                     //console.log(error)
                 });
