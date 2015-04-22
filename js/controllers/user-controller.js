@@ -13,7 +13,7 @@ ndexApp.controller('userController',
 
             $scope.userController = {};
             var userController = $scope.userController;
-            userController.isLoggedInUser = false;
+            userController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
             userController.identifier = identifier;
             userController.displayedUser = {};
 
@@ -277,7 +277,7 @@ ndexApp.controller('userController',
                     {
                         //console.log(error);
                     })
-            }
+            };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

@@ -62,7 +62,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         $scope.main.signout = function () {
             ndexUtility.clearUserCredentials();
-            $scope.main.loggedIn = false;
+            $scope.$emit('LOGGED_OUT');
             sharedProperties.currentNetworkId = null;
             //delete $scope.main.accountName;
             $location.path("/");
@@ -120,7 +120,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         if (accountName) {
             sharedProperties.setCurrentUser(ndexUtility.getLoggedInUserExternalId(), accountName);
             $scope.main.accountName = accountName;
-            $scope.main.loggedIn = true;
+            $scope.$emit('LOGGED_IN');
         }
 
         //---------------------------------------------
@@ -143,6 +143,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $http.get(url, config).
                 success(function(data, status, headers, config, statusText) {
                     sharedProperties.setCurrentUser(data.externalId, data.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                    ndexUtility.setUserInfo(data.accountName, data.externalId);
                     $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
                     $location.path("/user/" + data.externalId);
                     $scope.signIn.accountName = null;
@@ -159,13 +160,13 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 scope: $scope,
                 backdrop: 'static'
             });
-        }
+        };
 
         $scope.signIn.cancelSignUp = function () {
             $scope.signIn.newUser = {};
             $scope.signIn.modalInstance.close();
             $scope.signIn.modalInstance = null;
-        }
+        };
 
         $scope.signIn.signUp = function () {
             if ($scope.isProcessing)
@@ -181,6 +182,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             ndexService.createUser($scope.signIn.newUser,
                 function (userData) {
                     sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
+                    ndexUtility.setUserInfo(userData.accountName, userData.externalId);
                     $scope.$emit('LOGGED_IN');
                     $scope.signIn.cancelSignUp();// doesnt really cancel
                     $location.path('user/' + userData.externalId);
