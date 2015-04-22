@@ -66,7 +66,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             sharedProperties.currentNetworkId = null;
             //delete $scope.main.accountName;
             $location.path("/");
-            $window.location.reload();
+            $scope.$apply();
         };
 
         //navbar
