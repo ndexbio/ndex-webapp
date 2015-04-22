@@ -130,16 +130,26 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.signIn = {};
         $scope.signIn.newUser = {};
 
-        $scope.signIn.submitSignIn = function () {
-            ndexService.signIn($scope.signIn.accountName, $scope.signIn.password)
-                .success(function (userData) {
-                    sharedProperties.setCurrentUser(userData.externalId, userData.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+        $scope.signIn.submitSignIn = function ()
+        {
+            ndexUtility.clearUserCredentials();
+            var url = ndexService.getNdexServerUri() + '/user/authenticate';
+            var config =
+            {
+                headers: {
+                    'Authorization':  "Basic " + btoa($scope.signIn.accountName + ":" + $scope.signIn.password)
+                }
+            };
+            $http.get(url, config).
+                success(function(data, status, headers, config, statusText) {
+                    sharedProperties.setCurrentUser(data.externalId, data.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
                     $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
-                    $location.path("/user/" + userData.externalId);
+                    $location.path("/user/" + data.externalId);
                     $scope.signIn.accountName = null;
                     $scope.signIn.password = null;
-                }).error(function (error) {
-                    $scope.signIn.message = error;
+                }).
+                error(function(data, status, headers, config, statusText) {
+                    $scope.signIn.message = "Your credentials are incorrect.";
                 });
         };
 

@@ -21,6 +21,11 @@ ndexServiceApp.factory('ndexService',
             if (location.hostname.toLowerCase() != "localhost")
                 ndexServerURI = config.protocol + "://" + location.host + "/rest";
 
+            factory.getNdexServerUri = function()
+            {
+                return ndexServerURI;
+            };
+
             factory.getNetworkUploadURI = function () {
                 return ndexServerURI + "/network/upload";
             };
@@ -28,34 +33,7 @@ ndexServiceApp.factory('ndexService',
             /*---------------------------------------------------------------------*
              * Users
              *---------------------------------------------------------------------*/
-            //
-            //signIn
-            //
-            factory.signIn = function (accountName, password) {
-                ndexUtility.clearUserCredentials();
-                ////console.log("submitting user credentials for user: " + accountName);
-                var config = ndexConfigs.getSubmitUserCredentialsConfig(accountName, password);
-                return $http(config).success(function (userData) {
-                    ndexUtility.setUserCredentials(userData.accountName, userData.externalId, password);
-                    return {success: function (handler) {
-                        handler(userData);
-                    }
-                    }
-                }).error(function (error) {
-                    return {error: function (handler) {
-                        handler(error);
-                    }
-                    }
-                });
-            };
-
-            //
-            //signOut
-            //
-            factory.signOut = function () {
-                ndexUtility.clearUserCredentials();
-            };
-
+            
             //
             //getUserQuery
             //
@@ -1161,21 +1139,9 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             return null;
     };
 
-    factory.encodeCredentials = function(username, token)
-    {
-        return btoa(username + ":" + token);
-    };
-
     /*---------------------------------------------------------------------*
      * Users
      *---------------------------------------------------------------------*/
-    factory.getSubmitUserCredentialsConfig = function (accountName, password) {
-        var url = "/user/authenticate/";
-        var config = this.getGetConfig(url);
-        config['headers']['Authorization'] = "Basic " + factory.encodeCredentials(accountName, password);
-        return config;
-    };
-
     factory.getUserConfig = function (userId) {
         var url = "/user/" + userId;
         return this.getGetConfig(url, null);
