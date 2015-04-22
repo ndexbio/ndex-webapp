@@ -59,7 +59,7 @@ ndexApp.controller('searchNetworksController',
                 // Save the error.
                 if (error) {
                     searchController.networkSearchResults = [];
-                    searchController.errors.push(error);
+                    searchController.errors.push(error.message);
 
                     // close the modal.
                     modalInstance.close();
