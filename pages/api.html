@@ -6,7 +6,8 @@
                 <div ng-repeat="networkMethod in api.network">
                     <br/>
                     <div><strong>{{networkMethod.methodName}}</strong> <code>{{networkMethod.path}}</code></div>
-                    <div class="indent">{{networkMethod.apiDoc}}</div>
+                    <div class="indent">Requires Authentication: {{networkMethod.authentication}}</div>
+                    <div class="indent">Description: {{networkMethod.apiDoc}}</div>
                 </div>
             </div>
 
@@ -21,7 +22,8 @@
                 <div ng-repeat="userMethod in api.user">
                     <br/>
                     <div><strong>{{userMethod.methodName}}</strong> <code>{{userMethod.path}}</code></div>
-                    <div class="indent">{{userMethod.apiDoc}}</div>
+                    <div class="indent">Requires Authentication: {{userMethod.authentication}}</div>
+                    <div class="indent">Description: {{userMethod.apiDoc}}</div>
                 </div>
             </div>
 
@@ -35,7 +37,8 @@
                 <div ng-repeat="groupMethod in api.group">
                     <br/>
                     <div><strong>{{groupMethod.methodName}}</strong> <code>{{groupMethod.path}}</code></div>
-                    <div class="indent">{{groupMethod.apiDoc}}</div>
+                    <div class="indent">Requires Authentication: {{groupMethod.authentication}}</div>
+                    <div class="indent">Description: {{groupMethod.apiDoc}}</div>
                 </div>
             </div>
 
@@ -49,7 +52,8 @@
                 <div ng-repeat="requestMethod in api.request">
                     <br/>
                     <div><strong>{{requestMethod.methodName}}</strong> <code>{{requestMethod.path}}</code></div>
-                    <div class="indent">{{requestMethod.apiDoc}}</div>
+                    <div class="indent">Requires Authentication: {{requestMethod.authentication}}</div>
+                    <div class="indent">Description: {{requestMethod.apiDoc}}</div>
                 </div>
             </div>
 
@@ -63,7 +67,8 @@
                 <div ng-repeat="taskMethod in api.task">
                     <br/>
                     <div><strong>{{taskMethod.methodName}}</strong> <code>{{taskMethod.path}}</code></div>
-                    <div class="indent">{{taskMethod.apiDoc}}</div>
+                    <div class="indent">Requires Authentication: {{taskMethod.authentication}}</div>
+                    <div class="indent">Description: {{taskMethod.apiDoc}}</div>
                 </div>
             </div>
 
