@@ -147,7 +147,6 @@ ndexApp.controller('userController',
 
             userController.submitGroupSearch = function ()
             {
-                userController.groupSearchResults = [];
 
                 var query = {};
 
@@ -169,6 +168,19 @@ ndexApp.controller('userController',
                         //TODO
                     });
             };
+
+            userController.adminCheckBoxClicked = function()
+            {
+                userController.groupSearchMember = false;
+                userController.submitGroupSearch();
+            };
+
+            userController.memberCheckBoxClicked = function()
+            {
+                userController.groupSearchAdmin = false;
+                userController.submitGroupSearch();
+            };
+
 
             userController.submitNetworkSearch = function ()
             {
