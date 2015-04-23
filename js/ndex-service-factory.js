@@ -924,19 +924,6 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-
-            factory.saveSubnetwork2 = function(subnetworkJson, callback)
-            {
-                var config = ndexConfigs.getSaveSubnetworkConfig(subnetworkJson);
-                $http(config)
-                    .success(function()
-                    {
-                        callback();
-                    });
-            };
-
-
-
             // return factory object
             return factory;
         }]);
