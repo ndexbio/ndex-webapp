@@ -34,12 +34,11 @@ ndexApp.controller('groupController',
 
 
     groupController.submitUserSearch = function() {
-        groupController.userSearchResults = [];
 
         var query = {};
 
         query.accountName = groupController.displayedGroup.accountName;
-        query.searchString = groupController.memberSearchString
+        query.searchString = groupController.memberSearchString;
         if(groupController.userSearchAdmin) query.permission = 'GROUPADMIN';
         if(groupController.userSearchMember) query.permission = 'MEMBER'
                           
@@ -55,6 +54,18 @@ ndexApp.controller('groupController',
             });
     };
 
+    groupController.adminCheckBoxClicked = function()
+    {
+        groupController.userSearchMember = false;
+        groupController.submitUserSearch();
+    };
+
+    groupController.memberCheckBoxClicked = function()
+    {
+        groupController.userSearchAdmin = false;
+        groupController.submitUserSearch();
+    };
+
     groupController.submitNetworkSearch = function() {
         groupController.networkSearchResults = [];
 
@@ -67,7 +78,9 @@ ndexApp.controller('groupController',
             function(error){
                 //TODO
             })
-    }
+    };
+
+
     
 
     //              local functions
@@ -82,7 +95,7 @@ ndexApp.controller('groupController',
             function(error){
                 //console.log(error);
             });
-    }
+    };
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //----------------------------------------------------------------------------

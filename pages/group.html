@@ -123,18 +123,14 @@
                         <div class='offset-col-md-2 col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='groupController.userSearchAdmin = !groupController.userSearchAdmin; 
-                                                groupController.userSearchMember = false; 
-                                                groupController.submitUserSearch()'
+                                    ng-click='groupController.adminCheckBoxClicked()'
                                     ng-model="groupController.userSearchAdmin">Admin</label>
                             </div>
                         </div>
                         <div class='col-md-2'>
                             <div class="checkbox"><label>
                                 <input type="checkbox"
-                                    ng-click='groupController.userSearchMember = !groupController.userSearchMember;
-                                                groupController.userSearchAdmin = false; 
-                                                groupController.submitUserSearch()'
+                                    ng-click='groupController.memberCheckBoxClicked()'
                                     ng-model="groupController.userSearchMember">Member</label>
                             </div>
                         </div>
