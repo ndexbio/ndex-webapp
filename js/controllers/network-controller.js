@@ -10,23 +10,25 @@ ndexApp.controller('networkController',
             //              CONTROLLER INTIALIZATIONS
             //------------------------------------------------------------------------------------
 
-            $scope.edgeGridOptions = {
+            $scope.edgeGridOptions =
+            {
                 enableSorting: true,
                 enableFiltering: true,
                 showGridFooter: true,
-                onRegisterApi: function( gridApi ) {
+                onRegisterApi: function( gridApi )
+                {
                     $scope.edgeGridApi = gridApi;
-
                 }
             };
 
-            $scope.nodeGridOptions = {
+            $scope.nodeGridOptions =
+            {
                 enableSorting: true,
                 enableFiltering: true,
                 showGridFooter: true,
-                onRegisterApi: function( gridApi ) {
+                onRegisterApi: function( gridApi )
+                {
                     $scope.nodeGridApi = gridApi;
-
                 }
             };
 

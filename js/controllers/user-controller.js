@@ -31,6 +31,67 @@ ndexApp.controller('userController',
             userController.atLeastOneSelected = false;
 
 
+            //Grid Table experiment
+            userController.maxNetworks = 10000;
+
+            $scope.networkGridOptions = {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                onRegisterApi: function( gridApi ) {
+                    $scope.networkGridApi = gridApi;
+                }
+            };
+
+            var populateNetworkTable = function()
+            {
+                var columnDefs = [
+                    {
+                        field: 'Name',
+                        cellTooltip: true
+                    },
+                    {
+                        field: 'Nodes',
+                        cellTooltip: true
+                    },
+                    {
+                        field: 'Edges',
+                        cellTooltip: true
+                    }
+                ];
+
+                for( i = 0; i < userController.networkSearchResults.length; i++ )
+                {
+                    var network = userController.networkSearchResults[i];
+
+                    var row = {"Name": network.name, "Nodes": network.nodeCount, "Edges": network.edgeCount};
+
+                    $scope.networkGridOptions.data.push( row );
+                }
+                $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+                $scope.networkGridApi.grid.gridWidth = $('#divUserTabs').width();
+            };
+
+            userController.submitNetworkSearch2 = function ()
+            {
+                userController.networkSearchResults = [];
+                userController.networkQuery.accountName = userController.displayedUser.accountName;
+                userController.networkQuery.permission = "ADMIN";
+
+                ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.maxNetworks,
+                    function (networks)
+                    {
+                        userController.networkSearchResults = networks;
+                        for (i in userController.networkSearchResults)
+                            userController.networkSearchResults[i].selected = false;
+                        populateNetworkTable();
+                    },
+                    function (error)
+                    {
+
+                    })
+            };
+
             //tasks
             userController.pendingTasks = [];
 
@@ -50,7 +111,6 @@ ndexApp.controller('userController',
                     userController.deleteTask(task.externalId);
                 }
             };
-
 
             // gui control
             userController.selectAll = function ()
@@ -201,7 +261,7 @@ ndexApp.controller('userController',
                     {
                         //TODO
                     })
-            }
+            };
 
             userController.markTaskForDeletion = function (taskUUID)
             {
@@ -322,7 +382,10 @@ ndexApp.controller('userController',
                     userController.submitGroupSearch();
 
                     // get networks
-                    userController.submitNetworkSearch();
+                    //userController.submitNetworkSearch();
+
+                    // Paging experiment
+                    userController.submitNetworkSearch2();
 
 
                 })
