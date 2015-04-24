@@ -48,15 +48,18 @@ ndexApp.controller('userController',
                 var columnDefs = [
                     {
                         field: 'Name',
-                        cellTooltip: true
+                        cellTooltip: true,
+                        maxWidth: 100
                     },
                     {
                         field: 'Nodes',
-                        cellTooltip: true
+                        cellTooltip: true,
+                        maxWidth: 100
                     },
                     {
                         field: 'Edges',
-                        cellTooltip: true
+                        cellTooltip: true,
+                        maxWidth: 100
                     }
                 ];
 
