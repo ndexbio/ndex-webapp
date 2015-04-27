@@ -368,6 +368,11 @@ ndexServiceApp.factory('ndexService',
             factory.editGroupProfile = function (group, successHandler, errorHandler) {
                 group.accountType = 'Group';
                 $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                if( group.website )
+                {
+                    if( !group.website.startsWith("http") )
+                        group.website = "http://" + group.website;
+                }
                 GroupResource.save({identifier: group.externalId}, group, successHandler, errorHandler);
             };
 
