@@ -1088,7 +1088,7 @@
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
-                                        $scope.errors = error.data;
+                                        $scope.errors = error.data.message;
                                         $scope.isProcessing = false;
                                     });
                             };
