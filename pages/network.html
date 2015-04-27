@@ -34,15 +34,16 @@
             <p>{{networkController.currentNetwork.visibility}}</p>
         </div>
 
-        <div class="row">
+        <div class='row'>
+            <p>{{networkController.currentNetwork.description}}</p>
+        </div>
+
+        <div class="row" ng-show="networkController.isAdmin">
             <input type="checkbox"
                    ng-model="readOnlyChecked"
                    ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
         </div>
-
-        <div class='row'>
-            <p>{{networkController.currentNetwork.description}}</p>
-        </div>
+        <br>
 
         <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
             <button type="button" class="btn btn-primary dropdown-toggle">
