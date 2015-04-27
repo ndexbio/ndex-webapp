@@ -361,13 +361,13 @@ ndexApp.controller('networkController',
                     .error(
                     function (error) {
                         if (error.status != 0) {
-                            if( error.data == "Error in queryForSubnetwork: Result set is too large for this query.")
+                            if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                             {
                                 networkController.queryErrors.push("Error Querying: The maximum query size is " + networkQueryLimit);
                             }
                             else
                             {
-                                networkController.queryErrors.push(error.data);
+                                networkController.queryErrors.push(error.data.message);
                             }
 
                             // close the modal.
