@@ -1,6 +1,6 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter',
-        function (ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter) {
+    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location',
+        function (ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location) {
 
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -82,6 +82,20 @@ ndexApp.controller('networkController',
                 return provenance.uri;
             };
 
+            var extractUuidFromUri = function( uri )
+            {
+                var idStart = uri.lastIndexOf('/');
+                return uri.substring(idStart + 1);
+            };
+
+            var generateWebAppUrlFromUuid = function(uuid)
+            {
+                var baseUrl = $location.absUrl();
+                baseUrl = baseUrl.substring( 0, baseUrl.indexOf( $location.url() ) );
+
+                return baseUrl + "/network/" + uuid;
+            };
+
             $scope.buildGraph = function(prov, level, parent_node, edge_label, merge, nodes, edges, provMap)
             {
                 var node_id = nodes.length;
@@ -94,6 +108,24 @@ ndexApp.controller('networkController',
 
                 nodes.push(node);
                 provMap[node_id] = prov;
+                var uuid = extractUuidFromUri(prov.uri)
+                provMap[node_id].uuid = uuid;
+                if( uuid != cn.externalId )
+                {
+                    //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
+                    //not be set.
+                    (ndexService.getNetwork(networkController.currentNetworkId) )
+                        .success( function (network)
+                        {
+                            provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);
+                        }
+                    )
+                        .error( function (error)
+                        {
+
+                        }
+                    );
+                }
 
                 if( parent_node != -1 )
                 {

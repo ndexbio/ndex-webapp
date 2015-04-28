@@ -246,7 +246,14 @@
                         <div id="provenanceNetwork"></div>
                     </div>
                     <div class="col-sm-6">
-                        <a target="_blank" href="{{displayProvenance.uri}}"><span ng-bind="getProvenanceTitle(displayProvenance)"></span></a><br>
+                        <span ng-show="displayProvenance.webapp_url">
+                           <a target="_blank" href="{{displayProvenance.webapp_url}}">
+                               <span ng-bind="getProvenanceTitle(displayProvenance)"></span>
+                           </a><br>
+                        </span>
+                        <span ng-show="!displayProvenance.webapp_url">
+                            {{getProvenanceTitle(displayProvenance)}}<br>
+                        </span>
                             <span ng-show="(displayProvenance.properties == null ? 0 : displayProvenance.properties.length) > 0">
                             <table style="width:100%">
                                 <!--<caption>Entity Properties</caption>-->
