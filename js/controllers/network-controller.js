@@ -385,6 +385,8 @@ ndexApp.controller('networkController',
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);
+                        refreshEdgeTable();
+                        refreshNodeTable();
                         // close the modal
                         networkController.successfullyQueried = true;
                         modalInstance.close();
@@ -667,6 +669,20 @@ ndexApp.controller('networkController',
                     columnDefs.push(columnDef);
                 }
 
+                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+
+                refreshEdgeTable();
+            };
+
+            var refreshEdgeTable = function()
+            {
+                var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
+                var edges = networkController.currentSubnetwork.edges;
+                var terms = networkController.currentSubnetwork.terms;
+                var edgeKeys = $scope.networkController.getEdgeKeys();
+
+                $scope.edgeGridOptions.data = [];
                 for( i = 0; i < edgeKeys.length; i++ )
                 {
                     var edgeKey = edgeKeys[i];
@@ -675,12 +691,6 @@ ndexApp.controller('networkController',
                     var object = nodeLabelMap[edges[edgeKey].objectId];
 
                     var row = {"Subject": subject, "Predicate": predicate, "Object": object, "Citations": edgeKey};
-
-                    for (var j = 0; j < headers.length; j++)
-                    {
-                        var header = headers[j];
-                        row[header] = "";
-                    }
 
                     var properties = edges[edgeKey].properties;
                     for( j = 0; j < properties.length; j++ )
@@ -691,8 +701,8 @@ ndexApp.controller('networkController',
 
                     $scope.edgeGridOptions.data.push( row );
                 }
-                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
-                $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+
+
             };
 
             var populateNodeTable = function()
@@ -702,7 +712,7 @@ ndexApp.controller('networkController',
 
                 var nodePropertyKeys = {};
 
-                var longestName = "";
+                var longestName = "Label";
 
                 //The primary task performed by this loop is to determine all properties.
                 for( var i = 0; i < nodeKeys.length; i++ )
@@ -726,7 +736,7 @@ ndexApp.controller('networkController',
                     {
                         field: 'Label',
                         cellTooltip: true,
-                        minWidth: calcColumnWidth(longestName),
+                        minWidth: calcColumnWidth(longestName)
                     },
                     {
                         field: 'Citations',
@@ -749,6 +759,18 @@ ndexApp.controller('networkController',
                     columnDefs.push(columnDef);
                 }
 
+                $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+
+                refreshNodeTable();
+            };
+
+            var refreshNodeTable = function()
+            {
+                var nodes = networkController.currentSubnetwork.nodes;
+                var nodeKeys = $scope.networkController.getNodeKeys();
+
+                $scope.nodeGridOptions.data = [];
 
                 for( i = 0; i < nodeKeys.length; i++ )
                 {
@@ -756,12 +778,6 @@ ndexApp.controller('networkController',
                     var label = networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id];
 
                     var row = {"Label": label, "Citations": nodeKey};
-
-                    for (var j = 0; j < headers.length; j++)
-                    {
-                        var header = headers[j];
-                        row[header] = "";
-                    }
 
                     var properties = nodes[nodeKey].properties;
                     for( j = 0; j < properties.length; j++ )
@@ -772,8 +788,8 @@ ndexApp.controller('networkController',
 
                     $scope.nodeGridOptions.data.push( row );
                 }
-                $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
-                $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+
+
             };
 
             $scope.readOnlyChanged = function(readOnlyChecked)

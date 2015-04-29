@@ -36,6 +36,8 @@ ndexApp.controller('userController',
 
             userController.getTaskFileExt = function(task)
             {
+                if( !task.format )
+                    return "";
                 if( task.format.toUpperCase() == 'BIOPAX' )
                     return 'owl';
                 else
