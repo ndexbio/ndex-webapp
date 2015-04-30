@@ -1,7 +1,10 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http',
-    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http) {
+    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, Idle) {
 
+        $scope.$on('IdleStart', function() {
+            $scope.main.signout();
+        });
 
 
         $scope.main = {};

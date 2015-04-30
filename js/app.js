@@ -1,7 +1,7 @@
 //function () {
 // create the module and name it ndexApp
 var ndexApp = angular.module('ndexApp',
-    ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp', 'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection']);
+    ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp', 'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns', 'ui.grid.selection', 'ngIdle']);
 //'ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.resizeColumns'
 var net1, net2;
 var cn, csn;
@@ -27,6 +27,7 @@ ndexApp.config(['$httpProvider', function ($httpProvider) {
         //disable IE ajax request caching
         $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
     }
+
 }]);
 
 ndexApp.service('sharedProperties', function ($http) {
@@ -167,6 +168,16 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'manageGroupAccessController'
         });
 }]);
+
+//Idle
+ndexApp.config(function(IdleProvider, KeepaliveProvider) {
+    var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
+    IdleProvider.idle( config.idleTime );
+});
+
+ndexApp.run(function(Idle){
+    Idle.watch();
+});
 
 
 
