@@ -170,7 +170,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 //Idle
-ndexApp.config(function(IdleProvider, KeepaliveProvider) {
+ndexApp.config(function(IdleProvider) {
     var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
     IdleProvider.idle( config.idleTime );
 });

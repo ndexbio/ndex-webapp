@@ -420,6 +420,8 @@ ndexApp.controller('networkController',
                 if( !networkController.currentSubnetwork.citations[citationId].identifier )
                     return false;
                 var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
+                if( identifier.startsWith('http') )
+                    return true;
                 return identifier.split(':')[0] == 'pmid';
             };
 
@@ -428,6 +430,8 @@ ndexApp.controller('networkController',
                 if( !networkController.hasCitation(citationId) )
                     return "javaScript:void(0)";
                 var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
+                if( identifier.startsWith('http') )
+                    return identifier;
                 return 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
             };
 
