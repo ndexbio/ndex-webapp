@@ -178,6 +178,11 @@ ndexServiceApp.factory('ndexService',
             factory.editUserProfile = function (user, successHandler, errorHandler) {
                 user.accountType = 'User';
                 var externalId = ndexUtility.getLoggedInUserExternalId();
+                if( user.website )
+                {
+                    if( !user.website.startsWith("http") )
+                        user.website = "http://" + user.website;
+                }
                 $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                 UserResource.save({identifier: externalId}, user, successHandler, errorHandler);
             };
