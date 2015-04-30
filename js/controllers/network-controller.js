@@ -415,17 +415,20 @@ ndexApp.controller('networkController',
                 $route.reload();
             };
 
+            networkController.hasCitation = function(citationId)
+            {
+                if( !networkController.currentSubnetwork.citations[citationId].identifier )
+                    return false;
+                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
+                return identifier.split(':')[0] == 'pmid';
+            };
 
-            networkController.getCitation = function (citation) {
-                //return;
-                var identifier = networkController.currentSubnetwork.citations[citation].identifier;
-                var parsedString = identifier.split(':');
 
-                if (parsedString[0] == 'pmid') {
-                    return 'http://www.ncbi.nlm.nih.gov/pubmed/' + parsedString[1];
-                } else {
-                    //TODO
-                }
+            networkController.getCitation = function (citationId) {
+                if( !networkController.hasCitation(citationId) )
+                    return "javaScript:void(0)";
+                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
+                return 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
             };
 
             //                  local functions
@@ -587,10 +590,18 @@ ndexApp.controller('networkController',
                 var links = "";
                 for( var i = 0; i < citationIds.length; i++ )
                 {
-                    var citation = citationIds[i];
-                    links += "<a href='"+networkController.getCitation(citation)+"' target='_blank'>";
+                    var citationId = citationIds[i];
+                    var url = networkController.getCitation(citationId);
+                    var title = url;
+                    if( networkController.currentSubnetwork.citations[citationId].title )
+                        title = networkController.currentSubnetwork.citations[citationId].title;
+                    var color = "";
+                    if( !networkController.hasCitation(citationId) )
+                        color = "text-muted";
+
+                    links += "<a href='"+url+"' target='_blank' title='"+title+"'>";
                     links += "  <sup>";
-                    links += "      <span class='glyphicon glyphicon-book'></span>";
+                    links += "      <span class='glyphicon glyphicon-book "+color+"'></span>";
                     links += "  </sup>";
                     links += "</a>";
                 }
@@ -759,10 +770,12 @@ ndexApp.controller('networkController',
                     columnDefs.push(columnDef);
                 }
 
+                refreshNodeTable();
+
                 $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
 
-                refreshNodeTable();
+
             };
 
             var refreshNodeTable = function()
