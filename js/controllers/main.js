@@ -1,6 +1,6 @@
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http',
-    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, Idle) {
+ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http', '$log',
+    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, $log, Idle) {
 
         $scope.$on('IdleStart', function() {
             $scope.main.signout();
@@ -197,6 +197,49 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                     //console.log(error)
                 });
 
-        }
+        };
+
+        $scope.forgot = {};
+
+        $scope.forgotPassword = function()
+        {
+            var modalInstance = $modal.open({
+                templateUrl: 'forgotPassword.html',
+                controller: function ($scope, $modalInstance, $log, forgot)
+                {
+                    $scope.forgot = forgot;
+                    $scope.resetPassword = function ()
+                    {
+                        var url = ndexService.getNdexServerUri() + '/user/forgot-password';
+                        $http.post(url, $scope.forgot.accountName ).
+                            success(function(data, status, headers, config) {
+                                forgot.done = true;
+                                forgot.errorMsg = null;
+                                forgot.successMsg = "A new password has been sent to the email of record."
+                            }).
+                            error(function(data, status, headers, config) {
+                                forgot.errorMsg = data.message;
+                            });
+                    };
+
+                    $scope.cancel = function () {
+                        $modalInstance.dismiss('cancel');
+                    };
+                },
+                resolve:
+                {
+                    forgot: function ()
+                    {
+                        return $scope.forgot;
+                    }
+                }
+            });
+
+            modalInstance.result.finally( function()
+            {
+               $scope.forgot = {};
+            });
+
+        };
 
     }]);
