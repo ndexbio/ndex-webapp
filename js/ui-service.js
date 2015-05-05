@@ -698,14 +698,17 @@
 
                 $scope.openMe = function() {
                     $scope.networkType = 'SIF';
+                    var types = ["XGMML", "BEL", "XBEL", "BIOPAX"];
                     if (csn)
                     {
                         for (var i = 0; i < csn.properties.length; i++)
                         {
                             var property = csn.properties[i];
-                            if (property.predicateString == "sourceFormat")
+                            if (property.predicateString.toUpperCase() == "SOURCEFORMAT")
                             {
-                                $scope.networkType = property.value;
+                                if( $.inArray(property.value.toUpperCase(), types) == -1 )
+                                    break;
+                                $scope.networkType = property.value.toUpperCase();
                                 if( $scope.networkType == 'BEL' )
                                     $scope.networkType = 'XBEL';
                                 break;
