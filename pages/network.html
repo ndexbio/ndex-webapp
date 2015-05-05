@@ -66,11 +66,19 @@
                         Export Network as File
                     </create-export-network-task>
                 </a></li>
-                <li ng-hide='networkController.isAdmin'>
+                <li ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>
                     <a>
                         <create-request-network
                                 ndex-data='networkController.currentNetwork'>
                             Ask for Access!
+                        </create-request-network>
+                    </a>
+                </li>
+                <li ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead' >
+                    <a>
+                        <create-request-network
+                                ndex-data='networkController.currentNetwork'>
+                            Ask for More Access!
                         </create-request-network>
                     </a>
                 </li>
