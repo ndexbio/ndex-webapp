@@ -15,40 +15,22 @@
                   {{task.format}} <span class="caret"></span>
               </a>
 		      <ul class="dropdown-menu">
-                  <li>
+                  <li ng-show="networkType=='XGMML'">
                       <a class="dropdown-toggle" ng-click='task.format = "XGMML"'><small>XGMML</small></a>
+                  </li>
+                  <li ng-show="networkType=='XBEL'">
+                      <a class="dropdown-toggle" ng-click='task.format = "XBEL"'><small>XBEL</small></a>
+                  </li>
+                  <li ng-show="networkType=='BIOPAX'">
+                      <a class="dropdown-toggle" ng-click='task.format = "BIOPAX"'><small>BioPAX</small></a>
                   </li>
                   <li>
                       <a class="dropdown-toggle" ng-click='task.format = "SIF"'><small>SIF</small></a>
-                  </li>
-                  <li>
-                      <a class="dropdown-toggle" ng-click='task.format = "XBEL"'><small>XBEL</small></a>
-                  </li>
-                  <li>
-                      <a class="dropdown-toggle" ng-click='task.format = "BIOPAX"'><small>BioPAX</small></a>
                   </li>
 
               </ul>
 		    </span>
             </strong></h5>
-
-
-
-            <div ng-show = "task.format == 'XGMML'"><strong style="color:red">XGMML export is only for XGMML format networks.
-                Be sure this network is in XGMML.</strong>
-            </div>
-
-            <div ng-show = "task.format == 'SIF'"><strong style="color:red">SIF export is only for SIF format networks.
-                Be sure this network is in SIF.</strong>
-            </div>
-
-            <div ng-show = "task.format == 'XBEL'"><strong style="color:red">XBEL export is only for BEL format networks.
-                Be sure this network is in BEL.</strong>
-            </div>
-
-            <div ng-show = "task.format == 'BIOPAX'"><strong style="color:red">BioPAX export is only for BioPAX format networks.
-                Be sure this network is in BioPAX.</strong>
-            </div>
 
             <div>This will create a background task to export the network as a file.
                 When complete, the task will be displayed on your account home page

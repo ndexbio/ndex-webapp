@@ -670,16 +670,18 @@
             restrict: 'E',
             transclude: true,
             templateUrl: 'pages/directives/createExportNetworkTask.html',
-            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility)
+            {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
+                $scope.networkType = 'SIF';
+
+
 
                 $scope.task = {
                     description: 'network export',
                     priority: 'MEDIUM',
-                    format: 'XGMML',
-                    fileExt: 'xgmml',
                     taskType: 'EXPORT_NETWORK_TO_FILE',
                     status: 'QUEUED',
                     progress: 0,
@@ -689,10 +691,28 @@
                     //old - resource: $scope.externalId
                     //new - resource: undefined
                     resource: undefined
-                }
+                };
+
+
+
 
                 $scope.openMe = function() {
-                    intialize();
+                    $scope.networkType = 'SIF';
+                    if (csn)
+                    {
+                        for (var i = 0; i < csn.properties.length; i++)
+                        {
+                            var property = csn.properties[i];
+                            if (property.predicateString == "sourceFormat")
+                            {
+                                $scope.networkType = property.value;
+                                if( $scope.networkType == 'BEL' )
+                                    $scope.networkType = 'XBEL';
+                                break;
+                            }
+                        }
+                    }
+                    $scope.task.format = $scope.networkType;
                     modalInstance = $modal.open({
                         templateUrl: 'create-export-network-task-modal.html',
                         scope: $scope,
@@ -733,10 +753,6 @@
                     $scope.name = $scope.ndexData.name;
                 });
 
-
-                var intialize = function() {
-
-                }
 
             }
         }
