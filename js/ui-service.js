@@ -723,8 +723,9 @@
                     });
                 };
 
-                $scope.close = function() {
-
+                $scope.close = function()
+                {
+                    $scope.isProcessing = true;
                     modalInstance.close();
                 };
 
@@ -742,6 +743,7 @@
                         function(data) {
                             ////console.log(data);
                             $scope.false = true;
+                            $scope.isProcessing = false;
                             modalInstance.close();
                         },
                         function(error) {
