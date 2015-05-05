@@ -931,13 +931,13 @@
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function($scope, $modal, $location, ndexService) {
+            controller: function($scope, $modal, $location) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
                         templateUrl: 'confirmation-modal.html',
                         scope: $scope,
-                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
 
                             $scope.title = 'Delete this Network'; //pass network name and add to title
                             $scope.message = 'This network will be permanently deleted from NDEx. Are you sure you want to delete?';
@@ -954,6 +954,7 @@
                                 $scope.progress = 'Delete in progress....';
                                 ndexService.deleteNetwork($scope.externalId,
                                     function(data) {
+                                        sharedProperties.setCurrentNetworkId(null);
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
                                         $scope.isProcessing = false;
