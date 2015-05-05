@@ -73,7 +73,7 @@
                 <li ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>
                     <a>
                         <create-request-network
-                                ndex-data='networkController.currentNetwork'>
+                                ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
                             Ask for Access Privileges!
                         </create-request-network>
                     </a>
@@ -81,7 +81,7 @@
                 <li ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead' >
                     <a>
                         <create-request-network
-                                ndex-data='networkController.currentNetwork'>
+                                ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
                             Ask for More Access Privileges!
                         </create-request-network>
                     </a>

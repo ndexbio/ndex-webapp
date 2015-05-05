@@ -567,7 +567,8 @@
     uiServiceApp.directive('createRequestNetwork', function() {
         return {
             scope: {
-                ndexData: '='
+                ndexData: '=',
+                privileges: '='
             },
             restrict: 'E',
             transclude: true,
@@ -616,24 +617,32 @@
                         function(error){
                             $scope.request.error = error.data;
                         });
-                }
+                };
 
                 $scope.$watch('ndexData', function(value) {
                     $scope.request.destinationName = $scope.ndexData.name;
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
                 });
 
+                //$scope.$watch('privileges', function(value) {
+                //    $scope.request.privileges = $scope.privileges;
+                //});
+
 
                 var intialize = function() {
                     $scope.accounts = [];
-
-                    $scope.modal.permissionLabel ='Can edit';
 
                     $scope.request.destinationName = $scope.ndexData.name;
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
 
                     $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
                     $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+
+                    //$scope.request.privileges = $scope.privileges;
+
+                    $scope.modal.permissionLabel ='Can edit';
+                    if( $scope.privileges == 'Edit' )
+                        $scope.modal.permissionLabel ='Is admin';
 
                     var query = {};
 
