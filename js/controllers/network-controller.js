@@ -36,6 +36,8 @@ ndexApp.controller('networkController',
             $scope.networkController = {};
             var networkController = $scope.networkController;
 
+            networkController.privilegeLevel = "None";
+
             networkController.currentNetworkId = networkExternalId; // externalId
             networkController.currentNetwork = {}; // network summary
             networkController.currentSubnetwork = {}; // subnetwork
@@ -481,13 +483,24 @@ ndexApp.controller('networkController',
 
             var getMembership = function (callback) {
                 ndexService.getMyMembership(networkController.currentNetworkId,
-                    function (membership) {
+                    function (membership)
+                    {
                         if (membership && membership.permissions == 'ADMIN')
+                        {
                             networkController.isAdmin = true;
+                            networkController.privilegeLevel = "Admin";
+                        }
                         if (membership && membership.permissions == 'WRITE')
+                        {
                             networkController.canEdit = true;
+                            networkController.privilegeLevel = "Edit";
+                        }
                         if (membership && membership.permissions == 'READ')
+                        {
                             networkController.canRead = true;
+                            networkController.privilegeLevel = "Read";
+
+                        }
                         callback();
                     },
                     function (error) {

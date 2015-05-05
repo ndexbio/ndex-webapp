@@ -14,12 +14,12 @@
         <div class="row">
             <div id="divNetworkStats">
             <span>
-                 <label>nodes:</label>
+                 <label>Nodes:</label>
                 <!--<span>{{networkController.currentSubnetwork.nodeCount}}</span> out of-->
                  <span>{{networkController.currentNetwork.nodeCount}}</span>
             </span>
             <span>
-                 <label>edges:</label>
+                 <label>Edges:</label>
                 <!--<span>{{networkController.currentSubnetwork.edgeCount}}</span> out of-->
                  <span>{{networkController.currentNetwork.edgeCount}}</span>
             </span>
@@ -27,7 +27,7 @@
         </div>
 
         <div class='row' ng-show='networkController.currentNetwork.version'>
-            <p> Version: {{networkController.currentNetwork.version}} </p>
+            <p> <strong>Version:</strong> {{networkController.currentNetwork.version}} </p>
         </div>
 
         <div class='row text-success'>
@@ -36,6 +36,10 @@
 
         <div class='row'>
             <p>{{networkController.currentNetwork.description}}</p>
+        </div>
+
+        <div class="row">
+            <strong>Privileges:</strong> {{networkController.privilegeLevel}}
         </div>
 
         <div class="row" ng-show="networkController.isAdmin">
@@ -70,7 +74,7 @@
                     <a>
                         <create-request-network
                                 ndex-data='networkController.currentNetwork'>
-                            Ask for Access!
+                            Ask for Access Privileges!
                         </create-request-network>
                     </a>
                 </li>
@@ -78,7 +82,7 @@
                     <a>
                         <create-request-network
                                 ndex-data='networkController.currentNetwork'>
-                            Ask for More Access!
+                            Ask for More Access Privileges!
                         </create-request-network>
                     </a>
                 </li>
@@ -121,8 +125,13 @@
             </ul>
         </div>
         <hr>
+
+        <div class="row">
+            <h5>Network Properties</h5>
+        </div>
         <span ng-show='(networkController.currentNetwork.properties.length == 0)
                 && (networkController.isAdmin || networkController.canEdit)'>
+
 
         <div class='row'>
             <h5>More Info</h5>
