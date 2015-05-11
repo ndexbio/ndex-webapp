@@ -205,7 +205,7 @@
         <div class="row">
 
             <span ng-show="networkController.queryMode == 'simple' && !networkController.successfullyQueried" class="com-sm-12">
-                <span class="pull-right"><a ng-click="networkController.queryMode = 'advanced'">Advanced</a></span>
+                <span class="pull-right"><a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a></span>
                 <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
                       class="form-inline pull-left">
 
@@ -230,7 +230,7 @@
             </span>
             <span ng-show="networkController.queryMode == 'advanced' && !networkController.successfullyQueried">
                 <form ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)">
-                    <span class="pull-right"><a ng-click="networkController.queryMode = 'simple'">Simple</a></span>
+                    <span class="pull-right"><a ng-click="networkController.queryMode = 'simple'"><u>Simple Query</u></a></span>
                     Find a subnetwork with edges that,<br>
                     (1) have one or more of these properties:<br>
                     <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
