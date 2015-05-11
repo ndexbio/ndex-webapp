@@ -851,7 +851,7 @@ ndexApp.controller('networkController',
             networkController.advancedQueryNodeCriteria = 'source';
             networkController.advancedQueryEdgeProperties = [{}];
             networkController.advancedQueryNodeProperties = [{}];
-            networkController.queryMode = 'advanced';
+            networkController.queryMode = 'simple';
 
             networkController.addQueryEdgeProperty = function()
             {
