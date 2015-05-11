@@ -863,10 +863,6 @@ ndexServiceApp.factory('ndexService',
             factory.queryNetwork = function (networkId, terms, searchDepth, edgeLimit) {
                 ////console.log("searching for subnetworks");
 
-                // REMOVED: we pass a simple string.  It is processed on the server, not here on the client
-                // Split the string into an array of strings for the $http request
-                // terms = terms.split(/[ ,]+/);
-
                 // The $http timeout property takes a deferred value that can abort AJAX request
                 var deferredAbort = $q.defer();
 
@@ -1115,7 +1111,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var config = {
             method: 'POST',
             url: ndexServerURI + url,
-            data: JSON.stringify(postData),
+            data: angular.toJson(postData),
             headers: {}
         };
         if( factory.getEncodedUser() )

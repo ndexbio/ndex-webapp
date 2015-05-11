@@ -1,6 +1,6 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location',
-        function (ndexService, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location) {
+    ['ndexService', 'ndexConfigs', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexHelper', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location', '$http','$q',
+        function (ndexService, ndexConfigs, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexHelper, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location, $http, $q) {
 
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -52,6 +52,7 @@ ndexApp.controller('networkController',
             networkController.directCanRead = false;
 
             networkController.successfullyQueried = false;
+
 
             $scope.provenance = [];
             $scope.displayProvenance = [];
@@ -414,7 +415,8 @@ ndexApp.controller('networkController',
             };
 
             networkController.backToOriginalNetwork = function () {
-                $route.reload();
+                initialize();
+                networkController.successfullyQueried = false;
             };
 
             networkController.hasCitation = function(citationId)
@@ -818,8 +820,6 @@ ndexApp.controller('networkController',
 
                     $scope.nodeGridOptions.data.push( row );
                 }
-
-
             };
 
             $scope.readOnlyChanged = function(readOnlyChecked)
@@ -846,6 +846,144 @@ ndexApp.controller('networkController',
             // Initialize the current network and current subnetwork
             initialize();
             getProvenance();
+
+            //Advanced Query
+            networkController.advancedQueryNodeCriteria = 'source';
+            networkController.advancedQueryEdgeProperties = [{}];
+            networkController.advancedQueryNodeProperties = [{}];
+            networkController.queryMode = 'advanced';
+
+            networkController.addQueryEdgeProperty = function()
+            {
+                networkController.advancedQueryEdgeProperties.push({});
+            };
+
+            networkController.removeQueryEdgeProperty = function(index)
+            {
+                networkController.advancedQueryEdgeProperties.splice(index, 1);
+            };
+
+            networkController.addQueryNodeProperty = function()
+            {
+                networkController.advancedQueryNodeProperties.push({});
+            };
+
+            networkController.removeQueryNodeProperty = function(index)
+            {
+                networkController.advancedQueryNodeProperties.splice(index, 1);
+            };
+
+            networkController.runAdvancedQuery = function(networkQueryLimit)
+            {
+                var url = "/network/"+csn.externalId+"/asNetwork/prototypeNetworkQuery";
+                var mode = 'Source';
+                if( networkController.advancedQueryNodeCriteria == 'target' )
+                {
+                    mode = 'Target'
+                }
+                else if( networkController.advancedQueryNodeCriteria.includes('both') )
+                {
+                    mode = 'Both'
+                }
+                else if( networkController.advancedQueryNodeCriteria.includes('either') )
+                {
+                    mode = 'Either'
+                }
+
+                var validEdgeProperties = null;
+                var i;
+                for( i = 0; i < networkController.advancedQueryEdgeProperties.length; i++ )
+                {
+                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
+                    if( edgeProperty.name && edgeProperty.value )
+                    {
+                        if( !validEdgeProperties )
+                            validEdgeProperties = [];
+                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
+                    }
+                }
+
+                var validNodeProperties = null;
+                for( i = 0; i < networkController.advancedQueryNodeProperties.length; i++ )
+                {
+                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
+                    if( nodeProperty.name && nodeProperty.value )
+                    {
+                        if( !validNodeProperties )
+                            validNodeProperties = [];
+                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
+                    }
+                }
+
+                var postData =
+                {
+                    nodePropertyFilter:
+                    {
+                        propertySpecifications: validNodeProperties,
+                        mode: mode
+                    },
+                    edgeLimit: networkQueryLimit,
+                    queryName: "Not used yet."
+                };
+
+                if( validEdgeProperties )
+                {
+                    postData.edgeFilter =
+                    {
+                        propertySpecifications: validEdgeProperties
+                    };
+                }
+
+                if( validNodeProperties )
+                {
+                    postData.nodeFilter =
+                    {
+                        propertySpecifications: validNodeProperties,
+                        mode: mode
+                    };
+                }
+
+                var config = ndexConfigs.getPostConfig(url, postData);
+                var canceler = $q.defer();
+                config.timeout = canceler.promise;
+
+                var modalInstance = $modal.open({
+                    templateUrl: 'queryContent.html',
+                    scope: $scope,
+                    backdrop: 'static'
+                });
+
+                // cancel
+                // Close the modal and abort the AJAX request.
+                networkController.cancel = function () {
+                    modalInstance.close();
+                    canceler.resolve();
+                };
+
+                $http(config).
+                    success(function(network, status, headers, config)
+                    {
+                        ndexUtility.setNetwork(network);
+                        ndexHelper.updateNodeLabels(network);
+                        ndexHelper.updateTermLabels(network);
+                        csn = network;
+                        networkController.queryErrors = [];
+                        networkController.currentSubnetwork = network;
+                        cytoscapeService.setNetwork(network);
+                        refreshEdgeTable();
+                        refreshNodeTable();
+                        // close the modal
+                        networkController.successfullyQueried = true;
+                        modalInstance.close();
+                    }).
+                    error(function(error, status, headers, config)
+                    {
+                        networkController.queryErrors.push(error.message);
+                        modalInstance.close();
+                    });
+            }
+
+
 
         }]);
 

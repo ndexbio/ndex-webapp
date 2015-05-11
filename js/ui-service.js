@@ -1310,7 +1310,7 @@
                     return 'accepted';
             }
         }
-    })
+    });
 
     uiServiceApp.filter('taskStatusToLabel', function() {
         return function(input) {
@@ -1337,4 +1337,4 @@
         }
     })
 
-}) ()
+}) ();

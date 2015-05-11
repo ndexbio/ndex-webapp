@@ -23,7 +23,7 @@ ndexApp.controller('editNetworkPropertiesController',
 		if(index == (editor.propertyValuePairs.length - 1))
 			editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
 
-	}
+	};
 
 	editor.save = function() {
         if( $scope.isProcessing )
@@ -47,22 +47,22 @@ ndexApp.controller('editNetworkPropertiesController',
 			},
 			function(error) {
 				editor.errors.push(error)
-			})
+			});
 
         $location.path("network/"+editor.networkExternalId);
         $scope.isProcessing = false;
-	}
+	};
 
 	editor.removeNamespace = function(index) {
 		editor.ontologies.splice(index,1);
 		//TODO api call
-	}
+	};
 
 	editor.addNamespace = function() {
         var namespace = {
             prefix : editor.newPrefix,
             uri : editor.newURI
-        }
+        };
 		ndexService.addNamespaceToNetwork(networkExternalId, namespace,
             function(success) {
                 editor.namespaces.push(namespace);
@@ -72,11 +72,11 @@ ndexApp.controller('editNetworkPropertiesController',
             function(error) {
                 editor.errors.push(error.data)
             })
-	}
+	};
 
 	editor.setURI = function(item, mode, label) {
 		editor.newURI = item.uri;
-	}
+	};
 
     editor.refresh = $route.reload;
 
@@ -161,7 +161,7 @@ ndexApp.controller('editNetworkPropertiesController',
             prefix: 'TTHERM',
             uri: 'http://identifiers.org/tgd/'
         }
-    ]
+    ];
 
     //				API initializations
     //------------------------------------------------------------------------------------
