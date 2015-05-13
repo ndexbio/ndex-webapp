@@ -615,10 +615,14 @@ ndexApp.controller('networkController',
                     if( networkController.currentSubnetwork.citations[citationId].title )
                         title = networkController.currentSubnetwork.citations[citationId].title;
                     var color = "";
+                    var cursorStyle = "cursorpointer";
                     if( !networkController.hasCitation(citationId) )
+                    {
                         color = "text-muted";
+                        cursorStyle = "cursordefault";
+                    }
 
-                    links += "<a href='"+url+"' target='_blank' title='"+title+"'>";
+                    links += "<a class='"+cursorStyle+"' href='"+url+"' target='_blank' title='"+title+"' >";
                     links += "  <sup>";
                     links += "      <span class='glyphicon glyphicon-book "+color+"'></span>";
                     links += "  </sup>";

@@ -657,6 +657,9 @@ dl.Accordion > dd
 /*angular ui fix for cursor*/
 a { cursor: pointer; }
 
+.cursorpointer {cursor: pointer; }
+.cursordefault {cursor: default; }
+
 /* Added by David Welker, September 26, 2014 */
 .indent
 {
