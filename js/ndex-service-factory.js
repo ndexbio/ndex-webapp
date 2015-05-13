@@ -1343,35 +1343,65 @@ ndexServiceApp.factory('ndexHelper', function () {
      * Looks-up abbreviations for term functions.
      *-----------------------------------------------------------------------*/
     factory.lookupFunctionAbbreviation = function (functionLabel) {
-        var fl = functionLabel.toLowerCase();
+        var fl = functionLabel;
         if (fl.match(/^bel:/)) fl = fl.replace(/^bel:/, '');
         switch (fl) {
             case "abundance":
                 return "a";
-            case "biological_process":
+            case "biologicalProcess":
                 return "bp";
-            case "catalytic_activity":
+            case "catalyticActivity":
                 return "cat";
-            case "complex_abundance":
+            case "cellSecretion":
+                return "sec";
+            case "cellSurfaceExpression":
+                return "surf";
+            case "chaperoneActivity":
+                return "chap";
+            case "complexAbundance":
                 return "complex";
-            case "pathology":
-                return "path";
-            case "peptidase_activity":
-                return "pep";
-            case "protein_abundance":
-                return "p";
-            case "rna_abundance":
-                return "r";
-            case "protein_modification":
-                return "pmod";
-            case "transcriptional_activity":
-                return "trans";
-            case "molecular_activity":
-                return "act";
+            case "compositeAbundance":
+                return "composite";
             case "degradation":
                 return "deg";
-            case "kinase_activity":
+            case "fusion":
+                return "fus";
+            case "geneAbundance":
+                return "g";
+            case "gtpBoundActivity":
+                return "gtp";
+            case "kinaseActivity":
                 return "kin";
+            case "microRNAAbundance":
+                return "m";
+            case "molecularActivity":
+                return "act";
+            case "pathology":
+                return "path";
+            case "peptidaseActivity":
+                return "pep";
+            case "phosphateActivity":
+                return "phos";
+            case "proteinAbundance":
+                return "p";
+            case "proteinModification":
+                return "pmod";
+            case "reaction":
+                return "rxn";
+            case "ribosylationActivity":
+                return "ribo";
+            case "rnaAbundance":
+                return "r";
+            case "substitution":
+                return "sub";
+            case "translocation":
+                return "tloc";
+            case "transcriptionalActivity":
+                return "tscript";
+            case "transportActivity":
+                return "tport";
+            case "truncation":
+                return "trunc";
             default:
                 return fl;
         }
