@@ -852,6 +852,7 @@ ndexApp.controller('networkController',
             networkController.advancedQueryEdgeProperties = [{}];
             networkController.advancedQueryNodeProperties = [{}];
             networkController.queryMode = 'simple';
+            networkController.advancedQueryIsValid = false;
 
             networkController.addQueryEdgeProperty = function()
             {
@@ -881,11 +882,11 @@ ndexApp.controller('networkController',
                 {
                     mode = 'Target'
                 }
-                else if( networkController.advancedQueryNodeCriteria.includes('both') )
+                else if( networkController.advancedQueryNodeCriteria.indexOf('both') != -1 )
                 {
                     mode = 'Both'
                 }
-                else if( networkController.advancedQueryNodeCriteria.includes('either') )
+                else if( networkController.advancedQueryNodeCriteria.indexOf('either') != -1 )
                 {
                     mode = 'Either'
                 }
@@ -981,6 +982,47 @@ ndexApp.controller('networkController',
                         networkController.queryErrors.push(error.message);
                         modalInstance.close();
                     });
+            };
+
+            networkController.validateAdvancedQuery = function()
+            {
+                var i;
+                var validEdgeProperties = null;
+                for( i = 0; i < networkController.advancedQueryEdgeProperties.length; i++ )
+                {
+                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
+                    if( edgeProperty.name && !edgeProperty.value || edgeProperty.value && !edgeProperty.name )
+                    {
+                        networkController.advancedQueryIsValid = false;
+                        return;
+                    }
+                    if( edgeProperty.name && edgeProperty.value )
+                    {
+                        if( !validEdgeProperties )
+                            validEdgeProperties = [];
+                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
+                    }
+                }
+                var validNodeProperties = null;
+                for( i = 0; i < networkController.advancedQueryNodeProperties.length; i++ )
+                {
+                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
+                    if( nodeProperty.name && !nodeProperty.value || nodeProperty.value && !nodeProperty.name )
+                    {
+                        networkController.advancedQueryIsValid = false;
+                        return;
+                    }
+                    if( nodeProperty.name && nodeProperty.value )
+                    {
+                        if( !validNodeProperties )
+                            validNodeProperties = [];
+                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
+                    }
+                }
+                if( validEdgeProperties || validNodeProperties )
+                    networkController.advancedQueryIsValid = true;
+                else
+                    networkController.advancedQueryIsValid = false;
             }
 
 

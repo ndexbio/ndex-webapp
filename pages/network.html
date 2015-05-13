@@ -229,17 +229,17 @@
                 </form>
             </span>
             <span ng-show="networkController.queryMode == 'advanced' && !networkController.successfullyQueried">
-                <form ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)">
+                <form novalidate ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)">
                     <span class="pull-right"><a ng-click="networkController.queryMode = 'simple'"><u>Simple Query</u></a></span>
                     Find a subnetwork with edges that,<br>
                     (1) have one or more of these properties:<br>
                     <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
                         <div class="row">
                             <div class="col-sm-5">
-                                <input class="form-control input-sm" ng-model="property.name" placeholder="Edge Property Name">
+                                <input class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()" placeholder="Edge Property Name">
                             </div>
                             <div class="col-sm-5">
-                                <input class="form-control input-sm" ng-model="property.value" placeholder="Value">
+                                <input class="form-control input-sm" ng-model="property.value" ng-change="networkController.validateAdvancedQuery()" placeholder="Value">
                             </div>
                             <div class="col-sm-1">
                                 <button type="button" ng-click="networkController.removeQueryEdgeProperty($index)" ng-disabled="networkController.advancedQueryEdgeProperties.length == 1" class="btn btn-default btn-sm vcenter" tabindex="-1">
@@ -270,10 +270,10 @@
                     <div ng-repeat="property in networkController.advancedQueryNodeProperties">
                         <div class="row">
                             <div class="col-sm-5">
-                                <input class="form-control input-sm" ng-model="property.property" placeholder="Node Property Name">
+                                <input class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()" placeholder="Node Property Name">
                             </div>
                             <div class="col-sm-5">
-                                <input class="form-control input-sm" ng-model="property.value" placeholder="Value">
+                                <input class="form-control input-sm" ng-model="property.value" ng-change="networkController.validateAdvancedQuery()" placeholder="Value">
                             </div>
                             <div class="col-sm-1">
                                 <button type="button" ng-click="networkController.removeQueryNodeProperty($index)" ng-disabled="networkController.advancedQueryNodeProperties.length == 1" class="btn btn-default btn-sm" tabindex="-1">
@@ -285,7 +285,7 @@
                     <button type="button" ng-click="networkController.addQueryNodeProperty()"  class="btn btn-default btn-sm" tabindex="-1">
                         <span class="glyphicon glyphicon-plus"></span>
                     </button><br>
-                    <button type="submit" class="btn btn-primary btn-default pull-right">Run Query</button>
+                    <button ng-disabled="!networkController.advancedQueryIsValid" type="submit" class="btn btn-primary btn-default pull-right">Run Query</button>
                 </form>
             </span>
             <button type="button"
