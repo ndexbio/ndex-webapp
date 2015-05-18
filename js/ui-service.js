@@ -1239,7 +1239,10 @@
 
                     //var config = ndexConfigs.getSaveSubnetworkConfig(csn);
 
-                    $http.post(ndexServerURI + '/network/asNetwork', JSON.stringify(csn)).
+
+                    var postData = angular.toJson(csn);
+
+                    $http.post(ndexServerURI + '/network/asNetwork', postData).
                     //$http(config).
                         success(function(data, status, headers, config) {
                             saveSubnetworkProvenance(data, modal);
