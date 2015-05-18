@@ -1136,7 +1136,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function(sharedProperties, $http, $scope, $modal, $log, $location, ndexService, config) {
+            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, config) {
 
                 var saveSubnetworkProvenance = function(networkSummary, modal)
                 {
@@ -1244,8 +1244,7 @@
                             saveSubnetworkProvenance(data, modal);
                         }).
                         error(function(data, status, headers, config) {
-                            $log.log("Stranger error from post");
-
+                            var x = 10;
                             // called asynchronously if an error occurs
                             // or server returns response with an error status.
                         });
