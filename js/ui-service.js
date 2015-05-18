@@ -1215,7 +1215,6 @@
 
                     var terms = sharedProperties.getCurrentQueryTerms();
                     var depth = sharedProperties.getCurrentQueryDepth();
-                    csn.name = cn.name + ' Query Result - ' + terms;
 
                     //var removeReferences = function (node) {
                     //    for (var key in node) {
@@ -1241,7 +1240,10 @@
 
 
                     //var postData = angular.toJson(csn);
-
+                    var postData = angular.fromJson(csn.json);
+                    postData.name = cn.name + ' Query Result - ' + terms;
+                    csn.json = angular.toJson(postData);
+                    
                     $http.post(ndexServerURI + '/network/asNetwork', csn.json).
                     //$http(config).
                         success(function(data, status, headers, config) {
