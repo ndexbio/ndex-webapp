@@ -1136,7 +1136,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, config) {
+            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService) {
 
                 var saveSubnetworkProvenance = function(networkSummary, modal)
                 {
@@ -1230,11 +1230,12 @@
 
                     removeReferences(csn);
 
-                    var ndexServerURI = config.protocol + "://localhost:8080/ndexbio-rest";
+                    var configProp = angular.injector(['ng', 'ndexServiceApp']).get('config');
+                    var ndexServerURI = configProp.protocol + "://localhost:8080/ndexbio-rest";
                     // This convention is useful, but we may later allow a
                     // site configuration to explicitly specify a different host
                     if (location.hostname.toLowerCase() != "localhost")
-                        ndexServerURI = config.protocol + "://" + location.host + "/rest";
+                        ndexServerURI = configProp.protocol + "://" + location.host + "/rest";
 
                     var config = ndexConfigs.getSaveSubnetworkConfig(csn);
 
