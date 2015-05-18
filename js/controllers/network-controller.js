@@ -382,9 +382,10 @@ ndexApp.controller('networkController',
                 // David says: The last parameter is the edgeLimit. We are using this in the Web App temporarily.
                 (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, networkQueryLimit) )
                     .success(
-                    function (network) {
+                    function (network, json) {
                         //console.log("got query results for : " + networkController.searchString);
                         csn = network;
+                        csn.json = json;
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);

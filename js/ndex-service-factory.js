@@ -881,12 +881,13 @@ ndexServiceApp.factory('ndexService',
                 promise.success = function (handler) {
                     request.success(
                         function (network) {
+                            var json = angular.toJson(network);
                             sharedProperties.setCurrentQueryTerms(terms);
                             sharedProperties.setCurrentQueryDepth(searchDepth);
                             ndexUtility.setNetwork(network);
                             ndexHelper.updateNodeLabels(network);
                             ndexHelper.updateTermLabels(network);
-                            handler(network);
+                            handler(network, json);
                         }
                     );
                     return promise;
