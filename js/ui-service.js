@@ -1237,10 +1237,10 @@
                     if (location.hostname.toLowerCase() != "localhost")
                         ndexServerURI = configProp.protocol + "://" + location.host + "/rest";
 
-                    var config = ndexConfigs.getSaveSubnetworkConfig(csn);
+                    //var config = ndexConfigs.getSaveSubnetworkConfig(csn);
 
-                    //$http.post(ndexServerURI + '/network/asNetwork', JSON.stringify(csn)).
-                    $http(config).
+                    $http.post(ndexServerURI + '/network/asNetwork', JSON.stringify(csn)).
+                    //$http(config).
                         success(function(data, status, headers, config) {
                             saveSubnetworkProvenance(data, modal);
                         }).
