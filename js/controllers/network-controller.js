@@ -511,8 +511,9 @@ ndexApp.controller('networkController',
             };
 
             var getEdges = function (callback) {
+                var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
-                var blockSize = 300;
+                var blockSize = config.networkTableLimit;
                 var skipBlocks = 0;
 
                 // get first convenienceuple of edges
