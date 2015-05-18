@@ -1136,7 +1136,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
-            controller: function(sharedProperties, $http, $scope, $modal, $location, ndexService, config) {
+            controller: function(sharedProperties, $http, $scope, $modal, $log, $location, ndexService, config) {
 
                 var saveSubnetworkProvenance = function(networkSummary, modal)
                 {
@@ -1236,14 +1236,16 @@
                     if (location.hostname.toLowerCase() != "localhost")
                         ndexServerURI = config.protocol + "://" + location.host + "/rest";
 
-                    //var config = ndexConfigs.getSaveSubnetworkConfig(csn);
+                    var config = ndexConfigs.getSaveSubnetworkConfig(csn);
 
-                    $http.post(ndexServerURI + '/network/asNetwork', JSON.stringify(csn)).
-                    //$http(config).
+                    //$http.post(ndexServerURI + '/network/asNetwork', JSON.stringify(csn)).
+                    $http(config).
                         success(function(data, status, headers, config) {
                             saveSubnetworkProvenance(data, modal);
                         }).
                         error(function(data, status, headers, config) {
+                            $log.log("Stranger error from post");
+
                             // called asynchronously if an error occurs
                             // or server returns response with an error status.
                         });
