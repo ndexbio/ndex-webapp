@@ -1,6 +1,6 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'ndexConfigs', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexHelper', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location', '$http','$q',
-        function (ndexService, ndexConfigs, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexHelper, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location, $http, $q) {
+    ['ndexService', 'ndexConfigs', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexHelper', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location', '$http','$q', '$sce',
+        function (ndexService, ndexConfigs, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexHelper, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location, $http, $q, $sce) {
 
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -419,25 +419,7 @@ ndexApp.controller('networkController',
                 networkController.successfullyQueried = false;
             };
 
-            networkController.hasCitation = function(citationId)
-            {
-                if( !networkController.currentSubnetwork.citations[citationId].identifier )
-                    return false;
-                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
-                if( identifier.startsWith('http') )
-                    return true;
-                return identifier.split(':')[0] == 'pmid';
-            };
 
-
-            networkController.getCitation = function (citationId) {
-                if( !networkController.hasCitation(citationId) )
-                    return "javaScript:void(0)";
-                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
-                if( identifier.startsWith('http') )
-                    return identifier;
-                return 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
-            };
 
             //                  local functions
 
@@ -582,54 +564,132 @@ ndexApp.controller('networkController',
             };
 
 
-            $scope.getEdgeCitationLinks = function(edgeKey)
+            //$scope.getEdgeCitationLinks = function(edgeKey)
+            //{
+            //    if( !edgeKey )
+            //        return "";
+            //    var edge = networkController.currentSubnetwork.edges[edgeKey];
+            //    if( !edge )
+            //        return "";
+            //    var citationIds = edge.citationIds;
+            //    return $sce.trustAsHtml( $scope.getCitationLinks(citationIds) );
+            //};
+            //
+            //$scope.getNodeCitationLinks = function(nodeKey)
+            //{
+            //    if( !nodeKey )
+            //        return "";
+            //    var node = networkController.currentSubnetwork.nodes[nodeKey];
+            //    if( !node )
+            //        return "";
+            //    var citationIds = node.citationIds;
+            //    return $scope.getCitationLinks(citationIds);
+            //};
+
+            var getEdgeCitationIds = function(edgeKey)
             {
                 if( !edgeKey )
-                    return "";
+                    return [];
                 var edge = networkController.currentSubnetwork.edges[edgeKey];
                 if( !edge )
-                    return "";
-                var citationIds = edge.citationIds;
-                return $scope.getCitationLinks(citationIds);
+                    return [];
+                return edge.citationIds;
             };
 
-            $scope.getNodeCitationLinks = function(nodeKey)
+            var getNodeCitationIds = function(nodeKey)
             {
                 if( !nodeKey )
-                    return "";
+                    return [];
                 var node = networkController.currentSubnetwork.nodes[nodeKey];
                 if( !node )
-                    return "";
-                var citationIds = node.citationIds;
-                return $scope.getCitationLinks(citationIds);
+                    return [];
+                return node.citationIds;
             };
 
-            $scope.getCitationLinks = function(citationIds)
+            $scope.getNumEdgeCitations = function(edgeKey)
             {
-                var links = "";
+                var citationIds = getEdgeCitationIds(edgeKey);
+                return citationIds.length;
+            };
+
+            $scope.getNumNodeCitations = function(nodeKey)
+            {
+                var citationIds = getNodeCitationIds(nodeKey);
+                return citationIds.length;
+            };
+
+            var getCitationContributorsString = function(citationId)
+            {
+                var citation = networkController.currentSubnetwork.citations[citationId];
+                if( citation.contributors.length < 1 )
+                    return "";
+                var result = "";
+                for( var i = 0; i < citation.contributors.length - 1; i++ )
+                {
+                    result += citation.contributors[i] + ", ";
+                }
+                result += citation.contributors[citation.contributors.length - 1];
+                return result;
+            };
+
+            var getCitations = function(citationIds)
+            {
+                var result = [];
                 for( var i = 0; i < citationIds.length; i++ )
                 {
                     var citationId = citationIds[i];
-                    var url = networkController.getCitation(citationId);
-                    var title = url;
-                    if( networkController.currentSubnetwork.citations[citationId].title )
-                        title = networkController.currentSubnetwork.citations[citationId].title;
-                    var color = "";
-                    var cursorStyle = "cursorpointer";
-                    if( !networkController.hasCitation(citationId) )
-                    {
-                        color = "text-muted";
-                        cursorStyle = "cursordefault";
-                    }
-
-                    links += "<a class='"+cursorStyle+"' href='"+url+"' target='_blank' title='"+title+"' >";
-                    links += "  <sup>";
-                    links += "      <span class='glyphicon glyphicon-book "+color+"'></span>";
-                    links += "  </sup>";
-                    links += "</a>";
+                    var citation = networkController.currentSubnetwork.citations[citationId];
+                    if( networkController.hasCitation(citationId) )
+                        citation.link = networkController.getCitation(citationId);
+                    citation.contributorsString = getCitationContributorsString(citationId);
+                    result.push( citation );
                 }
-                return links;
+                return result;
             };
+
+            var showCitations = function(citations)
+            {
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: 'citations.html',
+                    controller: 'CitationModalCtrl',
+                    resolve: {
+                        citations: function () {
+                            return citations;
+                        }
+                    }
+                });
+            };
+
+            $scope.showEdgeCitations = function(edgeKey)
+            {
+                var edgeCitationIds = getEdgeCitationIds(edgeKey);
+                var edgeCitations = getCitations( edgeCitationIds );
+                showCitations(edgeCitations);
+            };
+
+            networkController.hasCitation = function(citationId)
+            {
+                if( !networkController.currentSubnetwork.citations[citationId].identifier )
+                    return false;
+                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
+                if( identifier.startsWith('http') )
+                    return true;
+                return identifier.split(':')[0] == 'pmid';
+            };
+
+
+            networkController.getCitation = function (citationId) {
+                if( !networkController.hasCitation(citationId) )
+                    return "javaScript:void(0)";
+                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
+                if( identifier.startsWith('http') )
+                    return identifier;
+                return 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
+            };
+
+
+
 
             var populateEdgeTable = function()
             {
@@ -687,7 +747,9 @@ ndexApp.controller('networkController',
                         cellToolTip: false,
                         minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
-                        cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getEdgeCitationLinks(COL_FIELD)"></span></div>'
+                        enableSorting: false,
+                        cellTemplate: "<div class='text-center'><h6><a ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0' ng-click='grid.appScope.showEdgeCitations(COL_FIELD)'>{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}</a></h6></div>"
+                        //cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getEdgeCitationLinks(COL_FIELD)"></span></div>'
                     }
                 ];
                 var headers = Object.keys(edgePropertyKeys);
@@ -777,7 +839,9 @@ ndexApp.controller('networkController',
                         cellToolTip: false,
                         minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
-                        cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getNodeCitationLinks(COL_FIELD)"></span></div>'
+                    //<button class='btn btn-primary btn-xs' ng-click='networkController.foo()'>Link</button>
+                        cellTemplate: "<a ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0'  ng-click='grid.appScope.foo()'>View {{grid.appScope.getNumNodeCitations(COL_FIELD)}} Citations</a>"
+                        //cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getNodeCitationLinks(COL_FIELD)"></span></div>'
                     }
                 ];
                 var headers = Object.keys(nodePropertyKeys);
@@ -1034,3 +1098,15 @@ ndexApp.controller('networkController',
         }]);
 
 
+ndexApp.controller('CitationModalCtrl', function ($scope, $modalInstance, citations)
+{
+    $scope.citations = citations;
+
+    $scope.ok = function () {
+        $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});

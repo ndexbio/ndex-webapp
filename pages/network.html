@@ -392,3 +392,45 @@
         <button class="btn btn-sm btn-default" ng-click="networkController.cancel()">Cancel</button>
     </div>
 </script>
+
+<script type="text/ng-template" id="citations.html">
+    <form>
+        <div>
+            <div class="modal-header">
+                <h3>Citations</h3>
+            </div>
+            <span class="modal-body">
+                <span ng-repeat="citation in citations">
+                    <dl class="dl-horizontal">
+                        <dt>Citation ID</dt>
+                        <dd>{{citation.id}}</dd>
+                        <dt>Type</dt>
+                        <dd>{{citation.idType}}</dd>
+                        <dt ng-show="citation.title && citation.title.length > 0">
+                            Title
+                        </dt>
+                        <dd ng-show="citation.title && citation.title.length > 0">
+                            {{citation.title}}
+                        </dd>
+                        <dt ng-show="citation.contributors && citation.contributors.length > 0">
+                            Contributors
+                        </dt>
+                        <dd ng-show="citation.contributors && citation.contributors.length > 0  ">
+                            {{citation.contributorsString}}
+                        </dd>
+                        <dt ng-show="citation.link">
+                            Link
+                        </dt>
+                        <dd ng-show="citation.link">
+                            <a ng-href="{{citation.link}}">{{citation.link}}</a>
+                        </dd>
+                    </dl>
+                </span>
+            </span>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-enter="ok()" ng-click="ok()">OK</button>
+            </div>
+        </div>
+    </form>
+
+</script>
