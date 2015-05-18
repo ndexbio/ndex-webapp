@@ -1217,18 +1217,18 @@
                     var depth = sharedProperties.getCurrentQueryDepth();
                     csn.name = cn.name + ' Query Result - ' + terms;
 
-                    var removeReferences = function (node) {
-                        for (var key in node) {
-                            if (key == 'network') {
-                                delete node[key];
-                            }
-                            if (typeof node[key] === 'object') {
-                                removeReferences(node[key]);
-                            }
-                        }
-                    };
-
-                    removeReferences(csn);
+                    //var removeReferences = function (node) {
+                    //    for (var key in node) {
+                    //        if (key == 'network') {
+                    //            delete node[key];
+                    //        }
+                    //        if (typeof node[key] === 'object') {
+                    //            removeReferences(node[key]);
+                    //        }
+                    //    }
+                    //};
+                    //
+                    //removeReferences(csn);
 
                     var configProp = angular.injector(['ng', 'ndexServiceApp']).get('config');
                     var ndexServerURI = configProp.protocol + "://localhost:8080/ndexbio-rest";
@@ -1240,9 +1240,9 @@
                     //var config = ndexConfigs.getSaveSubnetworkConfig(csn);
 
 
-                    var postData = angular.toJson(csn);
+                    //var postData = angular.toJson(csn);
 
-                    $http.post(ndexServerURI + '/network/asNetwork', postData).
+                    $http.post(ndexServerURI + '/network/asNetwork', csn.json).
                     //$http(config).
                         success(function(data, status, headers, config) {
                             saveSubnetworkProvenance(data, modal);
