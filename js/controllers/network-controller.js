@@ -1034,10 +1034,12 @@ ndexApp.controller('networkController',
                 $http(config).
                     success(function(network, status, headers, config)
                     {
+                        var json = angular.toJson(network);
                         ndexUtility.setNetwork(network);
                         ndexHelper.updateNodeLabels(network);
                         ndexHelper.updateTermLabels(network);
                         csn = network;
+                        csn.json = json;
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);

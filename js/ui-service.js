@@ -1243,7 +1243,7 @@
                     var postData = angular.fromJson(csn.json);
                     postData.name = cn.name + ' Query Result - ' + terms;
                     csn.json = angular.toJson(postData);
-                    
+
                     $http.post(ndexServerURI + '/network/asNetwork', csn.json).
                     //$http(config).
                         success(function(data, status, headers, config) {
