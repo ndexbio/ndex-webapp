@@ -58,6 +58,17 @@
             </div>
         </div>
 
+        <div class="row">
+            <dl>
+                <dt>Created:</dt>
+                <dd>{{networkController.currentNetwork.creationTime | date}}</dd>
+                <dt>Last Modified:</dt>
+                <dd>{{networkController.currentNetwork.modificationTime | date}}</dd>
+                <dt>UUID:</dt>
+                <dd>{{networkController.currentNetworkId}}</dd>
+            </dl>
+        </div>
+
         <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
             <button type="button" class="btn btn-primary dropdown-toggle">
                 Actions <span class="caret"></span>
