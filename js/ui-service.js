@@ -1210,7 +1210,7 @@
                         })
                 };
 
-                var saveSubnetwork = function(modal) {
+                var saveSubnetwork = function(modal, scope) {
                     var d = new Date();
 
                     var terms = sharedProperties.getCurrentQueryTerms();
@@ -1240,14 +1240,19 @@
                     csn.json = angular.toJson(postData);
 
                     $http.post(ndexServerURI + '/network/asNetwork', csn.json).
-                    //$http(config).
                         success(function(data, status, headers, config) {
                             saveSubnetworkProvenance(data, modal);
                         }).
-                        error(function(data, status, headers, config) {
-                            var x = 10;
-                            // called asynchronously if an error occurs
-                            // or server returns response with an error status.
+                        error(function(error, status, headers, config) {
+                            if( error )
+                            {
+                                $scope.errors = error.message;
+                            }
+                            else
+                            {
+                                scope.errors = "There was an unknown error saving the network.";
+                            }
+                            scope.progress = "";
                         });
 
 
@@ -1262,6 +1267,8 @@
                             $scope.message = 'The subnetwork for '+cn.name+' will be saved to your account?';
 
                             $scope.cancel = function() {
+                                $scope.errors = null;
+                                $scope.progress = 'Save in progress....'
                                 $modalInstance.dismiss();
                             };
 
@@ -1271,7 +1278,7 @@
                                 $scope.isProcessing = true;
                                 $scope.progress = 'Save in progress....';
 
-                                saveSubnetwork($modalInstance);
+                                saveSubnetwork($modalInstance, $scope);
 
                             };
                         }
