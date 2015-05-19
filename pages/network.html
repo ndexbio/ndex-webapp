@@ -34,6 +34,17 @@
             <p>{{networkController.currentNetwork.visibility}}</p>
         </div>
 
+        <div class="row">
+            <dl>
+                <dt>Created:</dt>
+                <dd>{{networkController.currentNetwork.creationTime | date}}</dd>
+                <dt>Last Modified:</dt>
+                <dd>{{networkController.currentNetwork.modificationTime | date}}</dd>
+                <dt>UUID:</dt>
+                <dd>{{networkController.currentNetworkId}}</dd>
+            </dl>
+        </div>
+
         <div class='row'>
             <p>{{networkController.currentNetwork.description}}</p>
         </div>
@@ -50,24 +61,14 @@
         <br>
 
         <div class="row" ng-show="networkController.networkAdmins">
-            <div class="panel panel-info small-margin-right">
-                <div class="panel-heading">Admins</div>
-                <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="networkAdmin in networkController.networkAdmins"><a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a></li>
-                </ul>
-            </div>
+            <strong>Other Admins</strong>
+            <ul style="list-style-type: circle; padding-left: 25px">
+                <li ng-repeat="networkAdmin in networkController.networkAdmins"><a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a></li>
+                <li ng-show="networkController.networkAdmins.length == 0">None</li>
+            </ul>
         </div>
+        <br>
 
-        <div class="row">
-            <dl>
-                <dt>Created:</dt>
-                <dd>{{networkController.currentNetwork.creationTime | date}}</dd>
-                <dt>Last Modified:</dt>
-                <dd>{{networkController.currentNetwork.modificationTime | date}}</dd>
-                <dt>UUID:</dt>
-                <dd>{{networkController.currentNetworkId}}</dd>
-            </dl>
-        </div>
 
         <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
             <button type="button" class="btn btn-primary dropdown-toggle">

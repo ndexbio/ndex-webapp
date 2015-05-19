@@ -433,12 +433,19 @@ ndexApp.controller('networkController',
                 ndexService.getNetworkMemberships(networkController.currentNetworkId, 'ADMIN',
                     function(networkAdmins)
                     {
+                        for( var i = 0; i < networkAdmins.length; i++ )
+                        {
+                            var networkAdmin = networkAdmins[i];
+                            if( networkAdmin.memberUUID == sharedProperties.getCurrentUserId() )
+                            {
+                                networkAdmins.splice(i, 1);
+                            }
+                        }
                         networkController.networkAdmins = networkAdmins;
                     },
                     function(error)
                     {
-                        var x = 10;
-                        //Fail silently.
+
                     });
             };
 
