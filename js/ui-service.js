@@ -1216,19 +1216,6 @@
                     var terms = sharedProperties.getCurrentQueryTerms();
                     var depth = sharedProperties.getCurrentQueryDepth();
 
-                    //var removeReferences = function (node) {
-                    //    for (var key in node) {
-                    //        if (key == 'network') {
-                    //            delete node[key];
-                    //        }
-                    //        if (typeof node[key] === 'object') {
-                    //            removeReferences(node[key]);
-                    //        }
-                    //    }
-                    //};
-                    //
-                    //removeReferences(csn);
-
                     var configProp = angular.injector(['ng', 'ndexServiceApp']).get('config');
                     var ndexServerURI = configProp.protocol + "://localhost:8080/ndexbio-rest";
                     // This convention is useful, but we may later allow a
@@ -1236,12 +1223,20 @@
                     if (location.hostname.toLowerCase() != "localhost")
                         ndexServerURI = configProp.protocol + "://" + location.host + "/rest";
 
-                    //var config = ndexConfigs.getSaveSubnetworkConfig(csn);
-
-
-                    //var postData = angular.toJson(csn);
                     var postData = angular.fromJson(csn.json);
-                    postData.name = cn.name + ' Query Result - ' + terms;
+                    if( terms )
+                    {
+                        postData.name = cn.name + ': Simple Query, Terms = ' + terms;
+                    }
+                    else
+                    {
+                        postData.name = cn.name + ': Advanced Query';
+                    }
+                    if( depth )
+                    {
+                        postData.name += ' at Depth ' + depth;
+                    }
+
                     csn.json = angular.toJson(postData);
 
                     $http.post(ndexServerURI + '/network/asNetwork', csn.json).

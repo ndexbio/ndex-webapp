@@ -585,12 +585,6 @@ ndexServiceApp.factory('ndexService',
                         },
                         isArray: true
                     },
-                    saveSubnetwork: {
-                        method: 'POST',
-                        params: {
-                            action: 'asNetwork'
-                        }
-                    },
                     editNetworkSummary: {
                         method: 'POST',
                         params: {
@@ -705,24 +699,6 @@ ndexServiceApp.factory('ndexService',
                 if (ndexUtility.getLoggedInUserAccountName() != null)
                     $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
                 NetworkResource.search({skipBlocks: skipBlocks, blockSize: blockSize}, query, successHandler, errorHandler);
-            };
-
-            factory.saveSubnetwork = function (subnetwork, successHandler, errorHandler) {
-                var removeReferences = function (node) {
-                    for (var key in node) {
-                        if (key == 'network') {
-                            delete node[key];
-                        }
-                        if (typeof node[key] === 'object') {
-                            removeReferences(node[key]);
-                        }
-                    }
-                };
-
-                removeReferences(subnetwork);
-
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
-                return NetworkResource.saveSubnetwork({}, subnetwork, successHandler, errorHandler);
             };
 
             //old http calls below
@@ -1195,13 +1171,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var url = "/network/" + networkId + "/setFlag/readOnly=" + value;
         return this.getGetConfig(url, null);
     };
-
-    factory.getSaveSubnetworkConfig = function(subnetworkJson)
-    {
-        var url = "/network/asNetwork";
-        return this.getPostConfig(url, subnetworkJson);
-    };
-
 
     return factory;
 
