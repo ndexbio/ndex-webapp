@@ -652,7 +652,7 @@ ndexServiceApp.factory('ndexService',
 
                 }
                 else {
-                    NetworkResource.getMemberships({identifer: externalId, permissionType: permission}, successHandler, errorHandler)
+                    NetworkResource.getMemberships({identifier: externalId, permissionType: permission}, successHandler, errorHandler)
                 }
 
             };

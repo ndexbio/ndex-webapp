@@ -688,6 +688,8 @@ a { cursor: pointer; }
 
 .padded { padding: 5px; }
 
+.small-margin-right { margin-right: 10px;}
+
 .bordered { border: 1px solid;
     border-color: lightgray;}
 
@@ -761,5 +763,6 @@ hr {
     vertical-align: middle;
     float: none;
 }
+
 
 

@@ -53,6 +53,10 @@ ndexApp.controller('networkController',
 
             networkController.successfullyQueried = false;
 
+            networkController.networkAdmins = null;
+
+
+
 
             $scope.provenance = [];
             $scope.displayProvenance = [];
@@ -424,6 +428,21 @@ ndexApp.controller('networkController',
 
             //                  local functions
 
+            var getNetworkAdmins = function()
+            {
+                ndexService.getNetworkMemberships(networkController.currentNetworkId, 'ADMIN',
+                    function(networkAdmins)
+                    {
+                        networkController.networkAdmins = networkAdmins;
+                    },
+                    function(error)
+                    {
+                        var x = 10;
+                        //Fail silently.
+                    });
+            };
+
+
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
                 var request1 = null;
@@ -449,6 +468,7 @@ ndexApp.controller('networkController',
                                 })
                         });
                         $scope.readOnlyChecked = cn.readOnlyCommitId > 0;
+                        getNetworkAdmins();
                     }
                 )
                     .error(
@@ -897,6 +917,9 @@ ndexApp.controller('networkController',
                 ndexService.setReadOnly(networkController.currentNetworkId, readOnlyChecked);
             };
 
+
+
+
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
@@ -1096,6 +1119,8 @@ ndexApp.controller('networkController',
                 else
                     networkController.advancedQueryIsValid = false;
             }
+
+
 
 
 

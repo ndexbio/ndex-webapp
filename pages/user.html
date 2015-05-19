@@ -24,44 +24,46 @@
             <div>
                 {{userController.displayedUser.description}}
             </div>
-            <hr>
-            <div class="btn-group" dropdown is-open="status.isopen" ng-show="userController.isLoggedInUser">
-                <button type="button" class="btn btn-primary dropdown-toggle">
-                    Actions <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li>
-                        <a ng-href="#upload">Upload Networks</a>
-                    </li>
-                    <li>
-                        <a trigger-create-group-modal="Create Group"></a>
-                    </li>
-                    <li>
-                        <a><edit-user-modal
-                                ndex-data='userController.displayedUser'>
-                                Edit Profile
-                            </edit-user-modal>
-                        </a>
-                    </li>
-                    <li>
-                        <a><change-password-modal>
-                                Change Password
-                            </change-password-modal>
-                        </a>
-                    </li>
-                    <li><a>
-                        <delete-user>
-                            Delete this Account
-                        </delete-user>
-                    </a></li>
-                </ul>
-            </div>
-            <div class="spacer">
-                <button type="button" class="btn btn-primary pull-down" ng-show="userController.atLeastOneSelected"
-                        ng-click="userController.deleteSelectedNetworks()">
-                    Delete Selected Networks
-                </button>
-            </div>
+            <span ng-show="userController.isLoggedInUser && userController.identifier == userController.loggedInIdentifier">
+                <hr>
+                <div class="btn-group" dropdown is-open="status.isopen">
+                    <button type="button" class="btn btn-primary dropdown-toggle">
+                        Actions <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a ng-href="#upload">Upload Networks</a>
+                        </li>
+                        <li>
+                            <a trigger-create-group-modal="Create Group"></a>
+                        </li>
+                        <li>
+                            <a><edit-user-modal
+                                    ndex-data='userController.displayedUser'>
+                                    Edit Profile
+                                </edit-user-modal>
+                            </a>
+                        </li>
+                        <li>
+                            <a><change-password-modal>
+                                    Change Password
+                                </change-password-modal>
+                            </a>
+                        </li>
+                        <li><a>
+                            <delete-user>
+                                Delete this Account
+                            </delete-user>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="spacer">
+                    <button type="button" class="btn btn-primary pull-down" ng-show="userController.atLeastOneSelected"
+                            ng-click="userController.deleteSelectedNetworks()">
+                        Delete Selected Networks
+                    </button>
+                </div>
+            </span>
         </div>
     </div>
 
@@ -75,7 +77,8 @@
                     <table class="table table-hover" ng-show="userController.networkSearchResults.length > 0">
                         <thead>
                         <tr>
-                            <th width="28"><input type="checkbox" ng-model="userController.allSelected" ng-click="userController.selectAll()"/></th>
+                            <th ng-show="userController.isLoggedInUser && userController.identifier == userController.loggedInIdentifier"
+                                width="28"><input type="checkbox" ng-model="userController.allSelected" ng-click="userController.selectAll()"/></th>
                             <th>Title</th>
                             <th style="width: 10%;">Nodes</th>
                             <th style="width: 10%;">Edges</th>
@@ -83,7 +86,9 @@
                         </thead>
                         <tbody  ng-repeat="network in userController.networkSearchResults">
                         <tr >
-                            <td><input type="checkbox" ng-model="network.selected" ng-click="userController.selectNetwork(network)"/></td>
+                            <td ng-show="userController.isLoggedInUser && userController.identifier == userController.loggedInIdentifier">
+                                <input type="checkbox" ng-model="network.selected" ng-click="userController.selectNetwork(network)"/>
+                            </td>
                             <td ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)">{{network.name}}</td>
                             <td ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)" class="AlignRight">{{network.nodeCount}}</td>
                             <td ng-click="userController.setAndDisplayCurrentNetwork(network.externalId)" class="AlignRight">{{network.edgeCount}}</td>

@@ -39,7 +39,7 @@
         </div>
 
         <div class="row">
-            <strong>Privileges:</strong> {{networkController.privilegeLevel}}
+            <strong>Your Access Privileges:</strong> {{networkController.privilegeLevel}}
         </div>
 
         <div class="row" ng-show="networkController.isAdmin">
@@ -48,6 +48,15 @@
                    ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
         </div>
         <br>
+
+        <div class="row" ng-show="networkController.networkAdmins">
+            <div class="panel panel-info small-margin-right">
+                <div class="panel-heading">Admins</div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="networkAdmin in networkController.networkAdmins"><a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a></li>
+                </ul>
+            </div>
+        </div>
 
         <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
             <button type="button" class="btn btn-primary dropdown-toggle">
