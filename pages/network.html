@@ -27,22 +27,32 @@
         </div>
 
         <div class='row' ng-show='networkController.currentNetwork.version'>
-            <p> <strong>Version:</strong> {{networkController.currentNetwork.version}} </p>
+            <strong>Version:</strong> {{networkController.currentNetwork.version}}
         </div>
 
         <div class='row text-success'>
-            <p>{{networkController.currentNetwork.visibility}}</p>
+            {{networkController.currentNetwork.visibility}}
         </div>
 
         <div class="row">
-            <dl>
-                <dt>Created:</dt>
-                <dd>{{networkController.currentNetwork.creationTime | date}}</dd>
-                <dt>Last Modified:</dt>
-                <dd>{{networkController.currentNetwork.modificationTime | date}}</dd>
-                <dt>UUID:</dt>
-                <dd>{{networkController.currentNetworkId}}</dd>
-            </dl>
+            <strong>Created:</strong>
+            {{networkController.currentNetwork.creationTime | date}}
+        </div>
+
+        <div class="row">
+            <strong>Last Modified:</strong>
+            {{networkController.currentNetwork.creationTime | date}}
+        </div>
+
+        <div class="row">
+            <strong>UUID:</strong>
+            {{networkController.currentNetworkId}}
+        </div>
+
+        <div class="row" ng-show="networkController.isAdmin">
+            <input type="checkbox"
+                   ng-model="readOnlyChecked"
+                   ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
         </div>
 
         <div class='row'>
@@ -53,22 +63,17 @@
             <strong>Your Access Privileges:</strong> {{networkController.privilegeLevel}}
         </div>
 
-        <div class="row" ng-show="networkController.isAdmin">
-            <input type="checkbox"
-                   ng-model="readOnlyChecked"
-                   ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
-        </div>
+
         <br>
 
         <div class="row" ng-show="networkController.networkAdmins">
-            <strong>Other Admins</strong>
+            <strong>Other Admins:</strong>
             <ul style="list-style-type: circle; padding-left: 25px">
                 <li ng-repeat="networkAdmin in networkController.networkAdmins"><a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a></li>
                 <li ng-show="networkController.networkAdmins.length == 0">None</li>
             </ul>
         </div>
-        <br>
-
+        <hr>
 
         <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
             <button type="button" class="btn btn-primary dropdown-toggle">
