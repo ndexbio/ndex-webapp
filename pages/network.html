@@ -10,29 +10,25 @@
         <div id="divNetworkHeadline" class="row">
             <h4><label>{{networkController.currentNetwork.name}}</label></h4>
         </div>
+
+        <div class="row">
+                 <label>Nodes:</label>
+                 <span>{{networkController.currentNetwork.nodeCount}}</span>
+
+                 <label>Edges:</label>
+                 <span>{{networkController.currentNetwork.edgeCount}}</span>
+        </div>
         <div class='row'>
             {{networkController.currentNetwork.description}}
+        </div>
+        <div class='row' ng-show='networkController.currentNetwork.version'>
+            <strong>Version:</strong> {{networkController.currentNetwork.version}}
         </div>
         <div class='row text-success'>
             {{networkController.currentNetwork.visibility}}
         </div>
-        <div class="row" ng-show="networkController.isAdmin">
-            <input type="checkbox"
-                   ng-model="readOnlyChecked"
-                   ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
-        </div>
 
-        <div class="row">
-                 <strong>Nodes:</strong>
-                 <span>{{networkController.currentNetwork.nodeCount}}</span>
-
-                 <strong>Edges:</strong>
-                 <span>{{networkController.currentNetwork.edgeCount}}</span>
-        </div>
-
-        <!--<div class='row' ng-show='networkController.currentNetwork.version'>-->
-            <!--<strong>Version:</strong> {{networkController.currentNetwork.version}}-->
-        <!--</div>-->
+        <br>
 
         <div class="row">
             <strong>Created:</strong>
@@ -40,7 +36,7 @@
         </div>
 
         <div class="row">
-            <strong>Modified:</strong>
+            <strong>Last Modified:</strong>
             {{networkController.currentNetwork.creationTime | date}}
         </div>
 
@@ -49,10 +45,14 @@
             {{networkController.currentNetworkId}}
         </div>
 
+
+        <br>
+
+
         <div class="row">
             <strong>Your Access Privileges:</strong> {{networkController.privilegeLevel}}
         </div>
-
+        
         <div class="row" ng-show="networkController.networkAdmins">
             <strong>Other Admins:</strong>
             <ul style="list-style-type: circle; padding-left: 25px">
