@@ -271,6 +271,11 @@ textarea
  * Navigation styling
  ******************************************************************************/
 
+.navbar
+{
+    min-height: 50px;
+}
+
 .navbar a
 {
     color: rgba(255, 255, 255, 0.8);
@@ -284,10 +289,15 @@ textarea
 
 .navbar-fixed-top
 {
-    font-size: 1.5em;
+    font-size: 1.1em;
     vertical-align: top;
     letter-spacing:0px;
     margin-bottom: 60px;
+}
+
+.navbar-nav>li>a {
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 /******************************************************************************
