@@ -80,6 +80,7 @@
     <script src="js/controllers/manage-network-access.js"></script>
     <script src="js/controllers/manage-group-access.js"></script>
     <script src="js/controllers/api-controller.js"></script>
+    <script src="js/controllers/home-controller.js"></script>
 
     <!-- newer third party libraries -->
     <script src="lib/vis/3.10/vis.js"></script>
@@ -101,7 +102,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#/" style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
+            <a class="navbar-brand" href="http://www.ndexbio.org/" style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
             <div style="
                 background-image: url('img/NDEx-horizontal-transparent.png');
                 background-repeat: no-repeat;
@@ -112,9 +113,30 @@
             "></div>
             </a>
         </div>
+
+        <ul class="nav navbar-nav navbar-left">
+
+            <li>
+                <a href="http://www.ndexbio.org/about-ndex-2" target="NDEx Home">About</a>
+            </li>
+            <li>
+                <a href="http://www.ndexbio.org/tutorials" target="NDEx Home">Documentation</a>
+            </li>
+            <li>
+                <a ng-href="#api">API</a>
+            </li>
+            <li>
+                <a href="http://home.ndexbio.org/report-a-bug" target="NDEx Home">Report a Bug</a>
+            </li>
+            <li>
+                <a href="{{config.contactUs.href}}" target="{{config.contactUs.target}}">{{config.contactUs.name}}</a>
+            </li>
+
+        </ul>
+
         <div class="collapse navbar-collapse" collapse="main.isCollapsed">
-            <div class="col-sm-6 col-md-7 col-lg-8">
-                <form ng-show="!config.requireAuthentication||main.loggedIn" class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <form ng-show="main.loggedIn" class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
                     <div class="input-group" >
                         <div class="input-group-btn dropdown">
                           <button type="button" class="btn btn-default dropdown-toggle">
@@ -154,38 +176,13 @@
                 <a ng-click="main.signout()">Sign Out</a>
             </li>
 
+            <li ng-show="!main.loggedIn && !main.showSignIn && !config.requireAuthentication">
+                <a ng-click="main.startSignIn()">Sign In</a>
+            </li>
+
         </ul>
         </div>
     </div>
-</nav>
-
-<!-- the footer as a fixed bottom nav bar -->
-<nav class="navbar navbar-ndex-bottom navbar-fixed-bottom footer-bar AlignCenter">
-    <div class='footer-content'>
-        <span>
-            <a href="http://home.ndexbio.org" target="NDEx Home">NDEx Project</a>
-        </span>
-        |
-        <span>
-            <a href="http://home.ndexbio.org/about-ndex-2" target="NDEx Home">About</a>
-        </span>
-        |
-        <span>
-            <a href="http://home.ndexbio.org/tutorials" target="NDEx Home">Documentation</a>
-        </span>
-        |
-        <span><a ng-href="#api">API</a></span>
-        |
-        <span>
-            <a href="http://home.ndexbio.org/report-a-bug" target="NDEx Home">Report a Bug</a>
-        </span>
-        |
-        <span>
-            <a href="{{config.contactUs.href}}" target="{{config.contactUs.target}}">{{config.contactUs.name}}</a>
-            <!--<a href="http://home.ndexbio.org/contact-us" target="NDEx Home">Contact Us</a>-->
-        </span>
-    </div>
-
 </nav>
 
 <div id="main" class="container">

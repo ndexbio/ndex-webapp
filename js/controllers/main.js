@@ -13,6 +13,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.isCollapsed = true;  //angular-ui bootstrap collapse implementation
 
         $scope.main.loggedIn = false;
+        $scope.main.showSignIn = false;
 
         $scope.$on('LOGGED_IN', function () {
             //listener for changes in log in.
@@ -27,25 +28,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
 
         $scope.config = config;
-        //$http.get('ndex-webapp-config.json').
-        //    success(function(data, status, headers, config) {
-        //        $scope.config = data;
-        //    }).
-        //    error(function(data, status, headers, config) {
-        //        //Do nothing
-        //
-        //    });
-
-
-        // This checks for a successful transition to the home page.
-        // If the user is logged in, then redirect to their account page
-        //$scope.$on('$routeChangeSuccess', function(){
-        //    if($scope.main.loggedIn){
-        //        var externalId = ndexUtility.getLoggedInUserExternalId();
-        //        if (externalId)
-        //            $location.path("/user/"+externalId);
-        //    }
-        //})
 
         $scope.main.host = $location.host();
         $scope.main.port = $location.port();
@@ -62,14 +44,22 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         else
             $scope.main.defaultSite = true;
 
+        $scope.main.startSignIn = function()
+        {
+            $scope.main.showSignIn = true;
+            $location.path("/");
+        };
+
 
         $scope.main.signout = function () {
             ndexUtility.clearUserCredentials();
             $scope.$emit('LOGGED_OUT');
             sharedProperties.currentNetworkId = null;
+            sharedProperties.currentUserId = null;
+            delete $http.defaults.headers.common['Authorization'];
+            $scope.main.showSignIn = false;
             //delete $scope.main.accountName;
             $location.path("/");
-            $scope.$apply();
         };
 
         //navbar
@@ -241,5 +231,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             });
 
         };
+
+
 
     }]);

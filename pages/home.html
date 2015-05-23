@@ -4,99 +4,76 @@
     <div class='col-md-8 AlignCenter'>
         <img src='img/NDEx-horizontal-transparent.png'
              style="width:100%; max-height:200px; align:center"/>
+        <br><br>
+        <h3>{{config.welcome}}</h3>
+        <br><br>
+
+
+        <form ng-show="!main.showSignIn && (!config.requireAuthentication||main.loggedIn)" style="width:100%" role="search" ng-submit="main.search()">
+            <br>
+            <br>
+            <div class="input-group" >
+                <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
+                <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
+            </div>
+        </form>
+
+        <div class='col-md-12' ng-show="main.showSignIn || config.requireAuthentication">
+            <div class="home-box home-margins">
+                <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
+                    <div class="AlignCenter" style="font-size: 14px">
+                        Sign in to your NDEx account
+                        <hr>
+                    </div>
+                    <div class="form-group">
+                        <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
+                        required autofocus ng-model="signIn.accountName">
+                    </div>
+                    <div class="form-group">
+                        <input name="password" type="password" class="form-control" placeholder="Password" required
+                        ng-model="signIn.password">
+                    </div>
+                    <div class="AlignCenter">
+                        <button class="btn btn-lg btn-danger" ng-click="main.showSignIn=false">Cancel</button>
+                        <button class="btn btn-lg btn-primary" type="submit"
+                        ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
+                        Sign in
+                        </button><br><br>
+                        <a ng-click="forgotPassword()">Forgot Password?</a>
+                    </div>
+                    <hr>
+                    <div class="AlignCenter" style="font-size: 14px">
+                        Need an account?
+                        <a ng-click="signIn.openSignUp()">Click here to sign up!</a>
+                    </div>
+                </form>
+            <span class="text-danger">{{signIn.message}}</span>
+            </div>
+        </div>
+
+
     </div>
-    <div class='col-md-8'></div>
 </div>
-<div class="row">
-    <div class='col-md-8'>
+
+<div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
+    <div class='col-md-12'>
         <div class="home-margins">
             <div class="home-text">
 
-                <div>
-                    {{config.welcome}}
-                </div>
-                <!-- local = {{main.localSite}}, test = {{main.testSite}} , default = {{main.defaultSite}}, production = {{main.productionSite} -->
-                <!--<div ng-show="main.localSite">-->
-                    <!--NDEx Web App deployed at localhost on port {{main.port}}-->
-                <!--</div>-->
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
 
-                <!--<div ng-show="main.productionSite">-->
-                    <!--Welcome to the NDEx Public Website-->
-                <!--</div>-->
-
-                <!--<div ng-show="main.testSite">-->
-
-                <!--<p>Welcome to the NDEx Test Website at {{main.host}}</p>-->
-                <!--This is a stable but <b>pre-release</b> version of NDEx for testing purposes.-->
-                <!--Networks stored on NDEx Test will typically be preserved, but this is <b>not</b> guaranteed.-->
-                <!--</div>-->
-
-                <!--<div ng-show="main.defaultSite">-->
-                    <!--Welcome to NDEx at {{main.host}}-->
-                <!--</div>-->
+            <div class="home-support AlignCenter">
+                <img src="http://www.ndexbio.org/wp-content/uploads/2015/05/nci-logo113x50.jpg">
+                <!--<img src="http://www.ndexbio.org/wp-content/uploads/2015/05/Janssen_3c_RGB.png">-->
+                <img src="http://www.ndexbio.org/wp-content/uploads/2015/05/pfizer.png">
+                <img src="http://www.ndexbio.org/wp-content/uploads/2015/05/roche-logo.png">
+                <img src="http://www.ndexbio.org/wp-content/uploads/2015/05/nrnb_blue-x80.png">
             </div>
-            <div class="home-advice">
-                <hr>
-                Browse public networks on this NDEx site using the search box at the top
-                of the page, or sign in to your account to store and manage your networks.
-            </div>
-            <div class="home-support">
-                <hr>
-                <div>Primary support for NDEx is from:</div>
-                <ul>
-                    <li><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> (U24
-                        CA-184427)
-                    </li>
-                    <li>F. Hoffmann-La Roche Ltd</li>
-                    <li>Janssen Research and Development, LLC</li>
-                    <li>Pfizer, Inc.</li>
-                </ul>
-                <div>
-                    NDEx is also supported by the <a href="http://nrnb.org" target="_blank">National Resource for Network
-                    Biology</a> (P41 GM103504).
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class='col-md-4' ng-show="main.loggedIn">
-        <div class="home-signed-in-user">
-            <div>
-                You are signed in as:
-            </div>
-            <div class="home-account">
-                <b>{{main.accountName}}</b>
-            </div>
-        </div>
-    </div>
-    <div class='col-md-4' ng-show="!main.loggedIn">
-        <div class="home-box home-margins">
-            <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
-                <div class="AlignCenter">
-                    Sign in to your NDEx account
-                    <hr>
-                </div>
-                <div class="form-group">
-                    <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
-                           required autofocus ng-model="signIn.accountName">
-                </div>
-                <div class="form-group">
-                    <input name="password" type="password" class="form-control" placeholder="Password" required
-                           ng-model="signIn.password">
-                </div>
-                <div class="AlignRight">
-                    <button class="btn btn btn-primary" type="submit"
-                            ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
-                        Sign in
-                    </button><br><br>
-                    <a ng-click="forgotPassword()">Forgot Password?</a>
-                </div>
-                <hr>
-                <div class="AlignCenter">
-                    Need an account? <br>
-                    <a ng-click="signIn.openSignUp()">Click here to sign up!</a>
-                </div>
-            </form>
-            <span class="text-danger">{{signIn.message}}</span>
         </div>
     </div>
 </div>
