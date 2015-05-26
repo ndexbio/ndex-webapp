@@ -65,7 +65,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         var lastHeartbeat = localStorage.getItem('last-heartbeat');
         if( lastHeartbeat )
         {
-            if( Date.now() - lastHeartbeat > config.idleTime )
+            if( Date.now() - lastHeartbeat > config.idleTime * 1000 )
                 $scope.main.signout();
         }
 
@@ -75,7 +75,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
         //Hard-coding the heartbeat as a ratio of the idle time for now. So, a heart-beat will be set
-        $interval(recordHeartbeat, config.idleTime / 100 );
+        $interval(recordHeartbeat, config.idleTime * 10 );
 
         //Whenever the browser or a tab containing the app is closed, record the heart beat.
         window.onbeforeunload = function (event)
