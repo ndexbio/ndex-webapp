@@ -1,11 +1,10 @@
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http', '$log',
-    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, $log, Idle) {
+ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http', '$interval',
+    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, $interval, Idle) {
 
         $scope.$on('IdleStart', function() {
             $scope.main.signout();
         });
-
 
         $scope.main = {};
 
@@ -61,6 +60,33 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             //delete $scope.main.accountName;
             $location.path("/");
         };
+
+        //The purpose of the heart beat is measure the time since the app was last used.
+        var lastHeartbeat = localStorage.getItem('last-heartbeat');
+        if( lastHeartbeat )
+        {
+            if( Date.now() - lastHeartbeat > config.idleTime )
+                $scope.main.signout();
+        }
+
+        var recordHeartbeat = function()
+        {
+            localStorage.setItem('last-heartbeat', Date.now() );
+        };
+
+        //Hard-coding the heartbeat as a ratio of the idle time for now. So, a heart-beat will be set
+        $interval(recordHeartbeat, config.idleTime / 100 );
+
+        //Whenever the browser or a tab containing the app is closed, record the heart beat.
+        window.onbeforeunload = function (event)
+        {
+            recordHeartbeat();
+        };
+
+        //To avoid affecting other controllers, destroy window.onbeforeunload when this controller goes out of scope.
+        $scope.$on('$destroy', function() {
+            delete window.onbeforeunload;
+        });
 
         //navbar
         $scope.main.getCurrentNetwork = function () {
