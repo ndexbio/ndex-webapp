@@ -131,15 +131,23 @@ ndexServiceApp.factory('ndexService',
                             action: 'password'
                         }
                     }
-                })
+                });
 
             factory.getUserApi = function(successHandler, errorHandler)
             {
                 UserResource.getApi({}, successHandler, errorHandler);
             };
 
+            function handleAuthorizationHeader()
+            {
+                if (ndexConfigs.getEncodedUser())
+                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                else
+                    $http.defaults.headers.common['Authorization'] = undefined;
+            }
+
             factory.deleteUser = function(successHandler, errorHandler){
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 UserResource.delete({}, null,
                     function(data) {
                         ndexUtility.clearUserCredentials();
@@ -151,7 +159,7 @@ ndexServiceApp.factory('ndexService',
 
             factory.changeAccountPassword = function(oldPassword, newPassword, successHandler, errorHandler) {
                 // not using old password because api doesnt, but might be used in the future
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 UserResource.changePassword({}, newPassword,
                     function(data) {
                         //intercepting here to use auth token provided by user
@@ -163,14 +171,14 @@ ndexServiceApp.factory('ndexService',
 
             factory.getSentRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
                 var externalId = ndexUtility.getLoggedInUserExternalId();
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 UserResource.getSentRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
                     successHandler, errorHandler);
             };
 
             factory.getPendingRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
                 var externalId = ndexUtility.getLoggedInUserExternalId();
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 UserResource.getPendingRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
                     successHandler, errorHandler);
             };
@@ -183,7 +191,7 @@ ndexServiceApp.factory('ndexService',
                     if( !user.website.startsWith("http") )
                         user.website = "http://" + user.website;
                 }
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 UserResource.save({identifier: externalId}, user, successHandler, errorHandler);
             };
 
@@ -241,7 +249,7 @@ ndexServiceApp.factory('ndexService',
                 ////console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
 
 
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 UserResource.query({
                         'identifier': userUUID,
                         'skipBlocks': skipBlocks,
@@ -321,14 +329,14 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.getMembershipToNetwork = function(networkExternalId, groupExternalId, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
 
                 return NetworkResource.getMembership({identifier: groupExternalId, subId: networkExternalId}, successHandler, errorHandler);
             };
 
             factory.getGroupMemberships = function(externalId, permission, successHandler, errorHandler) {
 
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
 
                 if(permission === 'ALL') {
                     var memberships = [];
@@ -355,24 +363,24 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.deleteGroup = function(externalId, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 GroupResource.delete({identifier: externalId}, null, successHandler, errorHandler);
             };
 
             factory.removeGroupMember = function (groupExternalId, memberExternalId, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 return GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
             };
 
             factory.updateGroupMember = function (membership, successHandler, errorHandler) {
                 membership.membershipType = 'GROUP';
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 return GroupResource.updateMembership({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
             };
 
             factory.editGroupProfile = function (group, successHandler, errorHandler) {
                 group.accountType = 'Group';
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 if( group.website )
                 {
                     if( !group.website.startsWith("http") )
@@ -391,7 +399,7 @@ ndexServiceApp.factory('ndexService',
                 group.accountType = "Group";
                 // ensure authorization header is set.
                 // May become superfluous if we update headers on sign-in, sign-out, initialization
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
 
                 GroupResource.save({}, group, successHandler, errorHandler);
             };
@@ -432,18 +440,18 @@ ndexServiceApp.factory('ndexService',
             factory.createRequest = function (request, successHandler, errorHandler) {
                 request.type = 'Request';
 
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 RequestResource.save({}, request, successHandler, errorHandler);
             };
 
             factory.updateRequest = function (externalId, request, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 request.responder = ndexUtility.getLoggedInUserAccountName();
                 RequestResource.save({identifier: externalId}, request, successHandler, errorHandler);
             };
 
             factory.deleteRequest = function (externalId, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 RequestResource.delete({identifier: externalId}, successHandler, errorHandler);
             };
 
@@ -496,7 +504,7 @@ ndexServiceApp.factory('ndexService',
 
             factory.createTask = function (task, successHandler, errorHandler) {
                 ////console.log("creating task with task = " + task.taskType);
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 TaskResource.save({}, task, successHandler, errorHandler);
             };
 
@@ -619,7 +627,7 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.addNamespaceToNetwork = function(externalId, namespace, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 NetworkResource.addNamespace({identifier: externalId}, namespace, successHandler, errorHandler)
             };
 
@@ -629,7 +637,7 @@ ndexServiceApp.factory('ndexService',
 
             factory.getNetworkMemberships = function(externalId, permission, successHandler, errorHandler) {
 
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
 
                 if(permission === 'ALL') {
                     var memberships = [];
@@ -658,37 +666,37 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.setNetworkProperties = function(externalId, properties, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 NetworkResource.setNetworkProperties({identifier: externalId}, properties, successHandler, errorHandler);
             };
 
             factory.deleteNetwork = function(externalId, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 NetworkResource.delete({identifier: externalId}, null, successHandler, errorHandler);
             };
 
             factory.editNetworkSummary = function (externalId, summary, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 NetworkResource.editNetworkSummary({identifier: externalId}, summary, successHandler, errorHandler);
             };
 
             factory.getProvenance = function (externalId, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 return NetworkResource.getProvenance({identifier: externalId}, successHandler, errorHandler);
             };
             factory.setProvenance = function(externalId, provenance, successHandler, errorHandler){
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 return NetworkResource.setProvenance({identifier: externalId}, provenance, successHandler, errorHandler);
             };
 
             factory.updateNetworkMember = function (membership, successHandler, errorHandler) {
                 membership.membershipType = 'NETWORK';
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 return NetworkResource.updateMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
             };
 
             factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
-                $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                handleAuthorizationHeader();
                 return NetworkResource.deleteMember({identifier: networkExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
             };
 
@@ -697,7 +705,7 @@ ndexServiceApp.factory('ndexService',
                     query.searchString = '';
 
                 if (ndexUtility.getLoggedInUserAccountName() != null)
-                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    handleAuthorizationHeader();
                 NetworkResource.search({skipBlocks: skipBlocks, blockSize: blockSize}, query, successHandler, errorHandler);
             };
 
@@ -1076,6 +1084,10 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         {
             config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
         }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
+        }
         if (queryArgs) {
             config.data = JSON.stringify(queryArgs);
         }
@@ -1095,6 +1107,10 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         if( factory.getEncodedUser() )
         {
             config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+        }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
         }
         return config;
     };
