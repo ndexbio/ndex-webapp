@@ -758,27 +758,30 @@ ndexApp.controller('networkController',
                 var columnDefs = [
                     {
                         field: 'Subject',
+                        displayName: 'Subject',
                         cellTooltip: true,
                         minWidth: calcColumnWidth(longestSubject)
                     },
                     {
                         field: 'Predicate',
+                        displayName: 'Predicate',
                         cellTooltip: true,
                         minWidth: calcColumnWidth(longestPredicate)
                     },
                     {
                         field: 'Object',
+                        displayName: 'Object',
                         cellTooltip: true,
                         minWidth: calcColumnWidth(longestObject)
                     },
                     {
                         field: 'Citations',
+                        displayName: 'Citations',
                         cellToolTip: false,
                         minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
                         enableSorting: false,
                         cellTemplate: "<div class='text-center'><h6><a ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0' ng-click='grid.appScope.showEdgeCitations(COL_FIELD)'>{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}</a></h6></div>"
-                        //cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getEdgeCitationLinks(COL_FIELD)"></span></div>'
                     }
                 ];
                 var headers = Object.keys(edgePropertyKeys);
@@ -786,11 +789,11 @@ ndexApp.controller('networkController',
                 {
                     for (i = 0; i < headers.length - 1; i++)
                     {
-                        var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
                         columnDefs.push(columnDef);
                     }
                     //Special width for the last column
-                    var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
+                    var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
                     columnDefs.push(columnDef);
                 }
 
@@ -860,17 +863,17 @@ ndexApp.controller('networkController',
                 var columnDefs = [
                     {
                         field: 'Label',
+                        displayName: 'Label',
                         cellTooltip: true,
                         minWidth: calcColumnWidth(longestName)
                     },
                     {
                         field: 'Citations',
+                        displayName: 'Citations',
                         cellToolTip: false,
                         minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
-                    //<button class='btn btn-primary btn-xs' ng-click='networkController.foo()'>Link</button>
                         cellTemplate: "<a ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0'  ng-click='grid.appScope.foo()'>View {{grid.appScope.getNumNodeCitations(COL_FIELD)}} Citations</a>"
-                        //cellTemplate: '<div class="ui-grid-cell-contents" title="TOOLTIP"><span ng-bind-html="grid.appScope.getNodeCitationLinks(COL_FIELD)"></span></div>'
                     }
                 ];
                 var headers = Object.keys(nodePropertyKeys);
@@ -878,11 +881,11 @@ ndexApp.controller('networkController',
                 {
                     for (i = 0; i < headers.length - 1; i++)
                     {
-                        var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
                         columnDefs.push(columnDef);
                     }
                     //Special width for the last column
-                    var columnDef = {field: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
+                    var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
                     columnDefs.push(columnDef);
                 }
 
