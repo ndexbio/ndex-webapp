@@ -10,7 +10,7 @@
         <br><br>
 
 
-        <form ng-show="!main.showSignIn && (!config.requireAuthentication||main.loggedIn)" style="width:100%" role="search" ng-submit="main.search()">
+        <form ng-show="!main.showSignIn && (!config.requireAuthentication||main.loggedIn)" style="width:100%" role="search" ng-submit="main.anonymousSearchPerformed = true; main.search()">
             <br>
             <br>
             <div class="input-group" >

@@ -25,6 +25,13 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             delete $scope.main.accountName;
         });
 
+        $scope.main.anonymousSearchPerformed = false;
+        $scope.$on('$routeChangeSuccess',function(){
+            if( $location.path() == '/' )
+                $scope.main.anonymousSearchPerformed = false;
+        });
+
+
 
         $scope.config = config;
 
