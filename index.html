@@ -140,7 +140,7 @@
 
         <div class="collapse navbar-collapse" collapse="main.isCollapsed">
             <div class="col-sm-4 col-md-4 col-lg-4">
-                <form ng-show="main.loggedIn || main.anonymousSearchPerformed" class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
+                <form ng-hide="main.hideSearchBar" class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
                     <div class="input-group" >
                         <div class="input-group-btn dropdown">
                           <button type="button" class="btn btn-default dropdown-toggle">
