@@ -27,6 +27,11 @@
         <div class='row text-success'>
             {{networkController.currentNetwork.visibility}}
         </div>
+        <div class="row" ng-show="networkController.isAdmin">
+            <input type="checkbox"
+                   ng-model="readOnlyChecked"
+                   ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
+        </div>
 
         <br>
 
