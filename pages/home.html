@@ -35,7 +35,7 @@
                         ng-model="signIn.password">
                     </div>
                     <div class="AlignCenter">
-                        <button class="btn btn-lg btn-danger" ng-click="main.showSignIn=false">Cancel</button>
+                        <button class="btn btn-lg btn-danger" type="button" ng-click="signIn.cancel()">Cancel</button>
                         <button class="btn btn-lg btn-primary" type="submit"
                         ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
                         Sign in

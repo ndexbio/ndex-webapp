@@ -23,6 +23,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.$on('LOGGED_OUT', function () {
             $scope.main.loggedIn = false;
             delete $scope.main.accountName;
+            ndexUtility.clearUserCredentials();
+            sharedProperties.currentNetworkId = null;
+            sharedProperties.currentUserId = null;
+            delete $http.defaults.headers.common['Authorization'];
+            $scope.main.showSignIn = false;
         });
 
         if( $location.path() == '/' )
@@ -64,13 +69,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
 
         $scope.main.signout = function () {
-            ndexUtility.clearUserCredentials();
             $scope.$emit('LOGGED_OUT');
-            sharedProperties.currentNetworkId = null;
-            sharedProperties.currentUserId = null;
-            delete $http.defaults.headers.common['Authorization'];
-            $scope.main.showSignIn = false;
-            //delete $scope.main.accountName;
             $location.path("/");
         };
 
@@ -184,6 +183,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 error(function(data, status, headers, config, statusText) {
                     $scope.signIn.message = "Your credentials are incorrect.";
                 });
+        };
+
+        $scope.signIn.cancel = function()
+        {
+            $scope.main.showSignIn=false;
         };
 
         $scope.signIn.openSignUp = function () {

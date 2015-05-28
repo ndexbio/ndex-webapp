@@ -937,8 +937,6 @@ ndexServiceApp.factory('ndexUtility', function () {
      *-----------------------------------------------------------------------*/
     factory.clearUserCredentials = function () {
         localStorage.setItem('loggedInUser', null);
-        loggedInUser = null;
-
     };
 
     factory.checkLocalStorage = function () {
