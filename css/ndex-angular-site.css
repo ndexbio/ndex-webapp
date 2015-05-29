@@ -179,6 +179,14 @@ textarea
     margin: 20px;
     padding: 10px;
 }
+
+.home-center
+{
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
+
 .home-box
 {
     border-radius: 20px;
