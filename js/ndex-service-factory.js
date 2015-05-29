@@ -141,7 +141,7 @@ ndexServiceApp.factory('ndexService',
             function handleAuthorizationHeader()
             {
                 if (ndexConfigs.getEncodedUser())
-                    $http.defaults.headers.common['Authorization'] = ndexConfigs.getEncodedUser();
+                    $http.defaults.headers.common['Authorization'] = 'Basic ' + ndexConfigs.getEncodedUser();
                 else
                     $http.defaults.headers.common['Authorization'] = undefined;
             }
