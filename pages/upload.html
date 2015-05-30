@@ -21,8 +21,8 @@
     <div class="col-md-9" style="margin-bottom: 40px">
 
         <h3>List of Files to Upload</h3>
-        <div ng-show="uploadController.hasSizeLimit">Files in list limited to 20 MB total.</div>
-        <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file that makes the list larger than 20 MB.</div>
+        <div ng-show="uploadController.hasSizeLimit">Files in list limited to {{config.uploadSizeLimit}} MB total.</div>
+        <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file that makes the list larger than {{uploadController.uploadSizeLimit}} MB.</div>
         <p style="color:red" ng-show="uploadController.fileExtensionError">Sorry. Any file you upload must have an .owl, .sif, .xbel, or .xgmml extension.</p>
         <p></p>
 
@@ -115,11 +115,6 @@
             <tr ng-repeat="task in tasks">
                 <td class="text-center">
                     {{task.status}}
-                    <!--
-                    <span ng-show="task.status"><i class="glyphicon glyphicon-ok"></i></span>
-                    <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                    <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-                    -->
                 </td>
                 <td>{{task.description}}</td>
                 <td nowrap>

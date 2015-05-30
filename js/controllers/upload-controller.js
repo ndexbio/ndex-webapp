@@ -10,24 +10,14 @@ ndexApp.controller('uploadController',
 
             var uploadController = $scope.uploadController;
 
-
-            uploadController.host = $location.host();
-            uploadController.port = $location.port();
-            uploadController.defaultSite = false;
-            uploadController.localSite = false;
-            uploadController.testSite = false;
-            uploadController.productionSite = false;
-
-            if (uploadController.host == 'localhost')
-                uploadController.localSite = true;
-            else if (uploadController.host == 'www.ndexbio.org')
-                uploadController.productionSite = true;
-            else if (uploadController.host == 'test.ndexbio.org')
-                uploadController.testSite = true;
-            else
-                uploadController.defaultSite = true;
-
-            uploadController.hasSizeLimit = uploadController.testSite || uploadController.productionSite;
+            var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
+            uploadController.uploadSizeLimit = config.uploadSizeLimit;
+            uploadController.hasSizeLimit = false;
+            if( uploadController.uploadSizeLimit )
+            {
+                if( uploadController.uploadSizeLimit != "none" )
+                    uploadController.hasSizeLimit = true;
+            }
 
 
             uploadController.fileSizeError = false;
@@ -37,13 +27,13 @@ ndexApp.controller('uploadController',
                 uploadController.fileExtensionError = false;
                 uploadController.fileSizeError = false;
                 item.remove();
-            }
+            };
 
             $scope.removeAllFromQueue = function(uploader){
                 uploadController.fileExtensionError = false;
                 uploadController.fileSizeError = false;
                 uploader.clearQueue();
-            }
+            };
 
 
 
@@ -85,21 +75,21 @@ ndexApp.controller('uploadController',
                         });
                 }
                 $scope.tasks = [];
-            }
+            };
 
             $scope.markTaskForDeletion= function(taskUUID){
                 ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
                     function(){
                         $scope.refreshTasks();
                     })
-            }
+            };
 
             $scope.deleteTask= function(taskUUID){
                 ndexService.deleteTask(taskUUID,
                     function(){
                         $scope.refreshTasks();
                     })
-            }
+            };
 
             var uploader = $scope.uploader = new FileUploader({
                 url: ndexService.getNetworkUploadURI(),
@@ -139,7 +129,7 @@ ndexApp.controller('uploadController',
                         this.queueSize += this.queue[i].file.size;
                     }
                     var maxSize = this.queueSize + item.size;
-                    return maxSize < 20971520;
+                    return maxSize < uploadController.uploadSizeLimit * 1024 * 1024;
                 }
             });
 
