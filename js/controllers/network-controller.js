@@ -95,6 +95,14 @@ ndexApp.controller('networkController',
                 return uri.substring(idStart + 1);
             };
 
+            var extractHostFromUri = function( uri )
+            {
+                var parser = document.createElement('a');
+                parser.href = uri;
+                return parser.protocol + "//" + parser.host;
+            };
+
+
             var generateWebAppUrlFromUuid = function(uuid)
             {
                 var baseUrl = $location.absUrl();
@@ -115,8 +123,9 @@ ndexApp.controller('networkController',
 
                 nodes.push(node);
                 provMap[node_id] = prov;
-                var uuid = extractUuidFromUri(prov.uri)
+                var uuid = extractUuidFromUri(prov.uri);
                 provMap[node_id].uuid = uuid;
+                provMap[node_id].host = extractHostFromUri(prov.uri);
                 if( uuid != cn.externalId )
                 {
                     //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should

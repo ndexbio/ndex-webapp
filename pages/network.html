@@ -356,7 +356,10 @@
                             <table style="width:100%">
                                 <!--<caption>Entity Properties</caption>-->
                                 <tr><th>Name</th><th>Value</th></tr>
+                                <tr><td>uuid</td><td>{{displayProvenance.uuid}}</td></tr>
+                                <tr><td>host</td><td>{{displayProvenance.host}}</td></tr>
                                 <tr ng-repeat="property in displayProvenance.properties"><td>{{property.name}}</td><td>{{property.value}}</td></tr>
+
                             </table>
                             </span>
                         <br>
