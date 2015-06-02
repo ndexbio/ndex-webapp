@@ -71,26 +71,46 @@
         </span>
     </span>
 </div>
-<div class="row">
+<div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
+    <br>
     <span class='col-md-2'>
     </span>
     <div class='col-md-8'>
         <div class="home-center">
-        <div>Primary support for NDEx is from:</div>
-        <ul>
-            <li><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> (U24
-                CA-184427)
-            </li>
-            <li><a href="http://www.roche.com/" target="_blank">F. Hoffmann-La Roche Ltd</a></li>
-            <li><a href="http://www.janssenrnd.com/" target="_blank">Janssen Research and Development, LLC</a></li>
-            <li><a href="http://www.pfizer.com/" target="_blank">Pfizer, Inc.</a></li>
-        </ul>
-        <div>
-            NDEx is also supported by the <a href="http://nrnb.org" target="_blank">National Resource for Network
-            Biology</a> (P41 GM103504).
-        </div>
+            <br><br>
+            <table class="home-support-table">
+                <caption>NDEx is supported by:</caption>
+                <tr class="home-support-row">
+                    <td><a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a> </td>
+                    <td><a href="http://www.janssenrnd.com/" target="_blank">Janssen Research and Development, LLC</a></td>
+                </tr>
+                <tr>
+                    <td><a href="http://www.roche.com/" target="_blank">F. Hoffmann-La Roche Ltd</a></td>
+                    <td><a href="http://www.pfizer.com/" target="_blank">Pfizer, Inc.</a></td>
+                </tr>
+                <tr>
+                    <td><a href="http://nrnb.org" target="_blank">National Resource for Network
+                        Biology</a></td>
+                </tr>
+            </table>
         </div>
     </div>
+
+</div>
+
+<div class="row">
+    <br>
+    <div class='col-md-12'>
+
+
+        <nav class="navbar navbar-ndex-bottom navbar-fixed-bottom footer-bar AlignCenter">
+            <div class='footer-content'>
+                © 2013-2015 UC Regents and Cytoscape Consortium. All rights reserved.
+            </div>
+
+        </nav>
+    </div>
+</div>
 
 
 
