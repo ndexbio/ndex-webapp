@@ -83,7 +83,7 @@ ndexApp.controller('networkController',
                 for( var i = 0; i < provenance.properties.length; i++ )
                 {
                     var p = provenance.properties[i];
-                    if(p.name == "dc:title")
+                    if(p.name.toLowerCase() == "dc:title")
                         return p.value;
                 }
                 return provenance.uri;
