@@ -121,7 +121,7 @@ ndexApp.controller('networkController',
                 {
                     //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
                     //not be set.
-                    (ndexService.getNetwork(networkController.currentNetworkId) )
+                    (ndexService.getNetwork(uuid) )
                         .success( function (network)
                         {
                             provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);
