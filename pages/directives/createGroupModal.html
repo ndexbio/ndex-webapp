@@ -15,7 +15,7 @@
           <div class="form-group">
               <input name="organizationName" type="organizationName" class="form-control"
                      placeholder="organization represented by group "
-                     ng-model="group.organizationName" required>
+                     ng-model="group.organizationName">
           </div>
 
           <p class='text-center text-danger'>{{errors}}</p>
@@ -24,7 +24,7 @@
   <div class="modal-footer">
       <a type='cancel' class="btn btn-danger" ng-click="cancel()">Cancel</a>
       <button type='submit' class="btn btn-default" ng-click="submit()"
-              ng-disabled="!createGroupForm.groupName.$valid || !createGroupForm.organizationName.$valid || isProcessing">
+              ng-disabled="!createGroupForm.groupName.$valid || isProcessing">
           Create</button>
   </div>
   </form>
