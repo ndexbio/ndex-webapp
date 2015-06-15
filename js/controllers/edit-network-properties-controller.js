@@ -170,6 +170,11 @@ ndexApp.controller('editNetworkPropertiesController',
             function(network) {
                 editor.propertyValuePairs = network.properties;
 
+                if( editor.propertyValuePairs[0].predicateString.toLowerCase() == "sourceformat" )
+                {
+                    editor.propertyValuePairs.splice(0,1);
+                }
+
                 ndexService.getNetworkNamespaces(networkExternalId,
                     function(namespaces) {
 
