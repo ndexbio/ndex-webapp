@@ -706,6 +706,13 @@ ndexApp.controller('networkController',
                 showCitations(edgeCitations);
             };
 
+            $scope.showNodeCitations = function(edgeKey)
+            {
+                var nodeCitationIds = getNodeCitationIds(edgeKey);
+                var nodeCitations = getCitations( nodeCitationIds );
+                showCitations(nodeCitations);
+            };
+
             networkController.hasCitation = function(citationId)
             {
                 if( !networkController.currentSubnetwork.citations[citationId].identifier )
@@ -882,7 +889,7 @@ ndexApp.controller('networkController',
                         cellToolTip: false,
                         minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
-                        cellTemplate: "<a ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0'  ng-click='grid.appScope.foo()'>View {{grid.appScope.getNumNodeCitations(COL_FIELD)}} Citations</a>"
+                        cellTemplate: "<div class='text-center'><h6><a ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0' ng-click='grid.appScope.showNodeCitations(COL_FIELD)'>{{grid.appScope.getNumNodeCitations(COL_FIELD)}}</a></h6></div>"
                     }
                 ];
                 var headers = Object.keys(nodePropertyKeys);
