@@ -17,6 +17,7 @@
                 <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
                 <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
             </div>
+            <br>
             &#x1f4a1; Tip: Click the magnifying lens to view all networks available on NDEx
         </form>
 
@@ -56,7 +57,8 @@
 
     </div>
 </div>
-
+<br>
+<br>
 <div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
     <span class='col-md-12'>
         <span class="home-margins">
@@ -73,10 +75,9 @@
     </span>
 </div>
 <div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
-    <br>
     <span class='col-md-2'>
     </span>
-    <div class='col-md-8'>
+    <span class='col-md-8'>
         <div class="home-center AlignCenter" >
             <br><br>
             <a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;
@@ -85,7 +86,7 @@
             <a href="http://www.pfizer.com/" target="_blank">Pfizer, Inc.</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;
             <a href="http://nrnb.org" target="_blank">National Resource for Network Biology</a>
         </div>
-    </div>
+    </span>
 
 </div>
 
