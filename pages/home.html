@@ -24,7 +24,7 @@
             <div class="home-box home-margins">
                 <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
                     <div class="AlignCenter" style="font-size: 14px">
-                        Sign in to your NDEx account
+                        <span>{{config.signIn.header}}</span>
                         <hr>
                     </div>
                     <div class="form-group">
@@ -41,12 +41,12 @@
                         ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
                         Sign in
                         </button><br><br>
-                        <a ng-click="forgotPassword()">Forgot Password?</a>
+                        <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
                     </div>
                     <hr>
                     <div class="AlignCenter" style="font-size: 14px">
-                        Need an account?
-                        <a ng-click="signIn.openSignUp()">Click here to sign up!</a>
+                        {{config.signIn.footer}}
+                        <a ng-show="config.signIn.showSignup" ng-click="signIn.openSignUp()">Click here to sign up!</a>
                     </div>
                 </form>
             <span class="text-danger">{{signIn.message}}</span>
