@@ -29,8 +29,8 @@
         </div>
         <div class="row" ng-show="networkController.isAdmin">
             <input type="checkbox"
-                   ng-model="readOnlyChecked"
-                   ng-change="readOnlyChanged(readOnlyChecked)"> Read Only
+                   ng-model="networkController.readOnlyChecked"
+                   ng-change="readOnlyChanged(networkController.readOnlyChecked)"> Read Only
         </div>
 
         <br>
@@ -71,7 +71,7 @@
                 Actions <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li ng-show='networkController.isAdmin'><a>
+                <li ng-show='networkController.isAdmin && !networkController.readOnlyChecked'><a>
                     <edit-network-summary-modal
                             ndex-data='networkController.currentNetwork'>
                         Edit Network Profile
@@ -115,7 +115,9 @@
                             Save Query Result
                         </save-subnetwork>
                     </a></li>
-                <li class="divider" ng-show='networkController.isAdmin'></li>
+                <li class="divider" ng-show='networkController.isAdmin && !networkController.readOnlyChecked || networkController.directIsAdmin
+                            || networkController.directCanEdit
+                            || networkController.directCanRead'></li>
                 <li ng-show='networkController.directIsAdmin 
                             || networkController.directCanEdit 
                             || networkController.directCanRead'><a>
@@ -124,7 +126,7 @@
                         Disaffiliate this Network
                     </leave-network>
                 </a></li>
-                <li ng-show='networkController.isAdmin'><a>
+                <li ng-show='networkController.isAdmin && !networkController.readOnlyChecked'><a>
                     <delete-network
                             ndex-data='networkController.currentNetwork.externalId'>
                         Delete this Network

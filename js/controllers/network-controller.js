@@ -483,7 +483,7 @@ ndexApp.controller('networkController',
                                     populateNodeTable();
                                 })
                         });
-                        $scope.readOnlyChecked = cn.readOnlyCommitId > 0;
+                        networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                         getNetworkAdmins();
                     }
                 )
