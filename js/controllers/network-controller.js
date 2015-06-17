@@ -720,7 +720,10 @@ ndexApp.controller('networkController',
                 var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
                 if( identifier.startsWith('http') )
                     return true;
-                return identifier.split(':')[0] == 'pmid';
+                if( identifier.toLowerCase().startsWith('pmid') )
+                    return identifier.toLowerCase().split(':')[0] == 'pmid';
+                if( identifier.toLowerCase().startsWith('pubmed') )
+                    return identifier.toLowerCase().split(':')[0] == 'pubmed';
             };
 
 
