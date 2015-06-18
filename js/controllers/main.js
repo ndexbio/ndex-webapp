@@ -46,20 +46,19 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         $scope.config = config;
 
-        $scope.main.host = $location.host();
-        $scope.main.port = $location.port();
-        $scope.main.defaultSite = false;
-        $scope.main.localSite = false;
-        $scope.main.testSite = false;
-        $scope.main.productionSite = false;
-        if ($scope.main.host == 'localhost')
-            $scope.main.localSite = true;
-        else if ($scope.main.host == 'www.ndexbio.org')
-            $scope.main.productionSite = true;
-        else if ($scope.main.host == 'test.ndexbio.org')
-            $scope.main.testSite = true;
-        else
-            $scope.main.defaultSite = true;
+        //Test whether the server is up or not.
+        var ndexServerUri = ndexService.getNdexServerUri();
+        $scope.main.serverIsDown = false;
+        $http.get(ndexServerUri + '/admin/status').
+            success(function(data, status, headers, config) {
+                // this callback will be called asynchronously
+                // when the response is available
+            }).
+            error(function(data, status, headers, config) {
+                $scope.main.serverIsDown = true;
+            });
+
+
 
         $scope.main.startSignIn = function()
         {

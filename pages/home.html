@@ -10,7 +10,7 @@
         <br><br>
 
 
-        <form ng-show="!main.showSignIn && (!config.requireAuthentication||main.loggedIn)" style="width:100%" role="search" ng-submit="main.anonymousSearchPerformed = true; main.search()">
+        <form ng-show="!main.showSignIn && !main.serverIsDown && (!config.requireAuthentication||main.loggedIn)" style="width:100%" role="search" ng-submit="main.anonymousSearchPerformed = true; main.search()">
             <br>
             <br>
             <div class="input-group" >
@@ -20,8 +20,9 @@
             <br>
             &#x1f4a1; Tip: Click the magnifying lens to view all networks available on NDEx
         </form>
+        <h1 class="text-danger" ng-show="main.serverIsDown">The NDEx server is down.<br>We apologize for the inconvenience. </h1>
 
-        <div class='col-md-12' ng-show="main.showSignIn || config.requireAuthentication">
+        <div class='col-md-12' ng-show="(main.showSignIn || config.requireAuthentication) && !main.serverIsDown">
             <div class="home-box home-margins">
                 <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
                     <div class="AlignCenter" style="font-size: 14px">

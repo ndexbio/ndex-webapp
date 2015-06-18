@@ -181,7 +181,7 @@
                 <a ng-click="main.signout()">Sign Out</a>
             </li>
 
-            <li ng-show="!main.loggedIn && !main.showSignIn && !config.requireAuthentication">
+            <li ng-show="!main.loggedIn && !main.showSignIn && !config.requireAuthentication && !main.serverIsDown">
                 <a ng-click="main.startSignIn()">Sign In</a>
             </li>
 
