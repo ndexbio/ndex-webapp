@@ -279,12 +279,12 @@ textarea
 
 .footer-content > a:link
 {
-    color: blue;
+    color: rgb(2, 114, 201);  /*NDEx blue*/
 }
 
 .footer-content > a:visited
 {
-    color: blue;
+    color: rgb(2, 114, 201);  /*NDEx blue*/
 }
 
 
