@@ -272,8 +272,8 @@ textarea
     -webkit-tap-highlight-color: red;
     font-family: 'Open Sans', sans-serif;
     font-size: 1.1em;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 
 }
 
@@ -319,7 +319,7 @@ textarea
 
 .navbar
 {
-    min-height: 50px;
+    min-height: 10px;
 }
 
 .navbar a
