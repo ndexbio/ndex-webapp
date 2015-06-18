@@ -269,10 +269,22 @@ textarea
 .footer-content
 {
     color: rgba(255, 255, 255, 0.8);
+    -webkit-tap-highlight-color: red;
     font-family: 'Open Sans', sans-serif;
     font-size: 1.1em;
     padding-top: 15px;
     padding-bottom: 15px;
+
+}
+
+.footer-content > a:link
+{
+    color: blue;
+}
+
+.footer-content > a:visited
+{
+    color: blue;
 }
 
 
