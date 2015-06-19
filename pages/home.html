@@ -5,16 +5,20 @@
         <br><br>
         <img src='http://www.ndexbio.org/wp-content/uploads/2015/06/ndex-new-logo.png'
              style="width:100%; max-height:200px; align:center"/>
-        <br><br>
+        <br>
+        <br>
         <h3>{{config.welcome}}</h3>
-        <br><br>
+        <br>
+        <br>
+        <br>
+        <br>
 
 
         <form ng-show="!main.showSignIn && !main.serverIsDown && (!config.requireAuthentication||main.loggedIn)" style="width:100%" role="search" ng-submit="main.anonymousSearchPerformed = true; main.search()">
             <br>
             <br>
             <div class="input-group" >
-                <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
+                <input type="text" class="form-control" placeholder="Search NDEx Networks" ng-model="main.searchString">
                 <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
             </div>
             <br>
