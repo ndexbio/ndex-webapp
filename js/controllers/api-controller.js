@@ -18,7 +18,7 @@ ndexApp.controller('apiController',
                     {
                         api.networkApiError = "Error while retrieving Network API";
                     })
-            }
+            };
             api.getNetworkApi();
 
             //User
@@ -35,7 +35,7 @@ ndexApp.controller('apiController',
                     {
                         api.userApiError = "Error while retrieving User API";
                     })
-            }
+            };
             api.getUserApi();
 
             //Group

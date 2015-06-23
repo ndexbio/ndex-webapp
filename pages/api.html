@@ -7,7 +7,7 @@
                     <br/>
                     <div><strong>{{networkMethod.methodName}}</strong> <code>{{networkMethod.path}}</code></div>
                     <div class="indent">Requires Authentication: {{networkMethod.authentication}}</div>
-                    <div class="indent">Description: {{networkMethod.apiDoc}}</div>
+                    <div class="indent">Description: <span ng-bind-html="networkMethod.apiDoc"></span></div>
                 </div>
             </div>
 
@@ -23,7 +23,7 @@
                     <br/>
                     <div><strong>{{userMethod.methodName}}</strong> <code>{{userMethod.path}}</code></div>
                     <div class="indent">Requires Authentication: {{userMethod.authentication}}</div>
-                    <div class="indent">Description: {{userMethod.apiDoc}}</div>
+                    <div class="indent">Description: <span ng-bind-html="userMethod.apiDoc"></span></div>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                     <br/>
                     <div><strong>{{groupMethod.methodName}}</strong> <code>{{groupMethod.path}}</code></div>
                     <div class="indent">Requires Authentication: {{groupMethod.authentication}}</div>
-                    <div class="indent">Description: {{groupMethod.apiDoc}}</div>
+                    <div class="indent">Description: <span ng-bind-html="groupMethod.apiDoc"></span></div>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@
                     <br/>
                     <div><strong>{{requestMethod.methodName}}</strong> <code>{{requestMethod.path}}</code></div>
                     <div class="indent">Requires Authentication: {{requestMethod.authentication}}</div>
-                    <div class="indent">Description: {{requestMethod.apiDoc}}</div>
+                    <div class="indent">Description: <span ng-bind-html="requestMethod.apiDoc"></span></div>
                 </div>
             </div>
 
@@ -68,7 +68,7 @@
                     <br/>
                     <div><strong>{{taskMethod.methodName}}</strong> <code>{{taskMethod.path}}</code></div>
                     <div class="indent">Requires Authentication: {{taskMethod.authentication}}</div>
-                    <div class="indent">Description: {{taskMethod.apiDoc}}</div>
+                    <div class="indent">Description: <span ng-bind-html="taskMethod.apiDoc"></span></div>
                 </div>
             </div>
 
