@@ -328,11 +328,21 @@ textarea
     font-family: 'Open Sans', sans-serif;
 }
 
+
+
+
+.navbar-nav>li>a:focus
+{
+    background: black;
+}
+
 .navbar-nav>li>a:hover
 {
-    /*color: black;*/
+    /*color: lightened black;*/
     background: rgb(38,38,38);
 }
+
+
 
 .navbar-fixed-top
 {
