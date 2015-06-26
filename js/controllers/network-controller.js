@@ -805,13 +805,20 @@ ndexApp.controller('networkController',
                 var headers = Object.keys(edgePropertyKeys);
                 if(  headers.length > 0 )
                 {
+                    var field = "";
                     for (i = 0; i < headers.length - 1; i++)
                     {
-                        var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        field = headers[i];
+                        field = field.replace("(", "*");
+                        field = field.replace(")", "*");
+                        var columnDef = {field: field, displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
                         columnDefs.push(columnDef);
                     }
                     //Special width for the last column
-                    var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
+                    field = headers[i];
+                    field = field.replace("(", "*");
+                    field = field.replace(")", "*");
+                    var columnDef = {field: field, displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
                     columnDefs.push(columnDef);
                 }
 
@@ -842,6 +849,8 @@ ndexApp.controller('networkController',
                     for( j = 0; j < properties.length; j++ )
                     {
                         var key = properties[j].predicateString;
+                        key = key.replace("(", "*");
+                        key = key.replace(")", "*");
                         row[key] = properties[j].value;
                     }
 
@@ -897,12 +906,19 @@ ndexApp.controller('networkController',
                 var headers = Object.keys(nodePropertyKeys);
                 if( headers.length > 0 )
                 {
+                    var field = "";
                     for (i = 0; i < headers.length - 1; i++)
                     {
-                        var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        field = headers[i];
+                        field = field.replace("(", "*");
+                        field = field.replace(")", "*");
+                        var columnDef = {field: field, displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
                         columnDefs.push(columnDef);
                     }
                     //Special width for the last column
+                    field = headers[i];
+                    field = field.replace("(", "*");
+                    field = field.replace(")", "*");
                     var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
                     columnDefs.push(columnDef);
                 }
@@ -933,6 +949,8 @@ ndexApp.controller('networkController',
                     for( j = 0; j < properties.length; j++ )
                     {
                         var key = properties[j].predicateString;
+                        key = key.replace("(", "*");
+                        key = key.replace(")", "*");
                         row[key] = properties[j].value;
                     }
 
