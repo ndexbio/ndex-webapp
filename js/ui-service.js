@@ -1155,17 +1155,17 @@
                                     {
                                         name: 'edge count',
                                         value: networkSummary.edgeCount,
-                                        type: 'SimpleValuePropertyPair'
+                                        type: 'SimplePropertyValuePair'
                                     },
                                     {
                                         name: 'node count',
                                         value: networkSummary.nodeCount,
-                                        type: 'SimpleValuePropertyPair'
+                                        type: 'SimplePropertyValuePair'
                                     },
                                     {
                                         name: 'dc:title',
                                         value: networkSummary.name,
-                                        type: 'SimpleValuePropertyPair'
+                                        type: 'SimplePropertyValuePair'
                                     }
                                 ],
                                 creationEvent:
@@ -1180,12 +1180,12 @@
                                         {
                                             name: 'query terms',
                                             value: terms,
-                                            type: 'SimpleValuePropertyPair'
+                                            type: 'SimplePropertyValuePair'
                                         },
                                         {
                                             name: 'query depth',
                                             value: depth,
-                                            type: 'SimpleValuePropertyPair'
+                                            type: 'SimplePropertyValuePair'
                                         }
                                     ]
                                 }
@@ -1193,11 +1193,11 @@
 
                             if( networkSummary.description )
                             {
-                                newProvenance.properties.push( {name:'description', value:networkSummary.description, type:'SimpleValuePropertyPair'}  )
+                                newProvenance.properties.push( {name:'description', value:networkSummary.description, type:'SimplePropertyValuePair'}  )
                             }
                             if( networkSummary.version )
                             {
-                                newProvenance.properties.push( {name:'version', value:networkSummary.version, type:'SimpleValuePropertyPair'}  )
+                                newProvenance.properties.push( {name:'version', value:networkSummary.version, type:'SimplePropertyValuePair'}  )
                             }
 
                             ndexService.setProvenance(networkSummary.externalId, newProvenance).$promise.then(
