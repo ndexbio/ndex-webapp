@@ -59,7 +59,13 @@
         </div>
 
         <div class="row" ng-show="networkController.networkAdmins">
-            <strong>Other Admins:</strong> <span ng-show="networkController.networkAdmins.length == 0">None</span>
+            <span ng-show="networkController.isAdmin">
+                <strong>Other Admins:</strong>
+            </span>
+            <span ng-show="!networkController.isAdmin">
+                <strong>Admins:</strong>
+            </span>
+            <span ng-show="networkController.networkAdmins.length == 0">None</span>
             <ul style="list-style-type: circle; padding-left: 25px">
                 <li ng-repeat="networkAdmin in networkController.networkAdmins"><a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a></li>
             </ul>
