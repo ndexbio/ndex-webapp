@@ -13,13 +13,7 @@ ndexServiceApp.factory('ndexService',
             // define and initialize factory object
             var factory = {};
 
-            //Windows http://192.168.80.1:8080/
-            var ndexServerURI = config.protocol + "://localhost:8080/ndexbio-rest";
-            //var ndexServerURI = "http://192.168.80.1:8080/ndexbio-rest";
-            // This convention is useful, but we may later allow a
-            // site configuration to explicitly specify a different host
-            if (location.hostname.toLowerCase() != "localhost")
-                ndexServerURI = config.protocol + "://" + location.host + "/rest";
+            var ndexServerURI = config.ndexServerUri;
 
             factory.getNdexServerUri = function()
             {
@@ -1061,11 +1055,7 @@ ndexServiceApp.factory('ndexUtility', function () {
 ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     var factory = {};
 
-    var ndexServerURI = config.protocol + "://localhost:8080/ndexbio-rest";
-    // This convention is useful, but we may later allow a
-    // site configuration to explicitly specify a different host
-    if (location.hostname.toLowerCase() != "localhost")
-        ndexServerURI = config.protocol + "://" + location.host + "/rest";
+    var ndexServerURI = config.ndexServerUri;
 
     /*---------------------------------------------------------------------*
      * GET request configuration
