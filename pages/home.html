@@ -22,7 +22,7 @@
             <br>
             <img src="img/lightbulb.png"> &nbsp;Tip: Click the magnifying lens to view all networks available on NDEx
         </form>
-        <h1 class="text-danger" ng-show="main.serverIsDown">The NDEx server is down.<br>We apologize for the inconvenience. </h1>
+        <h1 class="text-danger" ng-show="main.serverIsDown"><span id="bind-html-with-trust" ng-bind-html="config.messages.serverDown"></span></h1>
 
         <div class='col-md-12' ng-show="(main.showSignIn || config.requireAuthentication) && !main.serverIsDown">
             <div class="home-box home-margins">
@@ -45,12 +45,12 @@
                         ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
                         Sign in
                         </button><br><br>
-                        <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
+                        <a ng-show="config.messages.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
                     </div>
                     <hr>
                     <div class="AlignCenter" style="font-size: 14px">
                         {{config.signIn.footer}}
-                        <a ng-show="config.signIn.showSignup" ng-click="signIn.openSignUp()">Click here to sign up!</a>
+                        <a ng-show="config.messages.signIn.showSignup" ng-click="signIn.openSignUp()">Click here to sign up!</a>
                     </div>
                 </form>
             <span class="text-danger">{{signIn.message}}</span>
