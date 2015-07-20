@@ -67,10 +67,32 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
+
+
         $scope.main.signout = function () {
             $scope.$emit('LOGGED_OUT');
             $location.path("/");
         };
+
+        $scope.main.handleStorageEvent = function(event)
+        {
+            if( event.key == "loggedInUser" )
+            {
+                if( event.newValue == null || event.newValue == "null" )
+                {
+                    $scope.main.signout();
+                }
+            }
+        };
+
+        if (window.addEventListener)
+        {
+            window.addEventListener("storage", $scope.main.handleStorageEvent, false);
+        }
+        else
+        {
+            window.attachEvent("onstorage", $scope.main.handleStorageEvent);
+        }
 
         //The purpose of the heart beat is measure the time since the app was last used.
         var lastHeartbeat = localStorage.getItem('last-heartbeat');
