@@ -1217,11 +1217,7 @@
                     var depth = sharedProperties.getCurrentQueryDepth();
 
                     var configProp = angular.injector(['ng', 'ndexServiceApp']).get('config');
-                    var ndexServerURI = configProp.protocol + "://localhost:8080/ndexbio-rest";
-                    // This convention is useful, but we may later allow a
-                    // site configuration to explicitly specify a different host
-                    if (location.hostname.toLowerCase() != "localhost")
-                        ndexServerURI = configProp.protocol + "://" + location.host + "/rest";
+                    var ndexServerURI = configProp.ndexServerUri;
 
                     var postData = angular.fromJson(csn.json);
                     if( terms )
