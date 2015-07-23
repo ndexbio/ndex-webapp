@@ -45,12 +45,12 @@
                         ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
                         Sign in
                         </button><br><br>
-                        <a ng-show="config.messages.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
+                        <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
                     </div>
                     <hr>
                     <div class="AlignCenter" style="font-size: 14px">
                         {{config.signIn.footer}}
-                        <a ng-show="config.messages.signIn.showSignup" ng-click="signIn.openSignUp()">Click here to sign up!</a>
+                        <a ng-show="config.signIn.showSignup" ng-click="signIn.openSignUp()">Click here to sign up!</a>
                     </div>
                 </form>
             <span class="text-danger">{{signIn.message}}</span>
