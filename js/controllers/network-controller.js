@@ -601,29 +601,6 @@ ndexApp.controller('networkController',
                 return result > 250 ? 250 : result;
             };
 
-
-            //$scope.getEdgeCitationLinks = function(edgeKey)
-            //{
-            //    if( !edgeKey )
-            //        return "";
-            //    var edge = networkController.currentSubnetwork.edges[edgeKey];
-            //    if( !edge )
-            //        return "";
-            //    var citationIds = edge.citationIds;
-            //    return $sce.trustAsHtml( $scope.getCitationLinks(citationIds) );
-            //};
-            //
-            //$scope.getNodeCitationLinks = function(nodeKey)
-            //{
-            //    if( !nodeKey )
-            //        return "";
-            //    var node = networkController.currentSubnetwork.nodes[nodeKey];
-            //    if( !node )
-            //        return "";
-            //    var citationIds = node.citationIds;
-            //    return $scope.getCitationLinks(citationIds);
-            //};
-
             var getEdgeCitationIds = function(edgeKey)
             {
                 if( !edgeKey )
@@ -654,6 +631,18 @@ ndexApp.controller('networkController',
             {
                 var citationIds = getNodeCitationIds(nodeKey);
                 return citationIds.length;
+            };
+
+            $scope.linkify = function(cellContents)
+            {
+                if( cellContents.startsWith("http") )
+                {
+                    return '&nbsp;<a target="_blank" href="'+cellContents+'">External Link</a>'
+                }
+                else
+                {
+                    return cellContents;
+                }
             };
 
             var getCitationContributorsString = function(citationId)
@@ -735,9 +724,6 @@ ndexApp.controller('networkController',
                 return 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
             };
 
-
-
-
             var populateEdgeTable = function()
             {
                 var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
@@ -811,14 +797,26 @@ ndexApp.controller('networkController',
                         field = headers[i];
                         field = field.replace("(", "*");
                         field = field.replace(")", "*");
-                        var columnDef = {field: field, displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        var columnDef = {
+                            field: field,
+                            displayName: headers[i],
+                            cellTooltip: true,
+                            minWidth: calcColumnWidth(headers[i]),
+                            cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                        };
                         columnDefs.push(columnDef);
                     }
                     //Special width for the last column
                     field = headers[i];
                     field = field.replace("(", "*");
                     field = field.replace(")", "*");
-                    var columnDef = {field: field, displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
+                    var columnDef = {
+                        field: field,
+                        displayName: headers[i],
+                        cellTooltip: true,
+                        minWidth: calcColumnWidth(headers[i], true),
+                        cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                    };
                     columnDefs.push(columnDef);
                 }
 
@@ -912,14 +910,26 @@ ndexApp.controller('networkController',
                         field = headers[i];
                         field = field.replace("(", "*");
                         field = field.replace(")", "*");
-                        var columnDef = {field: field, displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i])};
+                        var columnDef = {
+                            field: field,
+                            displayName: headers[i],
+                            cellTooltip: true,
+                            minWidth: calcColumnWidth(headers[i]),
+                            cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                        };
                         columnDefs.push(columnDef);
                     }
                     //Special width for the last column
                     field = headers[i];
                     field = field.replace("(", "*");
                     field = field.replace(")", "*");
-                    var columnDef = {field: headers[i], displayName: headers[i], cellTooltip: true, minWidth: calcColumnWidth(headers[i], true)};
+                    var columnDef = {
+                        field: headers[i],
+                        displayName: headers[i],
+                        cellTooltip: true,
+                        minWidth: calcColumnWidth(headers[i], true),
+                        cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                    };
                     columnDefs.push(columnDef);
                 }
 
