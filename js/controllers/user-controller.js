@@ -27,7 +27,7 @@ ndexApp.controller('userController',
             userController.networkQuery = {};
             userController.networkSearchResults = [];
             userController.skip = 0;
-            userController.skipSize = 25;
+            userController.skipSize = 10000;
             userController.allSelected = false;
             userController.atLeastOneSelected = false;
 
@@ -153,14 +153,7 @@ ndexApp.controller('userController',
                     ndexService.deleteNetwork(selectedId,
                         function (data)
                         {
-                            //for( var j = 0; j < userController.networkSearchResults.length; j++ )
-                            //{
-                            //    if( userController.networkSearchResults[j].externalId == selectedId )
-                            //    {
-                            //        userController.networkSearchResults.splice(j, 1);
-                            //        return;
-                            //    }
-                            //}
+
                         },
                         function (error)
                         {
@@ -175,42 +168,6 @@ ndexApp.controller('userController',
                 }
                 refreshNetworkTable();
                 userController.atLeastOneSelected = false;
-
-                //for (var i = 0; i < userController.networkSearchResults.length; i++)
-                //{
-                //    if (userController.networkSearchResults[i].selected)
-                //    {
-                //        selectedIds.push(userController.networkSearchResults[i].externalId);
-                //    }
-                //}
-                //
-                //for (i = 0; i < selectedIds.length; i++ )
-                //{
-                //    var selectedId = selectedIds[i];
-                //    ndexService.deleteNetwork(selectedId,
-                //        function (data)
-                //        {
-                //            //for( var j = 0; j < userController.networkSearchResults.length; j++ )
-                //            //{
-                //            //    if( userController.networkSearchResults[j].externalId == selectedId )
-                //            //    {
-                //            //        userController.networkSearchResults.splice(j, 1);
-                //            //        return;
-                //            //    }
-                //            //}
-                //        },
-                //        function (error)
-                //        {
-                //
-                //        });
-                //}
-                //for (i = userController.networkSearchResults.length - 1; i >= 0; i-- )
-                //{
-                //    var externalId = userController.networkSearchResults[i].externalId;
-                //    if( selectedIds.indexOf(externalId) != -1 )
-                //        userController.networkSearchResults.splice(i,1);
-                //}
-                //userController.atLeastOneSelected = false;
 
             };
 
@@ -271,10 +228,7 @@ ndexApp.controller('userController',
                     function (networks)
                     {
                         userController.networkSearchResults = networks;
-                        for (i in userController.networkSearchResults)
-                            userController.networkSearchResults[i].selected = false;
                         populateNetworkTable();
-                        ////console.log(userController.networkSearchResults[0])
                     },
                     function (error)
                     {
