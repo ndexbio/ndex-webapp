@@ -35,6 +35,90 @@ ndexApp.controller('userController',
             //tasks
             userController.pendingTasks = [];
 
+            var calcColumnWidth = function(header, isLastColumn)
+            {
+                var result = header.length * 10;
+                result = result < 100 ? 100 : result;
+                if( isLastColumn )
+                    result += 40;
+                return result > 250 ? 250 : result;
+            };
+
+            //table
+            $scope.networkGridOptions =
+            {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+
+                onRegisterApi: function( gridApi )
+                {
+                    $scope.networkGridApi = gridApi;
+                    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+                        userController.atLeastOneSelected = selectedRows.length > 0;
+
+                    });
+                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+                        userController.atLeastOneSelected = selectedRows.length > 0;
+                    });
+
+                }
+            };
+
+            var populateNetworkTable = function()
+            {
+                var columnDefs = [
+                    { field: 'Network Name', enableFiltering: true, minWidth: calcColumnWidth('Network Name'),
+                      cellTemplate: 'pages/gridTemplates/networkName.html'},
+                    { field: 'Format', enableFiltering: true, minWidth: 70 },
+                    { field: 'Nodes', enableFiltering: false, minWidth: 70 },
+                    { field: 'Edges', enableFiltering: false, minWidth: 70 },
+                    { field: 'Owner', enableFiltering: true, minWidth: 70 },
+                    { field: 'Visibility', enableFiltering: false, minWidth: 70 },
+                    { field: 'Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
+                ];
+                refreshNetworkTable();
+                $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+            };
+
+            var refreshNetworkTable = function()
+            {
+                $scope.networkGridOptions.data = [];
+
+                for(var i = 0; i < userController.networkSearchResults.length; i++ )
+                {
+                    var network = userController.networkSearchResults[i];
+
+                    var networkName = network['name'];
+                    var description = network['description'];
+                    var externalId = network['externalId'];
+                    var nodes = network['nodeCount'];
+                    var edges = network['edgeCount'];
+                    var owner = network['owner'];
+                    var visibility = network['visibility'];
+                    var modified = new Date( network['modificationTime'] );
+
+                    var format = "Unknown";
+                    for(var j = 0; j < network['properties'].length; j++ )
+                    {
+                        if( network['properties'][j]['predicateString'] == "sourceFormat" )
+                        {
+                            format = network['properties'][j]['value'];
+                            break;
+                        }
+                    }
+
+                    var row = {"Network Name": networkName, "description": description, "externalId": externalId, "Format": format, "Nodes": nodes, "Edges": edges, "Owner": owner, "Visibility": visibility, "Modified": modified };
+                    //var row = {"Title": 'foo', "Nodes": 'foo', "Edges": 'foo' };
+                    //
+                    //
+                    $scope.networkGridOptions.data.push(row);
+                }
+            };
+
+
             userController.getTaskFileExt = function(task)
             {
                 if( !task.format )
@@ -54,59 +138,15 @@ ndexApp.controller('userController',
                 }
             };
 
-            // gui control
-            userController.selectAll = function ()
-            {
-                //Note that userController.allSelected lags behind ng-model. That is why we seem to be testing for
-                //values opposite of what you would expect here.
-                //UPDATE: This test has been reversed, because after upgrading Angular, there is no longer a lag.
-                for (var i = 0; i < userController.networkSearchResults.length; i++)
-                {
-                    userController.networkSearchResults[i].selected = userController.allSelected;
-                }
-                userController.atLeastOneSelected = userController.allSelected;
-            };
-
-            userController.selectNetwork = function (network)
-            {
-                //This test is the opposite of what you think, because this method is called before this value is
-                //changed by the ng-model.
-                //UPDATE: This test has been reversed, because after upgrading Angular, there is no longer a lag.
-                if (network.selected)
-                {
-                    userController.atLeastOneSelected = true;
-                    return;
-                }
-                else
-                {
-                    userController.allSelected = false;
-                }
-
-                for (var i = 0; i < userController.networkSearchResults.length; i++)
-                {
-                    n = userController.networkSearchResults[i];
-                    if (n.externalId == network.externalId)
-                        continue;
-                    if (n.selected)
-                    {
-                        userController.atLeastOneSelected = true;
-                        return;
-                    }
-                }
-                userController.atLeastOneSelected = false;
-            };
-
             userController.deleteSelectedNetworks = function ()
             {
                 var selectedIds = [];
-                for (var i = 0; i < userController.networkSearchResults.length; i++)
-                {
-                    if (userController.networkSearchResults[i].selected)
-                    {
-                        selectedIds.push(userController.networkSearchResults[i].externalId);
-                    }
-                }
 
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                for( var i = 0; i < selectedNetworksRows.length; i ++ )
+                {
+                    selectedIds.push(selectedNetworksRows[i].externalId);
+                }
                 for (i = 0; i < selectedIds.length; i++ )
                 {
                     var selectedId = selectedIds[i];
@@ -133,7 +173,44 @@ ndexApp.controller('userController',
                     if( selectedIds.indexOf(externalId) != -1 )
                         userController.networkSearchResults.splice(i,1);
                 }
+                refreshNetworkTable();
                 userController.atLeastOneSelected = false;
+
+                //for (var i = 0; i < userController.networkSearchResults.length; i++)
+                //{
+                //    if (userController.networkSearchResults[i].selected)
+                //    {
+                //        selectedIds.push(userController.networkSearchResults[i].externalId);
+                //    }
+                //}
+                //
+                //for (i = 0; i < selectedIds.length; i++ )
+                //{
+                //    var selectedId = selectedIds[i];
+                //    ndexService.deleteNetwork(selectedId,
+                //        function (data)
+                //        {
+                //            //for( var j = 0; j < userController.networkSearchResults.length; j++ )
+                //            //{
+                //            //    if( userController.networkSearchResults[j].externalId == selectedId )
+                //            //    {
+                //            //        userController.networkSearchResults.splice(j, 1);
+                //            //        return;
+                //            //    }
+                //            //}
+                //        },
+                //        function (error)
+                //        {
+                //
+                //        });
+                //}
+                //for (i = userController.networkSearchResults.length - 1; i >= 0; i-- )
+                //{
+                //    var externalId = userController.networkSearchResults[i].externalId;
+                //    if( selectedIds.indexOf(externalId) != -1 )
+                //        userController.networkSearchResults.splice(i,1);
+                //}
+                //userController.atLeastOneSelected = false;
 
             };
 
@@ -196,7 +273,7 @@ ndexApp.controller('userController',
                         userController.networkSearchResults = networks;
                         for (i in userController.networkSearchResults)
                             userController.networkSearchResults[i].selected = false;
-
+                        populateNetworkTable();
                         ////console.log(userController.networkSearchResults[0])
                     },
                     function (error)
