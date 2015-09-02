@@ -75,7 +75,7 @@ ndexApp.controller('userController',
                     { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
-                    { field: 'Visibility', enableFiltering: false, minWidth: 70 },
+                    { field: 'Visibility', enableFiltering: true, minWidth: 90 },
                     { field: 'Owner', enableFiltering: true, minWidth: 70 },
                     { field: 'Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
                 ];
