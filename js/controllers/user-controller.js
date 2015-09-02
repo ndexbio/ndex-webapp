@@ -70,17 +70,17 @@ ndexApp.controller('userController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Network Name', enableFiltering: true, minWidth: calcColumnWidth('Network Name'),
+                    { field: 'Network Name', enableFiltering: true, minWidth: 330,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
-                    { field: 'Owner', enableFiltering: true, minWidth: 70 },
                     { field: 'Visibility', enableFiltering: false, minWidth: 70 },
+                    { field: 'Owner', enableFiltering: true, minWidth: 70 },
                     { field: 'Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
                 ];
-                refreshNetworkTable();
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+                refreshNetworkTable();
             };
 
             var refreshNetworkTable = function()

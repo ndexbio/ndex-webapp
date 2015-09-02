@@ -830,4 +830,10 @@ hr {
     color: blue;
 }
 
+.networkGrid
+{
+    width: 100%;
+    height: 800px;
+}
+
 

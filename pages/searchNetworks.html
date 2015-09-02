@@ -59,26 +59,8 @@
             </p>
         </div>
 
-        <table  class="table table-hover" ng-model="networkSearch.networkSearchResults" ng-hide="networkSearch.networkSearchResults == null || networkSearch.networkSearchResults.length == 0">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>Visibility</th>
-                <th style="width: 10%;">Nodes</th>
-                <th style="width: 10%;">Edges</th>
-            </tr>
-            </thead>
+        <div ui-grid-selection ui-grid="networkSearchGridOptions" ui-grid-resize-columns class="networkGrid"></div>
 
-            <tbody ng-show="networkSearch.networkSearchResults.length > 0" ng-repeat="network in networkSearch.networkSearchResults">
-            <tr ng-click="networkSearch.setAndDisplayCurrentNetwork(network.externalId)" style="cursor:pointer;">
-                <td>{{network.name}}</td>
-                </td>
-                <td class='text-success'>{{network.visibility}}</td>
-                <td class="AlignRight">{{network.nodeCount}}</td>
-                <td class="AlignRight">{{network.edgeCount}}</td>
-            </tr>
-            </tbody>
-        </table>
         <div class='row text-center' ng-hide='networkSearch.skip == 0 && networkSearch.networkSearchResults.length < networkSearch.skipSize'>
 
           <ul class="pager">
