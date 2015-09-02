@@ -19,6 +19,11 @@ ndexApp.controller('searchNetworksController',
                 enableSorting: true,
                 enableFiltering: true,
                 showGridFooter: true,
+                enableSelectAll: false,
+                enableRowSelection: false,
+                multiSelect: false,
+                enableRowHeaderSelection: false,
+
 
                 onRegisterApi: function( gridApi )
                 {
