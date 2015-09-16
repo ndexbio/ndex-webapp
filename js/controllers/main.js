@@ -281,7 +281,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                     $scope.signIn.password = null;
                 }).
                 error(function(data, status, headers, config, statusText) {
-                    $scope.signIn.message = "Your credentials are incorrect.";
+                    if (status === 401) {
+                        $scope.signIn.message = "Invalid password for user " + $scope.signIn.accountName + ".";
+                    } else if (status === 404) {
+                        $scope.signIn.message = "User " + $scope.signIn.accountName  + " is not known.";
+                    }
                 });
         };
 
