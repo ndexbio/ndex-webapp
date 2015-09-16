@@ -44,6 +44,85 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
 
 
+
+        // check configuration parameters loaded from ndex-webapp-coinfig.js;
+        // if any of config parameeters missing, assign default values
+        if (typeof config.requireAuthentication === 'undefined') {
+            config.requireAuthentication = false;
+        }
+        if (typeof config.welcome === 'undefined') {
+            config.welcome = "NDEx Web App deployed at My Company";
+        }
+        if (typeof config.networkQueryLimit === 'undefined') {
+            config.networkQueryLimit = 1500;
+        }
+        if (typeof config.networkDisplayLimit === 'undefined') {
+            config.networkDisplayLimit = 300;
+        }
+        if (typeof config.networkTableLimit === 'undefined') {
+            config.networkTableLimit = 500;
+        }
+        if (typeof config.protocol === 'undefined') {
+            config.protocol = "http";
+        }
+        if (typeof config.idleTime === 'undefined') {
+            config.idleTime = 3600;
+        }
+        if (typeof config.uploadSizeLimit === 'undefined') {
+            config.uploadSizeLimit = "none";
+        }
+
+        if (typeof config.logo === 'undefined') {
+            config.logo = {};
+        }
+        if (typeof config.logo.href === 'undefined') {
+            config.logo.href = "http://www.ndexbio.org";
+        }
+        if (typeof config.messages === 'undefined') {
+            config.messages = {};
+        }
+        if (typeof config.messages.serverDown === 'undefined') {
+            config.messages.serverDown =
+                "<img src='http://www.ndexbio.org/wp-content/uploads/2015/06/manteinance2.png'>";
+        }
+
+        if (typeof config.contactUs === 'undefined') {
+            config.contactUs = {};
+        }
+        if (typeof config.contactUs.name === 'undefined') {
+            config.contactUs.name = "Contact Us";
+        }
+        if (typeof config.contactUs.href === 'undefined') {
+            config.contactUs.href = "http://www.ndexbio.org/contact-us";
+        }
+        if (typeof config.contactUs.target === 'undefined') {
+            config.contactUs.target = "NDEx Home";
+        }
+
+        if (typeof config.signIn === 'undefined') {
+            config.signIn = {};
+        }
+        if (typeof config.signIn.header === 'undefined') {
+            config.signIn.header = "Sign in to your NDEx account";
+        }
+        if (typeof config.signIn.footer === 'undefined') {
+            config.signIn.footer = "Need an account?";
+        }
+        if (typeof config.signIn.showForgotPassword === 'undefined') {
+            config.signIn.showForgotPassword = true;
+        }
+        if (typeof config.signIn.showSignup === 'undefined') {
+            config.signIn.showSignup = true;
+        }
+        if (typeof config.ndexServerUri === 'undefined') {
+            // ndexServerUri is a required parameter -- give an error message;
+            // replace the messages.serverDown message
+            config.messages.serverDown = "Error in ndex-webapp-config.js:<br>" +
+                                         "The parameter ndexServerUri is required.<br>" +
+                                         "Please edit the configuration file to provide this URI."   ;
+        }
+
+
         $scope.config = config;
 
         //Test whether the server is up or not.
