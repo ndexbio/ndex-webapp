@@ -64,5 +64,13 @@ svg {
     height:calc(100% - 2em);
     width: calc(100% - 2em);
 }
+.classWithPad {
+    margin:1px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+    /*border: 5px solid red;*/
+}
 
 

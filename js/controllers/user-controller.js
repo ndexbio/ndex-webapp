@@ -129,6 +129,7 @@ ndexApp.controller('userController',
                     return task.format.toLowerCase();
             };
 
+            /*
             userController.deleteAllTasks = function()
             {
                 for( var i = 0; i < userController.pendingTasks.length; i++ )
@@ -136,6 +137,21 @@ ndexApp.controller('userController',
                     var task = userController.pendingTasks[i];
                     userController.deleteTask(task.externalId);
                 }
+            };
+            */
+            userController.deleteAllTasks = function()
+            {
+                if( $scope.tasks == undefined )
+                    return;
+                for(var i = $scope.tasks.length - 1; i >= 0; i-- )
+                {
+                    var task = $scope.tasks[i];
+                    ndexService.deleteTask(task.externalId,
+                        function()
+                        {
+                        });
+                }
+                $scope.tasks = [];
             };
 
             userController.deleteSelectedNetworks = function ()
@@ -259,9 +275,32 @@ ndexApp.controller('userController',
                 $route.reload();
             };
 
+
             userController.refreshTasks = function ()
             {
-
+                ndexService.getUserTasks(
+                    sharedProperties.getCurrentUserId(),
+                    "ALL",
+                    0,
+                    100,
+                    // Success
+                    function(tasks){
+                        $scope.tasks = [];
+                        $.each(tasks, function(index, task){
+                            $scope.tasks.push(task);
+                        });
+                    },
+                    // Error
+                    function (response)
+                    {
+                        //console.log("Failed to retrieve tasks: " + response);
+                        //TBD
+                    }
+                )
+            };
+/*
+            userController.refreshTasks = function ()
+            {
                 ndexService.getUserTasks(
                     sharedProperties.getCurrentUserId(),
                     "ALL",
@@ -272,16 +311,12 @@ ndexApp.controller('userController',
                     {
                         ////console.log("Successfully retrieved tasks: " + tasks);
                         userController.pendingTasks = tasks;
-                        for (var i = userController.pendingTasks.length - 1; i >= 0; i--)
-                        {
+                        for (var i = userController.pendingTasks.length - 1; i >= 0; i--) {
                             var task = userController.pendingTasks[i];
-                            if( task.status == 'COMPLETED' && task.taskType != 'EXPORT_NETWORK_TO_FILE' )
-                            {
-                                userController.pendingTasks.splice(i,1);
+                            if (task.status == 'COMPLETED' && task.taskType != 'EXPORT_NETWORK_TO_FILE') {
+                                userController.pendingTasks.splice(i, 1);
                             }
                         }
-
-
                     },
                     // Error
                     function (response)
@@ -290,9 +325,8 @@ ndexApp.controller('userController',
                         //TBD
                     }
                 )
-
             };
-
+*/
             userController.refreshRequests = function ()
             {
                 getRequests();
