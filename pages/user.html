@@ -16,7 +16,7 @@
                 <small>{{userController.displayedUser.accountName}}</small>
             </div>
             <div>
-                <small>{{userController.displayeduser.emailAddress}}</small>
+                <small>{{userController.displayedUser.emailAddress}}</small>
             </div>
             <div>
                 <a href="{{userController.displayedUser.website}}">{{userController.displayedUser.website}}</a>
@@ -139,12 +139,16 @@
             </tab>
 
 
+            <!-- only show Tasks & Notifications tab if
+                 1) user is logged in (it is not an anonymous search), and
+                 2) selected user is the same as the one who logged in.  In other words, this tab will be hidden if
+                 a user logged in as say "aaa" and gets networks for user "bbb" --->
+            <tab heading="Tasks & Notifications"
+                 ng-show="(userController.isLoggedInUser) && (userController.displayedUser.externalId===userController.loggedInIdentifier)">
 
-            <tab heading="Tasks & Notifications">
+                <div class="row" ng-show="(userController.tasks.length > 0) || (userController.pendingRequests.length > 0 || userController.sentRequests.length > 0)">
 
-                <div class="row" ng-show="(tasks.length > 0) || (userController.pendingRequests.length > 0 || userController.sentRequests.length > 0)">
-
-                    <div class="col-md-6"  ng-show='(userController.isLoggedInUser) && (tasks.length > 0)'>
+                    <div class="col-md-6"  ng-show='userController.tasks.length > 0'>
                         <div class="row well well-sm classWithPad">
                             <ol class="list-inline">
                                 <li><strong>Tasks</strong></li>
@@ -156,7 +160,7 @@
                                 </li>
                             </ol>
                             <div class="panel panel-default">
-                                <ul class="list-group" ng-repeat='task in tasks'>
+                                <ul class="list-group" ng-repeat='task in userController.tasks'>
                                     <!--ng-repeat='task in userController.pendingTasks'> -->
                                     <!--ng-hide="task.status == 'COMPLETED' && task.taskType != 'EXPORT_NETWORK_TO_FILE'"-->
                                     <li class="list-group-item">
