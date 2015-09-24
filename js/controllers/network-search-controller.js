@@ -48,8 +48,8 @@ ndexApp.controller('searchNetworksController',
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
                     { field: 'Visibility', enableFiltering: true, minWidth: 90 },
-                    { field: 'Owner', enableFiltering: true, minWidth: 70 },
-                    { field: 'Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
+                    { field: 'Owned By', enableFiltering: true, minWidth: 70 },
+                    { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();
@@ -83,7 +83,7 @@ ndexApp.controller('searchNetworksController',
                         }
                     }
 
-                    var row = {"Network Name": networkName, "description": description, "externalId": externalId, "Format": format, "Nodes": nodes, "Edges": edges, "Owner": owner, "Visibility": visibility, "Modified": modified };
+                    var row = {"Network Name": networkName, "description": description, "externalId": externalId, "Format": format, "Nodes": nodes, "Edges": edges, "Owned By": owner, "Visibility": visibility, "Last Modified": modified };
                     //var row = {"Title": 'foo', "Nodes": 'foo', "Edges": 'foo' };
                     //
                     //

@@ -40,9 +40,9 @@
             {{networkController.currentNetwork.creationTime | date}}
         </div>
 
-        <div class="row" ng-show="networkController.currentNetwork.creationTime != networkController.currentNetwork.creationTime">
+        <div class="row" ng-show="(networkController.currentNetwork.creationTime | date) != (networkController.currentNetwork.modificationTime | date)">
             <strong>Last Modified:</strong>
-            {{networkController.currentNetwork.creationTime | date}}
+            {{networkController.currentNetwork.modificationTime | date}}
         </div>
 
         <div class="row">

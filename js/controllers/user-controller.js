@@ -33,7 +33,7 @@ ndexApp.controller('userController',
 
 
             //tasks
-            userController.pendingTasks = [];
+            userController.tasks = [];
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -76,8 +76,8 @@ ndexApp.controller('userController',
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
                     { field: 'Visibility', enableFiltering: true, minWidth: 90 },
-                    { field: 'Owner', enableFiltering: true, minWidth: 70 },
-                    { field: 'Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
+                    { field: 'Owned By', enableFiltering: true, minWidth: 70 },
+                    { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();
@@ -110,7 +110,7 @@ ndexApp.controller('userController',
                         }
                     }
 
-                    var row = {"Network Name": networkName, "description": description, "externalId": externalId, "Format": format, "Nodes": nodes, "Edges": edges, "Owner": owner, "Visibility": visibility, "Modified": modified };
+                    var row = {"Network Name": networkName, "description": description, "externalId": externalId, "Format": format, "Nodes": nodes, "Edges": edges, "Owned By": owner, "Visibility": visibility, "Last Modified": modified };
                     //var row = {"Title": 'foo', "Nodes": 'foo', "Edges": 'foo' };
                     //
                     //
@@ -129,30 +129,15 @@ ndexApp.controller('userController',
                     return task.format.toLowerCase();
             };
 
-            /*
-            userController.deleteAllTasks = function()
-            {
-                for( var i = 0; i < userController.pendingTasks.length; i++ )
-                {
-                    var task = userController.pendingTasks[i];
-                    userController.deleteTask(task.externalId);
-                }
-            };
-            */
-            userController.deleteAllTasks = function()
-            {
-                if( $scope.tasks == undefined )
-                    return;
-                for(var i = $scope.tasks.length - 1; i >= 0; i-- )
-                {
-                    var task = $scope.tasks[i];
-                    ndexService.deleteTask(task.externalId,
-                        function()
-                        {
-                        });
-                }
-                $scope.tasks = [];
-            };
+
+             userController.deleteAllTasks = function()
+             {
+                 for( var i = 0; i < userController.tasks.length; i++ )
+                 {
+                     var task = userController.tasks[i];
+                     userController.deleteTask(task.externalId);
+                 }
+             };
 
             userController.deleteSelectedNetworks = function ()
             {
@@ -275,30 +260,6 @@ ndexApp.controller('userController',
                 $route.reload();
             };
 
-
-            userController.refreshTasks = function ()
-            {
-                ndexService.getUserTasks(
-                    sharedProperties.getCurrentUserId(),
-                    "ALL",
-                    0,
-                    100,
-                    // Success
-                    function(tasks){
-                        $scope.tasks = [];
-                        $.each(tasks, function(index, task){
-                            $scope.tasks.push(task);
-                        });
-                    },
-                    // Error
-                    function (response)
-                    {
-                        //console.log("Failed to retrieve tasks: " + response);
-                        //TBD
-                    }
-                )
-            };
-/*
             userController.refreshTasks = function ()
             {
                 ndexService.getUserTasks(
@@ -309,24 +270,15 @@ ndexApp.controller('userController',
                     // Success
                     function (tasks)
                     {
-                        ////console.log("Successfully retrieved tasks: " + tasks);
-                        userController.pendingTasks = tasks;
-                        for (var i = userController.pendingTasks.length - 1; i >= 0; i--) {
-                            var task = userController.pendingTasks[i];
-                            if (task.status == 'COMPLETED' && task.taskType != 'EXPORT_NETWORK_TO_FILE') {
-                                userController.pendingTasks.splice(i, 1);
-                            }
-                        }
+                        userController.tasks = tasks;
                     },
                     // Error
                     function (response)
                     {
-                        //console.log("Failed to retrieve tasks: " + response);
-                        //TBD
                     }
                 )
             };
-*/
+
             userController.refreshRequests = function ()
             {
                 getRequests();
