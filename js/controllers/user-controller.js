@@ -130,14 +130,42 @@ ndexApp.controller('userController',
             };
 
 
-             userController.deleteAllTasks = function()
-             {
-                 for( var i = 0; i < userController.tasks.length; i++ )
-                 {
-                     var task = userController.tasks[i];
-                     userController.deleteTask(task.externalId);
-                 }
-             };
+            // recursive function that deletes all tasks from the server
+            userController.deleteAllTasks = function()
+            {
+
+                // delete all tasks that are visible to the user
+                for (var i = 0; i < userController.tasks.length; i++) {
+                    var task = userController.tasks[i];
+                    userController.deleteTask(task.externalId);
+                }
+
+                // there may be more tasks on the server; try to get them
+                ndexService.getUserTasks(
+                     sharedProperties.getCurrentUserId(),
+                     "ALL",
+                     0,
+                     100,
+                     // Success callback function
+                     function (tasks)
+                     {
+                         if (tasks.length == 0) {
+                             // recursive base case: no task was retrvieved from the server
+                             return;
+                         }
+
+                         // recursive general case: more tasks were retrieved -- call itself
+                         // (userController.deleteAllTasks) to delete them
+                         userController.tasks = tasks;
+                         userController.deleteAllTasks();
+                     },
+                     // Error
+                     function (response)
+                     {
+                         return;
+                     }
+                )
+            };
 
             userController.deleteSelectedNetworks = function ()
             {
