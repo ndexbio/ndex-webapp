@@ -836,4 +836,8 @@ hr {
     height: 640px;
 }
 
+.wrapLongLine {
+    word-wrap: break-word;
+}
+
 
