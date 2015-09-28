@@ -4,7 +4,9 @@
 	<div class='modal-content'>
 		<div class='modal-body' ng-hide='false'>
 			<h5><strong>
-			{{request.sourceName}} requests <span class='text-success'>{{request.permission | permissionToLabel}}</span> access to {{request.destinationName}}
+				<div class="wrapLongLine">
+			       {{request.sourceName}} requests <span class='text-success'>{{request.permission | permissionToLabel}}</span> access to {{request.destinationName}}
+			    </div>
 			</strong></h5>
 			<p>{{request.message}}</p>
 
