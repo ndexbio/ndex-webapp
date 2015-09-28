@@ -119,6 +119,17 @@ ndexApp.controller('userController',
             };
 
 
+            userController.tasksNotificationsTabDisabled = function() {
+
+                if ( (userController.tasks.length > 0) ||
+                     (userController.pendingRequests.length > 0) ||
+                     (userController.sentRequests.length > 0)) {
+                    return false;
+                }
+
+                return true;
+            }
+
             userController.getTaskFileExt = function(task)
             {
                 if( !task.format )

@@ -141,7 +141,8 @@
                  2) selected user is the same as the one who logged in.  In other words, this tab will be hidden if
                  a user logged in as say "aaa" and gets networks for user "bbb" --->
             <tab heading="Tasks & Notifications"
-                 ng-show="(userController.isLoggedInUser) && (userController.displayedUser.externalId===userController.loggedInIdentifier)">
+                 ng-show="(userController.isLoggedInUser) && (userController.displayedUser.externalId===userController.loggedInIdentifier)"
+                 disabled="userController.tasksNotificationsTabDisabled()">
 
                 <div class="row" ng-show="(userController.tasks.length > 0) || (userController.pendingRequests.length > 0 || userController.sentRequests.length > 0)">
 
@@ -209,7 +210,7 @@
                                     ng-repeat='request in userController.pendingRequests'>
                                     <li class="list-group-item">
                                     <!-- destination names should be cut off -->
-                                        <received-request ndex-data='request'>
+                                        <received-request ndex-data='request' class="wrapLongLine">
                                             <span class='text-success'>{{request.sourceName}}</span> requests
                                             <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to
                                             <span class='text-success'>{{request.destinationName}}</span>
@@ -224,7 +225,7 @@
                                             ng-repeat='request in userController.sentRequests'>
                                     <li class="list-group-item">
                                         <!-- destination names should be cut off -->
-                                        <sent-request ndex-data='request'>
+                                        <sent-request ndex-data='request' class="wrapLongLine">
                                             <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to
                                             <span class='text-success'>{{request.destinationName}}</span> for
                                             <span class='text-success'>{{request.sourceName}}</span>
