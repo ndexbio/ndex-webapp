@@ -706,8 +706,8 @@
 
 
                 $scope.openMe = function() {
-                    $scope.networkType = 'SIF';
-                    var types = ["XGMML", "BEL", "XBEL", "BIOPAX"];
+                    $scope.networkType = 'CX';
+                    var types = ["SIF", "XGMML", "BEL", "XBEL", "BIOPAX"];
                     if (csn)
                     {
                         for (var i = 0; i < csn.properties.length; i++)

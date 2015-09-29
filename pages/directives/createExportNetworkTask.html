@@ -17,6 +17,9 @@
                   {{task.format}} <span class="caret"></span>
               </a>
 		      <ul class="dropdown-menu">
+                  <li>
+                      <a class="dropdown-toggle" ng-click='task.format = "CX"'><small>CX</small></a>
+                  </li>
                   <li ng-show="networkType=='XGMML'">
                       <a class="dropdown-toggle" ng-click='task.format = "XGMML"'><small>XGMML</small></a>
                   </li>
