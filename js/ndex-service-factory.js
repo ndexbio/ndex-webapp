@@ -864,7 +864,7 @@ ndexServiceApp.factory('ndexService',
                             sharedProperties.setCurrentQueryDepth(searchDepth);
                             ndexUtility.setNetwork(network);
                             ndexHelper.updateNodeLabels(network);
-                            ndexHelper.updateTermLabels(network);
+                            //ndexHelper.updateTermLabels(network);
                             handler(network, json);
                         }
                     );
@@ -1203,10 +1203,25 @@ ndexServiceApp.factory('ndexHelper', function () {
             ////console.log(node.name);
             return node.name;
         }
-        else if ("represents" in node && node.represents && network.terms[node.represents])
-            return factory.getTermLabel(network.terms[node.represents], network);
-        else
-            return "unknown"
+        else if ("represents" in node && node.represents && network.terms[node.represents]){
+            // return factory.getTermLabel(network.terms[node.represents], network);
+
+
+            // calculate termType here
+            var termType;
+            if ("representsTermType" in node){
+                termType = node.representsTermType;
+            } else if ("functionTermId" in node.represents){
+                termType = "functionTerm"
+            } else if ("name" in node.represents){
+                termType = "BaseTerm";
+            } else {
+                return "unknown"
+            }
+            return factory.getTermLabel(network.terms[node.represents], termType, network);
+        } else {
+            return "unknown";
+        }
     };
 
     factory.getNodeNetwork = function (node) {
@@ -1214,6 +1229,7 @@ ndexServiceApp.factory('ndexHelper', function () {
         return {};
     };
 
+/*
     factory.updateTermLabels = function (network) {
         network.termLabelMap = [];
         var count = 0;
@@ -1224,6 +1240,7 @@ ndexServiceApp.factory('ndexHelper', function () {
             }
         });
     };
+*/
 
     factory.getTermBase = function (term, network) {
         if (term.namespaceId) {
@@ -1248,9 +1265,9 @@ ndexServiceApp.factory('ndexHelper', function () {
      * Function Terms or Base Terms, and as such must be traversed until a Base
      * Term is reached.
      *-----------------------------------------------------------------------*/
-    factory.getTermLabel = function (term, network) {
+    factory.getTermLabel = function (term, termType, network) {
         //if (!network) network = factory.getTermNetwork(term);
-        if (term.termType === "BaseTerm") {
+        if (termType === "baseTerm") {
             if (term.namespaceId) {
                 var namespace = network.namespaces[term.namespaceId];
 
@@ -1264,14 +1281,14 @@ ndexServiceApp.factory('ndexHelper', function () {
             else
                 return term.name;
         }
-        else if (term.termType === "FunctionTerm") {
-            var functionTerm = network.terms[term.functionTermId];
-            if (!functionTerm) {
+        else if (termType === "functionTerm") {
+            var baseTermForFunction = network.terms[term.functionTermId];
+            if (!baseTermForFunction) {
                 ////console.log("no functionTerm by id " + term.functionTermId);
                 return;
             }
 
-            var functionLabel = factory.getTermLabel(functionTerm, network);
+            var functionLabel = factory.getTermLabel(baseTermForFunction, "baseTerm", network);
             functionLabel = factory.lookupFunctionAbbreviation(functionLabel);
 
             var sortedParameters = factory.getDictionaryKeysSorted(term.parameterIds);
@@ -1281,8 +1298,15 @@ ndexServiceApp.factory('ndexHelper', function () {
                 var parameterId = term.parameterIds[sortedParameters[parameterIndex]];
                 var parameterTerm = network.terms[parameterId];
 
+                var parameterTermType;
+                if ("functionTermId" in parameterTerm){
+                    parameterTermType = "functionTerm"
+                } else {
+                    parameterTermType = "baseTerm";
+                }
+
                 if (parameterTerm)
-                    var parameterLabel = factory.getTermLabel(parameterTerm, network);
+                    var parameterLabel = factory.getTermLabel(parameterTerm, parameterTermType, network);
                 //else
                 //    //console.log("no parameterTerm by id " + parameterId);
 

@@ -1116,7 +1116,7 @@ ndexApp.controller('networkController',
                         var json = angular.toJson(network);
                         ndexUtility.setNetwork(network);
                         ndexHelper.updateNodeLabels(network);
-                        ndexHelper.updateTermLabels(network);
+                        //ndexHelper.updateTermLabels(network);
                         csn = network;
                         csn.json = json;
                         networkController.queryErrors = [];
