@@ -17,9 +17,6 @@
                   {{task.format}} <span class="caret"></span>
               </a>
 		      <ul class="dropdown-menu">
-                  <li>
-                      <a class="dropdown-toggle" ng-click='task.format = "CX"'><small>CX</small></a>
-                  </li>
                   <li ng-show="networkType=='XGMML'">
                       <a class="dropdown-toggle" ng-click='task.format = "XGMML"'><small>XGMML</small></a>
                   </li>
@@ -29,10 +26,15 @@
                   <li ng-show="networkType=='BIOPAX'">
                       <a class="dropdown-toggle" ng-click='task.format = "BIOPAX"'><small>BioPAX</small></a>
                   </li>
-                  <li>
+                  <li ng-show="networkType=='SIF'">
                       <a class="dropdown-toggle" ng-click='task.format = "SIF"'><small>SIF</small></a>
                   </li>
-
+                  <li>
+                      <a class="dropdown-toggle" ng-click='task.format = "CX"'><small>CX</small></a>
+                  </li>
+                  <li ng-show="networkType!='SIF'">
+                      <a class="dropdown-toggle" ng-click='task.format = "SIF"'><small>SIF</small></a>
+                  </li>
               </ul>
 		    </span>
             </strong></h5>

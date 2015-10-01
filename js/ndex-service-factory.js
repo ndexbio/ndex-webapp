@@ -1315,8 +1315,11 @@ ndexServiceApp.factory('ndexHelper', function () {
 
             return functionLabel + "(" + parameterList.join(", ") + ")";
         }
+        else if (termType === "reifiedEdgeTerm") {
+            return "Term Type not supported yet : " + termType;
+        }
         else
-            return "Unknown Term Type";
+            return "Unknown Term Type: " + termType;
     };
 
     factory.getTermNetwork = function (term) {
