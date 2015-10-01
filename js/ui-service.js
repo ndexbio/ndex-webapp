@@ -734,7 +734,7 @@
 
                 $scope.close = function()
                 {
-                    $scope.isProcessing = true;
+                    $scope.isProcessing = false;
                     modalInstance.close();
                 };
 
