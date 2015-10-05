@@ -542,9 +542,14 @@
                                         //TODO some modal
                                         $scope.close();
                                     },
-                                    function(error){
-                                        ////console.log(error.data)
-                                        $scope.request.error = error.data;
+                                    function(error) {
+                                        if ((typeof error.data !== 'undefined') &&
+                                            (typeof error.data.message !== 'undefined')) {
+                                            $scope.request.error = error.data.message;
+                                        } else {
+                                            $scope.request.error = "Server returned HTTP error response code " +
+                                                error.status;
+                                        }
                                     });
                             }
 
@@ -590,8 +595,8 @@
                 };
 
                 $scope.close = function() {
-
                     modalInstance.close();
+                    $scope.request = {};
                 };
 
                 $scope.submitRequest = function() {
@@ -614,8 +619,14 @@
                             //TODO some modal
                             $scope.close();
                         },
-                        function(error){
-                            $scope.request.error = error.data;
+                        function(error) {
+                            if ((typeof error.data !== 'undefined') &&
+                                (typeof error.data.message !== 'undefined')) {
+                                $scope.request.error = error.data.message;
+                            } else {
+                                $scope.request.error = "Server returned HTTP error response code " +
+                                        error.status;
+                            }
                         });
                 };
 
