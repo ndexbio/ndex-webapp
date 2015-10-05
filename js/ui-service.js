@@ -719,6 +719,9 @@
                 $scope.openMe = function() {
                     $scope.networkType = $scope.task.format;
                     var types = ["CX", "SIF", "XGMML", "BEL", "XBEL", "BIOPAX"];
+                    if (typeof $scope.networkType === 'undefined') {
+                        $scope.networkType = 'CX';
+                    }
                     if (csn)
                     {
                         for (var i = 0; i < csn.properties.length; i++)
