@@ -1316,11 +1316,71 @@ ndexServiceApp.factory('ndexHelper', function () {
             return functionLabel + "(" + parameterList.join(", ") + ")";
         }
         else if (termType === "reifiedEdgeTerm") {
-            return "Term Type not supported yet : " + termType;
+
+            var subjectLabel   = factory.getNodeLabelForReifiedEdge(network, term, 'subjectId');
+            var predicateLabel = factory.getPredicateLabelForReifiedEdge(network, term);
+            var objectLabel    = factory.getNodeLabelForReifiedEdge(network, term, 'objectId');
+
+            return subjectLabel + " " + predicateLabel + " " + objectLabel;
         }
         else
             return "Unknown Term Type: " + termType;
     };
+
+    factory.getPredicateLabelForReifiedEdge = function(network, term) {
+        var predicateLabel = "Predicate Undefined;"
+
+        if ((typeof network === 'undefined') || (typeof network.edges === 'undefined')  ||
+            (typeof term === 'undefined') || (typeof term.edgeId === 'undefined') ||
+            (typeof network.edges[term.edgeId] === 'undefined') ||
+            (typeof network.edges[term.edgeId].predicateId === 'undefined'))
+        {
+            return predicateLabel;
+        }
+        var predicateId = network.edges[term.edgeId].predicateId;
+        predicateLabel  = factory.getNodeLabel(network.terms[predicateId], network);
+
+        return predicateLabel;
+    }
+
+
+    factory.getNodeLabelForReifiedEdge = function(network, term, type) {
+        var nodeLabel = "Label: N/A";
+        var subjectUnknown = "Subject Unknown;"
+        var objectUnknown = "Object Unknown;"
+
+        if ((typeof network === 'undefined') || (typeof network.edges === 'undefined')  ||
+            (typeof term === 'undefined') || (typeof term.edgeId === 'undefined') ||
+            (typeof network.edges[term.edgeId] === 'undefined'))
+        {
+            if (type === 'subjectId') {
+                return subjectUnknown;
+            } else if (type === 'objectId') {
+                return objectUnknown;
+            }
+            return nodeLabel;
+        }
+
+        if (type === 'subjectId') {
+
+            if (typeof network.edges[term.edgeId].subjectId === 'undefined') {
+                return subjectUnknown;
+            }
+
+            var subjectId = network.edges[term.edgeId].subjectId;
+            nodeLabel     = factory.getNodeLabel(network.nodes[subjectId], network);
+
+        } else if (type === 'objectId') {
+
+            if (typeof  network.edges[term.edgeId].objectId === 'undefined') {
+                return objectUnknown;
+            }
+            var objectId  = network.edges[term.edgeId].objectId;
+            nodeLabel     =  factory.getNodeLabel(network.nodes[objectId], network);
+        }
+
+        return nodeLabel;
+    }
 
     factory.getTermNetwork = function (term) {
         //TODO
