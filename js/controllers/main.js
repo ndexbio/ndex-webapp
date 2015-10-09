@@ -43,85 +43,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         });
 
 
-
-
-        // check configuration parameters loaded from ndex-webapp-coinfig.js;
-        // if any of config parameeters missing, assign default values
-        if (typeof config.requireAuthentication === 'undefined') {
-            config.requireAuthentication = false;
-        }
-        if (typeof config.welcome === 'undefined') {
-            config.welcome = "NDEx Web App deployed at My Company";
-        }
-        if (typeof config.networkQueryLimit === 'undefined') {
-            config.networkQueryLimit = 1500;
-        }
-        if (typeof config.networkDisplayLimit === 'undefined') {
-            config.networkDisplayLimit = 300;
-        }
-        if (typeof config.networkTableLimit === 'undefined') {
-            config.networkTableLimit = 500;
-        }
-        if (typeof config.protocol === 'undefined') {
-            config.protocol = "http";
-        }
-        if (typeof config.idleTime === 'undefined') {
-            config.idleTime = 3600;
-        }
-        if (typeof config.uploadSizeLimit === 'undefined') {
-            config.uploadSizeLimit = "none";
-        }
-
-        if (typeof config.logo === 'undefined') {
-            config.logo = {};
-        }
-        if (typeof config.logo.href === 'undefined') {
-            config.logo.href = "http://www.ndexbio.org";
-        }
-        if (typeof config.messages === 'undefined') {
-            config.messages = {};
-        }
-        if (typeof config.messages.serverDown === 'undefined') {
-            config.messages.serverDown =
-                "<img src='http://www.ndexbio.org/wp-content/uploads/2015/06/manteinance2.png'>";
-        }
-
-        if (typeof config.contactUs === 'undefined') {
-            config.contactUs = {};
-        }
-        if (typeof config.contactUs.name === 'undefined') {
-            config.contactUs.name = "Contact Us";
-        }
-        if (typeof config.contactUs.href === 'undefined') {
-            config.contactUs.href = "http://www.ndexbio.org/contact-us";
-        }
-        if (typeof config.contactUs.target === 'undefined') {
-            config.contactUs.target = "NDEx Home";
-        }
-
-        if (typeof config.signIn === 'undefined') {
-            config.signIn = {};
-        }
-        if (typeof config.signIn.header === 'undefined') {
-            config.signIn.header = "Sign in to your NDEx account";
-        }
-        if (typeof config.signIn.footer === 'undefined') {
-            config.signIn.footer = "Need an account?";
-        }
-        if (typeof config.signIn.showForgotPassword === 'undefined') {
-            config.signIn.showForgotPassword = true;
-        }
-        if (typeof config.signIn.showSignup === 'undefined') {
-            config.signIn.showSignup = true;
-        }
-        if (typeof config.ndexServerUri === 'undefined') {
-            // ndexServerUri is a required parameter -- give an error message;
-            // replace the messages.serverDown message
-            config.messages.serverDown = "Error in ndex-webapp-config.js:<br>" +
-                                         "The parameter ndexServerUri is required.<br>" +
-                                         "Please edit the configuration file to provide this URI."   ;
-        }
-
+        // check configuration parameters loaded from ndex-webapp-config.js;
+        // if any of config parameters missing, assign default values
+        initMissingConfigParams(config);
 
         $scope.config = config;
 
@@ -380,6 +304,203 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             });
 
         };
+
+        /*
+         * As argument, this function takes one of configurable navigation bar
+         * menu objects specified in ndex-webapp-config.js (i.e., logoLink, aboutLink,
+         * documentationLink, etc), and checks whether this navigation link
+         * was configured to follow the link "silently" or warn user about navigating
+         * to an external domain.
+         */
+        $scope.redirectToExternalLink = function(redirectObj) {
+
+            if (redirectObj.showWarning) {
+                var choice = confirm(redirectObj.warning + "\n" + redirectObj.href);
+                if (!choice) {
+                    // user chose not to follow the link (not to redirect to
+                    // external site); don't do anything
+                    return;
+                }
+            }
+
+            // if we are here, then either config parameter redirectObj.showWarning is false
+            // or redirectObj.showWarning is true and user chose to follow the link to external site;
+            // open the link in new tab
+            var win = window.open(redirectObj.href, '_blank');
+            win.focus();
+
+        };
+
+        function initMissingConfigParams(config) {
+
+            // check configuration parameters loaded from ndex-webapp-config.js;
+            // if any of config parameters missing, assign default values
+            if (typeof config.requireAuthentication === 'undefined') {
+                config.requireAuthentication = false;
+            }
+            if (typeof config.welcome === 'undefined') {
+                config.welcome = "NDEx Web App deployed at My Company";
+            }
+            if (typeof config.networkQueryLimit === 'undefined') {
+                config.networkQueryLimit = 1500;
+            }
+            if (typeof config.networkDisplayLimit === 'undefined') {
+                config.networkDisplayLimit = 300;
+            }
+            if (typeof config.networkTableLimit === 'undefined') {
+                config.networkTableLimit = 500;
+            }
+            if (typeof config.protocol === 'undefined') {
+                config.protocol = "http";
+            }
+            if (typeof config.idleTime === 'undefined') {
+                config.idleTime = 3600;
+            }
+            if (typeof config.uploadSizeLimit === 'undefined') {
+                config.uploadSizeLimit = "none";
+            }
+
+            if (typeof config.messages === 'undefined') {
+                config.messages = {};
+            }
+            if (typeof config.messages.serverDown === 'undefined') {
+                config.messages.serverDown =
+                    "<img src='http://www.ndexbio.org/wp-content/uploads/2015/06/manteinance2.png'>";
+            }
+
+            //if (typeof config.contactUs === 'undefined') {
+            //    config.contactUs = {};
+            //}
+            //if (typeof config.contactUs.name === 'undefined') {
+            //    config.contactUs.name = "Contact Us";
+            //}
+            //if (typeof config.contactUs.href === 'undefined') {
+            //    config.contactUs.href = "http://www.ndexbio.org/contact-us";
+            //}
+            //if (typeof config.contactUs.target === 'undefined') {
+            //    config.contactUs.target = "NDEx Home";
+            //}
+
+            if (typeof config.signIn === 'undefined') {
+                config.signIn = {};
+            }
+            if (typeof config.signIn.header === 'undefined') {
+                config.signIn.header = "Sign in to your NDEx account";
+            }
+            if (typeof config.signIn.footer === 'undefined') {
+                config.signIn.footer = "Need an account?";
+            }
+            if (typeof config.signIn.showForgotPassword === 'undefined') {
+                config.signIn.showForgotPassword = true;
+            }
+            if (typeof config.signIn.showSignup === 'undefined') {
+                config.signIn.showSignup = true;
+            }
+            if (typeof config.ndexServerUri === 'undefined') {
+                // ndexServerUri is a required parameter -- give an error message;
+                // replace the messages.serverDown message
+                config.messages.serverDown = "Error in ndex-webapp-config.js:<br>" +
+                    "The parameter ndexServerUri is required.<br>" +
+                    "Please edit the configuration file to provide this URI."   ;
+            }
+
+
+            // check if any of configurable Navigation Bar links are missing
+            // and assign default values if yes
+            if (typeof config.logoLink === 'undefined') {
+                config.logoLink = {};
+            }
+            if (typeof config.logoLink.href === 'undefined') {
+                config.logoLink.href = "http://www.ndexbio.org";
+            }
+            if (typeof config.logoLink.warning === 'undefined') {
+                config.logoLink.warning = "This external link will take you outside your company's domain. Follow this link?";
+            }
+            if (typeof config.logoLink.showWarning === 'undefined') {
+                config.logoLink.showWarning = false;
+            }
+
+            if (typeof config.aboutLink === 'undefined') {
+                config.aboutLink = {};
+            }
+            if (typeof config.aboutLink.label === 'undefined') {
+                config.aboutLink.label = "About";
+            }
+            if (typeof config.aboutLink.href === 'undefined') {
+                config.aboutLink.href = "http://www.ndexbio.org/about-ndex";
+            }
+            if (typeof config.aboutLink.warning === 'undefined') {
+                config.aboutLink.warning = "This external link will take you outside your company's domain. Follow this link?";
+            }
+            if (typeof config.aboutLink.showWarning === 'undefined') {
+                config.aboutLink.showWarning = false;
+            }
+
+            if (typeof config.documentationLink === 'undefined') {
+                config.documentationLink = {};
+            }
+            if (typeof config.documentationLink.label === 'undefined') {
+                config.documentationLink.label = "Documentation";
+            }
+            if (typeof config.documentationLink.href === 'undefined') {
+                config.documentationLink.href = "http://www.ndexbio.org/quick-start";
+            }
+            if (typeof config.documentationLink.warning === 'undefined') {
+                config.documentationLink.warning = "This external link will take you outside your company's domain. Follow this link?";
+            }
+            if (typeof config.documentationLink.showWarning === 'undefined') {
+                config.documentationLink.showWarning = false;
+            }
+
+            if (typeof config.apiLink === 'undefined') {
+                config.apiLink = {};
+            }
+            if (typeof config.apiLink.label === 'undefined') {
+                config.apiLink.label = "API";
+            }
+            if (typeof config.apiLink.href === 'undefined') {
+                //config.apiLink.href = "http://public.ndexbio.org/#/api";
+                config.apiLink.href = "#/api";
+            }
+            if (typeof config.apiLink.warning === 'undefined') {
+                config.apiLink.warning = "This external link will take you outside your company's domain. Follow this link?";
+            }
+            if (typeof config.apiLink.warn === 'undefined') {
+                config.apiLink.warn = false;
+            }
+
+            if (typeof config.reportBugLink === 'undefined') {
+                config.reportBugLink = {};
+            }
+            if (typeof config.reportBugLink.label === 'undefined') {
+                config.reportBugLink.label = "Report a Bug";
+            }
+            if (typeof config.reportBugLink.href === 'undefined') {
+                config.reportBugLink.href = "http://www.ndexbio.org/report-a-bug";
+            }
+            if (typeof config.reportBugLink.warning === 'undefined') {
+                config.reportBugLink.warning = "This external link will take you outside your company's domain. Follow this link?";
+            }
+            if (typeof config.reportBugLink.showWarning === 'undefined') {
+                config.reportBugLink.showWarning = false;
+            }
+
+            if (typeof config.contactUsLink === 'undefined') {
+                config.contactUsLink = {};
+            }
+            if (typeof config.contactUsLink.label === 'undefined') {
+                config.contactUsLink.label = "Contact us";
+            }
+            if (typeof config.contactUsLink.href === 'undefined') {
+                config.contactUsLink.href = "http://www.ndexbio.org/contact-us/";
+            }
+            if (typeof config.contactUsLink.warning === 'undefined') {
+                config.contactUsLink.warning = "This external link will take you outside your company's domain. Follow this link?";
+            }
+            if (typeof config.contactUsLink.showWarning === 'undefined') {
+                config.contactUsLink.showWarning = false;
+            }
+        }
 
 
 

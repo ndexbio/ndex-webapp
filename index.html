@@ -105,7 +105,11 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="{{config.logo.href}}" target="NDEx Home" style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
+
+           <a ng-href="{{config.logoLink.href}}"
+              ng-click="$event.preventDefault(); redirectToExternalLink(config.logoLink)"
+              style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
+
             <div style="
                 background-image: url('img/NDEx-horizontal-transparent.png');
                 background-repeat: no-repeat;
@@ -120,23 +124,36 @@
         </div>
 
         <ul class="nav navbar-nav navbar-left">
-
             <li>
-                <a href="http://www.ndexbio.org/about-ndex-2" target="NDEx Home">About</a>
+                <a ng-href="{{config.aboutLink.href}}"
+                   ng-click="$event.preventDefault(); redirectToExternalLink(config.aboutLink)">
+                    {{config.aboutLink.label}}
+                </a>
             </li>
             <li>
-                <a href="http://www.ndexbio.org/quick-start" target="NDEx Home">Documentation</a>
+                <a ng-href="{{config.documentationLink.href}}"
+                   ng-click="$event.preventDefault(); redirectToExternalLink(config.documentationLink)">
+                       {{config.documentationLink.label}}
+                </a>
             </li>
             <li>
-                <a ng-href="#/api">API</a>
+                <a ng-href="{{config.apiLink.href}}"
+                   ng-click="$event.preventDefault(); redirectToExternalLink(config.apiLink)">
+                    {{config.apiLink.label}}
+                </a>
             </li>
             <li>
-                <a href="http://www.ndexbio.org/report-a-bug" target="NDEx Home">Report a Bug</a>
+                <a ng-href="{{config.reportBugLink.href}}"
+                   ng-click="$event.preventDefault(); redirectToExternalLink(config.reportBugLink)">
+                       {{config.reportBugLink.label}}
+                </a>
             </li>
             <li>
-                <a href="{{config.contactUs.href}}" target="{{config.contactUs.target}}">{{config.contactUs.name}}</a>
+                <a ng-href="{{config.contactUsLink.href}}"
+                   ng-click="$event.preventDefault(); redirectToExternalLink(config.contactUsLink)">
+                      {{config.contactUsLink.label}}
+                </a>
             </li>
-
         </ul>
 
 
