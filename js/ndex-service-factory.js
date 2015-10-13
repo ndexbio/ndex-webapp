@@ -1338,18 +1338,16 @@ ndexServiceApp.factory('ndexHelper', function () {
             return predicateLabel;
         }
 
-        //var predicateId = network.edges[term.edgeId].predicateId;
+        var predicateId = network.edges[term.edgeId].predicateId;
 
-        //if ((typeof network.terms === 'undefined')  ||
-        //    (typeof network.terms[predicateId] === 'undefined'))
-        //{
-        //    return predicateLabel;
-        //}
+        if ((typeof network.terms === 'undefined') ||
+            (typeof network.terms[predicateId] === 'undefined')) {
+            return predicateLabel;
+        }
 
-        //var predicateLabel1;
-        //predicateLabel1 = factory.getNodeLabel(network.terms[predicateId], network);
+        var termWithFoundPredicateId = network.terms[predicateId];
 
-        predicateLabel = factory.getTermLabel(term, "baseTerm", network);
+        predicateLabel = factory.getTermLabel(termWithFoundPredicateId, "baseTerm", network);
 
         return predicateLabel;
     }
