@@ -626,7 +626,8 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.getNetworkNamespaces = function(externalId, successHandler, errorHandler) {
-                NetworkResource.getNamespaces({identifier: externalId, skipBlocks: 0, blockSize: 500}, successHandler, errorHandler)
+                handleAuthorizationHeader();
+                NetworkResource.getNamespaces({identifier: externalId}, successHandler, errorHandler)
             };
 
             factory.getNetworkMemberships = function(externalId, permission, successHandler, errorHandler) {

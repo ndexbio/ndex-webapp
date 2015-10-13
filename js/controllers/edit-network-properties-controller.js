@@ -29,7 +29,11 @@ ndexApp.controller('editNetworkPropertiesController',
         if( $scope.isProcessing )
             return;
         $scope.isProcessing = true;
-		editor.propertyValuePairs.splice(editor.propertyValuePairs.length - 1, 1);
+
+        if ((editor.propertyValuePairs[editor.propertyValuePairs.length - 1].predicatePrefix.toLowerCase()==='none') &&
+            (editor.propertyValuePairs[editor.propertyValuePairs.length - 1].valuePrefix.toLowerCase()==='none')) {
+            editor.propertyValuePairs.splice(editor.propertyValuePairs.length - 1, 1);
+        }
 
 		var length = editor.propertyValuePairs.length;
 		for(var ii=0; ii<length; ii++){
@@ -170,9 +174,21 @@ ndexApp.controller('editNetworkPropertiesController',
             function(network) {
                 editor.propertyValuePairs = network.properties;
 
-                if( editor.propertyValuePairs[0].predicateString.toLowerCase() == "sourceformat" )
-                {
-                    editor.propertyValuePairs.splice(0,1);
+                var arrayLength = editor.propertyValuePairs.length;
+                var i = 0;
+
+                // we need to remove all "sourceformat" objects.  There should always be only one
+                // "sourceformat" element sent by the  server; we want to make sure we remove them
+                // all in case server by mistake sends multiple "sourceformat" elements.
+                while ( i < arrayLength ) {
+                    if (editor.propertyValuePairs[i].predicateString.toLowerCase() === "sourceformat") {
+                        editor.propertyValuePairs.splice(i,1);
+                        arrayLength = arrayLength - 1;
+                        // here, DO NOT increment the loop counter i since array has shrunk
+                        // after splicing and we have a new element at editor.propertyValuePairs[i] after splicing
+                        continue;
+                    }
+                    i = i + 1;
                 }
 
                 ndexService.getNetworkNamespaces(networkExternalId,
@@ -227,6 +243,9 @@ ndexApp.controller('editNetworkPropertiesController',
                         editor.networkName = network.name;
                     },
                     function(error) {
+                        editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
+                        editor.networkName = network.name;
+
                         editor.errors.push(error)
                     });
             }
