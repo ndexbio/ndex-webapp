@@ -34,10 +34,10 @@ ndexApp.controller('editNetworkPropertiesController',
 		var length = editor.propertyValuePairs.length;
 		for(var ii=0; ii<length; ii++){
 			var pair = editor.propertyValuePairs[ii];
-			if(pair.predicatePrefix != 'none')
+			if((typeof pair.predicatePrefix !== 'undefined') && (pair.predicatePrefix != 'none') )
 				pair.predicateString = pair.predicatePrefix+':'+pair.predicateString
 
-			if(pair.valuePrefix != 'none')
+            if((typeof pair.valuePrefix !== 'undefined') && (pair.valuePrefix != 'none') )
 				pair.value = pair.valuePrefix+':'+pair.value;
 		}
 
