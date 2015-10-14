@@ -40,24 +40,31 @@
             </span>
           </p>
       </div>
-    <ul>
-        <ul class ='row' ng-repeat="user in userSearch.userSearchResults">
-            <ndex-navigation ndex-class="'row'" ndex-url="'user/'+user.externalId">
-                <ndex-account-image 
-                  ndex-class="'col-xs-3 col-sm-3 col-md-3 col-lg-3'" 
-                  ndex-src="user.image">
-                </ndex-account-image>
-                <div class='col-xs-9 col-sm-9 col-md-9 col-lg-9'>
+
+    <ul class ='row' ng-repeat="user in userSearch.userSearchResults">
+
+        <div class="row"><br/></div>
+
+        <div>
+            <ndex-account-image
+                    ndex-class="'col-xs-3 col-sm-3 col-md-3 col-lg-3'"
+                    ndex-src="user.image">
+            </ndex-account-image>
+        </div>
+
+        <div class='col-xs-9 col-sm-9 col-md-9 col-lg-9'>
+            <ndex-navigation  ndex-url="'user/'+user.externalId" style="color:#428BCA">
                 <h5><strong>{{user.firstName}} {{user.lastName}}</strong></h5>
                 <p class="text-muted">{{user.accountName}}</p>
-                <p class="text-muted">{{user.website}}</p>
-                <!--<p class="">{{user.description.substring(0,30)}}</p> -->
-                <!--should add logic to split only when to big and add '...'-->
-                </div>
             </ndex-navigation>
-            
-        </ul>
+
+            <a ng-href="{{user.website}}" class="text-muted" target="_blank">{{user.website}}</a>
+        </div>
+
+        <div class="row"><br/></div>
+        <div class="row"><br/></div>
     </ul>
+
 
     <div class='row text-center' ng-hide='userSearch.userSearchResults.length == 0'>
 
