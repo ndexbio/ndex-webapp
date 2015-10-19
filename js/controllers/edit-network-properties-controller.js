@@ -48,13 +48,17 @@ ndexApp.controller('editNetworkPropertiesController',
 		ndexService.setNetworkProperties(networkExternalId, editor.propertyValuePairs,
 			function(data) {
 				//$route.reload();
+                $location.path("network/"+editor.networkExternalId);
+                $scope.isProcessing = false;
 			},
 			function(error) {
-				editor.errors.push(error)
+				editor.errors.push(error);
+                $location.path("network/"+editor.networkExternalId);
+                $scope.isProcessing = false;
 			});
 
-        $location.path("network/"+editor.networkExternalId);
-        $scope.isProcessing = false;
+        //$location.path("network/"+editor.networkExternalId);
+        //$scope.isProcessing = false;
 	};
 
 	editor.removeNamespace = function(index) {
