@@ -1,6 +1,6 @@
 ndexApp.controller('userController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$route',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $route)
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$route', '$modal',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $route, $modal)
         {
 
             //              Process the URL to get application state
@@ -171,7 +171,7 @@ ndexApp.controller('userController',
                      function (tasks)
                      {
                          if (tasks.length == 0) {
-                             // recursive base case: no task was retrvieved from the server
+                             // recursive base case: no task was retrieved from the server
                              return;
                          }
 
@@ -187,6 +187,33 @@ ndexApp.controller('userController',
                      }
                 )
             };
+
+            userController.confirmDeleteSelectedNetworks = function()
+            {
+                var   modalInstance = $modal.open({
+                    templateUrl: 'confirmation-modal.html',
+                    scope: $scope,
+
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.title = 'Delete Selected Networks';
+                        $scope.message = 'These networks will be permanently deleted from NDEx. Are you sure you want to delete?';
+
+                        $scope.cancel = function() {
+                            $modalInstance.dismiss();
+                            $scope.isProcessing = false;
+                        };
+
+                        $scope.confirm = function() {
+                            $scope.isProcessing = true;
+                            userController.deleteSelectedNetworks();
+                            $modalInstance.dismiss();
+                            $scope.isProcessing = false;
+                        };
+                    }
+                });
+
+            }
 
             userController.deleteSelectedNetworks = function ()
             {
