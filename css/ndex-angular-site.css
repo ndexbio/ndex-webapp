@@ -840,4 +840,7 @@ hr {
     word-wrap: break-word;
 }
 
-
+.rowWithTopAndBottomPad {
+    padding-top: 1em;
+    padding-bottom: 2em;
+}

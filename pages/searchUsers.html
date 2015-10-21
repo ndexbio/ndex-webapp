@@ -41,10 +41,7 @@
           </p>
       </div>
 
-    <ul class ='row' ng-repeat="user in userSearch.userSearchResults">
-
-        <div class="row"><br/></div>
-
+    <ul class ='rowWithTopAndBottomPad row' ng-repeat="user in userSearch.userSearchResults">
         <div>
             <ndex-account-image
                     ndex-class="'col-xs-3 col-sm-3 col-md-3 col-lg-3'"
@@ -60,9 +57,6 @@
 
             <a ng-href="{{user.website}}" class="text-muted" target="_blank">{{user.website}}</a>
         </div>
-
-        <div class="row"><br/></div>
-        <div class="row"><br/></div>
     </ul>
 
 
