@@ -355,6 +355,38 @@
         }
     });
 
+    // modal to present error message describing why the task failed
+    uiServiceApp.directive('showTaskFailureInfo', function() {
+        return {
+            scope: {
+                ndexData:'='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/informationModal.html',
+            controller: function($scope, $modal) {
+                var modalInstance;
+                var task = $scope.ndexData;
+
+                $scope.errors = null;
+                $scope.message = task.message;
+                $scope.title = task.description + " " + task.status;
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'information-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.cancel = function () {
+                    modalInstance.close();
+                };
+            }
+        }
+    });
+
     // modal to view request sent by user
     uiServiceApp.directive('sentRequest', function() {
         return {

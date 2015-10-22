@@ -166,9 +166,17 @@
                                             <div class='col-sm-10 user-tasks-panel'>
                                                 <span class='text-info' >{{task.description}}</span>
                                                 <span class='text-muted'>{{task.status | taskStatusToLabel}}</span>
-                                                <div ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'">
-                                                    <a href="/exported-networks/{{task.externalId}}.{{userController.getTaskFileExt(task)}}" download>Download Network</a>
-                                                </div>
+
+                                                <a ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'"
+                                                   href="/exported-networks/{{task.externalId}}.{{userController.getTaskFileExt(task)}}" >Download Network
+                                                </a>
+
+                                                <a>
+                                                    <show-task-failure-info ng-show="task.status == 'FAILED'" ndex-data='task'>
+                                                        Click for details
+                                                    </show-task-failure-info>
+                                                </a>
+
                                             </div>
                                             <a class='btn btn-xs btn-link' ng-click="userController.deleteTask(task.externalId)" ng-show="task.status != 'PROCESSING'">
                                                 <span class="text-danger glyphicon glyphicon-trash"></span>

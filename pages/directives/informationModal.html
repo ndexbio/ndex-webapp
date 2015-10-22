@@ -1,24 +1,17 @@
 <span ng-click="openMe()" ng-transclude></span>
 
 <script type="text/ng-template" id="information-modal.html">
+
 	<div class="modal-header">
-	    <h5 class="modal-title">{{title}}</h5>
+	    <h5 class="modal-title"><strong>{{title}}</strong></h5>
 	</div>
+
 	<div class="modal-body">
-	    <p><strong>{{message}}</strong></p>
-	    <div class='text-danger'>
-            <strong>
-            {{errors}}
-            </strong>
-        </div>
-        <div class='text-success'>
-            <strong>
-            {{progress}}
-            </strong>
-        </div>
+	    <strong>{{message}}</strong>
 	</div>
+
 	<div class="modal-footer">
 	    <button class="btn btn-default" ng-click="cancel()">Close</button>
-		<button class="btn btn-primary" ng-click="confirm()" ng-disabled="isProcessing">Confirm</button>
 	</div>
+
 </script>
