@@ -1047,7 +1047,7 @@
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
 
                             $scope.title = 'Delete this Network'; //pass network name and add to title
-                            $scope.message = 'This network will be permanently deleted from NDEx. Are you sure you want to delete?';
+                            $scope.message = 'This network will be permanently deleted from NDEx. Are you sure you want to proceed?';
 
                             $scope.cancel = function() {
                                 $modalInstance.dismiss();

@@ -53,7 +53,6 @@ ndexApp.controller('editNetworkPropertiesController',
 			},
 			function(error) {
 				editor.errors.push(error);
-                $location.path("network/"+editor.networkExternalId);
                 $scope.isProcessing = false;
 			});
 

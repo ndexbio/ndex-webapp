@@ -197,7 +197,8 @@ ndexApp.controller('userController',
                     controller: function($scope, $modalInstance) {
 
                         $scope.title = 'Delete Selected Networks';
-                        $scope.message = 'These networks will be permanently deleted from NDEx. Are you sure you want to delete?';
+                        $scope.message =
+                            'The selected networks will be permanently deleted from NDEx. Are you sure you want to proceed?';
 
                         $scope.cancel = function() {
                             $modalInstance.dismiss();
@@ -212,7 +213,18 @@ ndexApp.controller('userController',
                         };
                     }
                 });
+            }
 
+            userController.allTasksCompleted = function() {
+                var task;
+
+                for (var i = 0; i < userController.tasks.length; i++) {
+                    task = userController.tasks[i];
+                    if (task.status.toUpperCase() === 'PROCESSING') {
+                        return false;
+                    }
+                }
+                return true;
             }
 
             userController.deleteSelectedNetworks = function ()

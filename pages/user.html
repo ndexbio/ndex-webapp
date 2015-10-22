@@ -153,7 +153,7 @@
                                 <a ng-click="userController.refreshTasks()">
                                     <span class='glyphicon glyphicon-refresh'></span>
                                 </a>
-                                <li class='pull-right' style='vertical-align: top'>
+                                <li class='pull-right' style='vertical-align: top'  ng-show="userController.allTasksCompleted()">
                                     <button class="btn-link" ng-click="userController.deleteAllTasks()">Delete All</button>
                                 </li>
                             </ol>
@@ -170,7 +170,7 @@
                                                     <a href="/exported-networks/{{task.externalId}}.{{userController.getTaskFileExt(task)}}" download>Download Network</a>
                                                 </div>
                                             </div>
-                                            <a class='btn btn-xs btn-link' ng-click="userController.deleteTask(task.externalId)">
+                                            <a class='btn btn-xs btn-link' ng-click="userController.deleteTask(task.externalId)" ng-show="task.status != 'PROCESSING'">
                                                 <span class="text-danger glyphicon glyphicon-trash"></span>
                                             </a>
                                         </div>
