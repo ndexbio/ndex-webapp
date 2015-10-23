@@ -846,7 +846,7 @@
                     $scope.network.description = $scope.ndexData.description;
                     $scope.network.version = $scope.ndexData.version;
                     $scope.network.visibility = $scope.ndexData.visibility;
-                    $scope.network.citation2 = $scope.network.citation1;
+                    $scope.network.reference2 = $scope.network.reference1;
                 };
 
                 $scope.submit = function() {
@@ -854,24 +854,24 @@
                         return;
                     $scope.isProcessing = true;
 
-                    // check if citation field was modified.  As of Release 1.3, this field
+                    // check if reference field was modified.  As of Release 1.3, this field
                     // is not part of NetworkSummary object; so it needs to be sent to the server
                     // separately
                     var updateProperties =
-                        ($scope.network.citation1 === $scope.network.citation2) ? false : true;
+                        ($scope.network.reference1 === $scope.network.reference2) ? false : true;
                     var properties = null;
 
                     if (updateProperties) {
 
-                        // properties need to be updated on the server since citation was modified
+                        // properties need to be updated on the server since reference was modified
                         if ((typeof $scope.ndexData !== 'undefined') &&
                             (typeof $scope.ndexData.properties !== 'undefined')) {
 
                             var found = false;
                             for (i = 0; i < $scope.ndexData.properties.length; i++) {
-                                if($scope.ndexData.properties[i].predicateString === 'citation') {
-                                    // citation property is found; modify it
-                                    $scope.ndexData.properties[i].value = $scope.network.citation2;
+                                if($scope.ndexData.properties[i].predicateString.toLowerCase() === 'reference') {
+                                    // reference property is found; modify it
+                                    $scope.ndexData.properties[i].value = $scope.network.reference2;
                                     found = true;
                                     break;
                                 }
@@ -879,11 +879,11 @@
                             properties = $scope.ndexData.properties;
 
                             if (!found) {
-                                // if citation property is not found (it was just added),
+                                // if reference property is not found (it was just added),
                                 // add it to the array of properties before sending the properties to server
                                 properties[properties.length] =
-                                    { "predicateString" : "citation",
-                                      "value"           : $scope.network.citation2,
+                                    { "predicateString" : "Reference",
+                                      "value"           : $scope.network.reference2,
                                       "dataType"        : "string",
                                       "subNetworkId"    : null
                                     };
@@ -891,17 +891,17 @@
                         } else {
                             // properties not found; create the properties array and send it to the server
                             properties =
-                                { "predicateString" : "citation",
-                                  "value"           : $scope.network.citation2,
+                                { "predicateString" : "Reference",
+                                  "value"           : $scope.network.reference2,
                                   "dataType"        : "string",
                                   "subNetworkId"    : null
                                 };
                         }
-                        // remove citation1 and citation2 fields since $scope.network maps
-                        // to NetworkSummary object on server; this object doesn't have citation[1,2] fields;
+                        // remove reference1 and reference2 fields since $scope.network maps
+                        // to NetworkSummary object on server; this object doesn't have reference[1,2] fields;
                         // it is safe to send ctation fields to the server, but let's still remove them
-                        delete $scope.network.citation1;
-                        delete $scope.network.citation2;
+                        delete $scope.network.reference1;
+                        delete $scope.network.reference2;
                     }
 
 
@@ -934,7 +934,7 @@
                         return null;
                     }
                     for( var i = 0; i < propertiesArray.length; i++ ) {
-                        if (propertiesArray[i].predicateString === 'citation') {
+                        if (propertiesArray[i].predicateString.toLowerCase().trim() === 'reference') {
                             return propertiesArray[i].value;
                         }
                     }
@@ -947,13 +947,13 @@
                     $scope.network.version = $scope.ndexData.version;
                     $scope.network.visibility = $scope.ndexData.visibility;
 
-                    // citation1 and citation2 are used to decide whether to send setNetworkProperties
+                    // reference1 and reference2 are used to decide whether to send setNetworkProperties
                     // request to the server.  The request is sent if after editing Network Profile
-                    // the citation2 field was modified, i.e., if
-                    // $scope.network.citation1 !== $scope.network.citation2.
-                    $scope.network.citation1 =
+                    // the reference2 field was modified, i.e., if
+                    // $scope.network.reference1 !== $scope.network.reference2.
+                    $scope.network.reference1 =
                         $scope.findCitationForNetworkSummary($scope.ndexData.properties);
-                    $scope.network.citation2 = $scope.network.citation1;
+                    $scope.network.reference2 = $scope.network.reference1;
 
                 });
             }
