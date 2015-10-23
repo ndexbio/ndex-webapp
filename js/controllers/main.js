@@ -232,7 +232,15 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.signIn.newUser = {};
             $scope.signIn.modalInstance.close();
             $scope.signIn.modalInstance = null;
+            delete $scope.signIn.signUpErrors;
         };
+
+        $scope.$watch("signIn.newUser.password", function() {
+            delete $scope.signIn.signUpErrors;
+        });
+        $scope.$watch("signIn.newUser.passwordConfirm", function() {
+            delete $scope.signIn.signUpErrors;
+        });
 
         $scope.signIn.signUp = function () {
             if ($scope.isProcessing)
