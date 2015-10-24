@@ -18,56 +18,65 @@
                 <small>{{groupController.displayedGroup.emailAddress}}</small>
             </div>
             <div>
-                <a ng-href="{{groupController.displayedGroup.website}}">{{groupController.displayedGroup.website}}</a>
+                <a ng-href="{{groupController.displayedGroup.website}}" target="_blank">{{groupController.displayedGroup.website}}</a>
             </div>
             <div>
                 {{groupController.displayedGroup.description}}
             </div>
-            <hr>
-            <div class="btn-group" dropdown is-open="status.isopen" 
+
+            <ul class="nav nav-pills nav-stacked ndex-nav-pills"
                 ng-show='groupController.isAdmin || groupController.isMember'>
-                <button type="button" class="btn btn-primary dropdown-toggle">
-                    Actions <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li ng-show='groupController.isAdmin'>
-                        <a>
-                        <edit-group-modal 
-                                ndex-data='groupController.displayedGroup'>
-                                Edit Profile
-                            </edit-group-modal>
-                        </a>
-                    </li>
-                    <li ng-show='groupController.isAdmin'>
-                        <a ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
-                            Manage Members
-                        </a>
-                    </li>
-                    <li class="divider" ng-show='groupController.isAdmin'></li>
-                    <li>
-                        <a>
+
+                <hr>
+                <h5><strong>Select Action:</strong></h5>
+
+                <li ng-show='groupController.isAdmin'>
+                    <a>
+                        <edit-group-modal
+                            ndex-data='groupController.displayedGroup'>
+                            Edit Profile
+                        </edit-group-modal>
+                    </a>
+                </li>
+                <li ng-show='groupController.isAdmin'>
+                    <a ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
+                        Manage Members
+                    </a>
+                </li>
+
+                <li class="divider" ng-show='groupController.isAdmin'></li>
+
+                <li>
+                    <a>
                         <leave-group ndex-data='groupController.displayedGroup'>
-                        Leave Group
+                            Leave Group
                         </leave-group>
-                        </a>
-                    </li>
-                    <li ng-show='groupController.isAdmin'><a>
+                    </a>
+                </li>
+
+                <li ng-show='groupController.isAdmin'>
+                    <a>
                         <delete-group
                             ndex-data='groupController.displayedGroup.externalId'>
                             Delete this Group
                         </delete-group>
-                    </a></li>
-                </ul>
-            </div>
-            <create-request-group 
-                    ndex-data='groupController.displayedGroup'
-                    ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedIn'>
-                <button class='btn btn-primary'>
-                Ask to Join!
-                </button>
-            </create-request-group>
-        </div>
+                    </a>
+                </li>
+            </ul>
 
+            <ul class="nav nav-pills nav-stacked ndex-nav-pills"
+                ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedIn'>
+                <hr>
+                <h5><strong>Select Action:</strong></h5>
+                <li>
+                    <a>
+                        <create-request-group ndex-data='groupController.displayedGroup'>
+                            Ask to Join!
+                        </create-request-group>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <!-- tabs -->

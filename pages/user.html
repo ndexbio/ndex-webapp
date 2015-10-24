@@ -21,46 +21,27 @@
             <div>
                 {{userController.displayedUser.description}}
             </div>
+
             <span ng-show="userController.isLoggedInUser && userController.identifier == userController.loggedInIdentifier">
-                <hr>
-                <div class="btn-group" dropdown is-open="status.isopen">
-                    <button type="button" class="btn btn-primary dropdown-toggle">
-                        Actions <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a ng-href="#upload">Upload Networks</a>
-                        </li>
-                        <li>
-                            <a trigger-create-group-modal="Create Group"></a>
-                        </li>
-                        <li>
-                            <a><edit-user-modal
-                                    ndex-data='userController.displayedUser'>
-                                    Edit Profile
-                                </edit-user-modal>
-                            </a>
-                        </li>
-                        <li>
-                            <a><change-password-modal>
-                                    Change Password
-                                </change-password-modal>
-                            </a>
-                        </li>
-                        <li><a>
-                            <delete-user>
-                                Delete this Account
-                            </delete-user>
-                        </a></li>
-                    </ul>
-                </div>
-                <div class="spacer">
-                    <button type="button" class="btn btn-primary" ng-show="userController.atLeastOneSelected"
-                            ng-click="userController.confirmDeleteSelectedNetworks()">
-                        Delete Selected Networks
-                    </button>
-                </div>
+
+                <ul class="nav nav-pills nav-stacked ndex-nav-pills" ng-show="!userController.atLeastOneSelected">
+                    <hr>
+                    <h5><strong>Select Action:</strong></h5>
+                    <li><a ng-href="#upload">Upload Networks</a></li>
+                    <li><a trigger-create-group-modal="Create Group"></a></li>
+                    <li><a><edit-user-modal ndex-data='userController.displayedUser'>Edit Profile</edit-user-modal></a></li>
+                    <li><a><change-password-modal>Change Password</strong></change-password-modal></a></li>
+                    <li><a><delete-user>Delete this Account</delete-user></a></li>
+                </ul>
+
+                <ul class="nav nav-pills nav-stacked ndex-nav-pills" ng-show="userController.atLeastOneSelected">
+                    <hr>
+                    <h5><strong>Select Bulk Action:</strong></h5>
+                    <li><a ng-click="userController.confirmDeleteSelectedNetworks()">Delete Selected Networks</a></li>
+                </ul>
+
             </span>
+
         </div>
     </div>
 

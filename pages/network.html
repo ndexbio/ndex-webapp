@@ -1,14 +1,11 @@
-<!--   debugging
-<pre ng-show="message">
-    {{message}}
-</pre>
--->
 
 <div id="divNetwork" ng-show="networkController.errors.length == 0" class='row'>
     <div class='col-md-3'>
 
         <div id="divNetworkHeadline" class="row">
-            <div class="wrapLongLine"><h4><strong>{{networkController.currentNetwork.name}}</strong></h4></div>
+            <div class="wrapLongLine">
+                <h4><strong>{{networkController.currentNetwork.name}}</strong></h4>
+            </div>
         </div>
 
         <div class="row">
@@ -67,40 +64,39 @@
             </span>
             <span ng-show="networkController.networkAdmins.length == 0">None</span>
             <ul style="list-style-type: circle; padding-left: 25px">
-                <li ng-repeat="networkAdmin in networkController.networkAdmins"><a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a></li>
+                <li ng-repeat="networkAdmin in networkController.networkAdmins">
+                    <a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a>
+                </li>
             </ul>
         </div>
-        <hr style="margin-right: 30px">
 
-        <div class="btn-group row" dropdown is-open="status1.isopen" ng-show='networkController.isLoggedIn'>
-            <button type="button" class="btn btn-primary dropdown-toggle">
-                Actions <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                <li ng-show='networkController.isAdmin && !networkController.readOnlyChecked'><a>
-                    <edit-network-summary-modal
-                            ndex-data='networkController.currentNetwork'>
-                        Edit Network Profile
-                    </edit-network-summary-modal>
-                </a></li>
-                <li ng-show='networkController.isLoggedIn 
-                    && ((networkController.currentNetwork.visibility == "PUBLIC") 
-                        || networkController.isAdmin 
-                        || networkController.canEdit
-                        || networkController.canRead)'><a>
-                    <create-export-network-task
-                            ndex-data='networkController.currentNetwork'>
-                        Export Network as File
-                    </create-export-network-task>
-                </a></li>
-                <li ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+        <hr>
+
+        <div class="row" ng-show='networkController.isLoggedIn'>
+
+            <ul class="nav nav-pills nav-stacked ndex-nav-pills">
+                <h5><strong>Select Action:</strong></h5>
+                <li ng-show='networkController.isAdmin && !networkController.readOnlyChecked'>
                     <a>
-                        <create-request-network
-                                ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
-                            Ask for Access Privileges!
-                        </create-request-network>
+                        <edit-network-summary-modal
+                                ndex-data='networkController.currentNetwork'>
+                            Edit Network Profile
+                        </edit-network-summary-modal>
                     </a>
                 </li>
+                <li ng-show='networkController.isLoggedIn
+                    && ((networkController.currentNetwork.visibility == "PUBLIC")
+                        || networkController.isAdmin
+                        || networkController.canEdit
+                        || networkController.canRead)'>
+                        <a>
+                            <create-export-network-task
+                                    ndex-data='networkController.currentNetwork'>
+                                Export Network as File
+                            </create-export-network-task>
+                        </a>
+                </li>
+
                 <li ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead' >
                     <a>
                         <create-request-network
@@ -109,47 +105,67 @@
                         </create-request-network>
                     </a>
                 </li>
+
+                <li ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+                    <a>
+                        <create-request-network
+                                ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
+                            Ask for Access Privileges!
+                        </create-request-network>
+                    </a>
+                </li>
+
                 <li ng-show='networkController.isAdmin'>
                     <a ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                         Manage Access
                     </a>
                 </li>
+
                 <li ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
                     networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
                     <a>
                         <save-subnetwork>
                             Save Query Result
                         </save-subnetwork>
-                    </a></li>
+                    </a>
+                </li>
+
                 <li class="divider" ng-show='networkController.isAdmin && !networkController.readOnlyChecked || networkController.directIsAdmin
                             || networkController.directCanEdit
-                            || networkController.directCanRead'></li>
-                <li ng-show='networkController.directIsAdmin 
-                            || networkController.directCanEdit 
-                            || networkController.directCanRead'><a>
-                    <leave-network
-                            ndex-data='networkController.currentNetwork.externalId'>
-                        Disaffiliate this Network
-                    </leave-network>
-                </a></li>
-                <li ng-show='networkController.isAdmin && !networkController.readOnlyChecked'><a>
-                    <delete-network
-                            ndex-data='networkController.currentNetwork.externalId'>
-                        Delete this Network
-                    </delete-network>
-                </a></li>
+                            || networkController.directCanRead'>
+                </li>
+                <li ng-show='networkController.directIsAdmin
+                            || networkController.directCanEdit
+                            || networkController.directCanRead'>
+                    <a>
+                        <leave-network
+                                ndex-data='networkController.currentNetwork.externalId'>
+                            Disaffiliate this Network
+                        </leave-network>
+                    </a>
+                </li>
+
+                <li ng-show='networkController.isAdmin && !networkController.readOnlyChecked'>
+                    <a>
+                        <delete-network
+                                ndex-data='networkController.currentNetwork.externalId'>
+                            Delete this Network
+                        </delete-network>
+                    </a>
+                </li>
             </ul>
         </div>
 
-        <div class="btn-group row" dropdown is-open="status2.isopen" ng-hide='networkController.isLoggedIn'>
-            <button type="button" class="btn btn-primary dropdown-toggle">
-                Actions <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                <li><a href>You must be logged in to operate on network</a></li>
+        <div class="row" ng-show='!networkController.isLoggedIn'>
+            <ul class="nav nav-pills nav-stacked ndex-nav-pills">
+                <h5><strong>Select Action:</strong></h5>
+                <li>
+                    <a ng-click="main.startSignIn()"> Log in to operate on this network</a>
+                </li>
             </ul>
         </div>
-        <hr style="margin-right: 30px">
+
+        <hr>
 
         <div class="row">
             <h5>Network Properties</h5>
@@ -169,7 +185,6 @@
         <div class='row network-property-preview'
              ng-show='networkController.currentNetwork.properties.length > 0'>
 
-
             <h5>
                 <a class='btn btn-link'
                    ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
@@ -178,16 +193,16 @@
                 </a>
             </h5>
         
-        <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
-             <label>{{property.predicateString}} </label>
-             <span ng-hide='property.value.toString().length > 40'>{{property.value.toString()}}</span>
-             <span ng-show='property.value.toString().length > 40'>
-                {{ property.value.slice(0, 45 - property.predicateString.length) 
-                    +'&shy'+ 
-                    property.value.slice(45 - property.predicateString.length, property.value.length) }}     
+            <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
+                <label>{{property.predicateString}}: </label>
+                <span ng-hide='property.value.toString().length > 40'>{{property.value.toString()}}</span>
+                <span ng-show='property.value.toString().length > 40'>
+                    {{ property.value.slice(0, 45 - property.predicateString.length)
+                     +'&shy'+
+                    property.value.slice(45 - property.predicateString.length, property.value.length) }}
+                </span>
+                <br>
             </span>
-             <br>
-        </span>
         </div>
 
     </div>

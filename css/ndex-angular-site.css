@@ -844,3 +844,15 @@ hr {
     padding-top: 1em;
     padding-bottom: 2em;
 }
+
+.ndex-nav-pills {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* when hovering over li elements of ndex-nav-pills, change colors to the ones specified below */
+ul.ndex-nav-pills > li > a:hover {
+    background-color: #428bca;  /* default color of Bootstrap primary button */
+    color: white;
+    border-style: none;
+}
