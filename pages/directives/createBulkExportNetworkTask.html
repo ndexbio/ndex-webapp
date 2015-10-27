@@ -1,0 +1,46 @@
+<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="create-bulk-export-network-task-modal.html">
+    <div class='modal-content'>
+        <div class="modal-header">
+            <h5 class="modal-title">{{title}}</h5>
+        </div>
+
+        <div class='modal-body' ng-hide='false'>
+
+            <div><strong>This will create a background task to export the selected networks as a files.
+                When complete, the tasks will be displayed on your account home page
+                with links to download the exported files.
+                <br>
+                Please select format for networks exporting below.
+                All networks will be exported in the same format.
+            </strong></div>
+
+            <h5><strong>
+                File Format:
+            <span class="dropdown">
+		      <a href class="dropdown-toggle">
+                  {{export.networkType}} <span class="caret"></span>
+              </a>
+		      <ul class="dropdown-menu">
+                  <li>
+                      <a class="dropdown-toggle" ng-click='export.networkType = "Default"'><small>Default</small></a>
+                  </li>
+                  <li>
+                      <a class="dropdown-toggle" ng-click='export.networkType = "CX"'><small>CX</small></a>
+                  </li>
+                  <li>
+                      <a class="dropdown-toggle" ng-click='export.networkType = "SIF"'><small>SIF</small></a>
+                  </li>
+              </ul>
+		    </span>
+            </strong></h5>
+
+        </div>
+
+        <div class='modal-footer' ng-hide='false'>
+            <button class='btn btn-default' ng-click='close()'>Cancel</button>
+            <button class='btn btn-primary' ng-click='createTask()' ng-disabled='isProcessing'>Create Task</button>
+        </div>
+    </div>
+</script>

@@ -729,8 +729,6 @@
                 $scope.modal = {};
                 $scope.networkType = 'SIF';
 
-
-
                 $scope.task = {
                     description: 'network export',
                     priority: 'MEDIUM',
@@ -744,9 +742,6 @@
                     //new - resource: undefined
                     resource: undefined
                 };
-
-
-
 
                 $scope.openMe = function() {
                     $scope.networkType = $scope.task.format;
@@ -817,6 +812,111 @@
             }
         }
     });
+
+    // modal to create bulk network export task
+    uiServiceApp.directive('createBulkExportNetworkTask', function() {
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/createBulkExportNetworkTask.html',
+            controller: function($scope, $modal, $route, ndexService, ndexUtility)
+            {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.modal = {};
+                //$scope.task.networkType = 'Default 11';
+                $scope.title = 'Export Selected Networks As Files';
+                $scope.export = {};
+
+                $scope.task = {
+                    description: 'bulk network export',
+                    priority: 'MEDIUM',
+                    taskType: 'EXPORT_NETWORK_TO_FILE',
+                    status: 'QUEUED',
+                    progress: 0,
+                    //This old approach doesn't work, because at this point, externalId is undefined.
+                    //We are making resource undefined explicitly and we set it equal to the UUID of the network
+                    //in createTask() function below...
+                    //old - resource: $scope.externalId
+                    //new - resource: undefined
+                    resource: undefined
+                };
+
+                $scope.openMe = function() {
+                    $scope.export.networkType = "Default";
+                    //$scope.task.format = $scope.networkType;
+
+                    modalInstance = $modal.open({
+                        templateUrl: 'create-bulk-export-network-task-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.close = function()
+                {
+                    $scope.isProcessing = false;
+                    modalInstance.close();
+                };
+
+                $scope.createTask = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
+
+                    // get reference to userController.getIDsAndTypesOfSelectedNetworks from user.html
+                    var getIDsAndTypesOfSelectedNetworks = $scope.ndexData;
+
+                    // call the userController.getIDsAndTypesOfSelectedNetworks() function
+                    var IDsAndTypesOfSelectedNetworks = getIDsAndTypesOfSelectedNetworks();
+
+                    //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
+                    // UUID wasn't yet available.
+
+                    var myTask = $scope.task;
+
+                    for (i = 0; i < Object.keys(IDsAndTypesOfSelectedNetworks).length; i++) {
+                        myTask.format = ($scope.export.networkType === 'Default') ?
+                            IDsAndTypesOfSelectedNetworks[i]['format'] :
+                            $scope.export.networkType;
+
+                        myTask.resource = IDsAndTypesOfSelectedNetworks[i]['externalId'];
+                        if (myTask.format.toUpperCase() === 'BEL') {
+                            myTask.format = 'XBEL';
+                        }
+
+                        var createdTasksCounter = 0;
+
+
+                        ndexService.createTask(myTask,
+                            function (data) {
+                                createdTasksCounter = createdTasksCounter + 1;
+
+                                if (i == createdTasksCounter) {
+                                    //$scope.false = true;
+                                    $scope.isProcessing = false;
+                                    modalInstance.close();
+                                }
+                            },
+                            function (error) {
+                                createdTasksCounter = createdTasksCounter + 1;
+
+                                if (i == createdTasksCounter) {
+                                    //$scope.false = true;
+                                    $scope.isProcessing = false;
+                                    modalInstance.close();
+                                }
+
+                            });
+                    }
+                }
+            }
+        }
+    });
+
 
     // modal to edit network summary
     uiServiceApp.directive('editNetworkSummaryModal', function() {

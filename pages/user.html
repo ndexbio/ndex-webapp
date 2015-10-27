@@ -38,6 +38,22 @@
                     <hr>
                     <h5><strong>Select Bulk Action:</strong></h5>
                     <li><a ng-click="userController.confirmDeleteSelectedNetworks()">Delete Selected Networks</a></li>
+                    <!--<li><a ng-click="userController.exportSelectedNetworks()">Export Selected Networks</a></li>-->
+
+
+                    <li>
+                    <!---&& ((networkController.currentNetwork.visibility == "PUBLIC")
+                        || networkController.isAdmin
+                        || networkController.canEdit
+                        || networkController.canRead)'>--->
+                        <a>
+                            <create-bulk-export-network-task
+                                    ndex-data='userController.getIDsAndTypesOfSelectedNetworks'>
+                                Export Selected Networks as Files
+                            </create-bulk-export-network-task>
+                        </a>
+                    </li>
+
                 </ul>
 
             </span>

@@ -227,6 +227,23 @@ ndexApp.controller('userController',
                 return true;
             }
 
+            userController.getIDsAndTypesOfSelectedNetworks = function ()
+            {
+                var selectedIdsAndTypes = {};   //[];
+
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                var IdsAndTypes = {};
+                for( var i = 0; i < selectedNetworksRows.length; i ++ )
+                {
+                    selectedIdsAndTypes[i] = {};
+                    selectedIdsAndTypes[i]['externalId'] = selectedNetworksRows[i].externalId;
+                    selectedIdsAndTypes[i]['format']     = selectedNetworksRows[i].Format;
+                }
+
+                return selectedIdsAndTypes;
+            };
+
+
             userController.deleteSelectedNetworks = function ()
             {
                 var selectedIds = [];
@@ -257,9 +274,7 @@ ndexApp.controller('userController',
                 }
                 refreshNetworkTable();
                 userController.atLeastOneSelected = false;
-
             };
-
 
             //              scope functions
 
