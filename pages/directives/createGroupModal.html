@@ -1,32 +1,52 @@
 <span ng-click="openMe()">{{text}}</span>
 
 <script type="text/ng-template" id="modal.html">
-  <div class="modal-header">
-      <h4 class="modal-title">Create a Group</h4>
-  </div>
-  <form name="createGroupForm" class="form-create-group" role="form" ng-submit='submit()'>
-  <div class="modal-body">
-    
-          <div class="form-group">
-              <input name="groupName" type="groupName" class="form-control"
-                     placeholder="Group Name"
-                     ng-model="group.accountName" required>
-          </div>
-          <div class="form-group">
-              <input name="organizationName" type="organizationName" class="form-control"
-                     placeholder="Organization (optional) "
-                     ng-model="group.organizationName">
-          </div>
+    <div class="modal-header" required="required">
+        <h4 class="modal-title">Create a Group</h4>
+    </div>
+    <form name="createGroupForm" class="form-create-group" role="form" ng-submit='submit()'>
+        <div class="modal-body">
 
-          <p class='text-center text-danger'>{{errors}}</p>
-      
-  </div>
-  <div class="modal-footer">
-      <a type='cancel' class="btn btn-danger" ng-click="cancel()">Cancel</a>
-      <button type='submit' class="btn btn-default" ng-click="submit()"
-              ng-disabled="!createGroupForm.groupName.$valid || isProcessing">
-          Create</button>
-  </div>
-  </form>
+            <div class="form-group">
+                <div>
+                    <label for="groupName">Group Name:</label>
+                    <input name="groupName" type="groupName" class="form-control"
+                           placeholder="Group Name"
+                           id="groupName"
+                           required="required"
+                           ng-model="group.organizationName">
+                </div>
+                <div>
+                    <label for="website">Website:</label>
+                    <input name="webSite" type="website" class="form-control"
+                           placeholder="e.g. ndexbio.org"
+                           id="website"
+                           ng-model="group.website">
+                </div>
+                <div>
+                    <label for="imagehost">Image Host:</label>
+                    <input name="imagehost" type="imagehost" class="form-control"
+                           placeholder="e.g. http://i.imgur.com/09oVvZg.jpg"
+                           id="imagehost"
+                           ng-model="group.image">
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <div>
+                        <textarea class="form-control" rows="3" ng-model='group.description' id="description"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <p class='text-center text-danger'>{{errors}}</p>
+
+        </div>
+        <div class="modal-footer">
+            <a type='cancel' class="btn btn-danger" ng-click="cancel()">Cancel</a>
+            <button type='submit' class="btn btn-primary" ng-click="submit()"
+                    ng-disabled="!createGroupForm.groupName.$valid || isProcessing">
+                Create</button>
+        </div>
+    </form>
 
 </script>

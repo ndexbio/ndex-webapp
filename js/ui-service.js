@@ -79,7 +79,13 @@
 
                 $scope.cancel = function() {
                     modalInstance.dismiss();
+                    delete $scope.errors;
+                    delete $scope.group;
                 };
+
+                $scope.$watch("group.organizationName", function() {
+                    delete $scope.errors;
+                });
 
                 $scope.isProcessing = false;
 
@@ -87,6 +93,13 @@
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true;
+
+                    // when creating a new account, user enters Organization name;
+                    // but we also need to supply account name to the Server API --
+                    // so we create account name by removing all blanks from  Organization name.
+                    var accountName = $scope.group.organizationName.replace(/\s+/g,"");
+                    $scope.group.accountName = accountName;
+
                     ndexService.createGroup($scope.group,
                         function(groupData){
                             modalInstance.close();
@@ -1084,6 +1097,13 @@
                     modalInstance.close();
                     modalInstance = null;
                 };
+
+                $scope.$watch("change.newPassword", function() {
+                    delete $scope.errors;
+                });
+                $scope.$watch("change.newPasswordConfirm", function() {
+                    delete $scope.errors;
+                });
 
                 $scope.submit = function() {
                     if( $scope.isProcessing )

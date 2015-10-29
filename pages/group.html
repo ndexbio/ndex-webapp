@@ -8,32 +8,36 @@
                     ndex-src="groupController.displayedGroup.image">
             </ndex-account-image>
             </div>
+            <!--
             <h4>
                 {{groupController.displayedGroup.accountName}}
             </h4>
-            <div>
-                {{groupController.displayedGroup.organizationName}}
+            -->
+            <div class="wrapLongLine">
+                <h4>
+                    {{groupController.displayedGroup.organizationName}}
+                </h4>
             </div>
-            <div>
+            <div class="wrapLongLine">
                 <small>{{groupController.displayedGroup.emailAddress}}</small>
             </div>
-            <div>
+            <div class="wrapLongLine">
                 <a ng-href="{{groupController.displayedGroup.website}}" target="_blank">{{groupController.displayedGroup.website}}</a>
             </div>
-            <div>
+            <div class="wrapLongLine">
                 {{groupController.displayedGroup.description}}
             </div>
 
+
             <ul class="nav nav-pills nav-stacked ndex-nav-pills"
                 ng-show='groupController.isAdmin || groupController.isMember'>
-
                 <hr>
                 <h5><strong>Select Action:</strong></h5>
 
                 <li ng-show='groupController.isAdmin'>
                     <a>
                         <edit-group-modal
-                            ndex-data='groupController.displayedGroup'>
+                                ndex-data='groupController.displayedGroup'>
                             Edit Profile
                         </edit-group-modal>
                     </a>
@@ -43,9 +47,7 @@
                         Manage Members
                     </a>
                 </li>
-
                 <li class="divider" ng-show='groupController.isAdmin'></li>
-
                 <li>
                     <a>
                         <leave-group ndex-data='groupController.displayedGroup'>
@@ -53,15 +55,13 @@
                         </leave-group>
                     </a>
                 </li>
-
-                <li ng-show='groupController.isAdmin'>
-                    <a>
-                        <delete-group
+                <li ng-show='groupController.isAdmin'><a>
+                    <delete-group
                             ndex-data='groupController.displayedGroup.externalId'>
-                            Delete this Group
-                        </delete-group>
-                    </a>
-                </li>
+                        Delete this Group
+                    </delete-group>
+                </a></li>
+
             </ul>
 
             <ul class="nav nav-pills nav-stacked ndex-nav-pills"
