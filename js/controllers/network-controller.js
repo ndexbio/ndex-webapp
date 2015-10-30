@@ -737,6 +737,8 @@ ndexApp.controller('networkController',
                 var longestPredicate = "";
                 var longestObject = "";
 
+                var isCitationColumnVisible = false;
+
                 //The primary task performed by this loop is to determine all properties.
                 for( var i = 0; i < edgeKeys.length; i++ )
                 {
@@ -757,6 +759,10 @@ ndexApp.controller('networkController',
                     longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
                     longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
                     longestObject = longestObject.length < object.length ? object : longestObject;
+
+                    if (edges[edgeKey].citationIds.length > 0) {
+                        isCitationColumnVisible = true;
+                    }
                 }
 
                 var columnDefs = [
@@ -785,6 +791,7 @@ ndexApp.controller('networkController',
                         minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
                         enableSorting: false,
+                        visible: isCitationColumnVisible,
                         cellTemplate: "<div class='text-center'><h6><a ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0' ng-click='grid.appScope.showEdgeCitations(COL_FIELD)'>{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}</a></h6></div>"
                     }
                 ];
@@ -867,6 +874,8 @@ ndexApp.controller('networkController',
 
                 var longestName = "Label";
 
+                var isCitationColumnVisible = false;
+
                 //The primary task performed by this loop is to determine all properties.
                 for( var i = 0; i < nodeKeys.length; i++ )
                 {
@@ -882,7 +891,11 @@ ndexApp.controller('networkController',
                     //Determine the length of
                     var name = networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id];
 
-                    longestName = longestName < name ? name : longestName;
+                    longestName =  name.length > longestName.length  ? name : longestName;
+
+                    if (nodes[nodeKey].citationIds.length > 0) {
+                        isCitationColumnVisible = true;
+                    }
                 }
 
                 var columnDefs = [
@@ -898,6 +911,7 @@ ndexApp.controller('networkController',
                         cellToolTip: false,
                         minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
+                        visible: isCitationColumnVisible,
                         cellTemplate: "<div class='text-center'><h6><a ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0' ng-click='grid.appScope.showNodeCitations(COL_FIELD)'>{{grid.appScope.getNumNodeCitations(COL_FIELD)}}</a></h6></div>"
                     }
                 ];
