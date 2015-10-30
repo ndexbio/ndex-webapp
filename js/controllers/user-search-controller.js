@@ -35,7 +35,12 @@ ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties',
        if(sharedProperties.doSearch()) {
             searchController.query.searchString = sharedProperties.getSearchString();
             searchController.submitUserSearch();
-        }
+       }
+       else
+       {
+           searchController.query.searchString = "";
+           searchController.submitUserSearch();
+       }
 
 
 }]);

@@ -33,7 +33,11 @@ ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties'
        if(sharedProperties.doSearch()) {
             searchController.query.searchString = sharedProperties.getSearchString();
             searchController.submitGroupSearch();
-        }
-
+       }
+       else
+       {
+           searchController.query.searchString = "";
+           searchController.submitGroupSearch();
+       }
 
 }]);
