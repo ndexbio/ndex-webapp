@@ -80,10 +80,10 @@
                 $scope.cancel = function() {
                     modalInstance.dismiss();
                     delete $scope.errors;
-                    delete $scope.group;
+                    $scope.group = {};
                 };
 
-                $scope.$watch("group.organizationName", function() {
+                $scope.$watch("group.groupName", function() {
                     delete $scope.errors;
                 });
 
@@ -97,7 +97,7 @@
                     // when creating a new account, user enters Organization name;
                     // but we also need to supply account name to the Server API --
                     // so we create account name by removing all blanks from  Organization name.
-                    var accountName = $scope.group.organizationName.replace(/\s+/g,"");
+                    var accountName = $scope.group.groupName.replace(/\s+/g,"");
                     $scope.group.accountName = accountName;
 
                     ndexService.createGroup($scope.group,
