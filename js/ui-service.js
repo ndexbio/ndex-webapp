@@ -827,7 +827,7 @@
     });
 
     // modal to create bulk network export task
-    uiServiceApp.directive('createBulkExportNetworkTask', function() {
+    uiServiceApp.directive('createBulkExportNetworkTasks', function() {
         return {
             scope: {
                 ndexData: '='
@@ -875,7 +875,7 @@
                     modalInstance.close();
                 };
 
-                $scope.createTask = function() {
+                $scope.createTasks = function() {
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true;
@@ -889,9 +889,13 @@
                     //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
                     // UUID wasn't yet available.
 
-                    var myTask = $scope.task;
+
 
                     for (i = 0; i < Object.keys(IDsAndTypesOfSelectedNetworks).length; i++) {
+                        // clone $scope.task; myTask should be unique object since it
+                        // will be passed as argment to ndexService.createTask
+                        var myTask = JSON.parse(JSON.stringify($scope.task));
+
                         myTask.format = ($scope.export.networkType === 'Default') ?
                             IDsAndTypesOfSelectedNetworks[i]['format'] :
                             $scope.export.networkType;
