@@ -94,9 +94,9 @@
                         return;
                     $scope.isProcessing = true;
 
-                    // when creating a new account, user enters Organization name;
+                    // when creating a new account, user enters Group name;
                     // but we also need to supply account name to the Server API --
-                    // so we create account name by removing all blanks from  Organization name.
+                    // so we create account name by removing all blanks from  Group name.
                     var accountName = $scope.group.groupName.replace(/\s+/g,"");
                     $scope.group.accountName = accountName;
 
@@ -108,9 +108,14 @@
                             $scope.isProcessing = false;
                         },
                         function(error){
-                            $scope.errors = error.data.message;
+                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
+                                $scope.errors = "Group with name " + $scope.group.groupName + " already exists.";
+                            } else {
+                                $scope.errors = error.data.message;
+                            }
                             $scope.isProcessing = false;
                         });
+
                 };
             }
         }
