@@ -885,11 +885,11 @@
                         return;
                     $scope.isProcessing = true;
 
-                    // get reference to userController.getIDsAndTypesOfSelectedNetworks from user.html
-                    var getIDsAndTypesOfSelectedNetworks = $scope.ndexData;
+                    // get reference to userController from user.html
+                    var userController = $scope.ndexData;
 
                     // call the userController.getIDsAndTypesOfSelectedNetworks() function
-                    var IDsAndTypesOfSelectedNetworks = getIDsAndTypesOfSelectedNetworks();
+                    var IDsAndTypesOfSelectedNetworks = userController.getIDsAndTypesOfSelectedNetworks();
 
                     //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
                     // UUID wasn't yet available.
@@ -920,6 +920,7 @@
                                 if (i == createdTasksCounter) {
                                     //$scope.false = true;
                                     $scope.isProcessing = false;
+                                    userController.refreshTasks();
                                     modalInstance.close();
                                 }
                             },
@@ -929,6 +930,7 @@
                                 if (i == createdTasksCounter) {
                                     //$scope.false = true;
                                     $scope.isProcessing = false;
+                                    userController.refreshTasks();
                                     modalInstance.close();
                                 }
 
