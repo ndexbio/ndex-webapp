@@ -832,7 +832,9 @@ hr {
 
 .networkGrid
 {
-    width: 100%;
+    /* specifying width 100% will cause Network table to be distorted
+    when switching tabs and resizing browser window.  See NDEX-578 */
+    /*width: 100%;*/
     height: 640px;
 }
 

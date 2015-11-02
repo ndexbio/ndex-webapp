@@ -65,13 +65,18 @@
     <div id="divUserTabs" class="col-md-10" ng-show="userController.displayedUser">
 
         <tabset justified="false">
-            <tab heading="Networks"  select="tabShown = !tabShown" deselect="tabShown = !tabShown">
-                <!-- we need to use ng-if="tabShown" in order to resolve the issue of distorted UI table when
-                 you go to a Groups or Tasks&Notfications tab, resize browser slightly and then select Networks tab -- the
-                 Network grid in this case is distorted.  This is defect NDEX-578.
-                 Resolution is described here: http://ui-grid.info/docs/#/tutorial/108_hidden_grids -->
-                <div id="divNetworks" ng-show='userController.networkSearchResults.length > 0' ng-if="tabShown">
-                    <div ui-grid-selection ui-grid="networkGridOptions" ui-grid-resize-columns class="networkGrid"></div>
+            <tab heading="Networks">
+                <!-- adding ui-grid-auto-resize fixes the issue of distorted Networks Tab (NDEX-578).
+                 Resolution is described here: http://ui-grid.info/docs/#/tutorial/108_hidden_grids
+                 The use ng-if="tabShown" ... described on the page above introduces another issue:
+                 the selected rows on the Networks page get unselected if you select a different tab (i.e., Groups)
+                 and come back to Networks tab. -->
+                <div id="divNetworks" ng-show='userController.networkSearchResults.length > 0'>
+                    <div ui-grid-selection
+                         ui-grid="networkGridOptions"
+                         ui-grid-resize-columns
+                         ui-grid-auto-resize
+                         class="networkGrid"></div>
                 </div>
                 <div class='row' ng-hide='userController.networkSearchResults.length > 0'>
                     <br>
