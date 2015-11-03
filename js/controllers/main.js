@@ -137,25 +137,40 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.searchString = '';
         $scope.main.search = function () {
             ////console.log("navbar search");
-            sharedProperties.setDoSearch();
             //could user url instead, good for refresh
-            sharedProperties.setSearchString($scope.main.searchString);
+
+            var searchStringEncoded = encodeURIComponent($scope.main.searchString);
 
             if ($scope.main.searchType == 'Networks') {
-                if ($location.path() == '/searchNetworks')
-                    $route.reload();
-                else
+
+                if ($location.path() != '/searchNetworks') {
                     $location.path("/searchNetworks");
+                }
+
+                // add "?networks=<searchStringEncoded>" to the URL;
+                // we do it to be able to get back to this search with the browser Back button
+                $location.search({"networks": searchStringEncoded});
+
             } else if ($scope.main.searchType == 'Users') {
-                if ($location.path() == '/searchUsers')
-                    $route.reload();
-                else
+
+                if ($location.path() != '/searchUsers') {
                     $location.path("/searchUsers");
+                }
+
+                // add "?users=<searchStringEncoded>" to the URL;
+                // we do it to be able to get back to this search with the browser Back button
+                $location.search({"users": searchStringEncoded});
+
             } else if ($scope.main.searchType == 'Groups') {
-                if ($location.path() == '/searchGroups')
-                    $route.reload();
-                else
+
+                if ($location.path() != '/searchGroups') {
                     $location.path("/searchGroups");
+                }
+
+                // add "?groups=<searchStringEncoded>" to the URL;
+                // we do it to be able to get back to this search with the browser Back button
+                $location.search({"groups": searchStringEncoded});
+                
             }
 
         };

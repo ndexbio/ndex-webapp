@@ -1,5 +1,5 @@
-ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties', '$scope',  
-    function (ndexService, sharedProperties, $scope) {
+ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties', '$scope',  '$location',
+    function (ndexService, sharedProperties, $scope, $location) {
     
         //              Controller Declarations/Initializations
         //---------------------------------------------------------------------
@@ -29,15 +29,17 @@ ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties'
                 });
         };
 
-        //quick implementation for navbar search support
-       if(sharedProperties.doSearch()) {
-            searchController.query.searchString = sharedProperties.getSearchString();
-            searchController.submitGroupSearch();
-       }
-       else
-       {
-           searchController.query.searchString = "";
-           searchController.submitGroupSearch();
-       }
+        // extract value of 'groups' from URL; URL looks something like
+        // http://localhost:63342/ndex-webapp/index.html#/searchGroups?groups=Group%25203
+        var searchString = decodeURIComponent($location.search().groups);
+
+        // if no 'groups' was found in URL, then the search string is "" (i.e., "search for all groups")
+        searchController.query.searchString = (searchString === 'undefined' ) ? "" : searchString;
+
+        // set $scope.main.searchString to searchString - this ensures that $scope.main.searchString
+        // stays the same (doesn't get reset) in case of page reload (F5)
+        $scope.main.searchString = searchString;
+
+        searchController.submitGroupSearch();
 
 }]);

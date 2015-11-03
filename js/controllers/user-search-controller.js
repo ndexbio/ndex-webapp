@@ -1,5 +1,5 @@
 
-ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 
+ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal',
     function (ndexService, sharedProperties, $scope, $location, $modal) {
     
         //              Controller Declarations/Initializations
@@ -28,19 +28,17 @@ ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties',
                 });
         };
 
+        // extract value of 'users' from URL; URL looks something like
+        // http://localhost:63342/ndex-webapp/index.html#/searchUsers?users=vrynkov
+        var searchString = decodeURIComponent($location.search().users);
 
-        //              Initializations
-        //---------------------------------------------------------------------
-        //quick implementation for navbar search support
-       if(sharedProperties.doSearch()) {
-            searchController.query.searchString = sharedProperties.getSearchString();
-            searchController.submitUserSearch();
-       }
-       else
-       {
-           searchController.query.searchString = "";
-           searchController.submitUserSearch();
-       }
+        // if no 'users' was found in URL, then the search string is "" (i.e., "search for all users")
+        searchController.query.searchString = (searchString === 'undefined' ) ? "" : searchString;
 
+        // set $scope.main.searchString to searchString - this ensures that $scope.main.searchString
+        // stays the same (doesn't get reset) in case of page reload (F5)
 
+        $scope.main.searchString = searchString;
+
+        searchController.submitUserSearch();
 }]);

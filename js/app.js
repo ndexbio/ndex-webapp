@@ -59,21 +59,6 @@ ndexApp.service('sharedProperties', function ($http) {
             this.currentUserId = value;
             this.accountName = accountName;
         },
-        setDoSearch: function () {
-            this.Search = true;
-        },
-        doSearch: function () {
-            var val = this.Search
-            this.Search = false;
-            return val;
-        },
-        setSearchString: function (searchString) {
-            this.searchString = searchString
-        },
-        getSearchString: function ()
-        {
-            return this.searchString;
-        },
         setCurrentQueryTerms: function(currentQueryTerms)
         {
             this.currentQueryTerms = currentQueryTerms;

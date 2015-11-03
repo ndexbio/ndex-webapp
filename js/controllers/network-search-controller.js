@@ -1,5 +1,5 @@
 ndexApp.controller('searchNetworksController', 
-    [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 
+    [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal',
         function (ndexService, sharedProperties, $scope, $location, $modal) {
 
 
@@ -161,21 +161,17 @@ ndexApp.controller('searchNetworksController',
 
     };
 
+    // extract value of 'networks' from URL; URL looks something like
+    // http://localhost:63342/ndex-webapp/index.html#/searchNetworks?networks=test
+    var searchString = decodeURIComponent($location.search().networks);
 
-    //                  Initializations
-    //-----------------------------------------------------------------
+    // if no 'networks' was found in URL, then the search string is "" (i.e., "search for all networks")
+    searchController.searchString = (searchString === 'undefined' ) ? "" : searchString;
 
-    //quick implementation for navbar search support
-    if(sharedProperties.doSearch()) {
-        searchController.searchString = sharedProperties.getSearchString();
-        searchController.submitNetworkSearch();
-    }
-    else
-    {
-        searchController.searchString = "";
-        searchController.submitNetworkSearch();
-    }
+    // set $scope.main.searchString to searchString - this ensures that $scope.main.searchString
+    // stays the same (doesn't get reset) in case of page reload (F5)
+    $scope.main.searchString = searchString;
 
-
+    searchController.submitNetworkSearch();
 }]);
 
