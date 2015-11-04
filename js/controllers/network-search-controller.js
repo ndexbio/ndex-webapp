@@ -161,16 +161,21 @@ ndexApp.controller('searchNetworksController',
 
     };
 
-    // extract value of 'networks' from URL; URL looks something like
+    // extract value of 'networks' from URI; URI looks something like
     // http://localhost:63342/ndex-webapp/index.html#/searchNetworks?networks=test
+    // NOTE: searchString can be 'undefined' in  case 'networks' name in the search portion of URI was
+    // manually replaced with a non-existant value (i.e., 'abccba'); URI in this case may look like
+    // http://localhost:63342/ndex-webapp/index.html#/searchNetworks?abccba=test
     var searchString = decodeURIComponent($location.search().networks);
 
-    // if no 'networks' was found in URL, then the search string is "" (i.e., "search for all networks")
-    searchController.searchString = (searchString === 'undefined' ) ? "" : searchString;
+    // if no 'networks' name was found in the search portion of URI (it is 'undefined'),
+    // then the search string is "" (i.e., "search for all networks")
+    searchController.searchString = (searchString.toLowerCase() === 'undefined') ? "" : searchString;
 
-    // set $scope.main.searchString to searchString - this ensures that $scope.main.searchString
-    // stays the same (doesn't get reset) in case of page reload (F5)
-    $scope.main.searchString = searchString;
+    // set $scope.main.searchString to searchController.searchString; - this ensures that $scope.main.searchString
+    // stays the same (doesn't get reset) in the search window in case of page reload (F5);
+    // $scope.main.searchString is "" (empty string) in case searchString is 'undefined'
+    $scope.main.searchString = searchController.searchString;
 
     searchController.submitNetworkSearch();
 }]);

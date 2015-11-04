@@ -139,6 +139,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             ////console.log("navbar search");
             //could user url instead, good for refresh
 
+            // searchStringEncoded will be either 1) a string encoded as a valid component of URI (spaces and
+            // special characters replaced with their Hex representations), or 2) "" in case user entered nothing
+            // in the search field and thus runs the search with an empty
             var searchStringEncoded = encodeURIComponent($scope.main.searchString);
 
             if ($scope.main.searchType == 'Networks') {

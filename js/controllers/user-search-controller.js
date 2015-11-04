@@ -28,17 +28,21 @@ ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties',
                 });
         };
 
-        // extract value of 'users' from URL; URL looks something like
+        // extract value of 'users' from URI; URI looks something like
         // http://localhost:63342/ndex-webapp/index.html#/searchUsers?users=vrynkov
+        // NOTE: searchString can be 'undefined' in  case 'users' name in the search portion of URI was
+        // manually replaced with a non-existant value (i.e., 'abccba'); URI in this case may look like
+        // http://localhost:63342/ndex-webapp/index.html#/searchUsers?abccba=vrynkov
         var searchString = decodeURIComponent($location.search().users);
 
-        // if no 'users' was found in URL, then the search string is "" (i.e., "search for all users")
-        searchController.query.searchString = (searchString === 'undefined' ) ? "" : searchString;
+        // if no 'users' name was found in the search portion of URI (it is 'undefined'),
+        // then the search string is "" (i.e., "search for all users")
+        searchController.query.searchString = (searchString.toLowerCase() === 'undefined') ? "" : searchString;
 
-        // set $scope.main.searchString to searchString - this ensures that $scope.main.searchString
-        // stays the same (doesn't get reset) in case of page reload (F5)
-
-        $scope.main.searchString = searchString;
+        // set $scope.main.searchString to searchController.query.searchString; - this ensures that $scope.main.searchString
+        // stays the same (doesn't get reset) in the search window in case of page reload (F5);
+        // $scope.main.searchString is "" (empty string) in case searchString is 'undefined'
+        $scope.main.searchString = searchController.query.searchString;
 
         searchController.submitUserSearch();
 }]);
