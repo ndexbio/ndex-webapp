@@ -7,6 +7,10 @@ ndexApp.controller('networkController',
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
+            var INCOMPLETE_QUERY_CODE = -1;
+            var EMPTY_QUERY_CODE = 0;
+            var VALID_QUERY_CODE = 1;
+
             //              CONTROLLER INTIALIZATIONS
             //------------------------------------------------------------------------------------
 
@@ -55,7 +59,8 @@ ndexApp.controller('networkController',
 
             networkController.networkAdmins = null;
 
-
+            networkController.edgePropertyNamesForAdvancedQuery = [];
+            networkController.nodePropertyNamesForAdvancedQuery = [];
 
 
             $scope.provenance = [];
@@ -402,7 +407,9 @@ ndexApp.controller('networkController',
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);
-                        refreshEdgeTable();
+
+                        var enableFiltering = true;
+                        refreshEdgeTable(enableFiltering);
                         refreshNodeTable();
                         // close the modal
                         networkController.successfullyQueried = true;
@@ -765,23 +772,28 @@ ndexApp.controller('networkController',
                     }
                 }
 
+
+                var filteringEnabled = (networkController.currentNetwork.edgeCount <= 500) ? true : false;
                 var columnDefs = [
                     {
                         field: 'Subject',
                         displayName: 'Subject',
                         cellTooltip: true,
+                        enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestSubject)
                     },
                     {
                         field: 'Predicate',
                         displayName: 'Predicate',
                         cellTooltip: true,
+                        enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestPredicate)
                     },
                     {
                         field: 'Object',
                         displayName: 'Object',
                         cellTooltip: true,
+                        enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestObject)
                     },
                     {
@@ -796,8 +808,10 @@ ndexApp.controller('networkController',
                     }
                 ];
                 var headers = Object.keys(edgePropertyKeys);
-                if(  headers.length > 0 )
-                {
+
+                if (headers.length > 0) {
+                    networkController.edgePropertyNamesForAdvancedQuery = [];
+
                     var field = "";
                     for (i = 0; i < headers.length - 1; i++)
                     {
@@ -809,9 +823,11 @@ ndexApp.controller('networkController',
                             displayName: headers[i],
                             cellTooltip: true,
                             minWidth: calcColumnWidth(headers[i]),
+                            enableFiltering: filteringEnabled,
                             cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                         };
                         columnDefs.push(columnDef);
+                        networkController.edgePropertyNamesForAdvancedQuery.push(field);
                     }
                     //Special width for the last column
                     field = headers[i];
@@ -822,19 +838,22 @@ ndexApp.controller('networkController',
                         displayName: headers[i],
                         cellTooltip: true,
                         minWidth: calcColumnWidth(headers[i], true),
+                        enableFiltering: filteringEnabled,
                         cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                     };
                     columnDefs.push(columnDef);
+                    networkController.edgePropertyNamesForAdvancedQuery.push(field);
+
                 }
 
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
 
-                refreshEdgeTable();
+                var changeEnableFiltering = false;
+                refreshEdgeTable(changeEnableFiltering);
             };
 
-            var refreshEdgeTable = function()
-            {
+            var refreshEdgeTable = function (changeEnableFiltering) {
                 var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
                 var edges = networkController.currentSubnetwork.edges;
                 var terms = networkController.currentSubnetwork.terms;
@@ -862,6 +881,17 @@ ndexApp.controller('networkController',
                     $scope.edgeGridOptions.data.push( row );
                 }
 
+                if (changeEnableFiltering) {
+                    for (j = 0; j < $scope.edgeGridApi.grid.options.columnDefs.length; j++) {
+                        if ($scope.edgeGridApi.grid.options.columnDefs[j].displayName.toLowerCase() !== 'citations') {
+                            $scope.edgeGridApi.grid.options.columnDefs[j].enableFiltering = true;
+                            $scope.edgeGridOptions.columnDefs[i].enableFiltering = true;
+
+                        }
+                    }
+                    $scope.edgeGridApi.core.refresh();
+
+                }
 
             };
 
@@ -891,18 +921,20 @@ ndexApp.controller('networkController',
                     //Determine the length of
                     var name = networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id];
 
-                    longestName =  name.length > longestName.length  ? name : longestName;
+                    longestName = name.length > longestName.length ? name : longestName;
 
                     if (nodes[nodeKey].citationIds.length > 0) {
                         isCitationColumnVisible = true;
                     }
                 }
 
+                var filteringEnabled = (networkController.currentNetwork.nodeCount <= 500) ? true : false;
                 var columnDefs = [
                     {
                         field: 'Label',
                         displayName: 'Label',
                         cellTooltip: true,
+                        enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestName)
                     },
                     {
@@ -916,8 +948,8 @@ ndexApp.controller('networkController',
                     }
                 ];
                 var headers = Object.keys(nodePropertyKeys);
-                if( headers.length > 0 )
-                {
+                if (headers.length > 0) {
+                    networkController.nodePropertyNamesForAdvancedQuery = [];
                     var field = "";
                     for (i = 0; i < headers.length - 1; i++)
                     {
@@ -929,9 +961,11 @@ ndexApp.controller('networkController',
                             displayName: headers[i],
                             cellTooltip: true,
                             minWidth: calcColumnWidth(headers[i]),
+                            enableFiltering: filteringEnabled,
                             cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                         };
                         columnDefs.push(columnDef);
+                        networkController.nodePropertyNamesForAdvancedQuery.push(field);
                     }
                     //Special width for the last column
                     field = headers[i];
@@ -942,9 +976,11 @@ ndexApp.controller('networkController',
                         displayName: headers[i],
                         cellTooltip: true,
                         minWidth: calcColumnWidth(headers[i], true),
+                        enableFiltering: filteringEnabled,
                         cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                     };
                     columnDefs.push(columnDef);
+                    networkController.nodePropertyNamesForAdvancedQuery.push(field);
                 }
 
                 refreshNodeTable();
@@ -1017,24 +1053,24 @@ ndexApp.controller('networkController',
             networkController.queryMode = 'simple';
             networkController.advancedQueryIsValid = false;
 
-            networkController.addQueryEdgeProperty = function()
-            {
+            networkController.addQueryEdgeProperty = function () {
                 networkController.advancedQueryEdgeProperties.push({});
+                networkController.validateAdvancedQuery();
             };
 
-            networkController.removeQueryEdgeProperty = function(index)
-            {
+            networkController.removeQueryEdgeProperty = function (index) {
                 networkController.advancedQueryEdgeProperties.splice(index, 1);
+                networkController.validateAdvancedQuery();
             };
 
-            networkController.addQueryNodeProperty = function()
-            {
+            networkController.addQueryNodeProperty = function () {
                 networkController.advancedQueryNodeProperties.push({});
+                networkController.validateAdvancedQuery();
             };
 
-            networkController.removeQueryNodeProperty = function(index)
-            {
+            networkController.removeQueryNodeProperty = function (index) {
                 networkController.advancedQueryNodeProperties.splice(index, 1);
+                networkController.validateAdvancedQuery();
             };
 
             networkController.runAdvancedQuery = function(networkQueryLimit)
@@ -1136,7 +1172,10 @@ ndexApp.controller('networkController',
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);
-                        refreshEdgeTable();
+
+                        var enableFiltering = true;
+                        refreshEdgeTable(enableFiltering);
+
                         refreshNodeTable();
                         // close the modal
                         networkController.successfullyQueried = true;
@@ -1149,50 +1188,111 @@ ndexApp.controller('networkController',
                     });
             };
 
-            networkController.validateAdvancedQuery = function()
-            {
-                var i;
-                var validEdgeProperties = null;
-                for( i = 0; i < networkController.advancedQueryEdgeProperties.length; i++ )
-                {
-                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
-                    if( edgeProperty.name && !edgeProperty.value || edgeProperty.value && !edgeProperty.name )
-                    {
-                        networkController.advancedQueryIsValid = false;
-                        return;
-                    }
-                    if( edgeProperty.name && edgeProperty.value )
-                    {
-                        if( !validEdgeProperties )
-                            validEdgeProperties = [];
-                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
-                    }
-                }
-                var validNodeProperties = null;
-                for( i = 0; i < networkController.advancedQueryNodeProperties.length; i++ )
-                {
-                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
-                    if( nodeProperty.name && !nodeProperty.value || nodeProperty.value && !nodeProperty.name )
-                    {
-                        networkController.advancedQueryIsValid = false;
-                        return;
-                    }
-                    if( nodeProperty.name && nodeProperty.value )
-                    {
-                        if( !validNodeProperties )
-                            validNodeProperties = [];
-                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
-                    }
-                }
-                if( validEdgeProperties || validNodeProperties )
-                    networkController.advancedQueryIsValid = true;
-                else
+            /*
+             * var INCOMPLETE_QUERY_CODE = -1;
+             * var EMPTY_QUERY_CODE = 0;
+             * var VALID_QUERY_CODE = 1;
+             */
+
+            networkController.advancedEdgeQueryIsValid = function () {
+                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery()) ? true : false;
+            }
+            networkController.advancedNodeQueryIsValid = function () {
+                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery()) ? true : false;
+            }
+
+            networkController.validateAdvancedQuery = function () {
+                var advancedEdgeQueryState = networkController.validateAdvancedEdgeQuery();
+                var advancedNodeQueryState = networkController.validateAdvancedNodeQuery();
+
+                if ((INCOMPLETE_QUERY_CODE == advancedEdgeQueryState) ||
+                    (INCOMPLETE_QUERY_CODE == advancedNodeQueryState)) {
                     networkController.advancedQueryIsValid = false;
+                    return;
+                }
+                if ((EMPTY_QUERY_CODE == advancedEdgeQueryState) &&
+                    (EMPTY_QUERY_CODE == advancedNodeQueryState)) {
+                    networkController.advancedQueryIsValid = false;
+                    return;
+                }
+
+                if (((VALID_QUERY_CODE == advancedEdgeQueryState) &&
+                     (EMPTY_QUERY_CODE == advancedNodeQueryState) &&
+                     (networkController.advancedQueryNodeProperties.length == 1)) ||
+                    ((EMPTY_QUERY_CODE == advancedEdgeQueryState) &&
+                     (VALID_QUERY_CODE == advancedNodeQueryState) &&
+                     (networkController.advancedQueryEdgeProperties.length == 1))) {
+                    networkController.advancedQueryIsValid = true;
+                    return;
+                }
+
+                if ((VALID_QUERY_CODE == advancedEdgeQueryState) &&
+                    (VALID_QUERY_CODE == advancedNodeQueryState)) {
+                    networkController.advancedQueryIsValid = true;
+                    return;
+                }
+
+                networkController.advancedQueryIsValid = false;
+                return;
+            }
+
+            networkController.validateAdvancedEdgeQuery = function () {
+                var i;
+                var validEdgeProperties = false;
+
+                for (i = 0; i < networkController.advancedQueryEdgeProperties.length; i++) {
+                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
+
+                    if (( (typeof(edgeProperty.name) === "undefined") && (typeof(edgeProperty.value) !== "undefined")) ||
+                        ( (typeof(edgeProperty.name) !== "undefined") && (typeof(edgeProperty.value) === "undefined"))) {
+                        return INCOMPLETE_QUERY_CODE;
+                    }
+
+                    if ((edgeProperty.name && !edgeProperty.value) || (edgeProperty.value && !edgeProperty.name)) {
+                        return INCOMPLETE_QUERY_CODE;
+                    }
+
+                    if (( (typeof(edgeProperty.name) === "undefined") && (typeof(edgeProperty.value) === "undefined")) ||
+                        ((!edgeProperty.name || edgeProperty.name == "") && !edgeProperty.value)) {
+                        return EMPTY_QUERY_CODE;
+                    }
+                }
+
+                return VALID_QUERY_CODE;
             }
 
 
 
+            networkController.validateAdvancedNodeQuery = function () {
+                var i;
+                var validNodeProperties = false;
 
+                for (i = 0; i < networkController.advancedQueryNodeProperties.length; i++) {
+                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
+
+                    if (( (typeof(nodeProperty.name) === "undefined") && (typeof(nodeProperty.value) !== "undefined")) ||
+                        ( (typeof(nodeProperty.name) !== "undefined") && (typeof(nodeProperty.value) === "undefined"))) {
+                        return INCOMPLETE_QUERY_CODE;
+                    }
+
+                    if ((nodeProperty.name && !nodeProperty.value) || (nodeProperty.value && !nodeProperty.name)) {
+                        return INCOMPLETE_QUERY_CODE;
+                    }
+
+                    if (( (typeof(nodeProperty.name) === "undefined") && (typeof(nodeProperty.value) === "undefined")) ||
+                        ((!nodeProperty.name || nodeProperty.name == "") && !nodeProperty.value)) {
+                        return EMPTY_QUERY_CODE;
+                    }
+                }
+
+                return VALID_QUERY_CODE;
+            }
+
+            networkController.resetForm = function () {
+                networkController.advancedQueryEdgeProperties = [{}];
+                networkController.advancedQueryNodeProperties = [{}];
+                networkController.validateAdvancedQuery();
+            };
 
         }]);
 
