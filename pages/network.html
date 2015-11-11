@@ -275,16 +275,19 @@
                     (1) have one or more of these properties:<br>
                     <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
                         <div class="row">
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
                                     <option value="">[Select Edge Property Name]</option>
+                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                    <option value="ndex:predicate">predicate</option>
+                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
                                     <option ng-repeat="edgeProperty in networkController.edgePropertyNamesForAdvancedQuery"
                                             value="{{edgeProperty}}">{{edgeProperty}}
                                     </option>
                                 </select>
                             </div>
 
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <input class="form-control input-sm"
                                        ng-model="property.value"
                                        ng-change="networkController.validateAdvancedQuery()"
@@ -325,16 +328,21 @@
                     (3) with one or more of these properties.
                     <div ng-repeat="property in networkController.advancedQueryNodeProperties">
                         <div class="row">
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
                                     <option value="">[Select Node Property Name]</option>
+                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                    <option value="ndex:nodeName">nodeName</option>
+                                    <option value="ndex:nameOrTermName">nameOrTermName</option>
+                                    <option value="ndex:functionTermType">functionTermType</option>
+                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
                                     <option ng-repeat="nodeProperty in networkController.nodePropertyNamesForAdvancedQuery"
                                             value="{{nodeProperty}}">{{nodeProperty}}
                                     </option>
                                 </select>
                             </div>
 
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <input class="form-control input-sm"
                                        ng-model="property.value"
                                        ng-change="networkController.validateAdvancedQuery()"
