@@ -885,14 +885,11 @@ ndexApp.controller('networkController',
                     for (j = 0; j < $scope.edgeGridApi.grid.options.columnDefs.length; j++) {
                         if ($scope.edgeGridApi.grid.options.columnDefs[j].displayName.toLowerCase() !== 'citations') {
                             $scope.edgeGridApi.grid.options.columnDefs[j].enableFiltering = true;
-                            $scope.edgeGridOptions.columnDefs[i].enableFiltering = true;
-
+                            $scope.edgeGridOptions.columnDefs[j].enableFiltering = true;
                         }
                     }
                     $scope.edgeGridApi.core.refresh();
-
                 }
-
             };
 
             var populateNodeTable = function()
