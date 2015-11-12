@@ -75,7 +75,7 @@
         <div class="row" ng-show='networkController.isLoggedIn'>
 
             <ul class="nav nav-pills nav-stacked ndex-nav-pills">
-                <h5><strong>Select Action:</strong></h5>
+                <h5><strong>Actions:</strong></h5>
                 <li ng-show='networkController.isAdmin && !networkController.readOnlyChecked'>
                     <a>
                         <edit-network-summary-modal
@@ -92,7 +92,7 @@
                         <a>
                             <create-export-network-task
                                     ndex-data='networkController.currentNetwork'>
-                                Export Network as File
+                                Export Network
                             </create-export-network-task>
                         </a>
                 </li>
@@ -149,7 +149,7 @@
                     <a>
                         <delete-network
                                 ndex-data='networkController.currentNetwork.externalId'>
-                            Delete this Network
+                            Delete Network
                         </delete-network>
                     </a>
                 </li>
@@ -158,7 +158,7 @@
 
         <div class="row" ng-show='!networkController.isLoggedIn'>
             <ul class="nav nav-pills nav-stacked ndex-nav-pills">
-                <h5><strong>Select Action:</strong></h5>
+                <h5><strong>Actions:</strong></h5>
                 <li>
                     <a ng-click="main.startSignIn()"> Log in to operate on this network</a>
                 </li>

@@ -26,33 +26,32 @@
 
                 <ul class="nav nav-pills nav-stacked ndex-nav-pills" ng-show="!userController.atLeastOneSelected">
                     <hr>
-                    <h5><strong>Select Action:</strong></h5>
+                    <h5><strong>Actions:</strong></h5>
                     <li><a ng-href="#upload">Upload Networks</a></li>
                     <li><a trigger-create-group-modal="Create Group"></a></li>
                     <li><a><edit-user-modal ndex-data='userController.displayedUser'>Edit Profile</edit-user-modal></a></li>
                     <li><a><change-password-modal>Change Password</strong></change-password-modal></a></li>
-                    <li><a><delete-user>Delete this Account</delete-user></a></li>
+                    <li><a><delete-user>Delete Account</delete-user></a></li>
                 </ul>
 
                 <ul class="nav nav-pills nav-stacked ndex-nav-pills" ng-show="userController.atLeastOneSelected">
                     <hr>
-                    <h5><strong>Select Bulk Action:</strong></h5>
-                    <li><a ng-click="userController.confirmDeleteSelectedNetworks()">Delete Selected Networks</a></li>
-                    <!--<li><a ng-click="userController.exportSelectedNetworks()">Export Selected Networks</a></li>-->
-
-
+                    <h5><strong>Bulk Actions:</strong></h5>
                     <li>
-                    <!---&& ((networkController.currentNetwork.visibility == "PUBLIC")
-                        || networkController.isAdmin
-                        || networkController.canEdit
-                        || networkController.canRead)'>--->
+                        <!---&& ((networkController.currentNetwork.visibility == "PUBLIC")
+                            || networkController.isAdmin
+                            || networkController.canEdit
+                            || networkController.canRead)'>--->
                         <a>
                             <create-bulk-export-network-tasks
                                     ndex-data='userController'>
-                                Export Selected Networks as Files
+                                Export Networks
                             </create-bulk-export-network-tasks>
                         </a>
                     </li>
+
+                    <li><a ng-click="userController.confirmDeleteSelectedNetworks()">Delete Networks</a></li>
+                    <!--<li><a ng-click="userController.exportSelectedNetworks()">Export Selected Networks</a></li>-->
 
                 </ul>
 

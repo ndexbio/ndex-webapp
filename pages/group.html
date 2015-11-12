@@ -32,13 +32,13 @@
             <ul class="nav nav-pills nav-stacked ndex-nav-pills"
                 ng-show='groupController.isAdmin || groupController.isMember'>
                 <hr>
-                <h5><strong>Select Action:</strong></h5>
+                <h5><strong>Actions:</strong></h5>
 
                 <li ng-show='groupController.isAdmin'>
                     <a>
                         <edit-group-modal
                                 ndex-data='groupController.displayedGroup'>
-                            Edit Profile
+                            Edit Group Profile
                         </edit-group-modal>
                     </a>
                 </li>
@@ -58,7 +58,7 @@
                 <li ng-show='groupController.isAdmin'><a>
                     <delete-group
                             ndex-data='groupController.displayedGroup.externalId'>
-                        Delete this Group
+                        Delete Group
                     </delete-group>
                 </a></li>
 
@@ -67,7 +67,7 @@
             <ul class="nav nav-pills nav-stacked ndex-nav-pills"
                 ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedIn'>
                 <hr>
-                <h5><strong>Select Action:</strong></h5>
+                <h5><strong>Actions:</strong></h5>
                 <li>
                     <a>
                         <create-request-group ndex-data='groupController.displayedGroup'>
