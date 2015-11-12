@@ -1075,7 +1075,7 @@ ndexApp.controller('networkController',
 
             networkController.runAdvancedQuery = function(networkQueryLimit)
             {
-                var url = "/network/"+csn.externalId+"/asNetwork/prototypeNetworkQuery";
+                var url = "/network/"+networkController.currentNetworkId+"/asNetwork/prototypeNetworkQuery";
                 var mode = 'Source';
                 if( networkController.advancedQueryNodeCriteria == 'target' )
                 {
