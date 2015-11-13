@@ -862,3 +862,20 @@ ul.ndex-nav-pills > li > a:hover {
     color: white;
     border-style: none;
 }
+
+/* used to add some space below button -- we use this to separate vertically-stacked buttons on MyAccount,
+    Network and Group Pages */
+.buttonWithMarginBottom .btn {
+    margin-bottom: 5px;
+}
+
+/* this sets the width of all vertically-stacked buttons on MyAccount,
+    Network and Group Pages to be the same */
+.customButtonWidth {
+    width: 150px !important;
+}
+
+/* this adds some space after <HR> on Network page */
+.hrMarginRight {
+    margin-right: 15px;
+}

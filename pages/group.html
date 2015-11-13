@@ -28,54 +28,52 @@
                 {{groupController.displayedGroup.description}}
             </div>
 
-
-            <ul class="nav nav-pills nav-stacked ndex-nav-pills"
-                ng-show='groupController.isAdmin || groupController.isMember'>
+            <span class="btn-group btn-group-vertical buttonWithMarginBottom"
+                 ng-show='groupController.isAdmin || groupController.isMember'>
                 <hr>
                 <h5><strong>Actions:</strong></h5>
 
-                <li ng-show='groupController.isAdmin'>
-                    <a>
+                 <span ng-show='groupController.isAdmin'>
+                    <a class="btn btn-primary customButtonWidth">
                         <edit-group-modal
                                 ndex-data='groupController.displayedGroup'>
                             Edit Group Profile
                         </edit-group-modal>
                     </a>
-                </li>
-                <li ng-show='groupController.isAdmin'>
-                    <a ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
+
+                    <a class="btn btn-primary customButtonWidth"
+                        ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
                         Manage Members
                     </a>
-                </li>
-                <li class="divider" ng-show='groupController.isAdmin'></li>
-                <li>
-                    <a>
+
+                    <a class="btn btn-primary customButtonWidth">
                         <leave-group ndex-data='groupController.displayedGroup'>
                             Leave Group
                         </leave-group>
                     </a>
-                </li>
-                <li ng-show='groupController.isAdmin'><a>
-                    <delete-group
+
+                    <a class="btn btn-primary customButtonWidth">
+                        <delete-group
                             ndex-data='groupController.displayedGroup.externalId'>
-                        Delete Group
-                    </delete-group>
-                </a></li>
+                            Delete Group
+                        </delete-group>
+                    </a>
+                 </span>
 
-            </ul>
+            </span>
 
-            <ul class="nav nav-pills nav-stacked ndex-nav-pills"
+            <span class="btn-group btn-group-vertical buttonWithMarginBottom"
                 ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedIn'>
                 <hr>
                 <h5><strong>Actions:</strong></h5>
-                <li>
-                    <a>
+                <span>
+                    <a class="btn btn-primary customButtonWidth">
                         <create-request-group ndex-data='groupController.displayedGroup'>
                             Ask to Join!
                         </create-request-group>
                     </a>
-                </li>
-            </ul>
+                </span>
+            </span>
         </div>
     </div>
 

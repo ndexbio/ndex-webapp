@@ -23,37 +23,77 @@
             </div>
 
             <span ng-show="userController.isLoggedInUser && userController.identifier == userController.loggedInIdentifier">
-
-                <ul class="nav nav-pills nav-stacked ndex-nav-pills" ng-show="!userController.atLeastOneSelected">
+                <div class="btn-group btn-group-vertical buttonWithMarginBottom">
                     <hr>
                     <h5><strong>Actions:</strong></h5>
-                    <li><a ng-href="#upload">Upload Networks</a></li>
-                    <li><a trigger-create-group-modal="Create Group"></a></li>
-                    <li><a><edit-user-modal ndex-data='userController.displayedUser'>Edit Profile</edit-user-modal></a></li>
-                    <li><a><change-password-modal>Change Password</strong></change-password-modal></a></li>
-                    <li><a><delete-user>Delete Account</delete-user></a></li>
-                </ul>
 
-                <ul class="nav nav-pills nav-stacked ndex-nav-pills" ng-show="userController.atLeastOneSelected">
+                    <span>
+                        <a class="btn btn-primary customButtonWidth" href="#upload">Upload Networks</a>
+                    </span>
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth" trigger-create-group-modal="Create Group">Create Group</a>
+                    </span>
+
+                    <span>
+                       <div class="btn-group" dropdown>
+                           <button id="editAccountButton" type="button"
+                                   class="btn btn-primary dropdown-toggle customButtonWidth" data-toggle="dropdown">
+                               Edit Account
+                               <span class="caret"></span>
+                           </button>
+
+                           <ul class="dropdown-menu" role="menu" aria-labelledby="editAccountButton">
+                               <li><a><edit-user-modal ndex-data='userController.displayedUser'><strong>Edit Personal Info</strong></edit-user-modal></a></li>
+                               <li><a><change-password-modal><strong>Change Password</strong></change-password-modal></a></li>
+                               <li class="disabled"><a href="#">Notification Settings</a></li>
+                               <li><a><delete-user><strong>Delete Account</strong></delete-user></a></li>
+                           </ul>
+                       </div>
+                    </span>
+                </div>
+
+                <div class="btn-group btn-group-vertical buttonWithMarginBottom"  ng-show="userController.atLeastOneSelected">
                     <hr>
                     <h5><strong>Bulk Actions:</strong></h5>
-                    <li>
+
+                    <span>
                         <!---&& ((networkController.currentNetwork.visibility == "PUBLIC")
-                            || networkController.isAdmin
-                            || networkController.canEdit
-                            || networkController.canRead)'>--->
-                        <a>
-                            <create-bulk-export-network-tasks
-                                    ndex-data='userController'>
+                                || networkController.isAdmin
+                                || networkController.canEdit
+                                || networkController.canRead)'>--->
+
+                        <a class="btn btn-primary customButtonWidth">
+                            <create-bulk-export-network-tasks ndex-data='userController'>
                                 Export Networks
                             </create-bulk-export-network-tasks>
                         </a>
-                    </li>
+                    </span>
 
-                    <li><a ng-click="userController.confirmDeleteSelectedNetworks()">Delete Networks</a></li>
-                    <!--<li><a ng-click="userController.exportSelectedNetworks()">Export Selected Networks</a></li>-->
 
-                </ul>
+                    <span>
+                       <div class="btn-group" dropdown>
+                           <button id="editNetworksPropertiesButton" type="button"
+                                   class="btn btn-primary dropdown-toggle customButtonWidth" data-toggle="dropdown">
+                               Edit Properties
+                               <span class="caret"></span>
+                           </button>
+
+                           <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
+                               <li class="disabled"><a href="#">Change Description</a></li>
+                               <li class="disabled"><a href="#">Change Version</a></li>
+                               <li class="disabled"><a href="#">Change Privacy</a></li>
+                           </ul>
+                       </div>
+                    </span>
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
+                           ng-click="userController.confirmDeleteSelectedNetworks()">Delete Networks
+                        </a>
+                    </span>
+
+                </div>
 
             </span>
 
