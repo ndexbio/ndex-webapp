@@ -465,6 +465,27 @@ ndexApp.controller('networkController',
                     });
             };
 
+            var getNetworkSourceFormat = function(networkProperties)
+            {
+                networkController.currentNetworkSourceFormat = 'undefined';
+
+                if ('undefined'===typeof(networkProperties)) {
+                    return;
+                }
+
+                for( var i = 0; i < networkProperties.length; i++ ) {
+
+                    if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
+                                (networkProperties[i].predicateString.toLowerCase() === 'sourceformat')) {
+
+                        if (networkProperties[i].value !== 'undefined') {
+                            networkController.currentNetworkSourceFormat =
+                                networkProperties[i].value.toUpperCase();
+                            return;
+                        }
+                    }
+                }
+            }
 
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
@@ -497,6 +518,7 @@ ndexApp.controller('networkController',
                         });
                         networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                         getNetworkAdmins();
+                        getNetworkSourceFormat(networkController.currentNetwork.properties);
                     }
                 )
                     .error(

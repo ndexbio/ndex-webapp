@@ -121,6 +121,14 @@
                     </a>
                 </span>
 
+                <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL"' >
+                    <a class="btn btn-primary customButtonWidth">
+                        <archive-bel-namespaces  ndex-data='networkController.currentNetwork.externalId'>
+                            Archive BEL Namespaces
+                        </archive-bel-namespaces>
+                    </a>
+                </span>
+
                 <span ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
                     networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
                     <a class="btn btn-primary customButtonWidth">

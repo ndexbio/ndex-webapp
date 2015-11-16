@@ -872,7 +872,7 @@ ul.ndex-nav-pills > li > a:hover {
 /* this sets the width of all vertically-stacked buttons on MyAccount,
     Network and Group Pages to be the same */
 .customButtonWidth {
-    width: 150px !important;
+    width: 180px !important;
 }
 
 /* this adds some space after <HR> on Network page */

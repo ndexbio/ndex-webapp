@@ -1363,6 +1363,59 @@
 
             }
         }
+    })
+
+    // modal to archive BEL name spaces of the network
+    uiServiceApp.directive('archiveBelNamespaces', function(){
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $location) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
+
+                            $scope.title = 'Archive Name Spaces';
+                            $scope.message = 'This network\'s namespaces will be archived on NDEx. Are you sure you want to proceed?';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                                $scope.isProcessing = true;
+                            };
+
+                            $scope.confirm = function() {
+                                if( $scope.isProcessing )
+                                    return;
+                                $scope.isProcessing = true;
+                                $scope.progress = 'Archivinig in progress....';
+
+                                ndexService.archiveBelNamespaces($scope.externalId,
+                                    function(data) {
+                                        $modalInstance.close();
+                                        $scope.isProcessing = false;
+                                    },
+                                    function(error) {
+                                        $scope.errors = error.data;
+                                        $scope.isProcessing = false;
+                                    });
+                            };
+                        }
+                    });
+                };
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.externalId = value
+                });
+
+            }
+        }
     });
 
     // modal to remove own access to group

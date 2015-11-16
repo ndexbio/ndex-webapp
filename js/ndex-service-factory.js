@@ -611,6 +611,12 @@ ndexServiceApp.factory('ndexService',
                         params: {
                             subResource: 'namespace'
                         }
+                    },
+                    archiveBelNamespaces: {
+                        method: 'PUT',
+                        params: {
+                            subResource: 'attachNamespaceFiles'
+                        }
                     }
                 }
             );
@@ -670,6 +676,10 @@ ndexServiceApp.factory('ndexService',
                 NetworkResource.delete({identifier: externalId}, null, successHandler, errorHandler);
             };
 
+            factory.archiveBelNamespaces = function(externalId, successHandler, errorHandler) {
+                handleAuthorizationHeader();
+                NetworkResource.archiveBelNamespaces({identifier: externalId}, null, successHandler, errorHandler);
+            };
             factory.editNetworkSummary = function (externalId, summary, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 NetworkResource.editNetworkSummary({identifier: externalId}, summary, successHandler, errorHandler);
