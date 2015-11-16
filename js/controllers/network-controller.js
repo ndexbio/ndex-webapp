@@ -478,6 +478,11 @@ ndexApp.controller('networkController',
                     function (network) {
                         cn = network;
                         networkController.currentNetwork = network;
+
+                        if (!network.name) {
+                            networkController.currentNetwork.name = "No name";
+                        }
+
                         getMembership(function ()
                         {
                             if (network.visibility == 'PUBLIC'

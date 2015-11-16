@@ -92,7 +92,7 @@ ndexApp.controller('userController',
                 {
                     var network = userController.networkSearchResults[i];
 
-                    var networkName = network['name'];
+                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
                     var description = network['description'];
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
