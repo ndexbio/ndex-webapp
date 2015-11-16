@@ -243,6 +243,31 @@ ndexApp.controller('userController',
                 return selectedIdsAndTypes;
             };
 
+            userController.getIDsOfSelectedNetworks = function ()
+            {
+                var selectedIds = [];
+
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                for( var i = 0; i < selectedNetworksRows.length; i ++ )
+                {
+                    selectedIds.push(selectedNetworksRows[i].externalId);
+                }
+
+                return selectedIds;
+            };
+
+            userController.updateVisibilityOfNetwork = function (networkId, networkVisibility)
+            {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                for( var i = 0; i < selectedNetworksRows.length; i ++ )
+                {
+                    if (selectedNetworksRows[i].externalId == networkId) {
+                        selectedNetworksRows[i].Visibility = networkVisibility;
+                        break;
+                    }
+                }
+            };
 
             userController.deleteSelectedNetworks = function ()
             {

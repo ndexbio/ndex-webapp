@@ -58,20 +58,6 @@
                     <h5><strong>Bulk Actions:</strong></h5>
 
                     <span>
-                        <!---&& ((networkController.currentNetwork.visibility == "PUBLIC")
-                                || networkController.isAdmin
-                                || networkController.canEdit
-                                || networkController.canRead)'>--->
-
-                        <a class="btn btn-primary customButtonWidth">
-                            <create-bulk-export-network-tasks ndex-data='userController'>
-                                Export Networks
-                            </create-bulk-export-network-tasks>
-                        </a>
-                    </span>
-
-
-                    <span>
                        <div class="btn-group" dropdown>
                            <button id="editNetworksPropertiesButton" type="button"
                                    class="btn btn-primary dropdown-toggle customButtonWidth" data-toggle="dropdown">
@@ -80,12 +66,56 @@
                            </button>
 
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
-                               <li class="disabled"><a href="#">Change Description</a></li>
-                               <li class="disabled"><a href="#">Change Version</a></li>
-                               <li class="disabled"><a href="#">Change Privacy</a></li>
+                               <li>
+                                   <a>
+                                       <bulk-edit-network-property
+                                               ndex-data='userController'
+                                               directive-title="Change Description of Selected Networks"
+                                               directive-action="description"
+                                               directive-description="Change Descriptions of the selected networks to the one below:">
+                                            <strong>Change Description</strong>
+                                        </bulk-edit-network-property>
+                                   </a>
+                               </li>
+                               <li>
+                                   <a>
+                                       <bulk-edit-network-property
+                                               ndex-data='userController'
+                                               directive-title="Change Version of Selected Networks"
+                                               directive-action="version"
+                                               directive-description="Change Versions of the selected networks to the one below:">
+                                           <strong>Change Version</strong>
+                                       </bulk-edit-network-property>
+                                   </a>
+                               </li>
+                               <li>
+                                   <a>
+                                       <bulk-edit-network-property
+                                               ndex-data='userController'
+                                               directive-title="Change Visibility of Selected Networks"
+                                               directive-action="visibility"
+                                               directive-description="Change Visibility of the selected networks to the one below:">
+                                           <strong>Change Visibility</strong>
+                                       </bulk-edit-network-property>
+                                   </a>
+                               </li>
                            </ul>
                        </div>
                     </span>
+
+                    <span>
+                        <!---&& ((networkController.currentNetwork.visibility == "PUBLIC")
+                                || networkController.isAdmin
+                                || networkController.canEdit
+                                || networkController.canRead)'>--->
+
+                        <a class="btn btn-primary customButtonWidth">
+                            <create-bulk-export-network-tasks ndex-data='userController' ng-model="selection">
+                                Export Networks
+                            </create-bulk-export-network-tasks>
+                        </a>
+                    </span>
+
 
                     <span>
                         <a class="btn btn-primary customButtonWidth"

@@ -846,7 +846,7 @@
                 $scope.errors = null;
                 $scope.modal = {};
                 //$scope.task.networkType = 'Default 11';
-                $scope.title = 'Export Selected Networks As Files';
+                $scope.title = 'Export Selected Networks';
                 $scope.export = {};
 
                 $scope.task = {
@@ -894,7 +894,7 @@
                     //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
                     // UUID wasn't yet available.
 
-
+                    var createdTasksCounter = 0;
 
                     for (i = 0; i < Object.keys(IDsAndTypesOfSelectedNetworks).length; i++) {
                         // clone $scope.task; myTask should be unique object since it
@@ -909,9 +909,6 @@
                         if (myTask.format.toUpperCase() === 'BEL') {
                             myTask.format = 'XBEL';
                         }
-
-                        var createdTasksCounter = 0;
-
 
                         ndexService.createTask(myTask,
                             function (data) {
@@ -940,6 +937,7 @@
             }
         }
     });
+
 
 
     // modal to edit network summary
@@ -1083,6 +1081,127 @@
             }
         }
     });
+
+    // modal to bulk edit networks description
+    uiServiceApp.directive('bulkEditNetworkProperty', function() {
+        return {
+            scope: {
+                ndexData: '=',
+                action: '@directiveAction',
+                title:  '@directiveTitle',
+                text:   '@directiveDescription'
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
+            transclude: true,
+            controller: function($scope, $modal, ndexService, $route) {
+
+                var visibilities = ["PUBLIC", "DISCOVERABLE", "PRIVATE"];
+
+                var modalInstance;
+                $scope.errors = null;
+                $scope.network = {};
+
+                $scope.openMe = function() {
+
+                    $scope.network = {};
+
+                    $scope.network.name = null;
+                    $scope.network.description = null;
+                    $scope.network.version = null;
+                    $scope.network.visibility = null;
+
+                    modalInstance = $modal.open({
+                        templateUrl: 'bulk-edit-network-property-modal.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.cancel = function() {
+                    modalInstance.close();
+                    modalInstance = null;
+                    $scope.network = {};
+                };
+
+                $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
+
+                    var userController = $scope.ndexData;
+
+                    if (visibilities.indexOf($scope.network.visibility.toUpperCase()) == -1) {
+                        $scope.network.visibility = null;
+                    }
+
+                    var myNetwork = JSON.parse(JSON.stringify($scope.network));
+                    var IdsOfSelectedNetworks = userController.getIDsOfSelectedNetworks();
+
+                    var createdTasksCounter = 0;
+
+                    for (i = 0; i < IdsOfSelectedNetworks.length; i++ )
+                    {
+                        var networkId = IdsOfSelectedNetworks[i];
+                        var myNetwork = JSON.parse(JSON.stringify($scope.network));
+                        myNetwork.networkId  = networkId;
+
+                        ndexService.editNetworkSummary(networkId, myNetwork,
+                            function(data) {
+                                createdTasksCounter =  createdTasksCounter + 1;
+
+                                if (myNetwork.visibility != null) {
+                                    userController.updateVisibilityOfNetwork(data.networkId, myNetwork.visibility);
+                                }
+
+                                if (i == createdTasksCounter) {
+                                    $scope.isProcessing = false;
+                                    modalInstance.close();
+                                }
+                            },
+                            function(error) {
+                                createdTasksCounter =  createdTasksCounter + 1;
+
+                                if (i == createdTasksCounter) {
+                                    $scope.isProcessing = false;
+                                    modalInstance.close();
+
+                                }
+                            }
+                        )
+                    }
+                };
+
+                $scope.findCitationForNetworkSummary = function(propertiesArray) {
+                    if (typeof propertiesArray === 'undefined') {
+                        return null;
+                    }
+                    for( var i = 0; i < propertiesArray.length; i++ ) {
+                        if (propertiesArray[i].predicateString.toLowerCase().trim() === 'reference') {
+                            return propertiesArray[i].value;
+                        }
+                    }
+                    return null;
+                }
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.network.name = $scope.ndexData.name;
+                    $scope.network.description = $scope.ndexData.description;
+                    $scope.network.version = $scope.ndexData.version;
+                    $scope.network.visibility = $scope.ndexData.visibility;
+
+                    // reference1 and reference2 are used to decide whether to send setNetworkProperties
+                    // request to the server.  The request is sent if after editing Network Profile
+                    // the reference2 field was modified, i.e., if
+                    // $scope.network.reference1 !== $scope.network.reference2.
+                    $scope.network.reference1 =
+                        $scope.findCitationForNetworkSummary($scope.ndexData.properties);
+                    $scope.network.reference2 = $scope.network.reference1;
+
+                });
+            }
+        }
+    });
+
 
     // modal to change password
     uiServiceApp.directive('changePasswordModal', function() {
