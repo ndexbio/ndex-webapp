@@ -465,6 +465,31 @@ ndexApp.controller('networkController',
                     });
             };
 
+            var getNumberOfBelNetworkNamespaces = function()
+            {
+                ndexService.getNumberOfBelNetworkNamespaces(networkController.currentNetworkId,
+                    function(data)
+                    {
+                        networkController.numberOfBelNetworkNamespaces = "Not Archived";
+
+                        var i = 0;
+                        for (i = 0; i < data.metaData.length; i++) {
+
+                            if (data.metaData[i].name.toLowerCase() === 'belnamespacefiles') {
+                                if (data.metaData[i].elementCount > 0) {
+                                    networkController.numberOfBelNetworkNamespaces = "Archived (" +
+                                        data.metaData[i].elementCount + ")";
+                                }
+                                return;
+                            }
+                        }
+                    },
+                    function(error)
+                    {
+                        networkController.numberOfBelNetworkNamespaces = "Can't retrieve";
+                    });
+            };
+
             var getNetworkSourceFormat = function(networkProperties)
             {
                 networkController.currentNetworkSourceFormat = 'undefined';
@@ -518,7 +543,14 @@ ndexApp.controller('networkController',
                         });
                         networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                         getNetworkAdmins();
+
                         getNetworkSourceFormat(networkController.currentNetwork.properties);
+
+                        if ("BEL" === networkController.currentNetworkSourceFormat) {
+                            // for BEL networks, check if Namespaces have been archived
+                            getNumberOfBelNetworkNamespaces();
+                        }
+
                     }
                 )
                     .error(

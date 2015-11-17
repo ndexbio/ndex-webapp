@@ -70,6 +70,14 @@
             </ul>
         </div>
 
+
+        <div class="row">
+            <span ng-show='networkController.currentNetworkSourceFormat=="BEL"'>
+                <strong>BEL Namespaces:</strong>
+                {{networkController.numberOfBelNetworkNamespaces}}
+            </span>
+        </div>
+
         <div class="row" ng-show='networkController.isLoggedIn'>
 
             <div class="btn-group btn-group-vertical buttonWithMarginBottom">

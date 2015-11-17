@@ -617,6 +617,12 @@ ndexServiceApp.factory('ndexService',
                         params: {
                             subResource: 'attachNamespaceFiles'
                         }
+                    },
+                    getNumberOfBelNetworkNamespaces: {
+                        method: 'GET',
+                        params: {
+                            subResource: 'metadata'
+                        }
                     }
                 }
             );
@@ -670,15 +676,17 @@ ndexServiceApp.factory('ndexService',
                 handleAuthorizationHeader();
                 NetworkResource.setNetworkProperties({identifier: externalId}, properties, successHandler, errorHandler);
             };
-
             factory.deleteNetwork = function(externalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 NetworkResource.delete({identifier: externalId}, null, successHandler, errorHandler);
             };
-
             factory.archiveBelNamespaces = function(externalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 NetworkResource.archiveBelNamespaces({identifier: externalId}, null, successHandler, errorHandler);
+            };
+            factory.getNumberOfBelNetworkNamespaces = function(externalId, successHandler, errorHandler) {
+                handleAuthorizationHeader();
+                NetworkResource.getNumberOfBelNetworkNamespaces({identifier: externalId}, null, successHandler, errorHandler);
             };
             factory.editNetworkSummary = function (externalId, summary, successHandler, errorHandler) {
                 handleAuthorizationHeader();
