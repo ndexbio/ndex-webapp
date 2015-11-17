@@ -1225,6 +1225,13 @@ ndexApp.controller('networkController',
                 return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery()) ? true : false;
             }
 
+            networkController.isStringEmpty = function(s) {
+                if (typeof(s) === 'undefined' || s == null) {
+                    return true;
+                }
+                return ((s.trim()).length > 0) ? false : true;
+            }
+
             networkController.validateAdvancedQuery = function () {
                 var advancedEdgeQueryState = networkController.validateAdvancedEdgeQuery();
                 var advancedNodeQueryState = networkController.validateAdvancedNodeQuery();
@@ -1262,50 +1269,42 @@ ndexApp.controller('networkController',
 
             networkController.validateAdvancedEdgeQuery = function () {
                 var i;
-                var validEdgeProperties = false;
 
                 for (i = 0; i < networkController.advancedQueryEdgeProperties.length; i++) {
                     var edgeProperty = networkController.advancedQueryEdgeProperties[i];
 
-                    if (( (typeof(edgeProperty.name) === "undefined") && (typeof(edgeProperty.value) !== "undefined")) ||
-                        ( (typeof(edgeProperty.name) !== "undefined") && (typeof(edgeProperty.value) === "undefined"))) {
-                        return INCOMPLETE_QUERY_CODE;
-                    }
-
-                    if ((edgeProperty.name && !edgeProperty.value) || (edgeProperty.value && !edgeProperty.name)) {
-                        return INCOMPLETE_QUERY_CODE;
-                    }
-
-                    if (( (typeof(edgeProperty.name) === "undefined") && (typeof(edgeProperty.value) === "undefined")) ||
-                        ((!edgeProperty.name || edgeProperty.name == "") && !edgeProperty.value)) {
+                    if (networkController.isStringEmpty(edgeProperty.name) &&
+                        networkController.isStringEmpty(edgeProperty.value)) {
                         return EMPTY_QUERY_CODE;
+                    }
+
+                    if ( (networkController.isStringEmpty(edgeProperty.name) &&
+                         !networkController.isStringEmpty(edgeProperty.value) ) ||
+                        (!networkController.isStringEmpty(edgeProperty.name) &&
+                          networkController.isStringEmpty(edgeProperty.value)) ) {
+                        return INCOMPLETE_QUERY_CODE;
                     }
                 }
 
                 return VALID_QUERY_CODE;
             }
 
-
-
             networkController.validateAdvancedNodeQuery = function () {
                 var i;
-                var validNodeProperties = false;
 
                 for (i = 0; i < networkController.advancedQueryNodeProperties.length; i++) {
                     var nodeProperty = networkController.advancedQueryNodeProperties[i];
 
-                    if (( (typeof(nodeProperty.name) === "undefined") && (typeof(nodeProperty.value) !== "undefined")) ||
-                        ( (typeof(nodeProperty.name) !== "undefined") && (typeof(nodeProperty.value) === "undefined"))) {
-                        return INCOMPLETE_QUERY_CODE;
-                    }
-
-                    if ((nodeProperty.name && !nodeProperty.value) || (nodeProperty.value && !nodeProperty.name)) {
-                        return INCOMPLETE_QUERY_CODE;
-                    }
-
-                    if (( (typeof(nodeProperty.name) === "undefined") && (typeof(nodeProperty.value) === "undefined")) ||
-                        ((!nodeProperty.name || nodeProperty.name == "") && !nodeProperty.value)) {
+                    if (networkController.isStringEmpty(nodeProperty.name) &&
+                        networkController.isStringEmpty(nodeProperty.value)) {
                         return EMPTY_QUERY_CODE;
+                    }
+
+                    if ( (networkController.isStringEmpty(nodeProperty.name) &&
+                         !networkController.isStringEmpty(nodeProperty.value) ) ||
+                        (!networkController.isStringEmpty(nodeProperty.name) &&
+                          networkController.isStringEmpty(nodeProperty.value)) ) {
+                        return INCOMPLETE_QUERY_CODE;
                     }
                 }
 
