@@ -3,28 +3,29 @@
 <script type="text/ng-template" id="create-bulk-export-network-task-modal.html">
     <div class='modal-content'>
         <div class="modal-header">
-            <h5 class="modal-title">{{title}}</h5>
+            <h4 class="modal-title">{{title}}</h4>
         </div>
 
         <div class='modal-body' ng-hide='false'>
 
-            <div><strong>This will create background tasks to export the selected networks as files.
+            <div class="rowWithOneLineTopPad">
+                This will create background tasks to export the selected networks as files.
                 When complete, the tasks will be displayed in your Tasks & Notifications tab
                 with links to download the exported files.
-                <br>
-                Please select format for networks exporting below.
-                All networks will be exported in the same format.
-            </strong></div>
+            </div>
 
+            <div class="rowWithOneLineTopPad">
+                Please choose Export Format below:
+            </div>
             <h5><strong>
-                File Format:
+                Export Format:
             <span class="dropdown">
 		      <a href class="dropdown-toggle">
                   {{export.networkType}} <span class="caret"></span>
               </a>
 		      <ul class="dropdown-menu">
                   <li>
-                      <a class="dropdown-toggle" ng-click='export.networkType = "Default"'><small>Default</small></a>
+                      <a class="dropdown-toggle" ng-click='export.networkType = "Native"'><small>Native</small></a>
                   </li>
                   <li>
                       <a class="dropdown-toggle" ng-click='export.networkType = "CX"'><small>CX</small></a>

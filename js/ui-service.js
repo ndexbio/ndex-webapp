@@ -864,7 +864,7 @@
                 };
 
                 $scope.openMe = function() {
-                    $scope.export.networkType = "Default";
+                    $scope.export.networkType = "Native";
                     //$scope.task.format = $scope.networkType;
 
                     modalInstance = $modal.open({
@@ -901,7 +901,7 @@
                         // will be passed as argment to ndexService.createTask
                         var myTask = JSON.parse(JSON.stringify($scope.task));
 
-                        myTask.format = ($scope.export.networkType === 'Default') ?
+                        myTask.format = ($scope.export.networkType === 'Native') ?
                             IDsAndTypesOfSelectedNetworks[i]['format'] :
                             $scope.export.networkType;
 
@@ -1532,7 +1532,7 @@
                         templateUrl: 'confirmation-modal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
-                            $scope.title = 'Delete your Account'
+                            $scope.title = 'Delete Your Account'
                             $scope.message = 'Your account will be permanently deleted from NDEx. Are you sure you want to delete?';
 
                             $scope.cancel = function() {
