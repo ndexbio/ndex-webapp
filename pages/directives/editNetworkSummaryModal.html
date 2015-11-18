@@ -8,7 +8,7 @@
     </div>
     <div class="modal-body">
         
-          <div class="form-group">
+          <div class="form-group rowWithOneLineTopPad">
             <label class="col-sm-3 control-label">Name</label>
             <div class="col-sm-8">
               <input type="text" class="form-control" placeholder="Network Name" ng-model='network.name'>
@@ -49,11 +49,11 @@
               {{errors}}
             </strong>
           </div>
-        
-    <div class="modal-footer">
-        <a class="btn btn-default" type='button' ng-click='cancel()'>Cancel</a>
-        <button class="btn btn-primary" type='submit' ng-disabled='isProcessing'>Save</button>
-    </div>
+        </div>
+        <div class="modal-footer">
+            <a class="btn btn-default" type='button' ng-click='cancel()'>Cancel</a>
+            <button class="btn btn-primary" type='submit' ng-disabled='isProcessing'>Save</button>
+        </div>
   </form>
 </div>
 </script>
