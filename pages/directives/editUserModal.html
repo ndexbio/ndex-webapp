@@ -4,11 +4,11 @@
 <div class='modal-content'>
   <form class="form-horizontal" role="form" ng-submit='submit()'>
     <div class="modal-header">
-        <h4 class="modal-title">Edit Profile</h4>
+        <h4 class="modal-title">Edit Personal Info</h4>
     </div>
     <div class="modal-body">
         
-          <div class="form-group">
+          <div class="form-group rowWithOneLineTopPad">
             <label class="col-sm-3 control-label">Name</label>
             <div class="col-sm-4">
               <input type="text" class="form-control" placeholder="First Name" ng-model='user.firstName'>
@@ -42,11 +42,13 @@
               {{errors}}
             </strong>
           </div>
-        
-    <div class="modal-footer">
-        <button class="btn btn-default" type='button' ng-click='cancel()'>Cancel</button>
-        <button class="btn btn-primary" type='submit' ng-disabled='isProcessing'>Save</button>
-    </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default" type='button' ng-click='cancel()'>Cancel</button>
+            <button class="btn btn-primary" type='submit' ng-disabled='isProcessing'>Save</button>
+        </div>
+
   </form>
 </div>
 </script>
