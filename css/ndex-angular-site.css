@@ -851,6 +851,10 @@ hr {
     padding-top: 2em;
 }
 
+.rowWithOneLineTopPad {
+    padding-top: 1em;
+}
+
 .ndex-nav-pills {
     font-weight: bold;
     font-size: 1.1em;

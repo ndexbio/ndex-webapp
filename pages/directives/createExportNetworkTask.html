@@ -2,6 +2,11 @@
 
 <script type="text/ng-template" id="create-export-network-task-modal.html">
     <div class='modal-content'>
+
+        <div class="modal-header">
+            <h4 class="modal-title">Export Network</h4>
+        </div>
+
         <div class='modal-body' ng-hide='false'>
 
             <h5><strong>
@@ -10,8 +15,17 @@
                 </div>
             </strong></h5>
 
+            <div class="rowWithOneLineTopPad">This will create a background task to export the network as a file.
+                When complete, the task will be displayed in your Tasks & Notifications tab
+                with a link to download the exported file.
+            </div>
+
+            <div class="rowWithOneLineTopPad">
+                Please choose Export Format below:
+            </div>
+
             <h5><strong>
-                File Format:
+                Export Format:
             <span class="dropdown">
 		      <a href class="dropdown-toggle">
                   {{task.format}} <span class="caret"></span>
@@ -38,18 +52,12 @@
               </ul>
 		    </span>
             </strong></h5>
-
-            <div>This will create a background task to export the network as a file.
-                When complete, the task will be displayed in your Tasks & Notifications tab
-                with a link to download the exported file.
-            </div>
-
-
         </div>
 
         <div class='modal-footer' ng-hide='false'>
             <button class='btn btn-default' ng-click='close()'>Cancel</button>
             <button class='btn btn-primary' ng-click='createTask()' ng-disabled='isProcessing'>Export Network</button>
         </div>
+
     </div>
 </script>
