@@ -408,9 +408,12 @@ ndexApp.controller('networkController',
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);
 
+                        // enableFiltering set to true means that filtering will be on regardless of the size
+                        // of the network
                         var enableFiltering = true;
-                        refreshEdgeTable(enableFiltering);
-                        refreshNodeTable();
+                        populateEdgeTable(enableFiltering);
+                        populateNodeTable(enableFiltering);
+
                         // close the modal
                         networkController.successfullyQueried = true;
                         modalInstance.close();
@@ -537,8 +540,11 @@ ndexApp.controller('networkController',
                                 || networkController.canRead)
                                 getEdges(function (subnetwork) {
                                     cytoscapeService.setNetwork(subnetwork);
-                                    populateEdgeTable();
-                                    populateNodeTable();
+                                    // enableFiltering set to false means that filtering will be on if the size
+                                    // of the network is no greater than 500 edges
+                                    var enableFiltering = false;
+                                    populateEdgeTable(enableFiltering);
+                                    populateNodeTable(enableFiltering);
                                 })
                         });
                         networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
@@ -790,7 +796,7 @@ ndexApp.controller('networkController',
                 return 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
             };
 
-            var populateEdgeTable = function()
+            var populateEdgeTable = function(enableFiltering)
             {
                 var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
                 var edges = networkController.currentSubnetwork.edges;
@@ -832,7 +838,15 @@ ndexApp.controller('networkController',
                 }
 
 
+                // enable filtering if number of edges in the network is no greater than 500
                 var filteringEnabled = (networkController.currentNetwork.edgeCount <= 500) ? true : false;
+
+
+                if (enableFiltering) {
+                    // enable filtering even if the number of edges in the network is greater than 500;
+                    // this is the case when we want filtering on after running simple or advance query
+                    filteringEnabled = true;
+                }
                 var columnDefs = [
                     {
                         field: 'Subject',
@@ -908,11 +922,10 @@ ndexApp.controller('networkController',
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
 
-                var changeEnableFiltering = false;
-                refreshEdgeTable(changeEnableFiltering);
+                refreshEdgeTable();
             };
 
-            var refreshEdgeTable = function (changeEnableFiltering) {
+            var refreshEdgeTable = function () {
                 var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
                 var edges = networkController.currentSubnetwork.edges;
                 var terms = networkController.currentSubnetwork.terms;
@@ -939,7 +952,7 @@ ndexApp.controller('networkController',
 
                     $scope.edgeGridOptions.data.push( row );
                 }
-
+                /*
                 if (changeEnableFiltering) {
                     for (j = 0; j < $scope.edgeGridApi.grid.options.columnDefs.length; j++) {
                         if ($scope.edgeGridApi.grid.options.columnDefs[j].displayName.toLowerCase() !== 'citations') {
@@ -949,9 +962,10 @@ ndexApp.controller('networkController',
                     }
                     $scope.edgeGridApi.core.refresh();
                 }
+                */
             };
 
-            var populateNodeTable = function()
+            var populateNodeTable = function(enableFiltering)
             {
                 var nodes = networkController.currentSubnetwork.nodes;
                 var nodeKeys = $scope.networkController.getNodeKeys();
@@ -984,7 +998,16 @@ ndexApp.controller('networkController',
                     }
                 }
 
-                var filteringEnabled = (networkController.currentNetwork.nodeCount <= 500) ? true : false;
+                // enable filtering if number of edges in the network is no greater than 500;
+                // we still check number of edges even though we populate node headers in this routine
+                var filteringEnabled = (networkController.currentNetwork.edgeCount <= 500) ? true : false;
+
+                if (enableFiltering) {
+                    // enable filtering even if the number of edges in the network is greater than 500;
+                    // this is the case when we want filtering on after running simple or advance query.
+                    // we still check number of edges even though we populate node header in this routine
+                    filteringEnabled = true;
+                }
                 var columnDefs = [
                     {
                         field: 'Label',
@@ -1229,10 +1252,12 @@ ndexApp.controller('networkController',
                         networkController.currentSubnetwork = network;
                         cytoscapeService.setNetwork(network);
 
+                        // enableFiltering set to true means that filtering will be on regardless of the size
+                        // of the network
                         var enableFiltering = true;
-                        refreshEdgeTable(enableFiltering);
+                        populateEdgeTable(enableFiltering);
+                        populateNodeTable(enableFiltering);
 
-                        refreshNodeTable();
                         // close the modal
                         networkController.successfullyQueried = true;
                         modalInstance.close();

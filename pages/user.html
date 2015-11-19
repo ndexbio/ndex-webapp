@@ -250,7 +250,7 @@
                                                 <span class='text-muted'>{{task.status | taskStatusToLabel}}</span>
 
                                                 <a ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'"
-                                                   href="/exported-networks/{{task.externalId}}.{{userController.getTaskFileExt(task)}}" >Download Network
+                                                   href="/exported-networks/{{task.externalId}}.{{userController.getTaskFileExt(task)}}" download> Download Network
                                                 </a>
 
                                                 <a>
