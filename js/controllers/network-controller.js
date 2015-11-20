@@ -922,10 +922,10 @@ ndexApp.controller('networkController',
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
 
-                refreshEdgeTable();
+                refreshEdgeTable(headers);
             };
 
-            var refreshEdgeTable = function () {
+            var refreshEdgeTable = function (headers) {
                 var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
                 var edges = networkController.currentSubnetwork.edges;
                 var terms = networkController.currentSubnetwork.terms;
@@ -942,12 +942,28 @@ ndexApp.controller('networkController',
                     var row = {"Subject": subject, "Predicate": predicate, "Object": object, "Citations": edgeKey};
 
                     var properties = edges[edgeKey].properties;
+
+                    // create row of properties for the table
                     for( j = 0; j < properties.length; j++ )
                     {
                         var key = properties[j].predicateString;
                         key = key.replace("(", "*");
                         key = key.replace(")", "*");
                         row[key] = properties[j].value;
+                    }
+
+                    // The Edges table defines properties header columns, but
+                    // not all properties declared in the table header can be present for every row.
+                    // For cases where some property is missing from the table row, we need to implicitly assign it an
+                    // empty value to provide correct scrolling behavior of the table (defect NDEX-656).
+                    for( k = 0; k < headers.length; k++ )
+                    {
+                        var key = headers[k];
+                        key = key.replace("(", "*");
+                        key = key.replace(")", "*");
+                        if (!row.hasOwnProperty(key)) {
+                            row[key] = "";
+                        }
                     }
 
                     $scope.edgeGridOptions.data.push( row );
@@ -1062,7 +1078,7 @@ ndexApp.controller('networkController',
                     networkController.nodePropertyNamesForAdvancedQuery.push(field);
                 }
 
-                refreshNodeTable();
+                refreshNodeTable(headers);
 
                 $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
@@ -1070,7 +1086,7 @@ ndexApp.controller('networkController',
 
             };
 
-            var refreshNodeTable = function()
+            var refreshNodeTable = function(headers)
             {
                 var nodes = networkController.currentSubnetwork.nodes;
                 var nodeKeys = $scope.networkController.getNodeKeys();
@@ -1085,12 +1101,28 @@ ndexApp.controller('networkController',
                     var row = {"Label": label, "Citations": nodeKey};
 
                     var properties = nodes[nodeKey].properties;
+
+                    // create row of properties for the table
                     for( j = 0; j < properties.length; j++ )
                     {
                         var key = properties[j].predicateString;
                         key = key.replace("(", "*");
                         key = key.replace(")", "*");
                         row[key] = properties[j].value;
+                    }
+
+                    // The Nodes table defines properties header columns, but
+                    // not all properties declared in the table header can be present for every row.
+                    // For cases where some property is missing from the table row, we need to implicitly assign it an
+                    // empty value to provide correct scrolling behavior of the table (defect NDEX-656).
+                    for( k = 0; k < headers.length; k++ )
+                    {
+                        var key = headers[k];
+                        key = key.replace("(", "*");
+                        key = key.replace(")", "*");
+                        if (!row.hasOwnProperty(key)) {
+                            row[key] = "";
+                        }
                     }
 
                     $scope.nodeGridOptions.data.push( row );
