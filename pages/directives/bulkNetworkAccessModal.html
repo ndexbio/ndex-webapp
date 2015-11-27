@@ -1,0 +1,57 @@
+<span ng-click="openMe()">{{text}}</span>
+
+<script type="text/ng-template" id="modal.html">
+    <div class='modal-content'>
+        <form class="form-horizontal" name="manageBulkNetworkAccessForm" role="form" ng-submit='submit()'>
+            <div class="modal-header">
+                <h4 class="modal-title">Select Access to Grant</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="rowWithOneLineTopPad">This will create a background task to grant the selected
+                    access to the selected users for the selected networks.
+                </div>
+
+                <div class="rowWithOneLineTopPad">
+                    Please choose Access below:
+                </div>
+
+                <h5><strong>
+
+                    Access:
+
+                    <span class="dropdown">
+		                <a href class="dropdown-toggle">
+                            {{accessType.permission}} <span class="caret"></span>
+                        </a>
+		                <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-toggle" ng-click='accessType.permission = "Admin"'><small>Admin</small></a>
+                            </li>
+                            <li>
+                                <a class="dropdown-toggle" ng-click='accessType.permission = "Edit"'><small>Edit</small></a>
+                            </li>
+                            <li>
+                                <a class="dropdown-toggle" ng-click='accessType.permission = "Read"'><small>Read</small></a>
+                            </li>
+                        </ul>
+		            </span>
+                </strong></h5>
+
+                <div class='text-danger'>
+                    <strong>
+                        {{errors}}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a type='cancel' class="btn btn-default" ng-click="cancel()">Cancel</a>
+                <button type='submit' class="btn btn-primary"
+                        ng-disabled="accessType.permission=='' || isProcessing">
+                    Grant Access
+                </button>
+            </div>
+        </form>
+    </div>
+</script>
