@@ -1,0 +1,180 @@
+
+<div class ='row'>
+	<div class='col-sm-offset-2 col-sm-8'>
+		<p class="alert alert-danger" ng-repeat='error in bulkNetworkManager.errors'>
+			{{error}}
+			<span class="glyphicon glyphicon-remove pull-right"
+				style='cursor:pointer'
+				ng-click='bulkNetworkManager.errors.splice($index,1)'>	
+			</span>
+		</p>
+	</div>
+</div>
+
+<div class='row'>
+	<div class='col-sm-offset-2 col-sm-8' ng-hide="!noNetworksSelected">
+
+		<div class='row'>
+			<hr>
+			<h5>No networks selected</h5>
+			<hr>
+		</div>
+	</div>
+
+	<div class='col-sm-offset-2 col-sm-8' ng-hide="noNetworksSelected">
+
+		<div class='row'>
+			<h5>Grant access to the <strong>selected networks</strong></h5>
+			<br>
+			<p class='text-info'>
+				Users and groups with admin access modify and delete the network as well as manage who has access.
+				Users and groups who can edit the network can only modify the network.
+				Users and groups with read access can view the network even if it is private.
+			</p>
+			<p class='text-info'>
+				Please note that granting access to a group is equivalent to granting access to all the members
+				for the specified access.
+			</p>
+		</div>
+
+		<div class='row'>
+			<h6>Who has access</h6>
+			<hr>
+
+			<div ng-repeat='member in bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions'>
+			<div class='row'>
+				<div class='col-sm-offset-1 col-sm-3 text-muted'>
+					{{member.memberAccountName}}
+				</div>
+
+				<div class='col-sm-1'>
+					<span class="glyphicon glyphicon-remove text-muted"
+						  style='cursor:pointer'
+						  ng-click='bulkNetworkManager.removeMember($index, member);'>
+					</span>
+					<!--
+					<span class="glyphicon glyphicon-remove text-muted"
+						style='cursor:pointer'
+						ng-click='bulkNetworkManager.memberships.splice($index,1); bulkNetworkManager.remove.push(member)'>	
+					</span>
+					-->
+				</div>
+
+			</div>
+			<hr>
+			</div>
+
+			<div class='pull-left'>
+				<!--
+				<button type="button" class="btn btn-sm btn-danger" ng-click='bulkNetworkManager.discardChanges()'>
+					Discard Changes
+				</button>
+				-->
+				<span>
+					<a class="btn btn-sm btn-success"
+					   bulk-network-access-modal="Next"
+					   ndex-data="bulkNetworkManager"
+					   ng-disabled="isProcessing ||
+					       bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.length==0">
+						Next
+					</a>
+				</span>
+
+			</div>
+		</div>
+
+		<br>
+		<br>
+
+		<div class='row'>
+
+			<div class='col-sm-4'>
+				<h6>Grant access to users</h6>
+				<div class='row'>
+					<form role='form' ng-submit='bulkNetworkManager.findUsers()'>
+					<input type="text" class="input-sm" placeholder="find a person"
+						ng-model='bulkNetworkManager.searchString'>
+						<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+					</form>
+				</div>
+			
+				<div class='row' ng-repeat='user in bulkNetworkManager.newUsers'>
+					<br>
+					<div class='col-sm-8'>
+						<div class='row'>
+							<div class='col-sm-6'>
+								<div class='row'>
+									<ndex-account-image
+				                    	ndex-class="'col-sm-10'"
+				                    	ndex-src="user.image">
+				            		</ndex-account-image>
+				            	</div>
+				            </div>
+
+					        <div class='col-sm-6'>
+								{{bulkNetworkManager.getAccountName(user)}}
+							</div>
+
+						</div>
+					</div>
+					<div class='col-sm-4'>
+						<div class="row">
+							<button class='btn btn-xs btn-primary pull-right'
+								ng-disabled='user.member'
+								ng-click='bulkNetworkManager.addMember(user)'>
+								Add
+							</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class='col-sm-offset-2 col-sm-4'>
+				<h6>Grant access to groups</h6>
+				<div class='row'>
+					<form role='form' ng-submit='bulkNetworkManager.findGroups()'>
+					<input type="text" class="input-sm" placeholder="find a group"
+						ng-model='bulkNetworkManager.groupSearchString'>
+						<button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+					</form>
+				</div>
+			
+				<div class='row' ng-repeat='group in bulkNetworkManager.newGroups'>
+					<br>
+					<div class='col-sm-8'>
+						<div class='row'>
+							<div class='col-sm-6'>
+								<div class='row'>
+									<ndex-account-image
+				                    	ndex-class="'col-sm-10'"
+				                    	ndex-src="group.image">
+				            		</ndex-account-image>
+				            	</div>
+				            </div>
+
+					        <div class='col-sm-6'>
+								{{bulkNetworkManager.getAccountName(group)}}
+							</div>
+
+						</div>
+					</div>
+					<div class='col-sm-4'>
+						<div class='row'>
+							<button class='btn btn-xs btn-primary pull-right'
+								ng-disabled='group.member'
+								ng-click='bulkNetworkManager.addMember(group)'>
+								Add
+							</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+

@@ -74,6 +74,14 @@ ndexApp.service('sharedProperties', function ($http) {
         getCurrentQueryDepth: function()
         {
             return this.currentQueryDepth;
+        },
+        setSelectedNetworkIDs: function(selectedIDs)
+        {
+            this.selectedNetworkIDs = selectedIDs;
+        },
+        getSelectedNetworkIDs: function()
+        {
+            return this.selectedNetworkIDs;
         }
     }
 });
@@ -146,6 +154,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         .when('/access/network/:identifier', {
             templateUrl: 'pages/manageNetworkAccess.html',
             controller: 'manageNetworkAccessController'
+        })
+
+        .when('/access/bulk/network', {
+            templateUrl: 'pages/manageBulkNetworkAccess.html',
+            controller: 'manageBulkNetworkAccessController'
         })
 
         .when('/access/group/:identifier', {

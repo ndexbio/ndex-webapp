@@ -1202,6 +1202,192 @@
         }
     });
 
+    uiServiceApp.directive('bulkNetworkAccessModal', function() {
+        return {
+            scope: {
+                ndexData: '='
+            },
+            restrict: 'A',
+            transclude: true,
+            templateUrl: 'pages/directives/bulkNetworkAccessModal.html',
+            controller: function($scope, $attrs, $modal, $location, ndexService) {
+                var modalInstance;
+
+                //$scope.group = {};
+                $scope.text = $attrs.bulkNetworkAccessModal;
+                $scope.accessType = {};
+
+                $scope.openMe = function() {
+                    $scope.accessType.permission = '';
+                    modalInstance = $modal.open({
+                        templateUrl: 'modal.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.cancel = function() {
+                    modalInstance.dismiss();
+                    delete $scope.errors;
+                    //$scope.group = {};
+                };
+
+                //$scope.$watch("group.groupName", function() {
+                //    delete $scope.errors;
+                //});
+
+                $scope.isProcessing = false;
+
+                $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
+
+
+                    var accessTypeSelected =
+                        ($scope.accessType.permission.toUpperCase()==="EDIT") ? "WRITE" :
+                        $scope.accessType.permission.toUpperCase();
+
+                    var bulkNetworkManager = $scope.ndexData;
+                    modalInstance.close();
+                    $scope.isProcessing = false;
+
+
+                    /*
+                    var newMembership = {
+                        memberAccountName: member.accountName,
+                        memberUUID: member.externalId,
+                        resourceName: networkManager.network.name,
+                        resourceUUID: networkManager.network.externalId,
+                        permissions: 'WRITE'
+                    }
+                    */
+
+
+                    /*
+
+
+                     var newMembership = {
+                        memberAccountName: member.accountName,
+                        memberUUID: member.externalId,
+                        resourceName: networkManager.network.name,
+                        resourceUUID: networkManager.network.externalId,
+                        permissions: 'WRITE'
+                     }
+
+                     // using this for groups as well, didnt expect it to work. should have own check for group->network using group api call
+                     ndexService.getDirectMembership(networkManager.network.externalId, member.externalId).$promise.then(
+                        function(membership) {
+                            if(membership != null && membership.permissions !=null)
+                                networkManager.errors.push('User already has access to this network');
+                            else
+                                return ndexService.updateNetworkMember(newMembership).$promise
+                            }).then(
+                                function(success) {
+                                    member.member = true;
+                                    networkManager.loadMemberships();
+                                 },
+                                function(error) {
+                                    networkManager.errors.push(error.data);
+                                }
+                           );
+
+
+
+                     */
+
+
+
+                    var updateAccessRequestsSent = 0;
+                    var updateAccessRequestsResponsesReceived = 0;
+
+
+                    var IDsOfSelectedNetworks =
+                        Object.keys(bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions);
+
+
+                    // iterate through the list of networks selected for updating access
+                    for (var i = 0;  i < IDsOfSelectedNetworks.length; i++) {
+
+                        var networkId  = IDsOfSelectedNetworks[i];
+                        var networkPermissionsObjs =
+                            bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions[networkId];
+
+                        // loop through the list of accounts whose access for the networks we modify
+                        for (var j = 0;
+                                 j <  bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.length; j++) {
+
+                            var accountForUpdating =
+                                bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions[j];
+
+                            var updateNetworkAccessPermissions =
+                                bulkNetworkManager.checkIfNetworkAccessNeedsUpdating(
+                                    networkPermissionsObjs, accountForUpdating, accessTypeSelected);
+
+
+                            if (updateNetworkAccessPermissions) {
+
+                                var updatedMembership = {
+                                    //memberAccountName: member.accountName,
+                                    memberUUID: accountForUpdating.memberUUID,
+                                    //resourceName: networkManager.network.name,
+                                    resourceUUID: networkId,
+                                    permissions: accessTypeSelected
+                                }
+
+                                var cloneOfUpdatedMembership = JSON.parse(JSON.stringify(updatedMembership));
+
+                                updateAccessRequestsSent = updateAccessRequestsSent + 1;
+
+                                ndexService.updateNetworkMember(cloneOfUpdatedMembership).$promise.then(
+                                    function(success){
+                                        //TODO
+                                        updateAccessRequestsResponsesReceived =
+                                            updateAccessRequestsResponsesReceived + 1;
+
+                                    },
+                                    function(error){
+                                        updateAccessRequestsResponsesReceived =
+                                            updateAccessRequestsResponsesReceived + 1;
+                                    });
+                            }
+
+                        }
+
+                    }
+
+
+
+
+                    //$scope.isProcessing = false;
+
+
+                    //var keys = Object.keys(bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions);
+                    //var k = keys;
+
+                    /*
+                    ndexService.createGroup($scope.group,
+                        function(groupData){
+                            modalInstance.close();
+                            ////console.log(groupData);
+                            $location.path('/group/'+groupData.externalId);
+                            $scope.isProcessing = false;
+                        },
+                        function(error){
+                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
+                                $scope.errors = "Group with name " + $scope.group.groupName + " already exists.";
+                            } else {
+                                $scope.errors = error.data.message;
+                            }
+                            $scope.isProcessing = false;
+                        });
+                        */
+
+                };
+            }
+        }
+    });
+
+
 
     // modal to change password
     uiServiceApp.directive('changePasswordModal', function() {

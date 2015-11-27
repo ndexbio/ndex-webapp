@@ -215,6 +215,14 @@ ndexApp.controller('userController',
                 });
             }
 
+            userController.manageBulkAccess = function(path)
+            {
+                var selectedIDs = userController.getIDsOfSelectedNetworks();
+                sharedProperties.setSelectedNetworkIDs(selectedIDs);
+                $location.path(path);
+            }
+
+
             userController.allTasksCompleted = function() {
                 var task;
 
