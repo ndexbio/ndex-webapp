@@ -31,6 +31,8 @@ ndexApp.controller('userController',
             userController.allSelected = false;
             userController.atLeastOneSelected = false;
 
+            userController.pendingRequests = [];
+            userController.sentRequests = [];
 
             //tasks
             userController.tasks = [];
