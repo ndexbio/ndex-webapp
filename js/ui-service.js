@@ -1224,6 +1224,7 @@
                     delete $scope.errors;
                     delete $scope.progress;
                     $scope.summary = "";
+                    $scope.IDsOfNetworksToUpdate = [];
 
                     modalInstance = $modal.open({
                         templateUrl: 'modal.html',
@@ -1236,6 +1237,8 @@
                     delete $scope.errors;
                     delete $scope.progress;
                     delete $scope.summary;
+                    $scope.IDsOfNetworksToUpdate = [];
+
                 };
 
                 $scope.close = function() {
@@ -1243,6 +1246,7 @@
                     delete $scope.errors;
                     delete $scope.progress;
                     delete $scope.summary;
+                    $scope.IDsOfNetworksToUpdate = [];
                 };
                 //$scope.$watch("group.groupName", function() {
                 //    delete $scope.errors;
@@ -1257,13 +1261,16 @@
                         return;
                     }
                     if (membershipsForSending.length == 0) {
-                        if ($scope.progress) {
-                            $scope.progress = "Done";
-                        }
+                        var bulkNetworkManager = $scope.ndexData;
+                        bulkNetworkManager.getNetworkPermissions($scope.IDsOfNetworksToUpdate);
+                        $scope.progress = "Done";
                         return;
                     }
 
+                    // remove membership object from the list of memberships to send
                     membershipToSend = membershipsForSending.shift();
+
+
                     $scope.progress = "Granting " + membershipToSend.permissions +
                         " access to '" + membershipToSend.memberAccountName +
                             "' for network '" + membershipToSend.resourceName + "'";
@@ -1301,7 +1308,7 @@
                     // iterate through the list of networks selected for updating access
                     for (var i = 0;  i < IDsOfSelectedNetworks.length; i++) {
 
-                        var networkId  = IDsOfSelectedNetworks[i];
+                        var networkId = IDsOfSelectedNetworks[i];
                         var networkPermissionsObjs =
                             bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions[networkId];
 
@@ -1327,11 +1334,18 @@
                                 }
 
                                 membershipToUpdateReadyForSending.push(updatedMembership);
+                                if ($scope.IDsOfNetworksToUpdate.indexOf(updatedMembership.resourceUUID) == -1) {
+                                    $scope.IDsOfNetworksToUpdate.push(updatedMembership.resourceUUID);
+                                }
                             }
                         }
                     }
 
-                    $scope.updateMembershipsOnServer(membershipToUpdateReadyForSending);
+                    if (membershipToUpdateReadyForSending.length == 0) {
+                        $scope.progress = "No need to update.";
+                    } else {
+                        $scope.updateMembershipsOnServer(membershipToUpdateReadyForSending);
+                    }
                     $scope.isProcessing = false;
                     $scope.accessGranted = true;
                 };

@@ -28,17 +28,17 @@ ndexApp.controller('manageBulkNetworkAccessController',
     bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions = {};
 
 
-    bulkNetworkManager.getNetworkPermissions = function() {
+    bulkNetworkManager.getNetworkPermissions = function(IDs) {
 
-        if (typeof(bulkNetworkManager.selectedIDs) === 'undefined') {
+        if (typeof(IDs) === 'undefined') {
             // most likely, refresh/reload button was hit;
             // Next button
             $scope.noNetworksSelected = true;
             return;
         }
-        for (var i = 0; i <  bulkNetworkManager.selectedIDs.length; i++) {
+        for (var i = 0; i <  IDs.length; i++) {
 
-            var networkId = bulkNetworkManager.selectedIDs[i];
+            var networkId = IDs[i];
 
             ndexService.getNetworkMemberships(networkId, 'ALL',
                 function(memberships) {
@@ -53,78 +53,6 @@ ndexApp.controller('manageBulkNetworkAccessController',
                 })
         }
     };
-
-            /*
-    bulkNetworkManager.save = function() {
-        var myController = userController;
-        if( $scope.isProcessing )
-            return;
-        $scope.isProcessing = false;
-        // create a promise from the $q service
-        var deferred = $q.defer(); // save the instance to use the deferred API to resolve the promise
-        var promise = deferred.promise; // used to create a dynamic sequentail call of following api
-
-        var length = bulkNetworkManager.update.length;
-        for(var ii=0; ii<length; ii++) {
-             // use closure to capture current value in the scope of the promise
-            (function(m) {
-            //update reference to last promise in promise chaing
-                promise = promise.then(
-                    function(success) {
-                        // return the promise, once resolved, its value will be passed to next promise, we dont use it
-                        return ndexService.updateNetworkMember(m).$promise
-                    });
-            })(bulkNetworkManager.update[ii]);
-        }
-
-
-        var length2 = bulkNetworkManager.remove.length;
-        for(var ii=0; ii<length2; ii++){
-
-            (function(u) {
-                promise = promise.then(
-                    function(success){
-                        return ndexService.removeNetworkMember(identifier, u).$promise
-                    });
-            })(bulkNetworkManager.remove[ii].memberUUID);
-        }
-
-        // last thing to do once chain of calls is completed
-        promise.then(
-            function(success) {
-                bulkNetworkManager.loadMemberships();
-            },
-            function(error) {
-                bulkNetworkManager.errors.push(error.data);
-            });
-
-        // fire the promise chain
-        deferred.resolve('resolve this promise and set off the promise chain')
-        $location.path("network/"+ $scope.networkManager.externalId);
-        $scope.isProcessing = false;
-    };
-
-
-
-    bulkNetworkManager.loadMemberships = function() {
-
-        bulkNetworkManager.update = [];
-        bulkNetworkManager.remove = [];
-
-
-
-        /*
-        ndexService.getNetworkMemberships(identifier, 'ALL',
-            function(memberships) {
-                bulkNetworkManager.memberships = memberships;
-            },
-            function(error) {
-                bulkNetworkManager.errors.push(error.data);
-            })
-
-    };
-    */
-
 
     bulkNetworkManager.findUsers = function() {
         var query = {};
@@ -272,6 +200,6 @@ ndexApp.controller('manageBulkNetworkAccessController',
     };
 
 
-    bulkNetworkManager.getNetworkPermissions();
+    bulkNetworkManager.getNetworkPermissions(bulkNetworkManager.selectedIDs);
 }]);
 
