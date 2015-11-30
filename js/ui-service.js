@@ -1219,6 +1219,12 @@
 
                 $scope.openMe = function() {
                     $scope.accessType.permission = '';
+                    $scope.accessGranted = false;
+
+                    delete $scope.errors;
+                    delete $scope.progress;
+                    $scope.summary = "";
+
                     modalInstance = $modal.open({
                         templateUrl: 'modal.html',
                         scope: $scope
@@ -1228,82 +1234,69 @@
                 $scope.cancel = function() {
                     modalInstance.dismiss();
                     delete $scope.errors;
-                    //$scope.group = {};
+                    delete $scope.progress;
+                    delete $scope.summary;
                 };
 
+                $scope.close = function() {
+                    modalInstance.dismiss();
+                    delete $scope.errors;
+                    delete $scope.progress;
+                    delete $scope.summary;
+                };
                 //$scope.$watch("group.groupName", function() {
                 //    delete $scope.errors;
                 //});
 
                 $scope.isProcessing = false;
 
+
+                $scope.updateMembershipsOnServer = function(membershipsForSending) {
+
+                    if (typeof(membershipsForSending) === 'undefined') {
+                        return;
+                    }
+                    if (membershipsForSending.length == 0) {
+                        if ($scope.progress) {
+                            $scope.progress = "Done";
+                        }
+                        return;
+                    }
+
+                    membershipToSend = membershipsForSending.shift();
+                    $scope.progress = "Granting " + membershipToSend.permissions +
+                        " access to '" + membershipToSend.memberAccountName +
+                            "' for network '" + membershipToSend.resourceName + "'";
+
+                    ndexService.updateNetworkMember(membershipToSend,
+                        function(success){
+                            $scope.summary = $scope.summary +
+                                    $scope.progress.replace("Granting", "Granted") + "\n";
+                            $scope.updateMembershipsOnServer(membershipsForSending);
+                        },
+                        function(error){
+                            $scope.updateMembershipsOnServer(membershipsForSending);
+                        })
+                }
+
                 $scope.submit = function() {
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true;
-
 
                     var accessTypeSelected =
                         ($scope.accessType.permission.toUpperCase()==="EDIT") ? "WRITE" :
                         $scope.accessType.permission.toUpperCase();
 
                     var bulkNetworkManager = $scope.ndexData;
-                    modalInstance.close();
-                    $scope.isProcessing = false;
-
-
-                    /*
-                    var newMembership = {
-                        memberAccountName: member.accountName,
-                        memberUUID: member.externalId,
-                        resourceName: networkManager.network.name,
-                        resourceUUID: networkManager.network.externalId,
-                        permissions: 'WRITE'
-                    }
-                    */
-
-
-                    /*
-
-
-                     var newMembership = {
-                        memberAccountName: member.accountName,
-                        memberUUID: member.externalId,
-                        resourceName: networkManager.network.name,
-                        resourceUUID: networkManager.network.externalId,
-                        permissions: 'WRITE'
-                     }
-
-                     // using this for groups as well, didnt expect it to work. should have own check for group->network using group api call
-                     ndexService.getDirectMembership(networkManager.network.externalId, member.externalId).$promise.then(
-                        function(membership) {
-                            if(membership != null && membership.permissions !=null)
-                                networkManager.errors.push('User already has access to this network');
-                            else
-                                return ndexService.updateNetworkMember(newMembership).$promise
-                            }).then(
-                                function(success) {
-                                    member.member = true;
-                                    networkManager.loadMemberships();
-                                 },
-                                function(error) {
-                                    networkManager.errors.push(error.data);
-                                }
-                           );
-
-
-
-                     */
-
-
 
                     var updateAccessRequestsSent = 0;
                     var updateAccessRequestsResponsesReceived = 0;
 
-
                     var IDsOfSelectedNetworks =
                         Object.keys(bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions);
 
+                    var membershipToUpdateReadyForSending = [];
 
                     // iterate through the list of networks selected for updating access
                     for (var i = 0;  i < IDsOfSelectedNetworks.length; i++) {
@@ -1323,65 +1316,24 @@
                                 bulkNetworkManager.checkIfNetworkAccessNeedsUpdating(
                                     networkPermissionsObjs, accountForUpdating, accessTypeSelected);
 
-
                             if (updateNetworkAccessPermissions) {
 
                                 var updatedMembership = {
-                                    //memberAccountName: member.accountName,
+                                    memberAccountName: accountForUpdating.memberAccountName,
                                     memberUUID: accountForUpdating.memberUUID,
-                                    //resourceName: networkManager.network.name,
+                                    resourceName: networkPermissionsObjs[0].resourceName,
                                     resourceUUID: networkId,
                                     permissions: accessTypeSelected
                                 }
 
-                                var cloneOfUpdatedMembership = JSON.parse(JSON.stringify(updatedMembership));
-
-                                updateAccessRequestsSent = updateAccessRequestsSent + 1;
-
-                                ndexService.updateNetworkMember(cloneOfUpdatedMembership).$promise.then(
-                                    function(success){
-                                        //TODO
-                                        updateAccessRequestsResponsesReceived =
-                                            updateAccessRequestsResponsesReceived + 1;
-
-                                    },
-                                    function(error){
-                                        updateAccessRequestsResponsesReceived =
-                                            updateAccessRequestsResponsesReceived + 1;
-                                    });
+                                membershipToUpdateReadyForSending.push(updatedMembership);
                             }
-
                         }
-
                     }
 
-
-
-
-                    //$scope.isProcessing = false;
-
-
-                    //var keys = Object.keys(bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions);
-                    //var k = keys;
-
-                    /*
-                    ndexService.createGroup($scope.group,
-                        function(groupData){
-                            modalInstance.close();
-                            ////console.log(groupData);
-                            $location.path('/group/'+groupData.externalId);
-                            $scope.isProcessing = false;
-                        },
-                        function(error){
-                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
-                                $scope.errors = "Group with name " + $scope.group.groupName + " already exists.";
-                            } else {
-                                $scope.errors = error.data.message;
-                            }
-                            $scope.isProcessing = false;
-                        });
-                        */
-
+                    $scope.updateMembershipsOnServer(membershipToUpdateReadyForSending);
+                    $scope.isProcessing = false;
+                    $scope.accessGranted = true;
                 };
             }
         }
