@@ -909,7 +909,9 @@
                         if (myTask.format.toUpperCase() === 'BEL') {
                             myTask.format = 'XBEL';
                         }
-
+                        if (myTask.format.toUpperCase() === 'UNKNOWN') {
+                            myTask.format = 'CX';
+                        }
                         ndexService.createTask(myTask,
                             function (data) {
                                 createdTasksCounter = createdTasksCounter + 1;
