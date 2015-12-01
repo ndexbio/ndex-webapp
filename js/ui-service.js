@@ -1219,7 +1219,6 @@
 
                 $scope.openMe = function() {
                     $scope.accessType.permission = '';
-                    $scope.accessGranted = false;
 
                     delete $scope.errors;
                     delete $scope.progress;
@@ -1264,6 +1263,7 @@
                         var bulkNetworkManager = $scope.ndexData;
                         bulkNetworkManager.getNetworkPermissions($scope.IDsOfNetworksToUpdate);
                         $scope.progress = "Done";
+                        $scope.close();
                         return;
                     }
 
@@ -1343,11 +1343,11 @@
 
                     if (membershipToUpdateReadyForSending.length == 0) {
                         $scope.progress = "No need to update.";
+                        $scope.close();
                     } else {
                         $scope.updateMembershipsOnServer(membershipToUpdateReadyForSending);
                     }
                     $scope.isProcessing = false;
-                    $scope.accessGranted = true;
                 };
             }
         }

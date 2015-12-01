@@ -50,21 +50,14 @@
             </div>
 
             <div class="modal-footer">
-                <a type='cancel'
-                   class="btn btn-default"
-                   ng-click="close()"
-                   ng-hide="!accessGranted">Done
-                </a>
 
                 <a type='cancel'
                    class="btn btn-default"
-                   ng-click="cancel()"
-                   ng-hide="accessGranted">Cancel
+                   ng-click="cancel()">Cancel
                 </a>
 
                 <button type='submit' class="btn btn-primary"
-                        ng-disabled="accessType.permission=='' || isProcessing"
-                        ng-hide="accessGranted">
+                        ng-disabled="accessType.permission=='' || isProcessing">
                     Grant Access
                 </button>
 
