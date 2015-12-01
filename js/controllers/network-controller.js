@@ -707,6 +707,9 @@ ndexApp.controller('networkController',
 
             $scope.linkify = function(cellContents)
             {
+                if (typeof(cellContents) === "undefined") {
+                    return "";
+                }
                 if( cellContents.startsWith("http") )
                 {
                     return '&nbsp;<a target="_blank" href="'+cellContents+'">External Link</a>'
