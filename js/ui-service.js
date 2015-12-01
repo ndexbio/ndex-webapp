@@ -1264,6 +1264,8 @@
                         bulkNetworkManager.getNetworkPermissions($scope.IDsOfNetworksToUpdate);
                         $scope.progress = "Done";
                         $scope.close();
+                        $scope.isProcessing = false;
+                        $location.path("/user/" + bulkNetworkManager.currentUserId);
                         return;
                     }
 
@@ -1344,10 +1346,12 @@
                     if (membershipToUpdateReadyForSending.length == 0) {
                         $scope.progress = "No need to update.";
                         $scope.close();
+                        $scope.isProcessing = false;
+                        $location.path("/user/" + bulkNetworkManager.currentUserId);
                     } else {
                         $scope.updateMembershipsOnServer(membershipToUpdateReadyForSending);
                     }
-                    $scope.isProcessing = false;
+
                 };
             }
         }

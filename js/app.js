@@ -51,6 +51,9 @@ ndexApp.service('sharedProperties', function ($http) {
             //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
             return this.currentUserId;
         },
+        setCurrentUserId: function (currentUserId) {
+            this.currentUserId = currentUserId;
+        },
         getCurrentUserAccountName: function () {
             //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
             return this.accountName;

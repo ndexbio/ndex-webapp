@@ -1,10 +1,9 @@
 ndexApp.controller('manageBulkNetworkAccessController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$q', '$routeParams',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $q, $routeParams) {
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$q',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $q) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
-    var userController = $routeParams.userController;
 
 
     //              CONTROLLER DECLARATIONS/INTIALIZATIONS
@@ -15,7 +14,6 @@ ndexApp.controller('manageBulkNetworkAccessController',
 
     bulkNetworkManager.errors = [];
     bulkNetworkManager.isAdmin = false;
-    //bulkNetworkManager.externalId = identifier;
     bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions = [];
     bulkNetworkManager.update = [];
     bulkNetworkManager.remove = [];
@@ -24,6 +22,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
     $scope.noNetworksSelected = false;
 
     bulkNetworkManager.selectedIDs = sharedProperties.getSelectedNetworkIDs();
+    bulkNetworkManager.currentUserId = sharedProperties.getCurrentUserId();
 
     bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions = {};
 
