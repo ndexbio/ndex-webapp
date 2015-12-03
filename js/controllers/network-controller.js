@@ -1,6 +1,6 @@
 ndexApp.controller('networkController',
-    ['ndexService', 'ndexConfigs', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexHelper', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location', '$http','$q', '$sce',
-        function (ndexService, ndexConfigs, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexHelper, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location, $http, $q, $sce) {
+    ['config', 'ndexService', 'ndexConfigs', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexHelper', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location', '$http','$q', '$sce',
+        function (config, ndexService, ndexConfigs, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexHelper, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location, $http, $q, $sce) {
 
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -318,6 +318,29 @@ ndexApp.controller('networkController',
                 network.nodes[0].hover = true;
             };
 
+            $scope.networkToBeDisplayedInCanvas = function() {
+
+                if (typeof(networkController) === 'undefined' ||
+                    typeof(networkController.currentSubnetwork) === 'undefined' ||
+                    typeof(networkController.currentSubnetwork.edgeCount) === 'undefined' ||
+                    typeof(config) === 'undefined' ||
+                    typeof(config.networkDisplayLimit) === 'undefined') {
+                    return false;
+                }
+
+                return ((networkController.currentSubnetwork.edgeCount <= config.networkDisplayLimit) &&
+                        (networkController.currentSubnetwork.edgeCount > 0));
+            }
+
+            $scope.currentSubnetworkEdgeCountNotZero = function() {
+                if (typeof(networkController) === 'undefined' ||
+                    typeof(networkController.currentSubnetwork) === 'undefined' ||
+                    typeof(networkController.currentSubnetwork.edgeCount) === 'undefined') {
+                    return false;
+                }
+                return (networkController.currentSubnetwork.edgeCount > 0);
+            }
+
             networkController.getEdgeKeys = function()
             {
                 var keys = [];
@@ -406,7 +429,9 @@ ndexApp.controller('networkController',
                         csn.json = json;
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
-                        cytoscapeService.setNetwork(network);
+                        if ($scope.networkToBeDisplayedInCanvas()) {
+                            cytoscapeService.setNetwork(network);
+                        }
 
                         // enableFiltering set to true means that filtering will be on regardless of the size
                         // of the network
