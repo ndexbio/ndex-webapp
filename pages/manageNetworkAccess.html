@@ -28,10 +28,11 @@
 			<h6>Who has access</h6>
 			<hr>
 
-			<div ng-repeat='member in networkManager.memberships'>
+			<!--<div ng-repeat='member in networkManager.memberships'>-->
+			<div ng-repeat='member in networkManager.selectedAccountsForUpdatingAccessPermissions'>
 			<div class='row'>
 				<div class='col-sm-offset-1 col-sm-3 text-muted'>
-					{{member.memberAccountName}}
+					{{networkManager.getAccountName(member)}}
 				</div>
 				<div class='col-sm-3'>
 					<span class="dropdown">
@@ -40,20 +41,20 @@
 				        </a>
 				        <ul class="dropdown-menu">
 				      		<li>
-				            	<a class="dropdown-toggle" 
-				            		ng-click='networkManager.memberships[$index].permissions = "ADMIN"; networkManager.update.push(member)'>
+				            	<a class="dropdown-toggle"
+				            		ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "ADMIN"; networkManager.changesWereMade();'>
 				            		<small>Is Admin</small>
 				            	</a>
 				        	</li>
 				        	<li>
-				            	<a class="dropdown-toggle" 
-				            		ng-click='networkManager.memberships[$index].permissions = "WRITE"; networkManager.update.push(member)'>
+				            	<a class="dropdown-toggle"
+				            		ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "WRITE"; networkManager.changesWereMade();'>
 				            		<small>Can Edit</small>
 				            	</a>
 				        	</li>
 				        	<li>
-				            	<a class="dropdown-toggle" 
-				            		ng-click='networkManager.memberships[$index].permissions = "READ"; networkManager.update.push(member)'>
+				            	<a class="dropdown-toggle"
+				            		ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "READ"; networkManager.changesWereMade();'>
 				            		<small>Can Read</small>
 				            	</a>
 				        	</li>
@@ -63,7 +64,7 @@
 				<div class='col-sm-1'>
 					<span class="glyphicon glyphicon-remove text-muted"
 						style='cursor:pointer'
-						ng-click='networkManager.memberships.splice($index,1); networkManager.remove.push(member)'>	
+						ng-click='networkManager.removeMember($index, member);'>
 					</span>
 				</div>
 
@@ -72,17 +73,23 @@
 			</div>
 
 			<div class='pull-right'>
-				<button type="button" class="btn btn-sm btn-danger" ng-click='networkManager.loadMemberships()'>
+				<button type="button" class="btn btn-sm btn-danger"
+						ng-click='networkManager.discardChanges()'
+						ng-disabled="isProcessing || !networkManager.changesWereMade()" >
 					Discard Changes
 				</button>
-			    <button type="button" class="btn btn-sm btn-success" ng-click='networkManager.save()'
-						ng-disabled="isProcessing">
-					Save Changes</button>
+			    <button type="button" class="btn btn-sm btn-success"
+						ng-click='networkManager.save()'
+						ng-disabled="isProcessing || !networkManager.changesWereMade()" >
+					Save Changes
+				</button>
 			</div>
 
 		</div>
 
-		<br><br>
+		<br>
+		<br>
+
 		<div class='row'>
 
 			<div class='col-sm-4'>
@@ -109,14 +116,12 @@
 				            </div>
 
 					        <div class='col-sm-6'>
-						        <br>
-								{{user.accountName}}
+								{{networkManager.getAccountName(user)}}
 							</div>
 
 						</div>
 					</div>
 					<div class='col-sm-4'>
-					<br>
 						<button class='btn btn-xs btn-primary pull-right' 
 							ng-disabled='user.member' 
 							ng-click='networkManager.addMember(user)'>
@@ -151,14 +156,12 @@
 				            </div>
 
 					        <div class='col-sm-6'>
-						        <br>
-								{{group.accountName}}
+								{{networkManager.getAccountName(group)}}
 							</div>
 
 						</div>
 					</div>
 					<div class='col-sm-4'>
-					<br>
 						<button class='btn btn-xs btn-primary pull-right' 
 							ng-disabled='group.member' 
 							ng-click='networkManager.addMember(group)'>

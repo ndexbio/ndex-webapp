@@ -70,12 +70,6 @@ ndexApp.controller('manageBulkNetworkAccessController',
                             users[jj].member = true;
                     }
                 }
-
-                for(var jj=0; jj < bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions.length; jj++) {
-                    var i = jj;
-                    var b = i;
-                }
-
             },
             function(error) {
                 bulkNetworkManager.errors.push(error.data)
