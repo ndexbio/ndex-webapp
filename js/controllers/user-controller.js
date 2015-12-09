@@ -302,6 +302,12 @@ ndexApp.controller('userController',
 
                         });
                 }
+
+                // after we deleted all selected networks, the footer of the table may
+                // still show that some networks are selected (must be a bug), so
+                // we manually set the selected count to 0 (see defect NDEX-582)
+                $scope.networkGridApi.grid.selection.selectedCount = 0;
+
                 for (i = userController.networkSearchResults.length - 1; i >= 0; i-- )
                 {
                     var externalId = userController.networkSearchResults[i].externalId;
