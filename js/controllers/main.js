@@ -376,9 +376,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             if (typeof config.networkTableLimit === 'undefined') {
                 config.networkTableLimit = 500;
             }
-            if (typeof config.protocol === 'undefined') {
-                config.protocol = "http";
-            }
             if (typeof config.idleTime === 'undefined') {
                 config.idleTime = 3600;
             }
