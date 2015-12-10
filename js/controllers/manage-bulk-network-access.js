@@ -15,8 +15,6 @@ ndexApp.controller('manageBulkNetworkAccessController',
     bulkNetworkManager.errors = [];
     bulkNetworkManager.isAdmin = false;
     bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions = [];
-    bulkNetworkManager.update = [];
-    bulkNetworkManager.remove = [];
     bulkNetworkManager.newUsers = {};
     bulkNetworkManager.newGroups = {};
     $scope.noNetworksSelected = false;
@@ -102,16 +100,19 @@ ndexApp.controller('manageBulkNetworkAccessController',
     bulkNetworkManager.removeMember = function(index, memberToRemove) {
         memberToRemove.member = false;
         bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.splice(index, 1);
-        bulkNetworkManager.remove.push(memberToRemove);
 
-        for (var i = 0; i < bulkNetworkManager.newUsers.length; i++) {
-            if (bulkNetworkManager.newUsers[i].externalId === memberToRemove.memberUUID) {
-                bulkNetworkManager.newUsers[i].member = false;
+        if (typeof(bulkNetworkManager.newUsers.length) !== 'undefined') {
+            for (var i = 0; i < bulkNetworkManager.newUsers.length; i++) {
+                if (bulkNetworkManager.newUsers[i].externalId === memberToRemove.memberUUID) {
+                    bulkNetworkManager.newUsers[i].member = false;
+                }
             }
         }
-        for (var i = 0; i < bulkNetworkManager.newGroups.length; i++) {
-            if (bulkNetworkManager.newGroups[i].externalId === memberToRemove.memberUUID) {
-                bulkNetworkManager.newGroups[i].member = false;
+        if (typeof(bulkNetworkManager.newGroups.length) !== 'undefined') {
+            for (var i = 0; i < bulkNetworkManager.newGroups.length; i++) {
+                if (bulkNetworkManager.newGroups[i].externalId === memberToRemove.memberUUID) {
+                    bulkNetworkManager.newGroups[i].member = false;
+                }
             }
         }
     };
