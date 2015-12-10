@@ -883,3 +883,8 @@ ul.ndex-nav-pills > li > a:hover {
 .hrMarginRight {
     margin-right: 15px;
 }
+
+.rowWithTwoLinesTopPadAnd15EmFont {
+    padding-top: 2em;
+    font-size: 1.5em;
+}

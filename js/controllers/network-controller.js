@@ -66,6 +66,8 @@ ndexApp.controller('networkController',
             $scope.provenance = [];
             $scope.displayProvenance = [];
 
+            networkController.readyToRenderNetworkInUI = false;
+
 
 
             $scope.tree = [{name: "Node", nodes: []}];
@@ -559,18 +561,23 @@ ndexApp.controller('networkController',
 
                         getMembership(function ()
                         {
+                            networkController.readyToRenderNetworkInUI = true;
+
                             if (network.visibility == 'PUBLIC'
                                 || networkController.isAdmin
                                 || networkController.canEdit
                                 || networkController.canRead)
                                 getEdges(function (subnetwork) {
-                                    cytoscapeService.setNetwork(subnetwork);
+                                    if ($scope.networkToBeDisplayedInCanvas()) {
+                                        cytoscapeService.setNetwork(subnetwork);
+                                    }
+
                                     // enableFiltering set to false means that filtering will be on if the size
                                     // of the network is no greater than 500 edges
                                     var enableFiltering = false;
                                     populateEdgeTable(enableFiltering);
                                     populateNodeTable(enableFiltering);
-                                })
+                                });
                         });
                         networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                         getNetworkAdmins();
@@ -1310,7 +1317,10 @@ ndexApp.controller('networkController',
                         csn.json = json;
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
-                        cytoscapeService.setNetwork(network);
+
+                        if ($scope.networkToBeDisplayedInCanvas()) {
+                            cytoscapeService.setNetwork(network);
+                        }
 
                         // enableFiltering set to true means that filtering will be on regardless of the size
                         // of the network

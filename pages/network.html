@@ -1,6 +1,6 @@
 
 <div id="divNetwork" ng-show="networkController.errors.length == 0" class='row'>
-    <div class='col-md-3'>
+    <div class='col-md-3' ng-if="networkController.readyToRenderNetworkInUI">
 
         <div id="divNetworkHeadline" class="row">
             <div class="wrapLongLine">
@@ -223,12 +223,6 @@
     <div class='col-md-9'
          ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
 
-        <!--<div ng-show="!networkController.successfullyQueried" class='row text-center'>-->
-            <!--<br>-->
-            <!--<br>-->
-            <!--<br>-->
-            <!--<br>-->
-        <!--</div>-->
         <div ng-show="networkController.successfullyQueried" class='row text-center'>
             <h4>Query Result</h4>
             <span>
@@ -479,7 +473,8 @@
     </div>
 
     <div class='col-md-9'
-         ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+         ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'
+         ng-if="networkController.readyToRenderNetworkInUI">
         <br>
         <br>
 
@@ -488,6 +483,11 @@
 
     <!-- end tab content -->
 </div>
+
+<div class="rowWithTwoLinesTopPadAnd15EmFont" ng-if="!networkController.readyToRenderNetworkInUI">
+    <p class='text-center'>Retrieving network from server ... </p>
+</div>
+
 
 <div class="container-fluid" ng-hide="networkController.validRequest.length == 0">
     <div class="row">
