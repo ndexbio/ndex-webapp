@@ -16,7 +16,17 @@
             <br>
             <br>
             <div class="input-group" >
-                <input type="text" class="form-control" placeholder="Search NDEx Networks" ng-model="main.searchString">
+                <div class="input-group-btn dropdown AlignLeft">
+                    <button type="button" class="btn btn-default dropdown-toggle">
+                        {{main.searchType}} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
+                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
+                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
+                    </ul>
+                </div>
+                <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
                 <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
             </div>
             <br>
