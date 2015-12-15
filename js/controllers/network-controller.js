@@ -739,7 +739,7 @@ ndexApp.controller('networkController',
 
             $scope.linkify = function(cellContents)
             {
-                if (typeof(cellContents) === "undefined") {
+                if (typeof(cellContents) === "undefined" || cellContents === "") {
                     return "";
                 }
                 if( cellContents.startsWith("http") )
@@ -748,7 +748,7 @@ ndexApp.controller('networkController',
                 }
                 else
                 {
-                    return cellContents;
+                    return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
                 }
             };
 
