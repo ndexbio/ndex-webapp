@@ -932,7 +932,7 @@ ndexApp.controller('networkController',
                             cellTooltip: true,
                             minWidth: calcColumnWidth(headers[i]),
                             enableFiltering: filteringEnabled,
-                            cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                            cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                         };
                         columnDefs.push(columnDef);
                         networkController.edgePropertyNamesForAdvancedQuery.push(field);
@@ -947,7 +947,7 @@ ndexApp.controller('networkController',
                         cellTooltip: true,
                         minWidth: calcColumnWidth(headers[i], true),
                         enableFiltering: filteringEnabled,
-                        cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                        cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                     };
                     columnDefs.push(columnDef);
                     networkController.edgePropertyNamesForAdvancedQuery.push(field);
@@ -1092,7 +1092,7 @@ ndexApp.controller('networkController',
                             cellTooltip: true,
                             minWidth: calcColumnWidth(headers[i]),
                             enableFiltering: filteringEnabled,
-                            cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                            cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                         };
                         columnDefs.push(columnDef);
                         networkController.nodePropertyNamesForAdvancedQuery.push(field);
@@ -1107,7 +1107,7 @@ ndexApp.controller('networkController',
                         cellTooltip: true,
                         minWidth: calcColumnWidth(headers[i], true),
                         enableFiltering: filteringEnabled,
-                        cellTemplate: "<div ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                        cellTemplate: "<div class='ui-grid-cell-contents  hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
                     };
                     columnDefs.push(columnDef);
                     networkController.nodePropertyNamesForAdvancedQuery.push(field);
