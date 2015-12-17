@@ -67,6 +67,7 @@ ndexApp.controller('networkController',
             $scope.displayProvenance = [];
 
             networkController.readyToRenderNetworkInUI = false;
+            networkController.showRetrievingNetworkFromServerMessage = true;
 
 
 
@@ -561,6 +562,7 @@ ndexApp.controller('networkController',
 
                         getMembership(function ()
                         {
+                            networkController.showRetrievingNetworkFromServerMessage = false;
                             networkController.readyToRenderNetworkInUI = true;
 
                             if (network.visibility == 'PUBLIC'
@@ -593,8 +595,7 @@ ndexApp.controller('networkController',
                 )
                     .error(
                     function (error) {
-                        networkController.readyToRenderNetworkInUI = true;
-
+                        networkController.showRetrievingNetworkFromServerMessage = false;
                         if ((error !== 'undefined') && (error.message !== 'undefined')) {
                             networkController.errors.push({label: "Unable to retrieve network: ", error: error.message});
                         } else {
