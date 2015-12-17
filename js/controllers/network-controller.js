@@ -596,7 +596,7 @@ ndexApp.controller('networkController',
                     .error(
                     function (error) {
                         networkController.showRetrieveMessage = false;
-                        if ((error !== 'undefined') && (error.message !== 'undefined')) {
+                        if ((error != null) && (typeof(error.message) !== 'undefined')) {
                             networkController.errors.push({label: "Unable to retrieve network: ", error: error.message});
                         } else {
                             networkController.errors.push({label: "Unable to retrieve network: ", error: "Unknown error"});
@@ -693,7 +693,7 @@ ndexApp.controller('networkController',
 
                     }, function (error) {
                         networkController.showRetrieveMessage = false;
-                        if ((typeof error !== 'undefined') && (typeof error.message !== 'undefined')) {
+                        if ((error != null) && (typeof error.message !== 'undefined')) {
                             networkController.errors.push({label: "Unable to retrieve network provenance: ", error: error.message});
                         } else {
                             networkController.errors.push({label: "Unable to retrieve network provenance: ", error: "Unknown error"});
