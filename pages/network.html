@@ -491,8 +491,8 @@
 
 <div class="container-fluid" ng-hide="networkController.validRequest.length == 0">
     <div class="row">
-        <div class="col-md-6 col-md-offset-2" ng-repeat="message in networkController.errors">
-            <p><strong>{{message.label}}</strong> {{message.error}}</p>
+        <div class="rowWithTwoLinesTopPadAnd15EmFont" ng-repeat="message in networkController.errors">
+            <p class='text-center'><span style="color: red">{{message.label}} {{message.error}}</span></p>
         </div>
     </div>
 </div>

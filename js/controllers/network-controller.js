@@ -593,13 +593,12 @@ ndexApp.controller('networkController',
                 )
                     .error(
                     function (error) {
-                        if (error.status != 0) {
-                            networkController.errors.push({label: "Get Network Info Request: ", error: error});
+                        networkController.readyToRenderNetworkInUI = true;
+
+                        if ((error !== 'undefined') && (error.message !== 'undefined')) {
+                            networkController.errors.push({label: "Unable to retrieve network: ", error: error.message});
                         } else {
-                            networkController.errors.push({
-                                label: "Get Network Info Request: ",
-                                error: "Process Killed"
-                            });
+                            networkController.errors.push({label: "Unable to retrieve network: ", error: "Unknown error"});
                         }
                     }
                 );
