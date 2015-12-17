@@ -534,7 +534,7 @@ ndexApp.controller('networkController',
                     if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
                                 (networkProperties[i].predicateString.toLowerCase() === 'sourceformat')) {
 
-                        if (networkProperties[i].value !== 'undefined') {
+                        if (typeof(networkProperties[i].value) !== 'undefined') {
                             networkController.currentNetworkSourceFormat =
                                 networkProperties[i].value.toUpperCase();
                             return;
@@ -590,7 +590,7 @@ ndexApp.controller('networkController',
                             // for BEL networks, check if Namespaces have been archived
                             getNumberOfBelNetworkNamespaces();
                         }
-
+                        getProvenance();
                     }
                 )
                     .error(
@@ -692,7 +692,12 @@ ndexApp.controller('networkController',
                         var x = 10;
 
                     }, function (error) {
-                        //TODO
+                        networkController.showRetrieveMessage = false;
+                        if ((typeof error !== 'undefined') && (typeof error.message !== 'undefined')) {
+                            networkController.errors.push({label: "Unable to retrieve network provenance: ", error: error.message});
+                        } else {
+                            networkController.errors.push({label: "Unable to retrieve network provenance: ", error: "Unknown error"});
+                        }
                     });
             };
 
@@ -1190,7 +1195,6 @@ ndexApp.controller('networkController',
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
             // Initialize the current network and current subnetwork
             initialize();
-            getProvenance();
 
             //Advanced Query
             networkController.advancedQueryNodeCriteria = 'source';
