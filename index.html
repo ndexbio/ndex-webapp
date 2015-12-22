@@ -60,6 +60,8 @@
 
     <!-- Angular bootstrap -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js" />
+
 
     <!-- ndex scripts -->
     <script src="js/init.js"></script>
@@ -100,112 +102,118 @@
 <nav class="navbar navbar-ndex-top navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="btn btn-default navbar-toggle" data-toggle="collapse" ng-click="main.isCollapsed = !main.isCollapsed">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
 
-           <a ng-href="{{config.logoLink.href}}"
-              ng-click="$event.preventDefault(); redirectToExternalLink(config.logoLink)"
-              style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
+           <a class="navbar-brand"
+                ng-href="{{config.logoLink.href}}"
+                ng-click="$event.preventDefault(); redirectToExternalLink(config.logoLink)"
+                style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
 
-            <div style="
-                background-image: url('img/NDEx-horizontal-transparent.png');
-                background-repeat: no-repeat;
-                background-position: 0px 10px;
-                width: 120px;
-                height: 40px;
-                margin-left: 5px;
-                margin-right: 0px;
-                background-size: 120px 30px;
-            "></div>
-            </a>
+                <div style="
+                    background-image: url('img/NDEx-horizontal-transparent.png');
+                    background-repeat: no-repeat;
+                    background-position: 0px 10px;
+                    width: 120px;
+                    height: 40px;
+                    margin-left: 5px;
+                    margin-right: 0px;
+                    background-size: 120px 30px;">
+                </div>
+           </a>
+
         </div>
 
-        <ul class="nav navbar-nav navbar-left">
-            <li>
-                <a ng-href="{{config.aboutLink.href}}"
-                   ng-click="$event.preventDefault(); redirectToExternalLink(config.aboutLink)">
-                    {{config.aboutLink.label}}
-                </a>
-            </li>
-            <li>
-                <a ng-href="{{config.documentationLink.href}}"
-                   ng-click="$event.preventDefault(); redirectToExternalLink(config.documentationLink)">
-                       {{config.documentationLink.label}}
-                </a>
-            </li>
-            <li>
-                <a ng-href="{{config.apiLink.href}}"
-                   ng-click="$event.preventDefault(); redirectToExternalLink(config.apiLink)">
-                    {{config.apiLink.label}}
-                </a>
-            </li>
-            <li>
-                <a ng-href="{{config.reportBugLink.href}}"
-                   ng-click="$event.preventDefault(); redirectToExternalLink(config.reportBugLink)">
-                       {{config.reportBugLink.label}}
-                </a>
-            </li>
-            <li>
-                <a ng-href="{{config.contactUsLink.href}}"
-                   ng-click="$event.preventDefault(); redirectToExternalLink(config.contactUsLink)">
-                      {{config.contactUsLink.label}}
-                </a>
-            </li>
-        </ul>
+        <div class="navbar-collapse collapse" id="myNavbar">
 
+            <ul class="nav navbar-nav navbar-left">
+                <li>
+                    <a ng-href="{{config.aboutLink.href}}"
+                       ng-click="$event.preventDefault(); redirectToExternalLink(config.aboutLink)">
+                        {{config.aboutLink.label}}
+                    </a>
+                </li>
+                <li>
+                    <a ng-href="{{config.documentationLink.href}}"
+                       ng-click="$event.preventDefault(); redirectToExternalLink(config.documentationLink)">
+                           {{config.documentationLink.label}}
+                    </a>
+                </li>
+                <li>
+                    <a ng-href="{{config.apiLink.href}}"
+                       ng-click="$event.preventDefault(); redirectToExternalLink(config.apiLink)">
+                        {{config.apiLink.label}}
+                    </a>
+                </li>
+                <li>
+                    <a ng-href="{{config.reportBugLink.href}}"
+                       ng-click="$event.preventDefault(); redirectToExternalLink(config.reportBugLink)">
+                           {{config.reportBugLink.label}}
+                    </a>
+                </li>
+                <li>
+                    <a ng-href="{{config.contactUsLink.href}}"
+                       ng-click="$event.preventDefault(); redirectToExternalLink(config.contactUsLink)">
+                          {{config.contactUsLink.label}}
+                    </a>
+                </li>
+            </ul>
 
-
-        <div class="collapse navbar-collapse" collapse="main.isCollapsed">
-            <div class="col-sm-4 col-md-4 col-lg-4">
+            <ul class="col-sm-4 col-md-4 col-lg-4 nav navbar-nav">
                 <form ng-hide="main.hideSearchBar" class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
                     <div class="input-group" >
                         <div class="input-group-btn dropdown">
-                          <button type="button" class="btn btn-default dropdown-toggle">
-                            {{main.searchType}} <span class="caret"></span>
-                          </button>
-                          <ul class="dropdown-menu" role="menu">
-                            <li>
-                            <a class ="dropdown-toggle" ng-click="main.searchType = 'Networks'; main.searchString = ''">
-                            Networks</a></li>
-                            <li>
-                            <a class ="dropdown-toggle" ng-click="main.searchType = 'Users'; main.searchString = ''">
-                            Users</a></li>
-                            <li>
-                            <a class ="dropdown-toggle" ng-click="main.searchType = 'Groups'; main.searchString = ''">
-                            Groups</a></li>
-                          </ul>
+                            <button type="button" class="btn btn-default dropdown-toggle">
+                                {{main.searchType}} <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a class ="dropdown-toggle" ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a>
+                                </li>
+                                <li>
+                                    <a class ="dropdown-toggle" ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a>
+                                </li>
+                                <li>
+                                    <a class ="dropdown-toggle" ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a>
+                                </li>
+                            </ul>
                         </div>
+
                         <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
-                        <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-default">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </div>
                     </div>
                 </form>
-            </div>
-        <ul class="nav navbar-nav navbar-right">
+            </ul>
 
-            <li ng-show="main.getCurrentNetwork() != null"
-                ng-class="{active:main.url.url().search('/network') != -1}">
-                <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a>
-            </li>
+            <ul class="nav navbar-nav navbar-right">
 
-            <!--<li ng-show="main.loggedIn" ng-class="{active:main.url.url().search('/user') != -1}">-->
-            <li ng-show="main.loggedIn">
-                <a href="#/user/{{main.getCurrentUserId()}}">MyAccount</a>
-            </li>
+                <li ng-show="main.getCurrentNetwork() != null"
+                    ng-class="{active:main.url.url().search('/network') != -1}">
+                    <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a>
+                </li>
 
-            <!-- Show sign out if user is logged in -->
-            <li ng-show="main.loggedIn">
-                <a ng-click="main.signout()">Sign Out</a>
-            </li>
+                <li ng-show="main.loggedIn">
+                    <a href="#/user/{{main.getCurrentUserId()}}">MyAccount</a>
+                </li>
 
-            <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown">
-                <a ng-click="main.startSignIn()">Sign In</a>
-            </li>
+                <li ng-show="main.loggedIn">
+                    <a ng-click="main.signout()">Sign Out</a>
+                </li>
 
-        </ul>
+                <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown">
+                    <a ng-click="main.startSignIn()">Sign In</a>
+                </li>
+
+            </ul>
+
         </div>
     </div>
 </nav>
