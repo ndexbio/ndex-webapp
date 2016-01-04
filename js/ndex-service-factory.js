@@ -521,6 +521,34 @@ ndexServiceApp.factory('ndexService',
                 );
             };
 
+
+            /*---------------------------------------------------------------------*
+             * AdminService APIs
+             *---------------------------------------------------------------------*/
+            var AdminResource = $resource(ndexServerURI + '/admin/:action/:subResource',
+                //paramDefaults
+                {
+                    action: '@action',
+                    subResource: '@subResource'
+                },
+                //actions
+                {
+                    geAccountsByUUIDs: {
+                        method: 'POST',
+                        params: {
+                            subResource: 'accounts'
+                        },
+                        isArray: true
+                    }
+                }
+            );
+
+            factory.getAccountsByUUIDs = function(accountsIDs, successHandler, errorHandler) {
+                handleAuthorizationHeader();
+                AdminResource.geAccountsByUUIDs(accountsIDs, successHandler, errorHandler);
+            };
+
+
             /*---------------------------------------------------------------------*
              * Networks
              *---------------------------------------------------------------------*/
