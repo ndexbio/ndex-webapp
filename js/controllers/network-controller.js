@@ -597,9 +597,9 @@ ndexApp.controller('networkController',
                     function (error) {
                         networkController.showRetrieveMessage = false;
                         if ((error != null) && (typeof(error.message) !== 'undefined')) {
-                            networkController.errors.push({label: "Unable to retrieve network: ", error: error.message});
+                            networkController.errors.push({label: "Unable to retrieve network. ", error: error.message});
                         } else {
-                            networkController.errors.push({label: "Unable to retrieve network: ", error: "Unknown error"});
+                            networkController.errors.push({label: "Unable to retrieve network. ", error: "Unknown error."});
                         }
                     }
                 );
