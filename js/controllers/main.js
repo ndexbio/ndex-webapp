@@ -246,10 +246,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
         $scope.signIn.cancelSignUp = function () {
-            $scope.signIn.newUser = {};
             $scope.signIn.modalInstance.close();
             $scope.signIn.modalInstance = null;
             delete $scope.signIn.signUpErrors;
+            $scope.signIn.newUser = {};
         };
 
         $scope.$watch("signIn.newUser.password", function() {
@@ -272,19 +272,22 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
             ndexService.createUser($scope.signIn.newUser,
                 function (userData) {
-                    sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
-                    ndexUtility.setUserInfo(userData.accountName, userData.externalId);
-                    $scope.$emit('LOGGED_IN');
-                    $scope.signIn.cancelSignUp();// doesnt really cancel
-                    $location.path('user/' + userData.externalId);
+
                     $scope.isProcessing = false;
+                    $scope.signIn.cancelSignUp();  // doesnt really cancel
+
+                    // display modal asking to check email in order to activate the account
+                    $scope.signIn.modalInstance = $modal.open({
+                        templateUrl: 'signUpSuccess.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
                 },
                 function (error) {
                     $scope.signIn.signUpErrors = error.data.message;
                     $scope.isProcessing = false;
                     //console.log(error)
                 });
-
         };
 
         $scope.forgot = {};
