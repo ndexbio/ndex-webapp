@@ -145,6 +145,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
             if ($scope.main.searchType == 'Networks') {
 
+                var absURL1 = $location.absUrl();
+
                 if ($location.path() != '/searchNetworks') {
                     $location.path("/searchNetworks");
                 }
@@ -153,7 +155,18 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 // we do it to be able to get back to this search with the browser Back button
                 $location.search({"networks": searchStringEncoded});
 
+                var absURL2 = $location.absUrl();
+
+                if (absURL1 === absURL2) {
+                    // absURL1 and absURL2 are the same, it means that
+                    // the user is re-issuing the last search, and we need to reload
+                    // the route to enforce search
+                    $route.reload();
+                }
+
             } else if ($scope.main.searchType == 'Users') {
+
+                var absURL1 = $location.absUrl();
 
                 if ($location.path() != '/searchUsers') {
                     $location.path("/searchUsers");
@@ -163,7 +176,18 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 // we do it to be able to get back to this search with the browser Back button
                 $location.search({"users": searchStringEncoded});
 
+                var absURL2 = $location.absUrl();
+
+                if (absURL1 === absURL2) {
+                    // absURL1 and absURL2 are the same, it means that
+                    // the user is re-issuing the last search, and we need to reload
+                    // the route to enforce search
+                    $route.reload();
+                }
+
             } else if ($scope.main.searchType == 'Groups') {
+
+                var absURL1 = $location.absUrl();
 
                 if ($location.path() != '/searchGroups') {
                     $location.path("/searchGroups");
@@ -172,7 +196,15 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 // add "?groups=<searchStringEncoded>" to the URL;
                 // we do it to be able to get back to this search with the browser Back button
                 $location.search({"groups": searchStringEncoded});
-                
+
+                var absURL2 = $location.absUrl();
+
+                if (absURL1 === absURL2) {
+                    // absURL1 and absURL2 are the same, it means that
+                    // the user is re-issuing the last search, and we need to reload
+                    // the route to enforce search.
+                    $route.reload();
+                }
             }
 
         };
