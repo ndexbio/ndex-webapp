@@ -152,6 +152,33 @@ ndexApp.controller('userController',
                     return task.format.toLowerCase();
             };
 
+            userController.getNetworkDownloadName = function(task)
+            {
+                if (typeof task.attributes === 'undefined') {
+                    return;
+                }
+
+                var name = (typeof task.attributes.downloadFileName === 'undefined') ?
+                    task.externalId : task.attributes.downloadFileName.replace(/ /g, "_");
+
+                var extension = (typeof task.attributes.downloadFileExtension === 'undefined') ?
+                    "txt" : userController.getTaskFileExt(task);
+
+                var networkNameForDownload = name + "." + extension;
+
+                return networkNameForDownload;
+            };
+
+            userController.getNetworkName = function(task)
+            {
+                if (typeof task.attributes === 'undefined' ||
+                    typeof task.attributes.downloadFileName === 'undefined') {
+                    return task.externalId;
+                }
+
+                return task.attributes.downloadFileName + " " + "(" +
+                    userController.getTaskFileExt(task).toUpperCase() + ")";
+            };
 
             // recursive function that deletes all tasks from the server
             userController.deleteAllTasks = function()
@@ -247,8 +274,9 @@ ndexApp.controller('userController',
                 for( var i = 0; i < selectedNetworksRows.length; i ++ )
                 {
                     selectedIdsAndTypes[i] = {};
-                    selectedIdsAndTypes[i]['externalId'] = selectedNetworksRows[i].externalId;
-                    selectedIdsAndTypes[i]['format']     = selectedNetworksRows[i].Format;
+                    selectedIdsAndTypes[i]['externalId']  = selectedNetworksRows[i].externalId;
+                    selectedIdsAndTypes[i]['format']      = selectedNetworksRows[i].Format;
+                    selectedIdsAndTypes[i]['networkName'] = selectedNetworksRows[i]["Network Name"];
                 }
 
                 return selectedIdsAndTypes;

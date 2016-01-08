@@ -251,12 +251,15 @@
                                     <li class="list-group-item">
                                         <div class='row' data-toggle="tooltip" data-placement="left" tooltip="{{task.description}}">
                                             <div class='col-sm-10 user-tasks-panel'>
-                                                <span class='text-info'>{{task.taskType}}</span>
+                                                <!--<span class='text-info'>{{task.taskType}}</span>-->
                                                 <span class='text-info' >{{task.description}}</span>
                                                 <span class='text-muted'>{{task.status | taskStatusToLabel}}</span>
+                                                <br />
+
 
                                                 <a ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'"
-                                                   href="/exported-networks/{{task.externalId}}.{{userController.getTaskFileExt(task)}}" download> Download Network
+                                                   href="/exported-networks/{{task.externalId}}.{{userController.getTaskFileExt(task)}}"
+                                                   download="{{userController.getNetworkDownloadName(task)}}">Download {{userController.getNetworkName(task)}}
                                                 </a>
 
                                                 <a>

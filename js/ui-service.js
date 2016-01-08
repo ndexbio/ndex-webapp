@@ -807,6 +807,14 @@
                     myTask = $scope.task;
                     myTask.resource = $scope.externalId;
 
+                    // assign network name ($scope.name) and format to which we export the network
+                    // to the attributes object;  they will be used later for downloading the exported network
+                    var attributes = {
+                        downloadFileName: $scope.name,
+                        downloadFileExtension: myTask.format
+                    };
+                    myTask.attributes = attributes;
+
                     ndexService.createTask(myTask,
                         function(data) {
                             ////console.log(data);
@@ -912,6 +920,15 @@
                         if (myTask.format.toUpperCase() === 'UNKNOWN') {
                             myTask.format = 'CX';
                         }
+
+                        // assign network name  and format to which we export the network
+                        // to the attributes object;  they will be used later for downloading the exported network
+                        var attributes = {
+                            downloadFileName: IDsAndTypesOfSelectedNetworks[i]['networkName'],
+                            downloadFileExtension: IDsAndTypesOfSelectedNetworks[i]['format']
+                        };
+                        myTask.attributes = attributes;
+
                         ndexService.createTask(myTask,
                             function (data) {
                                 createdTasksCounter = createdTasksCounter + 1;
