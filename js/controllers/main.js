@@ -383,16 +383,22 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         $scope.NDEx = {};
         // citation that will be presented to a user in a modal after (s)he selects the "Cite NDEx" menu item
-        $scope.NDEx.citation =
-            "NDEx, the Network Data Exchange.<br><br>" +
-            "Cell Systems, Volume 1, Issue 4, 28 October 2015 , Pages 302-305<br>" +
-            "Dexter Pratt, Jing Chen, David Welker, Ricardo Rivas, Rudolf Pillich, Vladimir Rynkov, Keiichiro Ono, Carol " +
-            "Miello, Lyndon Hicks, Sandor Szalma, Aleksandar Stojmirovic, Radu Dobrin, Michael Braxenthaler, Jan " +
-            "Kuentzer, Barry Demchak, Trey Ideker.<br><br> " +
-            "http://www.cell.com/cell-systems/abstract/S2405-4712(15)00147-7";
+        //$scope.NDEx.citation =
+        //    "NDEx, the Network Data Exchange.<br><br>" +
+        //    "Cell Systems, Volume 1, Issue 4, 28 October 2015 , Pages 302-305<br>" +
+        //    "Dexter Pratt, Jing Chen, David Welker, Ricardo Rivas, Rudolf Pillich, Vladimir Rynkov, Keiichiro Ono, Carol " +
+        //    "Miello, Lyndon Hicks, Sandor Szalma, Aleksandar Stojmirovic, Radu Dobrin, Michael Braxenthaler, Jan " +
+        //    "Kuentzer, Barry Demchak, Trey Ideker.<br><br> " +
+        //    "http://www.cell.com/cell-systems/abstract/S2405-4712(15)00147-7";
+
+
+        $scope.NDEx.citation = "Dexter Pratt, Jing Chen, David Welker, Ricardo Rivas, Rudolf Pillich, Vladimir Rynkov, " +
+            "Keiichiro Ono, Carol Miello, Lyndon Hicks, Sandor Szalma, Aleksandar Stojmirovic, Radu Dobrin, " +
+            "Michael Braxenthaler, Jan Kuentzer, Barry Demchak, Trey Ideker. NDEx, the Network Data Exchange. " +
+            "Cell Systems, Volume 1, Issue 4, 302-305 (2015). DOI:/10.1016/j.cels.2015.10.001";
 
         // ctation that will be copied to clipboard; we replace HTML new break line chars (<br>) with ascii "\n"
-        $scope.NDEx.citationProcessed = $scope.NDEx.citation.replace(/<br>/g, "\n");
+        // $scope.NDEx.citationProcessed = $scope.NDEx.citation.replace(/<br>/g, "\n");
 
         $scope.NDEx.openQuoteNDExModal = function () {
             $scope.NDEx.modalInstance = $modal.open({
