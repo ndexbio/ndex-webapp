@@ -228,3 +228,27 @@
         <button id="forgotPasswordDoneButton" ng-show="forgot.done" class="btn btn-primary" ng-click="cancel()">Done</button>
     </div>
 </script>
+
+<script type="text/ng-template" id="quoteNDEx.html">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h4 class="modal-title">NDEx Citation Information Ready for Pasting</h4>
+        </div>
+
+        <div class="modal-body">
+            <div>
+                <strong>The following citation information is available for pasting from clipboard:</strong>
+                <br><br>
+                <span ng-bind-html="NDEx.citation" id="ndexCitationId"/>
+                <br><br>
+                <strong>To paste it using keyboard use Ctrl-V, or using mouse Right-Click and select Paste</strong>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default" ng-click="NDEx.closeModal()">Close</button>
+        </div>
+
+    </div>
+</script>

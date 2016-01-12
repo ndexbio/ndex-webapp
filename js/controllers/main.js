@@ -46,6 +46,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         // if any of config parameters missing, assign default values
         initMissingConfigParams(config);
 
+        // "Cite NDEx" menu item is not configurable.
+        config.citeNDEx = {};
+        config.citeNDEx.label = "Cite NDEx";
+
+
         $scope.config = config;
 
         //Test whether the server is up or not.
@@ -206,7 +211,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                     $route.reload();
                 }
             }
-
         };
 
         //navbar initializations
@@ -375,6 +379,34 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             });
 
         };
+
+
+        $scope.NDEx = {};
+        // citation that will be presented to a user in a modal after (s)he selects the "Cite NDEx" menu item
+        $scope.NDEx.citation =
+            "NDEx, the Network Data Exchange.<br><br>" +
+            "Cell Systems, Volume 1, Issue 4, 28 October 2015 , Pages 302-305<br>" +
+            "Dexter Pratt, Jing Chen, David Welker, Ricardo Rivas, Rudolf Pillich, Vladimir Rynkov, Keiichiro Ono, Carol " +
+            "Miello, Lyndon Hicks, Sandor Szalma, Aleksandar Stojmirovic, Radu Dobrin, Michael Braxenthaler, Jan " +
+            "Kuentzer, Barry Demchak, Trey Ideker.<br><br> " +
+            "http://www.cell.com/cell-systems/abstract/S2405-4712(15)00147-7";
+
+        // ctation that will be copied to clipboard; we replace HTML new break line chars (<br>) with ascii "\n"
+        $scope.NDEx.citationProcessed = $scope.NDEx.citation.replace(/<br>/g, "\n");
+
+        $scope.NDEx.openQuoteNDExModal = function () {
+            $scope.NDEx.modalInstance = $modal.open({
+                templateUrl: 'quoteNDEx.html',
+                scope: $scope,
+                backdrop: 'static'
+            });
+        };
+
+        $scope.NDEx.closeModal = function () {
+            $scope.NDEx.modalInstance.close();
+            $scope.NDEx.modalInstance = null;
+        };
+
 
         /*
          * As argument, this function takes one of configurable navigation bar
