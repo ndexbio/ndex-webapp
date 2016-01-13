@@ -440,6 +440,16 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         };
 
+        $scope.showNDExCitationInClipboardMessage = function(redirectObj) {
+
+            var message =
+                "The NDEX citation information is available for pasting. \n" +
+                "To paste it using keyboard, use Ctrl-V. \n" +
+                "To paste it using mouse, Right-Click and select Paste.";
+
+            alert(message);
+        };
+
         function initMissingConfigParams(config) {
 
             // check configuration parameters loaded from ndex-webapp-config.js;

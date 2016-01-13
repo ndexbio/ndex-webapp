@@ -168,7 +168,16 @@
                     </a>
                 </li>
                 <li>
-                    <a ng-click="NDEx.openQuoteNDExModal()" ngclipboard data-clipboard-text="{{NDEx.citation}}">{{config.citeNDEx.label}}</a>
+                    <a ng-click="$event.preventDefault(); showNDExCitationInClipboardMessage()"
+                       ngclipboard data-clipboard-text="{{NDEx.citation}}">
+                        {{config.citeNDEx.label}}
+                    </a>
+<!--
+                    <a ng-click="NDEx.openQuoteNDExModal()"
+                       ngclipboard data-clipboard-text="{{NDEx.citation}}">
+                        {{config.citeNDEx.label}}
+                    </a>
+-->
                 </li>
             </ul>
 

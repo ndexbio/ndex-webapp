@@ -898,7 +898,7 @@ ul.ndex-nav-pills > li > a:hover {
 
 /* this makes the header menu to "collapse" into a menu button when
 max-width of the browser reachea the specified value; this is for NDEX-662 */
-@media (max-width: 1350px) {
+@media (max-width: 1450px) {
 
     .navbar-header {
         float: none;
