@@ -948,3 +948,17 @@ max-width of the browser reachea the specified value; this is for NDEX-662 */
 .icon-bar {
     background-color: lightgrey !important;
 }
+
+.belNamespaceFileModal {
+    white-space: pre;
+    word-wrap: break-word;
+}
+
+.belNamespaceFileModalSize {
+    width: 850px;
+}
+
+.my-modal-body-size {
+    max-height: calc(100vh - 212px);
+    overflow-y: auto;
+}

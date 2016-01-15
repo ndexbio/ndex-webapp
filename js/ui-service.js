@@ -1593,6 +1593,132 @@
         }
     });
 
+    // modal to download BEL name space file of the network
+    uiServiceApp.directive('downloadBelNamespace', function(){
+        return {
+            scope: {
+                ndexNetworkUuid: '=',
+                ndexNetworkName: '='
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/downloadBelNamespace.html',
+            transclude: true,
+            controller: function($scope, $modal, $location, $http) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'download-bel-namespace-modal.html',
+                        scope: $scope,
+                        backdrop: 'static',
+
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
+
+                            $scope.title = 'Download BEL Namespace';
+                            //$scope.progress = 'Getting namespaces for this network ....';
+
+                            $scope.close = function() {
+                                $modalInstance.dismiss();
+                                $scope.isProcessing = false;
+                            };
+
+                            $scope.nameSpaces = [];
+
+                            $scope.namespace = {};
+                            delete $scope.namespace.namespaceFileContents;
+                            delete $scope.namespace.modalInstance;
+
+                            $scope.namespace.selectedNameSpace = 'undefined';
+
+                            $scope.errors = null;
+
+                            ndexService.getNetworkNamespaces($scope.ndexNetworkUuid,
+                                function(namespaces) {
+
+                                    $scope.nameSpaces = namespaces;
+
+                                    if (namespaces.length > 0) {
+                                        $scope.namespace.selectedNameSpace = namespaces[0];
+                                    }
+                                },
+                                function(error) {
+
+                                });
+
+                            $scope.$watch("namespace.selectedNameSpace", function() {
+                                $scope.errors = null;
+                            });
+
+                            $scope.viewNameSpace = function() {
+
+                                var networkUUID = $scope.ndexNetworkUuid;
+                                var prefix = $scope.namespace.selectedNameSpace.prefix;
+
+                                var URI = ndexService.getNdexServerUri() + '/network/' + networkUUID + '/namespaceFile/' + prefix;
+
+                                // since the server REST API returns String (text/plain), we need to use the $http service.
+                                // When server was returning String as application/json,  the client (Web UI) was unable to pase the expected JSON and threw errors,
+                                // so we changed the server to return text/plain.
+                                $http.get(URI).
+                                    success(function(data, status, headers, config) {
+
+                                        $scope.namespace.namespaceFileContents = data;
+                                        $scope.namespace.prefixForTitle = prefix;
+
+                                        $scope.namespace.modalInstance = $modal.open({
+                                            templateUrl: 'bel-namespace-show-contents.html',
+                                            scope: $scope,
+                                            backdrop: 'static'
+                                        });
+
+                                        $scope.namespace.close = function() {
+                                            $scope.namespace.modalInstance.dismiss();
+                                            //$scope.isProcessing = false;
+                                        };
+
+                                        $scope.namespace.saveToFile = function() {
+                                            $scope.namespace.modalInstance.dismiss();
+
+
+                                            var textFileAsBlob = new Blob([$scope.namespace.namespaceFileContents], {type:'text/plain'});
+                                            var fileNameToSaveAs = $scope.namespace.selectedNameSpace.prefix + ".txt";
+
+                                            var downloadLink = document.createElement("a");
+                                            downloadLink.download = fileNameToSaveAs;
+                                            downloadLink.innerHTML = "Download File";
+
+                                            if (window.webkitURL != null)
+                                            {
+                                                // Chrome allows the link to be clicked
+                                                // without actually adding it to the DOM.
+                                                downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+                                            }
+                                            else
+                                            {
+                                                // Firefox requires the link to be added to the DOM
+                                                // before it can be clicked.
+                                                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                                                document.body.appendChild(downloadLink);
+                                            }
+
+                                            if (confirm("Save BEL Namespace file for prefix " + prefix + " in " + fileNameToSaveAs + "?"))
+                                            {
+                                                downloadLink.click();
+                                            }
+                                        };
+                                    }).
+                                    error(function(error, status, headers, config) {
+
+                                        $scope.errors = error.message;
+                                    }
+                                );
+                            }
+                        }
+                    });
+                };
+            }
+        }
+    });
+
     // modal to remove own access to group
     uiServiceApp.directive('leaveGroup', function(){
         return {

@@ -1,0 +1,81 @@
+<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="download-bel-namespace-modal.html">
+    <div class='modal-content'>
+        <form class="form-horizontal" role="form" ng-submit='submit()'>
+
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+            </div>
+
+            <div class='modal-body'>
+
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Network </label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static">{{ndexNetworkName}}</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Namespace</label>
+                    <div class="col-sm-4">
+                        <select ng-model="namespace.selectedNameSpace"
+                                class="form-control"
+                                ng-options="namespace as namespace.prefix for namespace in nameSpaces">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">URI</label>
+                    <div class="col-sm-8">
+                        <p class="form-control-static wrapLongLine">{{namespace.selectedNameSpace.uri}}</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label text-danger"  ng-if="errors">Error </label>
+                    <div class="col-sm-8" ng-if="errors">
+                        <p class="form-control-static text-danger" >{{errors}}</p>
+                    </div>
+                </div>
+
+                <div class='modal-footer' ng-hide='false'>
+                    <button class='btn btn-default' ng-click='close()'>Close</button>
+                    <button class='btn btn-primary' ng-click='viewNameSpace()' ng-disabled='isProcessing'>View Namespace</button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="bel-namespace-show-contents.html">
+    <div class='modal-content belNamespaceFileModalSize'>
+        <form class="form-horizontal" role="form" ng-submit='submit()'>
+
+            <div class="modal-header">
+                <h4 class="modal-title">BEL Namespace file for prefix {{namespace.prefixForTitle}}</h4>
+            </div>
+
+            <div class="modal-body my-modal-body-size">
+                <span class="belNamespaceFileModal"
+                      ng-bind-html="namespace.namespaceFileContents"
+                      id="namespaceFileContentsId">
+                </span>
+            </div>
+
+            <div class='modal-footer' ng-hide='false'>
+                <button class='btn btn-default' ng-click='namespace.close()'>Close</button>
+                <button class='btn btn-primary' ng-click='namespace.saveToFile()' ng-disabled='errors'>Download Namespace</button>
+            </div>
+
+        </form>
+
+    </div>
+</script>

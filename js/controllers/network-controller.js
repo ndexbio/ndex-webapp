@@ -62,6 +62,8 @@ ndexApp.controller('networkController',
             networkController.edgePropertyNamesForAdvancedQuery = [];
             networkController.nodePropertyNamesForAdvancedQuery = [];
 
+            networkController.numberOfBelNetworkNamespacesAsInt = 0;
+
 
             $scope.provenance = [];
             $scope.displayProvenance = [];
@@ -510,6 +512,7 @@ ndexApp.controller('networkController',
                                 if (data.metaData[i].elementCount > 0) {
                                     networkController.numberOfBelNetworkNamespaces = "Archived (" +
                                         data.metaData[i].elementCount + ")";
+                                    networkController.numberOfBelNetworkNamespacesAsInt = data.metaData[i].elementCount;
                                 }
                                 return;
                             }
