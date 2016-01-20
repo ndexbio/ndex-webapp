@@ -116,7 +116,7 @@
             </button>
 
            <a class="navbar-brand"
-                ng-href="javascript:void(0)"
+                ng-href="{{$location.path()}}"
                 ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.logoLink)"
                 style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
 
@@ -138,7 +138,7 @@
 
             <ul class="nav navbar-nav navbar-left">
                 <li>
-                    <a ng-href="javascript:void(0)"
+                    <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.aboutLink)" >{{config.aboutLink.label}}
                     </a>
                     <!--
@@ -149,25 +149,25 @@
                     -->
                 </li>
                 <li>
-                    <a ng-href="javascript:void(0)"
+                    <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.documentationLink)">
                            {{config.documentationLink.label}}
                     </a>
                 </li>
                 <li>
-                    <a ng-href="javascript:void(0)"
+                    <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.apiLink)">
                         {{config.apiLink.label}}
                     </a>
                 </li>
                 <li>
-                    <a ng-href="javascript:void(0)"
+                    <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.reportBugLink)">
                            {{config.reportBugLink.label}}
                     </a>
                 </li>
                 <li>
-                    <a ng-href="javascript:void(0)"
+                    <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.contactUsLink)">
                           {{config.contactUsLink.label}}
                     </a>
