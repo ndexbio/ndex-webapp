@@ -108,7 +108,7 @@
 <nav class="navbar navbar-ndex-top navbar-fixed-top" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" data-target="#myNavbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -116,8 +116,8 @@
             </button>
 
            <a class="navbar-brand"
-                ng-href="{{config.logoLink.href}}"
-                ng-click="$event.preventDefault(); redirectToExternalLink(config.logoLink)"
+                ng-href="javascript:void(0)"
+                ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.logoLink)"
                 style="max-height: 40px; padding-top: 0; padding-bottom: 0;">
 
                 <div style="
@@ -138,37 +138,42 @@
 
             <ul class="nav navbar-nav navbar-left">
                 <li>
+                    <a ng-href="javascript:void(0)"
+                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.aboutLink)" >{{config.aboutLink.label}}
+                    </a>
+                    <!--
                     <a ng-href="{{config.aboutLink.href}}"
                        ng-click="$event.preventDefault(); redirectToExternalLink(config.aboutLink)">
                         {{config.aboutLink.label}}
                     </a>
+                    -->
                 </li>
                 <li>
-                    <a ng-href="{{config.documentationLink.href}}"
-                       ng-click="$event.preventDefault(); redirectToExternalLink(config.documentationLink)">
+                    <a ng-href="javascript:void(0)"
+                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.documentationLink)">
                            {{config.documentationLink.label}}
                     </a>
                 </li>
                 <li>
-                    <a ng-href="{{config.apiLink.href}}"
-                       ng-click="$event.preventDefault(); redirectToExternalLink(config.apiLink)">
+                    <a ng-href="javascript:void(0)"
+                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.apiLink)">
                         {{config.apiLink.label}}
                     </a>
                 </li>
                 <li>
-                    <a ng-href="{{config.reportBugLink.href}}"
-                       ng-click="$event.preventDefault(); redirectToExternalLink(config.reportBugLink)">
+                    <a ng-href="javascript:void(0)"
+                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.reportBugLink)">
                            {{config.reportBugLink.label}}
                     </a>
                 </li>
                 <li>
-                    <a ng-href="{{config.contactUsLink.href}}"
-                       ng-click="$event.preventDefault(); redirectToExternalLink(config.contactUsLink)">
+                    <a ng-href="javascript:void(0)"
+                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.contactUsLink)">
                           {{config.contactUsLink.label}}
                     </a>
                 </li>
                 <li>
-                    <a ng-click="$event.preventDefault(); showNDExCitationInClipboardMessage()"
+                    <a ng-click="collapseHamburgerMenu(); showNDExCitationInClipboardMessage()"
                        ngclipboard data-clipboard-text="{{NDEx.citation}}">
                         {{config.citeNDEx.label}}
                     </a>
@@ -179,10 +184,12 @@
                     </a>
 -->
                 </li>
-            </ul>
 
-            <ul class="col-sm-4 col-md-4 col-lg-4 nav navbar-nav">
-                <form ng-hide="main.hideSearchBar" class="navbar-form navbar-left" style="width:100%" role="search" ng-submit="main.search()">
+                <form ng-hide="main.hideSearchBar"
+                      class="navbar-form navbar-left"
+                      style="width:435px"
+                      role="search"
+                      ng-submit="collapseHamburgerMenu(); main.search()">
                     <div class="input-group" >
                         <div class="input-group-btn dropdown">
                             <button type="button" class="btn btn-default dropdown-toggle">
@@ -209,25 +216,28 @@
                         </div>
                     </div>
                 </form>
+
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
 
-                <li ng-show="main.getCurrentNetwork() != null"
+                <li ng-click="collapseHamburgerMenu()"
+                    ng-show="main.getCurrentNetwork() != null"
                     ng-class="{active:main.url.url().search('/network') != -1}">
                     <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a>
                 </li>
 
-                <li ng-show="main.loggedIn">
+                <li ng-click="collapseHamburgerMenu()"
+                        ng-show="main.loggedIn">
                     <a href="#/user/{{main.getCurrentUserId()}}">MyAccount</a>
                 </li>
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="main.signout()">Sign Out</a>
+                    <a ng-click="collapseHamburgerMenu(); main.signout()">Sign Out</a>
                 </li>
 
                 <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown">
-                    <a ng-click="main.startSignIn()">Sign In</a>
+                    <a ng-click="collapseHamburgerMenu(); main.startSignIn()">Sign In</a>
                 </li>
 
             </ul>

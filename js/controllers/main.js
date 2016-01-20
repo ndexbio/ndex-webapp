@@ -74,8 +74,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
-
-
         $scope.main.signout = function () {
             $scope.$emit('LOGGED_OUT');
             $location.path("/");
@@ -438,6 +436,13 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             var win = window.open(redirectObj.href, '_blank');
             win.focus();
 
+        };
+
+        /*
+         * This function closes/collapses the opened hamburger menu after user selected (clicked) an item from this menu.
+         */
+        $scope.collapseHamburgerMenu = function() {
+            $(".navbar-collapse.in").collapse('hide');
         };
 
         $scope.showNDExCitationInClipboardMessage = function(redirectObj) {

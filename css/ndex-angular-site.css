@@ -908,6 +908,10 @@ max-width of the browser reachea the specified value; this is for NDEX-662 */
         float: none !important;
     }
 
+    .navbar-right {
+        margin-left: -15px;
+    }
+
     .navbar-toggle {
         display: block;
     }
@@ -915,6 +919,7 @@ max-width of the browser reachea the specified value; this is for NDEX-662 */
     .navbar-collapse {
         border-top: 1px solid transparent;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        max-height: 700px;
     }
 
     .navbar-fixed-top {
