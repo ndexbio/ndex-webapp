@@ -30,8 +30,8 @@
                 <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
             </div>
             <br>
-            <img src="img/lightbulb.png"> &nbsp;Tip: Click the magnifying lens to view all networks available on NDEx
         </form>
+
         <h1 class="text-danger" ng-show="main.serverIsDown"><span id="bind-html-with-trust" ng-bind-html="config.messages.serverDown"></span></h1>
 
         <div class='col-md-12' ng-show="(main.showSignIn || config.requireAuthentication) && !main.serverIsDown">
@@ -67,11 +67,14 @@
             </div>
         </div>
 
-
     </div>
 </div>
-<br>
-<br>
+
+<div class="ndex-citation-landing-page">Cite NDEx: Pratt <em>et al.</em>
+    <a href="http://dx.doi.org/10.1016/j.cels.2015.10.001">NDEx, the Network Data Exchange.</a>
+    Cell Systems, Volume 1, Issue 4, 302-305 (2015).
+</div>
+
 <br>
 <div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
     <span class='col-md-12'>

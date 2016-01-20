@@ -897,8 +897,8 @@ ul.ndex-nav-pills > li > a:hover {
 
 
 /* this makes the header menu to "collapse" into a menu button when
-max-width of the browser reachea the specified value; this is for NDEX-662 */
-@media (max-width: 1450px) {
+max-width of the browser reaches the specified value; this is for NDEX-662 */
+@media (max-width: 1200px) {
 
     .navbar-header {
         float: none;
@@ -966,4 +966,11 @@ max-width of the browser reachea the specified value; this is for NDEX-662 */
 .my-modal-body-size {
     max-height: calc(100vh - 212px);
     overflow-y: auto;
+}
+
+.ndex-citation-landing-page {
+    font-size:18px;
+    line-height:2;
+    margin:2em;
+    text-align: center;
 }
