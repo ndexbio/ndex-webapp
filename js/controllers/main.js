@@ -561,7 +561,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.documentationLink = {};
             }
             if (typeof config.documentationLink.label === 'undefined') {
-                config.documentationLink.label = "Documentation";
+                config.documentationLink.label = "Docs";
             }
             if (typeof config.documentationLink.href === 'undefined') {
                 config.documentationLink.href = "http://www.ndexbio.org/quick-start";
@@ -594,7 +594,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.reportBugLink = {};
             }
             if (typeof config.reportBugLink.label === 'undefined') {
-                config.reportBugLink.label = "Report a Bug";
+                config.reportBugLink.label = "Report Bug";
             }
             if (typeof config.reportBugLink.href === 'undefined') {
                 config.reportBugLink.href = "http://www.ndexbio.org/report-a-bug";
@@ -610,7 +610,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.contactUsLink = {};
             }
             if (typeof config.contactUsLink.label === 'undefined') {
-                config.contactUsLink.label = "Contact us";
+                config.contactUsLink.label = "Contact Us";
             }
             if (typeof config.contactUsLink.href === 'undefined') {
                 config.contactUsLink.href = "http://www.ndexbio.org/contact-us/";
