@@ -37,6 +37,15 @@ ndexApp.controller('userController',
             //tasks
             userController.tasks = [];
 
+            // list of network IDs of all networks for which the current user has ADMIN access and therefore can delete.
+            // These networks are owned by both the current user and other users.
+            userController.networksWithAdminAccess = [];
+
+            // list of network IDs of all networks for which the current user has WRITE access and therefore can update.
+            // These networks are owned by both the current user and other users.
+            userController.networksWithWriteAccess = [];
+
+
             var calcColumnWidth = function(header, isLastColumn)
             {
                 var result = header.length * 10;
@@ -217,6 +226,43 @@ ndexApp.controller('userController',
                 )
             };
 
+            userController.checkAndDeleteSelectedNetworks = function() {
+                var checkWritePrivilege = false;
+                var networksDeleteable =
+                    userController.checkIfSelectedNetworksCanBeDeletedOrChanged(checkWritePrivilege);
+
+                if (networksDeleteable) {
+                    userController.confirmDeleteSelectedNetworks();
+                } else {
+                    var title = "Cannot Delete Selected Networks";
+                    var message =
+                        "Some selected networks could not be deleted because they are either marked READ-ONLY" +
+                        " or you do not have ADMIN privileges. Please uncheck the READ-ONLY box in each network " +
+                        " page, make sure you have ADMIN access to all selected networks, and try again.";
+
+                    userController.genericInfoModal(title, message);
+                }
+                return;
+            }
+
+            userController.genericInfoModal = function(title, message)
+            {
+                var   modalInstance = $modal.open({
+                    templateUrl: 'generic-info-modal.html',
+                    scope: $scope,
+
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.title = title;
+                        $scope.message = message;
+
+                        $scope.close = function() {
+                            $modalInstance.dismiss();
+                        };
+                    }
+                });
+            }
+
             userController.confirmDeleteSelectedNetworks = function()
             {
                 var   modalInstance = $modal.open({
@@ -307,6 +353,72 @@ ndexApp.controller('userController',
                     }
                 }
             };
+
+            /*
+             * This function is used by Bulk Network Delete and Bulk Network Edit Properties operations.
+             * It goes through the list of selected networks and checks if the networks
+             * can be deleted (or modified in case checkWriteAccess is set to true).
+             * It makes sure that in the list of selected networks
+             *
+             * 1) there are no read-only networks, and
+             * 2) that the current user can delete the selected networks (i.e., has Admin access to all of them).
+             *
+             * If either of the above conditions is false, than the list of networks cannot be deleted.
+             *
+             * If the function was called with (checkWriteAccess=true) then it also checks if user has
+             * WRITE access to the networks.
+             *
+             * The function returns true if all networks can be deleted or modified, and false otherwise (all or none).
+             */
+            userController.checkIfSelectedNetworksCanBeDeletedOrChanged = function(checkWriteAccess) {
+
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                // iterate through the list of selected networks
+                for (var i = 0; i < selectedNetworksRows.length; i++) {
+                    var externalId1 = selectedNetworksRows[i].externalId;
+
+                    // check if the selected network is read-only and can be deleted by the current account
+                    for (var j = 0; j < userController.networkSearchResults.length; j++) {
+
+                        var externalId2 = userController.networkSearchResults[j].externalId;
+
+                        // find the current network info in the list of networks this user has access to
+                        if (externalId1 !== externalId2) {
+                            continue;
+                        }
+
+                        // check if network is read-only
+                        if (userController.networkSearchResults[j].readOnlyCommitId > 0) {
+                            // it is read-only; cannot delete or modify
+                            return false;
+                        }
+
+                        // check if you have admin privilege for this network
+                        if (userController.networksWithAdminAccess.indexOf(externalId1) == -1) {
+                            // the current user is not admin for this network, therefore, (s)he cannot delete it
+
+                            // see if user has WRITE access in case this function was called to check whether
+                            // network can be modified
+                            if (checkWriteAccess) {
+
+                                if (userController.networksWithWriteAccess.indexOf(externalId1) == -1) {
+                                    // no ADMIN or WRITE priviled for this network.  The current user cannot modify it.
+                                    return false;
+                                }
+
+                            } else {
+                                // we don't check if user has WRITE privilege here (since checkWriteAccess is false)
+                                // and user has no ADMIN access, which means the network cannot be deleted by the current user
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+
 
             userController.deleteSelectedNetworks = function ()
             {
@@ -401,6 +513,8 @@ ndexApp.controller('userController',
                 ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks)
                     {
+                        userController.getNetworksWithAdminAccess();
+                        userController.getNetworksWithWriteAccess();
                         userController.networkSearchResults = networks;
                         populateNetworkTable();
                     },
@@ -444,6 +558,59 @@ ndexApp.controller('userController',
                     function (tasks)
                     {
                         userController.tasks = tasks;
+                    },
+                    // Error
+                    function (response)
+                    {
+                    }
+                )
+            };
+
+            userController.getNetworksWithAdminAccess = function ()
+            {
+                // get all networks for which the current user has ADMIN privilege.
+                // These networks include both networks owned by current user and by other accounts.
+                ndexService.getUserNetworkMemberships(
+                    sharedProperties.getCurrentUserId(),
+                    "ADMIN",
+                    0,
+                    100,
+                    // Success
+                    function (networks)
+                    {
+                        userController.networksWithAdminAccess = [];
+
+                        for (var i = 0; i < networks.length; i++) {
+                            var networkUUID = networks[i].resourceUUID;
+                            userController.networksWithAdminAccess.push(networkUUID);
+                        }
+                    },
+                    // Error
+                    function (response)
+                    {
+                    }
+                )
+            };
+
+            userController.getNetworksWithWriteAccess = function ()
+            {
+                // get all networks for which the current user has WRITE privilege.
+                // These networks include both networks owned by current user and by other accounts.
+                ndexService.getUserNetworkMemberships(
+                    sharedProperties.getCurrentUserId(),
+                    "WRITE",
+                    0,
+                    100,
+                    // Success
+                    function (networks)
+                    {
+                        userController.networksWithWriteAccess = [];
+
+                        for (var i = 0; i < networks.length; i++) {
+                            var networkUUID = networks[i].resourceUUID;
+                            userController.networksWithWriteAccess.push(networkUUID);
+                        }
+                        var i = 10;
                     },
                     // Error
                     function (response)

@@ -124,7 +124,14 @@ ndexServiceApp.factory('ndexService',
                         params: {
                             action: 'password'
                         }
-                    }
+                    },
+                    getUserNetworkMemberships: {
+                        method: 'GET',
+                        params: {
+                            subResource: 'network'
+                        },
+                        isArray: true
+                    },
                 });
 
             factory.getUserApi = function(successHandler, errorHandler)
@@ -233,6 +240,18 @@ ndexServiceApp.factory('ndexService',
                 ndexUtility.setUserAuthToken(user.password);
 
                 UserResource.createUser({}, user, successHandler, errorHandler);
+            };
+
+            factory.getUserNetworkMemberships = function (userId, membership, skipBlocks, blockSize, successHandler, errorHandler) {
+                var externalId = ndexUtility.getLoggedInUserExternalId();
+                if (externalId == null) {
+                    successHandler(null);
+                    return;
+                }
+                UserResource.getUserNetworkMemberships(
+                    {identifier: userId, permissions: membership,
+                    'skipBlocks': skipBlocks,
+                    'blockSize': blockSize}, successHandler, errorHandler);
             };
 
             // /user/{userUUID}/task/{status}/{skipBlocks}/{blockSize}

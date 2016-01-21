@@ -1130,6 +1130,23 @@
                     $scope.network.version = null;
                     $scope.network.visibility = null;
 
+                    var checkWritePrivilege = true;
+                    var networksUpdateable =
+                        $scope.ndexData.checkIfSelectedNetworksCanBeDeletedOrChanged(checkWritePrivilege);
+
+                    // before updating networks, we want to make sure that all of the selected networks can be modified.
+                    if (!networksUpdateable) {
+                        var title = "Cannot Modify Selected Networks";
+                        var message =
+                            "Some selected networks could not be modified because they are either marked READ-ONLY" +
+                            " or you do not have ADMIN or WRITE privileges. Please uncheck the READ-ONLY box in each network " +
+                            " page, make sure you have either ADMIN or WRITE access to all selected networks, and try again.";
+
+                        $scope.ndexData.genericInfoModal(title, message);
+
+                        return;
+                    }
+
                     modalInstance = $modal.open({
                         templateUrl: 'bulk-edit-network-property-modal.html',
                         scope: $scope
