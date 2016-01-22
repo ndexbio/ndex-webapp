@@ -1101,7 +1101,7 @@
         }
     });
 
-    // modal to bulk edit networks description
+    // modal to bulk edit networks property (description, version or visibility)
     uiServiceApp.directive('bulkEditNetworkProperty', function() {
         return {
             scope: {
@@ -1113,7 +1113,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
             transclude: true,
-            controller: function($scope, $modal, ndexService, $route) {
+            controller: function($scope, $modal, ndexService) {
 
                 var visibilities = ["PUBLIC", "DISCOVERABLE", "PRIVATE"];
 
@@ -1237,6 +1237,106 @@
             }
         }
     });
+
+    // modal to bulk set/unset read-only flag
+    uiServiceApp.directive('bulkChangeReadonlyProperty', function() {
+        return {
+            scope: {
+                ndexData: '=',
+                action: '@directiveAction',
+                title:  '@directiveTitle',
+                text:   '@directiveDescription'
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
+            transclude: true,
+            controller: function($scope, $modal, ndexService) {
+
+                var modalInstance;
+                $scope.errors = null;
+                $scope.network = {};
+
+                $scope.openMe = function() {
+
+                    $scope.network = {};
+                    $scope.network.readOnly = null;
+                    $scope.network.label = "Change Read-Only Flag";
+
+                    var haveAdminPrivilege = $scope.ndexData.checkAdminPrivilegeOnSelectedNetworks();
+
+                    // before setting/unsetting the READ-ONLY flag, we want to make sure that user has
+                    // ADMIN access to all of them
+                    if (!haveAdminPrivilege) {
+                        var title = "Cannot Modify Read-Only Property";
+                        var message =
+                            "For some of the selected networks you do not have ADMIN privilege. " +
+                            "You need to have the ADMIN privilege in order to set or unset the READ-ONLY flag. " +
+                            " Please make sure you have ADMIN access to all selected networks, and try again.";
+
+                        $scope.ndexData.genericInfoModal(title, message);
+
+                        return;
+                    }
+
+                    modalInstance = $modal.open({
+                        templateUrl: 'bulk-edit-network-property-modal.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.cancel = function() {
+                    modalInstance.close();
+                    modalInstance = null;
+                    $scope.network = {};
+                };
+
+                $scope.submit = function() {
+
+                    var userController = $scope.ndexData;
+
+                    var IdsOfSelectedNetworks = userController.getIDsOfSelectedNetworks();
+
+                    for (var i = 0; i < userController.networkSearchResults.length; i++ )
+                    {
+                        var networkObj  = userController.networkSearchResults[i];
+                        var networkUUID = userController.networkSearchResults[i].externalId;
+
+                        if (IdsOfSelectedNetworks.indexOf(networkUUID) == -1) {
+                            continue;
+                        }
+
+                        if ((networkObj.readOnlyCommitId > 0) && ($scope.network.readOnly.toUpperCase()==='UNSET')) {
+
+                            // the network is read-only and the operation is UNSET, so let's remove the read-only flag
+                            ndexService.setReadOnly(networkUUID, false);
+
+                            // set the read-only flags in networkSearchResults to -1 showing that this network
+                            // is now read-write
+                            userController.networkSearchResults[i].readOnlyCacheId = -1;
+                            userController.networkSearchResults[i].readOnlyCommitId = -1;
+
+
+                        } else  if ((networkObj.readOnlyCommitId < 0) && ($scope.network.readOnly.toUpperCase()==='SET')) {
+
+                            // the network is not read-only and the true is SET, so let's make network read-only
+                            ndexService.setReadOnly(networkUUID, true);
+
+                            // set the read-only flags to 1 showing that this network is now read-only;
+                            // the readOnlyCacheId and readOnlyCacheId flags will be replaced with correct values
+                            // when we reload user page and re-populate the userController.networkSearchResults structure;
+                            // But for now, keep the values 1 so that UI behaves correctly with these networks.
+                            userController.networkSearchResults[i].readOnlyCacheId = 1;
+                            userController.networkSearchResults[i].readOnlyCommitId = 1;
+                        }
+                    }
+
+                    modalInstance.close();
+
+                };
+            }
+        }
+    });
+
 
     uiServiceApp.directive('bulkNetworkAccessModal', function() {
         return {

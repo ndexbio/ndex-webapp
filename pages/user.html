@@ -38,7 +38,7 @@
                     <span>
                        <div class="btn-group" dropdown>
                            <button id="editAccountButton" type="button"
-                                   class="btn btn-primary dropdown-toggle customButtonWidth" data-toggle="dropdown">
+                                   class="btn btn-primary dropdown-toggle customButtonWidth">
                                Edit Account
                                <span class="caret"></span>
                            </button>
@@ -60,7 +60,7 @@
                     <span>
                        <div class="btn-group" dropdown>
                            <button id="editNetworksPropertiesButton" type="button"
-                                   class="btn btn-primary dropdown-toggle customButtonWidth" data-toggle="dropdown">
+                                   class="btn btn-primary dropdown-toggle customButtonWidth">
                                Edit Properties
                                <span class="caret"></span>
                            </button>
@@ -97,6 +97,17 @@
                                                directive-description="Change Visibility of the selected networks to the one below:">
                                            Change Visibility
                                        </bulk-edit-network-property>
+                                   </a>
+                               </li>
+                               <li>
+                                   <a>
+                                       <bulk-change-readonly-property
+                                               ndex-data='userController'
+                                               directive-title="Change Read-Only Flag of Selected Networks"
+                                               directive-action="readOnly"
+                                               directive-description="Change Read-Only flag of the selected networks to the one below:">
+                                           Set/Unset Read-Only Flag
+                                       </bulk-change-readonly-property>
                                    </a>
                                </li>
                            </ul>
