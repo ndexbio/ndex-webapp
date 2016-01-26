@@ -17,13 +17,20 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Description</label>
             <div class="col-sm-8">
-              <textarea class="form-control" rows="3" placeholder="Description" ng-model='network.description'></textarea>
+              <textarea class="form-control"
+                        rows="3"
+                        placeholder="Description"
+                        ng-model='network.description'>
+              </textarea>
+
+              <markdown markdown-model="network.description"></markdown>
             </div>
           </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">Reference</label>
             <div class="col-sm-8">
                 <input type="text" class="form-control" placeholder="Reference" ng-model='network.reference2'>
+                <markdown markdown-model="network.reference2"></markdown>
             </div>
         </div>
           <div class="form-group">

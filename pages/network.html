@@ -15,8 +15,9 @@
                  <label>Edges:</label>
                  <span>{{networkController.currentNetwork.edgeCount}}</span>
         </div>
-        <div class='row' style="margin-bottom: 4px; margin-right: 1px">
-            {{networkController.currentNetwork.description}}
+        <div class='row wrapLongLine' style="margin-bottom: 4px; margin-right: 1px">
+            <!--{{networkController.currentNetwork.description}}-->
+            <markdown markdown-model="networkController.currentNetwork.description"></markdown>
         </div>
         <div class='row' ng-show='networkController.currentNetwork.version'>
             <strong>Version:</strong> {{networkController.currentNetwork.version}}
