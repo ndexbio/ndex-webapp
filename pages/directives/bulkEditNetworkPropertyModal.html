@@ -19,8 +19,18 @@
                 <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='description'">
                     <label class="col-sm-3 control-label">Description</label>
                     <div class="col-sm-8">
+                        <!--
                         <textarea class="form-control" rows="3" placeholder="Description" ng-model='network.description'></textarea>
                         <markdown markdown-model="network.description"></markdown>
+                        -->
+                        <text-angular
+                                ta-toolbar-class="btn-toolbar"
+                                ta-toolbar-group-class="btn-group btn-group-xs"
+                                ta-toolbar-button-class="btn btn-default"
+                                ta-toolbar-button-active-class="active"
+                                ng-model='network.description'>
+
+                        </text-angular>
                     </div>
                 </div>
 
