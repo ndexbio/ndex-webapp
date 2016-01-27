@@ -22,8 +22,9 @@
         </div>
 
         <div class='row wrapLongLine'
-             ng-show="networkController.currentNetworkReference != null"
+             ng-show="networkController.currentNetworkReference"
              style="margin-bottom: 4px; margin-right: 1px">
+            <label>Reference:</label>
             <markdown markdown-model="networkController.currentNetworkReference"></markdown>
         </div>
 
