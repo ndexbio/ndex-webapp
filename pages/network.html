@@ -15,10 +15,18 @@
                  <label>Edges:</label>
                  <span>{{networkController.currentNetwork.edgeCount}}</span>
         </div>
+
         <div class='row wrapLongLine' style="margin-bottom: 4px; margin-right: 1px">
             <!--{{networkController.currentNetwork.description}}-->
             <markdown markdown-model="networkController.currentNetwork.description"></markdown>
         </div>
+
+        <div class='row wrapLongLine'
+             ng-show="networkController.currentNetworkReference != null"
+             style="margin-bottom: 4px; margin-right: 1px">
+            <markdown markdown-model="networkController.currentNetworkReference"></markdown>
+        </div>
+
         <div class='row' ng-show='networkController.currentNetwork.version'>
             <strong>Version:</strong> {{networkController.currentNetwork.version}}
         </div>
@@ -192,7 +200,7 @@
 
         <div class="row">
             <hr class="hrMarginRight">
-            <h5><strong>Network Properties</strong></h5>
+            <h5><strong>Network Properties:</strong></h5>
         </div>
 
         <span ng-show='(networkController.currentNetwork.properties.length == 0)

@@ -71,6 +71,8 @@ ndexApp.controller('networkController',
             networkController.readyToRenderNetworkInUI = false;
             networkController.showRetrieveMessage = true;
 
+            networkController.currentNetworkReference = null;
+
 
 
             $scope.tree = [{name: "Node", nodes: []}];
@@ -546,6 +548,27 @@ ndexApp.controller('networkController',
                 }
             }
 
+            var getNetworkReference = function(networkProperties)
+            {
+                networkController.currentNetworkReference = null;
+
+                if ('undefined'===typeof(networkProperties)) {
+                    return;
+                }
+
+                for( var i = 0; i < networkProperties.length; i++ ) {
+
+                    if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
+                        (networkProperties[i].predicateString.toLowerCase() === 'reference')) {
+
+                        if (typeof(networkProperties[i].value) !== 'undefined') {
+                            networkController.currentNetworkReference = networkProperties[i].value;
+                            return;
+                        }
+                    }
+                }
+            }
+
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
                 var request1 = null;
@@ -588,6 +611,7 @@ ndexApp.controller('networkController',
                         getNetworkAdmins();
 
                         getNetworkSourceFormat(networkController.currentNetwork.properties);
+                        getNetworkReference(networkController.currentNetwork.properties);
 
                         if ("BEL" === networkController.currentNetworkSourceFormat) {
                             // for BEL networks, check if Namespaces have been archived
