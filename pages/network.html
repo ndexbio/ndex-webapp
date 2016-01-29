@@ -16,16 +16,15 @@
                  <span>{{networkController.currentNetwork.edgeCount}}</span>
         </div>
 
-        <div class='row wrapLongLine' style="margin-bottom: 4px; margin-right: 1px">
-            <!--{{networkController.currentNetwork.description}}-->
-            <markdown markdown-model="networkController.currentNetwork.description"></markdown>
+        <div class='row wrapLongLine' style="margin-bottom: 4px; margin-right: 1px"
+             ng-bind-html="networkController.currentNetwork.description">
         </div>
 
         <div class='row wrapLongLine'
-             ng-show="networkController.currentNetworkReference"
+             ng-show="networkController.currentNetwork.reference"
              style="margin-bottom: 4px; margin-right: 1px">
             <label>Reference:</label>
-            <markdown markdown-model="networkController.currentNetworkReference"></markdown>
+            <span ng-bind-html="networkController.currentNetwork.reference"></span>
         </div>
 
         <div class='row' ng-show='networkController.currentNetwork.version'>
@@ -219,13 +218,15 @@
              ng-show='networkController.currentNetwork.properties.length > 0'>
 
             <h5>
-                <a class='btn btn-link'
+                <a class='btn-link'
                    ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
                    ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
-                    <span class="glyphicon glyphicon-edit"></span>
+                    Edit Properties
                 </a>
             </h5>
-        
+
+            <br>
+
             <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
                 <label>{{property.predicateString}}: </label>
                 <span ng-hide='property.value.toString().length > 40'>{{property.value.toString()}}</span>

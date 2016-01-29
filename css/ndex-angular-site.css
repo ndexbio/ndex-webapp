@@ -898,7 +898,7 @@ ul.ndex-nav-pills > li > a:hover {
 
 /* this makes the header menu to "collapse" into a menu button when
 max-width of the browser reaches the specified value; this is for NDEX-662 */
-@media (max-width: 1200px) {
+@media (max-width: 1210px) {
 
     .navbar-header {
         float: none;
@@ -973,4 +973,14 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
     line-height:2;
     margin:2em;
     text-align: center;
+}
+
+
+/* the following classes (ta-toolbar, ta-toolbar.focussed ) only show textAngular toolbar when a
+ * textAngular-edited field (i.e., Description or Reference in Edit Profile Modal) is in focus. */
+.ta-toolbar {
+    display: none;
+}
+.ta-toolbar.focussed {
+    display: block;
 }

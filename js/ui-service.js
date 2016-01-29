@@ -985,9 +985,9 @@
                     modalInstance = null;
                     $scope.network.name = $scope.ndexData.name;
                     $scope.network.description = $scope.ndexData.description;
+                    $scope.network.reference = $scope.ndexData.reference;
                     $scope.network.version = $scope.ndexData.version;
                     $scope.network.visibility = $scope.ndexData.visibility;
-                    $scope.network.reference2 = $scope.network.reference1;
                 };
 
                 $scope.submit = function() {
@@ -996,10 +996,11 @@
                     $scope.isProcessing = true;
 
                     // check if reference field was modified.  As of Release 1.3, this field
-                    // is not part of NetworkSummary object; so it needs to be sent to the server
+                    // is not part of NetworkSummary object (it is property); so it needs to be sent to the server
                     // separately
                     var updateProperties =
-                        ($scope.network.reference1 === $scope.network.reference2) ? false : true;
+                        ($scope.network.reference === $scope.ndexData.reference) ? false : true;
+
                     var properties = null;
 
                     if (updateProperties) {
@@ -1008,44 +1009,28 @@
                         if ((typeof $scope.ndexData !== 'undefined') &&
                             (typeof $scope.ndexData.properties !== 'undefined')) {
 
-                            var found = false;
-                            for (i = 0; i < $scope.ndexData.properties.length; i++) {
-                                if($scope.ndexData.properties[i].predicateString.toLowerCase() === 'reference') {
-                                    // reference property is found; modify it
-                                    $scope.ndexData.properties[i].value = $scope.network.reference2;
-                                    found = true;
-                                    break;
-                                }
-                            }
                             properties = $scope.ndexData.properties;
 
-                            if (!found) {
-                                // if reference property is not found (it was just added),
-                                // add it to the array of properties before sending the properties to server
-                                properties[properties.length] =
-                                    { "predicateString" : "Reference",
-                                      "value"           : $scope.network.reference2,
-                                      "dataType"        : "string",
-                                      "subNetworkId"    : null
-                                    };
-                            }
+                            properties[properties.length] =
+                                { "predicateString" : "Reference",
+                                  "value"           : $scope.network.reference,
+                                  "dataType"        : "string",
+                                  "subNetworkId"    : null
+                                }
                         } else {
                             // properties not found; create the properties array and send it to the server
                             properties =
                                 { "predicateString" : "Reference",
-                                  "value"           : $scope.network.reference2,
+                                  "value"           : $scope.network.reference,
                                   "dataType"        : "string",
                                   "subNetworkId"    : null
                                 };
                         }
-                        // remove reference1 and reference2 fields since $scope.network maps
-                        // to NetworkSummary object on server; this object doesn't have reference[1,2] fields;
+                        // remove reference field since $scope.network maps
+                        // to NetworkSummary object on server; this object doesn't have reference field;
                         // it is safe to send ctation fields to the server, but let's still remove them
-                        delete $scope.network.reference1;
-                        delete $scope.network.reference2;
+                        delete $scope.network.reference;
                     }
-
-
 
                     ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
                         function(data) {
@@ -1057,45 +1042,22 @@
                                     function (data) {
                                         $route.reload();
                                     },
-                                    function (error) {
-                                        //editor.errors.push(error)
-                                    });
+                                    function (error) {});
                             } else {
                                 $route.reload();
                             }
                         },
                         function(error) {
                             $scope.isProcessing = false;
-                            //console.log('error' + error);
                         })
                 };
-
-                $scope.findCitationForNetworkSummary = function(propertiesArray) {
-                    if (typeof propertiesArray === 'undefined') {
-                        return null;
-                    }
-                    for( var i = 0; i < propertiesArray.length; i++ ) {
-                        if (propertiesArray[i].predicateString.toLowerCase().trim() === 'reference') {
-                            return propertiesArray[i].value;
-                        }
-                    }
-                    return null;
-                }
 
                 $scope.$watch('ndexData', function(value) {
                     $scope.network.name = $scope.ndexData.name;
                     $scope.network.description = $scope.ndexData.description;
+                    $scope.network.reference = $scope.ndexData.reference;
                     $scope.network.version = $scope.ndexData.version;
                     $scope.network.visibility = $scope.ndexData.visibility;
-
-                    // reference1 and reference2 are used to decide whether to send setNetworkProperties
-                    // request to the server.  The request is sent if after editing Network Profile
-                    // the reference2 field was modified, i.e., if
-                    // $scope.network.reference1 !== $scope.network.reference2.
-                    $scope.network.reference1 =
-                        $scope.findCitationForNetworkSummary($scope.ndexData.properties);
-                    $scope.network.reference2 = $scope.network.reference1;
-
                 });
             }
         }
@@ -1125,7 +1087,6 @@
 
                     $scope.network = {};
 
-                    $scope.network.name = null;
                     $scope.network.description = null;
                     $scope.network.version = null;
                     $scope.network.visibility = null;
@@ -1165,28 +1126,36 @@
                     $scope.isProcessing = true;
 
                     var userController = $scope.ndexData;
-
-                    if (visibilities.indexOf($scope.network.visibility.toUpperCase()) == -1) {
-                        $scope.network.visibility = null;
-                    }
-
-                    var myNetwork = JSON.parse(JSON.stringify($scope.network));
                     var IdsOfSelectedNetworks = userController.getIDsOfSelectedNetworks();
+
+                    var operation = $scope.network.operation.toLowerCase();
+                    delete $scope.network.operation;
 
                     var createdTasksCounter = 0;
 
                     for (i = 0; i < IdsOfSelectedNetworks.length; i++ )
                     {
                         var networkId = IdsOfSelectedNetworks[i];
-                        var myNetwork = JSON.parse(JSON.stringify($scope.network));
-                        myNetwork.networkId  = networkId;
+                        var myNet = {};
+                        myNet.networkId = networkId;
 
-                        ndexService.editNetworkSummary(networkId, myNetwork,
+                        if (operation === 'description') {
+                            myNet.description = $scope.network.description;
+
+                        } else if(operation === 'version') {
+                            myNet.version = $scope.network.version;
+
+                        } else if (operation === 'visibility') {
+                            myNet.visibility = $scope.network.visibility;
+                        }
+
+
+                        ndexService.editNetworkSummary(networkId, myNet,
                             function(data) {
                                 createdTasksCounter =  createdTasksCounter + 1;
 
-                                if (myNetwork.visibility != null) {
-                                    userController.updateVisibilityOfNetwork(data.networkId, myNetwork.visibility);
+                                if (operation === 'visibility') {
+                                    userController.updateVisibilityOfNetwork(data.networkId, myNet.visibility);
                                 }
 
                                 if (i == createdTasksCounter) {
@@ -1206,34 +1175,6 @@
                         )
                     }
                 };
-
-                $scope.findCitationForNetworkSummary = function(propertiesArray) {
-                    if (typeof propertiesArray === 'undefined') {
-                        return null;
-                    }
-                    for( var i = 0; i < propertiesArray.length; i++ ) {
-                        if (propertiesArray[i].predicateString.toLowerCase().trim() === 'reference') {
-                            return propertiesArray[i].value;
-                        }
-                    }
-                    return null;
-                }
-
-                $scope.$watch('ndexData', function(value) {
-                    $scope.network.name = $scope.ndexData.name;
-                    $scope.network.description = $scope.ndexData.description;
-                    $scope.network.version = $scope.ndexData.version;
-                    $scope.network.visibility = $scope.ndexData.visibility;
-
-                    // reference1 and reference2 are used to decide whether to send setNetworkProperties
-                    // request to the server.  The request is sent if after editing Network Profile
-                    // the reference2 field was modified, i.e., if
-                    // $scope.network.reference1 !== $scope.network.reference2.
-                    $scope.network.reference1 =
-                        $scope.findCitationForNetworkSummary($scope.ndexData.properties);
-                    $scope.network.reference2 = $scope.network.reference1;
-
-                });
             }
         }
     });
@@ -1331,7 +1272,6 @@
                     }
 
                     modalInstance.close();
-
                 };
             }
         }

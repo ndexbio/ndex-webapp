@@ -71,9 +71,6 @@ ndexApp.controller('networkController',
             networkController.readyToRenderNetworkInUI = false;
             networkController.showRetrieveMessage = true;
 
-            networkController.currentNetworkReference = null;
-
-
 
             $scope.tree = [{name: "Node", nodes: []}];
 
@@ -550,7 +547,7 @@ ndexApp.controller('networkController',
 
             var getNetworkReference = function(networkProperties)
             {
-                networkController.currentNetworkReference = null;
+                networkController.currentNetwork.reference = null;
 
                 if ('undefined'===typeof(networkProperties)) {
                     return;
@@ -562,7 +559,8 @@ ndexApp.controller('networkController',
                         (networkProperties[i].predicateString.toLowerCase() === 'reference')) {
 
                         if (typeof(networkProperties[i].value) !== 'undefined') {
-                            networkController.currentNetworkReference = networkProperties[i].value;
+                            networkController.currentNetwork.reference = networkProperties[i].value;
+                            networkProperties.splice(i, 1);
                             return;
                         }
                     }

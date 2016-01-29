@@ -19,17 +19,12 @@
                 <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='description'">
                     <label class="col-sm-3 control-label">Description</label>
                     <div class="col-sm-8">
-                        <!--
-                        <textarea class="form-control" rows="3" placeholder="Description" ng-model='network.description'></textarea>
-                        <markdown markdown-model="network.description"></markdown>
-                        -->
                         <text-angular
                                 ta-toolbar-class="btn-toolbar"
                                 ta-toolbar-group-class="btn-group btn-group-xs"
                                 ta-toolbar-button-class="btn btn-default"
                                 ta-toolbar-button-active-class="active"
                                 ng-model='network.description'>
-
                         </text-angular>
                     </div>
                 </div>
@@ -76,17 +71,20 @@
                 <button class="btn btn-primary"
                         type='submit'
                         ng-disabled='isProcessing'
-                        ng-show="action=='description'">Change Description</button>
+                        ng-show="action=='description'"
+                        ng-click="network.operation='description'">Change Description</button>
 
                 <button class="btn btn-primary"
                         type='submit'
                         ng-disabled='isProcessing'
-                        ng-show="action=='version'">Change Version</button>
+                        ng-show="action=='version'"
+                        ng-click="network.operation='version'">Change Version</button>
 
                 <button class="btn btn-primary"
                         type='submit'
                         ng-disabled="isProcessing || network.visibility=='[Select Network Visibility]'"
-                        ng-show="action=='visibility'">Change Visibility</button>
+                        ng-show="action=='visibility'"
+                        ng-click="network.operation='visibility'">Change Visibility</button>
 
                 <button class="btn btn-primary"
                         type='submit'

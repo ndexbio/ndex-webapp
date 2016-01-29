@@ -19,6 +19,8 @@ ndexApp.controller('editNetworkPropertiesController',
     editor.canEdit = false;
     editor.canRead = false;
 
+    editor.reference = null;
+
 	editor.changed = function(index) {
 		if(index == (editor.propertyValuePairs.length - 1))
 			editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
@@ -44,6 +46,24 @@ ndexApp.controller('editNetworkPropertiesController',
             if((typeof pair.valuePrefix !== 'undefined') && (pair.valuePrefix != 'none') )
 				pair.value = pair.valuePrefix+':'+pair.value;
 		}
+
+
+        if (typeof editor.propertyValuePairs !== 'undefined') {
+            editor.propertyValuePairs[editor.propertyValuePairs.length] =
+            {   "predicateString" : "Reference",
+                "value"           : editor.reference,
+                "dataType"        : "string",
+                "subNetworkId"    : null
+            }
+        } else {
+            editor.propertyValuePairs =
+            {   "predicateString" : "Reference",
+                "value"           : editor.reference,
+                "dataType"        : "string",
+                "subNetworkId"    : null
+            };
+        }
+
 
 		ndexService.setNetworkProperties(networkExternalId, editor.propertyValuePairs,
 			function(data) {
@@ -184,7 +204,12 @@ ndexApp.controller('editNetworkPropertiesController',
                 // "sourceformat" element sent by the  server; we want to make sure we remove them
                 // all in case server by mistake sends multiple "sourceformat" elements.
                 while ( i < arrayLength ) {
-                    if (editor.propertyValuePairs[i].predicateString.toLowerCase() === "sourceformat") {
+                    if ((editor.propertyValuePairs[i].predicateString.toLowerCase() === "sourceformat") ||
+                        (editor.propertyValuePairs[i].predicateString.toLowerCase() === "reference")) {
+
+                        if( editor.propertyValuePairs[i].predicateString.toLowerCase() === "reference") {
+                            editor.reference = editor.propertyValuePairs[i].value;
+                        }
                         editor.propertyValuePairs.splice(i,1);
                         arrayLength = arrayLength - 1;
                         // here, DO NOT increment the loop counter i since array has shrunk
