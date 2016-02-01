@@ -95,6 +95,28 @@ ndexApp.controller('userController',
                 refreshNetworkTable();
             };
 
+            /*
+             * This function removes most HTML tags and replaces them with markdown symbols so that this
+             * field could be displayed in the title element of networkName.html template in the pop-up window
+             * when mouse cursor hovers over it.
+             */
+            var stripHTML = function(html) {
+
+                // remove convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
+                var markDown = toMarkdown(html);
+
+                // after using toMarkdown() at previous statement, markDown var can still contain
+                // some HTML Code (i.e.,<span class=...></span>). In order to remove it, we use jQuery text() function.
+                // We need to add <html> and </html> in the beginning and of markDown variable; otherwise, markDown
+                // will not be recognized byu text() as a valid HTML and exception will be thrown.
+
+                // Note that we need to use toMarkdown() followed by jQuery text(); if just jQuery text() is used, then
+                // all new lines and </p> , </h1>...</h6> tags are removed; and all lines get "glued" together
+                var markDownFinal  = $("<html>"+markDown+"</html>").text();
+
+                return markDownFinal;
+            }
+
             var refreshNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
@@ -104,7 +126,7 @@ ndexApp.controller('userController',
                     var network = userController.networkSearchResults[i];
 
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
-                    var description = network['description'];
+                    var description = stripHTML(network['description']);
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
                     var edges = network['edgeCount'];
