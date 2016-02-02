@@ -64,7 +64,7 @@ ndexApp.controller('searchNetworksController',
              */
             var stripHTML = function(html) {
 
-                // remove convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
+                // convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
                 var markDown = toMarkdown(html);
 
                 // after using toMarkdown() at previous statement, markDown var can still contain

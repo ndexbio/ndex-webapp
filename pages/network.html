@@ -467,7 +467,15 @@
                                 <tr><th>Name</th><th>Value</th></tr>
                                 <tr><td>uuid</td><td>{{displayProvenance.uuid}}</td></tr>
                                 <tr><td>host</td><td>{{displayProvenance.host}}</td></tr>
-                                <tr ng-repeat="property in displayProvenance.properties"><td>{{property.name}}</td><td>{{property.value}}</td></tr>
+
+                                <tr ng-repeat="property in displayProvenance.properties">
+                                    <td>
+                                        {{property.name}}
+                                    </td>
+                                    <td>
+                                        <span ng-bind-html="property.value"></span>
+                                    </td>
+                                </tr>
 
                             </table>
                             </span>
@@ -481,7 +489,14 @@
                             <tr ng-show="displayProvenance.creationEvent.startedAtTime == displayProvenance.creationEvent.endedAtTime"><td>event time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
                             <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>start time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
                             <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>end time</td><td>{{displayProvenance.creationEvent.endedAtTime | date:'medium' }}</td></tr>
-                            <tr ng-repeat="property in displayProvenance.creationEvent.properties"><td>{{property.name}}</td><td>{{property.value}}</td></tr>
+                            <tr ng-repeat="property in displayProvenance.creationEvent.properties">
+                                <td>
+                                    {{property.name}}
+                                </td>
+                                <td>
+                                    <span ng-bind-html="property.value"></span>
+                                </td>
+                            </tr>
                         </table>
 
 
