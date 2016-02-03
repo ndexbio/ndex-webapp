@@ -8,28 +8,31 @@
             </div>
         </div>
 
-        <div class="row">
-                 <label>Nodes:</label>
+        <div class="row rowWithOneLineBottomPad">
+                 <strong>Nodes:</strong>
                  <span>{{networkController.currentNetwork.nodeCount}}</span>
 
-                 <label>Edges:</label>
+                 <strong>Edges:</strong>
                  <span>{{networkController.currentNetwork.edgeCount}}</span>
         </div>
 
-        <div class='row wrapLongLine'
+        <div class='row wrapLongLine rowWithOneLineBottomPad'
              ng-show="networkController.currentNetwork.licensingInfo">
-            <span><strong>Licensing Info:</strong></span>
+            <!--<span><strong>Licensing Info:</strong></span>-->
             <span ng-bind-html="networkController.currentNetwork.licensingInfo"></span>
         </div>
 
-        <div class='row wrapLongLine' style="margin-bottom: 4px; margin-right: 1px"
-             ng-bind-html="networkController.currentNetwork.description">
+        <div class='row wrapLongLine rowWithOneLineBottomPad'
+             ng-show="networkController.currentNetwork.description"
+             style="margin-right: 1px;">
+             <strong>Description:</strong>
+             <span ng-bind-html="networkController.currentNetwork.description"></span>
         </div>
 
-        <div class='row wrapLongLine'
+        <div class='row wrapLongLine rowWithOneLineBottomPad'
              ng-show="networkController.currentNetwork.reference"
-             style="margin-bottom: 4px; margin-right: 1px">
-            <label>Reference:</label>
+             style="margin-right: 1px;">
+            <strong>Reference:</strong>
             <span ng-bind-html="networkController.currentNetwork.reference"></span>
         </div>
 
@@ -57,14 +60,10 @@
             {{networkController.currentNetwork.modificationTime | date}}
         </div>
 
-        <div class="row">
+        <div class="row rowWithOneLineBottomPad">
             <strong>UUID:</strong>
             {{networkController.currentNetworkId}}
         </div>
-
-
-        <br>
-
 
         <div class="row">
             <strong>Your Access Privileges:</strong> {{networkController.privilegeLevel}}

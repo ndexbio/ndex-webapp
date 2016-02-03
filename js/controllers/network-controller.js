@@ -572,8 +572,8 @@ ndexApp.controller('networkController',
             var getLicensingInfo = function(networkProperties)
             {
                 networkController.currentNetwork.licensingInfo = null;
-                var rightsHolder = "";
                 var copyrightDate = "";
+                var rightsHolder = "";
                 var licenseType = "";
                 var publicRightsType = "";
 
@@ -586,23 +586,70 @@ ndexApp.controller('networkController',
 
                     if (typeof(networkProperties[i].predicateString) !== 'undefined') {
 
-                        if (networkProperties[i].predicateString.toLowerCase() === 'rightsholder') {
-                            rightsHolder = rightsHolder + networkProperties[i].value + " ";
-                        }
                         if (networkProperties[i].predicateString.toLowerCase() === 'copyrightdate') {
-                            copyrightDate = copyrightDate + networkProperties[i].value + " ";
+
+                            if (copyrightDate) {
+                                copyrightDate = copyrightDate + ", " + networkProperties[i].value;
+                            } else {
+                                copyrightDate = networkProperties[i].value;
+                            }
+                        }
+                        if (networkProperties[i].predicateString.toLowerCase() === 'rightsholder') {
+
+                            if (rightsHolder) {
+                                rightsHolder = rightsHolder + ", " + networkProperties[i].value;
+                            } else {
+                                rightsHolder = networkProperties[i].value;
+                            }
                         }
                         if (networkProperties[i].predicateString.toLowerCase() === 'licensetype') {
-                            licenseType = licenseType + networkProperties[i].value + " ";
+
+                            if (licenseType) {
+                                licenseType = licenseType + ", " + networkProperties[i].value;
+                            } else {
+                                licenseType = networkProperties[i].value;
+                            }
                         }
                         if (networkProperties[i].predicateString.toLowerCase() === 'publicrightstype') {
-                            publicRightsType = publicRightsType + networkProperties[i].value + " ";
+
+                            if (publicRightsType) {
+                                publicRightsType = publicRightsType + ", " + networkProperties[i].value;
+                            } else {
+                                publicRightsType = networkProperties[i].value;
+                            }
                         }
                     }
                 }
 
-                networkController.currentNetwork.licensingInfo = rightsHolder + copyrightDate +
-                    licenseType + publicRightsType;
+                var copyRightDateAndHolder = "";
+
+                if (copyrightDate && rightsHolder) {
+                    copyRightDateAndHolder = copyrightDate + ", " + rightsHolder;
+                } else {
+                    copyRightDateAndHolder = copyrightDate + rightsHolder;
+                }
+
+                if (copyRightDateAndHolder) {
+                    copyRightDateAndHolder = "Copyright " + "&copy; " + copyRightDateAndHolder + ". ";
+                }
+
+
+                var licenseTypeAndRightsType = "";
+
+                if (licenseType && publicRightsType) {
+                    licenseTypeAndRightsType = licenseType + ", " + publicRightsType;
+                } else {
+                    licenseTypeAndRightsType = licenseType + publicRightsType;
+                }
+
+                if (licenseTypeAndRightsType) {
+                    licenseTypeAndRightsType = licenseTypeAndRightsType + ". ";
+                }
+                if ((!licenseType || !publicRightsType) && copyRightDateAndHolder) {
+                    licenseTypeAndRightsType = licenseTypeAndRightsType + "Contact rights holder."
+                }
+
+                networkController.currentNetwork.licensingInfo = copyRightDateAndHolder + licenseTypeAndRightsType;
             }
 
             var initialize = function () {
