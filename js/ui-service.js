@@ -1077,8 +1077,6 @@
             transclude: true,
             controller: function($scope, $modal, ndexService) {
 
-                var visibilities = ["PUBLIC", "DISCOVERABLE", "PRIVATE"];
-
                 var modalInstance;
                 $scope.errors = null;
                 $scope.network = {};
