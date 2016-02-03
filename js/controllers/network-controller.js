@@ -64,6 +64,8 @@ ndexApp.controller('networkController',
 
             networkController.numberOfBelNetworkNamespacesAsInt = 0;
 
+            networkController.currentNetwork.licensingInfo = null;
+
 
             $scope.provenance = [];
             $scope.displayProvenance = [];
@@ -567,6 +569,42 @@ ndexApp.controller('networkController',
                 }
             }
 
+            var getLicensingInfo = function(networkProperties)
+            {
+                networkController.currentNetwork.licensingInfo = null;
+                var rightsHolder = "";
+                var copyrightDate = "";
+                var licenseType = "";
+                var publicRightsType = "";
+
+
+                if ('undefined'===typeof(networkProperties)) {
+                    return;
+                }
+
+                for( var i = 0; i < networkProperties.length; i++ ) {
+
+                    if (typeof(networkProperties[i].predicateString) !== 'undefined') {
+
+                        if (networkProperties[i].predicateString.toLowerCase() === 'rightsholder') {
+                            rightsHolder = rightsHolder + networkProperties[i].value + " ";
+                        }
+                        if (networkProperties[i].predicateString.toLowerCase() === 'copyrightdate') {
+                            copyrightDate = copyrightDate + networkProperties[i].value + " ";
+                        }
+                        if (networkProperties[i].predicateString.toLowerCase() === 'licensetype') {
+                            licenseType = licenseType + networkProperties[i].value + " ";
+                        }
+                        if (networkProperties[i].predicateString.toLowerCase() === 'publicrightstype') {
+                            publicRightsType = publicRightsType + networkProperties[i].value + " ";
+                        }
+                    }
+                }
+
+                networkController.currentNetwork.licensingInfo = rightsHolder + copyrightDate +
+                    licenseType + publicRightsType;
+            }
+
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
                 var request1 = null;
@@ -610,6 +648,7 @@ ndexApp.controller('networkController',
 
                         getNetworkSourceFormat(networkController.currentNetwork.properties);
                         getNetworkReference(networkController.currentNetwork.properties);
+                        getLicensingInfo(networkController.currentNetwork.properties);
 
                         if ("BEL" === networkController.currentNetworkSourceFormat) {
                             // for BEL networks, check if Namespaces have been archived

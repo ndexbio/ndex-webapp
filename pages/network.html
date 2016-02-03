@@ -16,6 +16,12 @@
                  <span>{{networkController.currentNetwork.edgeCount}}</span>
         </div>
 
+        <div class='row wrapLongLine'
+             ng-show="networkController.currentNetwork.licensingInfo">
+            <span><strong>Licensing Info:</strong></span>
+            <span ng-bind-html="networkController.currentNetwork.licensingInfo"></span>
+        </div>
+
         <div class='row wrapLongLine' style="margin-bottom: 4px; margin-right: 1px"
              ng-bind-html="networkController.currentNetwork.description">
         </div>
