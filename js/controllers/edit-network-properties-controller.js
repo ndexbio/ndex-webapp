@@ -1,6 +1,6 @@
-ndexApp.controller('editNetworkPropertiesController', 
-	['$scope', '$location', '$routeParams', '$route', 'ndexService',
-		function($scope, $location, $routeParams, $route, ndexService){
+ndexApp.controller('editNetworkPropertiesController',
+	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal',
+		function($scope, $location, $routeParams, $route, ndexService, $modal){
 	 //testing
 
 	//              Process the URL to get application state
@@ -27,6 +27,37 @@ ndexApp.controller('editNetworkPropertiesController',
 
 	};
 
+    /*
+     * checkPredicateString() function checks if user entered "Reference" (case-insensitive)
+     * in the predicate field.  If yes, the warning is shown.
+     */
+    checkPredicateString = function(obj) {
+        var prefixString = obj.value;
+
+        if ("reference" === prefixString.trim().toLowerCase()) {
+
+            var title = "Cannot Use NDEx Internal Reserved Words";
+            var message = "Case-insensitive " + "'" + prefixString + "'" + " is NDEx internal reserved word. It cannot be used " +
+                " as predicate. It will not be saved. If you need to edit Reference property " +
+                "of the current network, please select Edit Network Profile button from the Network page.";
+
+            var modalInstance = $modal.open({
+                templateUrl: 'generic-info-modal.html',
+                scope: $scope,
+
+                controller: function ($scope, $modalInstance) {
+
+                    $scope.title = title;
+                    $scope.message = message;
+
+                    $scope.close = function () {
+                        $modalInstance.dismiss();
+                    };
+                }
+            });
+        }
+    }
+
 	editor.save = function() {
         if( $scope.isProcessing )
             return;
@@ -38,6 +69,27 @@ ndexApp.controller('editNetworkPropertiesController',
         }
 
 		var length = editor.propertyValuePairs.length;
+        var i = 0;
+
+        // remove all "Reference" attributes
+        while (i < length){
+
+            if((typeof editor.propertyValuePairs[i].predicateString !== 'undefined') &&
+                (editor.propertyValuePairs[i].predicateString.trim().toLowerCase() === 'reference') ) {
+
+                // here, we just found "Reference" element entered by user; remove it
+                editor.propertyValuePairs.splice(i,1);
+                length = length - 1;
+
+                // here, DO NOT increment the loop counter i since array has shrunk
+                // after splicing and we have a new element at editor.propertyValuePairs[i] after splicing
+                continue;
+            }
+            i = i + 1;
+        }
+
+        length = editor.propertyValuePairs.length;
+
 		for(var ii=0; ii<length; ii++){
 			var pair = editor.propertyValuePairs[ii];
 			if((typeof pair.predicatePrefix !== 'undefined') && (pair.predicatePrefix != 'none') )

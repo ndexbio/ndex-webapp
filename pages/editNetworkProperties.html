@@ -101,7 +101,8 @@
 					<input class="form-control input-sm" placeholder="Label" 
 						ng-model='property.predicateString'
 						ng-change='editor.changed($index)'
-						ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+						ng-readonly='!(editor.isAdmin || editor.canEdit)'
+					    onblur="checkPredicateString(this);">
 				</div>
 		    </div>
 
