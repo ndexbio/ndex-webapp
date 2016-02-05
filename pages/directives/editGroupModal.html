@@ -27,11 +27,19 @@
                 ng-model='group.image'>
             </div>
           </div>
+
           <div class="form-group">
-            <label class="col-sm-3 control-label">Description</label>
-            <div class="col-sm-8">
-              <textarea class="form-control" rows="3" ng-model='group.description'></textarea>
-            </div>
+              <label class="col-sm-3 control-label">Description</label>
+              <div class="col-sm-8">
+                  <text-angular
+                        ta-toolbar-class="btn-toolbar"
+                        ta-toolbar-group-class="btn-group btn-group-xs"
+                        ta-toolbar-button-class="btn btn-default"
+                        ta-toolbar-button-active-class="active"
+                        ta-default-wrap="div"
+                        ng-model='group.description'>
+                  </text-angular>
+              </div>
           </div>
 
           <div class='text-danger'>

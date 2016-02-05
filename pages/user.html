@@ -18,9 +18,8 @@
             <div class="wrapLongLine">
                 <a href="{{userController.displayedUser.website}}" target="_blank">{{userController.displayedUser.website}}</a>
             </div>
-            <div>
-                {{userController.displayedUser.description}}
-            </div>
+
+            <div ng-bind-html="userController.displayedUser.description"></div>
 
             <span ng-show="userController.isLoggedInUser && userController.identifier == userController.loggedInIdentifier">
                 <div class="btn-group btn-group-vertical buttonWithMarginBottom">

@@ -24,9 +24,8 @@
             <div class="wrapLongLine">
                 <a ng-href="{{groupController.displayedGroup.website}}" target="_blank">{{groupController.displayedGroup.website}}</a>
             </div>
-            <div class="wrapLongLine">
-                {{groupController.displayedGroup.description}}
-            </div>
+
+            <div class="wrapLongLine" ng-bind-html="groupController.displayedGroup.description"></div>
 
             <span class="btn-group btn-group-vertical buttonWithMarginBottom"
                  ng-show='groupController.isAdmin || groupController.isMember'>
