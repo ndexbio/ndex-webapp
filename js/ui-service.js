@@ -409,7 +409,8 @@
     uiServiceApp.directive('sentRequest', function() {
         return {
             scope: {
-                ndexData:'='
+                ndexData:'=',
+                userController:'='
             },
             restrict: 'E',
             transclude: true,
@@ -434,7 +435,9 @@
                     ndexService.deleteRequest($scope.request.externalId,
                         function(data) {
                             modalInstance.close();
-                            $route.reload();
+
+                            var userController = $scope.userController;
+                            userController.refreshRequests();
                         },
                         function(error){
                             //TODO

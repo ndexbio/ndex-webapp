@@ -319,7 +319,7 @@
                                     ng-repeat='request in userController.pendingRequests'>
                                     <li class="list-group-item">
                                     <!-- destination names should be cut off -->
-                                        <received-request ndex-data='request' class="wrapLongLine">
+                                        <received-request ndex-data='request' class="wrapLongLine" user-controller="userController">
                                             <span class='text-success'>{{request.sourceName}}</span> requests
                                             <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to
                                             <span class='text-success'>{{request.destinationName}}</span>
@@ -334,7 +334,7 @@
                                             ng-repeat='request in userController.sentRequests'>
                                     <li class="list-group-item">
                                         <!-- destination names should be cut off -->
-                                        <sent-request ndex-data='request' class="wrapLongLine">
+                                        <sent-request ndex-data='request' class="wrapLongLine" user-controller="userController">
                                             <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to
                                             <span class='text-success'>{{request.destinationName}}</span> for
                                             <span class='text-success'>{{request.sourceName}}</span>
