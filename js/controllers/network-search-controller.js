@@ -64,6 +64,10 @@ ndexApp.controller('searchNetworksController',
              */
             var stripHTML = function(html) {
 
+                if (!html) {
+                    return "";
+                }
+
                 // convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
                 var markDown = toMarkdown(html);
 
