@@ -21,44 +21,54 @@ ndexApp.controller('editNetworkPropertiesController',
 
     editor.reference = null;
 
-	editor.changed = function(index) {
+	editor.changed = function(index, value, property) {
+
 		if(index == (editor.propertyValuePairs.length - 1))
 			editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
 
+        // there are 2 reserved case-incensitive words, "reference" and "sourceFormat"
+        // check if user entered one of them and if yes, then give an error.
+        if (value) {
+            if (value.toLowerCase() === 'reference') {
+
+                property.error = "This interface handles 'Reference' specially. " +
+                    "If you need to edit Reference property " +
+                    "of the current network, please select Edit Network Profile button from the Network page.";
+
+            } else if (value.toLowerCase() === 'sourceformat') {
+
+                property.error = "sourceFormat is reserved for internal use by NDEx and " +
+                    "cannot be used as predicate.";
+
+            } else {
+                property.error = null;
+            }
+        } else if (property) {
+            // no value entered (one possible scenario isd user deleted the whole word), remove error message
+            property.error = null;
+        }
 	};
 
-    /*
-     * checkPredicateString() function checks if user entered "Reference" (case-insensitive)
-     * in the predicate field.  If yes, the warning is shown.
-     */
-    checkPredicateString = function(obj) {
-        var prefixString = obj.value;
+    // these are names used by Solr for indexing.
+    // They are found in the server's ndexbio-rest/src/main/resources/solr/ndex-networks/conf/schema.xml
+    // under the "Collaborator required index fields" comment
+    $scope.namesForSolrIndexing = [
+        "objectCategory",
+        "organism",
+        "platform",
+        "disease",
+        "tissue",
+        "rightsHolder",
+        "author",
+        "createdAt",
+        "methods",
+        "subnetworkType",
+        "subnetworkFilter",
+        "graphHash",
+        "rights"
+    ];
 
-        if ("reference" === prefixString.trim().toLowerCase()) {
-
-            var title = "Cannot Use NDEx Internal Reserved Words";
-            var message = "Case-insensitive " + "'" + prefixString + "'" + " is NDEx internal reserved word. It cannot be used " +
-                " as predicate. It will not be saved. If you need to edit Reference property " +
-                "of the current network, please select Edit Network Profile button from the Network page.";
-
-            var modalInstance = $modal.open({
-                templateUrl: 'generic-info-modal.html',
-                scope: $scope,
-
-                controller: function ($scope, $modalInstance) {
-
-                    $scope.title = title;
-                    $scope.message = message;
-
-                    $scope.close = function () {
-                        $modalInstance.dismiss();
-                    };
-                }
-            });
-        }
-    }
-
-	editor.save = function() {
+    editor.save = function() {
         if( $scope.isProcessing )
             return;
         $scope.isProcessing = true;

@@ -86,7 +86,8 @@
 		    <div class="col-sm-offset-1 col-sm-5">
 		    	<div class='input-group'>
 			    	<div class='input-group-btn dropdown'>
-			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle' 
+			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'
+								data-toggle="dropdown"
 			    				ng-disabled='!(editor.isAdmin || editor.canEdit)'>
 			    			{{property.predicatePrefix}}:
 			    		</button>
@@ -98,18 +99,28 @@
                             </li>
                         </ul>
 			    	</div>
-					<input class="form-control input-sm" placeholder="Label" 
-						ng-model='property.predicateString'
-						ng-change='editor.changed($index)'
-						ng-readonly='!(editor.isAdmin || editor.canEdit)'
-					    onblur="checkPredicateString(this);">
+
+					<input class="form-control input-sm"
+						   type="text"
+						   placeholder="Label"
+						   ng-model='property.predicateString'
+						   ng-change='editor.changed($index, property.predicateString, property)'
+						   typeahead="nameForIndexing for nameForIndexing in namesForSolrIndexing |
+						              filter:$viewValue | orderBy:nameForIndexing | limitTo:12"
+						   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 				</div>
+
+				<span class='text-danger'>
+					<strong>{{property.error}}</strong>
+				</span>
+
 		    </div>
 
 		    <div class="col-sm-5">
 		    	<div class='input-group'>
 		    		<div class='input-group-btn dropdown'>
 			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'
+								data-toggle="dropdown"
 			    				ng-disabled='!(editor.isAdmin || editor.canEdit)'>
 			    			{{property.valuePrefix}}:
 			    		</button>

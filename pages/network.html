@@ -222,7 +222,7 @@
         <div class='row network-property-preview'
              ng-show='networkController.currentNetwork.properties.length > 0'>
 
-            <h5>
+            <h5 ng-show='!networkController.readOnlyChecked'>
                 <a class='btn-link'
                    ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
                    ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
@@ -230,7 +230,7 @@
                 </a>
             </h5>
 
-            <br>
+            <br ng-show='!networkController.readOnlyChecked'>
 
             <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
                 <label>{{property.predicateString}}: </label>
@@ -350,7 +350,7 @@
 
                     (2) and which have
                     <span class="dropdown">
-                        <a href class="dropdown-toggle">
+                        <a href class="dropdown-toggle" data-toggle="dropdown">
                             {{networkController.advancedQueryNodeCriteria}} <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
