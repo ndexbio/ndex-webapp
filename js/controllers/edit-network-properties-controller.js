@@ -23,8 +23,10 @@ ndexApp.controller('editNetworkPropertiesController',
 
 	editor.changed = function(index, value, property) {
 
-		if(index == (editor.propertyValuePairs.length - 1))
-			editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
+		if(index == (editor.propertyValuePairs.length - 1)) {
+            editor.propertyValuePairs.push({predicatePrefix: 'none',
+                valuePrefix: 'none', predicateString: "", value: ""});
+        }
 
         // there are 2 reserved case-incensitive words, "reference" and "sourceFormat"
         // check if user entered one of them and if yes, then give an error.
@@ -134,12 +136,16 @@ ndexApp.controller('editNetworkPropertiesController',
                 $scope.isProcessing = false;
 			},
 			function(error) {
-				editor.errors.push(error);
-                $scope.isProcessing = false;
-			});
 
-        //$location.path("network/"+editor.networkExternalId);
-        //$scope.isProcessing = false;
+                if (error.data && error.data.message) {
+                    editor.errors.push(error.data.message);
+                } else {
+                    editor.errors.push("Server returned HTTP error response code : " +
+                        error.status + ". Error message : " + error.statusText + ".");
+                }
+
+                $scope.isProcessing = false;
+            });
 	};
 
 	editor.removeNamespace = function(index) {
@@ -328,12 +334,15 @@ ndexApp.controller('editNetworkPropertiesController',
                             }
                         }
 
-                        editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
+                        editor.propertyValuePairs.push({predicatePrefix: 'none',
+                                                        valuePrefix: 'none', predicateString: "", value: ""});
                         // todo add local to list
                         editor.networkName = network.name;
                     },
                     function(error) {
-                        editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none'});
+                        editor.propertyValuePairs.push({predicatePrefix: 'none',
+                                                        valuePrefix: 'none', predicateString: "", value: ""});
+
                         editor.networkName = network.name;
 
                         editor.errors.push(error)
