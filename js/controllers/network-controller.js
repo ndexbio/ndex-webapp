@@ -64,8 +64,8 @@ ndexApp.controller('networkController',
 
             networkController.numberOfBelNetworkNamespacesAsInt = 0;
 
-            networkController.currentNetwork.licensingInfo = null;
-
+            networkController.currentNetwork.rightsHolder = [];
+            networkController.currentNetwork.rights = [];
 
             $scope.provenance = [];
             $scope.displayProvenance = [];
@@ -474,6 +474,16 @@ ndexApp.controller('networkController',
                 networkController.successfullyQueried = false;
             };
 
+            networkController.isPredicateReservedWord = function(wordToCheck) {
+                var reservedWords = ['rights', 'rightsHolder'];
+
+                if (!wordToCheck) {
+                    return true;
+                }
+
+                return reservedWords.indexOf(wordToCheck) > -1;
+            }
+
 
 
             //                  local functions
@@ -571,12 +581,8 @@ ndexApp.controller('networkController',
 
             var getLicensingInfo = function(networkProperties)
             {
-                networkController.currentNetwork.licensingInfo = null;
-                var copyrightDate = "";
-                var rightsHolder = "";
-                var licenseType = "";
-                var publicRightsType = "";
-
+                networkController.currentNetwork.rightsHolder = [];
+                networkController.currentNetwork.rights = [];
 
                 if ('undefined'===typeof(networkProperties)) {
                     return;
@@ -586,70 +592,19 @@ ndexApp.controller('networkController',
 
                     if (typeof(networkProperties[i].predicateString) !== 'undefined') {
 
-                        if (networkProperties[i].predicateString.toLowerCase() === 'copyrightdate') {
+                        if (networkProperties[i].predicateString === 'rightsHolder') {
 
-                            if (copyrightDate) {
-                                copyrightDate = copyrightDate + ", " + networkProperties[i].value;
-                            } else {
-                                copyrightDate = networkProperties[i].value;
-                            }
-                        }
-                        if (networkProperties[i].predicateString.toLowerCase() === 'rightsholder') {
+                            networkController.currentNetwork.rightsHolder.push(networkProperties[i].value);
 
-                            if (rightsHolder) {
-                                rightsHolder = rightsHolder + ", " + networkProperties[i].value;
-                            } else {
-                                rightsHolder = networkProperties[i].value;
-                            }
-                        }
-                        if (networkProperties[i].predicateString.toLowerCase() === 'licensetype') {
+                        } else if (networkProperties[i].predicateString === 'rights') {
 
-                            if (licenseType) {
-                                licenseType = licenseType + ", " + networkProperties[i].value;
-                            } else {
-                                licenseType = networkProperties[i].value;
-                            }
-                        }
-                        if (networkProperties[i].predicateString.toLowerCase() === 'publicrightstype') {
+                            networkController.currentNetwork.rights.push(networkProperties[i].value);
 
-                            if (publicRightsType) {
-                                publicRightsType = publicRightsType + ", " + networkProperties[i].value;
-                            } else {
-                                publicRightsType = networkProperties[i].value;
-                            }
                         }
                     }
                 }
 
-                var copyRightDateAndHolder = "";
-
-                if (copyrightDate && rightsHolder) {
-                    copyRightDateAndHolder = copyrightDate + ", " + rightsHolder;
-                } else {
-                    copyRightDateAndHolder = copyrightDate + rightsHolder;
-                }
-
-                if (copyRightDateAndHolder) {
-                    copyRightDateAndHolder = "Copyright " + "&copy; " + copyRightDateAndHolder + ". ";
-                }
-
-
-                var licenseTypeAndRightsType = "";
-
-                if (licenseType && publicRightsType) {
-                    licenseTypeAndRightsType = licenseType + ", " + publicRightsType;
-                } else {
-                    licenseTypeAndRightsType = licenseType + publicRightsType;
-                }
-
-                if (licenseTypeAndRightsType) {
-                    licenseTypeAndRightsType = licenseTypeAndRightsType + ". ";
-                }
-                if ((!licenseType || !publicRightsType) && copyRightDateAndHolder) {
-                    licenseTypeAndRightsType = licenseTypeAndRightsType + "Contact rights holder."
-                }
-
-                networkController.currentNetwork.licensingInfo = copyRightDateAndHolder + licenseTypeAndRightsType;
+                return;
             }
 
             var initialize = function () {

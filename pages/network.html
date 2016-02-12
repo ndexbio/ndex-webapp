@@ -17,9 +17,20 @@
         </div>
 
         <div class='row wrapLongLine rowWithOneLineBottomPad'
-             ng-show="networkController.currentNetwork.licensingInfo">
-            <!--<span><strong>Licensing Info:</strong></span>-->
-            <span ng-bind-html="networkController.currentNetwork.licensingInfo"></span>
+             ng-show="networkController.currentNetwork.rightsHolder.length > 0 ||
+                      networkController.currentNetwork.rights.length > 0" >
+
+            <div ng-repeat="rightsHolder in networkController.currentNetwork.rightsHolder"
+                 ng-show="networkController.currentNetwork.rightsHolder.length > 0" >
+                <strong>Rights Holder:</strong>
+                <span ng-bind-html="rightsHolder"></span>
+            </div>
+
+            <div ng-repeat="rights in networkController.currentNetwork.rights"
+                 ng-show="networkController.currentNetwork.rights.length > 0">
+                <strong>Rights:</strong>
+                <span ng-bind-html="rights"></span>
+            </div>
         </div>
 
         <div class='row wrapLongLine rowWithOneLineBottomPad'
@@ -233,14 +244,16 @@
             <br ng-show='!networkController.readOnlyChecked'>
 
             <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
-                <label>{{property.predicateString}}: </label>
-                <span ng-hide='property.value.toString().length > 40'>{{property.value.toString()}}</span>
-                <span ng-show='property.value.toString().length > 40'>
-                    {{ property.value.slice(0, 45 - property.predicateString.length)
-                     +'&shy'+
-                    property.value.slice(45 - property.predicateString.length, property.value.length) }}
+                <span ng-show="!networkController.isPredicateReservedWord(property.predicateString)">
+                   <label>{{property.predicateString}}: </label>
+                   <span ng-hide='property.value.toString().length > 40'>{{property.value.toString()}}</span>
+                   <span ng-show='property.value.toString().length > 40'>
+                       {{ property.value.slice(0, 45 - property.predicateString.length)
+                        +'&shy'+
+                       property.value.slice(45 - property.predicateString.length, property.value.length) }}
+                   </span>
+                   <br>
                 </span>
-                <br>
             </span>
         </div>
 
