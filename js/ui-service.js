@@ -977,6 +977,13 @@
                 $scope.network = {};
 
                 $scope.openMe = function() {
+
+                    $scope.network.name = $scope.ndexData.name;
+                    $scope.network.description = $scope.ndexData.description;
+                    $scope.network.reference = $scope.ndexData.reference;
+                    $scope.network.version = $scope.ndexData.version;
+                    $scope.network.visibility = $scope.ndexData.visibility;
+
                     modalInstance = $modal.open({
                         templateUrl: 'edit-network-summary-modal.html',
                         scope: $scope
@@ -1054,14 +1061,6 @@
                             $scope.isProcessing = false;
                         })
                 };
-
-                $scope.$watch('ndexData', function(value) {
-                    $scope.network.name = $scope.ndexData.name;
-                    $scope.network.description = $scope.ndexData.description;
-                    $scope.network.reference = $scope.ndexData.reference;
-                    $scope.network.version = $scope.ndexData.version;
-                    $scope.network.visibility = $scope.ndexData.visibility;
-                });
             }
         }
     });
