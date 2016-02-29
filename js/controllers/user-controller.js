@@ -554,8 +554,9 @@ ndexApp.controller('userController',
             userController.submitNetworkSearch = function ()
             {
                 userController.networkSearchResults = [];
-                userController.networkQuery.accountName = userController.displayedUser.accountName;
+                //userController.networkQuery.accountName = userController.displayedUser.accountName;
                 userController.networkQuery.permission = "READ";
+                userController.networkQuery.includeGroups = false;
 
                 ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks)
