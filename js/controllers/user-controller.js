@@ -100,7 +100,7 @@ ndexApp.controller('userController',
              * field could be displayed in the title element of networkName.html template in the pop-up window
              * when mouse cursor hovers over it.
              */
-            var stripHTML = function(html) {
+            $scope.stripHTML = function(html) {
 
                 if (!html) {
                     return "";
@@ -130,7 +130,7 @@ ndexApp.controller('userController',
                     var network = userController.networkSearchResults[i];
 
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
-                    var description = stripHTML(network['description']);
+                    var description = $scope.stripHTML(network['description']);
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
                     var edges = network['edgeCount'];
