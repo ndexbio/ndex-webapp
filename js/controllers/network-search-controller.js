@@ -155,6 +155,8 @@ ndexApp.controller('searchNetworksController',
             request.abort();
         };
 
+        searchController.includeGroups = true;
+
         (request = ndexService.findNetworks(searchController.searchString, 
                                             searchController.accountName, 
                                             searchController.permission,
