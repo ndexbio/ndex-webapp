@@ -458,7 +458,8 @@
     uiServiceApp.directive('receivedRequest', function() {
         return {
             scope: {
-                ndexData:'='
+                ndexData:'=',
+                userController:'='
             },
             restrict: 'E',
             transclude: true,
@@ -500,7 +501,7 @@
                                     function(data) {
                                         ////console.log($scope.request)
                                         modalInstance.close();
-                                        $route.reload();
+                                        $scope.userController.refreshRequests();
                                     },
                                     function(error){
                                         //TODO
@@ -517,7 +518,7 @@
                                 ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
                                     function(data) {
                                         modalInstance.close();
-                                        $route.reload();
+                                        $scope.userController.refreshRequests();
                                     },
                                     function(error){
                                         //TODO
@@ -535,7 +536,7 @@
                     ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
                         function(data) {
                             modalInstance.close();
-                            $route.reload();
+                            $scope.userController.refreshRequests();
                         },
                         function(error){
                             //TODO
