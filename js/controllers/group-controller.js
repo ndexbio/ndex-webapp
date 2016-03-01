@@ -71,9 +71,6 @@ ndexApp.controller('groupController',
 
         groupController.networkQuery.accountName = groupController.displayedGroup.accountName;
 
-        groupController.networkQuery.includeGroups = true;
-        groupController.networkQuery.permission = "READ";
-
         ndexService.searchNetworks(groupController.networkQuery, 0, 50,
             function(networks) {
                 groupController.networkSearchResults = networks;
