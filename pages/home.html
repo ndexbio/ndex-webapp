@@ -159,22 +159,31 @@
                            placeholder="Confirm Password" required>
                 </div>
 
+                <div class="rowWithTwoLinesTopPadAnd11EmFont">
+                    <input required ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
+                    <label>I have read and accept the
+                        <a ng-href="http://www.ndexbio.org/disclaimer-license/" target="_blank">Terms & Conditions</a>
+                    </label>
+                </div>
+
                 <div class='text-danger'>
                     <strong>
                         {{signIn.signUpErrors}}
                     </strong>
                 </div>
             </div>
+
             <div class="modal-footer">
                 <a class="btn btn-sm btn-danger" ng-click="signIn.cancelSignUp()">Cancel</a>
                 <button class="btn btn-sm btn-default" type="submit"
                         ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
                         || !signUpForm.accountName.$valid  || !signUpForm.email.$valid
                         || !signUpForm.password.$valid || !signUpForm.confirmPassword.$valid
-                        || isProcessing">
+                        || !termsAndConditionsChecked  || !termsAndConditionsChecked || isProcessing">
                     Sign Up
                 </button>
             </div>
+
         </form>
     </div>
 </script>

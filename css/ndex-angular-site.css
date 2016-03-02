@@ -893,6 +893,11 @@ ul.ndex-nav-pills > li > a:hover {
     font-size: 1.5em;
 }
 
+.rowWithTwoLinesTopPadAnd11EmFont {
+    padding-top: 2em;
+    font-size: 1.1em;
+}
+
 .hideLongLine {
     overflow: hidden;
     white-space: nowrap;
