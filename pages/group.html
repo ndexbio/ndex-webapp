@@ -1,5 +1,15 @@
 <div id="divGroup" class="row" >
 
+    <div ng-show="groupController.errors.length > 0">
+        <p class="alert alert-danger" ng-repeat='error in groupController.errors'>
+            {{error}}
+              <span class="glyphicon glyphicon-remove pull-right"
+                    style='cursor:pointer'
+                    ng-click='groupController.errors.splice($index,1)'>
+              </span>
+        </p>
+    </div>
+
     <div class="col-md-2">
         <div class="row">
             <div class='row'>

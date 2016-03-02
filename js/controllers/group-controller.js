@@ -25,6 +25,8 @@ ndexApp.controller('groupController',
     // networks
     groupController.networkSearchResults = [];
     groupController.networkQuery = {};
+    groupController.errors = [];
+
 
     //              scope functions
     // called on Networks belonging to group displayed on page
@@ -71,12 +73,18 @@ ndexApp.controller('groupController',
 
         groupController.networkQuery.accountName = groupController.displayedGroup.accountName;
 
-        ndexService.searchNetworks(groupController.networkQuery, 0, 50,
+        ndexService.getNetworkSummariesOfTheGroup(groupController.identifier,
             function(networks) {
                 groupController.networkSearchResults = networks;
             },
             function(error){
-                //TODO
+                if ((typeof error.data !== 'undefined') &&
+                    (typeof error.data.message !== 'undefined')) {
+                    groupController.errors.push(error.data.message);
+                } else {
+                    groupController.errors.push("Server returned HTTP error response code " +
+                        error.status);
+                }
             })
     };
 

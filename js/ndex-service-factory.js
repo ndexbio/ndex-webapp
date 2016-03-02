@@ -298,7 +298,6 @@ ndexServiceApp.factory('ndexService',
                         },
                         isArray: true
                     },
-
                     search: {
                         method: 'POST',
                         params: {
@@ -332,6 +331,13 @@ ndexServiceApp.factory('ndexService',
                         params: {
                             subResource: 'membership'
                         }
+                    },
+                    getNetwokSummaries: {
+                        method: 'GET',
+                        params: {
+                            subResource: 'networks'
+                        },
+                        isArray: true
                     }
                 }
             );
@@ -423,6 +429,10 @@ ndexServiceApp.factory('ndexService',
                     queryObject.searchString = '';
                 ////console.log('searching for groups');
                 GroupResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
+            };
+
+            factory.getNetworkSummariesOfTheGroup = function (groupUUID, successHandler, errorHandler) {
+                GroupResource.getNetwokSummaries({'identifier': groupUUID}, successHandler, errorHandler);
             };
 
             /*---------------------------------------------------------------------*
