@@ -432,6 +432,7 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.getNetworkSummariesOfTheGroup = function (groupUUID, successHandler, errorHandler) {
+                handleAuthorizationHeader();
                 GroupResource.getNetwokSummaries({'identifier': groupUUID}, successHandler, errorHandler);
             };
 
