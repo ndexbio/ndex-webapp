@@ -244,8 +244,8 @@ ndexServiceApp.factory('ndexService',
 
             factory.getUserNetworkMemberships = function (userId, membership, skipBlocks, blockSize, successHandler, errorHandler) {
                 var externalId = ndexUtility.getLoggedInUserExternalId();
-                if (externalId == null) {
-                    successHandler(null);
+                if ((typeof externalId === 'undefined') || (externalId == null)) {
+                    //successHandler(null);
                     return;
                 }
                 UserResource.getUserNetworkMemberships(
