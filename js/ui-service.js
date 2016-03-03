@@ -1057,6 +1057,7 @@
                             } else {
                                 $route.reload();
                             }
+                            $scope.isProcessing = false;
                         },
                         function(error) {
                             $scope.isProcessing = false;
