@@ -559,7 +559,7 @@ ndexApp.controller('networkController',
 
             var getNetworkReference = function(networkProperties)
             {
-                networkController.currentNetwork.reference = null;
+                networkController.currentNetwork.reference = "";
 
                 if ('undefined'===typeof(networkProperties)) {
                     return;
