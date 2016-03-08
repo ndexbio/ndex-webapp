@@ -467,6 +467,16 @@ ndexApp.controller('manageNetworkAccessController',
 		return "unknown account type";
 	};
 
+	networkManager.checkIfUserAccount = function(member) {
+
+		if (member && member.accountType) {
+			return (member.accountType.toLowerCase() === 'user') ? true : false;
+		}
+
+		return false;
+	};
+
+
 
 
 	//              INTIALIZATIONS

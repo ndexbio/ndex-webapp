@@ -124,7 +124,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
             //resourceName: bulkNetworkManager.network.name,
             //resourceUUID: bulkNetworkManager.network.externalId,
             permissions: 'WRITE',
-
+            accountType: member.accountType
         }
 
         member.member = true;

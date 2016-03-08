@@ -18,9 +18,13 @@
 		<div class='row'>
 			<h5>Manage who has access for <strong>{{networkManager.network.name}}</strong></h5>
 			<br>
-			<p class='text-info'>Users and groups with admin access modify and delete the network as well as manage who has access. Users and groups who can edit the network can only modify the network. Users and groups with read access can view the network even if it is private. </p>
+			<p class='text-info'>Users and groups with admin access modify and delete the network as well as manage who
+				has access. Users and groups who can edit the network can only modify the network.
+				Users and groups with read access can view the network even if it is private.
+			</p>
 			<p class='text-info'>
-			Please note that granting access to a group is equivalent to granting access to all the members for the specified access.
+			Please note that granting access to a group is equivalent to granting access to all the members
+				for the specified access.
 			</p>
 		</div>
 
@@ -40,22 +44,22 @@
 				        	{{member.permissions | permissionToLabel}}<span class="caret"></span>
 				        </a>
 				        <ul class="dropdown-menu">
-				      		<li>
+							<li>
+								<a class="dropdown-toggle"
+								   ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "READ"; networkManager.changesWereMade();'>
+									<small>Can Read</small>
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-toggle"
+								   ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "WRITE"; networkManager.changesWereMade();'>
+									<small>Can Edit</small>
+								</a>
+							</li>
+				      		<li ng-show="networkManager.checkIfUserAccount(member)">
 				            	<a class="dropdown-toggle"
 				            		ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "ADMIN"; networkManager.changesWereMade();'>
 				            		<small>Is Admin</small>
-				            	</a>
-				        	</li>
-				        	<li>
-				            	<a class="dropdown-toggle"
-				            		ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "WRITE"; networkManager.changesWereMade();'>
-				            		<small>Can Edit</small>
-				            	</a>
-				        	</li>
-				        	<li>
-				            	<a class="dropdown-toggle"
-				            		ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "READ"; networkManager.changesWereMade();'>
-				            		<small>Can Read</small>
 				            	</a>
 				        	</li>
 				      </ul>

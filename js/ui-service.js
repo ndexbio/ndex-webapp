@@ -1413,6 +1413,13 @@
                                     permissions: accessTypeSelected
                                 }
 
+                                if ((accountForUpdating.accountType.toUpperCase() === "GROUP") &&
+                                    accessTypeSelected.toUpperCase() === "ADMIN") {
+                                    // user is trying to grant ADMIN access to a group, NDEx cannot do that for security
+                                    // reasons.  Instead of ADMIN, grant this group WRITE permission.
+                                    updatedMembership.permissions = "WRITE";
+                                }
+
                                 membershipToUpdateReadyForSending.push(updatedMembership);
                                 if ($scope.IDsOfNetworksToUpdate.indexOf(updatedMembership.resourceUUID) == -1) {
                                     $scope.IDsOfNetworksToUpdate.push(updatedMembership.resourceUUID);
