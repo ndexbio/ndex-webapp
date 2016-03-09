@@ -93,7 +93,9 @@
 			    		</button>
 			    		<ul class="dropdown-menu" role="menu">
                             <li ng-repeat='namespace in editor.namespaces'>
-                            <a class ="dropdown-toggle" ng-click="property.predicatePrefix = namespace.prefix || namespace.uri">
+                            <a class ="dropdown-toggle"
+							   ng-click="property.predicatePrefix = namespace.prefix || namespace.uri;
+							   editor.changed($index, property.predicateString, property)">
                             {{namespace.prefix || namespace.uri}}
                             </a>
                             </li>
@@ -107,11 +109,12 @@
 						   ng-change='editor.changed($index, property.predicateString, property)'
 						   typeahead="nameForIndexing for nameForIndexing in namesForSolrIndexing |
 						              filter:$viewValue | orderBy:nameForIndexing | limitTo:12"
+						   typeahead-on-select='editor.changed($index, property.predicateString, property)'
 						   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 				</div>
 
 				<span class='text-danger'>
-					<strong>{{property.error}}</strong>
+					<strong>{{property.labelError}}</strong>
 				</span>
 
 		    </div>
@@ -134,13 +137,14 @@
 			    	</div>
 			        <input class="form-control input-sm" placeholder="Value" 
 			      	  ng-model='property.value'
-			      	  ng-change='editor.changed($index)'
 			      	  ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 		      	</div>
+
 		    </div>
 
 		    <div class='' ng-hide='$last || !(editor.isAdmin || editor.canEdit)'>
-		    	<button type='button' class='btn btn-link' ng-click='editor.propertyValuePairs.splice($index,1)'>
+		    	<button type='button' class='btn btn-link'
+						ng-click='editor.propertyValuePairs.splice($index,1); editor.changed($index, property.predicateString, property, "del")'>
 		    		<span class="glyphicon glyphicon-remove text-muted"></span>
 		    	</button>
 		    </div>
@@ -150,7 +154,7 @@
 		  <div class="row" ng-show='editor.isAdmin || editor.canEdit'>
 		  	<div class="pull-right">
 		      <button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
-		      <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
+		      <button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save Changes</button>
 		    </div>
 		  </div>
 		</form>

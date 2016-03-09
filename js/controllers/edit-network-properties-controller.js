@@ -21,11 +21,48 @@ ndexApp.controller('editNetworkPropertiesController',
 
     editor.reference = null;
 
-	editor.changed = function(index, value, property) {
+    editor.disableSaveChangesButton = false;
+
+
+    editor.buildAttributeDictionary = function() {
+        var dict = {};
+        var prefix, attribute;
+
+        for (var i = 0; i < editor.propertyValuePairs.length; i++) {
+
+            prefix = editor.propertyValuePairs[i].predicatePrefix;
+            attribute = editor.propertyValuePairs[i].predicateString
+
+            if (attribute) {
+
+                attribute = prefix + ":" + attribute;
+
+                if (attribute in dict) {
+                    dict[attribute] = dict[attribute] + 1;
+                } else {
+                    dict[attribute] = 1;
+                }
+
+            } else {
+                // attribute is empty string
+                continue;
+            }
+
+        }
+
+        return dict;
+    };
+
+	editor.changed = function(index, value, property, action) {
+
+        var attributeDictionary = editor.buildAttributeDictionary();
+
 
 		if(index == (editor.propertyValuePairs.length - 1)) {
-            editor.propertyValuePairs.push({predicatePrefix: 'none',
-                valuePrefix: 'none', predicateString: "", value: ""});
+
+            if ((!action) || (action.toLowerCase() !== 'del')) {
+                editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none', predicateString: "", value: ""});
+            }
         }
 
         // there are 2 reserved case-incensitive words, "reference" and "sourceFormat"
@@ -33,23 +70,138 @@ ndexApp.controller('editNetworkPropertiesController',
         if (value) {
             if (value.toLowerCase() === 'reference') {
 
-                property.error = "This interface handles 'Reference' specially. " +
+                property.labelError = "This interface handles 'Reference' specially. " +
                     "If you need to edit Reference property " +
                     "of the current network, please select Edit Network Profile button from the Network page.";
+                editor.disableSaveChangesButton = true;
 
             } else if (value.toLowerCase() === 'sourceformat') {
 
-                property.error = "sourceFormat is reserved for internal use by NDEx and " +
+                property.labelError = "sourceFormat is reserved for internal use by NDEx and " +
                     "cannot be used as predicate.";
+                editor.disableSaveChangesButton = true;
 
             } else {
-                property.error = null;
+
+                property.labelValue = property.predicatePrefix + ":" + property.predicateString;
+                delete property.labelError;
+
             }
         } else if (property) {
-            // no value entered (one possible scenario isd user deleted the whole word), remove error message
-            property.error = null;
+
+            // no value entered (one possible scenario is user marked and deleted the whole word); remove error message
+            property.labelError = "Missing attribute";
+            editor.disableSaveChangesButton = true;
         }
+
+        // enable or disable the Save button
+        editor.disableSaveChangesButton = editor.checkIfFormIsValid(attributeDictionary);
 	};
+
+
+
+    editor.checkIfFormIsValid = function(attributeDictionary) {
+
+
+        for(var i=0; i<editor.propertyValuePairs.length; i++) {
+
+            var pair = editor.propertyValuePairs[i];
+            var labelValue = pair.labelValue;
+
+            // check labelValue (that is prefix:attribute) has been entered more than once
+            if ((labelValue in attributeDictionary) && (attributeDictionary[labelValue] > 1)) {
+
+                // we wound attribute that is duplicate.  Mark all these attributes with error message
+                // if they are not marked already
+
+                for (var j=i; j<editor.propertyValuePairs.length; j++) {
+                    var pairForError = editor.propertyValuePairs[j];
+
+                    if ((pairForError.labelValue === labelValue) && (!pairForError.labelError)) {
+                        pairForError.labelError = "This attribute entered more than once."
+                    }
+                }
+
+            } else {
+
+                if (pair.predicateString !== "") {
+                    delete pair.labelError;
+                }
+            }
+        }
+
+
+        var disableSaveChangesButton = false;
+
+        // run through all attribute objects and see if any object has an error message field.
+        // If there is at least one error message, the form is invalid
+        for(var i=0; i<editor.propertyValuePairs.length; i++) {
+
+            if (editor.propertyValuePairs[i].labelError) {
+                disableSaveChangesButton = true;
+                break;
+            }
+        }
+
+        if (editor.propertyValuePairs.length == 1) {
+            if ((typeof (editor.propertyValuePairs[0].predicateString) === 'undefined') ||
+                !(editor.propertyValuePairs[0].predicateString)) {
+                disableSaveChangesButton = true;
+            }
+        }
+
+        return disableSaveChangesButton;
+    };
+
+
+    editor.checkIfFormIsValidOnLoad = function() {
+        var attributeDictionary = editor.buildAttributeDictionary();
+        var disableSaveChangesButton = false;
+
+
+        for(var i=0; i<editor.propertyValuePairs.length; i++) {
+
+            var pair = editor.propertyValuePairs[i];
+            var labelValue = pair.labelValue;
+
+            if (((typeof(pair.predicateString) === 'undefined') || !(pair.predicateString)) &&
+                ((editor.propertyValuePairs.length - 1) != i)) {
+                pair.labelError = "Missing attribute."
+                disableSaveChangesButton = true;
+            }
+
+
+            // check labelValue (that is prefix:attribute) has been entered more than once
+            if ((labelValue in attributeDictionary) && (attributeDictionary[labelValue] > 1)) {
+
+                disableSaveChangesButton = true;
+
+                // we wound attribute that is duplicate.  Mark all these attributes with error message
+                // if they are not marked already
+
+                for (var j=i; j<editor.propertyValuePairs.length; j++) {
+                    var pairForError = editor.propertyValuePairs[j];
+
+                    if ((pairForError.labelValue === labelValue) && (!pairForError.labelError)) {
+                        pairForError.labelError = "This attribute entered more than once."
+                    }
+                }
+            }
+        }
+
+        if ((editor.propertyValuePairs.length == 0) ||
+           ((editor.propertyValuePairs.length == 1) && ((typeof (editor.propertyValuePairs[0].predicateString) === 'undefined') ||
+                !(editor.propertyValuePairs[0].predicateString))) )
+          {
+              disableSaveChangesButton = true;
+          }
+
+        return disableSaveChangesButton;
+
+    }
+
+
+
 
     // these are names used by Solr for indexing.
     // They are found in the server's ndexbio-rest/src/main/resources/solr/ndex-networks/conf/schema.xml
@@ -69,6 +221,13 @@ ndexApp.controller('editNetworkPropertiesController',
         "graphHash",
         "rights"
     ];
+
+    $scope.namesForSolrIndexingDictionary = {};
+
+    $scope.namesForSolrIndexing.forEach(function(val, i) {
+        $scope.namesForSolrIndexingDictionary[val] = "";
+    });
+
 
     editor.save = function() {
         if( $scope.isProcessing )
@@ -90,6 +249,25 @@ ndexApp.controller('editNetworkPropertiesController',
                 (editor.propertyValuePairs[i].predicateString.trim().toLowerCase() === 'reference') ) {
 
                 // here, we just found "Reference" element entered by user; remove it
+                editor.propertyValuePairs.splice(i,1);
+                length = length - 1;
+
+                // here, DO NOT increment the loop counter i since array has shrunk
+                // after splicing and we have a new element at editor.propertyValuePairs[i] after splicing
+                continue;
+            }
+            i = i + 1;
+        }
+
+        length = editor.propertyValuePairs.length;
+        i = 0;
+
+        // now, remove all attributes with no values -- we don't want to save them
+        while (i < length){
+
+            if (( typeof editor.propertyValuePairs[i].value === 'undefined') || (!editor.propertyValuePairs[i].value) ) {
+
+                // remove attribute with no value
                 editor.propertyValuePairs.splice(i,1);
                 length = length - 1;
 
@@ -331,16 +509,21 @@ ndexApp.controller('editNetworkPropertiesController',
                                 {
                                     pair.valuePrefix = 'none';
                                 }
+                                pair.labelValue = pair.predicatePrefix + ":" + pair.predicateString;
+                                //pair.valueValue = pair.valuePrefix     + ":" + pair.value;
                             }
                         }
 
-                        editor.propertyValuePairs.push({predicatePrefix: 'none',
+                        editor.disableSaveChangesButton = editor.checkIfFormIsValidOnLoad();
+
+                        editor.propertyValuePairs.push({predicatePrefix: 'none',  labelValue: "none: ''",
                                                         valuePrefix: 'none', predicateString: "", value: ""});
                         // todo add local to list
                         editor.networkName = network.name;
+
                     },
                     function(error) {
-                        editor.propertyValuePairs.push({predicatePrefix: 'none',
+                        editor.propertyValuePairs.push({predicatePrefix: 'none', labelValue: "none:''",
                                                         valuePrefix: 'none', predicateString: "", value: ""});
 
                         editor.networkName = network.name;
