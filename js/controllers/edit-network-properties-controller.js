@@ -90,7 +90,7 @@ ndexApp.controller('editNetworkPropertiesController',
         } else if (property) {
 
             // no value entered (one possible scenario is user marked and deleted the whole word); remove error message
-            property.labelError = "Missing attribute";
+            property.labelError = "Missing attribute.";
             editor.disableSaveChangesButton = true;
         }
 
