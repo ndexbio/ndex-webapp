@@ -73,6 +73,13 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $location.path("/");
         };
 
+        $scope.main.isInternetExplorerUsed = function() {
+            var userAgent = window.navigator.userAgent;
+
+            var isIEUsed = userAgent.indexOf ("MSIE ") > 0;
+
+            return (isIEUsed) ? true : false;
+        }
 
         $scope.main.signout = function () {
             $scope.$emit('LOGGED_OUT');
