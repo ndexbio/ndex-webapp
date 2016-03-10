@@ -137,7 +137,7 @@
 			    	</div>
 			        <input class="form-control input-sm" placeholder="Value" 
 			      	  ng-model='property.value'
-			      	  ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+			      	  ng-readonly='!(editor.isAdmin || editor.canEdit) || !(property.predicateString)'>
 		      	</div>
 
 		    </div>
