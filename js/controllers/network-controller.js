@@ -931,7 +931,19 @@ ndexApp.controller('networkController',
 
                     //Determine the length of
                     var subject = nodeLabelMap[edges[edgeKey].subjectId];
-                    var predicate = terms[edges[edgeKey].predicateId].name;
+
+                    //var predicate = terms[edges[edgeKey].predicateId].name;
+                    var predicate = "";
+
+                    if ((typeof(edges[edgeKey]) !== 'undefined') &&
+                        (typeof(edges[edgeKey].predicateId) !== 'undefined') &&
+                        (typeof(terms[edges[edgeKey].predicateId]) !== 'undefined') &&
+                        (typeof(terms[edges[edgeKey].predicateId].name) !== 'undefined') ) {
+
+                        predicate = terms[edges[edgeKey].predicateId].name;
+                    }
+
+
                     var object = nodeLabelMap[edges[edgeKey].objectId];
 
                     longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
@@ -1042,7 +1054,18 @@ ndexApp.controller('networkController',
                 {
                     var edgeKey = edgeKeys[i];
                     var subject = nodeLabelMap[edges[edgeKey].subjectId];
-                    var predicate = terms[edges[edgeKey].predicateId].name;
+
+                    //var predicate = terms[edges[edgeKey].predicateId].name;
+                    var predicate = "";
+
+                    if ((typeof(edges[edgeKey]) !== 'undefined') &&
+                        (typeof(edges[edgeKey].predicateId) !== 'undefined') &&
+                        (typeof(terms[edges[edgeKey].predicateId]) !== 'undefined') &&
+                        (typeof(terms[edges[edgeKey].predicateId].name) !== 'undefined') ) {
+
+                        predicate = terms[edges[edgeKey].predicateId].name;
+                    }
+
                     var object = nodeLabelMap[edges[edgeKey].objectId];
 
                     var row = {"Subject": subject, "Predicate": predicate, "Object": object, "Citations": edgeKey};
