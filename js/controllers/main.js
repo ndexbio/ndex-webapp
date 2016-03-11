@@ -74,12 +74,36 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
         $scope.main.isInternetExplorerUsed = function() {
-            var userAgent = window.navigator.userAgent;
+            var ua = window.navigator.userAgent;
 
-            var isIEUsed = userAgent.indexOf ("MSIE ") > 0;
+            var msie = ua.indexOf('MSIE ');
+            if (msie > 0) {
+                // IE 10 or older => return version number
+                // return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+                return true;
+            }
 
-            return (isIEUsed) ? true : false;
+            var trident = ua.indexOf('Trident/');
+            if (trident > 0) {
+                // IE 11 => return version number
+                //var rv = ua.indexOf('rv:');
+                //return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+                return true;
+            }
+
+            /*
+            var edge = ua.indexOf('Edge/');
+            if (edge > 0) {
+                // Edge (IE 12+) => return version number
+                // return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+                return true;
+            }
+            */
+
+            // other browser
+            return false;
         }
+
 
         $scope.main.signout = function () {
             $scope.$emit('LOGGED_OUT');
