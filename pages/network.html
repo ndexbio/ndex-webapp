@@ -219,6 +219,7 @@
             <h5><strong>Network Properties:</strong></h5>
         </div>
 
+        <!--
         <span ng-show='(networkController.currentNetwork.properties.length == 0)
                 && (networkController.isAdmin || networkController.canEdit)'>
 
@@ -229,15 +230,15 @@
                 </p>
             </div>
         </span>
+        -->
 
-        <div class='row network-property-preview'
-             ng-show='networkController.currentNetwork.properties.length > 0'>
+        <div class='row network-property-preview'>
 
             <h5 ng-show='!networkController.readOnlyChecked'>
                 <a class='btn-link'
                    ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
                    ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
-                    Edit Properties
+                    Add / Edit Properties
                 </a>
             </h5>
 

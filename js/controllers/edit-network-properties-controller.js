@@ -146,7 +146,7 @@ ndexApp.controller('editNetworkPropertiesController',
         if (editor.propertyValuePairs.length == 1) {
             if ((typeof (editor.propertyValuePairs[0].predicateString) === 'undefined') ||
                 !(editor.propertyValuePairs[0].predicateString)) {
-                disableSaveChangesButton = true;
+                disableSaveChangesButton = false;
             }
         }
 
