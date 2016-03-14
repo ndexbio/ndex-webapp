@@ -217,7 +217,10 @@
                                         </div>
 
                                         <div class="wrapLongLine, text-muted">
-                                            <p>{{(stripHTML(group.description)).substring(0,30)}}</p>
+                                            <p>
+                                                {{stripHTML(group.description) | limitTo:30}}
+                                                {{stripHTML(group.description).length > 30 ? '...' : ''}}
+                                            </p>
                                         </div>
                                     </div>
                                 </ndex-navigation>
