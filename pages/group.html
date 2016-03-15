@@ -87,10 +87,18 @@
     </div>
 
     <!-- tabs -->
-    <div id="divgroupTabs" class="col-md-7" ng-show="groupController.displayedGroup">
+    <div id="divgroupTabs" class="col-md-9" ng-show="groupController.displayedGroup">
 
         <tabset justified="true">
             <tab heading="Networks">
+                <div id="divNetworks" ng-show='groupController.networkSearchResults.length > 0'>
+                    <div ui-grid-selection
+                         ui-grid="networkGridOptions"
+                         ui-grid-resize-columns
+                         ui-grid-auto-resize
+                         class="networkGrid"></div>
+                </div>
+                <!--
                 <div id="divNetworks" ng-show='groupController.networkSearchResults.length > 0'>
                     <table class="table table-hover" ng-show="groupController.networkSearchResults.length > 0">
                         <!--
@@ -100,6 +108,8 @@
                         </tr>
                         </tbody>
                         -->
+
+                <!--
                         <thead>
                         <tr>
                             <th>Title</th>
@@ -117,6 +127,7 @@
 
                     </table>
                 </div>
+                -->
                 <div class='row' ng-hide='groupController.networkSearchResults.length > 0'>
                     <br>
                     <p class='text-center text-muted'>No networks to display</p>
