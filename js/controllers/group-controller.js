@@ -76,6 +76,7 @@ ndexApp.controller('groupController',
         ndexService.getNetworkSummariesOfTheGroup(groupController.identifier,
             function(networks) {
                 groupController.networkSearchResults = networks;
+                populateNetworkTable();
             },
             function(error){
                 if ((typeof error.data !== 'undefined') &&
@@ -88,10 +89,116 @@ ndexApp.controller('groupController',
             })
     };
 
+    //table
+    $scope.networkGridOptions =
+    {
+        enableSorting: true,
+        enableFiltering: true,
+        showGridFooter: true,
+        enableSelectAll: false,
+        enableRowSelection: false,
+        multiSelect: false,
+        enableRowHeaderSelection: false,
 
-    
+        onRegisterApi: function( gridApi )
+        {
+            $scope.networkGridApi = gridApi;
+            gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                var selectedRows = gridApi.selection.getSelectedRows();
+                groupController.atLeastOneSelected = selectedRows.length > 0;
 
-    //              local functions
+            });
+            gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+                var selectedRows = gridApi.selection.getSelectedRows();
+                groupController.atLeastOneSelected = selectedRows.length > 0;
+            });
+
+        }
+    };
+
+    var populateNetworkTable = function()
+    {
+        var columnDefs = [
+            { field: 'Network Name', enableFiltering: true, minWidth: 330,
+                cellTemplate: 'pages/gridTemplates/networkName.html'},
+            { field: 'Format', enableFiltering: true, minWidth: 70 },
+            { field: 'Nodes', enableFiltering: false, minWidth: 70 },
+            { field: 'Edges', enableFiltering: false, minWidth: 70 },
+            { field: 'Visibility', enableFiltering: true, minWidth: 90 },
+            { field: 'Owned By', enableFiltering: true, minWidth: 70,
+                cellTemplate: 'pages/gridTemplates/ownedBy.html'},
+            { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
+        ];
+        $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+        refreshNetworkTable();
+    };
+
+    $scope.stripHTML = function(html) {
+
+        if (!html) {
+            return "";
+        }
+
+        // convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
+        var markDown = toMarkdown(html);
+
+        // after using toMarkdown() at previous statement, markDown var can still contain
+        // some HTML Code (i.e.,<span class=...></span>). In order to remove it, we use jQuery text() function.
+        // We need to add <html> and </html> in the beginning and of markDown variable; otherwise, markDown
+        // will not be recognized byu text() as a valid HTML and exception will be thrown.
+
+        // Note that we need to use toMarkdown() followed by jQuery text(); if just jQuery text() is used, then
+        // all new lines and </p> , </h1>...</h6> tags are removed; and all lines get "glued" together
+        var markDownFinal  = $("<html>"+markDown+"</html>").text();
+
+        return markDownFinal;
+    }
+
+    var refreshNetworkTable = function()
+    {
+        $scope.networkGridOptions.data = [];
+
+        for(var i = 0; i < groupController.networkSearchResults.length; i++ )
+        {
+            var network = groupController.networkSearchResults[i];
+
+            var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+            var description = $scope.stripHTML(network['description']);
+            var externalId = network['externalId'];
+            var nodes = network['nodeCount'];
+            var edges = network['edgeCount'];
+            var owner = network['owner'];
+            var visibility = network['visibility'];
+            var modified = new Date( network['modificationTime'] );
+
+            var format = "Unknown";
+            for(var j = 0; j < network['properties'].length; j++ )
+            {
+                if( network['properties'][j]['predicateString'] == "sourceFormat" )
+                {
+                    format = network['properties'][j]['value'];
+                    break;
+                }
+            }
+
+            var row = {
+                "Network Name"  :   networkName,
+                "Format"        :   format,
+                "Nodes"         :   nodes,
+                "Edges"         :   edges,
+                "Visibility"    :   visibility,
+                "Owned By"      :   owner,
+                "Last Modified" :   modified,
+                "description"   :   description,
+                "externalId"    :   externalId,
+                "owner"         :   owner
+            };
+            $scope.networkGridOptions.data.push(row);
+        }
+    };
+
+
+            //              local functions
     var getMembership = function() {
         ndexService.getMyDirectMembership(groupController.displayedGroup.externalId, 
             function(membership) {
