@@ -997,3 +997,73 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
 .ta-toolbar.focussed {
     display: block;
 }
+
+
+.marginsForNGView {
+    margin-left: 30px;
+    margin-right: 30px;
+    //margin-top: 10px
+}
+
+
+.networkViewHeader {
+    border-style: solid;
+    border-color: #287EC7;
+}
+
+.networkViewHeaderHeader
+{
+    font-weight: bold;
+
+    font-size: 2em;
+    text-align: center;
+
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    line-height: 1;
+}
+.networkViewHeaderBody
+{
+    font-size: 1.3em;
+    text-align: center;
+
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    line-height: 1;
+}
+
+.networkPropertyName {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+.networkVisibilityValue {
+    color: forestgreen;
+}
+
+
+.cytoscape-canvas {
+    color: #777;
+    border: 3px solid #e5e5e5;
+    height: 800px;
+    background-color: #eee;
+}
+
+.networkPropertiesTabset {
+    font-size: 1.05em;
+    border-style: solid;
+    border-color: #287EC7;
+}
+
+
+.networkPropertyValueInTabsetMargins {
+    font-size: 1.1em;
+    margin-left: 10px;
+    margin-right: 10px;
+    //margin-top: 10px
+}
