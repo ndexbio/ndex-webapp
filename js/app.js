@@ -144,6 +144,12 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'networkController'
         })
 
+        // route for the new network view page
+        .when('/newNetwork/:identifier', {
+            templateUrl: 'pages/network-view.html',
+            controller: 'networkViewController'
+        })
+
         // route for the upload page
         .when('/upload', {
             templateUrl: 'pages/upload.html',

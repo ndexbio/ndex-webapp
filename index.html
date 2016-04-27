@@ -87,6 +87,7 @@
     <script src="js/controllers/manage-group-access.js"></script>
     <script src="js/controllers/api-controller.js"></script>
     <script src="js/controllers/home-controller.js"></script>
+    <script src="js/controllers/network-view-controller.js"></script>
 
     <!-- newer third party libraries -->
     <script src="lib/vis/3.10/vis.js"></script>
@@ -232,6 +233,12 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
+
+                <li ng-click="collapseHamburgerMenu()"
+                    ng-show="main.getCurrentNetwork() != null"
+                    ng-class="{active:main.url.url().search('/network') != -1}">
+                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">New Network</a>
+                </li>
 
                 <li ng-click="collapseHamburgerMenu()"
                     ng-show="main.getCurrentNetwork() != null"
