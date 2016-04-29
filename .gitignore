@@ -5,7 +5,8 @@ account_img/users/foreground/*
 account_img/users/background/*
 account_img/groups/foreground/*
 account_img/groups/background/*
-config/rest_config.json
+config/
+config/*
 unit_test/node_modules/*
 rest.js
 .idea/*
