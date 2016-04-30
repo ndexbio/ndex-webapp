@@ -12,26 +12,7 @@
         <br>
         <br>
         <br>
-        <form ng-show="!main.showSignIn && !main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-              style="width:100%" role="search" ng-submit="main.anonymousSearchPerformed = true; main.search()">
-            <br>
-            <br>
-            <div class="input-group" >
-                <div class="input-group-btn dropdown AlignLeft">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        {{main.searchType}} <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
-                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
-                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
-                    </ul>
-                </div>
-                <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
-                <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
-            </div>
-            <br>
-        </form>
+<!-- where the search box used to be... -->
 
         <h1 class="text-danger" ng-show="main.serverIsDown"><span id="bind-html-with-trust" ng-bind-html="config.messages.serverDown"></span></h1>
 

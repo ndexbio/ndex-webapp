@@ -102,7 +102,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
             // other browser
             return false;
-        }
+        };
 
 
         $scope.main.signout = function () {
@@ -166,91 +166,37 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
-        $scope.main.searchType = 'Networks';
+        // Search code
+        $scope.main.searchType = 'All';
         $scope.main.searchString = '';
         $scope.main.search = function () {
-            ////console.log("navbar search");
-            //could user url instead, good for refresh
-
             // searchStringEncoded will be either 1) a string encoded as a valid component of URI (spaces and
             // special characters replaced with their Hex representations), or 2) "" in case user entered nothing
             // in the search field and thus runs the search with an empty
             var searchStringEncoded = encodeURIComponent($scope.main.searchString);
-
-            if ($scope.main.searchType == 'Networks') {
-
-                var absURL1 = $location.absUrl();
-
-                if ($location.path() != '/searchNetworks') {
-                    $location.path("/searchNetworks");
-                }
-
-                // add "?networks=<searchStringEncoded>" to the URL;
-                // we do it to be able to get back to this search with the browser Back button
-                $location.search({"networks": searchStringEncoded});
-
-                var absURL2 = $location.absUrl();
-
-                if (absURL1 === absURL2) {
-                    // absURL1 and absURL2 are the same, it means that
-                    // the user is re-issuing the last search, and we need to reload
-                    // the route to enforce search
-                    $route.reload();
-                }
-
-            } else if ($scope.main.searchType == 'Users') {
-
-                var absURL1 = $location.absUrl();
-
-                if ($location.path() != '/searchUsers') {
-                    $location.path("/searchUsers");
-                }
-
-                // add "?users=<searchStringEncoded>" to the URL;
-                // we do it to be able to get back to this search with the browser Back button
-                $location.search({"users": searchStringEncoded});
-
-                var absURL2 = $location.absUrl();
-
-                if (absURL1 === absURL2) {
-                    // absURL1 and absURL2 are the same, it means that
-                    // the user is re-issuing the last search, and we need to reload
-                    // the route to enforce search
-                    $route.reload();
-                }
-
-            } else if ($scope.main.searchType == 'Groups') {
-
-                var absURL1 = $location.absUrl();
-
-                if ($location.path() != '/searchGroups') {
-                    $location.path("/searchGroups");
-                }
-
-                // add "?groups=<searchStringEncoded>" to the URL;
-                // we do it to be able to get back to this search with the browser Back button
-                $location.search({"groups": searchStringEncoded});
-
-                var absURL2 = $location.absUrl();
-
-                if (absURL1 === absURL2) {
-                    // absURL1 and absURL2 are the same, it means that
-                    // the user is re-issuing the last search, and we need to reload
-                    // the route to enforce search.
-                    $route.reload();
-                }
+            var searchURL = '/search';
+            if ($location.path() != searchURL) {
+                $location.path(searchURL);
+            }
+            var urlBeforePathChange = $location.absUrl();
+            // add "?networks=<searchStringEncoded>" to the URL;
+            // we do it to be able to get back to this search with the browser Back button
+            $location.search({'searchType': $scope.main.searchType, 'searchString': searchStringEncoded});
+            var urlAfterPathChange = $location.absUrl();
+            if (urlBeforePathChange === urlAfterPathChange) {
+                // if before and after urls are the same, it means that
+                // the user is re-issuing the last search, and we need to reload
+                // the route to enforce search
+                $route.reload();
             }
         };
 
-        //navbar initializations
-        if ($location.path() == '/searchNetworks')
-            $scope.main.searchType = 'Networks';
-        if ($location.path() == '/searchUsers')
-            $scope.main.searchType = 'Users';
-        if ($location.path() == '/searchGroups')
-            $scope.main.searchType = 'Groups';
+        // make search type sticky
+        if ($location.path() == '/search')
+            $scope.main.searchType = $location.search().searchType;
 
-        //end navbar code
+
+        //end Search code
 
         //initializions for page refresh
         var accountName = ndexUtility.getLoggedInUserAccountName();

@@ -264,6 +264,26 @@
         </div>
     </div>
 </nav>
+<div id="search" class="'fluid-container">
+    <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
+          style="width:100%" role="search" ng-submit="main.search()">
+        <div class="input-group" >
+            <div class="input-group-btn dropdown AlignLeft">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    {{main.searchType}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Search'; main.searchString = ''">Networks</a></li>
+                    <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Search Networks'; main.searchString = ''">Networks</a></li>
+                    <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Search Users'; main.searchString = ''">Users</a></li>
+                    <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Search Groups'; main.searchString = ''">Groups</a></li>
+                </ul>
+            </div>
+            <input type="text" class="form-control" placeholder="{{'NDEx '+main.searchType}}" ng-model="main.searchString">
+            <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
+        </div>
+    </form>
+</div>
 
 
 <div id="main" class="fluid-container">
