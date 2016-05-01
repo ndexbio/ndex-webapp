@@ -168,6 +168,18 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         // Search code
         $scope.main.searchType = 'All';
+        const SEARCH_PLACEHOLDER_TEXT_MAP = {
+            All : "Search for networks, users, and groups",
+            Networks : "Search for networks",
+            Users : "Search for users",
+            Groups : "Search for groups"
+        };
+        
+        $scope.main.getSearchPlaceholder = function(){
+            //console.log("placeholder for " + $scope.main.searchType);
+            return SEARCH_PLACEHOLDER_TEXT_MAP[$scope.main.searchType];
+        };
+        
         $scope.main.searchString = '';
         $scope.main.search = function () {
             // searchStringEncoded will be either 1) a string encoded as a valid component of URI (spaces and

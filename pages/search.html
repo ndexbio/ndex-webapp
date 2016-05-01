@@ -1,10 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="row">
 
-</body>
-</html>
+    <div class=" col-sm-7 col-md-10 col-lg-10">
+
+        <div ng-show="networkSearch.errors.length > 0">
+            <p class="alert alert-danger" ng-repeat='error in networkSearch.errors'>
+                {{error}}
+              <span class="glyphicon glyphicon-remove pull-right"
+                    style='cursor:pointer'
+                    ng-click='networkSearch.errors.splice($index,1)'>
+              </span>
+            </p>
+        </div>
+
+        <div id="divSearchTabs" class="row">
+            <tabset>
+                <tab heading='{{networkTabHeading()}}'>
+                    <div ui-grid-selection ui-grid="networkSearchGridOptions" ui-grid-resize-columns
+                         class="networkGrid"></div>
+                    <div class='row text-center'>
+
+                        <ul class="pager">
+                            <!--<li ng-class='{disabled : networkSearch.skip == 0}' >-->
+
+
+                            <li>
+                                <button class='btn btn-primary btn-sm' ng-disabled='networkSearch.skip == 0'
+                                        ng-click='networkSearch.skip = networkSearch.skip - 1; networkSearch.submitNetworkSearch()'>
+                                    Prev
+                                </button>
+                            </li>
+                            &nbsp;
+                            <!--<li ng-class='{disabled : networkSearch.networkSearchResults.length < networkSearch.skipSize}'>-->
+                            <li>
+                                <button class='btn btn-primary btn-sm'
+                                        ng-disabled='networkSearch.networkSearchResults.length < networkSearch.skipSize'
+                                        ng-click='networkSearch.skip = networkSearch.skip + 1 ; networkSearch.submitNetworkSearch()'>
+                                    Next
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </tab>
+                <tab heading='{{userTabHeading()}}'>
+                    <div ui-grid-selection ui-grid="userSearchGridOptions" ui-grid-resize-columns
+                         class="networkGrid"></div>
+                </tab>
+                <tab heading='{{groupTabHeading()}}'>
+                    <div ui-grid-selection ui-grid="groupSearchGridOptions" ui-grid-resize-columns
+                         class="networkGrid"></div>
+                </tab>
+            </tabset>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/ng-template" id="searchContent.html">
+    <div class="modal-body text-center">
+        <img src="img/horizontal-loader.gif">
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-sm btn-default" ng-click="networkSearch.cancel()">Cancel</button>
+    </div>
+</script>

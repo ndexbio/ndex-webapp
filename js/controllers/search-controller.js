@@ -1,6 +1,3 @@
-/**
- * Created by dexter on 4/29/16.
- */
 ndexApp.controller('searchController',
     [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal',
         function (ndexService, sharedProperties, $scope, $location, $modal) {
@@ -13,52 +10,10 @@ ndexApp.controller('searchController',
 
             searchController.errors = [];
             searchController.networkSearchResults = [];
+            searchController.groupSearchResults = [];
+            searchController.userSearchResults = [];
             searchController.skip = 0;
             searchController.skipSize = 100000;
-
-            //table
-            $scope.networkSearchGridOptions =
-            {
-                enableSorting: true,
-                enableFiltering: true,
-                showGridFooter: true,
-                enableSelectAll: false,
-                enableRowSelection: false,
-                multiSelect: false,
-                enableRowHeaderSelection: false,
-
-
-                onRegisterApi: function( gridApi )
-                {
-                    $scope.networkGridApi = gridApi;
-                    gridApi.selection.on.rowSelectionChanged($scope,function(row){
-                        var selectedRows = gridApi.selection.getSelectedRows();
-
-                    });
-                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                    });
-
-                }
-            };
-
-            var populateNetworkTable = function()
-            {
-                var columnDefs = [
-                    { field: 'Network Name', enableFiltering: true, minWidth: 330,
-                        cellTemplate: 'pages/gridTemplates/networkName.html'},
-                    { field: 'Format', enableFiltering: true, minWidth: 70 },
-                    { field: 'Nodes', enableFiltering: false, minWidth: 70 },
-                    { field: 'Edges', enableFiltering: false, minWidth: 70 },
-                    { field: 'Visibility', enableFiltering: true, minWidth: 90 },
-                    { field: 'Owned By', enableFiltering: true, minWidth: 70,
-                        cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
-                ];
-                $scope.networkGridApi.grid.options.columnDefs = columnDefs;
-                refreshNetworkTable();
-
-            };
 
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
@@ -84,6 +39,62 @@ ndexApp.controller('searchController',
                 var markDownFinal  = $("<html>"+markDown+"</html>").text();
 
                 return markDownFinal;
+            };
+
+
+
+            /*---------------------------
+
+
+             Network Table
+
+             -----------------------------*/
+
+            $scope.networkTabHeading = function(){
+                return 'Networks (' + searchController.networkSearchResults.length + ')';
+            };
+
+            $scope.networkSearchGridOptions =
+            {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                enableSelectAll: false,
+                enableRowSelection: false,
+                multiSelect: false,
+                enableRowHeaderSelection: false,
+
+
+                onRegisterApi: function( gridApi )
+                {
+                    $scope.networkGridApi = gridApi;
+                    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+
+                    });
+                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+                    });
+
+                }
+            };
+            
+            const NETWORK_COLUMN_FIELDS = [
+                { field: 'Network Name', enableFiltering: true, minWidth: 330,
+                    cellTemplate: 'pages/gridTemplates/networkName.html'},
+                { field: 'Format', enableFiltering: true, minWidth: 70 },
+                { field: 'Nodes', enableFiltering: false, minWidth: 70 },
+                { field: 'Edges', enableFiltering: false, minWidth: 70 },
+                { field: 'Visibility', enableFiltering: true, minWidth: 90 },
+                { field: 'Owned By', enableFiltering: true, minWidth: 70,
+                    cellTemplate: 'pages/gridTemplates/ownedBy.html'},
+                { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
+            ];
+
+            var populateNetworkTable = function()
+            {
+                $scope.networkGridApi.grid.options.columnDefs = NETWORK_COLUMN_FIELDS;
+                refreshNetworkTable();
             };
 
             var refreshNetworkTable = function()
@@ -131,8 +142,6 @@ ndexApp.controller('searchController',
                 }
             };
 
-
-
             searchController.setAndDisplayCurrentNetwork = function (networkId) {
                 $location.path("/network/" + networkId);
             };
@@ -170,9 +179,6 @@ ndexApp.controller('searchController',
                         function (networks) {
                             if(networks.length == 0)
                                 searchController.errors.push('No results found that match your criteria')
-
-                            //console.log('got results')
-                            // Save the results
                             searchController.networkSearchResults = networks;
                             populateNetworkTable();
                             modalInstance.close();
@@ -189,6 +195,190 @@ ndexApp.controller('searchController',
 
                             }
                         })
+
+            };
+
+            /*---------------------------
+
+
+             User Tab
+
+             -----------------------------*/
+
+            $scope.userTabHeading = function(){
+                return 'Users (' + searchController.userSearchResults.length + ')';
+            };
+
+            $scope.userSearchGridOptions =
+            {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                enableSelectAll: false,
+                enableRowSelection: false,
+                multiSelect: false,
+                enableRowHeaderSelection: false,
+
+
+                onRegisterApi: function( gridApi )
+                {
+                    $scope.userGridApi = gridApi;
+                    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+
+                    });
+                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+                    });
+
+                }
+            };
+
+
+            const USER_COLUMN_FIELDS = [
+                { field: 'User Name'},
+                { field: 'Description'}
+            ];
+
+            var populateUserTable = function()
+            {
+                $scope.userGridApi.grid.options.columnDefs = USER_COLUMN_FIELDS;
+                refreshUserTable();
+                console.log($scope.userSearchGridOptions.data);
+
+            };
+
+            var refreshUserTable = function()
+            {
+                $scope.userSearchGridOptions.data = [];
+
+                for(var i = 0; i < searchController.userSearchResults.length; i++ )
+                {
+                    var user = searchController.userSearchResults[i];
+
+                    var userName = user['accountName'];
+                    var description = stripHTML(user['description']);
+
+
+                    var row = {
+                        "User Name"  :   userName,
+                        "Description" :   description
+                    };
+
+                    $scope.userSearchGridOptions.data.push(row);
+                }
+            };
+
+
+            searchController.submitUserSearch = function(){
+
+                var userQuery = {searchString: searchController.searchString};
+
+                ndexService.searchUsers(userQuery, searchController.skip, searchController.skipSize,
+                    function (users) {
+                        if(users.length == 0)
+                            searchController.errors.push('No results found that match your criteria')
+                        searchController.userSearchResults = users;
+                        //console.log(searchController.userSearchResults);
+                        populateUserTable();
+
+                    },
+                    function (error) {
+                        searchController.errors.push(error.data);
+                    });
+
+            };
+
+
+            /*---------------------------
+
+
+                    Group Table
+
+             -----------------------------*/
+
+            $scope.groupTabHeading = function(){
+                return 'Groups (' + searchController.groupSearchResults.length + ')';
+            };
+
+            $scope.groupSearchGridOptions =
+            {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                enableSelectAll: false,
+                enableRowSelection: false,
+                multiSelect: false,
+                enableRowHeaderSelection: false,
+
+
+                onRegisterApi: function( gridApi )
+                {
+                    $scope.groupGridApi = gridApi;
+                    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+
+                    });
+                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+                        var selectedRows = gridApi.selection.getSelectedRows();
+                    });
+
+                }
+            };
+
+
+            const GROUP_COLUMN_FIELDS = [
+                { field: 'Group Name'},
+                { field: 'Description'}
+            ];
+
+            var populateGroupTable = function()
+            {
+                $scope.groupGridApi.grid.options.columnDefs = GROUP_COLUMN_FIELDS;
+                refreshGroupTable();
+
+            };
+
+            var refreshGroupTable = function()
+            {
+                $scope.groupSearchGridOptions.data = [];
+
+                for(var i = 0; i < searchController.groupSearchResults.length; i++ )
+                {
+                    var group = searchController.groupSearchResults[i];
+
+                    var groupName = group['accountName'];
+                    var description = stripHTML(group['description']);
+
+
+                    var row = {
+                        "Group Name"  :   groupName,
+                        "Description" :   description
+                    };
+
+                    $scope.groupSearchGridOptions.data.push(row);
+                }
+            };
+
+
+            searchController.submitGroupSearch = function(){
+
+                var groupQuery = {searchString: searchController.searchString};
+
+                ndexService.searchGroups(groupQuery, searchController.skip, searchController.skipSize,
+                    function (groups) {
+
+                        if(groups.length == 0)
+                            searchController.errors.push('No results found that match your criteria')
+
+                        searchController.groupSearchResults = groups;
+                        //console.log(searchController.groupSearchResults);
+                        populateGroupTable();
+
+                    },
+                    function (error) {
+                        searchController.errors.push(error.data);
+                    });
 
             };
 
@@ -209,6 +399,14 @@ ndexApp.controller('searchController',
             // $scope.main.searchString is "" (empty string) in case searchString is 'undefined'
             $scope.main.searchString = searchController.searchString;
 
-            searchController.submitNetworkSearch();
+            
+            if (searchType === 'All'){
+                searchController.submitNetworkSearch();
+                searchController.submitGroupSearch();
+                searchController.submitUserSearch();
+            } else if (searchType === 'Network'){
+                searchController.submitNetworkSearch();
+            }
+
         }]);
 
