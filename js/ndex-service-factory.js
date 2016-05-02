@@ -1215,6 +1215,15 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
+
+    factory.getCompleteCXNetworkConfig = function (networkId) {
+        // network/{networkId}/edge/{skip}/{top}
+        // GET to NetworkAService
+        var url = "/network/" + networkId + "/asCX";
+        return this.getGetConfig(url, null);
+    };
+
+
     factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
         var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
         var postData = {};
@@ -1695,43 +1704,6 @@ ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', f
 
     };
     
-    /*-----------------------------------------------------------------------*
-     * Convert network received in JSON format to NiceCX;
-     * Convert only nodes and edges now.
-     *-----------------------------------------------------------------------*/
-    factory.convertNetworkInJSONToNiceCX = function (network) {
-
-        var nodes = { elements: []};
-        var edges = { elements: []};
-
-        $.each(network.nodes, function (index, node) {
-            var n = ndexHelper.getNodeLabel(node, network);
-            var element = {
-                '@id' : index,
-                   'n': n
-            };
-            nodes.elements.push(element);
-        });
-
-        $.each(network.edges, function (index, edge) {
-
-            var element = {
-                '@id' : index,
-                  's' : edge.subjectId,
-                  't' : edge.objectId
-            };
-
-            if (network.baseTerms && network.baseTerms[index] && network.baseTerms[index]['name']) {
-                element['i'] = network.baseTerms[index]['name'];
-            }
-
-            edges.elements.push(element);
-        });
-        
-        var niceCX = { 'nodes' : nodes,  'edges' : edges };
-        
-        return niceCX;
-    };
 
     return factory;
 }]);
