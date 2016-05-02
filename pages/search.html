@@ -14,9 +14,8 @@
 
         <div id="divSearchTabs" class="row">
             <tabset>
-                <tab heading='{{networkTabHeading()}}'>
-                    <div ui-grid-selection ui-grid="networkSearchGridOptions" ui-grid-resize-columns
-                         class="networkGrid"></div>
+                <tab heading='{{networkTabHeading()}}' ng-click="networkGridApi.core.handleWindowResize()">
+                    <div ui-grid-selection ui-grid="networkSearchGridOptions" ui-grid-resize-columns class="networkGrid"></div>
                     <div class='row text-center'>
 
                         <ul class="pager">
@@ -41,13 +40,11 @@
                         </ul>
                     </div>
                 </tab>
-                <tab heading='{{userTabHeading()}}'>
-                    <div ui-grid-selection ui-grid="userSearchGridOptions" ui-grid-resize-columns
-                         class="networkGrid"></div>
+                <tab heading='{{userTabHeading()}}' ng-click="userGridApi.core.handleWindowResize()">
+                    <div ui-grid-selection ui-grid="userSearchGridOptions" ui-grid-resize-columns class="networkGrid"></div>
                 </tab>
-                <tab heading='{{groupTabHeading()}}'>
-                    <div ui-grid-selection ui-grid="groupSearchGridOptions" ui-grid-resize-columns
-                         class="networkGrid"></div>
+                <tab heading='{{groupTabHeading()}}' ng-click="groupGridApi.core.handleWindowResize()">
+                    <div ui-grid-selection ui-grid="groupSearchGridOptions" ui-grid-resize-columns class="networkGrid"></div>
                 </tab>
             </tabset>
         </div>

@@ -357,6 +357,7 @@ ndexApp.controller('searchController',
                     };
 
                     $scope.groupSearchGridOptions.data.push(row);
+                    console.log($scope.groupSearchGridOptions);
                 }
             };
 
