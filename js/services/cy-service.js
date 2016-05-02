@@ -7,7 +7,7 @@
  * # cyService
  * Service in the ndexCravatWebappApp.
  */
-angular.module('ndexApp')
+angular.module('ndexServiceApp')
     .factory('cyService', ['$q', function ($q) {
 
         // Public API here: the factory object will be returned
@@ -762,8 +762,9 @@ angular.module('ndexApp')
 
             $(function () { // on dom ready
 
+                var cv = document.getElementById(canvasName);
                 cy = cytoscape({
-                    container: document.getElementById(canvasName),
+                    container: cv,
 
                     style: cyStyle,
 
@@ -781,7 +782,7 @@ angular.module('ndexApp')
 
             return deferred.promise;
         };
-        
+
 
 
         return factory;

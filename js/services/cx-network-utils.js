@@ -7,7 +7,7 @@
  * # cxNetworkUtils
  * Service in the ndexLinkedNetworkViewerApp.
  */
-angular.module('ndexApp')
+angular.module('ndexServiceApp')
   .service('cxNetworkUtils', function () {
       // AngularJS will instantiate a singleton by calling "new" on this function
 

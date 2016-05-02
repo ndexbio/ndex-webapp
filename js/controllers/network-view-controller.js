@@ -10,10 +10,19 @@ ndexApp.controller('networkViewController',
         {
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
-            
+
+
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
+
+
+            networkController.errors = []; // general page errors
+            networkController.queryErrors = [];
+
+
+
+
             /**
              * Return the value of a given property in the network. I assume the perperty names a unique in network.
              * Property name is case sensitive.
@@ -35,12 +44,36 @@ ndexApp.controller('networkViewController',
                 }
             }
 
-            
+
+            //                  local functions
+
+            var getNetworkAdmins = function()
+            {
+                ndexService.getNetworkMemberships(networkController.currentNetworkId, 'ADMIN',
+                    function(networkAdmins)
+                    {
+                        for( var i = 0; i < networkAdmins.length; i++ )
+                        {
+                            var networkAdmin = networkAdmins[i];
+                            if( networkAdmin.memberUUID == sharedProperties.getCurrentUserId() )
+                            {
+                                networkAdmins.splice(i, 1);
+                            }
+                        }
+                        networkController.networkAdmins = networkAdmins;
+                    },
+                    function(error)
+                    {
+
+                    });
+            };
+
+
             var drawCXNetworkOnCanvas = function (cxNetwork) {
                 var attributeNameMap = {};
 
-                var cyElements = cyService.cyElementsFromNiceCX(niceCX, attributeNameMap);
-                var cyStyle = cyService.cyStyleFromNiceCX(niceCX, attributeNameMap);
+                var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
+                var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
 
                 var layoutName = 'cose';
 
@@ -50,11 +83,11 @@ ndexApp.controller('networkViewController',
 
                 var cyLayout = {name: layoutName};
 
-                cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, viewer, 'cytoscape-canvas' );
+                cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, networkController, 'cytoscape-canvas' );
 
             }
             
-            var getNetworkAndDisplay = function (callback) {
+            var getNetworkAndDisplay = function (networkId, callback) {
                 var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
                 var blockSize = config.networkTableLimit;
@@ -66,7 +99,7 @@ ndexApp.controller('networkViewController',
                     // get complete CX stream and build the CX network object.
                 }
                 
-                (request2 = ndexServiceCX.getCXNetwork(networkController.currentNetworkId) )
+                (request2 = ndexServiceCX.getCXNetwork(networkId) )
                     .success(
                         function (network) {
                             csn = network; // csn is a debugging convenience variable
@@ -89,7 +122,7 @@ ndexApp.controller('networkViewController',
                     );
             }
 
-/*            var initialize = function () {
+            var initialize = function () {
                 // vars to keep references to http calls to allow aborts
                 var request1 = null;
                 var request2 = null;
@@ -115,7 +148,7 @@ ndexApp.controller('networkViewController',
                                     || networkController.isAdmin
                                     || networkController.canEdit
                                     || networkController.canRead)
-                                    getNetworkAndDisplay(drawCXNetworkOnCanvas);
+                                    getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
                             });
                             
                             networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
@@ -145,7 +178,7 @@ ndexApp.controller('networkViewController',
 
             };
 
-*/
+
             var getMembership = function (callback) {
                 ndexService.getMyMembership(networkController.currentNetworkId,
                     function (membership)
@@ -178,10 +211,10 @@ ndexApp.controller('networkViewController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
-     //       networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
+            networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
 
-      //      initialize();
+            initialize();
 
 
         }
