@@ -222,9 +222,12 @@
 
     </div>
 
-    <div class="row">
+    <div class="row" style="height:50px;">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-              style="width:100%" role="search" ng-submit="main.search()">
+              class="navbar-form "
+              style="margin-left: 20px; margin-right: 20px;"
+              role="search"
+              ng-submit="main.search()">
             <div class="input-group" >
                 <div class="input-group-btn dropdown AlignLeft">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
