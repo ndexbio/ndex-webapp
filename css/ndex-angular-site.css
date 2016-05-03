@@ -329,13 +329,14 @@ textarea
 
 .navbar-nav>li>a:focus
 {
-    background: black;
+    /*background-color: black;*/
+    background-color: rgb(38,38,38);
 }
 
 .navbar-nav>li>a:hover
 {
-    /*color: lightened black;*/
-    background: rgb(38,38,38);
+    /*color: red; */
+    background-color: rgb(38,38,38);
 }
 
 .navbar-fixed-top
@@ -353,13 +354,13 @@ textarea
 
 .navbar-ndex-bottom
 {
-    background: #000;
+    background-color: #000;
     border-top-color: white;
 }
 
 .navbar-ndex-top
 {
-    background: #000;
+    background-color: #000;
     border-bottom-color: white;
 }
 

@@ -120,7 +120,7 @@
 <body ng-controller="mainController" style="padding-bottom: 140px;">
 
 <div class="navbar navbar-default navbar-fixed-top navbar-ndex-top">
-    <div class="container-fluid">
+    <div class="container-fluid" style="padding-right: 20px;">
 
         <div class="collapse navbar-collapse col-lg-6 col-md-6">
             <a class="navbar-brand"
@@ -190,22 +190,20 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-
+<!--
                 <li ng-click="collapseHamburgerMenu()"
                     ng-show="main.getCurrentNetwork() != null"
                     ng-class="{active:main.url.url().search('/network') != -1}">
                     <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">New Network</a>
                 </li>
-
-                <li ng-click="collapseHamburgerMenu()"
-                    ng-show="main.getCurrentNetwork() != null"
-                    ng-class="{active:main.url.url().search('/network') != -1}">
-                    <a ng-href="{{'#network/' + main.getCurrentNetwork()}}">Network</a>
+-->
+                <li ng-show="main.getCurrentNetwork() != null">
+                    <!--ng-class="{active:main.url.url().search('/network') != -1}">-->
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentNetwork()">Network</a>
                 </li>
 
-                <li ng-click="collapseHamburgerMenu()"
-                    ng-show="main.loggedIn">
-                    <a href="#/user/{{main.getCurrentUserId()}}">MyAccount</a>
+                <li ng-show="main.loggedIn">
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()">MyAccount</a>
                 </li>
 
                 <li ng-show="main.loggedIn">

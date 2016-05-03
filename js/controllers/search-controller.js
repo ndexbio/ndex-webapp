@@ -259,6 +259,10 @@ ndexApp.controller('searchController',
                 return searchController.searchType == 'All' || searchController.searchType == 'Users';
             };
 
+            $scope.userTabActive = function(){
+                return searchController.searchType == 'Users'
+            };
+
             $scope.userSearchGridOptions =
             {
                 enableSorting: true,
@@ -322,6 +326,7 @@ ndexApp.controller('searchController',
 
                     $scope.userSearchGridOptions.data.push(row);
                 }
+                $scope.userGridApi.core.handleWindowResize();
             };
 
             searchController.submitUserSearch = function(){
@@ -376,6 +381,10 @@ ndexApp.controller('searchController',
 
             $scope.showGroupTab = function(){
                 return searchController.searchType == 'All' || searchController.searchType == 'Groups';
+            };
+
+            $scope.groupTabActive = function(){
+                return searchController.searchType == 'Groups'
             };
 
             $scope.groupSearchGridOptions =

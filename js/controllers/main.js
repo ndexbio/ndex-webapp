@@ -41,6 +41,18 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 $scope.main.hideSearchBar = false;
         });
 
+        $scope.main.goToCurrentNetwork = function(){
+            if (sharedProperties.currentNetworkId) {
+                $location.path("/network/" + sharedProperties.currentNetworkId);
+            }
+        };
+
+        $scope.main.goToCurrentUser = function(){
+            if (sharedProperties.currentUserId) {
+                $location.path("/user/" + sharedProperties.currentUserId);
+            }
+        };
+
 
         // check configuration parameters loaded from ndex-webapp-config.js;
         // if any of config parameters missing, assign default values
