@@ -12,8 +12,31 @@ ndexApp.controller('networkViewController',
             sharedProperties.setCurrentNetworkId(networkExternalId);
             
             $scope.networkController = {};
+            var networkController = $scope.networkController;
 
-            var networkController  = $scope.networkController;
+
+            networkController.searchDepths = [
+                {
+                    "name": "1-step",
+                    "description": "1-step",
+                    "value": 1,
+                    "id": "1"
+                },
+                {
+                    "name": "2-step",
+                    "description": "2-step",
+                    "value": 2,
+                    "id": "2"
+                },
+                {
+                    "name": "3-step",
+                    "description": "3-step",
+                    "value": 3,
+                    "id": "3"
+                }
+            ];
+
+
             /**
              * Return the value of a given property in the network. I assume the perperty names a unique in network.
              * Property name is case sensitive.
