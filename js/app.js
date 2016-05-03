@@ -36,10 +36,7 @@ ndexApp.service('sharedProperties', function ($http) {
     // this service is going to act as a general global variable throughout the application
     // should consider implementing some degree of relationship with localStorage to guard against
     // refreshes. In fact, we might just use cookies or something else because we may not want this to be permanent
-
-
-
-
+    
     return {
         getCurrentNetworkId: function () {
             //if (!this.currentNetworkId) this.currentNetworkId = "C25R1174";   // hardwired for testing
@@ -100,6 +97,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         .when('/', {
             templateUrl: 'pages/home.html',
             controller: 'homeController'
+        })
+        // route for the home page (where sign-in is handled)
+        .when('/signIn', {
+            templateUrl: 'pages/signIn.html',
+            controller: 'signInController'
         })
 
         // route for the api page

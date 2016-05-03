@@ -9,12 +9,23 @@ ndexApp.controller('searchController',
             var searchController = $scope.searcher;
 
             searchController.errors = [];
+            searchController.pageSize = 1000;
+            
             searchController.networkSearchResults = [];
+            searchController.networkSearchInProgress = false;
+            searchController.networkNoResults = false;
+            searchController.numberOfNetworksFound = 0;
+            searchController.networkSearchIncludeNetworksByGroupPermissions = true;
+            searchController.networkSkipPages = 0;
+            
             searchController.groupSearchResults = [];
+            searchController.groupSearchInProgress = false;
+            searchController.groupSearchNoResults = false;
+            
             searchController.userSearchResults = [];
-            searchController.skip = 0;
-            searchController.skipSize = 100000;
-
+            searchController.userSearchInProgress = false;
+            searchController.userSearchNoResults = false;
+            
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
              * field could be displayed in the title element of networkName.html template in the pop-up window
@@ -51,7 +62,11 @@ ndexApp.controller('searchController',
              -----------------------------*/
 
             $scope.networkTabHeading = function(){
-                return 'Networks (' + searchController.networkSearchResults.length + ')';
+                if (searchController.networkSearchInProgress){
+                    return 'Networks';
+                } else {
+                    return 'Networks (' + searchController.numberOfNetworksFound + ')';
+                }
             };
 
             $scope.networkSearchGridOptions =
@@ -149,53 +164,40 @@ ndexApp.controller('searchController',
 
             searchController.submitNetworkSearch = function () {
 
-                // We want to hold on to the request for the subnetwork query. The request contains the .abort method.
-                // This way, we can call the method midstream and cancel the AJAX call.
-                var request = null;
+                searchController.numberOfNetworksFound = 0;
+                searchController.networkSearchIncludeNetworksByGroupPermissions = true;
+                searchController.networkSearchInProgress = true;
+                searchController.networkSearchNoResults = false;
 
-                // AngularUi modal service use. queryContent.html is reused across this controller. It is located in our
-                // network.html page. We pass this controllers scope and do not allow close by clicking outside of the modal.
-                var modalInstance = $modal.open({
-                    templateUrl: 'searchContent.html',
-                    scope: $scope,
-                    backdrop: 'static'
-                });
-
-                // Close the modal and abort the AJAX request.
-                searchController.cancel = function () {
-                    modalInstance.close();
-                    request.abort();
-                };
-
-                searchController.includeGroups = true;
-
-                (request = ndexService.findNetworks(searchController.searchString,
+                ndexService.findNetworks(
+                    searchController.searchString,
                     searchController.accountName,
                     searchController.permission,
-                    searchController.includeGroups,
-                    searchController.skip,
-                    searchController.skipSize) )
+                    searchController.networkSearchIncludeNetworksByGroupPermissions,
+                    searchController.networkSkipPages,
+                    searchController.pageSize)
                     .success(
-                        function (networks) {
-                            if(networks.length == 0)
-                                searchController.errors.push('No results found that match your criteria')
-                            searchController.networkSearchResults = networks;
-                            populateNetworkTable();
-                            modalInstance.close();
+                        function (searchResult) {
+                            searchController.numberOfNetworksFound = searchResult.numFound;
+                            searchController.networkSearchResultStart = searchResult.start;
+                            var networks = searchResult.networks;
+                            if(networks.length > 0){
+                                searchController.networkSearchResults = networks;
+                                populateNetworkTable();
+                            } else {
+                                searchController.networkSearchNoResults = true;
+                            }
+                            searchController.networkSearchInProgress = false;
                         })
                     .error(
                         function (error, data) {
                             // Save the error.
                             if (error) {
-                                searchController.networkSearchResults = [];
+                                searchController.networkSearchResults = null;
                                 searchController.errors.push(error.message);
-
-                                // close the modal.
-                                modalInstance.close();
-
+                                searchController.networkSearchInProgress = false;
                             }
                         })
-
             };
 
             /*---------------------------
@@ -205,8 +207,17 @@ ndexApp.controller('searchController',
 
              -----------------------------*/
 
-            $scope.userTabHeading = function(){
-                return 'Users (' + searchController.userSearchResults.length + ')';
+            $scope.userTabHeading = function () {
+                if (searchController.userSearchResults) {
+                    var numUsers = searchController.userSearchResults.length;
+                    var pageLimitPlusSign = '';
+                    if (numUsers >= searchController.pageSize) {
+                        pageLimitPlusSign = '+';
+                    }
+                    return 'Users (' + numUsers + pageLimitPlusSign + ')';
+                } else {
+                    return 'Groups';
+                }
             };
 
             $scope.userSearchGridOptions =
@@ -236,7 +247,10 @@ ndexApp.controller('searchController',
 
 
             const USER_COLUMN_FIELDS = [
-                { field: 'User Name'},
+                {
+                    field: 'User Name',
+                    cellTemplate: 'pages/gridTemplates/userName.html'
+                },
                 { field: 'Description'}
             ];
 
@@ -244,7 +258,7 @@ ndexApp.controller('searchController',
             {
                 $scope.userGridApi.grid.options.columnDefs = USER_COLUMN_FIELDS;
                 refreshUserTable();
-                console.log($scope.userSearchGridOptions.data);
+                //console.log($scope.userSearchGridOptions.data);
 
             };
 
@@ -258,35 +272,43 @@ ndexApp.controller('searchController',
 
                     var userName = user['accountName'];
                     var description = stripHTML(user['description']);
+                    var externalId = user['externalId'];
 
 
                     var row = {
                         "User Name"  :   userName,
-                        "Description" :   description
+                        "Description" :   description,
+                        "externalId" : externalId
                     };
 
                     $scope.userSearchGridOptions.data.push(row);
                 }
             };
 
-
             searchController.submitUserSearch = function(){
-
                 var userQuery = {searchString: searchController.searchString};
-
-                ndexService.searchUsers(userQuery, searchController.skip, searchController.skipSize,
+                searchController.userSearchResults = null;
+                searchController.userSearchInProgress = true;
+                searchController.userSearchNoResults = false;
+                // We find only one page of users. No paging.
+                ndexService.searchUsers(
+                    userQuery,
+                    0,
+                    searchController.pageSize,
                     function (users) {
-                        if(users.length == 0)
-                            searchController.errors.push('No results found that match your criteria')
-                        searchController.userSearchResults = users;
-                        //console.log(searchController.userSearchResults);
-                        populateUserTable();
-
+                        if(users.length > 0){
+                            searchController.userSearchResults = users;
+                            //console.log(searchController.userSearchResults);
+                            populateUserTable();
+                        } else {
+                            searchController.userSearchNoResults = true;
+                        }
+                        searchController.userSearchInProgress = false;
                     },
                     function (error) {
                         searchController.errors.push(error.data);
+                        searchController.userSearchInProgress = false;
                     });
-
             };
 
 
@@ -298,7 +320,17 @@ ndexApp.controller('searchController',
              -----------------------------*/
 
             $scope.groupTabHeading = function(){
-                return 'Groups (' + searchController.groupSearchResults.length + ')';
+                if (searchController.groupSearchResults){
+                    var numGroups = searchController.groupSearchResults.length;
+                    var pageLimitPlusSign = '';
+                    if (numGroups >= searchController.pageSize){
+                        pageLimitPlusSign = '+';
+                    }
+                    return 'Groups (' + numGroups + pageLimitPlusSign + ')';
+                } else {
+                    return 'Groups';
+                }
+
             };
 
             $scope.groupSearchGridOptions =
@@ -328,7 +360,10 @@ ndexApp.controller('searchController',
 
 
             const GROUP_COLUMN_FIELDS = [
-                { field: 'Group Name'},
+                {
+                    field: 'Group Name',
+                    cellTemplate: 'pages/gridTemplates/groupName.html'
+                },
                 { field: 'Description'}
             ];
 
@@ -349,38 +384,45 @@ ndexApp.controller('searchController',
 
                     var groupName = group['accountName'];
                     var description = stripHTML(group['description']);
+                    var externalId = group['externalId'];
 
 
                     var row = {
                         "Group Name"  :   groupName,
-                        "Description" :   description
+                        "Description" :   description,
+                        "externalId"  :   externalId
                     };
 
                     $scope.groupSearchGridOptions.data.push(row);
-                    console.log($scope.groupSearchGridOptions);
+                    //console.log($scope.groupSearchGridOptions);
                 }
             };
 
 
             searchController.submitGroupSearch = function(){
-
                 var groupQuery = {searchString: searchController.searchString};
-
-                ndexService.searchGroups(groupQuery, searchController.skip, searchController.skipSize,
+                searchController.groupSearchResults = null;
+                searchController.groupSearchInProgress = true;
+                searchController.groupSearchNoResults = false;
+                // We find only one page of groups. No paging.
+                ndexService.searchGroups(
+                    groupQuery,
+                    0,
+                    searchController.pageSize,
                     function (groups) {
-
-                        if(groups.length == 0)
-                            searchController.errors.push('No results found that match your criteria')
-
-                        searchController.groupSearchResults = groups;
-                        //console.log(searchController.groupSearchResults);
-                        populateGroupTable();
-
+                        if (groups.length > 0){
+                            searchController.groupSearchResults = groups;
+                            ////console.log(searchController.groupSearchResults);
+                            populateGroupTable();
+                        } else {
+                            searchController.groupSearchNoResults = false;
+                        }
+                        searchController.groupSearchInProgress = false;
                     },
                     function (error) {
                         searchController.errors.push(error.data);
+                        searchController.groupSearchInProgress = false;
                     });
-
             };
 
             // extract value of 'networks' from URI; URI looks something like

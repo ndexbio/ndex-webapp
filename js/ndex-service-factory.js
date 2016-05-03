@@ -1216,7 +1216,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     };
 
     factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
-        var url = "/network/search/" + skipBlocks.toString() + "/" + blockSize.toString();
+        var url = "/network/textsearch/" + skipBlocks.toString() + "/" + blockSize.toString();
         var postData = {};
         if( accountName )
         {
