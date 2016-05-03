@@ -9,7 +9,7 @@
 
     <!-- This CODE is to help with IE Explorer problems... -->
     <!--[if lte IE 7]>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
     <![endif]-->
 
     <!--[if lte IE 8]>
@@ -60,7 +60,7 @@
 
     <!-- Angular bootstrap -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js" />
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"/>
 
 
     <!-- ndex scripts -->
@@ -151,7 +151,7 @@
             <ul class="nav navbar-nav navbar-left">
                 <li>
                     <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.aboutLink)" >{{config.aboutLink.label}}
+                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.aboutLink)">{{config.aboutLink.label}}
                     </a>
 
                 </li>
@@ -219,32 +219,59 @@
             </ul>
 
         </div>
-
-
     </div>
 
-    <div class="row" style="height:50px;">
-        <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-              class="navbar-form "
-              style="margin-left: 20px; margin-right: 20px;"
-              role="search"
-              ng-submit="main.search()">
-            <div class="input-group" >
-                <div class="input-group-btn dropdown AlignLeft">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        {{'Search ' +main.searchType}} <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'All'; main.searchString = ''">Search All</a></li>
-                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Networks'; main.searchString = ''">Search Networks</a></li>
-                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Users'; main.searchString = ''">Search Users</a></li>
-                        <li><a class ="dropdown-toggle" ng-click="main.searchType = 'Groups'; main.searchString = ''">Search Groups</a></li>
-                    </ul>
+    <div class="container-fluid">
+
+        <div class="navbar-collapse collapse">
+            <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
+                  class="navbar-form navbar-left"
+                  style="min-width: 400px; max-width: 1000px;"
+                  role="search"
+                  ng-submit="main.search()">
+                <div class="input-group">
+                    <div class="input-group-btn dropdown AlignLeft">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            {{'Search ' +main.searchType}} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
+                        </ul>
+                    </div>
+                    <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
+                           ng-model="main.searchString">
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-default"><span
+                                class="glyphicon glyphicon-search"></span></button>
+                    </div>
                 </div>
-                <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}" ng-model="main.searchString">
-                <div class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button></div>
-            </div>
-        </form>
+
+            </form>
+            <ul class="nav navbar-nav navbar-left">
+                <li>
+                    <a ng-click="main.browse()">Browse</a>
+                </li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">Search Tips<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li ng-repeat="item in main.searchExamples">
+                            <a ng-click="main.runSearchExample(item)">
+                                {{item.description}}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
     </div>
 
 </div>
@@ -257,7 +284,8 @@
 
 <nav class="navbar navbar-ndex-bottom navbar-fixed-bottom footer-bar AlignCenter">
     <div class='footer-content'>
-        Copyright &copy; 2016 Regents of the University of California and The Cytoscape Consortium. All rights reserved.
+        Copyright &copy; 2016 Regents of the University of California and The Cytoscape Consortium. All rights
+        reserved.
         &nbsp;<a href="http://www.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
     </div>
 </nav>

@@ -25,6 +25,28 @@ ndexApp.controller('searchController',
             searchController.userSearchResults = [];
             searchController.userSearchInProgress = false;
             searchController.userSearchNoResults = false;
+
+            //              Search Type and Search String
+            //---------------------------------------------------------------------
+            //
+            // extract value of 'networks' from URI; URI looks something like
+            // http://localhost:63342/ndex-webapp/index.html#/search?networks=test
+            // NOTE: searchString can be 'undefined' in  case 'networks' name in the search portion of URI was
+            // manually replaced with a non-existant value (i.e., 'abccba'); URI in this case may look like
+            // http://localhost:63342/ndex-webapp/index.html#/search?abccba=test
+            searchController.searchString = decodeURIComponent($location.search().searchString);
+            searchController.searchType = decodeURIComponent($location.search().searchType);
+
+            // Ensure that we have "search for all" as the default if no parameters are provided
+            searchController.searchString = (searchController.searchString.toLowerCase() === 'undefined') ? "" : searchController.searchString;
+            searchController.searchType = (searchController.searchType.toLowerCase() === 'undefined') ? "All" : searchController.searchType;
+
+            // set $scope.main.searchString to searchController.searchString; - this ensures that $scope.main.searchString
+            // stays the same (doesn't get reset) in the search window in case of page reload (F5);
+            // $scope.main.searchString is "" (empty string) in case searchString is 'undefined'
+            $scope.main.searchString = searchController.searchString;
+            $scope.main.searchType = searchController.searchType;
+
             
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
@@ -37,19 +59,23 @@ ndexApp.controller('searchController',
                     return "";
                 }
 
+                return $("<html>"+html+"</html>").text();
+
+                /*
                 // convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
                 var markDown = toMarkdown(html);
 
                 // after using toMarkdown() at previous statement, markDown var can still contain
                 // some HTML Code (i.e.,<span class=...></span>). In order to remove it, we use jQuery text() function.
                 // We need to add <html> and </html> in the beginning and of markDown variable; otherwise, markDown
-                // will not be recognized byu text() as a valid HTML and exception will be thrown.
+                // will not be recognized by text() as a valid HTML and exception will be thrown.
 
                 // Note that we need to use toMarkdown() followed by jQuery text(); if just jQuery text() is used, then
                 // all new lines and </p> , </h1>...</h6> tags are removed; and all lines get "glued" together
                 var markDownFinal  = $("<html>"+markDown+"</html>").text();
 
                 return markDownFinal;
+                */
             };
 
 
@@ -64,9 +90,15 @@ ndexApp.controller('searchController',
             $scope.networkTabHeading = function(){
                 if (searchController.networkSearchInProgress){
                     return 'Networks';
+                } else if (searchController.networkNoResults) {
+                    return 'Networks (0)'
                 } else {
                     return 'Networks (' + searchController.numberOfNetworksFound + ')';
                 }
+            };
+
+            $scope.showNetworkTab = function(){
+                return searchController.searchType == 'All' || searchController.searchType == 'Networks';
             };
 
             $scope.networkSearchGridOptions =
@@ -216,8 +248,12 @@ ndexApp.controller('searchController',
                     }
                     return 'Users (' + numUsers + pageLimitPlusSign + ')';
                 } else {
-                    return 'Groups';
+                    return 'Users';
                 }
+            };
+
+            $scope.showUserTab = function(){
+                return searchController.searchType == 'All' || searchController.searchType == 'Users';
             };
 
             $scope.userSearchGridOptions =
@@ -315,7 +351,7 @@ ndexApp.controller('searchController',
             /*---------------------------
 
 
-                    Group Table
+                    Group Tab
 
              -----------------------------*/
 
@@ -331,6 +367,10 @@ ndexApp.controller('searchController',
                     return 'Groups';
                 }
 
+            };
+
+            $scope.showGroupTab = function(){
+                return searchController.searchType == 'All' || searchController.searchType == 'Groups';
             };
 
             $scope.groupSearchGridOptions =
@@ -425,30 +465,26 @@ ndexApp.controller('searchController',
                     });
             };
 
-            // extract value of 'networks' from URI; URI looks something like
-            // http://localhost:63342/ndex-webapp/index.html#/search?networks=test
-            // NOTE: searchString can be 'undefined' in  case 'networks' name in the search portion of URI was
-            // manually replaced with a non-existant value (i.e., 'abccba'); URI in this case may look like
-            // http://localhost:63342/ndex-webapp/index.html#/search?abccba=test
-            var searchString = decodeURIComponent($location.search().searchString);
-            var searchType = decodeURIComponent($location.search().searchType);
 
-            // if no 'networks' name was found in the search portion of URI (it is 'undefined'),
-            // then the search string is "" (i.e., "search for all networks")
-            searchController.searchString = (searchString.toLowerCase() === 'undefined') ? "" : searchString;
+            /*---------------------------
 
-            // set $scope.main.searchString to searchController.searchString; - this ensures that $scope.main.searchString
-            // stays the same (doesn't get reset) in the search window in case of page reload (F5);
-            // $scope.main.searchString is "" (empty string) in case searchString is 'undefined'
-            $scope.main.searchString = searchController.searchString;
+
+             Perform the Search
+
+             -----------------------------*/
+
 
             
-            if (searchType === 'All'){
+            if (searchController.searchType === 'All'){
                 searchController.submitNetworkSearch();
                 searchController.submitGroupSearch();
                 searchController.submitUserSearch();
-            } else if (searchType === 'Network'){
+            } else if (searchController.searchType === 'Networks'){
                 searchController.submitNetworkSearch();
+            } else if (searchController.searchType === 'Users'){
+                searchController.submitUserSearch();
+            } else if (searchController.searchType === 'Groups'){
+                searchController.submitGroupSearch();
             }
 
         }]);

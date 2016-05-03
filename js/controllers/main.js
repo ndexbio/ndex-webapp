@@ -163,7 +163,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
-        // Search code
+        /*----------------------------------------------
+         Search
+         ----------------------------------------------*/
+
         $scope.main.searchType = 'All';
         const SEARCH_PLACEHOLDER_TEXT_MAP = {
             All : "Search for networks, users, and groups",
@@ -205,6 +208,39 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.main.searchType = $location.search().searchType;
 
 
+        $scope.main.searchExamples = [
+            {
+                description: 'Network, User or Group based on a gene list',
+                searchString: 'TP53 MDM2 RB1 CDK4',
+                searchType: 'All'
+            },
+
+            {
+                description: 'Networks mentioning both of two genes',
+                searchString: 'TP53 AND RB1',
+                searchType: 'Networks'
+            },
+
+            {
+                description: 'Networks by wildcard gene symbol AND "NCI"',
+                searchString: 'CD* AND NCI',
+                searchType: 'Networks'
+            }
+        ];
+
+        $scope.main.runSearchExample = function(example){
+            $scope.main.searchString = example.searchString;
+            $scope.main.searchType = example.searchType;
+            $scope.main.search();
+
+        };
+
+        $scope.main.browse = function(){
+            $scope.main.searchString = '';
+            $scope.main.searchType = 'All';
+            $scope.main.search();
+        };
+
         //end Search code
 
         //initializions for page refresh
@@ -215,6 +251,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.$emit('LOGGED_IN');
         }
 
+
+        /*----------------------------------------------
+         Citing NDEx
+         ----------------------------------------------*/
 
 
         $scope.NDEx = {};
@@ -250,6 +290,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
+        /*----------------------------------------------
+         External Link Handling
+         ----------------------------------------------*/
         /*
          * As argument, this function takes one of configurable navigation bar
          * menu objects specified in ndex-webapp-config.js (i.e., logoLink, aboutLink,
@@ -292,6 +335,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
             alert(message);
         };
+
+
+        /*----------------------------------------------
+         Ensure that Config Parameters have valid values
+         ----------------------------------------------*/
 
         function initMissingConfigParams(config) {
 
