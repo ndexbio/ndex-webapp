@@ -7,7 +7,7 @@
  * # cyService
  * Service in the ndexCravatWebappApp.
  */
-angular.module('ndexApp')
+angular.module('ndexServiceApp')
     .factory('cyService', ['$q', function ($q) {
 
         // Public API here: the factory object will be returned
@@ -554,7 +554,12 @@ angular.module('ndexApp')
             var edge_default_mappings = [];
             var edge_specific_styles = [];
 
+
+            if ( !niceCX.visualProperties || niceCX.visualProperties.length ==0)
+                return DEF_VISUAL_STYLE;
+
             // TODO handle cases with multiple views
+
 
             _.forEach(niceCX.visualProperties, function (vpAspectElement) {
                 _.forEach(vpAspectElement, function (vpElement) {
@@ -665,6 +670,7 @@ angular.module('ndexApp')
                 });
             });
 
+
             // concatenate all of the style elements in order of specificity
             return node_default_styles.concat(node_default_mappings, node_specific_styles, edge_default_styles, edge_default_mappings, edge_specific_styles);
         };
@@ -756,14 +762,17 @@ angular.module('ndexApp')
         /*-----------------------------------------------------------------------*
          * initialize the cytoscape instance from niceCX
          *-----------------------------------------------------------------------*/
-        factory.initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, viewer, canvasName) {
+        factory.initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, /*viewer,*/ canvasName) {
 
             var deferred = $q.defer();
 
+            console.log(cyElements);
+
             $(function () { // on dom ready
 
+                var cv = document.getElementById(canvasName);
                 cy = cytoscape({
-                    container: document.getElementById(canvasName),
+                    container: cv,
 
                     style: cyStyle,
 
@@ -781,8 +790,10 @@ angular.module('ndexApp')
 
             return deferred.promise;
         };
-        
 
+        factory.getCy = function () {
+            return cy;
+        };
 
         return factory;
 

@@ -1,41 +1,24 @@
 ndexApp.controller('networkViewController',
-    ['config','ndexServiceCX', 'ndexService', 'ndexConfigs', 'cyService',
-        'provenanceVisualizerService', 'ndexUtility', 'ndexHelper', 'ndexNavigation',
+    ['config','ndexServiceCX', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
+         'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
-        '$route', '$filter', '$location','$q',
-        function (config, ndexServiceCX, ndexService, ndexConfigs, cyService,
-                  provenanceVisualizerService, ndexUtility, ndexHelper, ndexNavigation,
+        '$route', '$filter', '$location','$http','$q',
+        function (config, ndexServiceCX, ndexService, ndexConfigs, cyService, cxNetworkUtils,
+                   ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
-                  $route, $filter, $location, $q)
+                  $route, $filter, $location, $http, $q)
         {
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
-            
+
+
             $scope.networkController = {};
-            var networkController = $scope.networkController;
+
+            var networkController  = $scope.networkController;
 
 
-            networkController.searchDepths = [
-                {
-                    "name": "1-step",
-                    "description": "1-step",
-                    "value": 1,
-                    "id": "1"
-                },
-                {
-                    "name": "2-step",
-                    "description": "2-step",
-                    "value": 2,
-                    "id": "2"
-                },
-                {
-                    "name": "3-step",
-                    "description": "3-step",
-                    "value": 3,
-                    "id": "3"
-                }
-            ];
-
+            networkController.errors = []; // general page errors
+            networkController.queryErrors = [];
 
             /**
              * Return the value of a given property in the network. I assume the perperty names a unique in network.
@@ -58,12 +41,36 @@ ndexApp.controller('networkViewController',
                 }
             }
 
-            
+
+            //                  local functions
+
+            var getNetworkAdmins = function()
+            {
+                ndexService.getNetworkMemberships(networkController.currentNetworkId, 'ADMIN',
+                    function(networkAdmins)
+                    {
+                        for( var i = 0; i < networkAdmins.length; i++ )
+                        {
+                            var networkAdmin = networkAdmins[i];
+                            if( networkAdmin.memberUUID == sharedProperties.getCurrentUserId() )
+                            {
+                                networkAdmins.splice(i, 1);
+                            }
+                        }
+                        networkController.networkAdmins = networkAdmins;
+                    },
+                    function(error)
+                    {
+
+                    });
+            };
+
+
             var drawCXNetworkOnCanvas = function (cxNetwork) {
                 var attributeNameMap = {};
 
-                var cyElements = cyService.cyElementsFromNiceCX(niceCX, attributeNameMap);
-                var cyStyle = cyService.cyStyleFromNiceCX(niceCX, attributeNameMap);
+                var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
+                var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
 
                 var layoutName = 'cose';
 
@@ -73,26 +80,26 @@ ndexApp.controller('networkViewController',
 
                 var cyLayout = {name: layoutName};
 
-                cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, viewer, 'cytoscape-canvas' );
+                cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, networkController, 'cytoscape-canvas' );
 
             }
             
-            var getNetworkAndDisplay = function (callback) {
+            var getNetworkAndDisplay = function (networkId, callback) {
                 var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
                 var blockSize = config.networkTableLimit;
                 var skipBlocks = 0;
 
-                if ( networkController.currentNetworkSummary.edgeCount > config.networkDisplayLimit) {
+                if ( networkController.currentNetwork.edgeCount > config.networkDisplayLimit) {
                     // get edges, convert to CX obj
                 } else {
                     // get complete CX stream and build the CX network object.
                 }
                 
-                (request2 = ndexServiceCX.getCXNetwork(networkController.currentNetworkId) )
+                (request2 = ndexServiceCX.getCXNetwork(networkId) )
                     .success(
                         function (network) {
-                            csn = network; // csn is a debugging convenience variable
+                          //  csn = network; // csn is a debugging convenience variable
                    //         networkController.currentSubnetwork = network;
                    //         networkController.selectedEdges = network.edges;
                             callback(network);
@@ -112,7 +119,7 @@ ndexApp.controller('networkViewController',
                     );
             }
 
-/*            var initialize = function () {
+            var initialize = function () {
                 // vars to keep references to http calls to allow aborts
                 var request1 = null;
                 var request2 = null;
@@ -123,7 +130,7 @@ ndexApp.controller('networkViewController',
                     .success(
                         function (network) {
                             cn = network;
-                            networkController.currentNetworkSummary = network;
+                            networkController.currentNetwork = network;
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
@@ -137,14 +144,79 @@ ndexApp.controller('networkViewController',
                                 if (network.visibility == 'PUBLIC'
                                     || networkController.isAdmin
                                     || networkController.canEdit
-                                    || networkController.canRead)
-                                    getNetworkAndDisplay(drawCXNetworkOnCanvas);
+                                    || networkController.canRead) {
+
+                                    var req = {
+                                        'method': 'GET',
+                                        'url': 'http://dev2.ndexbio.org/rest/network/' + networkExternalId + '/asCX'
+                                    };
+
+                                    $http(req
+                                    ).success(
+                                        function (response) {
+
+                                            // response is a CX network
+                                            // First convert it to niceCX to make it easy to update attributes
+                                            var niceCX = cxNetworkUtils.rawCXtoNiceCX(response);
+
+                                            console.log(niceCX);
+
+                                            // attributeNameMap maps attribute names in niceCX to attribute names in cyjs.
+                                            //
+                                            // In some cases, such as 'id', 'source', and 'target', cyjs uses reserved names and
+                                            // any attribute names that conflict with those reserved names must be mapped to other values.
+                                            //
+                                            // Also, cyjs requires that attribute names avoid special characters, so cx attribute names with
+                                            // non-alpha numeric characters must also be transformed and mapped.
+                                            //
+                                            var attributeNameMap = {};
+
+                                            /*----------------------------------
+
+                                             Elements
+
+                                             ----------------------------------*/
+
+                                            var cyElements = cyService.cyElementsFromNiceCX(niceCX, attributeNameMap);
+
+                                            console.log(cyElements);
+
+                                            console.log(attributeNameMap);
+
+                                            var cyStyle = cyService.cyStyleFromNiceCX(niceCX, attributeNameMap);
+                                            console.log(cyStyle);
+
+                                            var layoutName = 'cose';
+
+                                            if (cyService.allNodesHaveUniquePositions(cyElements)) {
+                                                layoutName = 'preset';
+                                            }
+
+                                            var cyLayout = {name: layoutName};
+
+                                            cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas');
+
+                                            var cyObject = cyService.getCy();
+                                            console.log(cyObject);
+
+                                        }
+                                    ).error(
+                                        function (response) {
+
+                                            //console.log(JSON.stringify(response));
+
+                                            console.log('Error querying NDEx: ' + JSON.stringify(response));
+
+                                        }
+                                    );
+                                            //getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+                                }
                             });
                             
                             networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
-                            getNetworkAdmins();
+                            //getNetworkAdmins();
 
-                            networkController.currentNetworkSourceFormat =
+                            networkController.currentNetwork.SourceFormat =
                                 getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
                             networkController.currentNetwork.reference =
                                 getNetworkProperty(networkController.currentNetwork.properties,'reference');
@@ -168,7 +240,7 @@ ndexApp.controller('networkViewController',
 
             };
 
-*/
+
             var getMembership = function (callback) {
                 ndexService.getMyMembership(networkController.currentNetworkId,
                     function (membership)
@@ -201,10 +273,10 @@ ndexApp.controller('networkViewController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
-     //       networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
+            networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
 
-      //      initialize();
+            initialize();
 
 
         }
