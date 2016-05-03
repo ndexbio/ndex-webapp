@@ -221,8 +221,25 @@
         </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="background-color:lightgrey; padding-left: 20px; padding-right: 20px;">
+        <ul class="nav navbar-nav navbar-left">
 
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown">Search Examples<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li ng-repeat="item in main.searchExamples">
+                        <a ng-click="main.runSearchExample(item)">
+                            {{item.description}}
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li>
+                <a ng-click="main.browse()">Browse</a>
+            </li>
+
+        </ul>
         <div class="navbar-collapse collapse">
             <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
                   class="navbar-form navbar-left"
@@ -232,7 +249,7 @@
                 <div class="input-group">
                     <div class="input-group-btn dropdown AlignLeft">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            {{'Search ' +main.searchType}} <span class="caret"></span>
+                            {{main.searchType}} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li><a class="dropdown-toggle"
@@ -254,22 +271,7 @@
                 </div>
 
             </form>
-            <ul class="nav navbar-nav navbar-left">
-                <li>
-                    <a ng-click="main.browse()">Browse</a>
-                </li>
 
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown">Search Tips<span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li ng-repeat="item in main.searchExamples">
-                            <a ng-click="main.runSearchExample(item)">
-                                {{item.description}}
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
         </div>
 
     </div>

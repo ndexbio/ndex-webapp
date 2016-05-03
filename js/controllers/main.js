@@ -210,15 +210,15 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         $scope.main.searchExamples = [
             {
-                description: 'Network, User or Group based on a gene list',
+                description: 'Networks by gene list',
                 searchString: 'TP53 MDM2 RB1 CDK4',
-                searchType: 'All'
+                searchType: 'Networks'
             },
 
             {
-                description: 'Networks mentioning both of two genes',
+                description: 'Networks, users, or groups mentioning both gene names',
                 searchString: 'TP53 AND RB1',
-                searchType: 'Networks'
+                searchType: 'All'
             },
 
             {

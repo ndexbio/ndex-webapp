@@ -90,7 +90,7 @@ ndexApp.controller('searchController',
             $scope.networkTabHeading = function(){
                 if (searchController.networkSearchInProgress){
                     return 'Networks';
-                } else if (searchController.networkNoResults) {
+                } else if (searchController.networkSearchNoResults) {
                     return 'Networks (0)'
                 } else {
                     return 'Networks (' + searchController.numberOfNetworksFound + ')';
@@ -228,6 +228,7 @@ ndexApp.controller('searchController',
                                 searchController.networkSearchResults = null;
                                 searchController.errors.push(error.message);
                                 searchController.networkSearchInProgress = false;
+                                searchController.networkSearchNoResults = true;
                             }
                         })
             };
@@ -247,6 +248,8 @@ ndexApp.controller('searchController',
                         pageLimitPlusSign = '+';
                     }
                     return 'Users (' + numUsers + pageLimitPlusSign + ')';
+                }  else if (searchController.userSearchNoResults) {
+                    return 'Users (0)'
                 } else {
                     return 'Users';
                 }
@@ -363,6 +366,8 @@ ndexApp.controller('searchController',
                         pageLimitPlusSign = '+';
                     }
                     return 'Groups (' + numGroups + pageLimitPlusSign + ')';
+                } else if (searchController.groupSearchNoResults) {
+                    return 'Groups (0)'
                 } else {
                     return 'Groups';
                 }
@@ -455,13 +460,14 @@ ndexApp.controller('searchController',
                             ////console.log(searchController.groupSearchResults);
                             populateGroupTable();
                         } else {
-                            searchController.groupSearchNoResults = false;
+                            searchController.groupSearchNoResults = true;
                         }
                         searchController.groupSearchInProgress = false;
                     },
                     function (error) {
                         searchController.errors.push(error.data);
                         searchController.groupSearchInProgress = false;
+                        searchController.groupSearchNoResults = true;
                     });
             };
 

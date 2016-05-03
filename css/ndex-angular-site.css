@@ -351,6 +351,18 @@ textarea
     padding-bottom: 15px;
 }
 
+.navbar-ndex-bottom
+{
+    background: #000;
+    border-top-color: white;
+}
+
+.navbar-ndex-top
+{
+    background: #000;
+    border-bottom-color: white;
+}
+
 /******************************************************************************
  * Search styling
  ******************************************************************************/
@@ -760,17 +772,7 @@ a { cursor: pointer; }
 
 .spacer {  margin-top: 5px; }
 
-.navbar-ndex-bottom
-{
-    background: #000;
-    border-top-color: white;
-}
 
-.navbar-ndex-top
-{
-    background: #000;
-    border-bottom-color: white;
-}
 
 hr {
     border-color: #d3d3d3;
@@ -996,7 +998,8 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
 .marginsForNGView {
     margin-left: 30px;
     margin-right: 30px;
-    //margin-top: 10px
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 
