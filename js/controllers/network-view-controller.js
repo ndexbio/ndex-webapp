@@ -16,7 +16,6 @@ ndexApp.controller('networkViewController',
 
             var networkController  = $scope.networkController;
 
-
             networkController.errors = []; // general page errors
             networkController.queryErrors = [];
 
@@ -90,33 +89,52 @@ ndexApp.controller('networkViewController',
                 var blockSize = config.networkTableLimit;
                 var skipBlocks = 0;
 
+
                 if ( networkController.currentNetwork.edgeCount > config.networkDisplayLimit) {
                     // get edges, convert to CX obj
+                    (request2 = ndexServiceCX.getSampleCXNetworkFromOldAPI(networkId, config.networkTableLimit) )
+                        .success(
+                            function (network) {
+
+                                callback(network);
+                            }
+                        )
+                        .error(
+                            function (error) {
+                                if (error.status != 0) {
+                                    networkController.errors.push({label: "Get Network Edges Request: ", error: error});
+                                } else {
+                                    networkController.errors.push({
+                                        label: "Get Network Edges Request: ",
+                                        error: "Process killed"
+                                    });
+                                }
+                            }
+                        );
                 } else {
                     // get complete CX stream and build the CX network object.
+                    (request2 = ndexServiceCX.getCXNetwork(networkId) )
+                        .success(
+                            function (network) {
+
+                                callback(network);
+                            }
+                        )
+                        .error(
+                            function (error) {
+                                if (error.status != 0) {
+                                    networkController.errors.push({label: "Get Network in CX: ", error: error});
+                                } else {
+                                    networkController.errors.push({
+                                        label: "Get network in CX fromat: ",
+                                        error: "Process killed"
+                                    });
+                                }
+                            }
+                        );
+
                 }
                 
-                (request2 = ndexServiceCX.getCXNetwork(networkId) )
-                    .success(
-                        function (network) {
-                          //  csn = network; // csn is a debugging convenience variable
-                   //         networkController.currentSubnetwork = network;
-                   //         networkController.selectedEdges = network.edges;
-                            callback(network);
-                        }
-                    )
-                    .error(
-                        function (error) {
-                            if (error.status != 0) {
-                                networkController.errors.push({label: "Get Network Edges Request: ", error: error});
-                            } else {
-                                networkController.errors.push({
-                                    label: "Get Network Edges Request: ",
-                                    error: "Process killed"
-                                });
-                            }
-                        }
-                    );
             }
 
             var initialize = function () {
@@ -146,70 +164,7 @@ ndexApp.controller('networkViewController',
                                     || networkController.canEdit
                                     || networkController.canRead) {
 
-                                    var req = {
-                                        'method': 'GET',
-                                        'url': 'http://dev2.ndexbio.org/rest/network/' + networkExternalId + '/asCX'
-                                    };
-
-                                    $http(req
-                                    ).success(
-                                        function (response) {
-
-                                            // response is a CX network
-                                            // First convert it to niceCX to make it easy to update attributes
-                                            var niceCX = cxNetworkUtils.rawCXtoNiceCX(response);
-
-                                            console.log(niceCX);
-
-                                            // attributeNameMap maps attribute names in niceCX to attribute names in cyjs.
-                                            //
-                                            // In some cases, such as 'id', 'source', and 'target', cyjs uses reserved names and
-                                            // any attribute names that conflict with those reserved names must be mapped to other values.
-                                            //
-                                            // Also, cyjs requires that attribute names avoid special characters, so cx attribute names with
-                                            // non-alpha numeric characters must also be transformed and mapped.
-                                            //
-                                            var attributeNameMap = {};
-
-                                            /*----------------------------------
-
-                                             Elements
-
-                                             ----------------------------------*/
-
-                                            var cyElements = cyService.cyElementsFromNiceCX(niceCX, attributeNameMap);
-
-                                            console.log(cyElements);
-
-                                            console.log(attributeNameMap);
-
-                                            var cyStyle = cyService.cyStyleFromNiceCX(niceCX, attributeNameMap);
-                                            console.log(cyStyle);
-
-                                            var layoutName = 'cose';
-
-                                            if (cyService.allNodesHaveUniquePositions(cyElements)) {
-                                                layoutName = 'preset';
-                                            }
-
-                                            var cyLayout = {name: layoutName};
-
-                                            cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas');
-
-                                            var cyObject = cyService.getCy();
-                                            console.log(cyObject);
-
-                                        }
-                                    ).error(
-                                        function (response) {
-
-                                            //console.log(JSON.stringify(response));
-
-                                            console.log('Error querying NDEx: ' + JSON.stringify(response));
-
-                                        }
-                                    );
-                                            //getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
                                 }
                             });
                             

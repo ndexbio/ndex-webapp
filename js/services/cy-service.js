@@ -762,9 +762,7 @@ angular.module('ndexServiceApp')
         /*-----------------------------------------------------------------------*
          * initialize the cytoscape instance from niceCX
          *-----------------------------------------------------------------------*/
-        factory.initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, /*viewer,*/ canvasName) {
-
-            var deferred = $q.defer();
+        factory.initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, viewer, canvasName) {
 
             console.log(cyElements);
 
@@ -781,14 +779,13 @@ angular.module('ndexServiceApp')
                     elements: cyElements,
 
                     ready: function () {
-                        deferred.resolve(this);
+                        window.cy = this;
                     }
                 });
 
 
             }); // on dom ready
 
-            return deferred.promise;
         };
 
         factory.getCy = function () {

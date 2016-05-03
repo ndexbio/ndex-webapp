@@ -1047,7 +1047,7 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
 }
 
 
-.cytoscape-canvas {
+.cytoscapeCanvas {
     color: #777;
     border: 3px solid #e5e5e5;
     height: 800px;

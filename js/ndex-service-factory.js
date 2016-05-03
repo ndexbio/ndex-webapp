@@ -1617,8 +1617,8 @@ ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', f
                     }),
 
                 layout: {
-                    //name : 'circle',
-                    //padding: 10
+                   // name : 'circle',
+                  //  padding: 10
                     /*
                      name: 'arbor',
                      liveUpdate: true, // whether to show the layout as it's running

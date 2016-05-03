@@ -8,7 +8,7 @@
  * Service in the ndexLinkedNetworkViewerApp.
  */
 angular.module('ndexServiceApp')
-  .service('cxNetworkUtils', function () {
+  .service('cxNetworkUtils', ['ndexHelper', function (ndexHelper) {
       // AngularJS will instantiate a singleton by calling "new" on this function
 
       this.rawCXtoNiceCX = function(rawCX) {
@@ -235,4 +235,4 @@ angular.module('ndexServiceApp')
       };
 
 
-  });
+  }]);
