@@ -15,6 +15,7 @@ ndexApp.controller('networkViewController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
+            networkController.currentNetworkId = networkExternalId;
 
             networkController.errors = []; // general page errors
             networkController.queryErrors = [];
@@ -223,7 +224,11 @@ ndexApp.controller('networkViewController',
                     });
 
             };
-
+            
+            $scope.readOnlyChanged = function()
+            {
+                ndexService.setReadOnly(networkController.currentNetworkId, networkController.readOnlyChecked);
+            };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

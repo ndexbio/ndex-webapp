@@ -14,11 +14,11 @@
                     <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}} &nbsp;&nbsp;
                     <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}} &nbsp;&nbsp;
 
-                    <span class="networkPropertyName">
+                    <span class="networkPropertyName" ng-show="networkController.isAdmin">
                         <input type="checkbox"
-                               ng-model="aaa"
-                               ng-change="readOnlyChanged(networkController.readOnlyChecked)"> Read Only
-                    </span>&nbsp;&nbsp;
+                               ng-model="networkController.readOnlyChecked"
+                               ng-change="readOnlyChanged()"> Read Only &nbsp;&nbsp;
+                    </span>
 
                     <span class="networkVisibilityValue">PUBLIC </span> &nbsp;&nbsp;
 
