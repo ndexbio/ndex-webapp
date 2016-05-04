@@ -540,12 +540,12 @@ angular.module('ndexServiceApp')
 
         // get the color from the network visual property and convert it to CSS format
         factory.cyBackgroundColorFromNiceCX = function (niceCX) {
-            console.log(niceCX);
+            //console.log(niceCX);
             return 'rgb(1.0, 1.0, 1.0)';
         };
 
         factory.cyStyleFromNiceCX = function (niceCX, attributeNameMap) {
-            console.log('style from niceCX: ' + Object.keys(niceCX).length);
+            //console.log('style from niceCX: ' + Object.keys(niceCX).length);
 
             var node_default_styles = [];
             var node_default_mappings = [];
@@ -764,7 +764,7 @@ angular.module('ndexServiceApp')
          *-----------------------------------------------------------------------*/
         factory.initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, viewer, canvasName) {
 
-            console.log(cyElements);
+            //console.log(cyElements);
 
             $(function () { // on dom ready
 

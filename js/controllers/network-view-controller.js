@@ -29,16 +29,20 @@ ndexApp.controller('networkViewController',
              */
             var getNetworkProperty = function(networkProperties, propertyName)
             {
-                if ('undefined'===typeof(networkProperties)) {
+                if ('undefined'===typeof(networkProperties) || !propertyName) {
                     return undefined;
                 }
 
                 for( var i = 0; i < networkProperties.length; i++ ) {
 
-                    if ((networkProperties[i].predicateString === propertyName)) {
+                    if (!networkProperties[i].predicateString) {
+                        continue;
+                    }
+                    if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase())) {
                             return networkProperties[i].value ;
                     }
                 }
+                return undefined;
             }
 
 
@@ -172,10 +176,13 @@ ndexApp.controller('networkViewController',
                             networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                             //getNetworkAdmins();
 
-                            networkController.currentNetwork.SourceFormat =
+                            var sourceFormat =
                                 getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
+                            networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
+                                'Unknown' : sourceFormat;
+
                             networkController.currentNetwork.reference =
-                                getNetworkProperty(networkController.currentNetwork.properties,'reference');
+                                getNetworkProperty(networkController.currentNetwork.properties,'Reference');
                             networkController.currentNetwork.rightsHolder =
                                 getNetworkProperty(networkController.currentNetwork.properties,'rightsHolder');
                             networkController.currentNetwork.rights =
