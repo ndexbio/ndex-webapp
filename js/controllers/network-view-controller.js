@@ -172,7 +172,7 @@ ndexApp.controller('networkViewController',
                             networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                             //getNetworkAdmins();
 
-                            networkController.currentNetwork.SourceFormat =
+                            networkController.currentNetwork.sourceFormat =
                                 getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
                             networkController.currentNetwork.reference =
                                 getNetworkProperty(networkController.currentNetwork.properties,'reference');
