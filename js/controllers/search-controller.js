@@ -78,6 +78,16 @@ ndexApp.controller('searchController',
                 */
             };
 
+            $scope.activeTab = {
+
+            };
+
+            $scope.activateTab = function(tabName){
+                $scope.activeTab = {};
+                $scope.activeTab[tabName] = true;
+
+            };
+
 
 
             /*---------------------------
@@ -95,10 +105,6 @@ ndexApp.controller('searchController',
                 } else {
                     return 'Networks (' + searchController.numberOfNetworksFound + ')';
                 }
-            };
-
-            $scope.showNetworkTab = function(){
-                return searchController.searchType == 'All' || searchController.searchType == 'Networks';
             };
 
             $scope.networkSearchGridOptions =
@@ -255,14 +261,6 @@ ndexApp.controller('searchController',
                 }
             };
 
-            $scope.showUserTab = function(){
-                return searchController.searchType == 'All' || searchController.searchType == 'Users';
-            };
-
-            $scope.userTabActive = function(){
-                return searchController.searchType == 'Users'
-            };
-
             $scope.userSearchGridOptions =
             {
                 enableSorting: true,
@@ -379,14 +377,6 @@ ndexApp.controller('searchController',
 
             };
 
-            $scope.showGroupTab = function(){
-                return searchController.searchType == 'All' || searchController.searchType == 'Groups';
-            };
-
-            $scope.groupTabActive = function(){
-                return searchController.searchType == 'Groups'
-            };
-
             $scope.groupSearchGridOptions =
             {
                 enableSorting: true,
@@ -488,18 +478,32 @@ ndexApp.controller('searchController',
 
              -----------------------------*/
 
+            // set the state to no results for each tab so they default to showing that message
+            searchController.groupSearchNoResults = true;
+            searchController.userSearchNoResults = true;
+            searchController.networkSearchNoResults = true;
 
-            
             if (searchController.searchType === 'All'){
                 searchController.submitNetworkSearch();
                 searchController.submitGroupSearch();
                 searchController.submitUserSearch();
+                // Default for All is to make networks active
+                $scope.activateTab('Networks');
             } else if (searchController.searchType === 'Networks'){
                 searchController.submitNetworkSearch();
+                // Networks is active tab.
+                // others are No Results
+                $scope.activateTab('Networks');
             } else if (searchController.searchType === 'Users'){
                 searchController.submitUserSearch();
+                // Users is active tab.
+                // others are No Results
+                $scope.activateTab('Users');
             } else if (searchController.searchType === 'Groups'){
                 searchController.submitGroupSearch();
+                // Groups is active tab.
+                // others are No Results
+                $scope.activateTab('Groups');
             }
 
         }]);

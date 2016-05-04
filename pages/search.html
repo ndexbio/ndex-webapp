@@ -17,8 +17,8 @@
 
                 <tab
                         heading='{{networkTabHeading()}}'
-                        ng-click="networkGridApi.core.handleWindowResize()"
-                        ng-show="showNetworkTab()">
+                        ng-click="activateTab('Networks'); networkGridApi.core.handleWindowResize()"
+                        active="activeTab.Networks">
                     <div ng-show='searcher.networkSearchInProgress'><i>Finding Networks...</i></div>
                     <div ng-show='searcher.networkSearchNoResults'><i>No Networks Found.</i></div>
                     <!--
@@ -50,18 +50,16 @@
                 </tab>
                 <tab
                         heading='{{userTabHeading()}}'
-                        ng-click="userGridApi.core.handleWindowResize()"
-                        ng-show="showUserTab()"
-                        active="userTabActive()">
+                        ng-click="activateTab('Users'); userGridApi.core.handleWindowResize(); "
+                        active="activeTab.Users">
                     <div ng-show='searcher.userSearchInProgress'><i>Finding Users...</i></div>
                     <div ng-show='searcher.userSearchNoResults'><i>No Users Found.</i></div>
                     <div ng-show='searcher.userSearchResults' ui-grid-selection ui-grid="userSearchGridOptions" ui-grid-resize-columns class="networkGrid"></div>
                 </tab>
                 <tab
                         heading='{{groupTabHeading()}}'
-                        ng-click="groupGridApi.core.handleWindowResize()"
-                        ng-show="showGroupTab()"
-                        active="groupTabActive()">
+                        ng-click="activateTab('Groups'); groupGridApi.core.handleWindowResize()"
+                        active="activeTab.Groups">
                     <div ng-show='searcher.groupSearchInProgress'><i>Finding Groups...</i></div>
                     <div ng-show='searcher.groupSearchNoResults'><i>No Groups Found.</i></div>
                     <div ng-show='searcher.groupSearchResults' ui-grid-selection ui-grid="groupSearchGridOptions" ui-grid-resize-columns class="networkGrid"></div>
