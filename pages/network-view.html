@@ -209,11 +209,12 @@
                         <div class="networkPropertyValueInTabsetMargins">
 
                             <span class="networkPropertyName">Created: </span>
-                            {{networkController.currentNetwork.creationTime | date}} <br />
+                            {{networkController.currentNetwork.creationTime | date: 'medium'}} <br />
 
-                            <span ng-show="(networkController.currentNetwork.creationTime | date) != (networkController.currentNetwork.modificationTime | date)">
+                            <span ng-show="(networkController.currentNetwork.creationTime | date) !=
+                                           (networkController.currentNetwork.modificationTime | date)">
                                 <span class="networkPropertyName">Last Modified: </span>
-                                {{networkController.currentNetwork.modificationTime | date}} <br />
+                                {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br />
                             </span>
 
                             <span class="networkPropertyName">UUID: </span>
@@ -223,36 +224,29 @@
                             {{networkController.currentNetwork.sourceFormat}}<br />
 
                             <span class="networkPropertyName">Your Privileges: </span>
-                            <span class="networkPropertyValueInTabset">Admin </span>
-                            <br />
+                            {{networkController.privilegeLevel}}<br />
 
-                            <span class="networkPropertyName">Other Admins: </span>
-                            <span class="networkPropertyValueInTabset">rudipillich </span>
-                            <br />
+                            <div class='wrapLongLine rowWithOneLineTopPad'
+                                 ng-show="networkController.currentNetwork.description"
+                                 style="margin-right: 1px;">
+                                 <span class="networkPropertyName">Description </span>
+                                 <span ng-bind-html="networkController.currentNetwork.description"></span>
+                            </div>
 
-                            <div class="rowWithOneLineTopPad"></div>
+                            <div class='wrapLongLine rowWithOneLineTopPad'
+                                 ng-show="networkController.currentNetwork.reference"
+                                 style="margin-right: 1px;">
+                                <span class="networkPropertyName">Reference </span>
+                                <span ng-bind-html="networkController.currentNetwork.reference"></span>
+                            </div>
 
-                            <span class="networkPropertyName">Description: </span>
-                            <span class="networkPropertyValueInTabset">
-                                Bayesian network representing the targeting interactions of 43 chromatin components.
-                                This network was built using the previously described bootstrapping approach.
-                                The frequencies at which each given edge occurs are taken as the confidence score
-                                 of this edge and can be between 0 (0%) and 1,000 (100%).
-                            </span>
-
-                            <div class="rowWithOneLineTopPad"></div>
-
-                            <span class="networkPropertyName">Reference: </span>
-                            <span class="networkPropertyValueInTabset">
-                                Bayesian network representing the targeting interactions of 43 chromatin components.
-                                This network was built using the previously described bootstrapping approach.
-                                The frequencies at which each given edge occurs are taken as the confidence score
-                                of this edge and can be between 0 (0%) and 1,000 (100%).
-                            </span>
+                            <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
+                                <span class="networkPropertyName">Version: </span>
+                                {{networkController.currentNetwork.version}}
+                            </div>
 
                         </div>
 
-                        <div class="rowWithOneLineTopPad"></div>
                         <div class="rowWithOneLineTopPad"></div>
 
 
