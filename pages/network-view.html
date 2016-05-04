@@ -7,12 +7,12 @@
 
             <div class="networkViewFrame">
                 <div class="networkViewHeaderHeader networkViewPadding" id="networkViewHeaderHeaderId">
-                    Aurora B Signaling in Rodents – NDEx Augmented Version, May 2016
+                    {{networkController.currentNetwork.name}}
                 </div>
 
                 <div class="networkViewHeaderBody networkViewPadding" id="networkViewHeaderBodyId">
-                    <span class="networkPropertyName">Nodes: </span>130 &nbsp;&nbsp;
-                    <span class="networkPropertyName">Edges: </span>455 &nbsp;&nbsp;
+                    <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}} &nbsp;&nbsp;
+                    <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}} &nbsp;&nbsp;
 
                     <span class="networkPropertyName">
                         <input type="checkbox"
@@ -37,7 +37,7 @@
 
         <div class="container-fluid">
 
-            <div class="cytoscapeCanvas"  id="cytoscape-canvas"></div>
+            <div class="cytoscapeCanvas" id="cytoscape-canvas"></div>
 
             <div class="rowWithOneLineTopPad"></div>
 

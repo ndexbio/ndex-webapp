@@ -998,43 +998,42 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
     display: block;
 }
 
-
 .marginsForNGView {
     margin-left: 30px;
     margin-right: 30px;
     //margin-top: 10px
 }
 
-
-.networkViewHeader {
+.networkViewFrame {
     border-style: solid;
     border-color: #287EC7;
+}
+
+.networkViewActionsSectionFrame {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.networkViewPadding {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .networkViewHeaderHeader
 {
     font-weight: bold;
-
     font-size: 2em;
     text-align: center;
-
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-
     line-height: 1;
 }
+
 .networkViewHeaderBody
 {
     font-size: 1.3em;
     text-align: center;
-
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-
     line-height: 1;
 }
 
@@ -1042,10 +1041,10 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
     font-size: 1.1em;
     font-weight: bold;
 }
+
 .networkVisibilityValue {
     color: forestgreen;
 }
-
 
 .cytoscapeCanvas {
     color: #777;
@@ -1060,10 +1059,24 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
     border-color: #287EC7;
 }
 
-
 .networkPropertyValueInTabsetMargins {
     font-size: 1.1em;
     margin-left: 10px;
     margin-right: 10px;
-    //margin-top: 10px
+}
+
+.networkActionsSection {
+    font-size: 1.3em;
+    font-weight: bold;
+
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+
+    line-height: 1;
+}
+
+.actionsLabel {
+    margin-bottom: 10px;
 }
