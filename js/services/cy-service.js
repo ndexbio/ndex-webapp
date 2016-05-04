@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';   //comment out this line because Safari doesn' allow using const in strict mood.
 
 /**
  * @ngdoc service
