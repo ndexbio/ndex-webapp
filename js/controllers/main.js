@@ -228,8 +228,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             },
             
             {
-                description: 'Any mention of "TP53"',
-                searchString: 'TP53',
+                description: 'Any mention of "RBL2"',
+                searchString: 'RBL2',
                 searchType: 'All'
             }];
 
@@ -263,9 +263,28 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 description: 'By numeric property range: "nodeCount:[11 TO 79]"',
                 searchString: 'nodeCount:[11 TO 79]',
                 searchType: 'Networks'
+            },
+
+            {
+                description: 'With "AND" for co-occurance : "TP53 AND BARD1"',
+                searchString: 'TP53 AND BARD1',
+                searchType: 'Networks'
+            },
+
+            {
+                description: 'With more complex "AND" : "NCI AND edgeCount:[100 TO 300]"',
+                searchString: 'NCI AND edgeCount:[100 TO 300]',
+                searchType: 'Networks'
+            },
+
+            {
+                description: 'By creation time : "creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]"',
+                searchString: 'creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]',
+                searchType: 'Networks'
             }
             /*
-            
+             name:metabolism AND edgeCount:[1 TO 5000]
+             creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]
 
             */
 
