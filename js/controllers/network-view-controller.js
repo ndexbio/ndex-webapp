@@ -15,6 +15,8 @@ ndexApp.controller('networkViewController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
+            networkController.privilegeLevel = "None";
+            
             networkController.currentNetworkId = networkExternalId;
 
             networkController.errors = []; // general page errors
