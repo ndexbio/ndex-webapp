@@ -292,7 +292,10 @@ ndexApp.controller('searchController',
                     field: 'User Name',
                     cellTemplate: 'pages/gridTemplates/userName.html'
                 },
+                { field: 'First Name'},
+                { field: 'Last Name'},
                 { field: 'Description'}
+
             ];
 
             var populateUserTable = function()
@@ -314,12 +317,16 @@ ndexApp.controller('searchController',
                     var userName = user['accountName'];
                     var description = stripHTML(user['description']);
                     var externalId = user['externalId'];
+                    var firstName = user['firstName'];
+                    var lastName = user['lastName'];
 
 
                     var row = {
                         "User Name"  :   userName,
                         "Description" :   description,
-                        "externalId" : externalId
+                        "externalId" : externalId,
+                        "First Name" : firstName,
+                        "Last Name" : lastName
                     };
 
                     $scope.userSearchGridOptions.data.push(row);
@@ -404,11 +411,14 @@ ndexApp.controller('searchController',
 
 
             const GROUP_COLUMN_FIELDS = [
+                { field: 'Group Name',
+                    cellTemplate: 'pages/gridTemplates/groupName.html'},
                 {
-                    field: 'Group Name',
+                    field: 'Group Account',
                     cellTemplate: 'pages/gridTemplates/groupName.html'
                 },
                 { field: 'Description'}
+
             ];
 
             var populateGroupTable = function()
@@ -425,16 +435,19 @@ ndexApp.controller('searchController',
                 for(var i = 0; i < searchController.groupSearchResults.length; i++ )
                 {
                     var group = searchController.groupSearchResults[i];
+                    console.log(group);
 
-                    var groupName = group['accountName'];
+                    var groupName = group['groupName'];
                     var description = stripHTML(group['description']);
                     var externalId = group['externalId'];
+                    var accountName = group['accountName'];
 
 
                     var row = {
                         "Group Name"  :   groupName,
                         "Description" :   description,
-                        "externalId"  :   externalId
+                        "externalId"  :   externalId,
+                        "Group Account"   :   accountName
                     };
 
                     $scope.groupSearchGridOptions.data.push(row);

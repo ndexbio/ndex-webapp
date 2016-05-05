@@ -33,10 +33,8 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
-
     <link rel="stylesheet" href="css/ndex-angular-site.css"/>
     <link rel="stylesheet" href="css/visualize_network.css"/>
-
     <link rel="styleSheet" href="lib/ui-grid/3.0.1/ui-grid.min.css"/>
 
     <!-- Scripts -->
@@ -70,7 +68,6 @@
     <script src="js/ndex-service-factory.js"></script>
     <script src="js/ui-service.js"></script>
     <script src="js/app.js"></script>
-
 
     <!-- page controllers -->
     <script src="js/controllers/main.js"></script>
@@ -117,10 +114,79 @@
 </head>
 
 <!-- define angular controller -->
-<body ng-controller="mainController" style="padding-bottom: 140px;">
+<body ng-controller="mainController" style="padding-bottom: 140px";>
 
-<div class="navbar navbar-default navbar-fixed-top navbar-ndex-top">
-    <div class="container-fluid" style="padding-right: 20px;">
+<script type="text/ng-template" id="search_bar.html">
+    <div class="container-fluid" style="background-color:white; color:black; padding-top:15px; padding-bottom:15px;">
+        <div class="row vertical-align">
+            <div class="col-sm-2 AlignCenter">
+                <div class="dropdown ndex-search-control">
+                    <a class="dropdown-toggle" data-toggle="dropdown">Search Examples<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li class="AlignLeft" ng-repeat="item in main.searchExamples">
+                            <a ng-click="main.runSearchExample(item)">
+                                {{item.description}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-2 AlignCenter ndex-search-control">
+                <a ng-click="main.browse()">Browse</a>
+            </div>
+            <div class="col-sm-8">
+                <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
+                      class="navbar-form navbar-left"
+                      role="search"
+                      ng-submit="main.search()">
+                    <div class="input-group">
+                        <div class="input-group-btn dropdown AlignLeft">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                {{main.searchType}} <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a class="dropdown-toggle"
+                                       ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
+                                <li><a class="dropdown-toggle"
+                                       ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
+                                <li><a class="dropdown-toggle"
+                                       ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
+                                <li><a class="dropdown-toggle"
+                                       ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
+                            </ul>
+                        </div>
+                        <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
+                               ng-model="main.searchString">
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-default"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- CSS Notes
+
+Bootstrap:
+    navbar:
+    navbar-default:
+    navbar-fixed-top:
+    navbar-ndex-top:
+    navbar-collapse:
+    collapse:
+    nav:
+    navbar-nav:
+    navbar-right:
+
+NDEx:
+-->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid navbar-ndex" style="padding-right: 20px;">
 
         <div class="collapse navbar-collapse col-lg-6 col-md-6">
             <a class="navbar-brand"
@@ -190,13 +256,13 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-<!--
-                <li ng-click="collapseHamburgerMenu()"
-                    ng-show="main.getCurrentNetwork() != null"
-                    ng-class="{active:main.url.url().search('/network') != -1}">
-                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">New Network</a>
-                </li>
--->
+                <!--
+                                <li ng-click="collapseHamburgerMenu()"
+                                    ng-show="main.getCurrentNetwork() != null"
+                                    ng-class="{active:main.url.url().search('/network') != -1}">
+                                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">New Network</a>
+                                </li>
+                -->
                 <li ng-show="main.getCurrentNetwork() != null">
                     <!--ng-class="{active:main.url.url().search('/network') != -1}">-->
                     <a ng-click="collapseHamburgerMenu(); main.goToCurrentNetwork()">Network</a>
@@ -219,62 +285,13 @@
         </div>
     </div>
 
-    <div class="container-fluid" style="background-color:lightgrey; padding-left: 20px; padding-right: 20px;">
-        <ul class="nav navbar-nav navbar-left">
-
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown">Search Examples<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li ng-repeat="item in main.searchExamples">
-                        <a ng-click="main.runSearchExample(item)">
-                            {{item.description}}
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <li>
-                <a ng-click="main.browse()">Browse</a>
-            </li>
-
-        </ul>
-        <div class="navbar-collapse collapse">
-            <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-                  class="navbar-form navbar-left"
-                  style="min-width: 400px; max-width: 1000px;"
-                  role="search"
-                  ng-submit="main.search()">
-                <div class="input-group">
-                    <div class="input-group-btn dropdown AlignLeft">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            {{main.searchType}} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
-                        </ul>
-                    </div>
-                    <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
-                           ng-model="main.searchString">
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default"><span
-                                class="glyphicon glyphicon-search"></span></button>
-                    </div>
-                </div>
-
-            </form>
-
+    <div class="row" ng-hide="main.hideSearchBar">
+        <div class='col-md-1'></div>
+        <div class='col-md-10 AlignCenter'>
+            <ng-include src="'search_bar.html'"></ng-include>
         </div>
-
     </div>
-
-</div>
+</nav>
 
 <div id="main" class="fluid-container">
     <!-- angular templating -->
@@ -282,7 +299,7 @@
     <div ng-view class="marginsForNGView"></div>
 </div>
 
-<nav class="navbar navbar-ndex-bottom navbar-fixed-bottom footer-bar AlignCenter">
+<nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter">
     <div class='footer-content'>
         Copyright &copy; 2016 Regents of the University of California and The Cytoscape Consortium. All rights
         reserved.

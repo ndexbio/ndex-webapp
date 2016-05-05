@@ -29,13 +29,13 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.main.showSignIn = false;
         });
 
-        if( $location.path() == '/' )
+        if( $location.path() == '/' || $location.path() == '/signIn')
             $scope.main.hideSearchBar = true;
         else
             $scope.main.hideSearchBar = false;
 
         $scope.$on('$routeChangeSuccess',function(){
-            if( $location.path() == '/' )
+            if( $location.path() == '/' || $location.path() == '/signIn')
                 $scope.main.hideSearchBar = true;
             else
                 $scope.main.hideSearchBar = false;

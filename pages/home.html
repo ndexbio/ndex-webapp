@@ -1,23 +1,34 @@
+<div class="row">
+    <div class='col-md-2'></div>
+    <div class='col-md-8 AlignCenter' style="margin-top:30px; margin-bottom:30px">
+        <img src='http://www.ndexbio.org/wp-content/uploads/2015/06/ndex-new-logo.png'
+             style="width:70%; max-height:150px; align:center"/>
+    </div>
+</div>
+
+<div class="row">
+    <div class='col-md-1'></div>
+    <div class='col-md-10 AlignCenter'>
+        <ng-include src="'search_bar.html'"></ng-include>
+    </div>
+</div>
+
+<div class="row">
+    <div class='col-md-2' style="margin-top:10px; margin-bottom:10px" ></div>
+    <div class='col-md-8 AlignCenter'>
+        <h3>{{config.welcome}}</h3>
+    </div>
+</div>
 
 <div class="row">
     <div class='col-md-2'></div>
     <div class='col-md-8 AlignCenter'>
-        <br><br>
-        <img src='http://www.ndexbio.org/wp-content/uploads/2015/06/ndex-new-logo.png'
-             style="width:100%; max-height:200px; align:center"/>
-        <br>
-        <br>
-        <br>
-        <h3>{{config.welcome}}</h3>
-        <br>
-        <br>
-        <br>
-<!-- where the search box used to be... -->
+        <h1 class="text-danger" ng-show="main.serverIsDown"><span id="bind-html-with-trust"
+                                                                  ng-bind-html="config.messages.serverDown"></span></h1>
 
-        <h1 class="text-danger" ng-show="main.serverIsDown"><span id="bind-html-with-trust" ng-bind-html="config.messages.serverDown"></span></h1>
-
-        <div ng-show="main.isInternetExplorerUsed() && main.showSignIn" class="rowWithTwoLinesTopPad rowWithFourLinesBottomPad">
-            <span style="color:red; font-size:2.5em" ><strong>Your browser is not supported</strong></span>
+        <div ng-show="main.isInternetExplorerUsed() && main.showSignIn"
+             class="rowWithTwoLinesTopPad rowWithFourLinesBottomPad">
+            <span style="color:red; font-size:2.5em"><strong>Your browser is not supported</strong></span>
 
             <br><br>
             <span id="IENotSupportedText" style="color:black; font-size:1.5em;">
@@ -29,54 +40,55 @@
             </span>
             <span>
                 <a href="https://www.google.com/chrome/browser/" target="_blank">
-                    <img border="0"  src="img/chrome.jpeg" width="100" height="100">
+                    <img border="0" src="img/chrome.jpeg" width="100" height="100">
                 </a>
             </span>
             <span>
                 <a href="https://www.mozilla.org/firefox" target="_blank">
-                    <img border="0"  src="img/firefox.jpg" width="100" height="100">
+                    <img border="0" src="img/firefox.jpg" width="100" height="100">
                 </a>
             </span>
                 <span>
                 <a href="http://www.apple.com/safari/" target="_blank">
-                    <img border="0"  src="img/safari.jpeg" width="100" height="100">
+                    <img border="0" src="img/safari.jpeg" width="100" height="100">
                 </a>
             </span>
         </div>
 
-
-        <div class='col-md-12' ng-show="(main.showSignIn || config.requireAuthentication) && !main.serverIsDown && !main.isInternetExplorerUsed()">
-            <div class="home-box home-margins">
-                <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
-                    <div class="AlignCenter" style="font-size: 14px">
-                        <span>{{config.signIn.header}}</span>
-                        <hr>
+        <!--
+                <div class='col-md-12' ng-show="(main.showSignIn || config.requireAuthentication) && !main.serverIsDown && !main.isInternetExplorerUsed()">
+                    <div class="home-box home-margins">
+                        <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
+                            <div class="AlignCenter" style="font-size: 14px">
+                                <span>{{config.signIn.header}}</span>
+                                <hr>
+                            </div>
+                            <div class="form-group">
+                                <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
+                                required autofocus ng-model="signIn.accountName">
+                            </div>
+                            <div class="form-group">
+                                <input name="password" type="password" class="form-control" placeholder="Password" required
+                                ng-model="signIn.password">
+                            </div>
+                            <div class="AlignCenter">
+                                <button class="btn btn-lg btn-danger" type="button" ng-click="signIn.cancel()">Cancel</button>
+                                <button class="btn btn-lg btn-primary" type="submit"
+                                ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
+                                Sign in
+                                </button><br><br>
+                                <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
+                            </div>
+                            <hr>
+                            <div class="AlignCenter" style="font-size: 14px">
+                                {{config.signIn.footer}}
+                                <a ng-show="config.signIn.showSignup" ng-click="signIn.openSignUp()">Click here to sign up!</a>
+                            </div>
+                        </form>
+                    <span class="text-danger">{{signIn.message}}</span>
                     </div>
-                    <div class="form-group">
-                        <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
-                        required autofocus ng-model="signIn.accountName">
-                    </div>
-                    <div class="form-group">
-                        <input name="password" type="password" class="form-control" placeholder="Password" required
-                        ng-model="signIn.password">
-                    </div>
-                    <div class="AlignCenter">
-                        <button class="btn btn-lg btn-danger" type="button" ng-click="signIn.cancel()">Cancel</button>
-                        <button class="btn btn-lg btn-primary" type="submit"
-                        ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
-                        Sign in
-                        </button><br><br>
-                        <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
-                    </div>
-                    <hr>
-                    <div class="AlignCenter" style="font-size: 14px">
-                        {{config.signIn.footer}}
-                        <a ng-show="config.signIn.showSignup" ng-click="signIn.openSignUp()">Click here to sign up!</a>
-                    </div>
-                </form>
-            <span class="text-danger">{{signIn.message}}</span>
-            </div>
-        </div>
+                </div>
+                -->
 
     </div>
 </div>
@@ -86,18 +98,27 @@
     Cell Systems, Volume 1, Issue 4, 302-305 (2015).
 </div>
 
-<br>
 <div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
     <span class='col-md-12'>
         <span class="home-margins">
 
             <div class="home-support AlignCenter">
 
-                <a href="http://itcr.nci.nih.gov/" target="_blank"><img src="http://www.ndexbio.org/wp-content/uploads/2015/05/ITCR-logo.png" style="padding: 20px 15px"></a>
-                <a href="http://www.roche.com/" target="_blank"><img src="http://www.ndexbio.org/wp-content/uploads/2015/05/Roche-Logox50.jpg" style="padding: 20px 0 20px 15px"></a>
-                <a href="http://www.pfizer.com/" target="_blank"><img src="http://www.ndexbio.org/wp-content/uploads/2015/05/pfizer_logox501.png" style="padding: 20px 15px 20px 0"></a>
-                <a href="http://www.janssenrnd.com/" target="_blank"><img src="http://www.ndexbio.org/wp-content/uploads/2015/06/janssen_logo.png" style="padding: 20px 5px 20px 15px"></a>
-                <a href="http://www.nrnb.org/" target="_blank"><img src="http://www.ndexbio.org/wp-content/uploads/2015/05/NRNB_black_5001.png" style="padding: 25px 0 15px 5px"></a>
+                <a href="http://itcr.nci.nih.gov/" target="_blank"><img
+                        src="http://www.ndexbio.org/wp-content/uploads/2015/05/ITCR-logo.png"
+                        style="padding: 20px 15px"></a>
+                <a href="http://www.roche.com/" target="_blank"><img
+                        src="http://www.ndexbio.org/wp-content/uploads/2015/05/Roche-Logox50.jpg"
+                        style="padding: 20px 0 20px 15px"></a>
+                <a href="http://www.pfizer.com/" target="_blank"><img
+                        src="http://www.ndexbio.org/wp-content/uploads/2015/05/pfizer_logox501.png"
+                        style="padding: 20px 15px 20px 0"></a>
+                <a href="http://www.janssenrnd.com/" target="_blank"><img
+                        src="http://www.ndexbio.org/wp-content/uploads/2015/06/janssen_logo.png"
+                        style="padding: 20px 5px 20px 15px"></a>
+                <a href="http://www.nrnb.org/" target="_blank"><img
+                        src="http://www.ndexbio.org/wp-content/uploads/2015/05/NRNB_black_5001.png"
+                        style="padding: 25px 0 15px 5px"></a>
             </div>
         </span>
     </span>
@@ -121,17 +142,7 @@
 </div>
 -->
 
-<div class="row">
-    <br>
-    <div class='col-md-12'>
-
-
-
-    </div>
-</div>
-
-
-
+<!--
 <script type="text/ng-template" id="signUp.html">
     <div class="modal-content">
         <form name="signUpForm" role="form" ng-submit="signIn.signUp()">
@@ -251,6 +262,7 @@
         <button id="forgotPasswordDoneButton" ng-show="forgot.done" class="btn btn-primary" ng-click="cancel()">Done</button>
     </div>
 </script>
+-->
 
 <script type="text/ng-template" id="quoteNDEx.html">
     <div class="modal-content">
