@@ -278,8 +278,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             },
 
             {
-                description: 'By creation time : "creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]"',
-                searchString: 'creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]',
+                description: 'Created between 1.1.16 and 4.27.16 : "creationTime:[2016-01-01T00:00:01Z TO 2016-04-27T23:59:59Z]"',
+                searchString: 'creationTime:[2016-01-01T00:00:01Z TO 2016-04-27T23:59:59Z]',
                 searchType: 'Networks'
             }
             /*
