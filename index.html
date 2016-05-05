@@ -114,10 +114,83 @@
 </head>
 
 <!-- define angular controller -->
-<body ng-controller="mainController" style="padding-bottom: 140px";>
+<body ng-controller="mainController" style="padding-bottom: 140px" ;>
 
 <script type="text/ng-template" id="search_bar.html">
     <div class="container-fluid" style="background-color:white; color:black; padding-top:15px; padding-bottom:15px;">
+        <div class="col-sm-12">
+            <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
+                  class="navbar-form navbar-left"
+                  role="search"
+                  ng-submit="main.search()">
+                <div class="input-group">
+                    <div class="input-group-btn dropdown AlignLeft">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Search Examples <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="AlignLeft" style="padding-left: 2px; padding-bottom: 2px;">Search Networks,
+                                Users, and Groups:
+                            </li>
+                            <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchAllExamples">
+                                <a ng-click="main.runSearchExample(item)">
+                                    {{item.description}}
+                                </a>
+                            </li>
+                            <li>
+                                <hr>
+                            </li>
+                            <li class="AlignLeft" style="padding-left: 2px; padding-bottom: 2px;">Search Networks:</li>
+                            <li class="AlignLeft" style="padding-left: 5px;"
+                                ng-repeat="item in main.searchNetworksExamples">
+                                <a ng-click="main.runSearchExample(item)">
+                                    {{item.description}}
+                                </a>
+                            </li>
+                            <li>
+                                <hr>
+                            </li>
+                            <li class="AlignLeft" ng-show="config.searchDocLink">
+                                <a ng-click="redirectToExternalLink(config.searchDocLink)">{{config.searchDocLink.label}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="input-group-btn">
+                        <button type="button" ng-click="main.browse()" class="btn btn-default">Browse</button>
+                    </div>
+                    <div class="input-group-btn dropdown AlignLeft">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            {{main.searchType}} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
+                            <li><a class="dropdown-toggle"
+                                   ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
+                        </ul>
+                    </div>
+                    <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
+                           ng-model="main.searchString">
+                    <div class="input-group-btn">
+                        <button type="submit" class="btn btn-default"><span
+                                class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+    </div>
+</script>
+
+<!-- CSS Notes
+
         <div class="row vertical-align">
             <div class="col-sm-2 AlignCenter">
                 <div class="dropdown ndex-search-control">
@@ -143,47 +216,11 @@
                         </li>
                     </ul>
                 </div>
+
             </div>
             <div class="col-sm-2 AlignCenter ndex-search-control">
                 <a ng-click="main.browse()">Browse</a>
             </div>
-            <div class="col-sm-8">
-                <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-                      class="navbar-form navbar-left"
-                      role="search"
-                      ng-submit="main.search()">
-                    <div class="input-group">
-                        <div class="input-group-btn dropdown AlignLeft">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                {{main.searchType}} <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a class="dropdown-toggle"
-                                       ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
-                                <li><a class="dropdown-toggle"
-                                       ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
-                                <li><a class="dropdown-toggle"
-                                       ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
-                                <li><a class="dropdown-toggle"
-                                       ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
-                            </ul>
-                        </div>
-                        <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
-                               ng-model="main.searchString">
-                        <div class="input-group-btn">
-                            <button type="submit" class="btn btn-default"><span
-                                    class="glyphicon glyphicon-search"></span></button>
-                        </div>
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-    </div>
-</script>
-
-<!-- CSS Notes
 
 Bootstrap:
     navbar:
