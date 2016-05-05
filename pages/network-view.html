@@ -187,18 +187,13 @@
                             </div>
 
                             <button type="submit" class="btn btn-default btn-primary" style="margin-bottom:0">Run Query</button>
-
-                            <span class="pull-right">
-                                &nbsp;&nbsp;
-                                <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
-                            </span>
+                            &nbsp;
                         </form>
-                    <!--
-                    <span class="pull-right" style="margin-bottom:0">
-                        &nbsp;&nbsp;
-                        <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
-                    </span>
-                    -->
+
+                        <span class="pull-left" style="margin-top:0.5em">
+                            <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
+                        </span>
+
                     </span>
 
                 </div>
@@ -239,8 +234,10 @@
                             <span class="networkPropertyName">Format: </span>
                             {{networkController.currentNetwork.sourceFormat}}<br />
 
-                            <span class="networkPropertyName">Your Privileges: </span>
-                            {{networkController.privilegeLevel}}<br />
+                            <span ng-show="networkController.privilegeLevel">
+                                <span class="networkPropertyName">Your Privileges: </span>
+                                {{networkController.privilegeLevel}}<br />
+                            </span>
 
                             <div class='wrapLongLine rowWithOneLineTopPad'
                                  ng-show="networkController.currentNetwork.description"
