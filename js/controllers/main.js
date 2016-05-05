@@ -220,24 +220,56 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.main.searchType = $location.search().searchType;
 
 
-        $scope.main.searchExamples = [
+        $scope.main.searchAllExamples = [
             {
-                description: 'Networks by gene list',
+                description: 'Any mention of "melanoma"',
+                searchString: 'melanoma',
+                searchType: 'All'
+            },
+            
+            {
+                description: 'Any mention of "TP53"',
+                searchString: 'TP53',
+                searchType: 'All'
+            }];
+
+        $scope.main.searchNetworksExamples = [
+
+            {
+                description: 'Mentioning any term in a list: "TP53 MDM2 RB1 CDK4"',
                 searchString: 'TP53 MDM2 RB1 CDK4',
                 searchType: 'Networks'
             },
-
+            
             {
-                description: 'Networks, users, or groups mentioning both gene names',
-                searchString: 'TP53 AND RB1',
-                searchType: 'All'
+                description: 'By wildcard terms: "mel*"',
+                searchString: 'mel*',
+                searchType: 'Networks'
+            },
+/*
+            {
+                description: 'By network id: "uuid:"',
+                searchString: 'uuid:',
+                searchType: 'Networks'
+            },
+*/
+            {
+                description: 'By wildcard and property: "name:mel*"',
+                searchString: 'name:mel*',
+                searchType: 'Networks'
             },
 
             {
-                description: 'Networks by wildcard gene symbol AND "NCI"',
-                searchString: 'CD* AND NCI',
+                description: 'By numeric property range: "nodeCount:[11 TO 79]"',
+                searchString: 'nodeCount:[11 TO 79]',
                 searchType: 'Networks'
             }
+            /*
+            
+
+            */
+
+
         ];
 
         $scope.main.runSearchExample = function(example){
