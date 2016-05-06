@@ -114,8 +114,9 @@
 </head>
 
 <!-- define angular controller -->
-<body ng-controller="mainController" style="padding-bottom: 140px" ;>
+<body ng-controller="mainController" style="padding-bottom: 140px;">
 
+<!-- template for search bar -->
 <script type="text/ng-template" id="search_bar.html">
     <div class="container-fluid" style="background-color:white; color:black; padding-top:15px; padding-bottom:15px;">
         <div class="col-sm-12">
@@ -124,7 +125,7 @@
                   role="search"
                   ng-submit="main.search()">
                 <div class="input-group">
-                    <div class="input-group-btn dropdown AlignLeft">
+                    <div class="input-group-btn dropdown" style="padding-right:3px;">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                             Search Examples <span class="caret"></span>
                         </button>
@@ -156,7 +157,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="input-group-btn">
+                    <div class="input-group-btn" style="padding-right:10px;">
                         <button type="button" ng-click="main.browse()" class="btn btn-default">Browse</button>
                     </div>
                     <div class="input-group-btn dropdown AlignLeft">
@@ -189,56 +190,21 @@
     </div>
 </script>
 
-<!-- CSS Notes
-
-        <div class="row vertical-align">
-            <div class="col-sm-2 AlignCenter">
-                <div class="dropdown ndex-search-control">
-                    <a class="dropdown-toggle" data-toggle="dropdown">Search Examples<span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li class="AlignLeft" style="padding-left: 2px; padding-bottom: 2px;">Search Networks, Users, and Groups:</li>
-                        <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchAllExamples">
-                            <a ng-click="main.runSearchExample(item)">
-                                {{item.description}}
-                            </a>
-                        </li>
-                        <li><hr></li>
-                        <li class="AlignLeft" style="padding-left: 2px; padding-bottom: 2px;">Search Networks:</li>
-                        <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchNetworksExamples">
-                            <a ng-click="main.runSearchExample(item)">
-                                {{item.description}}
-                            </a>
-                        </li>
-                        <li><hr></li>
-                        <li class="AlignLeft" ng-show="config.searchDocLink">
-                            <a ng-click="redirectToExternalLink(config.searchDocLink)">{{config.searchDocLink.label}}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-            </div>
-            <div class="col-sm-2 AlignCenter ndex-search-control">
-                <a ng-click="main.browse()">Browse</a>
-            </div>
-
-Bootstrap:
-    navbar:
-    navbar-default:
-    navbar-fixed-top:
-    navbar-ndex-top:
-    navbar-collapse:
-    collapse:
-    nav:
-    navbar-nav:
-    navbar-right:
-
-NDEx:
--->
-<nav class="navbar  navbar-fixed-top">
+<!-- Nav Bar -->
+<nav class="navbar navbar-fixed-top">
     <div class="container-fluid navbar-ndex" style="padding-right: 20px;">
+        <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle"
+                    data-toggle="collapse"
 
-        <div class="collapse navbar-collapse col-lg-6 col-md-6">
+                    data-target="#myNavbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
             <a class="navbar-brand"
                ng-href="{{$location.path()}}"
                ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.logoLink)"
@@ -255,11 +221,6 @@ NDEx:
                     background-size: 120px 30px;">
                 </div>
             </a>
-            <!--
-            <ul class="nav navbar-nav  navbar-left">
-                <li><img src='img/NDEx-horizontal-transparent.png'></li>
-            </ul>
-            -->
         </div>
 
         <div class="navbar-collapse collapse" id="myNavbar">
@@ -333,11 +294,11 @@ NDEx:
             </ul>
 
         </div>
-    </div>
 
-    <div class="row" ng-hide="main.hideSearchBar">
-        <div class='col-md-1'></div>
-        <div class='col-md-10 AlignCenter'>
+    </div>
+    <!-- Include the search bar -->
+    <div class="row marginsForNGView" ng-hide="main.hideSearchBar" style="background-color: white">
+        <div class='col-md-12 AlignCenter'>
             <ng-include src="'search_bar.html'"></ng-include>
         </div>
     </div>

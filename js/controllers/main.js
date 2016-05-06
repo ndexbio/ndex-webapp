@@ -382,12 +382,17 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         };
 
-        /*
+        /*----------------------------------------------
          * This function closes/collapses the opened hamburger menu after user selected (clicked) an item from this menu.
-         */
+         ----------------------------------------------*/
         $scope.collapseHamburgerMenu = function() {
             $(".navbar-collapse.in").collapse('hide');
         };
+
+
+        /*----------------------------------------------
+         * Use an alert to let the user know that the citation has been copied to the clipboard
+         ----------------------------------------------*/
 
         $scope.showNDExCitationInClipboardMessage = function(redirectObj) {
 

@@ -270,31 +270,7 @@ textarea
     min-height: 10px;
 }
 
-.navbar-nav>li>a:focus
-{
-    /*background-color: black;*/
-    background-color: rgb(38,38,38);
-}
-
-.navbar-nav>li>a:hover
-{
-    /*color: red; */
-    background-color: rgb(38,38,38);
-}
-
-.navbar-ndex-top
-{
-    font-size: 1.1em;
-    vertical-align: top;
-    letter-spacing:0px;
-    /* margin-bottom is part of the hack to make the content start at the bottom of the nav bar?? */
-    margin-bottom: 120px;
-}
-
-.navbar-nav>li>a {
-    padding-top: 15px;
-    padding-bottom: 15px;
-}
+/* styles for the black bars at the top and bottom of the screen - but not the search bar */
 
 .navbar-ndex
 {
@@ -309,8 +285,45 @@ textarea
 
 }
 
+/* nav bar links */
+
+.navbar-nav>li>a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+
+
+/* highlight nav bar links on focus or hover with a lightened black background */
+.navbar-nav>li>a:focus
+{
+    background-color: rgb(38,38,38);
+}
+
+.navbar-nav>li>a:hover {
+    background-color: rgb(38, 38, 38);
+}
+
+/* styles for the top black bar only */
+
+.navbar-ndex-top
+{
+    font-size: 1.1em;
+    vertical-align: top;
+    letter-spacing:0px;
+    /* margin-bottom is part of the hack to make the content start at the bottom of the nav bar?? */
+    margin-bottom: 120px;
+}
+
+/* the color of the collapsed menu bar in the header; this is for NDEX-662 */
+.icon-bar {
+    background-color: lightgrey !important;
+}
+
+
 /* this makes the header menu "collapse" into a menu button when
 max-width of the browser reaches the specified value; this is for NDEX-662 */
+/*
 @media (max-width: 1210px) {
 
     .navbar-header {
@@ -362,6 +375,7 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
         display: block !important;
     }
 }
+*/
 
 .ndex-search-control > a {
     font-size: 14px;
@@ -556,10 +570,7 @@ ul.ndex-nav-pills > li > a:hover {
 
 
 
-/* the color of the collapsed menu bar in the header; this is for NDEX-662 */
-.icon-bar {
-    background-color: lightgrey !important;
-}
+
 
 .belNamespaceFileModal {
     white-space: pre;
