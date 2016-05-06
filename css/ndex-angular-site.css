@@ -312,7 +312,7 @@ textarea
     vertical-align: top;
     letter-spacing:0px;
     /* margin-bottom is part of the hack to make the content start at the bottom of the nav bar?? */
-    margin-bottom: 120px;
+    /*margin-bottom: 120px;*/
 }
 
 /* the color of the collapsed menu bar in the header; this is for NDEX-662 */
