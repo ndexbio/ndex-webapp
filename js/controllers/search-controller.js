@@ -133,7 +133,7 @@ ndexApp.controller('searchController',
             };
             
             const NETWORK_COLUMN_FIELDS = [
-                { field: 'Network Name', enableFiltering: true, minWidth: 330,
+                { field: 'Network Name', enableFiltering: true, minWidth: 450,
                     cellTemplate: 'pages/gridTemplates/networkName.html'},
                 { field: 'Format', enableFiltering: true, minWidth: 70 },
                 { field: 'Nodes', enableFiltering: false, minWidth: 70 },
@@ -141,7 +141,7 @@ ndexApp.controller('searchController',
                 { field: 'Visibility', enableFiltering: true, minWidth: 90 },
                 { field: 'Owned By', enableFiltering: true, minWidth: 70,
                     cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: 'date' }
+                { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: "date:'short'" }
             ];
 
             var populateNetworkTable = function()

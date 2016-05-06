@@ -118,8 +118,8 @@
 
 <!-- template for search bar -->
 <script type="text/ng-template" id="search_bar.html">
-    <div class="container-fluid" style="background-color:white; color:black; padding-top:15px; padding-bottom:15px;">
-        <div class="col-sm-12">
+    <div class="container-fluid" style="background-color:white; color:black; padding-top:15px; padding-bottom:15px; ">
+        <div class="col-sm-12 ">
             <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
                   class="navbar-form navbar-left"
                   role="search"
@@ -157,7 +157,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="input-group-btn" style="padding-right:10px;">
+                    <div class="input-group-btn" style="padding-right:30px;">
                         <button type="button" ng-click="main.browse()" class="btn btn-default">Browse</button>
                     </div>
                     <div class="input-group-btn dropdown AlignLeft">
@@ -192,7 +192,7 @@
 
 <!-- Nav Bar -->
 <nav class="navbar navbar-fixed-top">
-    <div class="container-fluid navbar-ndex" style="padding-right: 20px;">
+    <div class="container-fluid navbar-ndex navbar-ndex-top" style="padding-right: 20px;">
         <div class="navbar-header">
             <button type="button"
                     class="navbar-toggle"
@@ -297,8 +297,8 @@
 
     </div>
     <!-- Include the search bar -->
-    <div class="row marginsForNGView" ng-hide="main.hideSearchBar" style="background-color: white">
-        <div class='col-md-12 AlignCenter'>
+    <div class="row marginsForNGView AlignCenter" ng-hide="main.hideSearchBar" style="background-color: white; max-width: 1000px; margin-left: auto; margin-right: auto;">
+        <div class='col-md-12 ' >
             <ng-include src="'search_bar.html'"></ng-include>
         </div>
     </div>
