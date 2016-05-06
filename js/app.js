@@ -149,7 +149,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             templateUrl: 'pages/network-view.html',
             controller: 'networkViewController'
         })
-
+            
         // route for the upload page
         .when('/upload', {
             templateUrl: 'pages/upload.html',

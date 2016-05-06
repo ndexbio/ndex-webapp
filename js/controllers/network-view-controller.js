@@ -75,9 +75,15 @@ ndexApp.controller('networkViewController',
                 return undefined;
             }
 
-        //    $scope.build_provenance_view = function() {
-        //        provenanceService.showProvenance(networkController);
-        //    }
+            $scope.build_provenance_view = function() {
+                provenanceService.showProvenance(networkController);
+            }
+
+            $scope.getProvenanceTitle = function(provenance)
+            {
+               return provenanceService.getProvenanceTitle();
+            };
+
             //                  local functions
 
             var getNetworkAdmins = function()
