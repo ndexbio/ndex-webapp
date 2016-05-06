@@ -1,12 +1,12 @@
 ndexApp.controller('networkViewController',
-    ['config','ndexServiceCX', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
+    ['config','provenanceService','ndexServiceCX', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
-        '$route', '$filter', '$location','$http','$q',
-        function (config, ndexServiceCX, ndexService, ndexConfigs, cyService, cxNetworkUtils,
+        '$route', '$filter', '$location','$q',
+        function (config, provenanceService, ndexServiceCX, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
-                  $route, $filter, $location, $http, $q)
+                  $route, $filter, $location, $q)
         {
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
@@ -75,6 +75,14 @@ ndexApp.controller('networkViewController',
                 return undefined;
             }
 
+            $scope.build_provenance_view = function() {
+                provenanceService.showProvenance(networkController);
+            }
+
+            $scope.getProvenanceTitle = function(provenance)
+            {
+               return provenanceService.getProvenanceTitle();
+            };
 
             //                  local functions
 
