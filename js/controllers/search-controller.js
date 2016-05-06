@@ -500,8 +500,20 @@ ndexApp.controller('searchController',
                 searchController.submitNetworkSearch();
                 searchController.submitGroupSearch();
                 searchController.submitUserSearch();
-                // Default for All is to make networks active
                 $scope.activateTab('Networks');
+                /*
+                console.log(!searchController.networkSearchNoResults + " " + !searchController.userSearchNoResults + "  " + !searchController.groupSearchNoResults);
+                if (!searchController.networkSearchNoResults){
+                    $scope.activateTab('Networks');
+                } else if (!searchController.userSearchNoResults){
+                    $scope.activateTab('Users');
+                } else if (!searchController.groupSearchNoResults){
+                    $scope.activateTab('Groups');
+                } else {
+                    
+                }
+                */
+
             } else if (searchController.searchType === 'Networks'){
                 searchController.submitNetworkSearch();
                 // Networks is active tab.

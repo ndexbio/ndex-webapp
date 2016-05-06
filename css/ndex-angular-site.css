@@ -108,6 +108,18 @@ textarea
 }
 
 /******************************************************************************
+ * Margins for all views
+ ******************************************************************************/
+
+.marginsForNGView {
+    margin-left: 65px;
+    margin-right: 65px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+/******************************************************************************
  * Styling by class
  ******************************************************************************/
 .AlignCenter
@@ -568,10 +580,6 @@ ul.ndex-nav-pills > li > a:hover {
     text-overflow: ellipsis;
 }
 
-
-
-
-
 .belNamespaceFileModal {
     white-space: pre;
     word-wrap: break-word;
@@ -604,12 +612,6 @@ ul.ndex-nav-pills > li > a:hover {
 }
 
 
-.marginsForNGView {
-    margin-left: 60px;
-    margin-right: 60px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
 
 
 .networkViewHeader {
@@ -652,7 +654,6 @@ ul.ndex-nav-pills > li > a:hover {
     color: forestgreen;
 }
 
-
 .cytoscape-canvas {
     color: #777;
     border: 3px solid #e5e5e5;
@@ -665,7 +666,6 @@ ul.ndex-nav-pills > li > a:hover {
     border-style: solid;
     border-color: #287EC7;
 }
-
 
 .networkPropertyValueInTabsetMargins {
     font-size: 1.1em;
