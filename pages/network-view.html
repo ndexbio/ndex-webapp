@@ -242,9 +242,22 @@
                             <div class='wrapLongLine rowWithOneLineTopPad'
                                  ng-show="networkController.currentNetwork.description"
                                  style="margin-right: 1px;">
-                                 <span class="networkPropertyName">Description </span>
-                                 <span ng-bind-html="networkController.currentNetwork.description"></span>
+                                <span class="networkPropertyName">Description </span>
+                                <span ng-bind-html="networkController.currentNetwork.rightsHolder"></span>
                             </div>
+
+                            <span ng-show="networkController.currentNetwork.rightsHolder">
+                                <br />
+                                <span class="networkPropertyName">Rights Holder: </span>
+                                <span ng-bind-html="networkController.currentNetwork.rightsHolder"></span>
+                            </span>
+
+                            <span ng-show="networkController.currentNetwork.rights">
+                                <br />
+                                <span class="networkPropertyName">Rights: </span>
+                                <span ng-bind-html="networkController.currentNetwork.rights"></span>
+                            </span>
+
 
                             <div class='wrapLongLine rowWithOneLineTopPad'
                                  ng-show="networkController.currentNetwork.reference"
@@ -258,11 +271,42 @@
                                 {{networkController.currentNetwork.version}}
                             </div>
 
+                            <div  class='rowWithOneLineTopPad'>
+                                <span class="networkPropertyName">Properties</span>
+
+                                <div class="networkPropertiesNameMargins">
+
+                                    <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
+                                        <span ng-show="!networkController.isPredicateReservedWord(property.predicateString)">
+                                           <span class="networkPropertiesNameFont">{{property.predicateString}}:
+                                           </span>
+                                           <span class="networkPropertiesValueFont" ng-hide='property.value.toString().length > 40'
+                                               ng-bind-html="property.value.toString()">
+                                           </span>
+                                           <span class="networkPropertiesValueFont" ng-show='property.value.toString().length > 40'
+                                                 ng-bind-html="property.value.slice(0, 45 - property.predicateString.length)
+                                                +'&shy'+
+                                               property.value.slice(45 - property.predicateString.length, property.value.length)">
+                                           </span>
+                                           <br />
+                                        </span>
+                                    </span>
+
+                                </div>
+
+                                <h5 ng-show='!networkController.readOnlyChecked'>
+                                    <a class='btn-link'
+                                       ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
+                                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
+                                        Add / Edit Properties
+                                    </a>
+                                </h5>
+
+                            </div>
+
                         </div>
 
                         <div class="rowWithOneLineTopPad"></div>
-
-
                     </tab>
 
 

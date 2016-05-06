@@ -1042,6 +1042,20 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
     font-weight: bold;
 }
 
+.networkPropertiesNameFont {
+    font-size: 0.9em;
+    font-weight: bold;
+}
+.networkPropertiesValueFont {
+    font-size: 0.9em;
+    font-weight: normal;
+}
+.networkPropertiesNameMargins {
+
+    line-height: 1.5em;
+    margin-left: 1em;
+}
+
 .networkVisibilityValue {
     color: forestgreen;
 }
