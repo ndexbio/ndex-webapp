@@ -226,6 +226,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
             };
 
             controller.displayProvenance = provMap[0];
+       //     $scope.displayProvenance = provMap[0];
 
             var network = new vis.Network(container, data, options);
             network.lastHover = 0;
@@ -257,9 +258,11 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
                 this.lastHover = node_id;
                 if (typeof provMap[node_id] == 'undefined')
                     return;
-               // $scope.$apply(function(){
+              /*  $scope.$apply(function(){
                     controller.displayProvenance = provMap[node_id];
-               // });
+                }); */
+
+                controller.refreshProvMap(provMap[node_id]);
 
             });
 

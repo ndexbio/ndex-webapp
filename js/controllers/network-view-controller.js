@@ -8,11 +8,15 @@ ndexApp.controller('networkViewController',
                   sharedProperties, $scope, $routeParams, $modal,
                   $route, $filter, $location, $q)
         {
+            var self = this;
+            
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
 
             $scope.networkController = {};
+
+
 
             var networkController  = $scope.networkController;
 
@@ -20,6 +24,7 @@ ndexApp.controller('networkViewController',
 
             networkController.errors = []; // general page errors
             networkController.queryErrors = [];
+            networkController.displayProvenance = {};
 
 
             networkController.searchDepths = [
@@ -81,9 +86,16 @@ ndexApp.controller('networkViewController',
 
             $scope.getProvenanceTitle = function(provenance)
             {
-               return provenanceService.getProvenanceTitle();
+               return provenanceService.getProvenanceTitle(provenance);
             };
 
+
+            networkController.refreshProvMap = function (obj) {
+                $scope.$apply(function () {
+                    networkController.displayProvenance = obj;
+                });
+            }    
+            
             //                  local functions
 
             var getNetworkAdmins = function()
