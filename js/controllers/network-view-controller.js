@@ -94,9 +94,20 @@ ndexApp.controller('networkViewController',
                 $scope.$apply(function () {
                     networkController.displayProvenance = obj;
                 });
-            }    
-            
+            }
+
+
+            networkController.isPredicateReservedWord = function(wordToCheck) {
+                var reservedWords = ['rights', 'rightsHolder'];
+                
+                if (!wordToCheck) {
+                    return true;
+                }
+
+                return reservedWords.indexOf(wordToCheck) > -1;
+            }
             //                  local functions
+
 
             var getNetworkAdmins = function()
             {
@@ -192,6 +203,36 @@ ndexApp.controller('networkViewController',
                 
             }
 
+            var getNetworkReference = function(networkProperties)
+            {
+                networkController.currentNetwork.reference = "";
+
+                if ('undefined'===typeof(networkProperties)) {
+                    return;
+                }
+
+                var length = networkProperties.length;
+                var i = 0;
+
+                // remove all Reference attributes (there should only be one, but we'll
+                // handle the erroneous case when there are more than one)
+                while (i < length) {
+
+                    if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
+                        (networkProperties[i].predicateString.toLowerCase() === 'reference')) {
+
+                        if (typeof(networkProperties[i].value) !== 'undefined') {
+                            networkController.currentNetwork.reference = networkProperties[i].value;
+                            networkProperties.splice(i, 1);
+                            length = length - 1;
+                            continue;
+                        }
+                    }
+                    i = i + 1;
+                }
+            }
+
+
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
                 var request1 = null;
@@ -225,6 +266,8 @@ ndexApp.controller('networkViewController',
                             
                             networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                             //getNetworkAdmins();
+
+                            getNetworkReference(networkController.currentNetwork.properties);
 
                             var sourceFormat =
                                 getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
