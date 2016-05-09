@@ -8,11 +8,15 @@ ndexApp.controller('networkViewController',
                   sharedProperties, $scope, $routeParams, $modal,
                   $route, $filter, $location, $q)
         {
+            var self = this;
+            
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
 
             $scope.networkController = {};
+
+
 
             var networkController  = $scope.networkController;
 
@@ -20,6 +24,7 @@ ndexApp.controller('networkViewController',
 
             networkController.errors = []; // general page errors
             networkController.queryErrors = [];
+            networkController.displayProvenance = {};
 
 
             networkController.searchDepths = [
@@ -81,13 +86,20 @@ ndexApp.controller('networkViewController',
 
             $scope.getProvenanceTitle = function(provenance)
             {
-               return provenanceService.getProvenanceTitle();
+               return provenanceService.getProvenanceTitle(provenance);
             };
-            
-            
+
+
+            networkController.refreshProvMap = function (obj) {
+                $scope.$apply(function () {
+                    networkController.displayProvenance = obj;
+                });
+            }
+
+
             networkController.isPredicateReservedWord = function(wordToCheck) {
                 var reservedWords = ['rights', 'rightsHolder'];
-
+                
                 if (!wordToCheck) {
                     return true;
                 }
@@ -261,6 +273,9 @@ ndexApp.controller('networkViewController',
                                 getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
+
+                            networkController.currentNetwork.reference =
+                                getNetworkProperty(networkController.currentNetwork.properties,'Reference');
                             networkController.currentNetwork.rightsHolder =
                                 getNetworkProperty(networkController.currentNetwork.properties,'rightsHolder');
                             networkController.currentNetwork.rights =
