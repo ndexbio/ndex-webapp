@@ -274,8 +274,8 @@ ndexApp.controller('networkViewController',
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
-                            networkController.currentNetwork.reference =
-                                getNetworkProperty(networkController.currentNetwork.properties,'Reference');
+                            //networkController.currentNetwork.reference =
+                            //    getNetworkProperty(networkController.currentNetwork.properties,'Reference');
                             networkController.currentNetwork.rightsHolder =
                                 getNetworkProperty(networkController.currentNetwork.properties,'rightsHolder');
                             networkController.currentNetwork.rights =
