@@ -413,10 +413,12 @@ ndexApp.controller('searchController',
             const GROUP_COLUMN_FIELDS = [
                 { field: 'Group Name',
                     cellTemplate: 'pages/gridTemplates/groupName.html'},
+                /*
                 {
                     field: 'Group Account',
                     cellTemplate: 'pages/gridTemplates/groupName.html'
                 },
+                */
                 { field: 'Description'}
 
             ];
@@ -440,14 +442,17 @@ ndexApp.controller('searchController',
                     var groupName = group['groupName'];
                     var description = stripHTML(group['description']);
                     var externalId = group['externalId'];
-                    var accountName = group['accountName'];
+                    //var accountName = group['accountName'];
 
 
                     var row = {
                         "Group Name"  :   groupName,
                         "Description" :   description,
-                        "externalId"  :   externalId,
+                        "externalId"  :   externalId
+
+                        /*
                         "Group Account"   :   accountName
+                        */
                     };
 
                     $scope.groupSearchGridOptions.data.push(row);
