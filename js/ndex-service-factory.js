@@ -1289,10 +1289,9 @@ ndexServiceApp.factory('ndexHelper', function () {
             ////console.log(node.name);
             return node.name;
         }
-        else if ("represents" in node && node.represents && network.terms[node.represents]){
-            // return factory.getTermLabel(network.terms[node.represents], network);
-
-
+        else if ("represents" in node && node.represents &&
+            network && network.terms && network.terms[node.represents]){
+            
             // calculate termType here
             var termType;
             if ("representsTermType" in node){
