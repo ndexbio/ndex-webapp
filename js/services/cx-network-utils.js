@@ -206,10 +206,9 @@ angular.module('ndexServiceApp')
           var edges = { elements: []};
 
           $.each(network.nodes, function (index, node) {
-              var n = ndexHelper.getNodeLabel(node, network);
               var element = {
                   '@id' : index,
-                  'n': n
+                  'n': (node & node.name) ? node.name : ""
               };
               nodes.elements.push(element);
           });
@@ -218,8 +217,8 @@ angular.module('ndexServiceApp')
 
               var element = {
                   '@id' : index,
-                  's' : edge.subjectId,
-                  't' : edge.objectId
+                  's' : (edge && edge.subjectId) ? edge.subjectId : "",
+                  't' : (edge && edge.objectId) ? edge.objectId : ""
               };
 
               if (network.baseTerms && network.baseTerms[index] && network.baseTerms[index]['name']) {
