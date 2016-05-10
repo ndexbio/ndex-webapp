@@ -11,7 +11,9 @@ angular.module('ndexServiceApp')
   .service('cxNetworkUtils', ['ndexHelper', function (ndexHelper) {
       // AngularJS will instantiate a singleton by calling "new" on this function
 
-      this.rawCXtoNiceCX = function(rawCX) {
+      var self = this;
+
+      self.rawCXtoNiceCX = function(rawCX) {
 
           var niceCX = {};
 
@@ -61,7 +63,7 @@ angular.module('ndexServiceApp')
           return niceCX;
       };
       
-      this.niceCXToRawCX = function(niceCX) {
+      self.niceCXToRawCX = function(niceCX) {
         
         var rawCX = [];
 
@@ -136,7 +138,7 @@ angular.module('ndexServiceApp')
         return rawCX;
       };
 
-      this.setNodeAttribute = function(niceCX, nodeId, attributeName, attributeValue, attributeDataType) {
+      self.setNodeAttribute = function(niceCX, nodeId, attributeName, attributeValue, attributeDataType) {
 
           if (!attributeName || !attributeValue) {
               return;
@@ -148,12 +150,34 @@ angular.module('ndexServiceApp')
               attributeObject.d = attributeDataType;
           }
 
+          if (!niceCX.nodeAttributes) {
+              niceCX['nodeAttributes'] = {};
+          }
+          if (!niceCX.nodeAttributes.nodes) {
+              niceCX['nodeAttributes']['nodes'] = {};
+          }
           if (!niceCX.nodeAttributes.nodes[nodeId]) {
               niceCX.nodeAttributes.nodes[nodeId] = {};
           }
 
           niceCX.nodeAttributes.nodes[nodeId][attributeName] =  attributeObject;
       };
+
+      var addElementToNiceCX = function(niceCX, aspectName, element) {
+
+          var aspect = niceCX[aspectName];
+
+          if (!aspect) {
+              // add aspect to niceCX
+              aspect = {elements: []};
+
+              niceCX[aspectName] = aspect;
+          }
+
+          aspect.elements.push(element);
+      };
+
+
 
       var handleCxElement = function (aspectName, element, niceCX) {
 
@@ -200,38 +224,66 @@ angular.module('ndexServiceApp')
        * Convert network received in JSON format to NiceCX;
        * Convert only nodes and edges now.
        *-----------------------------------------------------------------------*/
-      this.convertNetworkInJSONToNiceCX = function (network) {
+      self.convertNetworkInJSONToNiceCX = function (network) {
 
-          var nodes = { elements: []};
-          var edges = { elements: []};
+          var niceCX = {};
 
-          $.each(network.nodes, function (index, node) {
+          $.each(network.nodes, function (nodeId, node) {
               var element = {
-                  '@id' : index,
-                  'n': (node & node.name) ? node.name : ""
+                  '@id' : nodeId,
+                  'n': (node && node.name) ? node.name : ""
               };
-              nodes.elements.push(element);
+
+              addElementToNiceCX(niceCX, 'nodes', element);
+              
+              if (node.aliases && node.aliases.length > 0) {
+                  var aliasList = buildAttributesList(network, node.aliases);
+                  self.setNodeAttribute(niceCX, nodeId, 'alias', aliasList, 'list_of_string');
+              }
+
+              if (node.properties && node.properties.length > 0) {
+                  var propertiesList = buildAttributesList(network, node.properties);
+                  self.setNodeAttribute(niceCX, nodeId, 'properties', propertiesList, 'list_of_string');
+              }
+
           });
 
-          $.each(network.edges, function (index, edge) {
+          $.each(network.edges, function (edgeId, edge) {
 
               var element = {
-                  '@id' : index,
+                  '@id' : edgeId,
                   's' : (edge && edge.subjectId) ? edge.subjectId : "",
                   't' : (edge && edge.objectId) ? edge.objectId : ""
               };
 
-              if (network.baseTerms && network.baseTerms[index] && network.baseTerms[index]['name']) {
-                  element['i'] = network.baseTerms[index]['name'];
+              if (edge.predicateId) {
+                  var edgePredicateId = edge.predicateId;
+
+                  if (network.baseTerms && network.baseTerms[edgePredicateId] && network.baseTerms[edgePredicateId]['name']) {
+                      element['i'] = network.baseTerms[edgePredicateId]['name'];
+                  }
               }
 
-              edges.elements.push(element);
+              addElementToNiceCX(niceCX, 'edges', element);
           });
-
-          var niceCX = { 'nodes' : nodes,  'edges' : edges };
 
           return niceCX;
       };
+
+      var buildAttributesList = function(network, arrayOfIDs) {
+          var attributes = [];
+
+          for (var i = 0; i < arrayOfIDs.length; i++) {
+              var baseTermId = arrayOfIDs[i];
+
+              if (network.baseTerms && network.baseTerms[baseTermId] &&
+                  network.baseTerms[baseTermId]['name'])
+              {
+                  attributes.push(network.baseTerms[baseTermId]['name']);
+              }
+          }
+          return attributes;
+      }
 
 
   }]);
