@@ -565,7 +565,12 @@ ndexApp.controller('networkController',
                     return;
                 }
 
-                for( var i = 0; i < networkProperties.length; i++ ) {
+                var length = networkProperties.length;
+                var i = 0;
+
+                // remove all Reference attributes (there should only be one, but we'll
+                // handle the erroneous case when there are more than one)
+                while (i < length) {
 
                     if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
                         (networkProperties[i].predicateString.toLowerCase() === 'reference')) {
@@ -573,9 +578,11 @@ ndexApp.controller('networkController',
                         if (typeof(networkProperties[i].value) !== 'undefined') {
                             networkController.currentNetwork.reference = networkProperties[i].value;
                             networkProperties.splice(i, 1);
-                            return;
+                            length = length - 1;
+                            continue;
                         }
                     }
+                    i = i + 1;
                 }
             }
 

@@ -5,7 +5,7 @@ var ndexApp = angular.module('ndexApp',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
      'ui.grid.selection', 'ngIdle', 'ngclipboard', 'textAngular']);
 //'ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.resizeColumns'
-var net1, net2;
+//var net1, net2;
 var cn, csn;
 var cUser;
 
@@ -32,7 +32,7 @@ ndexApp.config(['$httpProvider', function ($httpProvider) {
 
 }]);
 
-ndexApp.service('sharedProperties', function ($http) {
+ndexApp.service('sharedProperties', function () {
     // this service is going to act as a general global variable throughout the application
     // should consider implementing some degree of relationship with localStorage to guard against
     // refreshes. In fact, we might just use cookies or something else because we may not want this to be permanent
@@ -157,7 +157,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             templateUrl: 'pages/network-view.html',
             controller: 'networkViewController'
         })
-
+            
         // route for the upload page
         .when('/upload', {
             templateUrl: 'pages/upload.html',

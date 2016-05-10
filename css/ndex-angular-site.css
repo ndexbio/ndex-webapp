@@ -88,6 +88,30 @@ section
     position: relative;
 }
 
+tbody > tr:nth-child(odd)
+{
+    background: #EEE;
+    background: linear-gradient(center top, #F2F2F2, #EEE);
+    background: -moz-linear-gradient(center top, #F2F2F2, #EEE);
+    background: -ms-linear-gradient(center top, #F2F2F2, #EEE);
+    background: -o-linear-gradient(center top, #F2F2F2, #EEE);
+    background: -webkit-linear-gradient(top, #F2F2F2, #EEE);
+    border-top: 1px solid #DDD;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#FFF", endColorstr="#DDD");
+}
+
+tbody > tr:nth-child(even)
+{
+    background: #CCC;
+    background: linear-gradient(center top, #EEE, #DDD);
+    background: -moz-linear-gradient(center top, #EEE, #DDD);
+    background: -ms-linear-gradient(center top, #EEE, #DDD);
+    background: -o-linear-gradient(center top, #EEE, #DDD);
+    background: -webkit-linear-gradient(top, #EEE, #DDD);
+    border-top: 1px solid #DDD;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#EEE", endColorstr="#DDD");
+}
+
 td
 {
     margin: 0;
@@ -611,38 +635,36 @@ ul.ndex-nav-pills > li > a:hover {
     display: block;
 }
 
-
-
-
-.networkViewHeader {
+.networkViewFrame {
     border-style: solid;
     border-color: #287EC7;
+}
+
+.networkViewActionsSectionFrame {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.networkViewPadding {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .networkViewHeaderHeader
 {
     font-weight: bold;
-
     font-size: 2em;
     text-align: center;
-
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-
     line-height: 1;
 }
+
 .networkViewHeaderBody
 {
     font-size: 1.3em;
     text-align: center;
-
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-
     line-height: 1;
 }
 
@@ -650,11 +672,26 @@ ul.ndex-nav-pills > li > a:hover {
     font-size: 1.1em;
     font-weight: bold;
 }
+
+.networkPropertiesNameFont {
+    font-size: 0.9em;
+    font-weight: bold;
+}
+.networkPropertiesValueFont {
+    font-size: 0.9em;
+    font-weight: normal;
+}
+.networkPropertiesNameMargins {
+
+    line-height: 1.5em;
+    margin-left: 1em;
+}
+
 .networkVisibilityValue {
     color: forestgreen;
 }
 
-.cytoscape-canvas {
+.cytoscapeCanvas {
     color: #777;
     border: 3px solid #e5e5e5;
     height: 800px;
@@ -671,5 +708,20 @@ ul.ndex-nav-pills > li > a:hover {
     font-size: 1.1em;
     margin-left: 10px;
     margin-right: 10px;
-    //margin-top: 10px
+}
+
+.networkActionsSection {
+    font-size: 1.3em;
+    font-weight: bold;
+
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+
+    line-height: 1;
+}
+
+.actionsLabel {
+    margin-bottom: 10px;
 }

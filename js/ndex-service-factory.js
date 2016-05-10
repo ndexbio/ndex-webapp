@@ -1215,6 +1215,15 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
+
+    factory.getCompleteCXNetworkConfig = function (networkId) {
+        // network/{networkId}/edge/{skip}/{top}
+        // GET to NetworkAService
+        var url = "/network/" + networkId + "/asCX";
+        return this.getGetConfig(url, null);
+    };
+
+
     factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
         var url = "/network/textsearch/" + skipBlocks.toString() + "/" + blockSize.toString();
         var postData = {};
@@ -1280,10 +1289,9 @@ ndexServiceApp.factory('ndexHelper', function () {
             ////console.log(node.name);
             return node.name;
         }
-        else if ("represents" in node && node.represents && network.terms[node.represents]){
-            // return factory.getTermLabel(network.terms[node.represents], network);
-
-
+        else if ("represents" in node && node.represents &&
+            network && network.terms && network.terms[node.represents]){
+            
             // calculate termType here
             var termType;
             if ("representsTermType" in node){
@@ -1608,8 +1616,7 @@ ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', f
                     }),
 
                 layout: {
-                    //name : 'cose',
-                    //padding: 10
+                 //padding: 10
                     name: 'circle',
                     padding: 10
                 },
@@ -1661,7 +1668,7 @@ ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', f
         cy.load(elements);
 
     };
-
+    
 
     return factory;
 }]);
