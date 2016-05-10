@@ -32,6 +32,7 @@ ndexApp.config(['$httpProvider', function ($httpProvider) {
 
 }]);
 
+/*
 ndexApp.service('sharedProperties', function () {
     // this service is going to act as a general global variable throughout the application
     // should consider implementing some degree of relationship with localStorage to guard against
@@ -87,7 +88,7 @@ ndexApp.service('sharedProperties', function () {
         }
     }
 });
-
+*/
 
 // configure our routes
 ndexApp.config(['$routeProvider', function ($routeProvider) {

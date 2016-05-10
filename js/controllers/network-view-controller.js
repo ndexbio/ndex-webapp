@@ -1,10 +1,10 @@
 ndexApp.controller('networkViewController',
-    ['config','provenanceService','ndexServiceCX', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
+    ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
         '$route', '$filter', '$location','$q',
-        function (config, provenanceService, ndexServiceCX, ndexService, ndexConfigs, cyService, cxNetworkUtils,
-                   ndexUtility, ndexHelper, ndexNavigation,
+        function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
+                  ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
                   $route, $filter, $location, $q)
         {
@@ -62,23 +62,7 @@ ndexApp.controller('networkViewController',
              * @param propertyName
              * @returns {undefined}
              */
-            var getNetworkProperty = function(networkProperties, propertyName)
-            {
-                if ('undefined'===typeof(networkProperties) || !propertyName) {
-                    return undefined;
-                }
 
-                for( var i = 0; i < networkProperties.length; i++ ) {
-
-                    if (!networkProperties[i].predicateString) {
-                        continue;
-                    }
-                    if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase())) {
-                            return networkProperties[i].value ;
-                    }
-                }
-                return undefined;
-            }
 
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
@@ -203,36 +187,6 @@ ndexApp.controller('networkViewController',
                 
             }
 
-            var getNetworkReference = function(networkProperties)
-            {
-                networkController.currentNetwork.reference = "";
-
-                if ('undefined'===typeof(networkProperties)) {
-                    return;
-                }
-
-                var length = networkProperties.length;
-                var i = 0;
-
-                // remove all Reference attributes (there should only be one, but we'll
-                // handle the erroneous case when there are more than one)
-                while (i < length) {
-
-                    if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
-                        (networkProperties[i].predicateString.toLowerCase() === 'reference')) {
-
-                        if (typeof(networkProperties[i].value) !== 'undefined') {
-                            networkController.currentNetwork.reference = networkProperties[i].value;
-                            networkProperties.splice(i, 1);
-                            length = length - 1;
-                            continue;
-                        }
-                    }
-                    i = i + 1;
-                }
-            }
-
-
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
                 var request1 = null;
@@ -240,10 +194,9 @@ ndexApp.controller('networkViewController',
 
                 // get network summary
                 // keep a reference to the promise
-                (request1 = ndexService.getNetwork(networkExternalId) )
+                (request1 = networkService.getNetworkSummaryFromNdex(networkExternalId) )
                     .success(
                         function (network) {
-                            cn = network;
                             networkController.currentNetwork = network;
 
                             if (!network.name) {
@@ -267,15 +220,15 @@ ndexApp.controller('networkViewController',
                             networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
                             //getNetworkAdmins();
 
-                            getNetworkReference(networkController.currentNetwork.properties);
+//                            getNetworkReference(networkController.currentNetwork.properties);
 
                             var sourceFormat =
-                                getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
+                                networkService.getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
-                            //networkController.currentNetwork.reference =
-                            //    getNetworkProperty(networkController.currentNetwork.properties,'Reference');
+                            networkController.currentNetwork.reference =
+                                getNetworkProperty(networkController.currentNetwork.properties,'Reference');
                             networkController.currentNetwork.rightsHolder =
                                 getNetworkProperty(networkController.currentNetwork.properties,'rightsHolder');
                             networkController.currentNetwork.rights =
