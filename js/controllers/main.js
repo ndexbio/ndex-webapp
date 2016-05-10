@@ -11,7 +11,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.url = $location; //expose the service to the scope for nav
 
         $scope.main.loggedIn = false;
-        $scope.main.showSignIn = false;
+        //$scope.main.showSignIn = false;
 
         $scope.$on('LOGGED_IN', function () {
             //listener for changes in log in.
@@ -29,17 +29,29 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.main.showSignIn = false;
         });
 
-        if( $location.path() == '/' )
+        if( $location.path() == '/' || $location.path() == '/signIn')
             $scope.main.hideSearchBar = true;
         else
             $scope.main.hideSearchBar = false;
 
         $scope.$on('$routeChangeSuccess',function(){
-            if( $location.path() == '/' )
+            if( $location.path() == '/' || $location.path() == '/signIn')
                 $scope.main.hideSearchBar = true;
             else
                 $scope.main.hideSearchBar = false;
         });
+
+        $scope.main.goToCurrentNetwork = function(){
+            if (sharedProperties.currentNetworkId) {
+                $location.path("/network/" + sharedProperties.currentNetworkId);
+            }
+        };
+
+        $scope.main.goToCurrentUser = function(){
+            if (sharedProperties.currentUserId) {
+                $location.path("/user/" + sharedProperties.currentUserId);
+            }
+        };
 
 
         // check configuration parameters loaded from ndex-webapp-config.js;
@@ -65,12 +77,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 $scope.main.serverIsDown = true;
             });
 
-
-
         $scope.main.startSignIn = function()
         {
-            $scope.main.showSignIn = true;
-            $location.path("/");
+            $location.path("/signIn");
         };
 
         $scope.main.isInternetExplorerUsed = function() {
@@ -102,7 +111,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
             // other browser
             return false;
-        }
+        };
 
 
         $scope.main.signout = function () {
@@ -166,91 +175,136 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
-        $scope.main.searchType = 'Networks';
+        /*----------------------------------------------
+         Search
+         ----------------------------------------------*/
+
+        $scope.main.searchType = 'All';
+        const SEARCH_PLACEHOLDER_TEXT_MAP = {
+            All : "Search for networks, users, and groups",
+            Networks : "Search for networks",
+            Users : "Search for users",
+            Groups : "Search for groups"
+        };
+        
+        $scope.main.getSearchPlaceholder = function(){
+            //console.log("placeholder for " + $scope.main.searchType);
+            return SEARCH_PLACEHOLDER_TEXT_MAP[$scope.main.searchType];
+        };
+        
         $scope.main.searchString = '';
         $scope.main.search = function () {
-            ////console.log("navbar search");
-            //could user url instead, good for refresh
-
             // searchStringEncoded will be either 1) a string encoded as a valid component of URI (spaces and
             // special characters replaced with their Hex representations), or 2) "" in case user entered nothing
             // in the search field and thus runs the search with an empty
             var searchStringEncoded = encodeURIComponent($scope.main.searchString);
-
-            if ($scope.main.searchType == 'Networks') {
-
-                var absURL1 = $location.absUrl();
-
-                if ($location.path() != '/searchNetworks') {
-                    $location.path("/searchNetworks");
-                }
-
-                // add "?networks=<searchStringEncoded>" to the URL;
-                // we do it to be able to get back to this search with the browser Back button
-                $location.search({"networks": searchStringEncoded});
-
-                var absURL2 = $location.absUrl();
-
-                if (absURL1 === absURL2) {
-                    // absURL1 and absURL2 are the same, it means that
-                    // the user is re-issuing the last search, and we need to reload
-                    // the route to enforce search
-                    $route.reload();
-                }
-
-            } else if ($scope.main.searchType == 'Users') {
-
-                var absURL1 = $location.absUrl();
-
-                if ($location.path() != '/searchUsers') {
-                    $location.path("/searchUsers");
-                }
-
-                // add "?users=<searchStringEncoded>" to the URL;
-                // we do it to be able to get back to this search with the browser Back button
-                $location.search({"users": searchStringEncoded});
-
-                var absURL2 = $location.absUrl();
-
-                if (absURL1 === absURL2) {
-                    // absURL1 and absURL2 are the same, it means that
-                    // the user is re-issuing the last search, and we need to reload
-                    // the route to enforce search
-                    $route.reload();
-                }
-
-            } else if ($scope.main.searchType == 'Groups') {
-
-                var absURL1 = $location.absUrl();
-
-                if ($location.path() != '/searchGroups') {
-                    $location.path("/searchGroups");
-                }
-
-                // add "?groups=<searchStringEncoded>" to the URL;
-                // we do it to be able to get back to this search with the browser Back button
-                $location.search({"groups": searchStringEncoded});
-
-                var absURL2 = $location.absUrl();
-
-                if (absURL1 === absURL2) {
-                    // absURL1 and absURL2 are the same, it means that
-                    // the user is re-issuing the last search, and we need to reload
-                    // the route to enforce search.
-                    $route.reload();
-                }
+            var searchURL = '/search';
+            if ($location.path() != searchURL) {
+                $location.path(searchURL);
+            }
+            var urlBeforePathChange = $location.absUrl();
+            // add "?networks=<searchStringEncoded>" to the URL;
+            // we do it to be able to get back to this search with the browser Back button
+            $location.search({'searchType': $scope.main.searchType, 'searchString': searchStringEncoded});
+            var urlAfterPathChange = $location.absUrl();
+            if (urlBeforePathChange === urlAfterPathChange) {
+                // if before and after urls are the same, it means that
+                // the user is re-issuing the last search, and we need to reload
+                // the route to enforce search
+                $route.reload();
             }
         };
 
-        //navbar initializations
-        if ($location.path() == '/searchNetworks')
-            $scope.main.searchType = 'Networks';
-        if ($location.path() == '/searchUsers')
-            $scope.main.searchType = 'Users';
-        if ($location.path() == '/searchGroups')
-            $scope.main.searchType = 'Groups';
+        // make search type sticky
+        if ($location.path() == '/search')
+            $scope.main.searchType = $location.search().searchType;
 
-        //end navbar code
+
+        $scope.main.searchAllExamples = [
+            {
+                description: 'Any mention of "melanoma"',
+                searchString: 'melanoma',
+                searchType: 'All'
+            },
+            
+            {
+                description: 'Any mention of "RBL2"',
+                searchString: 'RBL2',
+                searchType: 'All'
+            }];
+
+        $scope.main.searchNetworksExamples = [
+
+            {
+                description: 'Mentioning any term in a list: "TP53 MDM2 RB1 CDK4"',
+                searchString: 'TP53 MDM2 RB1 CDK4',
+                searchType: 'Networks'
+            },
+            
+            {
+                description: 'By wildcard terms: "mel*"',
+                searchString: 'mel*',
+                searchType: 'Networks'
+            },
+/*
+            {
+                description: 'By network id: "uuid:"',
+                searchString: 'uuid:',
+                searchType: 'Networks'
+            },
+*/
+            {
+                description: 'By wildcard and property: "name:mel*"',
+                searchString: 'name:mel*',
+                searchType: 'Networks'
+            },
+
+            {
+                description: 'By numeric property range: "nodeCount:[11 TO 79]"',
+                searchString: 'nodeCount:[11 TO 79]',
+                searchType: 'Networks'
+            },
+
+            {
+                description: 'With "AND" for co-occurance : "TP53 AND BARD1"',
+                searchString: 'TP53 AND BARD1',
+                searchType: 'Networks'
+            },
+
+            {
+                description: 'With more complex "AND" : "NCI AND edgeCount:[100 TO 300]"',
+                searchString: 'NCI AND edgeCount:[100 TO 300]',
+                searchType: 'Networks'
+            },
+
+            {
+                description: 'Created between 1.1.16 and 4.27.16 : "creationTime:[2016-01-01T00:00:01Z TO 2016-04-27T23:59:59Z]"',
+                searchString: 'creationTime:[2016-01-01T00:00:01Z TO 2016-04-27T23:59:59Z]',
+                searchType: 'Networks'
+            }
+            /*
+             name:metabolism AND edgeCount:[1 TO 5000]
+             creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]
+
+            */
+
+
+        ];
+
+        $scope.main.runSearchExample = function(example){
+            $scope.main.searchString = example.searchString;
+            $scope.main.searchType = example.searchType;
+            $scope.main.search();
+
+        };
+
+        $scope.main.browse = function(){
+            $scope.main.searchString = '';
+            $scope.main.searchType = 'All';
+            $scope.main.search();
+        };
+
+        //end Search code
 
         //initializions for page refresh
         var accountName = ndexUtility.getLoggedInUserAccountName();
@@ -260,154 +314,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.$emit('LOGGED_IN');
         }
 
-        //---------------------------------------------
-        // SignIn / SignUp Handler
-        //---------------------------------------------
 
-        $scope.signIn = {};
-        $scope.signIn.newUser = {};
-
-        $scope.signIn.submitSignIn = function ()
-        {
-            ndexUtility.clearUserCredentials();
-            var url = ndexService.getNdexServerUri() + '/user/authenticate';
-            var config =
-            {
-                headers: {
-                    'Authorization':  "Basic " + btoa($scope.signIn.accountName + ":" + $scope.signIn.password)
-                }
-            };
-            $http.get(url, config).
-                success(function(data, status, headers, config, statusText) {
-                    sharedProperties.setCurrentUser(data.externalId, data.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-                    ndexUtility.setUserCredentials(data.accountName, data.externalId, $scope.signIn.password);
-                    $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
-                    $location.path("/user/" + data.externalId);
-                    $scope.signIn.accountName = null;
-                    $scope.signIn.password = null;
-                }).
-                error(function(data, status, headers, config, statusText) {
-                    if (status === 401) {
-                        $scope.signIn.message = "Invalid password for user " + $scope.signIn.accountName + ".";
-                    } else if (status === 404) {
-                        $scope.signIn.message = "User " + $scope.signIn.accountName  + " is not known.";
-                    } else {
-                        $scope.signIn.message = "Unexpected error during sign-in with status " + status + ".";
-                    }
-                });
-        };
-
-        $scope.signIn.cancel = function()
-        {
-            $scope.main.showSignIn=false;
-        };
-
-        $scope.signIn.openSignUp = function () {
-            $scope.signIn.modalInstance = $modal.open({
-                templateUrl: 'signUp.html',
-                scope: $scope,
-                backdrop: 'static'
-            });
-        };
-
-        $scope.signIn.cancelSignUp = function () {
-            $scope.signIn.modalInstance.close();
-            $scope.signIn.modalInstance = null;
-            delete $scope.signIn.signUpErrors;
-            $scope.signIn.newUser = {};
-        };
-
-        $scope.$watch("signIn.newUser.password", function() {
-            delete $scope.signIn.signUpErrors;
-        });
-        $scope.$watch("signIn.newUser.passwordConfirm", function() {
-            delete $scope.signIn.signUpErrors;
-        });
-
-        $scope.signIn.signUp = function () {
-            if ($scope.isProcessing)
-                return;
-            $scope.isProcessing = true;
-            //check if passwords match, else throw error
-            if ($scope.signIn.newUser.password != $scope.signIn.newUser.passwordConfirm) {
-                $scope.signIn.signUpErrors = 'Passwords do not match';
-                $scope.isProcessing = false;
-                return;
-            }
-
-            ndexService.createUser($scope.signIn.newUser,
-                function (userData) {
-
-                    if (userData.externalId !== null) {
-                        sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
-                        ndexUtility.setUserInfo(userData.accountName, userData.externalId);
-                        $scope.$emit('LOGGED_IN');
-                        $scope.signIn.cancelSignUp();// doesnt really cancel
-                        $location.path('user/' + userData.externalId);
-                        $scope.isProcessing = false;
-
-                    } else {
-
-                        $scope.isProcessing = false;
-                        $scope.signIn.cancelSignUp();  // doesnt really cancel
-
-                        // display modal asking to check email in order to activate the account
-                        $scope.signIn.modalInstance = $modal.open({
-                            templateUrl: 'signUpSuccess.html',
-                            scope: $scope,
-                            backdrop: 'static'
-                        });
-                    }
-                },
-                function (error) {
-                    $scope.signIn.signUpErrors = error.data.message;
-                    $scope.isProcessing = false;
-                    //console.log(error)
-                });
-        };
-
-        $scope.forgot = {};
-
-        $scope.forgotPassword = function()
-        {
-            var modalInstance = $modal.open({
-                templateUrl: 'forgotPassword.html',
-                controller: function ($scope, $modalInstance, $log, forgot)
-                {
-                    $scope.forgot = forgot;
-                    $scope.resetPassword = function ()
-                    {
-                        var url = ndexService.getNdexServerUri() + '/user/forgot-password';
-                        $http.post(url, $scope.forgot.accountName ).
-                            success(function(data, status, headers, config) {
-                                forgot.done = true;
-                                forgot.errorMsg = null;
-                                forgot.successMsg = "A new password has been sent to the email of record."
-                            }).
-                            error(function(data, status, headers, config) {
-                                forgot.errorMsg = data.message;
-                            });
-                    };
-
-                    $scope.cancel = function () {
-                        $modalInstance.dismiss('cancel');
-                    };
-                },
-                resolve:
-                {
-                    forgot: function ()
-                    {
-                        return $scope.forgot;
-                    }
-                }
-            });
-
-            modalInstance.result.finally( function()
-            {
-               $scope.forgot = {};
-            });
-
-        };
+        /*----------------------------------------------
+         Citing NDEx
+         ----------------------------------------------*/
 
 
         $scope.NDEx = {};
@@ -443,6 +353,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
+        /*----------------------------------------------
+         External Link Handling
+         ----------------------------------------------*/
         /*
          * As argument, this function takes one of configurable navigation bar
          * menu objects specified in ndex-webapp-config.js (i.e., logoLink, aboutLink,
@@ -469,12 +382,17 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         };
 
-        /*
+        /*----------------------------------------------
          * This function closes/collapses the opened hamburger menu after user selected (clicked) an item from this menu.
-         */
+         ----------------------------------------------*/
         $scope.collapseHamburgerMenu = function() {
             $(".navbar-collapse.in").collapse('hide');
         };
+
+
+        /*----------------------------------------------
+         * Use an alert to let the user know that the citation has been copied to the clipboard
+         ----------------------------------------------*/
 
         $scope.showNDExCitationInClipboardMessage = function(redirectObj) {
 
@@ -485,6 +403,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
             alert(message);
         };
+
+
+        /*----------------------------------------------
+         Ensure that Config Parameters have valid values
+         ----------------------------------------------*/
 
         function initMissingConfigParams(config) {
 

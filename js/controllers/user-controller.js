@@ -561,7 +561,7 @@ ndexApp.controller('userController',
                     // We are getting networks of some user. This is the scenario where we click a user/account name
                     // from the list of found networks on the Network search page (when we are logged in or anonymously)
                     userController.networkQuery.permission = null;
-                    userController.networkQuery.includeGroups = false;
+                    userController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
                     userController.networkQuery.accountName = cUser.accountName;
 
                 } else {
@@ -569,7 +569,7 @@ ndexApp.controller('userController',
                     // We are getting networks we (the logged in user) have access to (that we and other accounts own).
                     // We are getting networks that we have explicit READ permission at minimum.
                     userController.networkQuery.permission = "READ";
-                    userController.networkQuery.includeGroups = false;
+                    userController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
                 }
 
                 ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,

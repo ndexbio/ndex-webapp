@@ -155,12 +155,12 @@ ndexApp.controller('searchNetworksController',
             request.abort();
         };
 
-        searchController.includeGroups = true;
+        searchController.networkSearchIncludeNetworksByGroupPermissions = true;
 
         (request = ndexService.findNetworks(searchController.searchString, 
                                             searchController.accountName, 
                                             searchController.permission,
-                                            searchController.includeGroups,
+                                            searchController.networkSearchIncludeNetworksByGroupPermissions,
                                             searchController.skip,
                                             searchController.skipSize) )
             .success(
