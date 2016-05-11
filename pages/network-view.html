@@ -274,8 +274,8 @@
 
                                 <div class="networkPropertiesNameMargins">
 
-                                    <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
-                                        <span ng-show="!networkController.isPredicateReservedWord(property.predicateString)">
+                                    <span class='' ng-repeat='property in networkController.otherProperties'>
+                                        <span >
                                            <span class="networkPropertiesNameFont">{{property.predicateString}}:
                                            </span>
                                            <span class="networkPropertiesValueFont" ng-hide='property.value.toString().length > 40'
@@ -292,10 +292,8 @@
 
                                 </div>
 
-                                <h5 ng-show='!networkController.readOnlyChecked'>
-                                    <a class='btn-link'
-                                       ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
-                                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
+                                <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
+                                    <a class='btn-link' ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
                                         Add / Edit Properties
                                     </a>
                                 </h5>

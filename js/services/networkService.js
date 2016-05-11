@@ -71,7 +71,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        factory.currentNetworkSummary = network;
+                        currentNetworkSummary = network;
                         handler(network);
                     }
                 );
@@ -223,13 +223,22 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return promise;
         };
 
+        /**
+         * Return the value of a given property in the network. I assume the perperty names a unique in network.
+         * Property name is case insensitive.
+         * @param networkProperties
+         * @param propertyName
+         * @returns {undefined}
+         */
+
         factory.getNetworkProperty = function( propertyName)
         {
             if ('undefined'===typeof(currentNetworkSummary) || !propertyName) {
                 return undefined;
             }
 
-            for( var i = 0; i < currentNetworkSummary.networkProperties.length; i++ ) {
+            var networkProperties = currentNetworkSummary.properties;
+            for( var i = 0; i < networkProperties.length; i++ ) {
 
                 if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase())) {
                     return networkProperties[i].value ;
@@ -238,17 +247,35 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return undefined;
         }
 
+        factory.getPropertiesExcluding = function (excludeList) {
+            var result = [];
+            var excludeSet = new Set();
+            for ( var i = 0 ; i < excludeList.length ; i++ ) {
+                excludeSet.add(excludeList[i].toLowerCase());
+            }
+            var networkProperties = currentNetworkSummary.properties;
+            for( i = 0; i < networkProperties.length; i++ ) {
+                if (!excludeSet.has(networkProperties[i].predicateString.toLowerCase()) ){
+                    result.push(networkProperties[i]) ;
+                }
+            }
+            return result;
+        }
+        
         factory.setNetworkProperty = function ( propertyName, propertyValue, propertyValueType ) {
 
             var propObject = { "predicateString": propertyName, "value": propertyValue,
                 "dataType": (typeof propertyValueType !== 'undefined ') ? b : 'string'  };
-            for( var i = 0; i < currentNetworkSummary.networkProperties.length; i++ ) {
 
-                if ((currentNetworkSummary.networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase())) {
-                    currentNetworkSummary.networkProperties[i] = propObject;
+            var networkProperties = currentNetworkSummary.properties;
+
+            for( var i = 0; i < networkProperties.length; i++ ) {
+
+                if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase())) {
+                    networkProperties[i] = propObject;
                     return;
                 }
-                currentNetworkSummary.networkProperties.push(propObject);
+                networkProperties.push(propObject);
             }
         }
         

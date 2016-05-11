@@ -4,7 +4,7 @@ ndexApp.controller('networkViewController',
         'sharedProperties', '$scope', '$routeParams', '$modal',
         '$route', '$filter', '$location','$q',
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
-                  ndexUtility, ndexHelper, ndexNavigation,
+                   ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
                   $route, $filter, $location, $q)
         {
@@ -15,8 +15,6 @@ ndexApp.controller('networkViewController',
 
 
             $scope.networkController = {};
-
-
 
             var networkController  = $scope.networkController;
 
@@ -55,18 +53,11 @@ ndexApp.controller('networkViewController',
                 "id": "1"
             };
 
-            /**
-             * Return the value of a given property in the network. I assume the perperty names a unique in network.
-             * Property name is case sensitive.
-             * @param networkProperties
-             * @param propertyName
-             * @returns {undefined}
-             */
 
 
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
-            }
+            };
 
             $scope.getProvenanceTitle = function(provenance)
             {
@@ -78,19 +69,7 @@ ndexApp.controller('networkViewController',
                 $scope.$apply(function () {
                     networkController.displayProvenance = obj;
                 });
-            }
-
-
-            networkController.isPredicateReservedWord = function(wordToCheck) {
-                var reservedWords = ['rights', 'rightsHolder'];
-                
-                if (!wordToCheck) {
-                    return true;
-                }
-
-                return reservedWords.indexOf(wordToCheck) > -1;
-            }
-            //                  local functions
+            };
 
 
             var getNetworkAdmins = function()
@@ -136,13 +115,10 @@ ndexApp.controller('networkViewController',
             var getNetworkAndDisplay = function (networkId, callback) {
                 var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
-                var blockSize = config.networkTableLimit;
-                var skipBlocks = 0;
-
 
                 if ( networkController.currentNetwork.edgeCount > config.networkDisplayLimit) {
                     // get edges, convert to CX obj
-                    (request2 = ndexServiceCX.getSampleCXNetworkFromOldAPI(networkId, config.networkTableLimit) )
+                    (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkTableLimit) )
                         .success(
                             function (network) {
 
@@ -163,7 +139,7 @@ ndexApp.controller('networkViewController',
                         );
                 } else {
                     // get complete CX stream and build the CX network object.
-                    (request2 = ndexServiceCX.getCXNetwork(networkId) )
+                    (request2 = networkService.getCXNetwork(networkId) )
                         .success(
                             function (network) {
 
@@ -185,16 +161,14 @@ ndexApp.controller('networkViewController',
 
                 }
                 
-            }
+            };
 
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
-                var request1 = null;
-                var request2 = null;
 
                 // get network summary
                 // keep a reference to the promise
-                (request1 = networkService.getNetworkSummaryFromNdex(networkExternalId) )
+                networkService.getNetworkSummaryFromNdex(networkExternalId) 
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
@@ -217,23 +191,18 @@ ndexApp.controller('networkViewController',
                                 }
                             });
                             
-                            networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
-                            //getNetworkAdmins();
-
-//                            getNetworkReference(networkController.currentNetwork.properties);
+                            networkController.readOnlyChecked = networkController.currentNetwork.readOnlyCommitId > 0;
+                            getNetworkAdmins();
 
                             var sourceFormat =
-                                networkService.getNetworkProperty(networkController.currentNetwork.properties, 'sourceFormat');
+                                networkService.getNetworkProperty('sourceFormat');
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
-                            networkController.currentNetwork.reference =
-                                getNetworkProperty(networkController.currentNetwork.properties,'Reference');
-                            networkController.currentNetwork.rightsHolder =
-                                getNetworkProperty(networkController.currentNetwork.properties,'rightsHolder');
-                            networkController.currentNetwork.rights =
-                                getNetworkProperty(networkController.currentNetwork.properties,'rights');
-
+                            networkController.currentNetwork.reference = networkService.getNetworkProperty('Reference');
+                            networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty('rightsHolder');
+                            networkController.currentNetwork.rights = networkService.getNetworkProperty('rights');
+                            networkController.otherProperties = networkService.getPropertiesExcluding(['rights','rightsHolder','Reference','sourceFormat']);
                         }
                     )
                     .error(
