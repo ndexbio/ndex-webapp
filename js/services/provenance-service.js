@@ -3,12 +3,11 @@
  */
 
 
-ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter',
-    function (ndexService, $location, $filter) {
+ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$location', '$filter',
+    function (networkService, ndexService, $location, $filter) {
 
         var factory = {};
-
-
+        
         var extractUuidFromUri = function( uri )
         {
             var idStart = uri.lastIndexOf('/');
@@ -88,7 +87,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
             var uuid = extractUuidFromUri(prov.uri);
             provMap[node_id].uuid = uuid;
             provMap[node_id].host = extractHostFromUri(prov.uri);
-            if( uuid != cn.externalId )
+            if( uuid !== networkService.getCurrentNetworkSummary().externalId )
             {
                 //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
                 //not be set.

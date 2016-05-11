@@ -725,3 +725,10 @@ ul.ndex-nav-pills > li > a:hover {
 .actionsLabel {
     margin-bottom: 10px;
 }
+
+.wrappedCell {
+    width:100%;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+}

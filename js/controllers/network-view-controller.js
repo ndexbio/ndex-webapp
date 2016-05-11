@@ -2,11 +2,11 @@ ndexApp.controller('networkViewController',
     ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
-        '$route', '$filter', '$location','$q',
+        '$route', '$filter',/* '$location','$q',*/
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
-                  $route, $filter, $location, $q)
+                  $route, $filter /*, $location, $q */)
         {
             var self = this;
             
