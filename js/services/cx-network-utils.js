@@ -162,6 +162,39 @@ angular.module('ndexServiceApp')
 
           niceCX.nodeAttributes.nodes[nodeId][attributeName] =  attributeObject;
       };
+      
+
+      var addNodePropertyToNiceCX = function(niceCX, nodeId, propertyObj) {
+
+          if (!propertyObj) {
+              return;
+          }
+
+          var attributeName  = (propertyObj['predicateString']) ? propertyObj['predicateString'] : null;
+          var attributeValue = (propertyObj['value']) ? propertyObj['value'] : null;
+          var attributeType  = (propertyObj['dataType']) ? propertyObj['dataType'] : null;
+
+          self.setNodeAttribute(niceCX, nodeId, attributeName, attributeValue, attributeType);
+      };
+
+      var addEdgePropertyToNiceCX = function(niceCX, edgeId, propertyObj) {
+
+          if (!propertyObj) {
+              return;
+          }
+
+          var po = Number(edgeId);
+          var n  = (propertyObj['predicateString']) ? propertyObj['predicateString'] : null;
+          var v  = (propertyObj['value']) ? propertyObj['value'] : null;
+          var d  = (propertyObj['dataType']) ? propertyObj['dataType'] : null;
+
+          var element = {
+              'po': po, 'n' : n, 'v' : v, 'd' : d
+          }
+
+          addElementToNiceCX(niceCX, 'edgeAttributes', element);
+
+      };
 
       var addElementToNiceCX = function(niceCX, aspectName, element) {
 
@@ -177,6 +210,23 @@ angular.module('ndexServiceApp')
           aspect.elements.push(element);
       };
 
+      var addElementToNiceCXForLookup = function(niceCX, aspectName, id, element) {
+
+          if (!aspectName || !id || !element) {
+              return;
+          }
+
+          var aspect = niceCX[aspectName];
+
+          if (!aspect) {
+              // add aspect to niceCX
+              aspect = {elements: {}};
+
+              niceCX[aspectName] = aspect;
+          }
+
+          aspect.elements[id] = element;
+      };
 
 
       var handleCxElement = function (aspectName, element, niceCX) {
@@ -228,22 +278,54 @@ angular.module('ndexServiceApp')
 
           var niceCX = {};
 
+          $.each(network.citations, function (citationId, citation) {
+
+              //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citation);
+
+              /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
+              if (citation) {
+
+                  var citationElement = {
+                      "@id"            : (citation.id)          ? citation.id : null,
+                      "dc:identifier"  : (citation.identifier)  ? citation.identifier : null,
+                      "dc:title"       : (citation.title)       ? citation.title : null,
+                      "dc:type"        : (citation.idType)      ? citation.idType : null,
+                      "dc:description" : (citation.description) ? citation.description : null,
+
+                  }
+              }
+
+              // ALSO:  do we want to add citationElement as a lookup with citationID as the key --
+              // if yest, then use addElementToNiceCXForLookup() below instead of addElementToNiceCX()
+              //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citationElement);
+
+              addElementToNiceCX(niceCX, 'citations', citationElement);
+          });
+
+
           $.each(network.nodes, function (nodeId, node) {
               var element = {
-                  '@id' : nodeId,
-                  'n': (node && node.name) ? node.name : ""
+                  '@id' : Number(nodeId),
+                  'n': (node && node.name) ? node.name : null
               };
 
               addElementToNiceCX(niceCX, 'nodes', element);
               
               if (node.aliases && node.aliases.length > 0) {
-                  var aliasList = buildAttributesList(network, node.aliases);
+                  var aliasList = buildListOfAliasIDs(network, node.aliases);
                   self.setNodeAttribute(niceCX, nodeId, 'alias', aliasList, 'list_of_string');
               }
 
+
               if (node.properties && node.properties.length > 0) {
-                  var propertiesList = buildAttributesList(network, node.properties);
-                  self.setNodeAttribute(niceCX, nodeId, 'properties', propertiesList, 'list_of_string');
+
+                  for (var i = 0; i < node.properties.length; i++) {
+
+                      var propertyObj = node.properties[i];
+
+                      addNodePropertyToNiceCX(niceCX, nodeId, propertyObj);
+                  }
+
               }
 
           });
@@ -251,9 +333,9 @@ angular.module('ndexServiceApp')
           $.each(network.edges, function (edgeId, edge) {
 
               var element = {
-                  '@id' : edgeId,
-                  's' : (edge && edge.subjectId) ? edge.subjectId : "",
-                  't' : (edge && edge.objectId) ? edge.objectId : ""
+                  '@id' : Number(edgeId),
+                  's' : (edge && edge.subjectId) ? edge.subjectId : null,
+                  't' : (edge && edge.objectId) ? edge.objectId : null
               };
 
               if (edge.predicateId) {
@@ -265,12 +347,36 @@ angular.module('ndexServiceApp')
               }
 
               addElementToNiceCX(niceCX, 'edges', element);
+
+
+              if (edge.properties && edge.properties.length > 0) {
+
+                  for (var i = 0; i < edge.properties.length; i++) {
+
+                      var propertyObj = edge.properties[i];
+
+                      addEdgePropertyToNiceCX(niceCX, edgeId, propertyObj);
+                  }
+              }
+
+              if (edge.citationIds && edge.citationIds.length > 0) {
+
+                  for (var i = 0; i < edge.citationIds.length; i++) {
+
+                      var citationId = edge.citationIds[i];
+
+                      //console.log('citation Id = ' + citationId);
+
+
+                  }
+              }
+
           });
 
           return niceCX;
       };
 
-      var buildAttributesList = function(network, arrayOfIDs) {
+      var buildListOfAliasIDs = function(network, arrayOfIDs) {
           var attributes = [];
 
           for (var i = 0; i < arrayOfIDs.length; i++) {
