@@ -11,8 +11,10 @@
                 </div>
 
                 <div class="networkViewHeaderBody networkViewPadding" id="networkViewHeaderBodyId">
-                    <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}} &nbsp;&nbsp;
-                    <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}} &nbsp;&nbsp;
+                    <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
+                    &nbsp;&nbsp;
+                    <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
+                    &nbsp;&nbsp;
 
                     <span class="networkPropertyName" ng-show="networkController.isAdmin">
                         <input type="checkbox"
@@ -35,15 +37,15 @@
 <div class="row">
     <div class="col-md-6">
 
-        <div class="container-fluid">
+        <div>
 
-            <div class="cytoscapeCanvas" id="cytoscape-canvas"></div>
+            <div class="cytoscapeCanvas" id="cytoscape-canvas" onresize="networkController.resizeCygraph()"></div>
 
             <div class="rowWithOneLineTopPad"></div>
 
             <div class="networkViewFrame networkActionsSection">
 
-                <div class="actionsLabel">Actions: </div>
+                <div class="actionsLabel">Actions:</div>
 
                 <div class="btn-group buttonWithMarginBottom">
 
@@ -51,7 +53,7 @@
                                 ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
                         <a class="btn btn-primary customButtonWidth">
                             <edit-network-summary-modal
-                                ndex-data='networkController.currentNetwork'>
+                                    ndex-data='networkController.currentNetwork'>
                             Edit Network Profile
                             </edit-network-summary-modal>
                         </a>
@@ -65,27 +67,29 @@
 
                             <a class="btn btn-primary customButtonWidth">
                                 <create-export-network-task
-                                    ndex-data='networkController.currentNetwork'>
+                                        ndex-data='networkController.currentNetwork'>
                                     Export Network
                                 </create-export-network-task>
                             </a>
                     </span>
 
 
-                    <span ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead' >
+                    <span ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead'>
                         <a class="btn btn-primary customButtonWidth">
                             <create-request-network
-                                ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
+                                    ndex-data='networkController.currentNetwork'
+                                    privileges="networkController.privilegeLevel">
                                 Ask for More Access!
                             </create-request-network>
                         </a>
                     </span>
 
-                <!--<span ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>-->
+                    <!--<span ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>-->
                     <span ng-hide='true'>
                         <a class="btn btn-primary customButtonWidth">
                             <create-request-network
-                                    ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
+                                    ndex-data='networkController.currentNetwork'
+                                    privileges="networkController.privilegeLevel">
                                 Ask for Access Privileges!
                             </create-request-network>
                         </a>
@@ -94,24 +98,24 @@
 
                     <span ng-show='networkController.isLoggedIn && networkController.isAdmin'>
                         <a class="btn btn-primary customButtonWidth"
-                            ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
+                           ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                                 Manage Access
                         </a>
                     </span>
 
-                    <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL"' >
+                    <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL"'>
                         <a class="btn btn-primary customButtonWidth">
-                            <archive-bel-namespaces  ndex-data='networkController.currentNetwork.externalId'>
+                            <archive-bel-namespaces ndex-data='networkController.currentNetwork.externalId'>
                                 Archive BEL Namespaces
                             </archive-bel-namespaces>
                         </a>
                     </span>
 
                     <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL" &&
-                        networkController.numberOfBelNetworkNamespacesAsInt > 0' >
+                        networkController.numberOfBelNetworkNamespacesAsInt > 0'>
                         <a class="btn btn-primary customButtonWidth">
-                            <download-bel-namespace  ndex-network-uuid='networkController.currentNetwork.externalId'
-                                                 ndex-network-name='networkController.currentNetwork.name'>
+                            <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
+                                                    ndex-network-name='networkController.currentNetwork.name'>
                                 Download Namespace
                             </download-bel-namespace>
                         </a>
@@ -139,7 +143,7 @@
 
                         <a class="btn btn-primary customButtonWidth">
                             <leave-network
-                                ndex-data='networkController.currentNetwork.externalId'>
+                                    ndex-data='networkController.currentNetwork.externalId'>
                                 Disaffiliate this Network
                             </leave-network>
                         </a>
@@ -163,12 +167,13 @@
                     <span>
                         <hr>
 
-                        <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
-                            class="form-inline pull-left">
+                        <form id="frmSearchNetwork"
+                              ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
+                              class="form-inline pull-left">
 
                             <div class="form-group">
                                 <input class="form-control" type="search" ng-model="networkController.searchString"
-                                    placeholder="Network Terms" required/>
+                                       placeholder="Network Terms" required/>
                             </div>
                             <div class="form-group">
                                 <label>Depth:</label>
@@ -176,17 +181,18 @@
                             <div class="form-group">
                                 <span>
                                     <select
-                                        class="form-control"
-                                        id="selectSearchDepth"
-                                        ng-model="networkController.searchDepth.value"
-                                        ng-selected="1"
-                                        ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
-                                        required>
+                                            class="form-control"
+                                            id="selectSearchDepth"
+                                            ng-model="networkController.searchDepth.value"
+                                            ng-selected="1"
+                                            ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                                            required>
                                     </select>
                                 </span>
                             </div>
 
-                            <button type="submit" class="btn btn-default btn-primary" style="margin-bottom:0">Run Query</button>
+                            <button type="submit" class="btn btn-default btn-primary"
+                                    style="margin-bottom:0">Run Query</button>
                             &nbsp;
                         </form>
 
@@ -207,118 +213,133 @@
 
     <div class="col-md-6">
 
-            <div id="divNetworkTabs" class="networkPropertiesTabset">
-                <tabset>
+        <div id="divNetworkTabs" class="row networkPropertiesTabset">
+            <tabset>
 
-                    <tab heading="Network Info">
+                <tab heading="{{ networkController.tabs[0].heading }}" active="networkController.tabs[0].active">
 
-                        <div class="rowWithOneLineTopPad"></div>
-                        <div class="rowWithOneLineTopPad"></div>
+                    <div class="rowWithOneLineTopPad"></div>
+                    <div class="rowWithOneLineTopPad"></div>
 
-                        <div class="networkPropertyValueInTabsetMargins">
+                    <div class="networkPropertyValueInTabsetMargins">
 
-                            <span class="networkPropertyName">Created: </span>
-                            {{networkController.currentNetwork.creationTime | date: 'medium'}} <br />
+                        <span class="networkPropertyName">Created: </span>
+                        {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
 
                             <span ng-show="(networkController.currentNetwork.creationTime | date) !=
                                            (networkController.currentNetwork.modificationTime | date)">
                                 <span class="networkPropertyName">Last Modified: </span>
-                                {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br />
+                                {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
                             </span>
 
-                            <span class="networkPropertyName">UUID: </span>
-                            {{networkController.currentNetwork.externalId}}<br />
+                        <span class="networkPropertyName">UUID: </span>
+                        {{networkController.currentNetwork.externalId}}<br/>
 
-                            <span class="networkPropertyName">Format: </span>
-                            {{networkController.currentNetwork.sourceFormat}}<br />
+                        <span class="networkPropertyName">Format: </span>
+                        {{networkController.currentNetwork.sourceFormat}}<br/>
 
                             <span ng-show="networkController.privilegeLevel">
                                 <span class="networkPropertyName">Your Privileges: </span>
-                                {{networkController.privilegeLevel}}<br />
+                                {{networkController.privilegeLevel}}<br/>
                             </span>
 
-                            <div class='wrapLongLine rowWithOneLineTopPad'
-                                 ng-show="networkController.currentNetwork.description"
-                                 style="margin-right: 1px;">
-                                <span class="networkPropertyName">Description </span>
-                                <span ng-bind-html="networkController.currentNetwork.description"></span>
-                            </div>
+                        <div class='wrapLongLine rowWithOneLineTopPad'
+                             ng-show="networkController.currentNetwork.description"
+                             style="margin-right: 1px;">
+                            <span class="networkPropertyName">Description </span>
+                            <span ng-bind-html="networkController.currentNetwork.description"></span>
+                        </div>
 
                             <span ng-show="networkController.currentNetwork.rightsHolder">
-                                <br />
+                                <br/>
                                 <span class="networkPropertyName">Rights Holder: </span>
                                 <span ng-bind-html="networkController.currentNetwork.rightsHolder"></span>
                             </span>
 
                             <span ng-show="networkController.currentNetwork.rights">
-                                <br />
+                                <br/>
                                 <span class="networkPropertyName">Rights: </span>
                                 <span ng-bind-html="networkController.currentNetwork.rights"></span>
                             </span>
 
 
-                            <div class='wrapLongLine rowWithOneLineTopPad'
-                                 ng-show="networkController.currentNetwork.reference"
-                                 style="margin-right: 1px;">
-                                <span class="networkPropertyName">Reference </span>
-                                <span ng-bind-html="networkController.currentNetwork.reference"></span>
-                            </div>
+                        <div class='wrapLongLine rowWithOneLineTopPad'
+                             ng-show="networkController.currentNetwork.reference"
+                             style="margin-right: 1px;">
+                            <span class="networkPropertyName">Reference </span>
+                            <span ng-bind-html="networkController.currentNetwork.reference"></span>
+                        </div>
 
-                            <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
-                                <span class="networkPropertyName">Version: </span>
-                                {{networkController.currentNetwork.version}}
-                            </div>
+                        <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
+                            <span class="networkPropertyName">Version: </span>
+                            {{networkController.currentNetwork.version}}
+                        </div>
 
-                            <div  class='rowWithOneLineTopPad'>
-                                <span class="networkPropertyName">Properties</span>
+                        <div class='rowWithOneLineTopPad'>
+                            <span class="networkPropertyName">Properties</span>
 
-                                <div class="networkPropertiesNameMargins">
+                            <div class="networkPropertiesNameMargins">
 
                                     <span class='' ng-repeat='property in networkController.otherProperties'>
-                                        <span >
+                                        <span>
                                            <span class="networkPropertiesNameFont">{{property.predicateString}}:
                                            </span>
-                                           <span class="networkPropertiesValueFont" ng-hide='property.value.toString().length > 40'
-                                               ng-bind-html="property.value.toString()">
+                                           <span class="networkPropertiesValueFont"
+                                                 ng-hide='property.value.toString().length > 40'
+                                                 ng-bind-html="property.value.toString()">
                                            </span>
-                                           <span class="networkPropertiesValueFont" ng-show='property.value.toString().length > 40'
+                                           <span class="networkPropertiesValueFont"
+                                                 ng-show='property.value.toString().length > 40'
                                                  ng-bind-html="property.value.slice(0, 45 - property.predicateString.length)
                                                 +'&shy'+
                                                property.value.slice(45 - property.predicateString.length, property.value.length)">
                                            </span>
-                                           <br />
+                                           <br/>
                                         </span>
                                     </span>
 
-                                </div>
-
-                                <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
-                                    <a class='btn-link' ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
-                                        Add / Edit Properties
-                                    </a>
-                                </h5>
-
                             </div>
+
+                            <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
+                                <a class='btn-link'
+                                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
+                                    Add / Edit Properties
+                                </a>
+                            </h5>
 
                         </div>
 
-                        <div class="rowWithOneLineTopPad"></div>
-                    </tab>
+                    </div>
+
+                    <div class="rowWithOneLineTopPad"></div>
+                </tab>
 
 
-                    <tab heading="Nodes/Edges">
+                <tab heading="{{ networkController.tabs[1].heading }}" active="networkController.tabs[1].active">
 
-                        <div class="rowWithOneLineTopPad"></div>
-                        <div class="rowWithOneLineTopPad"></div>
 
-                    </tab>
+                    <div >
 
-                <tab heading="Provenance" ng-click="build_provenance_view()">
+                        <table style="width:100%">
+                            <tr>
+                                <td>select node count: {{ networkController.selectionContainer.nodes.length}}</td>
+                            </tr>
+                            <tr ng-repeat="node in networkController.selectionContainer.nodes">
+                                <td>
+                                    {{node }}
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>
+                </tab>
+
+                <tab heading="{{ networkController.tabs[2].heading }}" active="networkController.tabs[2].active" ng-click="build_provenance_view()">
                     <div class="row" style="font-size: 1.1em; margin-left: 0px; margin-right: 0px;">
-                            <div class="col-xs-6">
-                                <div id="provenanceNetwork"/>
-                            </div>
-                            <div class="col-xs-6">
+                        <div class="col-xs-6">
+                            <div id="provenanceNetwork"/>
+                        </div>
+                        <div class="col-xs-6">
                             <span ng-show="networkController.displayProvenance.webapp_url">
                                 <a target="_blank" href="{{networkController.displayProvenance.webapp_url}}">
                                     <span ng-bind="getProvenanceTitle(networkController.displayProvenance)"></span>
@@ -345,47 +366,47 @@
 
                             </table>
                             </span>
-                                <br>
+                            <br>
 
-                                Generated By:
-                                <b>{{networkController.displayProvenance.creationEvent.eventType}}</b>
-                                <table style="width:100%">
-                                    <!--<caption>Event Properties</caption>-->
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Value</th>
-                                    </tr>
-                                    <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime == networkController.displayProvenance.creationEvent.endedAtTime">
-                                        <td>event time</td>
-                                        <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
-                                            date:'medium' }}
-                                        </td>
-                                    </tr>
-                                    <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
-                                        <td>start time</td>
-                                        <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
-                                            date:'medium' }}
-                                        </td>
-                                    </tr>
-                                    <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
-                                        <td>end time</td>
-                                        <td>{{networkController.displayProvenance.creationEvent.endedAtTime |
-                                            date:'medium' }}
-                                        </td>
-                                    </tr>
-                                    <tr ng-repeat="property in networkController.displayProvenance.creationEvent.properties">
-                                        <td>
-                                            {{property.name}}
-                                        </td>
-                                        <td class= "wrappedCell">
-                                            <span ng-bind-html="property.value"></span>
-                                        </td>
-                                    </tr>
-                                </table>
+                            Generated By:
+                            <b>{{networkController.displayProvenance.creationEvent.eventType}}</b>
+                            <table style="width:100%">
+                                <!--<caption>Event Properties</caption>-->
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                </tr>
+                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime == networkController.displayProvenance.creationEvent.endedAtTime">
+                                    <td>event time</td>
+                                    <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
+                                        date:'medium' }}
+                                    </td>
+                                </tr>
+                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
+                                    <td>start time</td>
+                                    <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
+                                        date:'medium' }}
+                                    </td>
+                                </tr>
+                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
+                                    <td>end time</td>
+                                    <td>{{networkController.displayProvenance.creationEvent.endedAtTime |
+                                        date:'medium' }}
+                                    </td>
+                                </tr>
+                                <tr ng-repeat="property in networkController.displayProvenance.creationEvent.properties">
+                                    <td>
+                                        {{property.name}}
+                                    </td>
+                                    <td class="wrappedCell">
+                                        <span ng-bind-html="property.value"></span>
+                                    </td>
+                                </tr>
+                            </table>
 
 
-                            </div>
                         </div>
+                    </div>
                 </tab>
 
             </tabset>
@@ -394,7 +415,7 @@
 
         <div class="rowWithOneLineTopPad"></div>
 
-        </div>
     </div>
+</div>
 
 </div>

@@ -1643,7 +1643,7 @@ ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', f
         }); // on dom ready
 
         return deferred.promise;
-    };
+    }; 
 
     /*-----------------------------------------------------------------------*
      * Set a network to be displayed in the viewer
@@ -1664,8 +1664,54 @@ ndexServiceApp.factory('cytoscapeService', ['ndexService', 'ndexHelper', '$q', f
             elements.edges.push(cyEdge);
         });
 
+
+        cy = cytoscape({
+            container: $('#canvas')[0],
+
+            style: cytoscape.stylesheet()
+                .selector('node')
+                .css({
+                    'content': 'data(name)',
+                    'height': 10,
+                    'width': 10,
+                    'text-valign': 'center',
+                    'background-color': 'orange',
+                    'font-size': 8,
+                    //'text-outline-width': 2,
+                    //'text-outline-color': 'blue',
+                    'color': 'black'
+                })
+                .selector('edge')
+                .css({
+                    'target-arrow-shape': 'triangle'
+                })
+                .selector(':selected')
+                .css({
+                    'background-color': 'white',
+                    'line-color': 'black',
+                    'target-arrow-color': 'black',
+                    'source-arrow-color': 'black',
+                    'text-outline-color': 'black'
+                }),
+
+            layout: {
+                //padding: 10
+                name: 'circle',
+                padding: 10
+            },
+
+            elements: elements,
+
+            ready: function () {
+                window.cy = this;
+            }
+        });
+
+
         // set the cytoscsape instance elements
-        cy.load(elements);
+        //cy.load(elements);
+        //cy.fit();
+        //cy.forceRender();
 
     };
     
