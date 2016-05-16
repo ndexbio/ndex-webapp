@@ -336,7 +336,7 @@ ndexApp.controller('networkController',
 
                 return ((networkController.currentSubnetwork.edgeCount <= config.networkDisplayLimit) &&
                         (networkController.currentSubnetwork.edgeCount > 0));
-            }
+            };
 
             $scope.currentSubnetworkEdgeCountNotZero = function() {
                 if (typeof(networkController) === 'undefined' ||
@@ -345,7 +345,7 @@ ndexApp.controller('networkController',
                     return false;
                 }
                 return (networkController.currentSubnetwork.edgeCount > 0);
-            }
+            };
 
             networkController.getEdgeKeys = function()
             {

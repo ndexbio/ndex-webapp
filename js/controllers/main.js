@@ -114,9 +114,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
-        $scope.main.signout = function () {
+        $scope.main.signout = function (noRedirectToHome) {
             $scope.$emit('LOGGED_OUT');
-            $location.path("/");
+            if (!noRedirectToHome){
+                $location.path("/");
+            }
         };
 
         $scope.main.handleStorageEvent = function(event)
@@ -143,8 +145,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         var lastHeartbeat = localStorage.getItem('last-heartbeat');
         if( lastHeartbeat )
         {
-            if( Date.now() - lastHeartbeat > config.idleTime * 1000 )
-                $scope.main.signout();
+            if( Date.now() - lastHeartbeat > config.idleTime * 1000 ){
+                $scope.main.signout(true); // true = no redirect to home
+            }
+
         }
 
         var recordHeartbeat = function()
