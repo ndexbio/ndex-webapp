@@ -685,13 +685,8 @@
                 };
 
                 $scope.$watch('ndexData', function(value) {
-                    $scope.request.destinationName = ($scope.ndexData && $scope.ndexData.name) ?
-                        $scope.ndexData.name :
-                        null;
-
-                    $scope.request.destinationUUID = ($scope.ndexData && $scope.ndexData.externalId) ?
-                        $scope.ndexData.externalId :
-                        null;
+                    $scope.request.destinationName = $scope.ndexData.name;
+                    $scope.request.destinationUUID = $scope.ndexData.externalId;
                 });
 
                 //$scope.$watch('privileges', function(value) {
@@ -839,13 +834,8 @@
                 }
 
                 $scope.$watch('ndexData', function(value) {
-                    $scope.externalId = ($scope.ndexData && $scope.ndexData.externalId) ?
-                        $scope.ndexData.externalId :
-                        null;
-
-                    $scope.name = ($scope.ndexData && $scope.ndexData.name) ?
-                        $scope.ndexData.name :
-                        null;
+                    $scope.externalId = $scope.ndexData.externalId;
+                    $scope.name = $scope.ndexData.name;
                 });
 
 
