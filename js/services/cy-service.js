@@ -67,16 +67,6 @@ angular.module('ndexServiceApp')
 
             var cyAttributeName = attributeNameMap[attributeName];
 
-            // handle attribute names that conflict with reserved names used by cyjs
-
-            // The attributeNameMap maps attribute names in niceCX to attribute names in cyjs.
-            // In some cases, such as 'id', 'source', and 'target', cyjs uses reserved names and
-            // any attribute names that conflict must be mapped.
-            // Also, cyjs requires that attribute names avoid special characters, so names with
-            // special characters must be transformed and mapped.
-
-            // This function updates the attributeNameMap if a new mapping is required
-
             if (!cyAttributeName) {
                 attributeNameMap[attributeName] = attributeName; // direct mapping
                 cyAttributeName = attributeName;
@@ -86,7 +76,44 @@ angular.module('ndexServiceApp')
 
         };
 
-        const CX_NUMBER_DATATYPES = ['boolean','byte','char', 'double', 'float', 'integer', 'long', 'short'];
+        // The attributeNameMap maps attribute names in niceCX to attribute names in cyjs.
+        // In some cases, such as 'id', 'source', and 'target', cyjs uses reserved names and
+        // any attribute names that conflict must be mapped.
+        var specialCaseAttributeMap = {
+            'id' : 'cx_id',
+            'target' : 'cx_target',
+            'source' : 'cx_source',
+            'shared name' : 'name'
+
+        };
+
+        var sanitizeAttributeNameMap = function (attributeNameMap){
+            var attributeNames = _.keys(attributeNameMap);
+            var uniqueCounter = 1;
+            _.forEach(attributeNames, function(attributeName){
+                // handle attribute names that conflict with reserved names used by cyjs
+                var specialCaseName = specialCaseAttributeMap[attributeName];
+                if (specialCaseName){
+                    attributeNameMap[attributeName] = specialCaseName;
+                } else if (/^[A-Za-z][A-Za-z0-9]*$/.test(attributeName)){ // name is ok
+                    attributeNameMap[attributeName] = attributeName;
+                } else {
+                    // We will map the name to a modified name
+                    // cyjs requires that attribute names avoid special characters, so names with
+                    // special characters must be transformed and mapped.
+                    // `^[^a-zA-Z_]+|[^a-zA-Z_0-9]+
+
+                    var nonAlpha = attributeName.replace(/^[^a-zA-Z_]+|[^a-zA-Z_0-9]+/gi, '+');
+                    nonAlpha = nonAlpha + "_u" + uniqueCounter;
+                    uniqueCounter = uniqueCounter + 1;
+                    attributeNameMap[attributeName] = nonAlpha;
+                }
+
+            });
+
+        };
+
+        const CX_NUMBER_DATATYPES = ['byte','char', 'double', 'float', 'integer', 'long', 'short'];
 
 
         factory.cyElementsFromNiceCX = function (niceCX, attributeNameMap) {
@@ -128,8 +155,21 @@ angular.module('ndexServiceApp')
                         _.forEach(nodeAttributeMap, function (attributeObject, attributeName) {
                             var cyAttributeName = getCyAttributeName(attributeName, attributeNameMap);
                             var dataType = attributeObject.d;
-                            if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType)){
+                            if (cyAttributeName === 'selected'){
+                                if (attributeObject.v === 'true'){
+                                    node.selected = true;
+                                } else if (attributeObject.v === 'false'){
+                                    node.selected = false;
+                                }
+                            } else if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType)){
                                 node.data[cyAttributeName] = parseFloat(attributeObject.v);
+                            } else if (dataType && dataType === 'boolean'){
+                                if (attributeObject.v === 'true'){
+                                    node.data[cyAttributeName] = true;
+                                } else if (attributeObject.v === 'false'){
+                                    node.data[cyAttributeName] = false;
+                                }
+
                             } else {
                                 // Default to String
                                 node.data[cyAttributeName] = attributeObject.v;
@@ -197,6 +237,8 @@ angular.module('ndexServiceApp')
             _.forEach(edgeMap, function (edge) {
                 edgeList.push(edge);
             });
+
+            sanitizeAttributeNameMap(attributeNameMap);
 
             return elements;
 
@@ -352,7 +394,9 @@ angular.module('ndexServiceApp')
             'EDGE_UNSELECTED_PAINT': {'att': 'line-color', 'type': 'color'},
             'EDGE_TRANSPARENCY': {'att': 'opacity', 'type': 'opacity'},
             'EDGE_SOURCE_ARROW_SHAPE': {'att': 'source-arrow-shape', 'type': 'arrow'},
-            'EDGE_TARGET_ARROW_SHAPE': {'att': 'target-arrow-shape', 'type': 'arrow'}
+            'EDGE_TARGET_ARROW_SHAPE': {'att': 'target-arrow-shape', 'type': 'arrow'},
+            'EDGE_TARGET_ARROW_UNSELECTED_PAINT': {'att': 'target-arrow-color', 'type': 'color'},
+            'EDGE_SOURCE_ARROW_UNSELECTED_PAINT': {'att': 'source-arrow-color', 'type': 'color'}
         };
 
         var getCyVisualAttributeForVP = function (vp) {
@@ -368,14 +412,14 @@ angular.module('ndexServiceApp')
             return attProps.type;
         };
 
-        var mappingStyle = function (elementType, vp, type, definition) {
+        var mappingStyle = function (elementType, vp, type, definition, attributeNameMap) {
             var def = parseMappingDefinition(definition);
             if (type === 'DISCRETE') {
-                return discreteMappingStyle(elementType, vp, def);
+                return discreteMappingStyle(elementType, vp, def, attributeNameMap);
             } else if (type === 'CONTINUOUS') {
-                return continuousMappingStyle(elementType, vp, def);
+                return continuousMappingStyle(elementType, vp, def, attributeNameMap);
             } else if (type === 'PASSTHROUGH') {
-                return passthroughMappingStyle(elementType, vp, def);
+                return passthroughMappingStyle(elementType, vp, def, attributeNameMap);
             }
         };
 
@@ -406,8 +450,9 @@ angular.module('ndexServiceApp')
             return visualAttributeValue;
         };
 
-        var discreteMappingStyle = function (elementType, vp, def) {
-            console.log(def);
+        var discreteMappingStyle = function (elementType, vp, def, attributeNameMap) {
+            //console.log(def);
+            // def is the discreteMappingStyle definition
             var elements = [];
             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
             if (!cyVisualAttribute) {
@@ -419,7 +464,8 @@ angular.module('ndexServiceApp')
 
             var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
 
-            var cyDataAttribute = def.COL;
+            // the cytoscape column is mapped to the cyjs attribute name
+            var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
             _.forEach(def.m, function (pair) {
                 var cyDataAttributeValue = pair.K;
@@ -435,7 +481,7 @@ angular.module('ndexServiceApp')
             return elements;
         };
 
-        var continuousMappingStyle = function (elementType, vp, def) {
+        var continuousMappingStyle = function (elementType, vp, def, attributeNameMap) {
             var elements = [];
             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
             if (!cyVisualAttribute) {
@@ -443,7 +489,9 @@ angular.module('ndexServiceApp')
                 return elements;  // empty result, vp not handled
             }
             var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
-            var cyDataAttribute = def.COL;
+            // the cytoscape column is mapped to the cyjs attribute name
+            var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
+
             var lastPointIndex = Object.keys(def.m).length - 1;
 
             // Each Continuous Mapping Point in def.m has 4 entries:
@@ -529,15 +577,19 @@ angular.module('ndexServiceApp')
 
         };
 
-        var passthroughMappingStyle = function (elementType, vp, def) {
+        var passthroughMappingStyle = function (elementType, vp, def, attributeNameMap) {
             var elements = [];
             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
             if (!cyVisualAttribute) {
                 console.log("no visual attribute for " + vp);
                 return elements;  // empty result, vp not handled
             }
+
+            // the cytoscape column is mapped to the cyjs attribute name
+            var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
+
             var properties = {};
-            properties[cyVisualAttribute] = 'data(' + def.COL + ')';
+            properties[cyVisualAttribute] = 'data(' + cyDataAttribute + ')';
             var style = {'selector': elementType, 'css': properties};
             elements.push(style);
             return elements;
@@ -560,6 +612,8 @@ angular.module('ndexServiceApp')
             var edge_default_styles = [];
             var edge_default_mappings = [];
             var edge_specific_styles = [];
+            var node_selected_styles = [];
+            var edge_selected_styles = [];
 
 
             if ( !niceCX.visualProperties || niceCX.visualProperties.length ==0)
@@ -582,13 +636,17 @@ angular.module('ndexServiceApp')
                             console.log('default node property ' + vp + ' = ' + value);
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
                             if (cyVisualAttribute) {
-                                if (cyVisualAttribute === 'NODE_LABEL_POSITION'){
+                                var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                defaultNodeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                            } else {
+                                if (vp === 'NODE_LABEL_POSITION'){
                                     nodeLabelPosition = value;
-                                } else if (cyVisualAttribute === 'NODE_LABEL_FONT_FACE'){
+                                } else if (vp === 'NODE_LABEL_FONT_FACE'){
                                     nodeLabelFontFace  = value;
-                                } else {
-                                    var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
-                                    defaultNodeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                                } else if (vp === 'NODE_SELECTED_PAINT'){
+                                    var selectedColor = getCyVisualAttributeValue(value, 'color');
+                                    node_selected_styles.push({'selector': 'node:selected', 'css': {'background-color': selectedColor}});
+
                                 }
                             }
                         });
@@ -613,32 +671,42 @@ angular.module('ndexServiceApp')
                         node_default_styles.push(defaultNodeStyle);
 
                         _.forEach(vpElement.mappings, function (mapping, vp) {
-                            console.log(mapping);
-                            console.log('VP = ' + vp);
+                            //console.log(mapping);
+                            //console.log('VP = ' + vp);
                             elementType = 'node';
-                            var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition);
+                            var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
                             node_default_mappings = node_default_mappings.concat(styles);
                         });
 
                     } else if (elementType === 'edges:default') {
 
                         var defaultEdgeProperties = {};
+                        var selectedEdgeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
-                            console.log('default node property ' + vp + ' = ' + value);
+                            //console.log('default node property ' + vp + ' = ' + value);
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
                             if (cyVisualAttribute) {
                                 var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
                                 defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                            } else if (vp === 'EDGE_STROKE_SELECTED_PAINT'){
+                                selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
+                            } else if (vp === 'EDGE_SOURCE_ARROW_SELECTED_PAINT'){
+                                selectedEdgeProperties['source-arrow-color'] = getCyVisualAttributeValue(value, 'color');
+                            } else if (vp === 'EDGE_TARGET_ARROW_SELECTED_PAINT'){
+                                selectedEdgeProperties['target-arrow-color'] = getCyVisualAttributeValue(value, 'color');
                             }
                         });
+                        if (_.keys(selectedEdgeProperties).length > 0){
+                            edge_selected_styles.push({'selector': 'edge:selected', 'css': selectedEdgeProperties});
+                        }
                         var defaultEdgeStyle = {'selector': 'edge', 'css': defaultEdgeProperties};
                         edge_default_styles.push(defaultEdgeStyle);
 
                         _.forEach(vpElement.mappings, function (mapping, vp) {
-                            console.log(mapping);
-                            console.log('VP = ' + vp);
+                            //console.log(mapping);
+                            //console.log('VP = ' + vp);
                             elementType = 'edge';
-                            var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition);
+                            var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
                             edge_default_mappings = edge_default_mappings.concat(styles);
                         });
 
@@ -679,7 +747,14 @@ angular.module('ndexServiceApp')
 
 
             // concatenate all of the style elements in order of specificity
-            return node_default_styles.concat(node_default_mappings, node_specific_styles, edge_default_styles, edge_default_mappings, edge_specific_styles);
+            return node_default_styles.concat(
+                node_default_mappings,
+                node_specific_styles,
+                edge_default_styles,
+                edge_default_mappings,
+                edge_specific_styles,
+                node_selected_styles,
+                edge_selected_styles);
         };
 
 
@@ -690,7 +765,8 @@ angular.module('ndexServiceApp')
          */
 
         /*        #12 Selected Node/Edge default value handler
-         In Cytoscape, there are selected node/edge color visual property, but there is no such thing in Cytoscape.js.  We need to convert default value of selected colors into special CSS Selector, like:
+         In Cytoscape, there are selected node/edge color visual property, but there is no such thing in Cytoscape.js.
+         We need to convert default value of selected colors into special CSS Selector, like:
 
          ```"selector": "node:selected",
          "css": {
@@ -704,16 +780,12 @@ angular.module('ndexServiceApp')
          • Size
          • Arrow Color
 
-         #14 Filter / Ignore unused Visual Properties
-         CX file contains a lot of incompatible, unused Visual Properties.  Need to properly ignore them.  Otherwise, some side-effect happens in style conversion process.
          }*/
         /*
 
-         #17 Bypass support
-         Currently, conversion result is unpredictable if Bypass is set in a Style.  Need to handle this as a special case for selector converter.
-
          #18 Passthrough mapping conversion is incomplete
-         In Cytoscape, Passthrough mapping supports various data types, including numbers, custom graphics, and labels.  Currently, this Style converter only supports labels.  Need to add support for other data types.
+         In Cytoscape, Passthrough mapping supports various data types, including numbers, custom graphics, and labels.
+         Currently, this Style converter supports numbers and labels
 
          */
 
