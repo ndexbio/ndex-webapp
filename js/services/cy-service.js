@@ -8,12 +8,12 @@
  * Service in the ndexCravatWebappApp.
  */
 angular.module('ndexServiceApp')
-    .factory('cyService', ['$q', function ($q) {
+    .factory('cyService', ['cxNetworkUtils','$q', function (cxNetworkUtils,$q) {
 
         // Public API here: the factory object will be returned
         var factory = {};
         var cy;
-        var selectionContainer = {};
+   //     var selectionContainer = {};
 
         // Original position will be used when layout positions are available
         const DEF_LAYOUT = 'preset';
@@ -102,8 +102,9 @@ angular.module('ndexServiceApp')
             elements.edges = edgeList;
 
             // handle node aspect
-            if (niceCX.nodes) {
-                _.forEach(niceCX.nodes.elements, function (nodeElement) {
+            var cxNodes = cxNetworkUtils.getNodes(niceCX);
+            if (cxNodes) {
+                _.forEach(cxNodes, function (nodeElement) {
                     var cxNodeId = nodeElement['@id'];
                     var nodeData = {'id': cxNodeId};
                     if (nodeElement.n) {
@@ -118,9 +119,10 @@ angular.module('ndexServiceApp')
 
             // handle nodeAttributes aspect
             // Note that nodeAttributes elements are handled specially in niceCX as a map of maps!!
-            if (niceCX.nodeAttributes) {
+            var cxNodeAttributes = cxNetworkUtils.getNodeAttributes(niceCX);
+            if (cxNodeAttributes) {
                 // for each node id
-                _.forEach(niceCX.nodeAttributes.nodes, function (nodeAttributeMap, nodeId) {
+                _.forEach(cxNodeAttributes, function (nodeAttributeMap, nodeId) {
                     var node = nodeMap[nodeId];
                     if (node) {
                         _.forEach(nodeAttributeMap, function (attributeObject, attributeName) {
@@ -147,8 +149,9 @@ angular.module('ndexServiceApp')
             }
 
             // handle edge aspect
-            if (niceCX.edges) {
-                _.forEach(niceCX.edges.elements, function (element) {
+            var cxEdges = cxNetworkUtils.getEdges(niceCX);
+            if (cxEdges) {
+                _.forEach(cxEdges, function (element) {
                     var cxEdgeId = element['@id'];
                     var edgeData = {
                         id: cxEdgeId,
@@ -165,20 +168,23 @@ angular.module('ndexServiceApp')
             }
 
             // handle edgeAttributes aspect
-            // Note that edgeAttributes elements are just in a list in niceCX for the moment!!
-            if (niceCX.edgeAttributes) {
-                _.forEach(niceCX.edgeAttributes.elements, function (element) {
-                    var edgeId = element.po;
+            // Note that edgeAttributes is a map similar to nodeAttributes!!
+            var edgeAttributes = cxNetworkUtils.getEdgeAttributes(niceCX);
+            if (edgeAttributes) {
+                _.forEach(edgeAttributes, function (edgeAttributeMap, edgeId) {
                     var edge = edgeMap[edgeId];
-                    var cyAttributeName = getCyAttributeName(element.n, attributeNameMap);
-                    var dataType = element.d;
-                    if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType)){
-                        edge.data[cyAttributeName] = parseFloat(element.v);
-                    } else {
-                        // Default to String
-                        edge.data[cyAttributeName] = element.v;
+                    if ( edge) {
+                        _.forEach(edgeAttributeMap, function (attributeObject, attributeName) {
+                            var cyAttributeName = getCyAttributeName(attributeName, attributeNameMap);
+                            var dataType = attributeObject.d;
+                            if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType)){
+                                edge.data[cyAttributeName] = parseFloat(attributeObject.v);
+                            } else {
+                                // Default to String
+                                edge.data[cyAttributeName] = attributeObject.v;
+                            }
+                        });
                     }
-
                 });
             }
 
@@ -784,7 +790,9 @@ angular.module('ndexServiceApp')
                         window.cy = this;
                     }
                 });
-                
+
+                // this is a workaround to catch select, deselect in one event. Otherwise if a use select multipe nodes/
+                // edges, the event is triggered for each node/edge.
                 cy.on ( 'select unselect',function (event) {
                     clearTimeout(cy.nodesSelectionTimeout);
                     cy.nodesSelectionTimeout = setTimeout(function () {
@@ -795,10 +803,15 @@ angular.module('ndexServiceApp')
                             var id = node.id;
                             cxNodes.push({'id': id, 'data': data})   ;
                         });
-                        selectionContainer.nodes = cxNodes;
-                      //  selectionContainer.nodes = cy.$("node:selected");
-                      //  selectionContainer.edges = cy.$("edge:selected");
-                      viewer.refreshNodeEdgeTab(selectionContainer);
+                        _.forEach(cy.$("edge:selected"), function (edge) {
+                            var data = edge.data();
+                            var id = edge.id;
+                            cxEdges.push({'id': id, 'data': data})   ;
+                        });
+            //            selectionContainer.nodes = cxNodes;
+            //            selectionContainer.nodes = cxEdges;
+
+                      viewer.refreshNodeEdgeTab({'nodes': cxNodes, 'edges': cxEdges});
                     }, 300) ;
                 });
 

@@ -314,7 +314,7 @@
                     <div class="rowWithOneLineTopPad"></div>
                 </tab>
 
-
+                <!-- node/edge tab -->
                 <tab heading="{{ networkController.tabs[1].heading }}" active="networkController.tabs[1].active">
 
 
@@ -322,13 +322,17 @@
 
                         <table style="width:100%">
                             <tr>
-                                <td>select node count: {{ networkController.selectionContainer.nodes.length}}</td>
+                                <td>Selected Nodes: {{ networkController.selectionContainer.nodes.length}}</td>
                             </tr>
                             <tr ng-repeat="node in networkController.selectionContainer.nodes">
-                                <td>
-                                    {{node }}
+                                <td class="wrappedCell">
+                                    {{node.data }}
                                 </td>
 
+                            </tr>
+                            <tr><td>Selected Edges: {{ networkController.selectionContainer.edges.length}}</td></tr>
+                            <tr ng-repeat="edge in networkController.selectionContainer.edges">
+                                <td class="wrappedCell">{{edge.data}}</td>
                             </tr>
                         </table>
                     </div>

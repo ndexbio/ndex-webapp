@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc service
- * @name ndexLinkedNetworkViewerApp.cxNetworkUtils
+ * @name ndexServiceApp.cxNetworkUtils
  * @description
  * # cxNetworkUtils
  * Service in the ndexLinkedNetworkViewerApp.
@@ -138,137 +138,96 @@ angular.module('ndexServiceApp')
         return rawCX;
       };
 
-      self.setNodeAttribute = function(niceCX, nodeId, attributeName, attributeValue, attributeDataType) {
 
-          if (!attributeName || !attributeValue) {
-              return;
+      var addElementToAspactValueMap = function (aspectValueMap, element) {
+          var attributes = aspectValueMap[element.po];
+
+          if (!attributes) {
+              attributes = {};
+              aspectValueMap[element.po] = attributes;
           }
 
-          var attributeObject = {v : attributeValue};
-
-          if (attributeDataType) {
-              attributeObject.d = attributeDataType;
-          }
-
-          if (!niceCX.nodeAttributes) {
-              niceCX['nodeAttributes'] = {};
-          }
-          if (!niceCX.nodeAttributes.nodes) {
-              niceCX['nodeAttributes']['nodes'] = {};
-          }
-          if (!niceCX.nodeAttributes.nodes[nodeId]) {
-              niceCX.nodeAttributes.nodes[nodeId] = {};
-          }
-
-          niceCX.nodeAttributes.nodes[nodeId][attributeName] =  attributeObject;
-      };
-      
-
-      var addNodePropertyToNiceCX = function(niceCX, nodeId, propertyObj) {
-
-          if (!propertyObj) {
-              return;
-          }
-
-          var attributeName  = (propertyObj['predicateString']) ? propertyObj['predicateString'] : null;
-          var attributeValue = (propertyObj['value']) ? propertyObj['value'] : null;
-          var attributeType  = (propertyObj['dataType']) ? propertyObj['dataType'] : null;
-
-          self.setNodeAttribute(niceCX, nodeId, attributeName, attributeValue, attributeType);
+          attributes[element.n] = element;
       };
 
-      var addEdgePropertyToNiceCX = function(niceCX, edgeId, propertyObj) {
 
-          if (!propertyObj) {
-              return;
+      var addRelationToRelationAspect = function (aspect, element, relationName) {
+
+          for (var l = 0; l < element.po.length; l++) {
+              var srcId = element.po[l];
+              var relations = aspect[srcId];
+              if ( !relations) {
+                  aspect[srcId] = element[relationName];
+              } else {
+                  aspect[srcId].push.apply(element[relationName]);
+              }
           }
-
-          var po = Number(edgeId);
-          var n  = (propertyObj['predicateString']) ? propertyObj['predicateString'] : null;
-          var v  = (propertyObj['value']) ? propertyObj['value'] : null;
-          var d  = (propertyObj['dataType']) ? propertyObj['dataType'] : null;
-
-          var element = {
-              'po': po, 'n' : n, 'v' : v, 'd' : d
-          }
-
-          addElementToNiceCX(niceCX, 'edgeAttributes', element);
-
       };
 
-      var addElementToNiceCX = function(niceCX, aspectName, element) {
-
-          var aspect = niceCX[aspectName];
-
-          if (!aspect) {
-              // add aspect to niceCX
-              aspect = {elements: []};
-
-              niceCX[aspectName] = aspect;
-          }
-
-          aspect.elements.push(element);
-      };
-
-      var addElementToNiceCXForLookup = function(niceCX, aspectName, id, element) {
-
-          if (!aspectName || !id || !element) {
-              return;
-          }
-
-          var aspect = niceCX[aspectName];
-
-          if (!aspect) {
-              // add aspect to niceCX
-              aspect = {elements: {}};
-
-              niceCX[aspectName] = aspect;
-          }
-
-          aspect.elements[id] = element;
-      };
 
 
       var handleCxElement = function (aspectName, element, niceCX) {
 
           var aspect = niceCX[aspectName];
 
-          if (aspectName === 'nodeAttributes') {
+          if (!aspect) {
+              aspect = {};
 
-              if (!aspect) {
-                  aspect = {nodes: {}};
+              niceCX[aspectName] = aspect;
+          }
 
-                  niceCX[aspectName] = aspect;
-              }
+          switch (aspectName) {
+              case 'nodes':
+              case 'edges':
+              case 'citations':
+              case 'supports':
+                  aspect[element['@id']] = element;
+                  break;
+              case 'nodeAttributes':
+                  addElementToAspactValueMap(aspect, element);
+                  break;
+              case 'edgeAttributes':
+                  addElementToAspactValueMap(aspect, element);
+                  break;
+              case 'edgeCitations':
+              case 'nodeCitations':
+                  addRelationToRelationAspect(aspect,element, 'citations');
+                  break;
+              case 'edgeSupports':
+              case 'nodeSupports':
+                  addRelationToRelationAspect(aspect,element,'supports');
+                  break;
+              default:
+                  // opaque for now
 
-              var nodeMap = aspect.nodes;
+                  if (!aspect.elements) {
+                      aspect = {elements: []};
+                  }
 
-              var attributes = nodeMap[element.po];
+                  var elementList = aspect.elements;
 
-              if(!attributes){
-                  attributes = {};
-                  nodeMap[element.po] = attributes;
-              }
-
-              attributes[element.n] = {v: element.v, d : element.d};
-              
-          } else  {
-              // opaque for now
-
-              if (!aspect) {
-                  // add aspect to niceCX
-                  aspect = {elements: []};
-
-                  niceCX[aspectName] = aspect;
-              }
-
-              var elementList = aspect.elements;
-
-              elementList.push(element);
-
+                  elementList.push(element);
           }
       };
 
+
+      /** utility functions for nice cx */
+
+      self.getNodes = function (niceCX) {
+          return _.values(niceCX['nodes']);
+      };
+
+      self.getNodeAttributes = function (niceCX) {
+          return niceCX['nodeAttributes'];
+      };
+
+      self.getEdges = function (niceCX) {
+          return _.values(niceCX.edges);
+      };
+
+      self.getEdgeAttributes = function (niceCX) {
+          return niceCX['edgeAttributes'];
+      };
 
       /*-----------------------------------------------------------------------*
        * Convert network received in JSON format to NiceCX;
@@ -279,21 +238,16 @@ angular.module('ndexServiceApp')
           var niceCX = {};
 
           $.each(network.citations, function (citationId, citation) {
-
-              //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citation);
-
               /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
-              if (citation) {
 
-                  var citationElement = {
-                      "@id"            : (citation.id)          ? citation.id : null,
-                      "dc:identifier"  : (citation.identifier)  ? citation.identifier : null,
-                      "dc:title"       : (citation.title)       ? citation.title : null,
-                      "dc:type"        : (citation.idType)      ? citation.idType : null,
-                      "dc:description" : (citation.description) ? citation.description : null,
-
-                  }
-              }
+              var citationElement = {
+                  "@id"            : citation.id ,
+                  "dc:identifier"  : (citation.identifier)  ? citation.identifier : null,
+                  "dc:title"       : citation.title,
+                  "dc:type"        : (citation.idType)      ? citation.idType : null,
+                  "dc:description" : (citation.description) ? citation.description : null,
+                  "dc:contributor" : citation.constructor
+              };
 
               // ALSO:  do we want to add citationElement as a lookup with citationID as the key --
               // if yest, then use addElementToNiceCXForLookup() below instead of addElementToNiceCX()
@@ -303,27 +257,62 @@ angular.module('ndexServiceApp')
           });
 
 
+          $.each(network.supports, function (supportId, support) {
+              /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
+
+              var supportElement = {
+                  "@id"         : supportId ,
+                  "text"        : support.text,
+                  "citation"    : support.citaitonId
+
+              };
+
+              // ALSO:  do we want to add citationElement as a lookup with citationID as the key --
+              // if yest, then use addElementToNiceCXForLookup() below instead of addElementToNiceCX()
+              //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citationElement);
+
+              addElementToNiceCX(niceCX, 'supports', supportElement);
+          });
+
           $.each(network.nodes, function (nodeId, node) {
               var element = {
-                  '@id' : Number(nodeId),
-                  'n': (node && node.name) ? node.name : null
+                  '@id' : nodeId,
+                  'n': node.name
               };
+
+              if ( node.represents) {
+                  if ( node.representsTermType === 'baseTerm') {
+                      element['r'] = getBaseTermStr(network,node.representsId);
+                  } else if ( node.representsTermType === 'functionTerm') {
+                  //     var funElement = cvtFuctionTermToCXElmt ( network, node.representsId);
+                  //    niceCX.
+                  } else {
+
+                  }
+              }
 
               addElementToNiceCX(niceCX, 'nodes', element);
               
               if (node.aliases && node.aliases.length > 0) {
-                  var aliasList = buildListOfAliasIDs(network, node.aliases);
-                  self.setNodeAttribute(niceCX, nodeId, 'alias', aliasList, 'list_of_string');
+                  var aliasList = buildBasetermStrListFromIDs(network, node.aliases);
+                  setNodeAttribute(niceCX, nodeId, 'alias', aliasList, 'list_of_string');
               }
 
+              // related terms...
+              if (node.relatedTerms && node.relatedTerms.length > 0) {
+                  var relatedToList = buildBasetermStrListFromIDs(network, node.relatedTerms);
+                  setNodeAttribute(niceCX, nodeId, 'relatedTo', relatedToList, 'list_of_string');
+              }
 
+              //node properties
               if (node.properties && node.properties.length > 0) {
 
                   for (var i = 0; i < node.properties.length; i++) {
 
                       var propertyObj = node.properties[i];
 
-                      addNodePropertyToNiceCX(niceCX, nodeId, propertyObj);
+                      setNodeAttribute(niceCX,nodeId, propertyObj['predicateString'],propertyObj['value'],
+                                propertyObj['dataType']);
                   }
 
               }
@@ -334,16 +323,12 @@ angular.module('ndexServiceApp')
 
               var element = {
                   '@id' : Number(edgeId),
-                  's' : (edge && edge.subjectId) ? edge.subjectId : null,
-                  't' : (edge && edge.objectId) ? edge.objectId : null
+                  's' : edge.subjectId,
+                  't' : edge.objectId
               };
 
               if (edge.predicateId) {
-                  var edgePredicateId = edge.predicateId;
-
-                  if (network.baseTerms && network.baseTerms[edgePredicateId] && network.baseTerms[edgePredicateId]['name']) {
-                      element['i'] = network.baseTerms[edgePredicateId]['name'];
-                  }
+                  element ['i'] = getBaseTermStr(network,edge.predicateId);
               }
 
               addElementToNiceCX(niceCX, 'edges', element);
@@ -355,20 +340,49 @@ angular.module('ndexServiceApp')
 
                       var propertyObj = edge.properties[i];
 
-                      addEdgePropertyToNiceCX(niceCX, edgeId, propertyObj);
+                      setEdgeAttribute(niceCX, edgeId, propertyObj['predicateString'],propertyObj['value'],
+                          propertyObj['dataType']);
                   }
               }
 
               if (edge.citationIds && edge.citationIds.length > 0) {
 
-                  for (var i = 0; i < edge.citationIds.length; i++) {
-
-                      var citationId = edge.citationIds[i];
-
-                      //console.log('citation Id = ' + citationId);
-
-
+                  var aspect = niceCX['edgeCitations'];
+                  if ( !aspect) {
+                      aspect = {};
+                      niceCX['edgeCitations'] = aspect;
                   }
+
+                  var oldList = aspect[edgeId];
+
+                  if ( !oldList) {
+                      oldList = [];
+                  }
+
+                  for (var i = 0; i < edge.citationIds.length; i++) {
+                      oldList.push(edge.citationIds[i]);
+                  }
+
+              }
+
+              if (edge.supportIds && edge.supportIds.length > 0) {
+
+                  var aspect = niceCX['edgeSupports'];
+                  if ( !aspect) {
+                      aspect = {};
+                      niceCX['edgeSupports'] = aspect;
+                  }
+
+                  var oldList = aspect[edgeId];
+
+                  if ( !oldList) {
+                      oldList = [];
+                  }
+
+                  for (var i = 0; i < edge.supportIds.length; i++) {
+                      oldList.push(edge.supportIds[i]);
+                  }
+
               }
 
           });
@@ -376,20 +390,78 @@ angular.module('ndexServiceApp')
           return niceCX;
       };
 
-      var buildListOfAliasIDs = function(network, arrayOfIDs) {
+      /**
+       * Stringify a baseterm.
+       * @param network
+       * @param baseTermId
+       * @returns {*}
+       */
+      var getBaseTermStr = function (network, baseTermId) {
+          var bterm = network.baseTerms[baseTermId];
+          if ( bterm.nameSpaceId > 0 ) {
+              var ns = network.namespaces[bterm.nameSpaceId];
+              if ( ns.prefix)
+                  return ns.prefix + ":" + bterm.name;
+              else
+                  return ns.uri + bterm.name;
+          }
+          return bterm.name;
+      };
+
+      var addElementToNiceCX = function(niceCX, aspectName, element) {
+
+          var aspect = niceCX[aspectName];
+
+          if (!aspect) {
+              // add aspect to niceCX
+              aspect = {};
+
+              niceCX[aspectName] = aspect;
+          }
+
+          aspect[element['@id']] = element;
+      };
+
+
+      var buildBasetermStrListFromIDs = function(network, arrayOfIDs) {
           var attributes = [];
 
           for (var i = 0; i < arrayOfIDs.length; i++) {
               var baseTermId = arrayOfIDs[i];
-
-              if (network.baseTerms && network.baseTerms[baseTermId] &&
-                  network.baseTerms[baseTermId]['name'])
-              {
-                  attributes.push(network.baseTerms[baseTermId]['name']);
-              }
+              attributes.push(getBaseTermStr(network, baseTermId));
           }
           return attributes;
-      }
+      };
+
+      var setNodeAttribute = function(niceCX, nodeId, attributeName, attributeValue, attributeDataType) {
+
+          setCoreAspectAttributes(niceCX, 'nodeAttributes', nodeId, attributeName, attributeValue, attributeDataType);
+
+      };
+
+      var setEdgeAttribute = function (niceCX, edgeId, attributeName,attributeValue, attributeDataType) {
+          setCoreAspectAttributes(niceCX, 'edgeAttributes', edgeId, attributeName, attributeValue, attributeDataType);
+      };
+
+
+      var setCoreAspectAttributes = function(niceCX, aspectName, referenceId, attributeName, attributeValue, attributeDataType) {
+
+          var attributeObject = {'v' : attributeValue,
+              'd' :  attributeDataType,
+              'po' : referenceId,
+              'n' : attributeName
+          };
+
+          if (!niceCX[aspectName]) {
+              niceCX[aspectName] = {};
+          }
+
+          if (!niceCX[aspectName][referenceId]) {
+              niceCX[aspectName][referenceId] = {};
+          }
+
+          niceCX[aspectName][referenceId][attributeName] =  attributeObject;
+      };
 
 
   }]);
