@@ -24,6 +24,9 @@ ndexApp.controller('networkViewController',
             networkController.queryErrors = [];
             networkController.displayProvenance = {};
 
+            networkController.prettyStyle = "no style yet";
+            networkController.prettyVisualProperties = "nothing yet";
+
 
             networkController.searchDepths = [
                 {
@@ -100,6 +103,12 @@ ndexApp.controller('networkViewController',
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
                 var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
 
+                // networkController.prettyStyle added for debugging -- remove/comment out when done
+                networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
+
+                // networkController.prettyVisualProperties added for debugging -- remove/comment out when done
+                networkController.prettyVisualProperties = JSON.stringify(cxNetwork.visualProperties, null, 2);
+                
                 var layoutName = 'cose';
 
                 if (cyService.allNodesHaveUniquePositions(cyElements)) {
@@ -160,7 +169,7 @@ ndexApp.controller('networkViewController',
                         );
 
                 }
-                
+
             };
 
             var initialize = function () {

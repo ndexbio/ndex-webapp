@@ -345,7 +345,9 @@ angular.module('ndexServiceApp')
             'EDGE_UNSELECTED_PAINT': {'att': 'line-color', 'type': 'color'},
             'EDGE_TRANSPARENCY': {'att': 'opacity', 'type': 'opacity'},
             'EDGE_SOURCE_ARROW_SHAPE': {'att': 'source-arrow-shape', 'type': 'arrow'},
-            'EDGE_TARGET_ARROW_SHAPE': {'att': 'target-arrow-shape', 'type': 'arrow'}
+            'EDGE_TARGET_ARROW_SHAPE': {'att': 'target-arrow-shape', 'type': 'arrow'},
+            'EDGE_TARGET_ARROW_UNSELECTED_PAINT': {'att': 'target-arrow-color', 'type': 'color'},
+            'EDGE_SOURCE_ARROW_UNSELECTED_PAINT': {'att': 'source-arrow-color', 'type': 'color'}
         };
 
         var getCyVisualAttributeForVP = function (vp) {
