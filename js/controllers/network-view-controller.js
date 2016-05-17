@@ -135,7 +135,7 @@ ndexApp.controller('networkViewController',
 
                 cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, networkController, 'cytoscape-canvas' );
 
-            }
+            };
             
             var getNetworkAndDisplay = function (networkId, callback) {
                 var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
