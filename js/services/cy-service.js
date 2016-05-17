@@ -13,6 +13,7 @@ angular.module('ndexServiceApp')
         // Public API here: the factory object will be returned
         var factory = {};
         var cy;
+        var selectionContainer = {};
 
         // Original position will be used when layout positions are available
         const DEF_LAYOUT = 'preset';
@@ -771,6 +772,7 @@ angular.module('ndexServiceApp')
             $(function () { // on dom ready
 
                 var cv = document.getElementById(canvasName);
+
                 cy = cytoscape({
                     container: cv,
 
@@ -783,6 +785,23 @@ angular.module('ndexServiceApp')
                     ready: function () {
                         window.cy = this;
                     }
+                });
+                
+                cy.on ( 'select unselect',function (event) {
+                    clearTimeout(cy.nodesSelectionTimeout);
+                    cy.nodesSelectionTimeout = setTimeout(function () {
+                        var cxNodes = [];
+                        var cxEdges = [];
+                        _.forEach(cy.$("node:selected"), function (node) {
+                            var data = node.data();
+                            var id = node.id;
+                            cxNodes.push({'id': id, 'data': data})   ;
+                        });
+                        selectionContainer.nodes = cxNodes;
+                      //  selectionContainer.nodes = cy.$("node:selected");
+                      //  selectionContainer.edges = cy.$("edge:selected");
+                      viewer.refreshNodeEdgeTab(selectionContainer);
+                    }, 300) ;
                 });
 
 

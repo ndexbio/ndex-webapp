@@ -2,11 +2,11 @@ ndexApp.controller('networkViewController',
     ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
-        '$route', '$filter',/* '$location','$q',*/
+        '$route', /*'$filter', '$location','$q',*/
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
-                  $route, $filter /*, $location, $q */)
+                  $route /*, $filter /*, $location, $q */)
         {
             var self = this;
             
@@ -23,6 +23,13 @@ ndexApp.controller('networkViewController',
             networkController.errors = []; // general page errors
             networkController.queryErrors = [];
             networkController.displayProvenance = {};
+            networkController.selectionContainer = {};
+
+            networkController.tabs = [
+                    {"heading": "Network Info", 'active':true},
+                    {'heading': 'Nodes/Edges', 'active': false},
+                    {'heading': 'Provenance', 'active': false}
+                ];
 
             networkController.prettyStyle = "no style yet";
             networkController.prettyVisualProperties = "nothing yet";
@@ -57,7 +64,16 @@ ndexApp.controller('networkViewController',
             };
 
 
+            networkController.refreshNodeEdgeTab= function(updatedSelection) {
+                $scope.$apply(function () {
 
+                    networkController.selectionContainer = updatedSelection;
+                    if (!networkController.tabs[1].active )
+                        networkController.tabs[1].active = true;
+                });
+            };
+
+                            
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
             };
@@ -197,6 +213,7 @@ ndexApp.controller('networkViewController',
                                     || networkController.canRead) {
 
                                             getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+
                                 }
                             });
                             
@@ -226,7 +243,7 @@ ndexApp.controller('networkViewController',
                     );
 
             };
-
+            
 
             var getMembership = function (callback) {
                 ndexService.getMyMembership(networkController.currentNetworkId,
