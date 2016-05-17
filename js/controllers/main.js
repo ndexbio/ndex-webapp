@@ -88,7 +88,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             var msie = ua.indexOf('MSIE ');
             if (msie > 0) {
                 // IE 10 or older => return version number
-                // return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);   
+                // return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
                 return true;
             }
 
@@ -236,6 +236,15 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 searchString: 'RBL2',
                 searchType: 'All'
             }];
+
+
+        $scope.main.searchUsersExamples = [
+            {
+                description: 'Any occurance of "NCI" the name of the user',
+                searchString: 'NCI',
+                searchType: 'Users'
+            }
+        ];
 
         $scope.main.searchNetworksExamples = [
 

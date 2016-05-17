@@ -128,7 +128,7 @@
                         Search Examples <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li class="AlignLeft" style="padding-left: 2px; padding-bottom: 2px;">Search Networks,
+                        <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px; padding-top: 5px;">Search Networks,
                             Users, and Groups:
                         </li>
                         <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchAllExamples">
@@ -139,17 +139,23 @@
                         <li>
                             <hr>
                         </li>
-                        <li class="AlignLeft" style="padding-left: 2px; padding-bottom: 2px;">Search Networks:</li>
+                        <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Users:
+                        </li>
+                        <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchUsersExamples">
+                            <a ng-click="main.runSearchExample(item)">
+                                {{item.description}}
+                            </a>
+                        </li>
+                        <li><hr></li>
+                        <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Networks:</li>
                         <li class="AlignLeft" style="padding-left: 5px;"
                             ng-repeat="item in main.searchNetworksExamples">
                             <a ng-click="main.runSearchExample(item)">
                                 {{item.description}}
                             </a>
                         </li>
-                        <li>
-                            <hr>
-                        </li>
-                        <li class="AlignLeft" ng-show="config.searchDocLink">
+                        <li><hr></li>
+                        <li class="AlignLeft" ng-show="config.searchDocLink" style="padding-bottom: 5px;">
                             <a ng-click="redirectToExternalLink(config.searchDocLink)">{{config.searchDocLink.label}}
                             </a>
                         </li>
