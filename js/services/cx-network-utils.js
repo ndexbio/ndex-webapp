@@ -282,7 +282,7 @@ angular.module('ndexServiceApp')
 
               if ( node.represents) {
                   if ( node.representsTermType === 'baseTerm') {
-                      element['r'] = getBaseTermStr(network,node.representsId);
+                      element['r'] = getBaseTermStr(network,node.represents);
                   } else if ( node.representsTermType === 'functionTerm') {
                   //     var funElement = cvtFuctionTermToCXElmt ( network, node.representsId);
                   //    niceCX.
@@ -398,8 +398,8 @@ angular.module('ndexServiceApp')
        */
       var getBaseTermStr = function (network, baseTermId) {
           var bterm = network.baseTerms[baseTermId];
-          if ( bterm.nameSpaceId > 0 ) {
-              var ns = network.namespaces[bterm.nameSpaceId];
+          if ( bterm.namespaceId > 0 ) {
+              var ns = network.namespaces[bterm.namespaceId];
               if ( ns.prefix)
                   return ns.prefix + ":" + bterm.name;
               else
