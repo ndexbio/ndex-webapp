@@ -201,12 +201,10 @@ angular.module('ndexServiceApp')
                   // opaque for now
 
                   if (!aspect.elements) {
-                      aspect = {elements: []};
+                      aspect.elements = [];
                   }
-
-                  var elementList = aspect.elements;
-
-                  elementList.push(element);
+                  
+                  aspect.elements.push(element);
           }
       };
 
