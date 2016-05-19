@@ -521,7 +521,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.documentationLink.href = "http://www.ndexbio.org/quick-start";
             }
             if (typeof config.documentationLink.warning === 'undefined') {
-                config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+                config.documentationLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
             }
             if (typeof config.documentationLink.showWarning === 'undefined') {
                 config.documentationLink.showWarning = false;
@@ -538,7 +538,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.apiLink.href = "#/api";
             }
             if (typeof config.apiLink.warning === 'undefined') {
-                config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+                config.apiLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
             }
             if (typeof config.apiLink.warn === 'undefined') {
                 config.apiLink.warn = false;
@@ -554,7 +554,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.reportBugLink.href = "http://www.ndexbio.org/report-a-bug";
             }
             if (typeof config.reportBugLink.warning === 'undefined') {
-                config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+                config.reportBugLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
             }
             if (typeof config.reportBugLink.showWarning === 'undefined') {
                 config.reportBugLink.showWarning = false;
@@ -570,7 +570,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.contactUsLink.href = "http://www.ndexbio.org/contact-us/";
             }
             if (typeof config.contactUsLink.warning === 'undefined') {
-                config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+                config.contactUsLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
             }
             if (typeof config.contactUsLink.showWarning === 'undefined') {
                 config.contactUsLink.showWarning = false;
