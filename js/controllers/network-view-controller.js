@@ -64,10 +64,47 @@ ndexApp.controller('networkViewController',
             };
 
 
+            var setSelectionContainer = function (updatedSelection) {
+                //networkController.selectionContainer
+
+                var selectedNodes = {};
+                var selectedEdges = {};
+                _.forEach(updatedSelection.nodes, function (node) {
+                    var data = node.data;
+                    //var id = node.id;
+                    selectedNodes[node.id] = networkService.getNodeInfo(data.id);
+                   // nodes.id({'id': id, 'data': data})   ;
+                });
+                
+                _.forEach ( updatedSelection.edges, function (edge){
+                    selectedEdges[edge.id] = networkService.getEdgeInfo(edge.id);
+                });
+
+                networkController.selectionContainer = {'nodes': selectedNodes, 'edges': selectedEdges};
+            };
+
+
             networkController.refreshNodeEdgeTab= function(updatedSelection) {
                 $scope.$apply(function () {
 
-                    networkController.selectionContainer = updatedSelection;
+                    var selectedNodes = [];
+                    var selectedEdges = [];
+                    _.forEach(updatedSelection.nodes, function (node) {
+                        var id = Number(node.data.id);
+                        //var id = node.id;
+                        selectedNodes.push( networkService.getNodeInfo(id));
+                        // nodes.id({'id': id, 'data': data})   ;
+                    });
+
+                    _.forEach ( updatedSelection.edges, function (edge){
+                        var id= Number(edge.data.id);
+                        selectedEdges.push( networkService.getEdgeInfo(id));
+                    });
+
+                    networkController.selectionContainer = {'nodes': selectedNodes, 'edges': selectedEdges};
+
+                    //  setSelectionContainer(updatedSelection);
+                 /*   networkController.selectionContainer = updatedSelection; */
                     if (!networkController.tabs[1].active )
                         networkController.tabs[1].active = true;
                 });
@@ -143,7 +180,7 @@ ndexApp.controller('networkViewController',
 
                 if ( networkController.currentNetwork.edgeCount > config.networkDisplayLimit) {
                     // get edges, convert to CX obj
-                    (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkTableLimit) )
+                    (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkDisplayLimit) )
                         .success(
                             function (network) {
 

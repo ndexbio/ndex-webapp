@@ -12,6 +12,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         var ndexServerURI = config.ndexServerUri;
 
+        var localNiceCX ;
+
         factory.getNdexServerUri = function()
         {
             return ndexServerURI;
@@ -111,7 +113,59 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return currentNetworkSummary;
         };
 
+        factory.getNiceCX = function () {
+            return localNiceCX;
+        };
 
+
+        factory.getNodeInfo = function (nodeId) {
+            if (!localNiceCX) return null;
+
+            var node = localNiceCX.nodes[nodeId];
+            var nodeInfo = {'id': nodeId,
+                            'n': node.n,
+                            'r': node.r
+                            };
+            if ( localNiceCX.nodeAttributes && localNiceCX.nodeAttributes[nodeId]) {
+                var nodeAttrs = localNiceCX.nodeAttributes[nodeId];
+                _.forEach(nodeAttrs, function(value, pname) {
+                     nodeInfo[pname]  = value;
+
+                });
+            }
+
+
+            return nodeInfo;
+        };
+
+
+        factory.getEdgeInfo = function (edgeId) {
+            if ( !localNiceCX) return null;
+
+            var edge = localNiceCX.edges[edgeId];
+            var edgeInfo = { id: edgeId,
+                            s: edge.s,
+                            t: edge.t,
+                            i: edge.i};
+            if ( localNiceCX.edgeAttributes && localNiceCX.edgeAttributes[edgeId]) {
+                var edgeAttrs = localNiceCX.edgeAttributes[edgeId];
+                _.forEach(edgeAttrs, function(value, pname) {
+                    edgeInfo[pname]  = value;
+
+                });
+            }
+
+            if ( localNiceCX.edgeCitations && localNiceCX.edgeCitations[edgeId]) {
+                var citationList = [];
+                _.forEach(localNiceCX.edgeCitations[edgeId], function ( citationId) {
+                    citationList.push ( localNiceCX.citations[citationId]);
+                });
+                if (citationList.length >0 )
+                    edgeInfo['citations'] = citationList;
+            }
+
+            return edgeInfo;
+        }
 
         factory.getCXNetwork = function (networkId) {
 
@@ -132,8 +186,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        var niceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        handler(niceCX);
+                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        handler(localNiceCX);
                     }
                 );
                 return promise;
@@ -188,8 +242,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        var niceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
-                        handler(niceCX);
+                        localNiceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
+                        handler(localNiceCX);
                     }
                 );
                 return promise;

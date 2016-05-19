@@ -3,8 +3,6 @@
     <!-- One column only that takes all screen  -->
     <div class="col-md-12">
 
-        <div class="container-fluid">
-
             <div class="networkViewFrame">
                 <div class="networkViewHeaderHeader networkViewPadding" id="networkViewHeaderHeaderId">
                     {{networkController.currentNetwork.name}}
@@ -27,15 +25,13 @@
                 </div>
             </div>
 
-        </div>
-
     </div>
 </div>
 
 <div class="row rowWithOneLineTopPad"></div>
 
 <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-8">
 
         <div>
 
@@ -211,7 +207,7 @@
 
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
 
         <div id="divNetworkTabs" class="row networkPropertiesTabset">
             <tabset>
@@ -326,13 +322,13 @@
                             </tr>
                             <tr ng-repeat="node in networkController.selectionContainer.nodes">
                                 <td class="wrappedCell">
-                                    {{node.data }}
+                                    {{node }}
                                 </td>
 
                             </tr>
                             <tr><td>Selected Edges: {{ networkController.selectionContainer.edges.length}}</td></tr>
                             <tr ng-repeat="edge in networkController.selectionContainer.edges">
-                                <td class="wrappedCell">{{edge.data}}</td>
+                                <td class="wrappedCell">{{edge}}</td>
                             </tr>
                         </table>
                     </div>
@@ -422,7 +418,7 @@
     </div>
 </div>
 
-
+<!--
     <div class="row">
 
         <div class="col-md-6">
@@ -434,6 +430,6 @@
         </div>
 
     </div>
-
+-->
 
 </div>
