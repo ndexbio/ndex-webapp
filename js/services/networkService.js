@@ -20,40 +20,6 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
 
-        //
-        // getNetwork
-        //
-   /*     factory.getNetwork = function (networkId) {
-            ////console.log("retrieving network " + networkId);
-
-            // The $http timeout property takes a deferred value that can abort AJAX request
-            var deferredAbort = $q.defer();
-
-            // Grab the config for this request. We modify the config to allow for $http request aborts.
-            // This may become standard in the client.
-            var config = ndexConfigs.getNetworkConfig(networkId);
-            config.timeout = deferredAbort.promise;
-
-            // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-            var request = $http(config);
-
-            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-            request.abort = function () {
-                deferredAbort.resolve();
-            };
-
-            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-            request.finally(
-                function () {
-                    request.abort = angular.noop; // angular.noop is an empty function
-                    deferredAbort = request = null;
-                }
-            );
-
-            return request;
-        }; */
-
-
         factory.getNetworkSummaryFromNdex = function (networkId) {
 
             // The $http timeout property takes a deferred value that can abort AJAX request
@@ -129,7 +95,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             if ( localNiceCX.nodeAttributes && localNiceCX.nodeAttributes[nodeId]) {
                 var nodeAttrs = localNiceCX.nodeAttributes[nodeId];
                 _.forEach(nodeAttrs, function(value, pname) {
-                     nodeInfo[pname]  = value;
+                    if ( pname != "selected") {
+                        nodeInfo[pname] = value;
+                    }
 
                 });
             }
@@ -150,8 +118,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             if ( localNiceCX.edgeAttributes && localNiceCX.edgeAttributes[edgeId]) {
                 var edgeAttrs = localNiceCX.edgeAttributes[edgeId];
                 _.forEach(edgeAttrs, function(value, pname) {
-                    edgeInfo[pname]  = value;
-
+                    if ( pname != 'selected') {
+                        edgeInfo[pname] = value;
+                    }
                 });
             }
 
