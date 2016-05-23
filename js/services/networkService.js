@@ -107,6 +107,32 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
 
+        factory.getNodeAttributes = function ( nodeId) { 
+            if ( !localNiceCX) return null;
+            return localNiceCX.nodeAttributes[nodeId];
+        };
+        
+        factory.getEdgeAttributes = function (edgeId) { 
+            if ( !localNiceCX) return null;
+            
+            return localNiceCX.edgeAttributes[edgeId];
+        };
+        
+        factory.getNodeAttr = function (nodeId, propName ) {
+            if ( localNiceCX && localNiceCX.nodeAttributes[nodeId] ) {
+                return localNiceCX.nodeAttributes[nodeId][propName];
+            }
+            return null;
+        };
+        
+        factory.getEdgeAttr = function ( edgeId, propName) {
+           if ( localNiceCX && localNiceCX.edgeAttributes[edgeId]) {
+               return localNiceCX.edgeAttributes[edgeId][propName];
+           }
+            
+            return null;
+        };
+        
         factory.getEdgeInfo = function (edgeId) {
             if ( !localNiceCX) return null;
 
