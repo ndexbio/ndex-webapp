@@ -396,7 +396,7 @@ angular.module('ndexServiceApp')
        */
       var getBaseTermStr = function (network, baseTermId) {
           var bterm = network.baseTerms[baseTermId];
-          if ( bterm.namespaceId > 0 ) {
+          if ( bterm && bterm.namespaceId && (bterm.namespaceId > 0) ) {
               var ns = network.namespaces[bterm.namespaceId];
               if ( ns.prefix)
                   return ns.prefix + ":" + bterm.name;
