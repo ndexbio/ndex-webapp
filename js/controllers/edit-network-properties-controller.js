@@ -102,32 +102,16 @@ ndexApp.controller('editNetworkPropertiesController',
 
     editor.checkIfFormIsValid = function(attributeDictionary) {
 
-        var disableSaveChangesButton = false;
 
         for(var i=0; i<editor.propertyValuePairs.length; i++) {
 
             var pair = editor.propertyValuePairs[i];
             var labelValue = pair.labelValue;
-            var predicateStr = pair.predicateString;
 
-            if (predicateStr.toLowerCase() === 'reference') {
+            // check labelValue (that is prefix:attribute) has been entered more than once
+            if ((labelValue in attributeDictionary) && (attributeDictionary[labelValue] > 1)) {
 
-                pair.labelError = "This interface handles 'Reference' specially. " +
-                    "If you need to edit Reference property " +
-                    "of the current network, please select Edit Network Profile button from the Network page.";
-                disableSaveChangesButton = true;
-
-            } else if (predicateStr.toLowerCase() === 'sourceformat') {
-
-                pair.labelError = "sourceFormat is reserved for internal use by NDEx and " +
-                    "cannot be used as predicate.";
-                disableSaveChangesButton = true;
-
-            } else if ((labelValue in attributeDictionary) && (attributeDictionary[labelValue] > 1)) {
-
-                 // check labelValue (that is prefix:attribute) has been entered more than once
-
-                // we found attribute that is duplicate.  Mark all these attributes with error message
+                // we wound attribute that is duplicate.  Mark all these attributes with error message
                 // if they are not marked already
 
                 for (var j=i; j<editor.propertyValuePairs.length; j++) {
@@ -146,6 +130,8 @@ ndexApp.controller('editNetworkPropertiesController',
             }
         }
 
+
+        var disableSaveChangesButton = false;
 
         // run through all attribute objects and see if any object has an error message field.
         // If there is at least one error message, the form is invalid

@@ -276,9 +276,18 @@
         </div>
         <br/>
 
+        <div ng-if="networkToBeDisplayedInCanvas() &&
+                    (networkController.currentNetwork.edgeCount > networkController.currentSubnetwork.edgeCount)  &&
+                    !networkController.successfullyQueried"
+          style="color:red; padding-bottom:1em; font-size:1.2em; margin-right:15px; margin-left:-15px">
+            Notice: The graph and table below only display a <strong><u>sample</u></strong> of the network.
+            However, if you perform a query, it will be executed on the full network.
+         </div>
+
         <div ng-show="networkToBeDisplayedInCanvas()"
              class="row bordered" id="canvas">
         </div>
+
         <div class="bordered padded"
              ng-show="!networkToBeDisplayedInCanvas() && currentSubnetworkEdgeCountNotZero()">
             <h4>
