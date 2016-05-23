@@ -2,11 +2,11 @@ ndexApp.controller('networkViewController',
     ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
-        '$route', /*'$filter', '$location','$q',*/
+        '$route', '$location', /*'$filter', '$location','$q',*/
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
-                  $route /*, $filter /*, $location, $q */)
+                  $route , $location/*, $filter /*, $location, $q */)
         {
             var self = this;
 
@@ -26,6 +26,7 @@ ndexApp.controller('networkViewController',
             networkController.queryErrors = [];
             networkController.displayProvenance = {};
             networkController.selectionContainer = {};
+            networkController.baseURL = $location.absUrl();
 
             networkController.tabs = [
                     {"heading": "Network Info", 'active':true},
@@ -182,16 +183,25 @@ ndexApp.controller('networkViewController',
 
                     var ndexLink = attributeNameMap['ndex:internalLink'];
                     var ndexDesc = attributeNameMap['ndex:description'];
-                    var ndexExtLink = attributeNameMap['ndex:description'];
+                    var ndexExtLink = attributeNameMap['ndex:externalLink'];
 
                     if ( ndexLink || ndexDesc || ndexExtLink) {
                         var selecterStr = [ndexLink,ndexDesc, ndexExtLink].join(' ');
-                        cy.edges(selecterStr).forEach(function (n) {
-                            var ndex_link = n.data('ndex_link');
-                            var g = ndex_link.replace(/\[(.*)\].*$/, '$1');
-                            var id = n.data('ndex_id');
-                            //if  {
-                            var url = ( viewer.baseURL.match(/view$/) ? viewer.baseURL : (viewer.baseURL + 'view' )) + '/' + id;
+                        selecterStr = '[' + selecterStr.trim() + ']';
+                        cy.nodes(selecterStr).forEach(function (n) {
+                            var ndex_link = n.data(ndexLink);
+                            var mArry = ndex_link.match(/(\[(.*)\])?(.*)$/);
+                            if ( mArray ) {
+                                if (mArry.length === 2 ) {
+                                    var m_title = mArry[0];
+                                    var m_uuid = mArry[1];
+                                } else {
+                                    var m_title = null;
+                                    var m_uuid = mArray[0];
+                                }
+                            }
+                            var m_uuid = ndex_link.replace(/(\[.*\])?(.*)$/, '$2');
+                            var url = networkController.baseURL  + '/' + id;
 
                             console.log("process node " + g + " , id:" + id);
                             n.qtip({
