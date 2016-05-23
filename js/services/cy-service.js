@@ -115,7 +115,43 @@ angular.module('ndexServiceApp')
 
         const CX_NUMBER_DATATYPES = ['byte','char', 'double', 'float', 'integer', 'long', 'short'];
 
+/*
+        factory.createElementAttributeTable = function (niceCX) {
+            var attributeNameMap = {};
 
+            var cxNodeAttributes = cxNetworkUtils.getNodeAttributes(niceCX);
+            if (cxNodeAttributes) {
+                // for each node id
+                _.forEach(cxNodeAttributes, function (nodeAttributeMap, nodeId) {
+                    var node = nodeMap[nodeId];
+                    if (node) {
+                        _.forEach(nodeAttributeMap, function (attributeObject, attributeName) {
+                            getCyAttributeName(attributeName, attributeNameMap);
+                        });
+                    }
+                });
+            }
+
+            var edgeAttributes = cxNetworkUtils.getEdgeAttributes(niceCX);
+            if (edgeAttributes) {
+                _.forEach(edgeAttributes, function (edgeAttributeMap, edgeId) {
+                    var edge = edgeMap[edgeId];
+                    if ( edge) {
+                        _.forEach(edgeAttributeMap, function (attributeObject, attributeName) {
+                            getCyAttributeName(attributeName, attributeNameMap);
+                            
+                        });
+                    }
+                });
+            }
+
+            sanitizeAttributeNameMap(attributeNameMap);
+
+            return attributeNameMap;
+        };
+        
+*/        
+        
         factory.cyElementsFromNiceCX = function (niceCX, attributeNameMap) {
 
             var elements = {};
@@ -127,6 +163,7 @@ angular.module('ndexServiceApp')
 
             elements.nodes = nodeList;
             elements.edges = edgeList;
+
 
             // handle node aspect
             var cxNodes = cxNetworkUtils.getNodes(niceCX);

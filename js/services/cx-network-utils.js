@@ -325,7 +325,7 @@ angular.module('ndexServiceApp')
                   't' : edge.objectId
               };
 
-              if (edge.predicateId) {
+              if (edge.predicateId && edge.predicateId>=0) {
                   element ['i'] = getBaseTermStr(network,edge.predicateId);
               }
 

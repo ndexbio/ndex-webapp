@@ -28,6 +28,8 @@ ndexApp.controller('networkViewController',
             networkController.selectionContainer = {};
             networkController.baseURL = $location.absUrl();
 
+            networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
+            
             networkController.tabs = [
                     {"heading": "Network Info", 'active':true},
                     {'heading': 'Nodes/Edges', 'active': false},
@@ -176,7 +178,7 @@ ndexApp.controller('networkViewController',
                                     networkController.tabs[1].active = true;
                             });
                         }, 300) ;
-                    });
+                    }); 
 
 
                     // handles the linked networks.
@@ -185,10 +187,10 @@ ndexApp.controller('networkViewController',
                     var ndexDesc = attributeNameMap['ndex:description'];
                     var ndexExtLink = attributeNameMap['ndex:externalLink'];
 
-                    if ( ndexLink || ndexDesc || ndexExtLink) {
-                        var selecterStr = [ndexLink,ndexDesc, ndexExtLink].join(' ');
-                        selecterStr = '[' + selecterStr.trim() + ']';
-                        cy.nodes(selecterStr).forEach(function (n) {
+       /*             if ( ndexLink || ndexDesc || ndexExtLink) {
+                        var selectorStr = [ndexLink,ndexDesc, ndexExtLink].join(' ');
+                        selectorStr = '['+ selectorStr +']';
+                        cy.nodes(selectorStr).forEach(function (n) {
                             var ndex_link = n.data(ndexLink);
                             var mArry = ndex_link.match(/(\[(.*)\])?(.*)$/);
                             if ( mArray ) {
@@ -221,7 +223,7 @@ ndexApp.controller('networkViewController',
                                  }
                                  ].map(function( link ){
                                  return '<a target="_blank" href="' + link.url + '">' + link.name + '</a>';
-                                 }).join('<br />\n')*/
+                                 }).join('<br />\n')
                                 position: {
                                     my: 'top center',
                                     at: 'bottom center'
@@ -235,7 +237,7 @@ ndexApp.controller('networkViewController',
                                 }
                             });
                         });
-                    }
+                    } */
 
                 }); // on dom ready
 
@@ -244,7 +246,7 @@ ndexApp.controller('networkViewController',
 
 
             var drawCXNetworkOnCanvas = function (cxNetwork) {
-                var attributeNameMap = {};
+                var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
                 var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
