@@ -9,6 +9,8 @@ ndexApp.controller('networkViewController',
                   $route /*, $filter /*, $location, $q */)
         {
             var self = this;
+
+            var cy;
             
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
@@ -64,16 +66,26 @@ ndexApp.controller('networkViewController',
             };
 
 
-            networkController.refreshNodeEdgeTab= function(updatedSelection) {
-                $scope.$apply(function () {
+            var setSelectionContainer = function (updatedSelection) {
+                //networkController.selectionContainer
 
-                    networkController.selectionContainer = updatedSelection;
-                    if (!networkController.tabs[1].active )
-                        networkController.tabs[1].active = true;
+                var selectedNodes = {};
+                var selectedEdges = {};
+                _.forEach(updatedSelection.nodes, function (node) {
+                    var data = node.data;
+                    //var id = node.id;
+                    selectedNodes[node.id] = networkService.getNodeInfo(data.id);
+                   // nodes.id({'id': id, 'data': data})   ;
                 });
+                
+                _.forEach ( updatedSelection.edges, function (edge){
+                    selectedEdges[edge.id] = networkService.getEdgeInfo(edge.id);
+                });
+
+                networkController.selectionContainer = {'nodes': selectedNodes, 'edges': selectedEdges};
             };
 
-                            
+
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
             };
@@ -113,6 +125,114 @@ ndexApp.controller('networkViewController',
             };
 
 
+            /*-----------------------------------------------------------------------*
+             * initialize the cytoscape instance from niceCX
+             *-----------------------------------------------------------------------*/
+            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
+
+                //console.log(cyElements);
+
+                $(function () { // on dom ready
+
+                    var cv = document.getElementById(canvasName);
+
+                    cy = cytoscape({
+                        container: cv,
+
+                        style: cyStyle,
+
+                        layout: cyLayout,
+
+                        elements: cyElements,
+
+                        ready: function () {
+                            window.cy = this;
+                        }
+                    });
+
+                    // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
+                    // edges, the event is triggered for each node/edge.
+                    cy.on ( 'select unselect',function (event) {
+                        clearTimeout(cy.nodesSelectionTimeout);
+                        cy.nodesSelectionTimeout = setTimeout(function () {
+                            var cxNodes = [];
+                            var cxEdges = [];
+                            _.forEach(cy.$("node:selected"), function (node) {
+                                var id = Number(node.id());
+                                cxNodes.push( networkService.getNodeInfo(id));
+
+                            });
+                            _.forEach(cy.$("edge:selected"), function (edge) {
+                                var id= Number(edge.id());
+                                cxEdges.push( networkService.getEdgeInfo(id));
+                            });
+                            //            selectionContainer.nodes = cxNodes;
+                            //            selectionContainer.nodes = cxEdges;
+
+                            $scope.$apply(function () {
+                                networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
+                                if (!networkController.tabs[1].active )
+                                    networkController.tabs[1].active = true;
+                            });
+                        }, 300) ;
+                    });
+
+
+                    // handles the linked networks.
+
+                    var ndexLink = attributeNameMap['ndex:internalLink'];
+                    var ndexDesc = attributeNameMap['ndex:description'];
+                    var ndexExtLink = attributeNameMap['ndex:description'];
+
+                    if ( ndexLink || ndexDesc || ndexExtLink) {
+                        var selecterStr = [ndexLink,ndexDesc, ndexExtLink].join(' ');
+                        cy.edges(selecterStr).forEach(function (n) {
+                            var ndex_link = n.data('ndex_link');
+                            var g = ndex_link.replace(/\[(.*)\].*$/, '$1');
+                            var id = n.data('ndex_id');
+                            //if  {
+                            var url = ( viewer.baseURL.match(/view$/) ? viewer.baseURL : (viewer.baseURL + 'view' )) + '/' + id;
+
+                            console.log("process node " + g + " , id:" + id);
+                            n.qtip({
+                                content: //'hello'
+                                '<a target="_blank" href="' + url + '">' + g + '</a>',
+                                /*  [  {
+                                 name: 'GeneCard',
+                                 url: 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + g
+                                 },
+                                 {
+                                 name: 'UniProt search',
+                                 url: 'http://www.uniprot.org/uniprot/?query='+ g +'&fil=organism%3A%22Homo+sapiens+%28Human%29+%5B9606%5D%22&sort=score'
+                                 },
+                                 {
+                                 name: 'GeneMANIA',
+                                 url: 'http://genemania.org/search/human/' + g
+                                 }
+                                 ].map(function( link ){
+                                 return '<a target="_blank" href="' + link.url + '">' + link.name + '</a>';
+                                 }).join('<br />\n')*/
+                                position: {
+                                    my: 'top center',
+                                    at: 'bottom center'
+                                },
+                                style: {
+                                    classes: 'qtip-bootstrap',
+                                    tip: {
+                                        width: 16,
+                                        height: 8
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                }); // on dom ready
+
+            };
+
+
+
             var drawCXNetworkOnCanvas = function (cxNetwork) {
                 var attributeNameMap = {};
 
@@ -133,7 +253,7 @@ ndexApp.controller('networkViewController',
 
                 var cyLayout = {name: layoutName};
 
-                cyService.initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, networkController, 'cytoscape-canvas' );
+                initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas' ,attributeNameMap);
 
             };
             
@@ -143,7 +263,7 @@ ndexApp.controller('networkViewController',
 
                 if ( networkController.currentNetwork.edgeCount > config.networkDisplayLimit) {
                     // get edges, convert to CX obj
-                    (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkTableLimit) )
+                    (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkDisplayLimit) )
                         .success(
                             function (network) {
 
@@ -277,6 +397,8 @@ ndexApp.controller('networkViewController',
             {
                 ndexService.setReadOnly(networkController.currentNetworkId, networkController.readOnlyChecked);
             };
+
+
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

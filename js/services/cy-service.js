@@ -838,59 +838,6 @@ angular.module('ndexServiceApp')
         };
 
 
-        /*-----------------------------------------------------------------------*
-         * initialize the cytoscape instance from niceCX
-         *-----------------------------------------------------------------------*/
-        factory.initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, viewer, canvasName) {
-
-            //console.log(cyElements);
-
-            $(function () { // on dom ready
-
-                var cv = document.getElementById(canvasName);
-
-                cy = cytoscape({
-                    container: cv,
-
-                    style: cyStyle,
-
-                    layout: cyLayout,
-
-                    elements: cyElements,
-
-                    ready: function () {
-                        window.cy = this;
-                    }
-                });
-
-                // this is a workaround to catch select, deselect in one event. Otherwise if a use select multipe nodes/
-                // edges, the event is triggered for each node/edge.
-                cy.on ( 'select unselect',function (event) {
-                    clearTimeout(cy.nodesSelectionTimeout);
-                    cy.nodesSelectionTimeout = setTimeout(function () {
-                        var cxNodes = [];
-                        var cxEdges = [];
-                        _.forEach(cy.$("node:selected"), function (node) {
-                            var data = node.data();
-                            var id = node.id;
-                            cxNodes.push({'id': id, 'data': data})   ;
-                        });
-                        _.forEach(cy.$("edge:selected"), function (edge) {
-                            var data = edge.data();
-                            var id = edge.id;
-                            cxEdges.push({'id': id, 'data': data})   ;
-                        });
-            //            selectionContainer.nodes = cxNodes;
-            //            selectionContainer.nodes = cxEdges;
-
-                      viewer.refreshNodeEdgeTab({'nodes': cxNodes, 'edges': cxEdges});
-                    }, 300) ;
-                });
-
-
-            }); // on dom ready
-
-        };
 
         factory.getCy = function () {
             return cy;

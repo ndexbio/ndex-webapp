@@ -12,44 +12,12 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         var ndexServerURI = config.ndexServerUri;
 
+        var localNiceCX ;
+
         factory.getNdexServerUri = function()
         {
             return ndexServerURI;
         };
-
-
-        //
-        // getNetwork
-        //
-   /*     factory.getNetwork = function (networkId) {
-            ////console.log("retrieving network " + networkId);
-
-            // The $http timeout property takes a deferred value that can abort AJAX request
-            var deferredAbort = $q.defer();
-
-            // Grab the config for this request. We modify the config to allow for $http request aborts.
-            // This may become standard in the client.
-            var config = ndexConfigs.getNetworkConfig(networkId);
-            config.timeout = deferredAbort.promise;
-
-            // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-            var request = $http(config);
-
-            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-            request.abort = function () {
-                deferredAbort.resolve();
-            };
-
-            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-            request.finally(
-                function () {
-                    request.abort = angular.noop; // angular.noop is an empty function
-                    deferredAbort = request = null;
-                }
-            );
-
-            return request;
-        }; */
 
 
         factory.getNetworkSummaryFromNdex = function (networkId) {
@@ -111,7 +79,88 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return currentNetworkSummary;
         };
 
+        factory.getNiceCX = function () {
+            return localNiceCX;
+        };
 
+
+        factory.getNodeInfo = function (nodeId) {
+            if (!localNiceCX) return null;
+
+            var node = localNiceCX.nodes[nodeId];
+            var nodeInfo = {'id': nodeId,
+                            'n': node.n,
+                            'r': node.r
+                            };
+            if ( localNiceCX.nodeAttributes && localNiceCX.nodeAttributes[nodeId]) {
+                var nodeAttrs = localNiceCX.nodeAttributes[nodeId];
+                _.forEach(nodeAttrs, function(value, pname) {
+                    if ( pname != "selected") {
+                        nodeInfo[pname] = value;
+                    }
+
+                });
+            }
+
+
+            return nodeInfo;
+        };
+
+
+        factory.getNodeAttributes = function ( nodeId) { 
+            if ( !localNiceCX) return null;
+            return localNiceCX.nodeAttributes[nodeId];
+        };
+        
+        factory.getEdgeAttributes = function (edgeId) { 
+            if ( !localNiceCX) return null;
+            
+            return localNiceCX.edgeAttributes[edgeId];
+        };
+        
+        factory.getNodeAttr = function (nodeId, propName ) {
+            if ( localNiceCX && localNiceCX.nodeAttributes[nodeId] ) {
+                return localNiceCX.nodeAttributes[nodeId][propName];
+            }
+            return null;
+        };
+        
+        factory.getEdgeAttr = function ( edgeId, propName) {
+           if ( localNiceCX && localNiceCX.edgeAttributes[edgeId]) {
+               return localNiceCX.edgeAttributes[edgeId][propName];
+           }
+            
+            return null;
+        };
+        
+        factory.getEdgeInfo = function (edgeId) {
+            if ( !localNiceCX) return null;
+
+            var edge = localNiceCX.edges[edgeId];
+            var edgeInfo = { id: edgeId,
+                            s: edge.s,
+                            t: edge.t,
+                            i: edge.i};
+            if ( localNiceCX.edgeAttributes && localNiceCX.edgeAttributes[edgeId]) {
+                var edgeAttrs = localNiceCX.edgeAttributes[edgeId];
+                _.forEach(edgeAttrs, function(value, pname) {
+                    if ( pname != 'selected') {
+                        edgeInfo[pname] = value;
+                    }
+                });
+            }
+
+            if ( localNiceCX.edgeCitations && localNiceCX.edgeCitations[edgeId]) {
+                var citationList = [];
+                _.forEach(localNiceCX.edgeCitations[edgeId], function ( citationId) {
+                    citationList.push ( localNiceCX.citations[citationId]);
+                });
+                if (citationList.length >0 )
+                    edgeInfo['citations'] = citationList;
+            }
+
+            return edgeInfo;
+        }
 
         factory.getCXNetwork = function (networkId) {
 
@@ -132,8 +181,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        var niceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        handler(niceCX);
+                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        handler(localNiceCX);
                     }
                 );
                 return promise;
@@ -188,8 +237,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        var niceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
-                        handler(niceCX);
+                        localNiceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
+                        handler(localNiceCX);
                     }
                 );
                 return promise;
