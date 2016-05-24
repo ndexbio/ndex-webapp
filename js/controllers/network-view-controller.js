@@ -128,6 +128,12 @@ ndexApp.controller('networkViewController',
             };
 
 
+            var parseNdexMarkupValue = function ( value ) {
+                return {n:  value.replace(/(\[(.*)\])?\(.*\)$/, '$2'),
+                        id: value.replace(/(\[.*\])?\((.*)\)$/, "$2")};
+            };
+
+
             /*-----------------------------------------------------------------------*
              * initialize the cytoscape instance from niceCX
              *-----------------------------------------------------------------------*/
@@ -195,6 +201,8 @@ ndexApp.controller('networkViewController',
                         });
 
                         var selectorStr = tmpArry.join(',');
+
+                        // render properties on nodes
                         cy.nodes(selectorStr).forEach(function (n) {
                             var menuList = [];
                             // check description
@@ -206,27 +214,84 @@ ndexApp.controller('networkViewController',
                             }
                             if ( ndexLink) {
                                 var ndexLinkList = n.data(ndexLink);
+                                if ( typeof ndexLinkList === 'string')
+                                    ndexLinkList = [ndexLinkList];
                                 _.forEach(ndexLinkList, function (e) {
-                                    var m_title = e.replace(/(\[(.*)\])?\(.*\)$/, '$2');
-                                    var m_uuid = e.replace(/(\[.*\])?\((.*)\)$/, "$2");
-                                    var url = networkController.baseURL + m_uuid;
-                                    menuList.push('<a target="_blank" href="' + url + '">' + m_title + '</a>');
-
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        var url = networkController.baseURL + markup.id;
+                                        menuList.push('<a href="' + url + '">' +
+                                            (markup.n? markup.n : markup.id)+ '</a>');
+                                    }
                                 });
                             }
                             if ( ndexExtLink) {
-                                var extLinkList = n.data(ndexLink);
+                                var extLinkList = n.data(ndexExtLink);
+                                if ( typeof extLinkList === 'string')
+                                    extLinkList = [ extLinkList];
                                 _.forEach(extLinkList, function (e) {
-                                    var m_title = e.replace(/(\[(.*)\])?\(.*\)$/, '$2');
-                                    var m_uuid = e.replace(/(\[.*\])?\((.*)\)$/, "$2");
-                                    var url = networkController.baseURL + m_uuid;
-                                    menuList.push('<a target="_blank" href="' + url + '">' + m_title + '</a>');
-
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        menuList.push('<a href="' + markup.id + '">' +
+                                            (markup.n? markup.n : 'external link') + '</a>');
+                                    }
                                 });
                             }
                             n.qtip({
                                 content:
                                   menuList.join('<br />\n'),
+                                position: {
+                                    my: 'top center',
+                                    at: 'bottom center'
+                                },
+                                style: {
+                                    classes: 'qtip-bootstrap',
+                                    tip: {
+                                        width: 16,
+                                        height: 8
+                                    }
+                                }
+                            });
+                        });
+
+                        // handles edges
+                        cy.edges(selectorStr).forEach(function (n) {
+                            var menuList = [];
+                            // check description
+                            if ( ndexDesc) {
+                                var desc = n.data(ndexDesc);
+                                if (desc) {
+                                    menuList.push(desc);
+                                }
+                            }
+                            if ( ndexLink) {
+                                var ndexLinkList = n.data(ndexLink);
+                                if ( typeof ndexLinkList === 'string')
+                                    ndexLinkList = [ ndexLinkList];
+                                _.forEach(ndexLinkList, function (e) {
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        var url = networkController.baseURL + markup.id;
+                                        menuList.push('<a href="' + url + '">' +
+                                            (markup.n? markup.n : markup.id)+ '</a>');
+                                    }
+                                });
+                            }
+                            if ( ndexExtLink) {
+                                var extLinkList = n.data(ndexExtLink);
+                                if ( typeof extLinkList == 'string')
+                                    extLinkList = [ extLinkList];
+                                _.forEach(extLinkList, function (e) {
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        menuList.push('<a href="' + markup.id + '">' +
+                                            (markup.n? markup.n : 'external link') + '</a>');
+                                    }
+                                });
+                            }
+                            n.qtip({
+                                content:
+                                    menuList.join('<br />\n'),
                                 position: {
                                     my: 'top center',
                                     at: 'bottom center'
