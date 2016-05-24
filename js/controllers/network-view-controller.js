@@ -197,25 +197,33 @@ ndexApp.controller('networkViewController',
                         var selectorStr = tmpArry.join(',');
                         cy.nodes(selectorStr).forEach(function (n) {
                             var menuList = [];
-                            // check description 
-                            var desc = n.data(ndexDesc);
-                            if ( desc) {
-                                menuList.push( desc);
-                                menuList.push( desc);
-
+                            // check description
+                            if ( ndexDesc) {
+                                var desc = n.data(ndexDesc);
+                                if (desc) {
+                                    menuList.push(desc);
+                                }
                             }
-                            var ndex_link_str = n.data(ndexLink);
-                         /*   var ndexLinkList= JSON.parse(ndex_link_str);
-                            _.forEach(ndexLinkList, function (e) {
-                                var m_title = ndex_link_list.replace(/(\[(.*)\])?\(.*\)$/, '$2');
-                                var m_uuid = ndex_link.replace (/(\[.*\])?\((.*)\)$/, "$2");
-                            });
-                            var m_title = ndex_link_list.replace(/(\[(.*)\])?\(.*\)$/, '$2');
-                            var m_uuid = ndex_link.replace (/(\[.*\])?\((.*)\)$/, "$2");
-                            
-                        //    var m_uuid = ndex_link.replace(/(\[.*\])?(.*)$/, '$2');
-                            var url = networkController.baseURL  + m_uuid; */
+                            if ( ndexLink) {
+                                var ndexLinkList = n.data(ndexLink);
+                                _.forEach(ndexLinkList, function (e) {
+                                    var m_title = e.replace(/(\[(.*)\])?\(.*\)$/, '$2');
+                                    var m_uuid = e.replace(/(\[.*\])?\((.*)\)$/, "$2");
+                                    var url = networkController.baseURL + m_uuid;
+                                    menuList.push('<a target="_blank" href="' + url + '">' + m_title + '</a>');
 
+                                });
+                            }
+                            if ( ndexExtLink) {
+                                var extLinkList = n.data(ndexLink);
+                                _.forEach(extLinkList, function (e) {
+                                    var m_title = e.replace(/(\[(.*)\])?\(.*\)$/, '$2');
+                                    var m_uuid = e.replace(/(\[.*\])?\((.*)\)$/, "$2");
+                                    var url = networkController.baseURL + m_uuid;
+                                    menuList.push('<a target="_blank" href="' + url + '">' + m_title + '</a>');
+
+                                });
+                            }
                             n.qtip({
                                 content:
                                   menuList.join('<br />\n'),
