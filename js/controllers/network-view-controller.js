@@ -178,7 +178,7 @@ ndexApp.controller('networkViewController',
                                     networkController.tabs[1].active = true;
                             });
                         }, 300) ;
-                    }); 
+                    });
 
 
                     // handles the linked networks.
@@ -187,43 +187,38 @@ ndexApp.controller('networkViewController',
                     var ndexDesc = attributeNameMap['ndex:description'];
                     var ndexExtLink = attributeNameMap['ndex:externalLink'];
 
-       /*             if ( ndexLink || ndexDesc || ndexExtLink) {
-                        var selectorStr = [ndexLink,ndexDesc, ndexExtLink].join(' ');
-                        selectorStr = '['+ selectorStr +']';
-                        cy.nodes(selectorStr).forEach(function (n) {
-                            var ndex_link = n.data(ndexLink);
-                            var mArry = ndex_link.match(/(\[(.*)\])?(.*)$/);
-                            if ( mArray ) {
-                                if (mArry.length === 2 ) {
-                                    var m_title = mArry[0];
-                                    var m_uuid = mArry[1];
-                                } else {
-                                    var m_title = null;
-                                    var m_uuid = mArray[0];
-                                }
-                            }
-                            var m_uuid = ndex_link.replace(/(\[.*\])?(.*)$/, '$2');
-                            var url = networkController.baseURL  + '/' + id;
+                    if ( ndexLink || ndexDesc || ndexExtLink) {
+                        var tmpArry = [];
+                        [ndexLink,ndexDesc, ndexExtLink].forEach(function(entry){
+                            if (entry)
+                                tmpArry.push ( '[' + entry + ']');
+                        });
 
-                            console.log("process node " + g + " , id:" + id);
+                        var selectorStr = tmpArry.join(',');
+                        cy.nodes(selectorStr).forEach(function (n) {
+                            var menuList = [];
+                            // check description 
+                            var desc = n.data(ndexDesc);
+                            if ( desc) {
+                                menuList.push( desc);
+                                menuList.push( desc);
+
+                            }
+                            var ndex_link_str = n.data(ndexLink);
+                         /*   var ndexLinkList= JSON.parse(ndex_link_str);
+                            _.forEach(ndexLinkList, function (e) {
+                                var m_title = ndex_link_list.replace(/(\[(.*)\])?\(.*\)$/, '$2');
+                                var m_uuid = ndex_link.replace (/(\[.*\])?\((.*)\)$/, "$2");
+                            });
+                            var m_title = ndex_link_list.replace(/(\[(.*)\])?\(.*\)$/, '$2');
+                            var m_uuid = ndex_link.replace (/(\[.*\])?\((.*)\)$/, "$2");
+                            
+                        //    var m_uuid = ndex_link.replace(/(\[.*\])?(.*)$/, '$2');
+                            var url = networkController.baseURL  + m_uuid; */
+
                             n.qtip({
-                                content: //'hello'
-                                '<a target="_blank" href="' + url + '">' + g + '</a>',
-                                /*  [  {
-                                 name: 'GeneCard',
-                                 url: 'http://www.genecards.org/cgi-bin/carddisp.pl?gene=' + g
-                                 },
-                                 {
-                                 name: 'UniProt search',
-                                 url: 'http://www.uniprot.org/uniprot/?query='+ g +'&fil=organism%3A%22Homo+sapiens+%28Human%29+%5B9606%5D%22&sort=score'
-                                 },
-                                 {
-                                 name: 'GeneMANIA',
-                                 url: 'http://genemania.org/search/human/' + g
-                                 }
-                                 ].map(function( link ){
-                                 return '<a target="_blank" href="' + link.url + '">' + link.name + '</a>';
-                                 }).join('<br />\n')
+                                content:
+                                  menuList.join('<br />\n'),
                                 position: {
                                     my: 'top center',
                                     at: 'bottom center'
@@ -237,7 +232,7 @@ ndexApp.controller('networkViewController',
                                 }
                             });
                         });
-                    } */
+                    }
 
                 }); // on dom ready
 
