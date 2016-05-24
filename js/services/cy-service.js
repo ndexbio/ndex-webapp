@@ -2,24 +2,24 @@
 
 /**
  * @ngdoc service
- * @name ndexCravatWebappApp.cyService
+ * @name ndexServiceApp.cyService
  * @description
  * # cyService
- * Service in the ndexCravatWebappApp.
+ * Service in the ndexServiceApp.
  */
 angular.module('ndexServiceApp')
-    .factory('cyService', ['cxNetworkUtils','$q', function (cxNetworkUtils,$q) {
+    .factory('cyService', ['cxNetworkUtils', function (cxNetworkUtils) {
 
         // Public API here: the factory object will be returned
         var factory = {};
         var cy;
-   //     var selectionContainer = {};
+        // var selectionContainer = {};
 
         // Original position will be used when layout positions are available
-        const DEF_LAYOUT = 'preset';
+        //const DEF_LAYOUT = 'preset';
 
         // Layout to be used when there is no layout information
-        const DEF_NO_LAYOUT = 'cose';
+        //const DEF_NO_LAYOUT = 'cose';
 
 
         const DEF_VISUAL_STYLE = [
@@ -131,7 +131,7 @@ angular.module('ndexServiceApp')
             var cxNodeAttributes = cxNetworkUtils.getNodeAttributes(niceCX);
             if (cxNodeAttributes) {
                 // for each node id
-                _.forEach(cxNodeAttributes, function (nodeAttributeMap, nodeId) {
+                _.forEach(cxNodeAttributes, function (nodeAttributeMap) {
                     _.forEach(nodeAttributeMap, function (attributeObject, attributeName) {
                         getCyAttributeName(attributeName, attributeNameMap);
                     });
@@ -143,7 +143,7 @@ angular.module('ndexServiceApp')
 
             var edgeAttributes = cxNetworkUtils.getEdgeAttributes(niceCX);
             if (edgeAttributes) {
-                _.forEach(edgeAttributes, function (edgeAttributeMap, edgeId) {
+                _.forEach(edgeAttributes, function (edgeAttributeMap) {
                     _.forEach(edgeAttributeMap, function (attributeObject, attributeName) {
                         getCyAttributeName(attributeName, attributeNameMap);
                     });
@@ -613,7 +613,7 @@ angular.module('ndexServiceApp')
 
             var properties = {};
             properties[cyVisualAttribute] = 'data(' + cyDataAttribute + ')';
-            var style = {'selector': elementType, 'css': properties};
+            var style = {'selector': elementType + '[' + cyDataAttribute + ']', 'css': properties};
             elements.push(style);
             return elements;
         };
