@@ -12,8 +12,8 @@ angular.module('ndexServiceApp')
 
         // Public API here: the factory object will be returned
         var factory = {};
-        var cy;
-   //     var selectionContainer = {};
+        //var cy;
+        // var selectionContainer = {};
 
         // Original position will be used when layout positions are available
         //const DEF_LAYOUT = 'preset';
