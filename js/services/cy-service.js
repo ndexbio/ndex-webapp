@@ -323,7 +323,7 @@ angular.module('ndexServiceApp')
             var def = {m: mapping};
             _.forEach(items, function (item) {
                 item = item.trim();
-                var vals = split('=');  //item.match(/('[^']+'|[^=]+)/g); 
+                var vals = item.split('=');  //item.match(/('[^']+'|[^=]+)/g);
                 var v0 = vals[0];
                 var v1 = vals[1];
                 if (vals.length > 2) {
