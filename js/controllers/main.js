@@ -439,8 +439,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.messages = {};
             }
             if (typeof config.messages.serverDown === 'undefined') {
-                config.messages.serverDown =
-                    "<img src='http://www.ndexbio.org/wp-content/uploads/2015/06/manteinance2.png'>";
+                config.messages.serverDown = "<img src='img/maintenance.png'>";
             }
 
             //if (typeof config.contactUs === 'undefined') {
