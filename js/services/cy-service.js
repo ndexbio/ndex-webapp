@@ -317,12 +317,13 @@ angular.module('ndexServiceApp')
         // "COL=interaction,T=string,K=0=binds,V=0=NONE,K=1=isa,V=1=ARROW"
         // "COL=weight,T=double,L=0=1.0,E=0=1.0,G=0=1.0,OV=0=0.0,L=1=8.0,E=1=8.0,G=1=1.0,OV=1=70.0"
         var parseMappingDefinition = function (definition) {
-            var items = definition.split(',');
+            var items =  definition.split(',');
+            items = items || [];
             var mapping = {};
             var def = {m: mapping};
             _.forEach(items, function (item) {
                 item = item.trim();
-                var vals = item.split('=');
+                var vals = split('=');  //item.match(/('[^']+'|[^=]+)/g); 
                 var v0 = vals[0];
                 var v1 = vals[1];
                 if (vals.length > 2) {

@@ -27,7 +27,10 @@ ndexApp.controller('networkViewController',
             networkController.displayProvenance = {};
             networkController.selectionContainer = {};
             networkController.baseURL = $location.absUrl();
-
+            networkController.isSample=false;
+            networkController.displayLimit = config.networkDisplayLimit;
+                
+                
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
             
             networkController.tabs = [
@@ -343,6 +346,7 @@ ndexApp.controller('networkViewController',
 
                 if ( networkController.currentNetwork.edgeCount > config.networkDisplayLimit) {
                     // get edges, convert to CX obj
+                    networkController.isSample = true;
                     (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkDisplayLimit) )
                         .success(
                             function (network) {

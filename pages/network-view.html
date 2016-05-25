@@ -35,7 +35,10 @@
 
         <div>
 
-            <div class="cytoscapeCanvas" id="cytoscape-canvas" onresize="networkController.resizeCygraph()"></div>
+            <div class="cytoscapeCanvas" id="cytoscape-canvas" onresize="networkController.resizeCygraph()">
+                <div id = "messageOverlay" style="float:left; display: inline-block; position: absolute; top: 100px; left: 100px"
+                   ng-show="networkController.isSample"  >(Showing top {{networkController.displayLimit}} edges)</div>
+            </div>
 
             <div class="rowWithOneLineTopPad"></div>
 
