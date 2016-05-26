@@ -92,11 +92,20 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                             'n': node.n,
                             'r': node.r
                             };
+            var counter =1;
             if ( localNiceCX.nodeAttributes && localNiceCX.nodeAttributes[nodeId]) {
                 var nodeAttrs = localNiceCX.nodeAttributes[nodeId];
                 _.forEach(nodeAttrs, function(value, pname) {
                     if ( pname != "selected") {
-                        nodeInfo[pname] = value;
+                        if ( !nodeInfo[pname] ) {
+                            nodeInfo[pname] = value;
+                        } else {
+                            while (nodeInfo[pname+ '_' + counter]) {
+                                counter++;
+                            };
+                            nodeInfo[pname+ '_' + counter] = value;
+                            counter++;
+                        }
                     }
 
                 });
@@ -137,15 +146,24 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             if ( !localNiceCX) return null;
 
             var edge = localNiceCX.edges[edgeId];
-            var edgeInfo = { id: edgeId,
+            var edgeInfo = { 'id': edgeId,
                             s: edge.s,
                             t: edge.t,
                             i: edge.i};
+            var counter;
             if ( localNiceCX.edgeAttributes && localNiceCX.edgeAttributes[edgeId]) {
                 var edgeAttrs = localNiceCX.edgeAttributes[edgeId];
                 _.forEach(edgeAttrs, function(value, pname) {
                     if ( pname != 'selected') {
-                        edgeInfo[pname] = value;
+                        if ( !edgeInfo[pname]) {
+                            edgeInfo[pname] = value;
+                        } else {
+                            while (edgeInfo[pname+ '_' + counter]) {
+                                counter++;
+                            };
+                            edgeInfo[pname+ '_' + counter] = value;
+                            counter++;
+                        }   
                     }
                 });
             }

@@ -26,7 +26,7 @@ angular.module('ndexServiceApp')
             {
                 selector: 'node',
                 style: {
-                    'background-color': 'rgb(0, 220, 200)',
+                    'background-color':  '#da8a43',//'rgb(0, 220, 200)',
                     'background-opacity': 0.8,
                     'width': '40px',
                     'height': '40px',
@@ -37,9 +37,9 @@ angular.module('ndexServiceApp')
             {
                 selector: 'edge',
                 style: {
-                    'line-color': '#aaaaaa',
+                    'line-color': '#76936f',
                     'width': '2px',
-                    'label': 'data(interaction)',
+                 //   'label': 'data(interaction)',
                     'font-family': 'Roboto, sans-serif',
                     'text-opacity': 0.8
                 }
@@ -47,12 +47,15 @@ angular.module('ndexServiceApp')
             {
                 selector: 'node:selected',
                 style: {
+                    'color': '#fb1605',
                     'background-color': 'yellow'
                 }
             },
             {
                 selector: 'edge:selected',
                 style: {
+                    'label': 'data(interaction)',
+                    'color' : '#fb1605',
                     'line-color': 'yellow',
                     'width': 6
                 }
@@ -137,10 +140,10 @@ angular.module('ndexServiceApp')
                     });
                 });
             }
-
+/*
             sanitizeAttributeNameMap(attributeNameMap);
             console.log(attributeNameMap);
-
+*/
             var edgeAttributes = cxNetworkUtils.getEdgeAttributes(niceCX);
             if (edgeAttributes) {
                 _.forEach(edgeAttributes, function (edgeAttributeMap) {
@@ -624,7 +627,19 @@ angular.module('ndexServiceApp')
         // get the color from the network visual property and convert it to CSS format
         factory.cyBackgroundColorFromNiceCX = function (niceCX) {
             //console.log(niceCX);
-            return 'rgb(1.0, 1.0, 1.0)';
+            var result = null;
+            if ( niceCX.visualProperties) {
+                _.forEach(niceCX.visualProperties, function (vpAspectElement) {
+                    _.forEach(vpAspectElement, function (vpElement) {
+                        var elementType = vpElement['properties_of'];
+                        if (elementType === 'network') {
+                           result =  vpElement.properties.NETWORK_BACKGROUND_PAINT;
+                            return false;
+                        } 
+                    });
+                });
+            }
+            return result;
         };
 
         factory.cyStyleFromNiceCX = function (niceCX, attributeNameMap) {

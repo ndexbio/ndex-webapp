@@ -41,6 +41,7 @@ ndexApp.controller('networkViewController',
 
             networkController.prettyStyle = "no style yet";
             networkController.prettyVisualProperties = "nothing yet";
+            networkController.bgColor = '#8fbdd7';
 
 
             networkController.searchDepths = [
@@ -140,7 +141,7 @@ ndexApp.controller('networkViewController',
             /*-----------------------------------------------------------------------*
              * initialize the cytoscape instance from niceCX
              *-----------------------------------------------------------------------*/
-            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
+            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap, bgColor) {
 
                 //console.log(cyElements);
 
@@ -322,6 +323,9 @@ ndexApp.controller('networkViewController',
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
                 var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
 
+                var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
+                if ( cxBGColor)
+                    networkController.bgColor = cxBGColor;
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
 
