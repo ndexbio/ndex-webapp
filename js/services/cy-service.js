@@ -404,6 +404,7 @@ angular.module('ndexServiceApp')
             'NODE_BORDER_PAINT': {'att': 'border-color', 'type': 'color'},
             'NODE_BORDER_TRANSPARENCY': {'att': 'border-opacity', 'type': 'opacity'},
             'NODE_BORDER_WIDTH': {'att': 'border-width', 'type': 'number'},
+            'NODE_SIZE' : [{'att': 'width','type': 'number'},{'att': 'height', 'type': 'number'}],
 
             'NODE_LABEL': {'att': 'content', 'type': 'string'},
             'NODE_LABEL_COLOR': {'att': 'color', 'type': 'color'},
@@ -430,6 +431,14 @@ angular.module('ndexServiceApp')
             var attProps = visualPropertyMap[vp];
             if (attProps){
                 return attProps.att;
+            }
+            return false;
+        };
+
+        var getCyVisualAttributeObjForVP = function (vp) {
+            var attProps = visualPropertyMap[vp];
+            if (attProps){
+                return attProps;
             }
             return false;
         };
@@ -508,17 +517,8 @@ angular.module('ndexServiceApp')
             return elements;
         };
 
-        var continuousMappingStyle = function (elementType, vp, def, attributeNameMap) {
-            var elements = [];
-            var cyVisualAttribute = getCyVisualAttributeForVP(vp);
-            if (!cyVisualAttribute) {
-                console.log("no visual attribute for " + vp);
-                return elements;  // empty result, vp not handled
-            }
-            var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
-            // the cytoscape column is mapped to the cyjs attribute name
-            var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
+        var continuousMappingStyle_aux = function (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements) {
             var lastPointIndex = Object.keys(def.m).length - 1;
 
             // Each Continuous Mapping Point in def.m has 4 entries:
@@ -598,6 +598,30 @@ angular.module('ndexServiceApp')
                     // set the previous point to this point for the next iteration
                     previousTranslatedPoint = translatedPoint;
                 }
+            });
+
+        };
+
+
+        var continuousMappingStyle = function (elementType, vp, def, attributeNameMap) {
+            var elements = [];
+            var cyVisualAttributeObj = getCyVisualAttributeObjForVP(vp) ; //getCyVisualAttributeForVP(vp);
+            if (!cyVisualAttributeObj) {
+                console.log("no visual attribute for " + vp);
+                return elements;  // empty result, vp not handled
+            }
+            var ll = Object.prototype.toString.call( cyVisualAttributeObj );
+            if(  ll != '[object Array]' ) {
+                cyVisualAttributeObj = [ cyVisualAttributeObj];
+            };
+
+            var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
+
+            _.forEach ( cyVisualAttributeObj, function (vAttr) {
+                var cyVisualAttribute = vAttr.att;
+                var cyVisualAttributeType = vAttr.type;
+                continuousMappingStyle_aux (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements);
+
             });
 
             return elements;
