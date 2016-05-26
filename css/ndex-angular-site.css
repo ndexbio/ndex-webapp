@@ -649,27 +649,27 @@ ul.ndex-nav-pills > li > a:hover {
 .networkViewPadding {
     padding-left: 30px;
     padding-right: 30px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .networkViewHeaderHeader
 {
     font-weight: bold;
-    font-size: 2em;
+    font-size: 1.3em;
     text-align: center;
     line-height: 1;
 }
 
 .networkViewHeaderBody
 {
-    font-size: 1.3em;
+    font-size: 1em;
     text-align: center;
     line-height: 1;
 }
 
 .networkPropertyName {
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: bold;
 }
 
@@ -694,7 +694,9 @@ ul.ndex-nav-pills > li > a:hover {
 .cytoscapeCanvas {
     color: #777;
     border: 2px solid #e5e5e5;
-    height: 90vh;
+    margin:0 auto;
+
+    /*height: 90vh;*/
     background-color: #eee;
 }
 
@@ -731,9 +733,4 @@ ul.ndex-nav-pills > li > a:hover {
     -ms-word-break: break-all;
     word-break: break-all;
     word-break: break-word;
-}
-
-.fill {
-    min-height: 100%;
-    height: 100%;
 }

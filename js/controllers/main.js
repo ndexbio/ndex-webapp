@@ -6,6 +6,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.main.signout();
         });
 
+        $scope.showFooter = true;
+        
         $scope.main = {};
 
         $scope.main.url = $location; //expose the service to the scope for nav

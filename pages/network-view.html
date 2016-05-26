@@ -36,7 +36,8 @@
         <div>
 
             <div class="cytoscapeCanvas" id="cytoscape-canvas" onresize="networkController.resizeCygraph()" ng-style="{background: networkController.bgColor}">
-                <div id = "messageOverlay" style="float:left; display: inline-block; position: absolute; top: 40px; left: 40px"
+                <div id = "messageOverlay"
+                     style="float:left; vdisplay: inline-block; position: absolute; top: 40px; left: 40px;font-size: 1.5em; color: #FF0000"
                    ng-show="networkController.isSample"  >(Showing top {{networkController.displayLimit}} edges)</div>
             </div>
 
@@ -44,9 +45,7 @@
 
             <div class="networkViewFrame networkActionsSection">
 
-                <div class="actionsLabel">Actions:</div>
-
-                <div class="btn-group buttonWithMarginBottom">
+                <div class="btn-group">
 
                     <span ng-show='networkController.isLoggedIn &&
                                 ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>

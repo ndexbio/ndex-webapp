@@ -15,6 +15,11 @@ ndexApp.controller('networkViewController',
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
+            $scope.showFooter = false;
+
+            $scope.$on('$destroy', function() {
+                $scope.showFooter = true;
+            });
 
             $scope.networkController = {};
 
@@ -493,6 +498,8 @@ ndexApp.controller('networkViewController',
 
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
+            $("#cytoscape-canvas").height($(window).height() - 425);
+            $("#divNetworkTabs").height($(window).height() - 255);
 
             initialize();
 
