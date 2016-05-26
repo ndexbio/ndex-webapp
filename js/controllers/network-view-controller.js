@@ -122,6 +122,100 @@ ndexApp.controller('networkViewController',
             };
 
 
+            $scope.getNodeName = function(node)
+            {
+                if (!node) {
+                    return 'unknown';
+                }
+
+                if (node['n']) {
+                    return node['n'];
+                }
+
+                if (node['name'] && node['name']['v']) {
+                    return node['name']['v'];
+                }
+
+                if (node['id']) {
+                    return node['id'];
+                }
+
+                return 'unknown';
+            };
+
+            $scope.getNodeAttributes = function(node) {
+                var attributeNames = _.keys(node);
+
+                var elementsToRemove = ['id', 'n', '$$hashKey'];
+
+                for (i = 0; i < elementsToRemove.length; i++) {
+
+                    var index = attributeNames.indexOf(elementsToRemove[i]);
+                    if (index > -1) {
+                        attributeNames.splice(index, 1);
+                    }
+                }
+
+                return attributeNames;
+            };
+
+            $scope.getEdgeAttributes = function(node) {
+                var attributeNames = _.keys(node);
+
+                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey'];
+
+                for (i = 0; i < elementsToRemove.length; i++) {
+
+                    var index = attributeNames.indexOf(elementsToRemove[i]);
+                    if (index > -1) {
+                        attributeNames.splice(index, 1);
+                    }
+                }
+
+                return attributeNames;
+            };
+
+            $scope.getAttributeValue = function(attribute) {
+
+                if (!attribute) {
+                    return null;
+                }
+
+                var attributeValue;
+
+                if (attribute instanceof Object) {
+                    attributeValue = (attribute['v']) ? attribute['v'] : 'unknown value';
+                }
+
+                return attributeValue;
+            }
+
+            $scope.getEdgeLabel = function(edge) {
+
+                if (!edge) {
+                    return "unknown";
+                }
+
+                var source="source unknown", target="target unknown", predicate="->";
+
+                if (edge['s']) {
+                    var nodeObj = networkService.getNodeInfo(edge['s']);
+                    source = $scope.getNodeName(nodeObj);
+                }
+                if (edge['t']) {
+                    var nodeObj = networkService.getNodeInfo(edge['t']);
+                    target = $scope.getNodeName(nodeObj);
+                }
+                if (edge['i']) {
+                    predicate = edge['i'];
+                }
+
+                return source + ' ' + predicate + ' ' + target;
+            }
+
+
+
+
             /*-----------------------------------------------------------------------*
              * initialize the cytoscape instance from niceCX
              *-----------------------------------------------------------------------*/
