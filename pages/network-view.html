@@ -315,31 +315,46 @@
                 <!-- node/edge tab -->
                 <tab heading="{{ networkController.tabs[1].heading }}" active="networkController.tabs[1].active">
 
-
-                    <div >
+                    <div>
 
                         <table style="width:100%">
-                            <tr>
-                                <td>Selected Nodes: {{ networkController.selectionContainer.nodes.length}}</td>
+                            <tr ng-if="networkController.selectionContainer.nodes.length > 0">
+                                <td>Selected Nodes: {{networkController.selectionContainer.nodes.length}}</td>
                             </tr>
-                            <tr ng-repeat="node in networkController.selectionContainer.nodes">
-                                <td class="wrappedCell">
-                                    Name: {{getNodeName(node)}} <br />
 
+                            <tr ng-repeat-start="node in networkController.selectionContainer.nodes">
+                                <td>
+                                    <button ng-if="node.expanded" ng-click="node.expanded = false">-</button>
+                                    <button ng-if="!node.expanded" ng-click="node.expanded = true">+</button>
+
+                                    &nbsp;{{getNodeName(node)}}
+                                </td>
+                            </tr>
+                            <tr ng-if="node.expanded" ng-repeat-end="">
+                                <td>
                                     <span ng-repeat="attribute in getNodeAttributes(node)">
                                         <span ng-show="getAttributeValue(node[attribute])">
                                             &nbsp;&nbsp;&nbsp;{{attribute}} : {{getAttributeValue(node[attribute])}}
                                             <br />
                                         </span>
                                     </span>
-
                                 </td>
-
                             </tr>
-                            <tr><td>Selected Edges: {{ networkController.selectionContainer.edges.length}}</td></tr>
-                            <tr ng-repeat="edge in networkController.selectionContainer.edges">
-                                <td class="wrappedCell">
-                                    Edge: {{getEdgeLabel(edge)}} <br />
+
+
+                            <tr ng-if="networkController.selectionContainer.edges.length > 0">
+                                <td>Selected Edges: {{ networkController.selectionContainer.edges.length}}</td>
+                            </tr>
+                            <tr ng-repeat-start="edge in networkController.selectionContainer.edges">
+                                <td>
+                                    <button ng-if="edge.expanded" ng-click="edge.expanded = false">-</button>
+                                    <button ng-if="!edge.expanded" ng-click="edge.expanded = true">+</button>
+
+                                    &nbsp;{{getEdgeLabel(edge)}}
+                                </td>
+                            </tr>
+                            <tr ng-if="edge.expanded" ng-repeat-end="">
+                                <td>
 
                                     <span ng-repeat="attribute in getEdgeAttributes(edge)">
                                         <span ng-show="getAttributeValue(edge[attribute])">
@@ -347,9 +362,9 @@
                                             <br />
                                         </span>
                                     </span>
-
                                 </td>
                             </tr>
+
                         </table>
                     </div>
                 </tab>

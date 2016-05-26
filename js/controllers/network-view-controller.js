@@ -234,9 +234,6 @@ ndexApp.controller('networkViewController',
                 return source + ' ' + predicate + ' ' + target;
             }
 
-
-
-
             /*-----------------------------------------------------------------------*
              * initialize the cytoscape instance from niceCX
              *-----------------------------------------------------------------------*/
