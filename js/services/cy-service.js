@@ -694,13 +694,14 @@ angular.module('ndexServiceApp')
                         var nodeLabelPosition = null;
                         var nodeLabelFontFace = null;
                         var defaultNodeProperties = {};
+                        var node_size = null;
 
                         _.forEach(vpElement.properties, function(value, vp){
                             console.log('default node property ' + vp + ' = ' + value);
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
                             if (cyVisualAttribute) {
-                                var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
-                                defaultNodeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                                    var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                    defaultNodeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                             } else {
                                 if (vp === 'NODE_LABEL_POSITION'){
                                     nodeLabelPosition = value;
@@ -710,10 +711,16 @@ angular.module('ndexServiceApp')
                                     var selectedColor = getCyVisualAttributeValue(value, 'color');
                                     node_selected_styles.push({'selector': 'node:selected', 'css': {'background-color': selectedColor}});
 
+                                } else if ( vp === 'NODE_SIZE') {
+                                    node_size = value;
                                 }
                             }
                         });
 
+                        if (  node_size) {
+                            defaultNodeProperties['height'] = node_size;
+                            defaultNodeProperties['width'] = node_size;
+                        }
                         if (nodeLabelPosition){
                             var position = nodeLabelPosition.split(',');
                             defaultNodeProperties['text-valign'] = getTextAlign(position[0]);
