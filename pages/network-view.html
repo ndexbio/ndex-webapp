@@ -323,7 +323,7 @@
                             </tr>
 
                             <tr ng-repeat-start="node in networkController.selectionContainer.nodes">
-                                <td>
+                                <td class="wrappedCell">
                                     <button ng-if="node.expanded" ng-click="node.expanded = false">-</button>
                                     <button ng-if="!node.expanded" ng-click="node.expanded = true">+</button>
 
@@ -331,7 +331,7 @@
                                 </td>
                             </tr>
                             <tr ng-if="node.expanded" ng-repeat-end="">
-                                <td>
+                                <td class="wrappedCell">
                                     <span ng-repeat="attribute in getNodeAttributes(node)">
                                         <span ng-show="getAttributeValue(node[attribute])">
                                             &nbsp;&nbsp;&nbsp;{{attribute}} : {{getAttributeValue(node[attribute])}}
@@ -346,7 +346,7 @@
                                 <td>Selected Edges: {{ networkController.selectionContainer.edges.length}}</td>
                             </tr>
                             <tr ng-repeat-start="edge in networkController.selectionContainer.edges">
-                                <td>
+                                <td class="wrappedCell">
                                     <button ng-if="edge.expanded" ng-click="edge.expanded = false">-</button>
                                     <button ng-if="!edge.expanded" ng-click="edge.expanded = true">+</button>
 
@@ -354,7 +354,7 @@
                                 </td>
                             </tr>
                             <tr ng-if="edge.expanded" ng-repeat-end="">
-                                <td>
+                                <td class="wrappedCell">
 
                                     <span ng-repeat="attribute in getEdgeAttributes(edge)">
                                         <span ng-show="getAttributeValue(edge[attribute])">
