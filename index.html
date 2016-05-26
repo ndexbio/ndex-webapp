@@ -340,17 +340,20 @@
     <div ng-view class="marginsForNGView"></div>
 </div>
 
-<nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter" ng-show="showFooter" >
-    <div class='footer-content'>
+<div ng-show='showFooter'>
+<nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter"  >
+    <div class='footer-content' >
         Copyright &copy; 2016 Regents of the University of California and The Cytoscape Consortium. All rights
         reserved.
         &nbsp;<a href="http://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
     </div>
 </nav>
+</div>
+
 
 <script>
     $(window).resize(function() {
-        $('#cytoscape-canvas').height($(window).height() - 425);
+        $('#cytoscape-canvas').height($(window).height() - 255);
         $("#divNetworkTabs").height($(window).height() - 255);
 
     });

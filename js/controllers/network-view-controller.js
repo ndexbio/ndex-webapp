@@ -17,9 +17,9 @@ ndexApp.controller('networkViewController',
 
             $scope.showFooter = false;
 
-            $scope.$on('$destroy', function() {
+     /*       $scope.$on('$destroy', function() {
                 $scope.showFooter = true;
-            });
+            }); */
 
             $scope.networkController = {};
 
@@ -75,28 +75,7 @@ ndexApp.controller('networkViewController',
                 "description": "1-step",
                 "value": 1,
                 "id": "1"
-            };
-
-
-            var setSelectionContainer = function (updatedSelection) {
-                //networkController.selectionContainer
-
-                var selectedNodes = {};
-                var selectedEdges = {};
-                _.forEach(updatedSelection.nodes, function (node) {
-                    var data = node.data;
-                    //var id = node.id;
-                    selectedNodes[node.id] = networkService.getNodeInfo(data.id);
-                   // nodes.id({'id': id, 'data': data})   ;
-                });
-                
-                _.forEach ( updatedSelection.edges, function (edge){
-                    selectedEdges[edge.id] = networkService.getEdgeInfo(edge.id);
-                });
-
-                networkController.selectionContainer = {'nodes': selectedNodes, 'edges': selectedEdges};
-            };
-
+            }
 
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
@@ -498,7 +477,7 @@ ndexApp.controller('networkViewController',
 
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            $("#cytoscape-canvas").height($(window).height() - 425);
+            $("#cytoscape-canvas").height($(window).height() - 255);
             $("#divNetworkTabs").height($(window).height() - 255);
 
             initialize();

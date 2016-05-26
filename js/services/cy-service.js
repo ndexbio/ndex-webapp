@@ -404,6 +404,7 @@ angular.module('ndexServiceApp')
             'NODE_BORDER_PAINT': {'att': 'border-color', 'type': 'color'},
             'NODE_BORDER_TRANSPARENCY': {'att': 'border-opacity', 'type': 'opacity'},
             'NODE_BORDER_WIDTH': {'att': 'border-width', 'type': 'number'},
+            'NODE_SIZE' : [{'att': 'width','type': 'number'},{'att': 'height', 'type': 'number'}],
 
             'NODE_LABEL': {'att': 'content', 'type': 'string'},
             'NODE_LABEL_COLOR': {'att': 'color', 'type': 'color'},
@@ -507,6 +508,92 @@ angular.module('ndexServiceApp')
             });
             return elements;
         };
+
+
+        var continuousMappingStyle_aux = function (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements) {
+            var lastPointIndex = Object.keys(def.m).length - 1;
+
+            // Each Continuous Mapping Point in def.m has 4 entries:
+            // L - Lesser Visual Attribute Value
+            // E - Equal Visual Attribute Value
+            // G - Greater Visual Attribute Value
+            // OV - Mapped Data Value
+
+            var previousTranslatedPoint = null;
+
+            console.log('m =' + JSON.stringify(def.m) );
+
+            _.forEach(def.m, function (point, index) {
+
+                var translatedPoint = {
+                    lesserValue: getCyVisualAttributeValue(point.L, cyVisualAttributeType),
+                    equalValue: getCyVisualAttributeValue(point.E, cyVisualAttributeType),
+                    greaterValue: getCyVisualAttributeValue(point.G, cyVisualAttributeType),
+                    mappedDataValue: cyNumberFromString(point.OV)
+                };
+
+                var lesserSelector = null;
+                var lesserCSS = {};
+
+                var equalSelector = null;
+                var equalCSS = {};
+
+                var middleSelector = null;
+                var middleCSS = {};
+
+                var greaterSelector = null;
+                var greaterCSS = {};
+
+                console.log('tp = ' + JSON.stringify(translatedPoint));
+                console.log('ptp = ' + JSON.stringify(previousTranslatedPoint));
+
+                var i = parseInt(index);
+
+                if (i === 0){
+                    // first Continuous Mapping point in sequence
+                    // output a style for values less than the point
+                    lesserSelector = elementType + '[' + cyDataAttribute + ' < ' + translatedPoint.mappedDataValue + ']';
+                    lesserCSS[cyVisualAttribute] = translatedPoint.lesserValue;
+                    elements.push({'selector': lesserSelector, 'css': lesserCSS});
+
+                    // output a style for values equal to the point
+                    equalSelector = elementType + '[' + cyDataAttribute + ' = ' + translatedPoint.mappedDataValue + ']';
+                    equalCSS[cyVisualAttribute] = translatedPoint.equalValue;
+                    elements.push({'selector': equalSelector, 'css': equalCSS});
+
+                    // set the previous point values to use when processing the next point
+                    previousTranslatedPoint = translatedPoint;
+
+                } else {
+                    // intermediate or final Continuous Mapping point in sequence
+                    // output a style for the range between the previous point and this point
+                    // "selector": "edge[weight > 0][weight < 70]"
+                    middleSelector = elementType + '[' + cyDataAttribute + ' > ' + previousTranslatedPoint.mappedDataValue + ']' + '[' + cyDataAttribute + ' < ' + translatedPoint.mappedDataValue + ']'  ;
+
+                    //"width": "mapData(weight,0,70,1.0,8.0)"
+                    middleCSS[cyVisualAttribute] = 'mapData(' + cyDataAttribute + ',' + previousTranslatedPoint.mappedDataValue + ',' + translatedPoint.mappedDataValue + ',' + previousTranslatedPoint.equalValue  + ',' + translatedPoint.equalValue + ')';
+                    elements.push({'selector': middleSelector, 'css': middleCSS});
+
+                    // output a style for values equal to this point
+                    equalSelector = elementType + '[' + cyDataAttribute + ' = ' + translatedPoint.mappedDataValue + ']';
+                    equalCSS[cyVisualAttribute] = translatedPoint.equalValue;
+                    elements.push({'selector': equalSelector, 'css': equalCSS});
+
+                    // if this is the last point, output a style for values greater than this point
+                    if (i === lastPointIndex){
+
+                        greaterSelector = elementType + '[' + cyDataAttribute + ' > ' + translatedPoint.mappedDataValue + ']';
+                        greaterCSS[cyVisualAttribute] = translatedPoint.equalValue;
+                        elements.push({'selector': greaterSelector, 'css': greaterCSS});
+                    }
+
+                    // set the previous point to this point for the next iteration
+                    previousTranslatedPoint = translatedPoint;
+                }
+            });
+
+        };
+
 
         var continuousMappingStyle = function (elementType, vp, def, attributeNameMap) {
             var elements = [];
