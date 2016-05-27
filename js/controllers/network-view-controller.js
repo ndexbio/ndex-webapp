@@ -143,10 +143,10 @@ ndexApp.controller('networkViewController',
                 return 'unknown';
             };
 
-            $scope.getNodeAttributes = function(node) {
+            $scope.getNodeAttributesNames = function(node) {
                 var attributeNames = _.keys(node);
 
-                var elementsToRemove = ['id', 'n', '$$hashKey'];
+                var elementsToRemove = ['id', 'n', '$$hashKey', '$$expanded'];
 
                 for (i = 0; i < elementsToRemove.length; i++) {
 
@@ -159,10 +159,10 @@ ndexApp.controller('networkViewController',
                 return attributeNames;
             };
 
-            $scope.getEdgeAttributes = function(node) {
+            $scope.getEdgeAttributesNames = function(node) {
                 var attributeNames = _.keys(node);
 
-                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey'];
+                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded'];
 
                 for (i = 0; i < elementsToRemove.length; i++) {
 
@@ -175,7 +175,7 @@ ndexApp.controller('networkViewController',
                 return attributeNames;
             };
 
-            $scope.getAttributeValue = function(attribute) {
+            $scope.getAttributeValue = function(attributrName, attribute) {
 
                 if (!attribute) {
                     return null;
@@ -184,7 +184,13 @@ ndexApp.controller('networkViewController',
                 var attributeValue;
 
                 if (attribute instanceof Object) {
-                    attributeValue = (attribute['v']) ? attribute['v'] : 'unknown value';
+                    if (attribute instanceof Array) {
+                        attributeValue = attribute;
+                    } else {
+                        attributeValue = (attribute['v']) ? attribute['v'] : 'unknown value';
+                    }
+                } else {
+                    attributeValue = attribute;
                 }
 
                 return attributeValue;

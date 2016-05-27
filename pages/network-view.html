@@ -324,42 +324,77 @@
 
                             <tr ng-repeat-start="node in networkController.selectionContainer.nodes">
                                 <td class="wrappedCell">
-                                    <button ng-if="node.expanded" ng-click="node.expanded = false">-</button>
-                                    <button ng-if="!node.expanded" ng-click="node.expanded = true">+</button>
+                                    <button ng-if="node.$$expanded" ng-click="node.$$expanded = false">-</button>
+                                    <button ng-if="!node.$$expanded" ng-click="node.$$expanded = true">+</button>
 
                                     &nbsp;{{getNodeName(node)}}
                                 </td>
                             </tr>
-                            <tr ng-if="node.expanded" ng-repeat-end="">
+                            <tr ng-if="node.$$expanded" ng-repeat-end="">
                                 <td class="wrappedCell">
-                                    <span ng-repeat="attribute in getNodeAttributes(node)">
-                                        <span ng-show="getAttributeValue(node[attribute])">
-                                            &nbsp;&nbsp;&nbsp;{{attribute}} : {{getAttributeValue(node[attribute])}}
+                                    <span ng-repeat="attributeName in getNodeAttributesNames(node)">
+                                        <span ng-show="getAttributeValue(attributeName, node[attributeName])">
+                                            &nbsp;&nbsp;&nbsp;{{attributeName}} :
+                                                              {{getAttributeValue(attributeName, node[attributeName])}}
                                             <br />
                                         </span>
                                     </span>
                                 </td>
                             </tr>
 
-
                             <tr ng-if="networkController.selectionContainer.edges.length > 0">
                                 <td>Selected Edges: {{ networkController.selectionContainer.edges.length}}</td>
                             </tr>
                             <tr ng-repeat-start="edge in networkController.selectionContainer.edges">
                                 <td class="wrappedCell">
-                                    <button ng-if="edge.expanded" ng-click="edge.expanded = false">-</button>
-                                    <button ng-if="!edge.expanded" ng-click="edge.expanded = true">+</button>
+                                    <button ng-if="edge.$$expanded" ng-click="edge.$$expanded = false">-</button>
+                                    <button ng-if="!edge.$$expanded" ng-click="edge.$$expanded = true">+</button>
 
                                     &nbsp;{{getEdgeLabel(edge)}}
                                 </td>
                             </tr>
-                            <tr ng-if="edge.expanded" ng-repeat-end="">
+                            <tr ng-if="edge.$$expanded" ng-repeat-end="">
                                 <td class="wrappedCell">
 
-                                    <span ng-repeat="attribute in getEdgeAttributes(edge)">
-                                        <span ng-show="getAttributeValue(edge[attribute])">
-                                            &nbsp;&nbsp;&nbsp;{{attribute}} : {{getAttributeValue(edge[attribute])}}
-                                            <br />
+                                    <span ng-repeat="attributeName in getEdgeAttributesNames(edge)">
+                                        <span ng-show="getAttributeValue(attributeName, edge[attributeName])">
+
+                                            <span ng-switch="attributeName">
+
+                                                <span ng-switch-when="citations">
+
+                                                    <table style="width:100%">
+
+                                                        <tr ng-repeat-start="citation in edge.citations">
+                                                            <td class="wrappedCell">
+                                                                <button ng-if="citation.$$expanded" ng-click="citation.$$expanded = false">-</button>
+                                                                <button ng-if="!citation.$$expanded" ng-click="citation.$$expanded = true">+</button>
+
+                                                                 &nbsp;&nbsp;&nbsp;citation
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr ng-if="citation.$$expanded" ng-repeat-end="">
+                                                            <td class="wrappedCell">
+                                                                <span ng-repeat="(key, value) in citation">
+                                                                    <span ng-show="value">
+                                                                        &nbsp;&nbsp;&nbsp;{{key}} : {{value}}
+                                                                        <br />
+                                                                    </span>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </span>
+
+                                                <span ng-switch-default>
+                                                   &nbsp;&nbsp;&nbsp;{{attributeName}} :
+                                                                     {{getAttributeValue(attributeName, edge[attributeName])}}
+                                                </span>
+
+                                                <br />
+
+                                            </span>
                                         </span>
                                     </span>
 
@@ -454,7 +489,7 @@
     </div>
 </div>
 
-
+<!--
     <div class="row">
 
         <div class="col-md-6">
@@ -466,6 +501,6 @@
         </div>
 
     </div>
-
+-->
 
 </div>
