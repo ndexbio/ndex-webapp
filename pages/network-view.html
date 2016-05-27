@@ -377,7 +377,7 @@
                                                         <tr ng-if="citation.$$expanded" ng-repeat-end="">
                                                             <td class="wrappedCell">
                                                                 <span ng-repeat="(key, value) in citation">
-                                                                    <span ng-show="value">
+                                                                    <span ng-show="value && key!='$$expanded'">
                                                                         &nbsp;&nbsp;&nbsp;{{key}} : {{value}}
                                                                         <br />
                                                                     </span>
