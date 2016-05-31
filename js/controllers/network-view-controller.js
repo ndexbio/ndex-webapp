@@ -187,7 +187,7 @@ ndexApp.controller('networkViewController',
                     if (attribute instanceof Array) {
                         attributeValue = attribute;
                     } else {
-                        attributeValue = (attribute['v']) ? attribute['v'] : 'unknown value';
+                        attributeValue = (attribute['v']) ? attribute['v'] : 'no value';
                     }
                 } else {
                     attributeValue = attribute;
@@ -219,6 +219,22 @@ ndexApp.controller('networkViewController',
                 return source + ' ' + predicate + ' ' + target;
             }
 
+            $scope.getCitation = function (citation) {
+
+                var identfier, retString = 'Citation : unable to get citation info';
+
+                if (citation && citation['dc:type'] && citation['dc:type'].toLowerCase() === 'uri'
+                    && citation['dc:identifier']) {
+
+                    identifier = citation['dc:identifier'].split(':')[1];
+
+                    retString = '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/' +
+                        identifier + '">Citation Id ' +
+                        identifier + '</a>';
+                }
+
+                return retString;
+            };
             /*-----------------------------------------------------------------------*
              * initialize the cytoscape instance from niceCX
              *-----------------------------------------------------------------------*/

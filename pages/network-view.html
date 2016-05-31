@@ -365,23 +365,13 @@
 
                                                     <table style="width:100%">
 
-                                                        <tr ng-repeat-start="citation in edge.citations">
+                                                        <tr>
                                                             <td class="wrappedCell">
-                                                                <button ng-if="citation.$$expanded" ng-click="citation.$$expanded = false">-</button>
-                                                                <button ng-if="!citation.$$expanded" ng-click="citation.$$expanded = true">+</button>
-
-                                                                 &nbsp;&nbsp;&nbsp;citation
-                                                            </td>
-                                                        </tr>
-
-                                                        <tr ng-if="citation.$$expanded" ng-repeat-end="">
-                                                            <td class="wrappedCell">
-                                                                <span ng-repeat="(key, value) in citation">
-                                                                    <span ng-show="value && key!='$$expanded'">
-                                                                        &nbsp;&nbsp;&nbsp;{{key}} : {{value}}
-                                                                        <br />
-                                                                    </span>
+                                                                <span ng-repeat="citation in edge.citations">
+                                                                    <span ng-bind-html='getCitation(citation)'></span>
+                                                                    <br />
                                                                 </span>
+
                                                             </td>
                                                         </tr>
                                                     </table>
