@@ -187,7 +187,7 @@ ndexApp.controller('networkViewController',
                     if (attribute instanceof Array) {
                         attributeValue = attribute;
                     } else {
-                        attributeValue = (attribute['v']) ? attribute['v'] : 'no value';
+                        attributeValue = (attribute['v']) ? attribute['v'] : '';
                     }
                 } else {
                     attributeValue = attribute;
@@ -221,7 +221,7 @@ ndexApp.controller('networkViewController',
 
             $scope.getCitation = function (citation) {
 
-                var identfier, retString = 'Citation : unable to get citation info';
+                var identfier, retString = 'PMID : unable to get citation info';
 
                 if (citation && citation['dc:type'] && citation['dc:type'].toLowerCase() === 'uri'
                     && citation['dc:identifier']) {
@@ -229,7 +229,7 @@ ndexApp.controller('networkViewController',
                     identifier = citation['dc:identifier'].split(':')[1];
 
                     retString = '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/' +
-                        identifier + '">Citation Id ' +
+                        identifier + '"><strong>PMID: </strong>' +
                         identifier + '</a>';
                 }
 

@@ -334,7 +334,7 @@
                                 <td class="wrappedCell">
                                     <span ng-repeat="attributeName in getNodeAttributesNames(node)">
                                         <span ng-show="getAttributeValue(attributeName, node[attributeName])">
-                                            &nbsp;&nbsp;&nbsp;{{attributeName}} :
+                                            &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
                                                               {{getAttributeValue(attributeName, node[attributeName])}}
                                             <br />
                                         </span>
@@ -378,7 +378,7 @@
                                                 </span>
 
                                                 <span ng-switch-default>
-                                                   &nbsp;&nbsp;&nbsp;{{attributeName}} :
+                                                   &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
                                                                      {{getAttributeValue(attributeName, edge[attributeName])}}
                                                 </span>
 
