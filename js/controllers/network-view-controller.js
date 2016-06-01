@@ -590,8 +590,8 @@ ndexApp.controller('networkViewController',
 
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            $("#cytoscape-canvas").height($(window).height() - 255);
-            $("#divNetworkTabs").height($(window).height() - 255);
+            $("#cytoscape-canvas").height($(window).height() - 275);
+            $("#divNetworkTabs").height($(window).height() - 275);
 
             initialize();
 
