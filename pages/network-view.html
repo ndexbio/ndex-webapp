@@ -59,6 +59,26 @@
 
                     <div class="networkPropertyValueInTabsetMargins">
 
+                        <div class="networkViewHeader rowWithOneLineBottomPad" id="networkViewHeaderId">
+                            {{networkController.currentNetwork.name}}  <br/>
+                        </div>
+
+                        <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
+                        &nbsp;&nbsp;
+                        <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
+                        &nbsp;&nbsp;
+
+                        <span class="networkVisibilityValue">{{networkController.currentNetwork.visibility}} </span>
+                        &nbsp;&nbsp;
+
+                        <span class="networkPropertyName" ng-show="networkController.isAdmin">
+                            <input type="checkbox"
+                                   ng-model="networkController.readOnlyChecked"
+                                   ng-change="readOnlyChanged()"> Read Only
+                        </span>
+                        <br />
+                        <br />
+
                         <span class="networkPropertyName">Created: </span>
                         {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
 
