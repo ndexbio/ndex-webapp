@@ -646,25 +646,11 @@ ul.ndex-nav-pills > li > a:hover {
     padding-bottom: 10px;
 }
 
-.networkViewPadding {
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.networkViewHeaderHeader
+.networkViewHeader
 {
     font-weight: bold;
     font-size: 1.3em;
-    text-align: center;
-    line-height: 1;
-}
-
-.networkViewHeaderBody
-{
-    font-size: 1em;
-    text-align: center;
+    text-align: left;
     line-height: 1;
 }
 
