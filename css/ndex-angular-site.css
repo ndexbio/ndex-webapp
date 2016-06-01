@@ -705,6 +705,7 @@ ul.ndex-nav-pills > li > a:hover {
     border-style: solid;
 
     border-color: #287EC7;
+    overflow: scroll;
 }
 
 .networkPropertyValueInTabsetMargins {
