@@ -1,6 +1,5 @@
-<div class="row">
+<!-- <div class="row">
 
-    <!-- One column only that takes all screen  -->
     <div class="col-md-12">
 
             <div class="networkViewFrame">
@@ -26,7 +25,8 @@
             </div>
 
     </div>
-</div>
+</div>    -->
+
 
 <div class="row rowWithOneLineTopPad"></div>
 
@@ -46,6 +46,43 @@
             <div class="networkViewFrame networkActionsSection">
 
                 <div class="btn-group">
+
+                    <span>
+
+                        <form id="frmSearchNetwork"
+                              ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
+                              class="form-inline pull-left">
+
+                            <div class="form-group">
+                                <input class="form-control" type="search" ng-model="networkController.searchString"
+                                       placeholder="Network Terms" required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Depth:</label>
+                            </div>
+                            <div class="form-group">
+                                <span>
+                                    <select
+                                            class="form-control"
+                                            id="selectSearchDepth"
+                                            ng-model="networkController.searchDepth.value"
+                                            ng-selected="1"
+                                            ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                                            required>
+                                    </select>
+                                </span>
+                            </div>
+
+                            <button type="submit" class="btn btn-default btn-primary"
+                                    style="margin-bottom:0">Run Query</button>
+                            &nbsp;
+                        </form>
+
+                        <span class="pull-left" style="margin-top:0.5em">
+                            <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
+                        </span>
+
+                    </span>
 
                     <span ng-show='networkController.isLoggedIn &&
                                 ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
@@ -162,43 +199,6 @@
                         </a>
                     </span>
 
-                    <span>
-                        <hr>
-
-                        <form id="frmSearchNetwork"
-                              ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
-                              class="form-inline pull-left">
-
-                            <div class="form-group">
-                                <input class="form-control" type="search" ng-model="networkController.searchString"
-                                       placeholder="Network Terms" required/>
-                            </div>
-                            <div class="form-group">
-                                <label>Depth:</label>
-                            </div>
-                            <div class="form-group">
-                                <span>
-                                    <select
-                                            class="form-control"
-                                            id="selectSearchDepth"
-                                            ng-model="networkController.searchDepth.value"
-                                            ng-selected="1"
-                                            ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
-                                            required>
-                                    </select>
-                                </span>
-                            </div>
-
-                            <button type="submit" class="btn btn-default btn-primary"
-                                    style="margin-bottom:0">Run Query</button>
-                            &nbsp;
-                        </form>
-
-                        <span class="pull-left" style="margin-top:0.5em">
-                            <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
-                        </span>
-
-                    </span>
 
                 </div>
             </div>
