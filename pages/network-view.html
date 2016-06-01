@@ -334,9 +334,23 @@
                                 <td class="wrappedCell">
                                     <span ng-repeat="attributeName in getNodeAttributesNames(node)">
                                         <span ng-show="getAttributeValue(attributeName, node[attributeName])">
-                                            &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
-                                                              {{getAttributeValue(attributeName, node[attributeName])}}
-                                            <br />
+
+                                            <span ng-switch="attributeName">
+                                                <span ng-switch-when="citations">
+                                                    <span ng-repeat="citation in node.citations">
+                                                        &nbsp;&nbsp;
+                                                        <span ng-bind-html='getCitation(citation)'></span>
+                                                        <br />
+                                                    </span>
+                                                </span>
+
+                                                <span ng-switch-default>
+                                                   &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
+                                                                     {{getAttributeValue(attributeName, node[attributeName])}}
+                                                    <br />
+                                                </span>
+                                            </span>
+
                                         </span>
                                     </span>
                                 </td>
@@ -362,27 +376,18 @@
                                             <span ng-switch="attributeName">
 
                                                 <span ng-switch-when="citations">
-
-                                                    <table style="width:100%">
-
-                                                        <tr>
-                                                            <td class="wrappedCell">
-                                                                <span ng-repeat="citation in edge.citations">
-                                                                    <span ng-bind-html='getCitation(citation)'></span>
-                                                                    <br />
-                                                                </span>
-
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                    <span ng-repeat="citation in edge.citations">
+                                                        &nbsp;&nbsp;
+                                                        <span ng-bind-html='getCitation(citation)'></span>
+                                                        <br />
+                                                    </span>
                                                 </span>
 
                                                 <span ng-switch-default>
                                                    &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
                                                                      {{getAttributeValue(attributeName, edge[attributeName])}}
+                                                    <br />
                                                 </span>
-
-                                                <br />
 
                                             </span>
                                         </span>
@@ -390,10 +395,10 @@
 
                                 </td>
                             </tr>
-
                         </table>
                     </div>
                 </tab>
+
 
                 <tab heading="{{ networkController.tabs[2].heading }}" active="networkController.tabs[2].active" ng-click="build_provenance_view()">
                     <div class="row" style="font-size: 1.1em; margin-left: 0px; margin-right: 0px;">
@@ -493,4 +498,3 @@
     </div>
 -->
 
-</div>
