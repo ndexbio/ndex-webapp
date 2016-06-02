@@ -134,7 +134,7 @@
 
 <!-- template for search bar -->
 <script type="text/ng-template" id="search_bar.html">
-    <div class="" style="background-color:white; color:black; padding-top:15px; padding-bottom:15px; ">
+    <div class="" style="background-color:white; color:black; padding-top:0px; padding-bottom:15px; ">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
 
               ng-submit="main.search()">
@@ -283,7 +283,12 @@
                        ngclipboard data-clipboard-text="{{NDEx.citation}}">
                         {{config.citeNDEx.label}}
                     </a>
+                </li>
 
+                <li>
+                    <a ng-click="collapseHamburgerMenu(); toggleSearchBar()">
+                        Search
+                    </a>
                 </li>
 
             </ul>
@@ -325,19 +330,31 @@
         </div>
 
     </div>
-    <!-- Include the search bar -->
-    <div class="marginsForNGView" ng-hide="main.hideSearchBar" style="background-color: white;  ">
+
+    <!-- Include the search bar --
+    <div class="marginsForNGView" ng-hide="true" style="background-color: white;  ">
         <div style="max-width: 1000px; margin-left: auto; margin-right: auto;">
             <ng-include src="'search_bar.html'"></ng-include>
         </div>
-
     </div>
+    -->
+
 </nav>
 
 <div id="main" class="container-fluid">
     <!-- angular templating -->
     <!-- this is where content will be injected -->
+
+    <div id="searchBarId" ng-hide="!$main.searchBarOn && main.hideSearchBar"
+         class="marginsForNGView" style="background-color: white;  ">
+        <div style="max-width: 1000px; margin-left: auto; margin-right: auto;">
+            <ng-include src="'search_bar.html'"></ng-include>
+        </div>
+
+    </div>
+
     <div ng-view class="marginsForNGView"></div>
+
 </div>
 
 <div ng-show='showFooter'>

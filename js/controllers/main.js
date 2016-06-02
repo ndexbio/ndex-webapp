@@ -43,6 +43,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 $scope.main.hideSearchBar = false;
         });
 
+        $scope.main.searchBarOn = true;
+
         $scope.main.goToCurrentNetwork = function(){
             if (sharedProperties.currentNetworkId) {
                 $location.path("/network/" + sharedProperties.currentNetworkId);
@@ -152,6 +154,21 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         var recordHeartbeat = function()
         {
             localStorage.setItem('last-heartbeat', Date.now() );
+        };
+
+
+        var setItemToLocalStorage = function(item, value) {
+            if (typeof(Storage)) {
+                localStorage.setItem(item, value);
+            }
+        };
+
+        $scope.getItemFromLocalStorage = function(item) {
+            if (typeof(Storage)) {
+                var v = JSON.parse(localStorage.getItem(item));
+                return v;
+            }
+            return 'undefined';
         };
 
         //Hard-coding the heartbeat as a ratio of the idle time for now. So, a heart-beat will be set
@@ -406,6 +423,31 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             alert(message);
         };
 
+        $scope.toggleSearchBar = function() {
+
+
+            var myElement = document.getElementById("searchBarId");
+
+            //var searchBarOn = $scope.getItemFromLocalStorage('searchBarOn');
+            //var searchBarOn = $scope.main.searchBarOn;
+
+            //searchBarOn =  (searchBarOn) ? searchBarOn : false;
+
+            //console.log('searchBarOn = '+ searchBarOn + ' switching to ' + !searchBarOn);
+
+            if ($scope.main.searchBarOn) {
+
+                myElement.style.display = 'none';
+            }
+            else {
+
+                myElement.style.display = 'block';
+            }
+
+            $scope.main.searchBarOn = !$scope.main.searchBarOn;
+
+            //setItemToLocalStorage('searchBarOn', !searchBarOn);
+        };
 
         /*----------------------------------------------
          Ensure that Config Parameters have valid values

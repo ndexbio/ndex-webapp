@@ -308,162 +308,162 @@
     <div class="col-md-12">
 
         <div class="networkViewFrame networkActionsSection">
-        <span>
+            <span>
 
-            <form id="frmSearchNetwork"
-                  ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
-                  class="form-inline pull-left">
+                <form id="frmSearchNetwork"
+                      ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
+                      class="form-inline pull-left">
 
-                <div class="form-group">
-                    <input class="form-control" type="search" ng-model="networkController.searchString"
-                           placeholder="Network Terms" required/>
-                </div>
-                <div class="form-group">
-                    <label>Depth:</label>
-                </div>
-                <div class="form-group">
-                    <span>
-                        <select
-                                class="form-control"
-                                id="selectSearchDepth"
-                                ng-model="networkController.searchDepth.value"
-                                ng-selected="1"
-                                ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
-                                required>
-                        </select>
-                    </span>
-                </div>
+                    <div class="form-group">
+                        <input class="form-control" type="search" ng-model="networkController.searchString"
+                               placeholder="Network Terms" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Depth:</label>
+                    </div>
+                    <div class="form-group">
+                        <span>
+                            <select
+                                    class="form-control"
+                                    id="selectSearchDepth"
+                                    ng-model="networkController.searchDepth.value"
+                                    ng-selected="1"
+                                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                                    required>
+                            </select>
+                        </span>
+                    </div>
 
-                <button type="submit" class="btn btn-default btn-primary"
-                        style="margin-bottom:0">Run Query</button>
-                &nbsp;
-            </form>
+                    <button type="submit" class="btn btn-default btn-primary"
+                            style="margin-bottom:0">Run Query</button>
+                    &nbsp;
+                </form>
 
-            <span class="pull-left" style="margin-top:0.5em">
-                <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
+                <span class="pull-left" style="margin-top:0.5em">
+                    <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
+                </span>
+
             </span>
 
-        </span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
 
-        &nbsp;&nbsp;&nbsp;&nbsp;
-
-        <span ng-show='networkController.isLoggedIn &&
-                    ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
-            <a class="btn btn-primary" style="width: 150px;">
-                <edit-network-summary-modal
-                        ndex-data='networkController.currentNetwork'>
-                Edit Network Profile
-                </edit-network-summary-modal>
-            </a>
-        </span>
-
-        <span ng-show='networkController.isLoggedIn
-            && ((networkController.currentNetwork.visibility == "PUBLIC")
-                || networkController.isAdmin
-                || networkController.canEdit
-                || networkController.canRead)'>
-
-                <a class="btn btn-primary" style="width: 120px;">
-                    <create-export-network-task
+            <span ng-show='networkController.isLoggedIn &&
+                        ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
+                <a class="btn btn-primary" style="width: 150px;">
+                    <edit-network-summary-modal
                             ndex-data='networkController.currentNetwork'>
-                        Export Network
-                    </create-export-network-task>
+                    Edit Network Profile
+                    </edit-network-summary-modal>
                 </a>
-        </span>
+            </span>
+
+            <span ng-show='networkController.isLoggedIn
+                && ((networkController.currentNetwork.visibility == "PUBLIC")
+                    || networkController.isAdmin
+                    || networkController.canEdit
+                    || networkController.canRead)'>
+
+                    <a class="btn btn-primary" style="width: 120px;">
+                        <create-export-network-task
+                                ndex-data='networkController.currentNetwork'>
+                            Export Network
+                        </create-export-network-task>
+                    </a>
+            </span>
 
 
-        <span ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead'>
-            <a class="btn btn-primary customButtonWidth">
-                <create-request-network
-                        ndex-data='networkController.currentNetwork'
-                        privileges="networkController.privilegeLevel">
-                    Ask for More Access!
-                </create-request-network>
-            </a>
-        </span>
+            <span ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead'>
+                <a class="btn btn-primary customButtonWidth">
+                    <create-request-network
+                            ndex-data='networkController.currentNetwork'
+                            privileges="networkController.privilegeLevel">
+                        Ask for More Access!
+                    </create-request-network>
+                </a>
+            </span>
 
-        <!--<span ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>-->
-        <span ng-hide='true'>
-            <a class="btn btn-primary customButtonWidth">
-                <create-request-network
-                        ndex-data='networkController.currentNetwork'
-                        privileges="networkController.privilegeLevel">
-                    Ask for Access Privileges!
-                </create-request-network>
-            </a>
-        </span>
+            <!--<span ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>-->
+            <span ng-hide='true'>
+                <a class="btn btn-primary customButtonWidth">
+                    <create-request-network
+                            ndex-data='networkController.currentNetwork'
+                            privileges="networkController.privilegeLevel">
+                        Ask for Access Privileges!
+                    </create-request-network>
+                </a>
+            </span>
 
 
-        <span ng-show='networkController.isLoggedIn && networkController.isAdmin'>
-            <a class="btn btn-primary" style="width: 120px;"
-               ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
-                    Manage Access
-            </a>
-        </span>
+            <span ng-show='networkController.isLoggedIn && networkController.isAdmin'>
+                <a class="btn btn-primary" style="width: 120px;"
+                   ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
+                        Manage Access
+                </a>
+            </span>
 
-        <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL"'>
-            <a class="btn btn-primary customButtonWidth">
-                <archive-bel-namespaces ndex-data='networkController.currentNetwork.externalId'>
-                    Archive BEL Namespaces
-                </archive-bel-namespaces>
-            </a>
-        </span>
+            <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL"'>
+                <a class="btn btn-primary customButtonWidth">
+                    <archive-bel-namespaces ndex-data='networkController.currentNetwork.externalId'>
+                        Archive BEL Namespaces
+                    </archive-bel-namespaces>
+                </a>
+            </span>
 
-        <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL" &&
-            networkController.numberOfBelNetworkNamespacesAsInt > 0'>
-            <a class="btn btn-primary customButtonWidth">
-                <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
-                                        ndex-network-name='networkController.currentNetwork.name'>
-                    Download Namespace
-                </download-bel-namespace>
-            </a>
-        </span>
+            <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL" &&
+                networkController.numberOfBelNetworkNamespacesAsInt > 0'>
+                <a class="btn btn-primary customButtonWidth">
+                    <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
+                                            ndex-network-name='networkController.currentNetwork.name'>
+                        Download Namespace
+                    </download-bel-namespace>
+                </a>
+            </span>
 
-        <span ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
-            networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
-            <a class="btn btn-primary customButtonWidth">
-                <save-subnetwork>
-                    Save Query Result
-                </save-subnetwork>
-            </a>
-        </span>
+            <span ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
+                networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
+                <a class="btn btn-primary customButtonWidth">
+                    <save-subnetwork>
+                        Save Query Result
+                    </save-subnetwork>
+                </a>
+            </span>
 
-        <span class="divider" ng-show='networkController.isAdmin &&
-                  !networkController.readOnlyChecked
-                || networkController.directIsAdmin
-                || networkController.directCanEdit
-                || networkController.directCanRead'>
-        </span>
+            <span class="divider" ng-show='networkController.isAdmin &&
+                      !networkController.readOnlyChecked
+                    || networkController.directIsAdmin
+                    || networkController.directCanEdit
+                    || networkController.directCanRead'>
+            </span>
 
-        <span ng-show='networkController.directIsAdmin
-                || networkController.directCanEdit
-                || networkController.directCanRead'>
+            <span ng-show='networkController.directIsAdmin
+                    || networkController.directCanEdit
+                    || networkController.directCanRead'>
 
-            <a class="btn btn-primary customButtonWidth">
-                <leave-network
-                        ndex-data='networkController.currentNetwork.externalId'>
-                    Disaffiliate this Network
-                </leave-network>
-            </a>
-        </span>
+                <a class="btn btn-primary customButtonWidth">
+                    <leave-network
+                            ndex-data='networkController.currentNetwork.externalId'>
+                        Disaffiliate this Network
+                    </leave-network>
+                </a>
+            </span>
 
-        <span ng-show='networkController.isLoggedIn && networkController.isAdmin &&
-                      !networkController.readOnlyChecked'>
-            <a class="btn btn-primary" style="width: 120px;">
-                <delete-network ndex-data='networkController.currentNetwork.externalId'>
-                    Delete Network
-                </delete-network>
-            </a>
-        </span>
+            <span ng-show='networkController.isLoggedIn && networkController.isAdmin &&
+                          !networkController.readOnlyChecked'>
+                <a class="btn btn-primary" style="width: 120px;">
+                    <delete-network ndex-data='networkController.currentNetwork.externalId'>
+                        Delete Network
+                    </delete-network>
+                </a>
+            </span>
 
-        <span ng-show='!networkController.isLoggedIn'>
-            <a class="btn btn-primary" ng-click="main.startSignIn()">
-                Log in to operate on this network
-            </a>
-        </span>
+            <span ng-show='!networkController.isLoggedIn'>
+                <a class="btn btn-primary" ng-click="main.startSignIn()">
+                    Log in to operate on this network
+                </a>
+            </span>
 
-    </div>
         </div>
+    </div>
 
 </div>
 <!--
