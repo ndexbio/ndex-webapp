@@ -31,6 +31,15 @@
                         <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
                         &nbsp;&nbsp;
 
+                        <div ng-show = "networkController.successfullyQueried">
+                            <span class="networkPropertyName">Query String: </span>{{networkController.currentNetwork.queryString}}
+                            <br>
+                            <span class="networkPropertyName">Search depth: </span>{{networkController.currentNetwork.queryDepth}}
+                            <br>
+
+                        </div>
+
+                        <div ng-show = "!networkController.successfullyQueried">
                         <span class="networkVisibilityValue">{{networkController.currentNetwork.visibility}} </span>
                         &nbsp;&nbsp;
 
@@ -128,6 +137,7 @@
 
                         </div>
 
+                        </div>
                     </div>
 
                 </tab>
@@ -220,7 +230,7 @@
                 </tab>
 
 
-                <tab heading="{{ networkController.tabs[2].heading }}" active="networkController.tabs[2].active" ng-click="build_provenance_view()">
+                <tab heading="{{ networkController.tabs[2].heading }}" active="networkController.tabs[2].active" ng-click="build_provenance_view()" ng-show="!networkController.successfullyQueried">
                     <div class="row" style="font-size: 1.1em; margin-left: 0px; margin-right: 0px;">
                         <div class="col-xs-6">
                             <div id="provenanceNetwork"/>

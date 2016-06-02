@@ -12,14 +12,12 @@ ndexApp.controller('networkViewController',
 
             var cy;
 
+            var currentNetworkSummary;
+
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
             $scope.showFooter = false;
-
-     /*       $scope.$on('$destroy', function() {
-                $scope.showFooter = true;
-            }); */
 
             $scope.networkController = {};
 
@@ -496,7 +494,17 @@ ndexApp.controller('networkViewController',
                     .success(
                         function (network) {
                             networkController.successfullyQueried = true;
+                            networkController.currentNetwork =
+                              {name: "Neighborhood query result on network - " + currentNetworkSummary.name,
+                                  "nodeCount": Object.keys(network.nodes).length,
+                                  "edgeCount": Object.keys(network.edges).length,
+                                  "queryString": networkController.searchString,
+                                  "queryDepth" : networkController.searchString
+                              };
                             drawCXNetworkOnCanvas(network,true);
+                            if (!networkController.tabs[0].active )
+                                networkController.tabs[0].active = true;
+                            networkController.selectionContainer = {};
                         }
                     )
                     .error(
@@ -520,8 +528,13 @@ ndexApp.controller('networkViewController',
 
             networkController.backToOriginalNetwork = function () {
                 networkService.resetNetwork();
+                networkController.currentNetwork = currentNetworkSummary;
                 drawCXNetworkOnCanvas(networkService.getNiceCX(),false);
                 networkController.successfullyQueried = false;
+                if (!networkController.tabs[0].active )
+                    networkController.tabs[0].active = true;
+                networkController.selectionContainer = {};
+
             };
 
             var initialize = function () {
@@ -533,6 +546,7 @@ ndexApp.controller('networkViewController',
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
+                            currentNetworkSummary = network;
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
