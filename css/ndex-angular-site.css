@@ -635,10 +635,12 @@ ul.ndex-nav-pills > li > a:hover {
     display: block;
 }
 
+/*
 .networkViewFrame {
     border-style: solid;
     border-color: #287EC7;
 }
+*/
 
 .networkViewActionsSectionFrame {
     padding-left: 10px;
@@ -688,7 +690,7 @@ ul.ndex-nav-pills > li > a:hover {
 
 .networkPropertiesTabset {
     font-size: 1.05em;
-    border-style: solid;
+    border-style: none;
 
     border-color: #287EC7;
     overflow: scroll;

@@ -326,12 +326,7 @@
         </button>
 
 
-        <div class="networkViewFrame networkActionsSection" ng-show="!networkController.successfullyQueried">
-
-
-        <span>
-        <div class="networkActionsSection">
-            <span>
+        <div class="networkActionsSection" ng-show="!networkController.successfullyQueried">
 
             <form id="frmSearchNetwork"
                   ng-submit="networkController.queryNetworkAndDisplay()"
@@ -358,14 +353,13 @@
                     </div>
 
                     <button type="submit" class="btn btn-default btn-primary"
-                            style="margin-bottom:0">Run Query</button>
+                            style="margin-bottom:0">Run Query
+                    </button>
                     &nbsp;
-                </form>
+            </form>
 
-                <span class="pull-left" style="margin-top:0.5em">
-                    <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
-                </span>
-
+            <span class="pull-left" style="margin-top:0.5em">
+                <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
             </span>
 
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -484,12 +478,12 @@
                     Log in to operate on this network
                 </a>
             </span>
+        </div>
 
     </div>
 
 </div>
-    </div>
-</div>
+
 <!--
     <div class="row">
 
@@ -503,4 +497,3 @@
 
     </div>
 -->
-
