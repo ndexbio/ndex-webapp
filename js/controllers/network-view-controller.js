@@ -11,7 +11,7 @@ ndexApp.controller('networkViewController',
             var self = this;
 
             var cy;
-            
+
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
@@ -34,8 +34,8 @@ ndexApp.controller('networkViewController',
             networkController.baseURL = $location.absUrl();
             networkController.isSample=false;
             networkController.displayLimit = config.networkDisplayLimit;
-                
-                
+            networkController.successfullyQueried = false;
+
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
             
             networkController.tabs = [
@@ -238,7 +238,7 @@ ndexApp.controller('networkViewController',
             /*-----------------------------------------------------------------------*
              * initialize the cytoscape instance from niceCX
              *-----------------------------------------------------------------------*/
-            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap, bgColor) {
+            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
                 //console.log(cyElements);
 
@@ -276,8 +276,6 @@ ndexApp.controller('networkViewController',
                                 var id= Number(edge.id());
                                 cxEdges.push( networkService.getEdgeInfo(id));
                             });
-                            //            selectionContainer.nodes = cxNodes;
-                            //            selectionContainer.nodes = cxEdges;
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
@@ -414,7 +412,7 @@ ndexApp.controller('networkViewController',
 
 
 
-            var drawCXNetworkOnCanvas = function (cxNetwork) {
+            var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
@@ -431,7 +429,7 @@ ndexApp.controller('networkViewController',
                 
                 var layoutName = 'cose';
 
-                if (cyService.allNodesHaveUniquePositions(cyElements)) {
+                if ( ! noStyle && cyService.allNodesHaveUniquePositions(cyElements)) {
                     layoutName = 'preset';
                 }
 
@@ -442,7 +440,7 @@ ndexApp.controller('networkViewController',
             };
             
             var getNetworkAndDisplay = function (networkId, callback) {
-                var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
+      //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
                 if ( networkController.currentNetwork.edgeCount > config.networkDisplayLimit) {
@@ -452,7 +450,7 @@ ndexApp.controller('networkViewController',
                         .success(
                             function (network) {
 
-                                callback(network);
+                                callback(network, true);
                             }
                         )
                         .error(
@@ -473,7 +471,7 @@ ndexApp.controller('networkViewController',
                         .success(
                             function (network) {
 
-                                callback(network);
+                                callback(network, false);
                             }
                         )
                         .error(
@@ -491,6 +489,39 @@ ndexApp.controller('networkViewController',
 
                 }
 
+            };
+
+            networkController.queryNetworkAndDisplay = function () {
+                networkService.neighborhoodQueryFromOldAPI(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value)
+                    .success(
+                        function (network) {
+                            networkController.successfullyQueried = true;
+                            drawCXNetworkOnCanvas(network,true);
+                        }
+                    )
+                    .error(
+                        function (error) {
+                            if (error.status != 0) {
+                                if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
+                                {
+                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + networkQueryLimit);
+                                }
+                                else
+                                {
+                                    networkController.queryErrors.push(error.data.message);
+                                }
+
+                                // close the modal.
+                                modalInstance.close();
+                            }
+                        }
+                    );  
+            };
+
+            networkController.backToOriginalNetwork = function () {
+                networkService.resetNetwork();
+                drawCXNetworkOnCanvas(networkService.getNiceCX(),false);
+                networkController.successfullyQueried = false;
             };
 
             var initialize = function () {

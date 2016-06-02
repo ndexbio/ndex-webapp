@@ -12,7 +12,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         var ndexServerURI = config.ndexServerUri;
 
-        var localNiceCX ;
+        var localNiceCXNetwork ;
+        
+        var localNiceCX;
 
         factory.getNdexServerUri = function()
         {
@@ -83,6 +85,10 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return localNiceCX;
         };
 
+
+        factory.resetNetwork = function () {
+            localNiceCX = localNiceCXNetwork;
+        };
 
         factory.getNodeInfo = function (nodeId) {
             if (!localNiceCX) return null;
@@ -200,6 +206,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                 request.success(
                     function (network) {
                         localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
                     }
                 );
@@ -243,13 +250,70 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             // Grab the config for this request. We modify the config to allow for $http request aborts.
             // This may become standard in the client.
-            var config = ndexConfigs.getNetworkByEdgesConfig(networkId, 0, edgeLimit);
-            config.timeout = deferredAbort.promise;
+            var urlConfig = ndexConfigs.getNetworkByEdgesConfig(networkId, 0, edgeLimit);
+            urlConfig.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
             // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
             // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
-            var request = $http(config);
+            var request = $http(urlConfig);
+            var promise = {};
+
+            promise.success = function (handler) {
+                request.success(
+                    function (network) {
+                        localNiceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
+                        localNiceCXNetwork = localNiceCX;
+                        handler(localNiceCX);
+                    }
+                );
+                return promise;
+            };
+
+            promise.error = function (handler) {
+                request.then(
+                    null,
+                    function (error) {
+                        handler(error);
+                    }
+                );
+                return promise;
+            };
+
+            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+            promise.abort = function () {
+                deferredAbort.resolve();
+            };
+
+            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+            promise.finally = function () {
+                request.finally(
+                    function () {
+                        promise.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = promise = null;
+                    }
+                );
+            };
+
+            return promise;
+        };
+
+
+        factory.neighborhoodQueryFromOldAPI = function (networkId, searchString, searchDepth) {
+
+            // The $http timeout property takes a deferred value that can abort AJAX request
+            var deferredAbort = $q.defer();
+
+            // Grab the config for this request. We modify the config to allow for $http request aborts.
+            // This may become standard in the client.
+            var edgeLimit = config.networkQueryLimit;
+            var urlConfig = ndexConfigs.getNetworkQueryConfig(networkId, searchString, searchDepth, edgeLimit, 0, edgeLimit);
+            urlConfig.timeout = deferredAbort.promise;
+
+            // We want to perform some operations on the response from the $http request. We can simply wrap the
+            // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
+            // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
+            var request = $http(urlConfig);
             var promise = {};
 
             promise.success = function (handler) {
@@ -289,7 +353,11 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             return promise;
         };
-
+        
+        
+        
+        
+        
         /**
          * Return the value of a given property in the network. I assume the perperty names a unique in network.
          * Property name is case insensitive.
