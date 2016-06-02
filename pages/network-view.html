@@ -307,9 +307,25 @@
 <div class="row">
     <div class="col-md-12">
 
+        <button type="button"
+                class="btn btn-primary"
+                ng-click="networkController.backToOriginalNetwork()"
+                ng-show="networkController.successfullyQueried">
+            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+            Back To Original Network
+        </button>
+
+
+        <div class="networkViewFrame networkActionsSection" ng-show="!networkController.successfullyQueried">
+
+
+        <span>
         <div class="networkViewFrame networkActionsSection">
             <span>
 
+            <form id="frmSearchNetwork"
+                  ng-submit="networkController.queryNetworkAndDisplay()"
+                  class="form-inline pull-left">
                 <form id="frmSearchNetwork"
                       ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
                       class="form-inline pull-left">
@@ -462,8 +478,8 @@
                 </a>
             </span>
 
-        </div>
     </div>
+        </div>
 
 </div>
 <!--
