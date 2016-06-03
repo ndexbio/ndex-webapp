@@ -34,6 +34,9 @@ ndexApp.controller('networkViewController',
             networkController.displayLimit = config.networkDisplayLimit;
             networkController.successfullyQueried = false;
 
+            // turn on (show) Search menu item on Nav Bar
+            $scope.$parent.showSearchMenu = true;
+
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
             
             networkController.tabs = [
@@ -75,6 +78,15 @@ ndexApp.controller('networkViewController',
                 "id": "1"
             }
 
+
+            // this function gets called when user navigates away from the current New Network view
+            $scope.$on("$destroy", function(){
+                // hide the Search menu item in Nav Bar
+                $scope.$parent.showSearchMenu = false;
+
+                showSearchMenuItem();
+            });
+
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
             };
@@ -91,6 +103,17 @@ ndexApp.controller('networkViewController',
                 });
             };
 
+
+            var hideSearchMenuItem = function() {
+                var searhMenuItemElemenmt = document.getElementById("searchBarId");
+                searhMenuItemElemenmt.style.display = 'none';
+            }
+
+            var showSearchMenuItem = function() {
+                var searhMenuItemElemenmt = document.getElementById("searchBarId");
+                searhMenuItemElemenmt.style.display = 'block';
+            }
+            
 
             var getNetworkAdmins = function()
             {
@@ -637,6 +660,8 @@ ndexApp.controller('networkViewController',
 
             $("#cytoscape-canvas").height($(window).height() - 275);
             $("#divNetworkTabs").height($(window).height() - 275);
+
+            hideSearchMenuItem();
 
             initialize();
 

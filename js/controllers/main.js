@@ -43,7 +43,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 $scope.main.hideSearchBar = false;
         });
 
-        $scope.main.searchBarOn = true;
+        // do not show Search anywhere except on New Network Page
+        // This value gets set to true when we load New Network page (in netwrok-view-controller.js), 
+        // and gets set back to false before we navigate away from New Network (in .
+        $scope.showSearchMenu = false;
 
         $scope.main.goToCurrentNetwork = function(){
             if (sharedProperties.currentNetworkId) {
@@ -423,6 +426,17 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             alert(message);
         };
 
+
+         $scope.showSearchBar = function() {
+
+             alert("Search modal will be shown here");
+
+         };
+
+
+
+
+        /*
         $scope.toggleSearchBar = function() {
 
 
@@ -448,6 +462,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
             //setItemToLocalStorage('searchBarOn', !searchBarOn);
         };
+        */
 
         /*----------------------------------------------
          Ensure that Config Parameters have valid values

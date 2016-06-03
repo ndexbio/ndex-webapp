@@ -285,15 +285,15 @@
                     </a>
                 </li>
 
-                <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); toggleSearchBar()">
-                        Search
-                    </a>
-                </li>
-
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
+
+                <li ng-show="showSearchMenu">
+                    <a ng-click="collapseHamburgerMenu(); showSearchBar()">
+                        Search
+                    </a>
+                </li>
 
                 <li ng-click="collapseHamburgerMenu()"
                     ng-show="main.getCurrentNetwork() != null"
@@ -345,7 +345,7 @@
     <!-- angular templating -->
     <!-- this is where content will be injected -->
 
-    <div id="searchBarId" ng-hide="!$main.searchBarOn && main.hideSearchBar"
+    <div id="searchBarId" ng-hide="main.hideSearchBar"
          class="marginsForNGView" style="background-color: white;  ">
         <div style="max-width: 1000px; margin-left: auto; margin-right: auto;">
             <ng-include src="'search_bar.html'"></ng-include>
