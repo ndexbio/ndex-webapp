@@ -532,7 +532,7 @@ ndexApp.controller('networkViewController',
                                   "nodeCount": Object.keys(network.nodes).length,
                                   "edgeCount": Object.keys(network.edges).length,
                                   "queryString": networkController.searchString,
-                                  "queryDepth" : networkController.searchString
+                                  "queryDepth" : networkController.searchDepth.value
                               };
                             drawCXNetworkOnCanvas(network,true);
                             if (!networkController.tabs[0].active )
@@ -668,8 +668,8 @@ ndexApp.controller('networkViewController',
 
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            $("#cytoscape-canvas").height($(window).height() - 275);
-            $("#divNetworkTabs").height($(window).height() - 275);
+            $("#cytoscape-canvas").height($(window).height() - 185);
+            $("#divNetworkTabs").height($(window).height() - 185);
 
             hideSearchMenuItem();
 
