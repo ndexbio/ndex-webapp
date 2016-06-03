@@ -79,13 +79,23 @@ ndexApp.controller('networkViewController',
             }
 
 
-            // this function gets called when user navigates away from the current New Network view
+            // this function gets called when user navigates away from the current New Network view.
+            // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
+
                 // hide the Search menu item in Nav Bar
                 $scope.$parent.showSearchMenu = false;
 
                 showSearchMenuItem();
             });
+
+            /*
+            $scope.$watch(function(){
+                return $location.path();
+            }, function(newPath, oldPath){
+                console.log('oldPath = ' + oldPath + '  newPath = ' + newPath );
+            })
+            */
 
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
@@ -113,7 +123,7 @@ ndexApp.controller('networkViewController',
                 var searhMenuItemElemenmt = document.getElementById("searchBarId");
                 searhMenuItemElemenmt.style.display = 'block';
             }
-            
+
 
             var getNetworkAdmins = function()
             {
