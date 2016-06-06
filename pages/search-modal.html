@@ -1,108 +1,15 @@
-<div class="modal-content">
 
-    <div class="modal-header">
+<div class="modal-content modal-lg">
 
-        <button type="button" class="close"
-                ng-click="cancel()">&times;
-        </button>
+    <button type="button" class="close" style="padding-right:5px; padding-left:5px"
+            ng-click="cancel()">&times;
+    </button>
 
-        <h4 class="modal-title">{{title}}</h4>
-
-    </div>
-
-
-    <div class="modal-body">
-
-        <div class="" style="background-color:white; color:black; padding-top:0px; padding-bottom:15px; ">
-            <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-                  ng-submit="main.search()">
-
-                <div class="input-group">
-                    <div class="input-group-btn dropdown" style="padding-right:20px;">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="border-radius: 5px;">
-                            Search Examples <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Networks,
-                                Users, and Groups:
-                            </li>
-                            <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchAllExamples">
-                                <a ng-click="closeModal(); main.runSearchExample(item)">
-                                    {{item.description}}
-                                </a>
-                            </li>
-
-                            <li class="divider"></li>
-
-                            <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Networks:</li>
-                            <li class="AlignLeft" style="padding-left: 5px;"
-                                ng-repeat="item in main.searchNetworksExamples">
-                                <a ng-click="closeModal(); main.runSearchExample(item)">
-                                    {{item.description}}
-                                </a>
-                            </li>
-
-                            <li class="divider"></li>
-
-                            <li class="AlignLeft" ng-show="config.searchDocLink">
-                                <a style="color:#428bca; background-color:white;"
-                                   ng-click="closeModal(); redirectToExternalLink(config.searchDocLink)">
-                                    <u>{{config.searchDocLink.label}}</u>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="input-group-btn" style="padding-right:20px;">
-                        <button type="button" ng-click="closeModal(); main.browse()" class="btn btn-default">Browse</button>
-                    </div>
-
-                    <div class="input-group-btn dropdown AlignLeft">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                style="border-bottom-right-radius:0px; border-top-right-radius:0px; margin-right: -1px;">
-                            {{main.searchType}} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
-                            <li><a class="dropdown-toggle"
-                                   ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
-                        </ul>
-                    </div>
-                    <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
-                           ng-model="main.searchString">
-                    <div class="input-group-btn">
-                        <button type="submit" ng-click="closeModal();" class="btn btn-default"><span
-                                class="glyphicon glyphicon-search"></span></button>
-                    </div>
-                </div>
-
-            </form>
-    </div>
-
-
-    <div class="modal-footer"></div>
-
-</div>
-
-<!--
-<div class="modal-footer">
-    <button class="btn btn-default" ng-click="cancel()">Close</button>
-</div>
--->
-
-
-
-<!-- template for search bar --
-<script type="text/ng-template" id="search_bar.html">
-    <div class="" style="background-color:white; color:black; padding-top:0px; padding-bottom:15px; ">
+    <div class=""
+         style="background-color:white; color:black; padding-top:15px; padding-bottom:14px; padding-left:15px; padding-right:15px; border-radius: 10px;">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-
               ng-submit="main.search()">
+
             <div class="input-group">
                 <div class="input-group-btn dropdown" style="padding-right:20px;">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="border-radius: 5px;">
@@ -113,7 +20,7 @@
                             Users, and Groups:
                         </li>
                         <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchAllExamples">
-                            <a ng-click="main.runSearchExample(item)">
+                            <a ng-click="closeModal(); main.runSearchExample(item)">
                                 {{item.description}}
                             </a>
                         </li>
@@ -123,7 +30,7 @@
                         <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Networks:</li>
                         <li class="AlignLeft" style="padding-left: 5px;"
                             ng-repeat="item in main.searchNetworksExamples">
-                            <a ng-click="main.runSearchExample(item)">
+                            <a ng-click="closeModal(); main.runSearchExample(item)">
                                 {{item.description}}
                             </a>
                         </li>
@@ -131,14 +38,16 @@
                         <li class="divider"></li>
 
                         <li class="AlignLeft" ng-show="config.searchDocLink">
-                            <a style="color:#428bca; background-color:white;" ng-click="redirectToExternalLink(config.searchDocLink)"><u>{{config.searchDocLink.label}}</u>
+                            <a style="color:#428bca; background-color:white;"
+                               ng-click="closeModal(); redirectToExternalLink(config.searchDocLink)">
+                                <u>{{config.searchDocLink.label}}</u>
                             </a>
                         </li>
                     </ul>
                 </div>
 
                 <div class="input-group-btn" style="padding-right:20px;">
-                    <button type="button" ng-click="main.browse()" class="btn btn-default">Browse</button>
+                    <button type="button" ng-click="closeModal(); main.browse()" class="btn btn-default">Browse</button>
                 </div>
 
                 <div class="input-group-btn dropdown AlignLeft">
@@ -160,12 +69,13 @@
                 <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
                        ng-model="main.searchString">
                 <div class="input-group-btn">
-                    <button type="submit" class="btn btn-default"><span
+                    <button type="submit" ng-click="closeModal();" class="btn btn-default"><span
                             class="glyphicon glyphicon-search"></span></button>
                 </div>
             </div>
 
         </form>
     </div>
-</script>
--->
+
+
+</div>
