@@ -45,7 +45,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         // do not show Search anywhere except on New Network Page
         // This value gets set to true when we load New Network page (in netwrok-view-controller.js), 
-        // and gets set back to false before we navigate away from New Network (in .
+        // and gets set back to false before we navigate away from New Network.
         $scope.showSearchMenu = false;
 
         $scope.main.goToCurrentNetwork = function(){
@@ -426,43 +426,30 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             alert(message);
         };
 
-
          $scope.showSearchBar = function() {
 
-             alert("Search modal will be shown here");
+             var  modalInstance = $modal.open({
+                 templateUrl: 'pages/search-modal.html',
+                 //keyboard: true,
+                 scope: $scope,
+
+                 controller: function($scope, $modalInstance) {
+
+                     $scope.title = 'Search';
+
+                     $scope.cancel = function() {
+                         $modalInstance.dismiss();
+                     };
+
+                     $scope.closeModal = function() {
+                         $modalInstance.close();
+                     };
+                     
+                 }
+             });
 
          };
 
-
-
-
-        /*
-        $scope.toggleSearchBar = function() {
-
-
-            var myElement = document.getElementById("searchBarId");
-
-            //var searchBarOn = $scope.getItemFromLocalStorage('searchBarOn');
-            //var searchBarOn = $scope.main.searchBarOn;
-
-            //searchBarOn =  (searchBarOn) ? searchBarOn : false;
-
-            //console.log('searchBarOn = '+ searchBarOn + ' switching to ' + !searchBarOn);
-
-            if ($scope.main.searchBarOn) {
-
-                myElement.style.display = 'none';
-            }
-            else {
-
-                myElement.style.display = 'block';
-            }
-
-            $scope.main.searchBarOn = !$scope.main.searchBarOn;
-
-            //setItemToLocalStorage('searchBarOn', !searchBarOn);
-        };
-        */
 
         /*----------------------------------------------
          Ensure that Config Parameters have valid values

@@ -136,8 +136,8 @@ textarea
  ******************************************************************************/
 
 .marginsForNGView {
-    margin-left: 5px;
-    margin-right: 5px;
+    //margin-left: 20px;
+    //margin-right:20px;
     padding-left: 20px;
     padding-right: 20px;
 }
@@ -706,10 +706,10 @@ ul.ndex-nav-pills > li > a:hover {
     font-size: 1.1em;
     font-weight: bold;
 
-    padding-left: 10px;
-    padding-top: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
+    //padding-left: 10px;
+    //padding-top: 10px;
+    //padding-right: 10px;
+    //padding-bottom: 10px;
 
     line-height: 1;
 }
