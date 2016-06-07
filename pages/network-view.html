@@ -228,10 +228,14 @@
                                                    &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
                                                     <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
 
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <a ng-click="networkController.showMoreAttributes()">
-                                                        more...
-                                                    </a>
+
+                                                    <span ng-show="checkHowManyAttributes(attributeName, node[attributeName])">
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <a ng-click="networkController.showMoreAttributes()">
+                                                            more...
+                                                        </a>
+                                                    </span>
+
 
                                                     <!--
 

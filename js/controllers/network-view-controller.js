@@ -276,6 +276,24 @@ ndexApp.controller('networkViewController',
                 return attributeValue;
             }
 
+            $scope.checkHowManyAttributes = function(attributeName, attribute) {
+
+                if (!attribute) {
+                    return false;
+                }
+
+                if ((attribute instanceof Object)
+                    && (attribute['v'])
+                    && (Array.isArray(attribute['v']))
+                    && (attribute['v'].length > 5)) {
+
+                    return true;
+                }
+
+                return false;
+            }
+
+
             networkController.showMoreAttributes = function() {
 
                 var title = "More Attributes";
