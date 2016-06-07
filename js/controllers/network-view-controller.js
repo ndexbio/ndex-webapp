@@ -42,7 +42,8 @@ ndexApp.controller('networkViewController',
             networkController.tabs = [
                     {"heading": "Network Info", 'active':true},
                     {'heading': 'Nodes/Edges', 'active': false},
-                    {'heading': 'Provenance', 'active': false}
+                    {'heading': 'Provenance', 'active': false},
+                    {'heading': 'Table View', 'active': false}
                 ];
 
             networkController.prettyStyle = "no style yet";
