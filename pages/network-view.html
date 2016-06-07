@@ -216,6 +216,12 @@
                                         <span ng-show="getAttributeValue(attributeName, node[attributeName])">
 
                                             <span ng-switch="attributeName">
+
+                                                <span ng-switch-when="r">
+                                                      &nbsp;&nbsp;&nbsp;<strong>ID:</strong>
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                </span>
+
                                                 <span ng-switch-when="citations">
                                                     <span ng-repeat="citation in node.citations">
                                                         &nbsp;&nbsp;

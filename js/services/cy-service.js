@@ -26,7 +26,7 @@ angular.module('ndexServiceApp')
             {
                 selector: 'node',
                 style: {
-                    'background-color':  '#da8a43',//'rgb(0, 220, 200)',
+                    'background-color': '#f6eecb' ,//  '#da8a43',//'rgb(0, 220, 200)',
                     'background-opacity': 0.8,
                     'width': '40px',
                     'height': '40px',
@@ -37,7 +37,7 @@ angular.module('ndexServiceApp')
             {
                 selector: 'edge',
                 style: {
-                    'line-color': '#76936f',
+                    'line-color':  '#75736c',//'#76936f',
                     'width': '2px',
                  //   'label': 'data(interaction)',
                     'font-family': 'Roboto, sans-serif',
