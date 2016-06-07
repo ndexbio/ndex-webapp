@@ -724,3 +724,7 @@ ul.ndex-nav-pills > li > a:hover {
     word-break: break-all;
     word-break: break-word;
 }
+
+.popup_search_bar_modal .modal-dialog {
+    width: 90%;
+}
