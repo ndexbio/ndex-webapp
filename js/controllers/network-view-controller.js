@@ -177,7 +177,17 @@ ndexApp.controller('networkViewController',
             $scope.getNodeAttributesNames = function(node) {
                 var attributeNames = _.keys(node);
 
-                var elementsToRemove = ['id', 'n', '$$hashKey', '$$expanded'];
+                var resultList = ['id'];
+
+                //First section will these attributes in order if they exists
+                var topList = ['n', 'r','alias','relatedTo','citation'];
+                _(topList).forEach(function (value) {
+                    if ( node[value]) {
+                        resultList.push(value);
+                    }
+                });
+
+                var elementsToRemove = topList.concat(['id', '$$hashKey', '$$expanded']);
 
                 for (i = 0; i < elementsToRemove.length; i++) {
 
@@ -187,7 +197,7 @@ ndexApp.controller('networkViewController',
                     }
                 }
 
-                return attributeNames;
+                return resultList.concat(attributeNames);
             };
 
             $scope.getEdgeAttributesNames = function(node) {
