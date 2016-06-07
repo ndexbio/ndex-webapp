@@ -1,13 +1,17 @@
-<div class="modal-header">
-    <h5 class="modal-title"><strong>{{title}}</strong></h5>
-</div>
 
-<div class="modal-body wrapLongLine" style="overflow-y:auto">
-    <!-- <strong>{{message}}</strong> -->
-    <span ng-bind-html='message'></span>
-</div>
+<div class="content">
 
-<div class="modal-footer">
-    <button class="btn btn-default" ng-click="close()">Close</button>
-</div>
+    <div class="modal-header">
+        <h5 class="modal-title"><strong>{{title}}</strong></h5>
+    </div>
 
+    <div class="modal-body wrapLongLine" style="max-height:600px; overflow:auto">
+        <!-- <strong>{{message}}</strong> -->
+        <span ng-bind-html='message'></span>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="close()">Close</button>
+    </div>
+
+</div>
