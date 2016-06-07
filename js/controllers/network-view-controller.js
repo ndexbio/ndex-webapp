@@ -206,17 +206,66 @@ ndexApp.controller('networkViewController',
                 return attributeNames;
             };
 
-            $scope.getAttributeValue = function(attributrName, attribute) {
+            $scope.getAttributeValue = function(attributeName, attribute) {
 
                 if (!attribute) {
                     return null;
                 }
 
-                var attributeValue;
+                var attributeValue ="";
 
                 if (attribute instanceof Object) {
-                    if (attribute instanceof Array) {
-                        attributeValue = attribute;
+                    if (attribute['v'] && Array.isArray(attribute['v']) && attribute['v'].length > 1) {
+
+                        if(attribute['v'].length > 5) {
+
+                            for (var i = 0; i < 5; i++) {
+                                if (i == 0) {
+                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br>";
+                                } else {
+                                    attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br>";
+                                }
+                            }
+
+                            //attributeValue = attributeValue + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+
+                                //' <a target="_blank" href="http://www.yahoo.com">more...</a> <br>' ;
+
+
+/*
+                       ' <a class="btn btn-primary" style="width: 150px;">' +
+                                '<edit-network-summary-modal ndex-data="networkController.currentNetwork">' +
+                                ' Edit Network Profile ' + ' </edit-network-summary-modal> </a><br>';
+
+
+/*
+                        '<a  ng-click="networkController.showMoreAttributes()"> ' + 'more...</a><br>';
+*/
+
+
+                        //<a class="btn btn-primary customButtonWidth"
+                        //   ng-click="userController.checkAndDeleteSelectedNetworks()">Delete Networks
+                        //</a>
+
+
+                            //console.log('attributeValue = ' + attributeValue);
+                            //console.log();
+
+
+
+                        } else {
+
+                            for (var i = 0; i < attribute['v'].length; i++) {
+                                if (i == 0) {
+                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br>";
+                                } else {
+                                    attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br> ";
+                                }
+                            }
+
+                        }
+
+
                     } else {
                         attributeValue = (attribute['v']) ? attribute['v'] : '';
                     }
@@ -227,7 +276,37 @@ ndexApp.controller('networkViewController',
                 return attributeValue;
             }
 
-            $scope.getEdgeLabel = function(edge) {
+            networkController.showMoreAttributes = function() {
+
+                var title = "More Attributes";
+                var message =
+                    "More attributes is to be shown in this modal ...";
+
+                networkController.genericInfoModal(title, message);
+
+                return;
+            }
+
+            networkController.genericInfoModal = function(title, message)
+            {
+                var   modalInstance = $modal.open({
+                templateUrl: 'pages/generic-info-modal.html',
+                scope: $scope,
+
+                controller: function($scope, $modalInstance) {
+
+                    $scope.title = title;
+                    $scope.message = message;
+
+                    $scope.close = function() {
+                        $modalInstance.dismiss();
+                    };
+                }
+                });
+            }
+
+
+        $scope.getEdgeLabel = function(edge) {
 
                 if (!edge) {
                     return "unknown";

@@ -1,14 +1,64 @@
 <div class="row">
+
     <div class="col-md-7">
 
-        <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}">
-            <div id = "messageOverlay"
-                 style="float:left; vdisplay: inline-block; position: absolute; top: 40px; left: 40px;font-size: 1.5em; color: #FF0000"
-               ng-show="networkController.isSample"  >(Showing top {{networkController.displayLimit}} edges)</div>
-        </div>
+        <div class="row">
+            <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}">
+                <div id = "messageOverlay"
+                     style="float:left; vdisplay: inline-block; position: absolute; top: 40px; left: 40px;font-size: 1.5em; color: #FF0000"
+                   ng-show="networkController.isSample"  >(Showing top {{networkController.displayLimit}} edges)</div>
+            </div>
 
-        <div class="rowWithOneLineTopPad"></div>
+            <div class="rowWithOneLineTopPad"></div>
+
+            <button type="button"
+                    class="btn btn-primary"
+                    ng-click="networkController.backToOriginalNetwork()"
+                    ng-show="networkController.successfullyQueried">
+                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                Back To Original Network
+            </button>
+
+            <div class="networkActionsSection" ng-show="!networkController.successfullyQueried">
+
+                <form id="frmSearchNetwork"
+                      ng-submit="networkController.queryNetworkAndDisplay()"
+                      class="form-inline pull-left">
+
+                    <div class="form-group">
+                        <input class="form-control" type="search" ng-model="networkController.searchString"
+                               placeholder="Network Terms" style="width:300px" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Depth:</label>
+                    </div>
+                    <div class="form-group">
+                        <span>
+                            <select
+                                    class="form-control"
+                                    id="selectSearchDepth"
+                                    ng-model="networkController.searchDepth.value"
+                                    ng-selected="1"
+                                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                                    required>
+                            </select>
+                        </span>
+                    </div>
+
+                    <button type="submit" class="btn btn-default btn-primary"
+                            style="margin-bottom:0">Run Query
+                    </button>
+                    &nbsp;
+                </form>
+
+                <span class="pull-left" style="margin-top:0.5em">
+                    <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
+                </span>
+
+            </div>
+        </div>
     </div>
+
 
     <div class="col-md-5">
 
@@ -176,7 +226,21 @@
 
                                                 <span ng-switch-default>
                                                    &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
-                                                                     {{getAttributeValue(attributeName, node[attributeName])}}
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <a ng-click="networkController.showMoreAttributes()">
+                                                        more...
+                                                    </a>
+
+                                                    <!--
+
+                                                    {{getAttributeValue(attributeName, node[attributeName])}}
+
+                                                    <span ng-repeat="attr in getAttributeValue(attributeName, node[attributeName])">
+                                                                     {{attr}}
+                                                        </span>
+                                                    -->
                                                     <br />
                                                 </span>
                                             </span>
@@ -310,60 +374,8 @@
         </div>
 
         <div class="rowWithOneLineTopPad"></div>
-    </div>
-</div>
 
-
-<div class="row">
-    <div class="col-md-12">
-
-        <button type="button"
-                class="btn btn-primary"
-                ng-click="networkController.backToOriginalNetwork()"
-                ng-show="networkController.successfullyQueried">
-            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-            Back To Original Network
-        </button>
-
-
-        <div class="networkActionsSection" ng-show="!networkController.successfullyQueried">
-
-            <form id="frmSearchNetwork"
-                  ng-submit="networkController.queryNetworkAndDisplay()"
-                  class="form-inline pull-left">
-
-                    <div class="form-group">
-                        <input class="form-control" type="search" ng-model="networkController.searchString"
-                               placeholder="Network Terms" required/>
-                    </div>
-                    <div class="form-group">
-                        <label>Depth:</label>
-                    </div>
-                    <div class="form-group">
-                        <span>
-                            <select
-                                    class="form-control"
-                                    id="selectSearchDepth"
-                                    ng-model="networkController.searchDepth.value"
-                                    ng-selected="1"
-                                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
-                                    required>
-                            </select>
-                        </span>
-                    </div>
-
-                    <button type="submit" class="btn btn-default btn-primary"
-                            style="margin-bottom:0">Run Query
-                    </button>
-                    &nbsp;
-            </form>
-
-            <span class="pull-left" style="margin-top:0.5em">
-                <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
-            </span>
-
-            &nbsp;&nbsp;&nbsp;&nbsp;
-
+        <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
             <span ng-show='networkController.isLoggedIn &&
                         ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
                 <a class="btn btn-primary" style="width: 150px;">
@@ -483,17 +495,3 @@
     </div>
 
 </div>
-
-<!--
-    <div class="row">
-
-        <div class="col-md-6">
-            <pre>networkController.prettyStyle = {{networkController.prettyStyle}}</pre>
-        </div>
-
-        <div class="col-md-6">
-            <pre>networkController.prettyVisualProperties = {{networkController.prettyVisualProperties}}</pre>
-        </div>
-
-    </div>
--->
