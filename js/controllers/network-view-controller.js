@@ -304,13 +304,24 @@ ndexApp.controller('networkViewController',
             }
 
 
-            networkController.showMoreAttributes = function() {
+            networkController.showMoreAttributes = function(attributeName, attribute) {
 
-                var title = "More Attributes";
+                var title = attributeName + ':';
                 var message =
                     "More attributes is to be shown in this modal ...";
 
-                networkController.genericInfoModal(title, message);
+                var attributeValue = "";
+
+                if (attribute instanceof Object) {
+                    if (attribute['v'] && Array.isArray(attribute['v'])) {
+
+                        for (var i = 0; i < attribute['v'].length; i++) {
+                            attributeValue = attributeValue + attribute['v'][i] + '<br>';
+                        }
+                    }
+                }
+                
+                networkController.genericInfoModal(title, attributeValue);
 
                 return;
             }

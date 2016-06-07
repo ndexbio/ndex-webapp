@@ -237,9 +237,10 @@
 
                                                     <span ng-show="checkHowManyAttributes(attributeName, node[attributeName])">
                                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <a ng-click="networkController.showMoreAttributes()">
+                                                        <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
                                                             more...
                                                         </a>
+                                                        <br>
                                                     </span>
 
 
