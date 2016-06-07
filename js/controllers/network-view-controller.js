@@ -222,6 +222,12 @@ ndexApp.controller('networkViewController',
                 if (!attribute) {
                     return null;
                 }
+                if (!attributeName) {
+                    return null;
+                }
+                if ('citations' === attributeName.toLowerCase()) {
+                    return attribute;
+                }
 
                 var attributeValue ="";
 
@@ -238,32 +244,6 @@ ndexApp.controller('networkViewController',
                                 }
                             }
 
-                            //attributeValue = attributeValue + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
-
-                                //' <a target="_blank" href="http://www.yahoo.com">more...</a> <br>' ;
-
-
-/*
-                       ' <a class="btn btn-primary" style="width: 150px;">' +
-                                '<edit-network-summary-modal ndex-data="networkController.currentNetwork">' +
-                                ' Edit Network Profile ' + ' </edit-network-summary-modal> </a><br>';
-
-
-/*
-                        '<a  ng-click="networkController.showMoreAttributes()"> ' + 'more...</a><br>';
-*/
-
-
-                        //<a class="btn btn-primary customButtonWidth"
-                        //   ng-click="userController.checkAndDeleteSelectedNetworks()">Delete Networks
-                        //</a>
-
-
-                            //console.log('attributeValue = ' + attributeValue);
-                            //console.log();
-
-
-
                         } else {
 
                             for (var i = 0; i < attribute['v'].length; i++) {
@@ -275,8 +255,7 @@ ndexApp.controller('networkViewController',
                             }
 
                         }
-
-
+                        
                     } else {
                         attributeValue = (attribute['v']) ? attribute['v'] : '';
                     }
@@ -383,6 +362,7 @@ ndexApp.controller('networkViewController',
                         identifier + '</a>';
                 }
 
+                console.log(retString);
                 return retString;
             };
             /*-----------------------------------------------------------------------*
