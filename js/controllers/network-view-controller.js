@@ -180,7 +180,7 @@ ndexApp.controller('networkViewController',
                 var resultList = ['id'];
 
                 //First section will these attributes in order if they exists
-                var topList = ['name', 'r','alias','relatedTo','citation'];
+                var topList = ['n', 'r','alias','relatedTo','citation'];
                 _(topList).forEach(function (value) {
                     if ( node[value]) {
                         resultList.push(value);

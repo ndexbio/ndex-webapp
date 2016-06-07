@@ -220,6 +220,19 @@
                                                 <span ng-switch-when="r">
                                                       &nbsp;&nbsp;&nbsp;<strong>ID:</strong>
                                                     <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                    <br/>
+                                                </span>
+
+                                                <span ng-switch-when="n">
+                                                      &nbsp;&nbsp;&nbsp;<strong>Name:</strong>
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                    <br/>
+                                                </span>
+
+                                                <span ng-switch-when="id">
+                                                      &nbsp;&nbsp;&nbsp;<strong>Node Id:</strong>
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                    <br/>
                                                 </span>
 
                                                 <span ng-switch-when="citations">
