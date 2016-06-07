@@ -432,6 +432,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  templateUrl: 'pages/search-modal.html',
                  //keyboard: true,
                  scope: $scope,
+                 windowClass: 'popup_search_bar_modal',
 
                  controller: function($scope, $modalInstance) {
 
