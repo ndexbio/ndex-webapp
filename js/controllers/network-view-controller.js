@@ -41,7 +41,7 @@ ndexApp.controller('networkViewController',
             
             networkController.tabs = [
                     {"heading": "Network Info", 'active':true},
-                    {'heading': 'Nodes/Edges', 'active': false},
+                    {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
                     {'heading': 'Provenance', 'active': false},
                     {'heading': 'Table View', 'active': false}
                 ];
@@ -429,8 +429,15 @@ ndexApp.controller('networkViewController',
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
-                                if (!networkController.tabs[1].active )
+
+                                if ( cxNodes.length ===0 && cxEdges.length ===0 ) {
+                                    networkController.tabs[0].active = true;
+                                    networkController.tabs[1].disabled = true;
+                                    networkController.tabs[1].active = false;
+                                } else if (!networkController.tabs[1].active ) {
                                     networkController.tabs[1].active = true;
+                                    networkController.tabs[1].disabled = false;
+                                }
                             });
                         }, 300) ;
                     });
