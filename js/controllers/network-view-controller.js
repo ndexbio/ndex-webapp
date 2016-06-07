@@ -261,14 +261,19 @@ ndexApp.controller('networkViewController',
                     }
                 } else {
 
-                    var attr = attribute.toLowerCase();
+                    if (typeof attribute === 'string') {
+                        var attr = attribute.toLowerCase();
 
-                    if (attr.startsWith('http://')
-                        && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
-                        && !attr.startsWith('http://purl')   && !attr.startsWith('http://www.purl') ) {
+                        if (attr.startsWith('http://')
+                            && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
+                            && !attr.startsWith('http://purl') && !attr.startsWith('http://www.purl')) {
 
-                        attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
+                            attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
 
+                        } else {
+
+                            attributeValue = attribute;
+                        }
                     } else {
 
                         attributeValue = attribute;
