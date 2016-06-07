@@ -260,7 +260,19 @@ ndexApp.controller('networkViewController',
                         attributeValue = (attribute['v']) ? attribute['v'] : '';
                     }
                 } else {
-                    attributeValue = attribute;
+
+                    var attr = attribute.toLowerCase();
+
+                    if (attr.startsWith('http://')
+                        && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
+                        && !attr.startsWith('http://purl')   && !attr.startsWith('http://www.purl') ) {
+
+                        attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
+
+                    } else {
+
+                        attributeValue = attribute;
+                    }
                 }
 
                 return attributeValue;
@@ -287,8 +299,6 @@ ndexApp.controller('networkViewController',
             networkController.showMoreAttributes = function(attributeName, attribute) {
 
                 var title = attributeName + ':';
-                var message =
-                    "More attributes is to be shown in this modal ...";
 
                 var attributeValue = "";
 
@@ -362,7 +372,6 @@ ndexApp.controller('networkViewController',
                         identifier + '</a>';
                 }
 
-                console.log(retString);
                 return retString;
             };
             /*-----------------------------------------------------------------------*
