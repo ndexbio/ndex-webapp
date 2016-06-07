@@ -432,6 +432,12 @@ ndexApp.controller('networkViewController',
                                     networkController.tabs[1].active = true;
                                     networkController.tabs[1].disabled = false;
                                 }
+                                if (cxNodes.length == 1) {
+                                    cxNodes[0].$$expanded = true;
+                                }
+                                if (cxEdges.length == 1) {
+                                    cxEdges[0].$$expanded = true;
+                                }
                             });
                         }, 300) ;
                     });
