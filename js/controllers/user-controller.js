@@ -274,7 +274,7 @@ ndexApp.controller('userController',
             userController.genericInfoModal = function(title, message)
             {
                 var   modalInstance = $modal.open({
-                    templateUrl: 'generic-info-modal.html',
+                    templateUrl: 'pages/generic-info-modal.html',
                     scope: $scope,
 
                     controller: function($scope, $modalInstance) {
