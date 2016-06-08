@@ -204,13 +204,15 @@
 
                             <tr ng-repeat-start="node in networkController.selectionContainer.nodes">
                                 <td class="wrappedCell">
-                                    <button ng-if="node.$$expanded" ng-click="node.$$expanded = false">-</button>
-                                    <button ng-if="!node.$$expanded" ng-click="node.$$expanded = true">+</button>
+                                    <button ng-if="node.$$expanded" ng-click="node.$$expanded = false"
+                                        ng-disabled="getNodeAttributesNames(node).length == 0">-</button>
+                                    <button ng-if="!node.$$expanded" ng-click="node.$$expanded = true"
+                                        ng-disabled="getNodeAttributesNames(node).length == 0">+</button>
 
                                     &nbsp;{{getNodeName(node)}}
                                 </td>
                             </tr>
-                            <tr ng-if="node.$$expanded" ng-repeat-end="">
+                            <tr ng-if="node.$$expanded && getNodeAttributesNames(node).length > 0" ng-repeat-end="">
                                 <td class="wrappedCell">
                                     <span ng-repeat="attributeName in getNodeAttributesNames(node)">
                                         <span ng-show="getAttributeValue(attributeName, node[attributeName])">
@@ -269,13 +271,15 @@
                             </tr>
                             <tr ng-repeat-start="edge in networkController.selectionContainer.edges">
                                 <td class="wrappedCell">
-                                    <button ng-if="edge.$$expanded" ng-click="edge.$$expanded = false">-</button>
-                                    <button ng-if="!edge.$$expanded" ng-click="edge.$$expanded = true">+</button>
+                                    <button ng-if="edge.$$expanded" ng-click="edge.$$expanded = false"
+                                        ng-disabled="getEdgeAttributesNames(edge).length == 0">-</button>
+                                    <button ng-if="!edge.$$expanded" ng-click="edge.$$expanded = true"
+                                        ng-disabled="getEdgeAttributesNames(edge).length == 0">+</button>
 
                                     &nbsp;{{getEdgeLabel(edge)}}
                                 </td>
                             </tr>
-                            <tr ng-if="edge.$$expanded" ng-repeat-end="">
+                            <tr ng-if="edge.$$expanded && getEdgeAttributesNames(edge).length > 0" ng-repeat-end="">
                                 <td class="wrappedCell">
 
                                     <span ng-repeat="attributeName in getEdgeAttributesNames(edge)">
