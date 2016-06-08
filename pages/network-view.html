@@ -297,8 +297,8 @@
 
                                                 <span ng-switch-default>
                                                    &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
-                                                                     {{getAttributeValue(attributeName, edge[attributeName])}}
-                                                    <br />
+                                                   <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
+                                                   <br />
                                                 </span>
 
                                             </span>
