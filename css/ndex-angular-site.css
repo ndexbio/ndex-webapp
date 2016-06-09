@@ -336,7 +336,7 @@ textarea
 /* this makes the header menu "collapse" into a menu button when
 max-width of the browser reaches the specified value; this is for NDEX-662 */
 /*
-@media (max-width: 1210px) {
+@media (max-width: 860px) {
 
     .navbar-header {
         float: none;
@@ -596,7 +596,15 @@ ul.ndex-nav-pills > li > a:hover {
 
 .ndex-citation-landing-page {
     font-size:18px;
-    line-height:2;
+    line-height:1.5;
+    margin:2em;
+    text-align: center;
+    padding-top: 2em;
+}
+
+.ndex-featured-collections {
+    font-size:14px;
+    line-height:1.5;
     margin:2em;
     text-align: center;
 }

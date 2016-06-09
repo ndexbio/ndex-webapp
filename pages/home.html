@@ -1,22 +1,15 @@
-<div class="row">
-    <div class='col-md-2'></div>
-    <div class='col-md-8 AlignCenter' style="margin-bottom:30px">
-        <img src='http://home.ndexbio.org/wp-content/uploads/2015/06/ndex-new-logo.png'
-             style="width:100%; max-height:150px; align:center"/>
-    </div>
+<div class="row AlignCenter" style="margin-top: -4em">
+    <img src='img/ndex-new-logo.png'>
 </div>
 
-<div class="row">
-    <div class='col-md-2' style="margin-top:10px; margin-bottom:10px" ></div>
-    <div class='col-md-8 AlignCenter'>
-        <h3>{{config.welcome}}</h3>
-    </div>
+<div class="row AlignCenter">
+    <h3>{{config.welcome}}</h3>
 </div>
 
 
 <div class="row">
     <div class='col-md-12' >
-        <div style="margin-top:10px; max-width: 1000px; margin-left: auto; margin-right: auto;">
+        <div style="margin-top:3em; max-width: 1000px; margin-left: auto; margin-right: auto;">
             <ng-include src="'search_bar.html'"></ng-include>
         </div>
     </div>
@@ -95,31 +88,42 @@
     </div>
 </div>
 
+<div class="ndex-featured-collections">Featured Collections:
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/301a91c6-a37b-11e4-bda0-000c29202374">NCI - Pathway Interaction Database (PID)</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/08cd9aae-08af-11e6-b550-06603eb7f303">The NDEx Butler</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/581b0295-c6b6-11e4-951c-000c29cb28fb">The Binding Database</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/ab10afd9-e488-11e4-951c-000c29cb28fb">NetPath</a>
+</div>
+
 <div class="ndex-citation-landing-page">Cite NDEx: Pratt <em>et al.</em>
-    <a href="http://dx.doi.org/10.1016/j.cels.2015.10.001">NDEx, the Network Data Exchange.</a>
+    <a target="_blank" href="http://dx.doi.org/10.1016/j.cels.2015.10.001">NDEx, the Network Data Exchange.</a>
     Cell Systems, Volume 1, Issue 4, 302-305 (2015).
 </div>
 
-<div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
+<div class="row" ng-show="!main.showSignIn && !config.requireAuthentication" style="margin-top: -4em">
     <span class='col-md-12'>
         <span class="home-margins">
 
             <div class="home-support AlignCenter">
 
                 <a href="http://itcr.nci.nih.gov/" target="_blank"><img
-                        src="http://home.ndexbio.org/wp-content/uploads/2015/05/ITCR-logo.png"
+                        src="img/ITCR-logo.png"
                         style="padding: 20px 15px"></a>
                 <a href="http://www.roche.com/" target="_blank"><img
-                        src="http://home.ndexbio.org/wp-content/uploads/2015/05/Roche-Logox50.jpg"
+                        src="img/Roche-Logox50.jpg"
                         style="padding: 20px 0 20px 15px"></a>
                 <a href="http://www.pfizer.com/" target="_blank"><img
-                        src="http://home.ndexbio.org/wp-content/uploads/2015/05/pfizer_logox501.png"
+                        src="img/pfizer_logox501.png"
                         style="padding: 20px 15px 20px 0"></a>
                 <a href="http://www.janssenrnd.com/" target="_blank"><img
-                        src="http://home.ndexbio.org/wp-content/uploads/2015/06/janssen_logo.png"
+                        src="img/janssen_logo.png"
                         style="padding: 20px 5px 20px 15px"></a>
                 <a href="http://www.nrnb.org/" target="_blank"><img
-                        src="http://home.ndexbio.org/wp-content/uploads/2015/05/NRNB_black_5001.png"
+                        src="img/NRNB_black_5001.png"
                         style="padding: 25px 0 15px 5px"></a>
             </div>
         </span>
