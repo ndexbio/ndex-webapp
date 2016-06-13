@@ -444,7 +444,7 @@ angular.module('ndexServiceApp')
 
       var setCoreAspectAttributes = function(niceCX, aspectName, referenceId, attributeName, attributeValue, attributeDataType) {
 
-          var attributeObject = {'v' : attributeValue,
+          var attributeObject = {'v' :  ( (attributeDataType.substring(0,7) === 'list_of' && typeof attributeValue === 'string') ? JSON.parse(attributeValue) :  attributeValue),
               'd' :  attributeDataType,
               'po' : referenceId,
               'n' : attributeName
