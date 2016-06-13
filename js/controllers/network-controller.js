@@ -324,6 +324,7 @@ ndexApp.controller('networkController',
                 network.nodes[0].hover = true;
             };
 
+            /*
             $scope.networkToBeDisplayedInCanvas = function() {
 
                 if (typeof(networkController) === 'undefined' ||
@@ -337,6 +338,7 @@ ndexApp.controller('networkController',
                 return ((networkController.currentSubnetwork.edgeCount <= config.networkDisplayLimit) &&
                         (networkController.currentSubnetwork.edgeCount > 0));
             }
+            */
 
             $scope.currentSubnetworkEdgeCountNotZero = function() {
                 if (typeof(networkController) === 'undefined' ||
@@ -431,13 +433,15 @@ ndexApp.controller('networkController',
                     .success(
                     function (network, json) {
                         //console.log("got query results for : " + networkController.searchString);
-                        csn = network;
-                        csn.json = json;
+                        //csn = network;
+                        //csn.json = json;
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
+                        /*
                         if ($scope.networkToBeDisplayedInCanvas()) {
                             cytoscapeService.setNetwork(network);
                         }
+                        */
 
                         // enableFiltering set to true means that filtering will be on regardless of the size
                         // of the network
@@ -641,9 +645,11 @@ ndexApp.controller('networkController',
                                 || networkController.canEdit
                                 || networkController.canRead)
                                 getEdges(function (subnetwork) {
+                                    /*
                                     if ($scope.networkToBeDisplayedInCanvas()) {
                                         cytoscapeService.setNetwork(subnetwork);
                                     }
+                                    */
 
                                     // enableFiltering set to false means that filtering will be on if the size
                                     // of the network is no greater than 500 edges
@@ -734,7 +740,7 @@ ndexApp.controller('networkController',
                 (request2 = ndexService.getNetworkByEdges(networkController.currentNetworkId, skipBlocks, blockSize) )
                     .success(
                     function (network) {
-                        csn = network; // csn is a debugging convenience variable
+                        //csn = network; // csn is a debugging convenience variable
                         networkController.currentSubnetwork = network;
                         networkController.selectedEdges = network.edges;
                         callback(network);
@@ -1046,6 +1052,10 @@ ndexApp.controller('networkController',
 
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+                //$scope.edgeGridApi.grid.gridHeight = 500; //$('#divNetworkTabs').height();
+
+                //console.log(' $("#divNetworkTabs").height() = ' +  $('#divNetworkTabs').height());
+
 
                 refreshEdgeTable(headers);
             };
@@ -1214,11 +1224,13 @@ ndexApp.controller('networkController',
                     networkController.nodePropertyNamesForAdvancedQuery.push(field);
                 }
 
-                refreshNodeTable(headers);
-
                 $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
+                //$scope.nodeGridApi.grid.gridHeight = 500; //$('#divNetworkTabs').height();
 
+                refreshNodeTable(headers);
+
+                //console.log(' $("#divNetworkTabs").height() = ' +  $('#divNetworkTabs').height());
 
             };
 
@@ -1409,18 +1421,20 @@ ndexApp.controller('networkController',
                 $http(config).
                     success(function(network, status, headers, config)
                     {
-                        var json = angular.toJson(network);
+                        //var json = angular.toJson(network);
                         ndexUtility.setNetwork(network);
                         ndexHelper.updateNodeLabels(network);
                         //ndexHelper.updateTermLabels(network);
-                        csn = network;
-                        csn.json = json;
+                        //csn = network;
+                        //csn.json = json;
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
 
+                        /*
                         if ($scope.networkToBeDisplayedInCanvas()) {
                             cytoscapeService.setNetwork(network);
                         }
+                        */
 
                         // enableFiltering set to true means that filtering will be on regardless of the size
                         // of the network

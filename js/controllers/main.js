@@ -532,7 +532,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.logoLink = {};
             }
             if (typeof config.logoLink.href === 'undefined') {
-                config.logoLink.href = "http://www.ndexbio.org";
+                config.logoLink.href = "http://public.ndexbio.org";
             }
             if (typeof config.logoLink.warning === 'undefined') {
                 config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
@@ -541,27 +541,21 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.logoLink.showWarning = false;
             }
 
-
-
-            /*
-             if (typeof config.homeLink === 'undefined') {
-             config.homeLink = {};
-             }
-             if (typeof config.homeLink.label === 'undefined') {
-             config.homeLink.label = "Home";
-             }
-             if (typeof config.homeLink.href === 'undefined') {
-             config.homeLink.href = "http://www.ndexbio.org/home";
-             }
-             if (typeof config.homeLink.warning === 'undefined') {
-             config.homeLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-             }
-             if (typeof config.homeLink.showWarning === 'undefined') {
-             config.homeLink.showWarning = false;
-             }
-             */
-
-
+            if (typeof config.homeLink === 'undefined') {
+                config.homeLink = {};
+            }
+            if (typeof config.homeLink.label === 'undefined') {
+                config.homeLink.label = "Home";
+            }
+            if (typeof config.homeLink.href === 'undefined') {
+                config.homeLink.href = "http://www.home.ndexbio.org";
+            }
+            if (typeof config.homeLink.warning === 'undefined') {
+                config.homeLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+            }
+            if (typeof config.homeLink.showWarning === 'undefined') {
+                config.homeLink.showWarning = false;
+            }
 
             if (typeof config.aboutLink === 'undefined') {
                 config.aboutLink = {};

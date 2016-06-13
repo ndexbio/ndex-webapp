@@ -359,8 +359,7 @@ textarea
 
 /* this makes the header menu "collapse" into a menu button when
 max-width of the browser reaches the specified value; this is for NDEX-662 */
-/*
-@media (max-width: 1210px) {
+@media (max-width: 1150px) {
 
     .navbar-header {
         float: none;
@@ -411,7 +410,6 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
         display: block !important;
     }
 }
-*/
 
 .ndex-search-control > a {
     font-size: 14px;
@@ -726,5 +724,5 @@ ul.ndex-nav-pills > li > a:hover {
 }
 
 .popup_search_bar_modal .modal-dialog {
-    width: 90%;
+    width: 80%;
 }

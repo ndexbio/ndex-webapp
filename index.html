@@ -240,13 +240,11 @@
         <div class="navbar-collapse collapse" id="myNavbar">
 
             <ul class="nav navbar-nav navbar-left">
-                <!--
                 <li>
                     <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.homeLink)">{{config.homeLink.label}}
                     </a>
                 </li>
-                -->
 
                 <li>
                     <a ng-href="{{$location.path()}}"
@@ -306,7 +304,7 @@
                 <li ng-click="collapseHamburgerMenu()"
                     ng-show="main.getCurrentNetwork() != null"
                     ng-class="{active:main.url.url().search('/network') != -1}">
-                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">New Network</a>
+                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">Graphic View</a>
                 </li>
 
                 <!--
@@ -318,7 +316,7 @@
                 -->
                 <li ng-show="main.getCurrentNetwork() != null">
                     <!--ng-class="{active:main.url.url().search('/network') != -1}">-->
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentNetwork()">Network</a>
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentNetwork()">Table View</a>
                 </li>
 
                 <li ng-show="main.loggedIn">
