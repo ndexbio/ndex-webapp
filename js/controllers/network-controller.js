@@ -74,6 +74,9 @@ ndexApp.controller('networkController',
             networkController.showRetrieveMessage = true;
 
 
+            // when this page loads, we need to show Graphic View and Table View menus in the nav bar
+            $scope.$parent.showViewMenus = true;
+
             $scope.tree = [{name: "Node", nodes: []}];
 
             $scope.delete = function(data) {
@@ -84,6 +87,12 @@ ndexApp.controller('networkController',
                 var newName = data.name + '-' + post;
                 data.nodes.push({name: newName,nodes: []});
             };
+
+            // when user navigates away from this page, we need to hidde Graphic View and Table View menus
+            // fron the nav bar
+            $scope.$on("$destroy", function(){
+                $scope.$parent.showViewMenus = false;
+            });
 
             $scope.getProvenanceTitle = function(provenance)
             {

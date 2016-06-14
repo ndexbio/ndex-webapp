@@ -43,6 +43,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 $scope.main.hideSearchBar = false;
         });
 
+        $scope.showViewMenus = false;
+        
         // do not show Search anywhere except on New Network Page
         // This value gets set to true when we load New Network page (in netwrok-view-controller.js), 
         // and gets set back to false before we navigate away from New Network.
@@ -189,7 +191,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         });
 
         //navbar
-        $scope.main.getCurrentNetwork = function () {
+        $scope.main.getCurrentNetworkId = function () {
             return sharedProperties.getCurrentNetworkId();
         };
         $scope.main.getCurrentUserId = function () {

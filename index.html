@@ -302,19 +302,19 @@
                 </li>
 
                 <li ng-click="collapseHamburgerMenu()"
-                    ng-show="main.getCurrentNetwork() != null"
+                    ng-show="showViewMenus"
                     ng-class="{active:main.url.url().search('/network') != -1}">
-                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">Graphic View</a>
+                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetworkId()}}">Graphic View</a>
                 </li>
 
                 <!--
                                 <li ng-click="collapseHamburgerMenu()"
-                                    ng-show="main.getCurrentNetwork() != null"
+                                    ng-show="main.getCurrentNetworkId() != null"
                                     ng-class="{active:main.url.url().search('/network') != -1}">
-                                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetwork()}}">New Network</a>
+                                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetworkId()}}">New Network</a>
                                 </li>
                 -->
-                <li ng-show="main.getCurrentNetwork() != null">
+                <li ng-show="showViewMenus">
                     <!--ng-class="{active:main.url.url().search('/network') != -1}">-->
                     <a ng-click="collapseHamburgerMenu(); main.goToCurrentNetwork()">Table View</a>
                 </li>

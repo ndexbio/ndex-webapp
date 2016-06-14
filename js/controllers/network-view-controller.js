@@ -34,8 +34,11 @@ ndexApp.controller('networkViewController',
             networkController.displayLimit = config.networkDisplayLimit;
             networkController.successfullyQueried = false;
 
-            // turn on (show) Search menu item on Nav Bar
+            // turn on (show) Search menu item on the Nav Bar
             $scope.$parent.showSearchMenu = true;
+
+            // turn on (show) Graphic View and Table View menu items on the Nav Bar
+            $scope.$parent.showViewMenus = true;
 
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
             
@@ -80,7 +83,7 @@ ndexApp.controller('networkViewController',
             }
 
 
-            // this function gets called when user navigates away from the current New Network view.
+            // this function gets called when user navigates away from the current Graphic View page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
 
@@ -88,6 +91,9 @@ ndexApp.controller('networkViewController',
                 $scope.$parent.showSearchMenu = false;
 
                 showSearchMenuItem();
+
+                // also, hide the Graphic View nad Table View menu items from that nav bar
+                $scope.$parent.showViewMenus = false;
             });
 
             /*
