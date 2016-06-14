@@ -1052,10 +1052,6 @@ ndexApp.controller('networkController',
 
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
-                //$scope.edgeGridApi.grid.gridHeight = 500; //$('#divNetworkTabs').height();
-
-                //console.log(' $("#divNetworkTabs").height() = ' +  $('#divNetworkTabs').height());
-
 
                 refreshEdgeTable(headers);
             };
@@ -1226,12 +1222,8 @@ ndexApp.controller('networkController',
 
                 $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
                 $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
-                //$scope.nodeGridApi.grid.gridHeight = 500; //$('#divNetworkTabs').height();
 
                 refreshNodeTable(headers);
-
-                //console.log(' $("#divNetworkTabs").height() = ' +  $('#divNetworkTabs').height());
-
             };
 
             var refreshNodeTable = function(headers)
@@ -1300,8 +1292,12 @@ ndexApp.controller('networkController',
                 "id": "1"
             };
 
+
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
             // Initialize the current network and current subnetwork
+
+            //$("#divNetworkTabs").height(500);
+
             initialize();
 
             //Advanced Query

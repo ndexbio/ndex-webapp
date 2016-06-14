@@ -726,3 +726,7 @@ ul.ndex-nav-pills > li > a:hover {
 .popup_search_bar_modal .modal-dialog {
     width: 75%;
 }
+
+.table_view_grid_height {
+    height: 500px;
+}
