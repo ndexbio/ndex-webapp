@@ -730,3 +730,18 @@ ul.ndex-nav-pills > li > a:hover {
 .table_view_grid_height {
     height: 425px;
 }
+
+.selected-navbar-item {
+    color: #ffffff !important;
+    background: #555;  // default value in Bootstrap is #333
+    font-weight: bold;
+    //font-size: 1.1em;
+}
+
+.nav.navbar-nav.navbar-left li a:hover,
+.nav.navbar-nav.navbar-right li a:hover {
+    color: #ffffff !important;
+    background: #555;  // default value in Bootstrap is #333
+    font-weight: bold;
+    //font-size: 1.1em;
+}

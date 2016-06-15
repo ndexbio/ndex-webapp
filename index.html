@@ -301,26 +301,25 @@
                     </a>
                 </li>
 
-                <li ng-click="collapseHamburgerMenu()"
-                    ng-show="showViewMenus"
-                    ng-class="{active:main.url.url().search('/network') != -1}">
-                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetworkId()}}">Graphic View</a>
+                <li ng-show="showViewMenus">
+                    <a ng-click="collapseHamburgerMenu(); main.goToNetworkView('/newNetwork/');"
+                       ng-class="{'selected-navbar-item' : isActiveNetworkView('/newNetwork/')}">
+                        Graphic View
+                    </a>
                 </li>
 
-                <!--
-                                <li ng-click="collapseHamburgerMenu()"
-                                    ng-show="main.getCurrentNetworkId() != null"
-                                    ng-class="{active:main.url.url().search('/network') != -1}">
-                                    <a ng-href="{{'#newNetwork/' + main.getCurrentNetworkId()}}">New Network</a>
-                                </li>
-                -->
                 <li ng-show="showViewMenus">
-                    <!--ng-class="{active:main.url.url().search('/network') != -1}">-->
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentNetwork()">Table View</a>
+                    <a ng-click="collapseHamburgerMenu(); main.goToNetworkView('/network/');"
+                         ng-class="{'selected-navbar-item' : isActiveNetworkView('/network/')}">
+                        Table View
+                    </a>
                 </li>
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()">MyAccount</a>
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser();"
+                        ng-class="{'selected-navbar-item' : isActiveUserView('/user/')}">
+                        MyAccount
+                    </a>
                 </li>
 
                 <li ng-show="main.loggedIn">

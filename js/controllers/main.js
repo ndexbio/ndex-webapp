@@ -50,9 +50,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         // and gets set back to false before we navigate away from New Network.
         $scope.showSearchMenu = false;
 
-        $scope.main.goToCurrentNetwork = function(){
+        $scope.main.goToNetworkView = function(path){
             if (sharedProperties.currentNetworkId) {
-                $location.path("/network/" + sharedProperties.currentNetworkId);
+                $location.path(path + sharedProperties.currentNetworkId);
             }
         };
 
@@ -62,7 +62,20 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             }
         };
 
+        $scope.isActiveNetworkView = function (viewLocation) {
+            var locationPath = $location.path();
+            var viewLocationPath = viewLocation + sharedProperties.getCurrentNetworkId();
+            var active = (viewLocationPath === locationPath);
+            return active;
+        };
 
+        $scope.isActiveUserView = function (viewLocation) {
+            var locationPath = $location.path();
+            var viewLocationPath = viewLocation + sharedProperties.getCurrentUserId();
+            var active = (viewLocationPath === locationPath);
+            return active;
+        };
+        
         // check configuration parameters loaded from ndex-webapp-config.js;
         // if any of config parameters missing, assign default values
         initMissingConfigParams(config);
