@@ -376,12 +376,23 @@
                 </span>
 
             </span>
+
             <span ng-show="networkController.queryMode == 'advanced' && !networkController.successfullyQueried">
                 <form novalidate ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)">
-                    <span class="pull-right"><a ng-click="networkController.queryMode = 'simple'">
-                        <u><strong>Simple Query</strong></u></a></span>
-                    Find a subnetwork with edges that,<br>
-                    (1) have one or more of these properties:<br>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            Find a subnetwork with edges that,<br>
+                            (1) have one or more of these properties:<br>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="pull-right" style="margin-top:0.5em"><a ng-click="networkController.queryMode = 'simple'">
+                                <u><strong>Back to Simple Query</strong></u></a>
+                            </span>
+                        </div>
+                    </div>
+
+
                     <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
                         <div class="row">
                             <div class="col-sm-4">
