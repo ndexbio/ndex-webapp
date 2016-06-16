@@ -19,7 +19,9 @@
                 Back To Original Network
             </button>
 
-            <div class="networkActionsSection" ng-show="!networkController.successfullyQueried">
+            <div class="networkActionsSection"
+                 ng-show="!networkController.successfullyQueried"
+                 id="simpleQueryNetworkViewId">
 
                 <form id="frmSearchNetwork"
                       ng-submit="networkController.queryNetworkAndDisplay()"
@@ -51,8 +53,13 @@
                     &nbsp;
                 </form>
 
-                <span class="pull-left" style="margin-top:0.5em">
-                    <a ng-click="networkController.queryMode = 'advanced'"><u>Advanced Query</u></a>
+                <span class="pull-left" style="margin-top:0.5em" ng-show="!hideAdvancedSearchLink">
+                    <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
+                        <u>Advanced Query</u>
+                    </a>
+                </span>
+                <span class="pull-left" style="margin-top:0.5em; color:#999999;" ng-show="hideAdvancedSearchLink">
+                    <u>Advanced Query</u>
                 </span>
 
             </div>
@@ -309,6 +316,7 @@
                             </tr>
                         </table>
                     </div>
+
                 </tab>
 
 
@@ -385,9 +393,38 @@
 
                         </div>
                     </div>
+
                 </tab>
 
-                <tab heading="{{ networkController.tabs[3].heading }}" active="networkController.tabs[3].active">
+<!--
+                <tab ng-repeat="t in tabs">
+                    <tab-heading>{{t.title}} <a ng-click="removeTab($index)" href=''><i class="icon-remove"></i></a></tab-heading>
+                    <div ng-bind-html-unsafe='t.content'></div>
+                </tab>
+                -->
+
+                <tab heading="{{ networkController.tabs[3].heading }}"
+                     active="networkController.tabs[3].active"
+                     ng-show="!networkController.tabs[3].hidden">
+
+                    <!--
+                    <tab-heading>
+                        {{ networkController.tabs[3].heading }}
+                        <a ng-click="hideTab(networkController.tabs[3])" href=''>
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </tab-heading>
+                    -->
+
+                    <div class="pull-left"><a ng-click="backToSimpleQuery()">
+                        <br>
+                        <u><strong>Back to Simple Query</strong></u></a>
+                    </div>
+
+                    <!--
+                    <span ng-show="networkController.tabs[3].active && !networkController.tabs[3].hidden">
+                    </span>
+                    -->
                 </tab>
 
             </tabset>

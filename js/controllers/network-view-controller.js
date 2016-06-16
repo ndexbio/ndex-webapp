@@ -46,7 +46,7 @@ ndexApp.controller('networkViewController',
                     {"heading": "Network Info", 'active':true},
                     {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
                     {'heading': 'Provenance', 'active': false},
-                    {'heading': 'Table View', 'active': false}
+                    {'heading': 'Advanced Query', 'hidden': true, 'active': false}
                 ];
 
             networkController.prettyStyle = "no style yet";
@@ -82,6 +82,27 @@ ndexApp.controller('networkViewController',
                 "id": "1"
             }
 
+            $scope.hideTab = function (tab) {
+                networkController.tabs[0].active = true;
+
+                tab.active = false;
+                tab.hidden = true;
+            };
+
+            $scope.backToSimpleQuery = function() {
+                networkController.tabs[0].active = true;
+
+                networkController.tabs[3].active = false;
+                networkController.tabs[3].hidden = true;
+
+                var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
+                for(var i = 0; i < nodes.length; i++){
+                    nodes[i].disabled = false;
+                }
+
+                $scope.hideAdvancedSearchLink = false;
+            }
+
 
             // this function gets called when user navigates away from the current Graphic View page.
             // (can also use "$locationChangeStart" instead of "$destroy"
@@ -104,6 +125,27 @@ ndexApp.controller('networkViewController',
             })
             */
 
+
+            $scope.activateAdvancedQueryTab = function() {
+
+                networkController.queryMode = 'advanced';
+
+                for (var i = 0; i < 3; i++) {
+                    networkController.tabs[i].active = false;
+                }
+
+                networkController.tabs[3].active = true;
+                networkController.tabs[3].disabled = false;
+                networkController.tabs[3].hidden = false;
+
+                // disable all elements in the Simple Query
+                var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
+                for(var i = 0; i < nodes.length; i++){
+                    nodes[i].disabled = true;
+                }
+            }
+            
+            
             $scope.build_provenance_view = function() {
                 provenanceService.showProvenance(networkController);
             };
