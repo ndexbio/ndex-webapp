@@ -119,7 +119,7 @@ angular.module('ndexServiceApp')
         const CX_NUMBER_DATATYPES = ['byte','char', 'double', 'float', 'integer', 'long', 'short'];
 
 
-        factory.cyElementsFromNiceCX = function (niceCX, attributeNameMap) {
+        factory.cyElementsFromNiceCX = function (niceCX, attributeNameMap, nodeAttributeNameMap, edgeAttributeNameMap) {
 
             var elements = {};
 
@@ -136,7 +136,7 @@ angular.module('ndexServiceApp')
                 // for each node id
                 _.forEach(cxNodeAttributes, function (nodeAttributeMap) {
                     _.forEach(nodeAttributeMap, function (attributeObject, attributeName) {
-                        getCyAttributeName(attributeName, attributeNameMap);
+                        getCyAttributeName(attributeName, nodeAttributeNameMap);
                     });
                 });
             }
@@ -148,10 +148,12 @@ angular.module('ndexServiceApp')
             if (edgeAttributes) {
                 _.forEach(edgeAttributes, function (edgeAttributeMap) {
                     _.forEach(edgeAttributeMap, function (attributeObject, attributeName) {
-                        getCyAttributeName(attributeName, attributeNameMap);
+                        getCyAttributeName(attributeName, edgeAttributeNameMap);
                     });
                 });
             }
+
+            attributeNameMap = _.merge({}, nodeAttributeNameMap, edgeAttributeNameMap);
 
             sanitizeAttributeNameMap(attributeNameMap);
             console.log(attributeNameMap);

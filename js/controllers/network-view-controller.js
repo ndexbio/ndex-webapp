@@ -45,6 +45,9 @@ ndexApp.controller('networkViewController',
             networkController.advancedQueryNodeCriteria = 'source';
             networkController.advancedQueryEdgeProperties = [{}];
             networkController.advancedQueryNodeProperties = [{}];
+
+            networkController.edgePropertyNamesForAdvancedQuery = [];
+            networkController.nodePropertyNamesForAdvancedQuery = [];
             
             networkController.tabs = [
                     {"heading": "Network Info", 'active':true},
@@ -625,11 +628,34 @@ ndexApp.controller('networkViewController',
             };
 
 
+            var populateNodeAndEdgeAttributesForAdvancedQuery = function(nodeAttributeNameMap, edgeAttributeNameMap) {
+
+                var attributeNames = _.keys(nodeAttributeNameMap);
+                _.forEach(attributeNames, function(attributeName) {
+                    networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
+
+                });
+
+                attributeNames = _.keys(edgeAttributeNameMap);
+                _.forEach(attributeNames, function(attributeName) {
+                    networkController.edgePropertyNamesForAdvancedQuery.push(attributeName);
+                });
+            }
+
 
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
-                var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
+                // we need node attributes and edge attributes for dropdowns in the Advanced Query Tab
+                var nodeAttributeNameMap = {};
+                var edgeAttributeNameMap = {};
+
+                var cyElements = 
+                    cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap, nodeAttributeNameMap, edgeAttributeNameMap);
+
+                populateNodeAndEdgeAttributesForAdvancedQuery(nodeAttributeNameMap, edgeAttributeNameMap);
+
+
                 var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
 
                 var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
@@ -649,7 +675,7 @@ ndexApp.controller('networkViewController',
 
                 var cyLayout = {name: layoutName};
 
-                initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas' ,attributeNameMap);
+                initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
 
             };
             
@@ -874,7 +900,7 @@ ndexApp.controller('networkViewController',
             networkController.advancedEdgeQueryIsValid = function () {
                 return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery()) ? true : false;
             }
-            
+
             networkController.advancedNodeQueryIsValid = function () {
                 return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery()) ? true : false;
             }
