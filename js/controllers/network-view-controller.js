@@ -41,6 +41,10 @@ ndexApp.controller('networkViewController',
             $scope.$parent.showViewMenus = true;
 
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
+
+            networkController.advancedQueryNodeCriteria = 'source';
+            networkController.advancedQueryEdgeProperties = [{}];
+            networkController.advancedQueryNodeProperties = [{}];
             
             networkController.tabs = [
                     {"heading": "Network Info", 'active':true},
@@ -52,6 +56,11 @@ ndexApp.controller('networkViewController',
             networkController.prettyStyle = "no style yet";
             networkController.prettyVisualProperties = "nothing yet";
             networkController.bgColor = '#8fbdd7';
+
+
+            var INCOMPLETE_QUERY_CODE = -1;
+            var EMPTY_QUERY_CODE = 0;
+            var VALID_QUERY_CODE = 1;
 
 
             networkController.searchDepths = [
@@ -835,6 +844,132 @@ ndexApp.controller('networkViewController',
                 ndexService.setReadOnly(networkController.currentNetworkId, networkController.readOnlyChecked);
             };
 
+
+            networkController.addQueryEdgeProperty = function () {
+                networkController.advancedQueryEdgeProperties.push({});
+                networkController.validateAdvancedQuery();
+            };
+
+            networkController.removeQueryEdgeProperty = function (index) {
+                networkController.advancedQueryEdgeProperties.splice(index, 1);
+                networkController.validateAdvancedQuery();
+            };
+
+            networkController.addQueryNodeProperty = function () {
+                networkController.advancedQueryNodeProperties.push({});
+                networkController.validateAdvancedQuery();
+            };
+
+            networkController.removeQueryNodeProperty = function (index) {
+                networkController.advancedQueryNodeProperties.splice(index, 1);
+                networkController.validateAdvancedQuery();
+            };
+
+            /*
+             * var INCOMPLETE_QUERY_CODE = -1;
+             * var EMPTY_QUERY_CODE = 0;
+             * var VALID_QUERY_CODE = 1;
+             */
+
+            networkController.advancedEdgeQueryIsValid = function () {
+                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery()) ? true : false;
+            }
+            
+            networkController.advancedNodeQueryIsValid = function () {
+                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery()) ? true : false;
+            }
+
+            networkController.isStringEmpty = function(s) {
+                if (typeof(s) === 'undefined' || s == null) {
+                    return true;
+                }
+                return ((s.trim()).length > 0) ? false : true;
+            }
+
+            networkController.validateAdvancedQuery = function () {
+                var advancedEdgeQueryState = networkController.validateAdvancedEdgeQuery();
+                var advancedNodeQueryState = networkController.validateAdvancedNodeQuery();
+
+                if ((INCOMPLETE_QUERY_CODE == advancedEdgeQueryState) ||
+                    (INCOMPLETE_QUERY_CODE == advancedNodeQueryState)) {
+                    networkController.advancedQueryIsValid = false;
+                    return;
+                }
+                if ((EMPTY_QUERY_CODE == advancedEdgeQueryState) &&
+                    (EMPTY_QUERY_CODE == advancedNodeQueryState)) {
+                    networkController.advancedQueryIsValid = false;
+                    return;
+                }
+
+                if (((VALID_QUERY_CODE == advancedEdgeQueryState) &&
+                    (EMPTY_QUERY_CODE == advancedNodeQueryState) &&
+                    (networkController.advancedQueryNodeProperties.length == 1)) ||
+                    ((EMPTY_QUERY_CODE == advancedEdgeQueryState) &&
+                    (VALID_QUERY_CODE == advancedNodeQueryState) &&
+                    (networkController.advancedQueryEdgeProperties.length == 1))) {
+                    networkController.advancedQueryIsValid = true;
+                    return;
+                }
+
+                if ((VALID_QUERY_CODE == advancedEdgeQueryState) &&
+                    (VALID_QUERY_CODE == advancedNodeQueryState)) {
+                    networkController.advancedQueryIsValid = true;
+                    return;
+                }
+
+                networkController.advancedQueryIsValid = false;
+                return;
+            }
+
+            networkController.validateAdvancedEdgeQuery = function () {
+                var i;
+
+                for (i = 0; i < networkController.advancedQueryEdgeProperties.length; i++) {
+                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
+
+                    if (networkController.isStringEmpty(edgeProperty.name) &&
+                        networkController.isStringEmpty(edgeProperty.value)) {
+                        return EMPTY_QUERY_CODE;
+                    }
+
+                    if ( (networkController.isStringEmpty(edgeProperty.name) &&
+                        !networkController.isStringEmpty(edgeProperty.value) ) ||
+                        (!networkController.isStringEmpty(edgeProperty.name) &&
+                        networkController.isStringEmpty(edgeProperty.value)) ) {
+                        return INCOMPLETE_QUERY_CODE;
+                    }
+                }
+
+                return VALID_QUERY_CODE;
+            }
+
+            networkController.validateAdvancedNodeQuery = function () {
+                var i;
+
+                for (i = 0; i < networkController.advancedQueryNodeProperties.length; i++) {
+                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
+
+                    if (networkController.isStringEmpty(nodeProperty.name) &&
+                        networkController.isStringEmpty(nodeProperty.value)) {
+                        return EMPTY_QUERY_CODE;
+                    }
+
+                    if ( (networkController.isStringEmpty(nodeProperty.name) &&
+                        !networkController.isStringEmpty(nodeProperty.value) ) ||
+                        (!networkController.isStringEmpty(nodeProperty.name) &&
+                        networkController.isStringEmpty(nodeProperty.value)) ) {
+                        return INCOMPLETE_QUERY_CODE;
+                    }
+                }
+
+                return VALID_QUERY_CODE;
+            }
+
+            networkController.resetForm = function () {
+                networkController.advancedQueryEdgeProperties = [{}];
+                networkController.advancedQueryNodeProperties = [{}];
+                networkController.validateAdvancedQuery();
+            };
 
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
