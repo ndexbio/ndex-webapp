@@ -760,9 +760,6 @@ ndexApp.controller('networkViewController',
                                 {
                                     networkController.queryErrors.push(error.data.message);
                                 }
-
-                                // close the modal.
-                                modalInstance.close();
                             }
                         }
                     );  

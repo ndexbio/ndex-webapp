@@ -11,6 +11,16 @@
 
             <div class="rowWithOneLineTopPad"></div>
 
+            <div ng-show="networkController.queryErrors.length > 0">
+                <p class="alert alert-danger" ng-repeat='error in networkController.queryErrors'>
+                    {{error}}
+                    <span class="glyphicon glyphicon-remove pull-right"
+                          style='cursor:pointer'
+                          ng-click='networkController.queryErrors.splice($index,1)'>
+                    </span>
+                </p>
+            </div>
+
             <button type="button"
                     class="btn btn-primary"
                     ng-click="networkController.backToOriginalNetwork()"
