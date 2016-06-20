@@ -72,7 +72,8 @@
         <div id="divNetworkTabs" class="networkPropertiesTabset">
             <tabset>
 
-                <tab heading="{{ networkController.tabs[0].heading }}" disabled="networkController.tabs[0].disabled"  active="networkController.tabs[0].active">
+                <tab active="networkController.tabs[0].active">
+                    <tab-heading>{{ networkController.tabs[0].heading }}</tab-heading>
 
                     <div class="rowWithOneLineTopPad"></div>
                     <div class="rowWithOneLineTopPad"></div>
@@ -200,7 +201,8 @@
                 </tab>
 
                 <!-- node/edge tab -->
-                <tab heading="{{ networkController.tabs[1].heading }}" disabled="networkController.tabs[1].disabled" active="networkController.tabs[1].active">
+                <tab disabled="networkController.tabs[1].disabled" active="networkController.tabs[1].active">
+                    <tab-heading>{{ networkController.tabs[1].heading }}</tab-heading>
 
                     <div>
 
@@ -320,7 +322,12 @@
                 </tab>
 
 
-                <tab heading="{{ networkController.tabs[2].heading }}" active="networkController.tabs[2].active" ng-click="build_provenance_view()" ng-show="!networkController.successfullyQueried">
+                <tab active="networkController.tabs[2].active" ng-click="build_provenance_view()" ng-show="!networkController.successfullyQueried">
+
+                    <tab-heading>
+                        {{ networkController.tabs[2].heading }}
+                    </tab-heading>
+
                     <div class="row" style="font-size: 1.1em; margin-left: 0px; margin-right: 0px;">
                         <div class="col-xs-6">
                             <div id="provenanceNetwork"/>
@@ -396,159 +403,146 @@
 
                 </tab>
 
-<!--
-                <tab ng-repeat="t in tabs">
-                    <tab-heading>{{t.title}} <a ng-click="removeTab($index)" href=''><i class="icon-remove"></i></a></tab-heading>
-                    <div ng-bind-html-unsafe='t.content'></div>
-                </tab>
-                -->
 
-                <tab heading="{{ networkController.tabs[3].heading }}"
-                     active="networkController.tabs[3].active"
-                     ng-show="!networkController.tabs[3].hidden">
+                <tab active="networkController.tabs[3].active" ng-show="!networkController.tabs[3].hidden">
 
-                    <!--
                     <tab-heading>
                         {{ networkController.tabs[3].heading }}
-                        <a ng-click="hideTab(networkController.tabs[3])" href=''>
+
+                        <a ng-click="backToSimpleQuery($event); networkController.resetForm();">
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </tab-heading>
-                    -->
 
-<!--
-                    <div class="pull-left"><a ng-click="backToSimpleQuery()">
-                        <br>
-                        <u><strong>Back to Simple Query</strong></u></a>
-                    </div>
--->
+                    <div>
 
-                <form novalidate ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)"
-                  style="padding-left:15px">
+                        <form novalidate ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)"
+                          style="padding-left:15px">
 
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <span class="row"><a ng-click="backToSimpleQuery(); networkController.resetForm();">
-                                <u><strong>Back to Simple Query</strong></u></a>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <span class="row"><a ng-click="backToSimpleQuery($event); networkController.resetForm();">
+                                        <u><strong>Back to Simple Query</strong></u></a>
+                                    </span>
+                                </div>
+                            </div>
+
+                            Find a subnetwork with edges that,<br>
+                            (1) have one or more of these properties:<br>
+
+                            <div class="row">
+                                <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
+                                    <div class="col-sm-5" style="padding-right: 5px">
+                                        <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
+                                            <option value="">[Select Edge Property Name]</option>
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option value="ndex:predicate">predicate</option>
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option ng-repeat="edgeProperty in networkController.edgePropertyNamesForAdvancedQuery"
+                                                    value="{{edgeProperty}}">{{edgeProperty}}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-sm-5" style="padding-left: 5px; padding-right: 5px">
+                                        <input class="form-control input-sm"
+                                               ng-model="property.value"
+                                               ng-change="networkController.validateAdvancedQuery()"
+                                               placeholder="Value">
+                                    </div>
+
+                                    <div class="col-sm-1" style="padding-left: 5px">
+                                        <button type="button" ng-click="networkController.removeQueryEdgeProperty($index)"
+                                                ng-hide="networkController.advancedQueryEdgeProperties.length == 1"
+                                                class="btn btn-default btn-sm vcenter"
+                                                tabindex="-1">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button"
+                                    ng-click="networkController.addQueryEdgeProperty()"
+                                    class="btn btn-default btn-sm"
+                                    ng-show="networkController.advancedEdgeQueryIsValid()"
+                                    tabindex="-1">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                            <br />
+
+                            (2) and which have
+                            <span class="dropdown">
+                                <a href class="dropdown-toggle" data-toggle="dropdown">
+                                    {{networkController.advancedQueryNodeCriteria}} <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='source'">source</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='target'">target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='both source and target'">both source and target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='either source or target'">either source or target</a></li>
+                                </ul>
                             </span>
-                        </div>
-                    </div>
+                             nodes<br>
+                            (3) with one or more of these properties.
+                            <div ng-repeat="property in networkController.advancedQueryNodeProperties">
+                                <div class="row">
+                                    <div class="col-sm-5" style="padding-right: 5px">
+                                        <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
+                                            <option value="">[Select Node Property Name]</option>
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option value="ndex:nodeName">nodeName</option>
+                                            <option value="ndex:nameOrTermName">nameOrTermName</option>
+                                            <option value="ndex:functionTermType">functionTermType</option>
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option ng-repeat="nodeProperty in networkController.nodePropertyNamesForAdvancedQuery"
+                                                    value="{{nodeProperty}}">{{nodeProperty}}
+                                            </option>
+                                        </select>
+                                    </div>
 
-                    Find a subnetwork with edges that,<br>
-                    (1) have one or more of these properties:<br>
+                                    <div class="col-sm-5" style="padding-left: 5px; padding-right: 5px">
+                                        <input class="form-control input-sm"
+                                               ng-model="property.value"
+                                               ng-change="networkController.validateAdvancedQuery()"
+                                               placeholder="Value">
+                                    </div>
 
-                    <div class="row">
-                        <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
-                            <div class="col-sm-5" style="padding-right: 5px">
-                                <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
-                                    <option value="">[Select Edge Property Name]</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option value="ndex:predicate">predicate</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option ng-repeat="edgeProperty in networkController.edgePropertyNamesForAdvancedQuery"
-                                            value="{{edgeProperty}}">{{edgeProperty}}
-                                    </option>
-                                </select>
+                                    <div class="col-sm-1" style="padding-left: 5px">
+                                        <button type="button"
+                                                ng-click="networkController.removeQueryNodeProperty($index)"
+                                                ng-hide="networkController.advancedQueryNodeProperties.length == 1"
+                                                class="btn btn-default btn-sm"
+                                                tabindex="-1">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="col-sm-5" style="padding-left: 5px; padding-right: 5px">
-                                <input class="form-control input-sm"
-                                       ng-model="property.value"
-                                       ng-change="networkController.validateAdvancedQuery()"
-                                       placeholder="Value">
-                            </div>
+                            <button type="button"
+                                    ng-click="networkController.addQueryNodeProperty()"
+                                    class="btn btn-default btn-sm"
+                                    ng-show="networkController.advancedNodeQueryIsValid()"
+                                    tabindex="-1">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
 
-                            <div class="col-sm-1" style="padding-left: 5px">
-                                <button type="button" ng-click="networkController.removeQueryEdgeProperty($index)"
-                                        ng-hide="networkController.advancedQueryEdgeProperties.length == 1"
-                                        class="btn btn-default btn-sm vcenter"
-                                        tabindex="-1">
-                                    <span class="glyphicon glyphicon-minus"></span>
+                            <div class="container; rowWithTwoLinesTopPad">
+
+                                <button ng-disabled="!networkController.advancedQueryIsValid"
+                                        type="submit"
+                                        class="btn btn-primary btn-default">Run Query
                                 </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <button type="button"
-                            ng-click="networkController.addQueryEdgeProperty()"
-                            class="btn btn-default btn-sm"
-                            ng-show="networkController.advancedEdgeQueryIsValid()"
-                            tabindex="-1">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                    <br />
-
-                    (2) and which have
-                    <span class="dropdown">
-                        <a href class="dropdown-toggle" data-toggle="dropdown">
-                            {{networkController.advancedQueryNodeCriteria}} <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='source'">source</a></li>
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='target'">target</a></li>
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='both source and target'">both source and target</a></li>
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='either source or target'">either source or target</a></li>
-                        </ul>
-                    </span>
-                     nodes<br>
-                    (3) with one or more of these properties.
-                    <div ng-repeat="property in networkController.advancedQueryNodeProperties">
-                        <div class="row">
-                            <div class="col-sm-5" style="padding-right: 5px">
-                                <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
-                                    <option value="">[Select Node Property Name]</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option value="ndex:nodeName">nodeName</option>
-                                    <option value="ndex:nameOrTermName">nameOrTermName</option>
-                                    <option value="ndex:functionTermType">functionTermType</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option ng-repeat="nodeProperty in networkController.nodePropertyNamesForAdvancedQuery"
-                                            value="{{nodeProperty}}">{{nodeProperty}}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="col-sm-5" style="padding-left: 5px; padding-right: 5px">
-                                <input class="form-control input-sm"
-                                       ng-model="property.value"
-                                       ng-change="networkController.validateAdvancedQuery()"
-                                       placeholder="Value">
-                            </div>
-
-                            <div class="col-sm-1" style="padding-left: 5px">
                                 <button type="button"
-                                        ng-click="networkController.removeQueryNodeProperty($index)"
-                                        ng-hide="networkController.advancedQueryNodeProperties.length == 1"
-                                        class="btn btn-default btn-sm"
-                                        tabindex="-1">
-                                    <span class="glyphicon glyphicon-minus"></span>
+                                        class="btn btn-primary btn-default"
+                                        ng-click="networkController.resetForm()">Reset Query
                                 </button>
                             </div>
-                        </div>
+
+                        </form>
                     </div>
-
-                    <button type="button"
-                            ng-click="networkController.addQueryNodeProperty()"
-                            class="btn btn-default btn-sm"
-                            ng-show="networkController.advancedNodeQueryIsValid()"
-                            tabindex="-1">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-
-                    <div class="container; rowWithTwoLinesTopPad">
-
-                        <button ng-disabled="!networkController.advancedQueryIsValid"
-                                type="submit"
-                                class="btn btn-primary btn-default">Run Query
-                        </button>
-
-                        <button type="button"
-                                class="btn btn-primary btn-default"
-                                ng-click="networkController.resetForm()">Reset Query
-                        </button>
-                    </div>
-
-                </form>
 
 
                 </tab>

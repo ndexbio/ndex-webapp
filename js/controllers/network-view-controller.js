@@ -94,15 +94,11 @@ ndexApp.controller('networkViewController',
                 "id": "1"
             }
 
-            $scope.hideTab = function (tab) {
-                networkController.tabs[0].active = true;
+            $scope.backToSimpleQuery = function(event) {
 
-                tab.active = false;
-                tab.hidden = true;
-            };
+                // this is needed to Close the Advacned Query tab in case the Close tab sign (x) was clicked
+                event.stopPropagation();
 
-            $scope.backToSimpleQuery = function() {
-                networkController.tabs[0].active = true;
 
                 networkController.tabs[3].active = false;
                 networkController.tabs[3].hidden = true;
@@ -113,8 +109,9 @@ ndexApp.controller('networkViewController',
                 }
 
                 $scope.hideAdvancedSearchLink = false;
-            }
 
+                networkController.tabs[0].active = true;
+            }
 
             // this function gets called when user navigates away from the current Graphic View page.
             // (can also use "$locationChangeStart" instead of "$destroy"
@@ -488,10 +485,13 @@ ndexApp.controller('networkViewController',
                                     networkController.tabs[0].active = true;
                                     networkController.tabs[1].disabled = true;
                                     networkController.tabs[1].active = false;
+                                    networkController.tabs[2].active = false;
                                 } else if (!networkController.tabs[1].active ) {
                                     networkController.tabs[1].active = true;
                                     networkController.tabs[1].disabled = false;
+                                    networkController.tabs[2].active = false;
                                 }
+
                                 if (cxNodes.length == 1) {
                                     cxNodes[0].$$expanded = true;
                                 }
