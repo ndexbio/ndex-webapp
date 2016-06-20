@@ -315,6 +315,49 @@ angular.module('ndexServiceApp')
 
               }
 
+
+              if (node.citationIds && node.citationIds.length > 0) {
+
+                  var aspect = niceCX['nodeCitations'];
+                  if ( !aspect) {
+                      aspect = {};
+                      niceCX['nodeCitations'] = aspect;
+                  }
+
+                  var oldList = aspect[nodeId];
+
+                  if ( !oldList) {
+                      oldList = [];
+                      aspect[nodeId] = oldList;
+                  }
+
+                  for (var i = 0; i < node.citationIds.length; i++) {
+                      oldList.push(node.citationIds[i]);
+                  }
+
+              }
+
+              if (node.supportIds && node.supportIds.length > 0) {
+
+                  var aspect = niceCX['nodeSupports'];
+                  if ( !aspect) {
+                      aspect = {};
+                      niceCX['nodeSupports'] = aspect;
+                  }
+
+                  var oldList = aspect[nodeId];
+
+                  if ( !oldList) {
+                      oldList = [];
+                      aspect[nodeId] = oldList;
+                  }
+
+                  for (var i = 0; i < node.supportIds.length; i++) {
+                      oldList.push(node.supportIds[i]);
+                  }
+
+              }
+
           });
 
           $.each(network.edges, function (edgeId, edge) {
@@ -355,6 +398,7 @@ angular.module('ndexServiceApp')
 
                   if ( !oldList) {
                       oldList = [];
+                      aspect[edgeId] = oldList;
                   }
 
                   for (var i = 0; i < edge.citationIds.length; i++) {
@@ -375,6 +419,7 @@ angular.module('ndexServiceApp')
 
                   if ( !oldList) {
                       oldList = [];
+                      aspect[edgeId] = oldList;
                   }
 
                   for (var i = 0; i < edge.supportIds.length; i++) {
