@@ -666,7 +666,6 @@ ndexApp.controller('networkViewController',
                 if (cxNetwork.edgeAttributes) {
 
                     var allEdgesAttributeObjectsIDs = _.keys(cxNetwork.edgeAttributes);
-                    console.log('cxNetwork.edgeAttributes');
 
                     _.forEach(allEdgesAttributeObjectsIDs, function(edgeAttributeId) {
 
