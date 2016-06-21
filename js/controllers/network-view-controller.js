@@ -56,8 +56,8 @@ ndexApp.controller('networkViewController',
                     {'heading': 'Advanced Query', 'hidden': true, 'active': false}
                 ];
 
-            networkController.prettyStyle = "no style yet";
-            networkController.prettyVisualProperties = "nothing yet";
+            //networkController.prettyStyle = "no style yet";
+            //networkController.prettyVisualProperties = "nothing yet";
             networkController.bgColor = '#8fbdd7';
 
 
@@ -323,6 +323,7 @@ ndexApp.controller('networkViewController',
                             attributeValue = '<a target="_blank" href="' + attributeValue + '">' + attributeValue + '</a>';
                         }
                     }
+
                 } else {
 
                     if (typeof attribute === 'string') {
@@ -355,6 +356,7 @@ ndexApp.controller('networkViewController',
                             }
 
                         }
+
                     } else {
 
                         attributeValue = attribute;
@@ -421,7 +423,7 @@ ndexApp.controller('networkViewController',
             }
 
 
-        $scope.getEdgeLabel = function(edge) {
+            $scope.getEdgeLabel = function(edge) {
 
                 if (!edge) {
                     return "unknown";
@@ -652,17 +654,52 @@ ndexApp.controller('networkViewController',
             };
 
 
-            var populateNodeAndEdgeAttributesForAdvancedQuery = function(nodeAttributeNameMap, edgeAttributeNameMap) {
+            var populateNodeAndEdgeAttributesForAdvancedQuery = function(cxNetwork) {
+                if (!cxNetwork) {
+                    return;
+                }
 
-                var attributeNames = _.keys(nodeAttributeNameMap);
+                var edgeAttributesMap = {};
+                var nodeAttributesMap = {};
+
+
+                if (cxNetwork.edgeAttributes) {
+
+                    var allEdgesAttributeObjectsIDs = _.keys(cxNetwork.edgeAttributes);
+                    console.log('cxNetwork.edgeAttributes');
+
+                    _.forEach(allEdgesAttributeObjectsIDs, function(edgeAttributeId) {
+
+                        var edgeAttributeObjects = _.keys(cxNetwork.edgeAttributes[edgeAttributeId]);
+
+                        _.forEach(edgeAttributeObjects, function(edgeAttribute) {
+                            edgeAttributesMap[edgeAttribute] = edgeAttribute;
+                        });
+                    });
+                }
+
+                if (cxNetwork.nodeAttributes) {
+
+                    var allNodesAttributeObjectsIDs = _.keys(cxNetwork.nodeAttributes);
+
+                    _.forEach(allNodesAttributeObjectsIDs, function(nodeAttributeId) {
+
+                        var nodeAttributeObjects = _.keys(cxNetwork.nodeAttributes[nodeAttributeId]);
+
+                        _.forEach(nodeAttributeObjects, function(nodeAttribute) {
+                            nodeAttributesMap[nodeAttribute] = nodeAttribute;
+                        });
+                    });
+                }
+
+                var attributeNames = _.keys(edgeAttributesMap);
                 _.forEach(attributeNames, function(attributeName) {
-                    networkController.nodePropertyNames.push(attributeName);
+                    networkController.edgePropertyNamesForAdvancedQuery.push(attributeName);
+                 });
 
-                });
-
-                attributeNames = _.keys(edgeAttributeNameMap);
+                var attributeNames = _.keys(nodeAttributesMap);
                 _.forEach(attributeNames, function(attributeName) {
-                    networkController.edgePropertyNames.push(attributeName);
+                    networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
                 });
             }
 
@@ -670,25 +707,21 @@ ndexApp.controller('networkViewController',
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
-                // we need node attributes and edge attributes for dropdowns in the Advanced Query Tab
-                var nodeAttributeNameMap = {};
-                var edgeAttributeNameMap = {};
-
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
 
-                populateNodeAndEdgeAttributesForAdvancedQuery(nodeAttributeNameMap, edgeAttributeNameMap);
-
+                populateNodeAndEdgeAttributesForAdvancedQuery(cxNetwork);
 
                 var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
 
                 var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
                 if ( cxBGColor)
                     networkController.bgColor = cxBGColor;
+
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
-                networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
+                //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
 
                 // networkController.prettyVisualProperties added for debugging -- remove/comment out when done
-                networkController.prettyVisualProperties = JSON.stringify(cxNetwork.visualProperties, null, 2);
+                //networkController.prettyVisualProperties = JSON.stringify(cxNetwork.visualProperties, null, 2);
                 
                 var layoutName = 'cose';
 
