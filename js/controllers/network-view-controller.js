@@ -776,6 +776,110 @@ ndexApp.controller('networkViewController',
 
             };
 
+
+            networkController.runAdvancedQuery = function(networkQueryLimit)
+            {
+                var mode = 'Source';
+                if( networkController.advancedQueryNodeCriteria == 'target' )
+                {
+                    mode = 'Target'
+                }
+                else if( networkController.advancedQueryNodeCriteria.indexOf('both') != -1 )
+                {
+                    mode = 'Both'
+                }
+                else if( networkController.advancedQueryNodeCriteria.indexOf('either') != -1 )
+                {
+                    mode = 'Either'
+                }
+
+                var validEdgeProperties = null;
+                var i;
+                for( i = 0; i < networkController.advancedQueryEdgeProperties.length; i++ )
+                {
+                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
+                    if( edgeProperty.name && edgeProperty.value )
+                    {
+                        if( !validEdgeProperties )
+                            validEdgeProperties = [];
+                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
+                    }
+                }
+
+                var validNodeProperties = null;
+                for( i = 0; i < networkController.advancedQueryNodeProperties.length; i++ )
+                {
+                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
+                    if( nodeProperty.name && nodeProperty.value )
+                    {
+                        if( !validNodeProperties )
+                            validNodeProperties = [];
+                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
+                    }
+                }
+
+                var postData =
+                {
+                    nodePropertyFilter:
+                    {
+                        propertySpecifications: validNodeProperties,
+                        mode: mode
+                    },
+                    edgeLimit: networkQueryLimit,
+                    queryName: "Not used yet."
+                };
+
+                if( validEdgeProperties )
+                {
+                    postData.edgeFilter =
+                    {
+                        propertySpecifications: validEdgeProperties
+                    };
+                }
+
+                if( validNodeProperties )
+                {
+                    postData.nodeFilter =
+                    {
+                        propertySpecifications: validNodeProperties,
+                        mode: mode
+                    };
+                }
+
+                networkService.advancedQueryFromOldAPI(networkController.currentNetworkId, postData)
+                    .success(
+                        function (network) {
+                            networkController.successfullyQueried = true;
+                            networkController.currentNetwork =
+                            {name: "Advanced query result on network - " + currentNetworkSummary.name,
+                                "nodeCount": Object.keys(network.nodes).length,
+                                "edgeCount": Object.keys(network.edges).length,
+
+                                "edgeFilter": postData.edgeFilter
+                            };
+                            drawCXNetworkOnCanvas(network,true);
+                            if (!networkController.tabs[0].active )
+                                networkController.tabs[0].active = true;
+                            networkController.selectionContainer = {};
+                        }
+                    )
+                    .error(
+                        function (error) {
+                            if (error.status != 0) {
+                                if( error.data.message == "Error in advanced query: Result set is too large for this query.")
+                                {
+                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + networkQueryLimit);
+                                }
+                                else
+                                {
+                                    networkController.queryErrors.push(error.data.message);
+                                }
+                            }
+                        }
+                    );
+            };
+
+
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
 
