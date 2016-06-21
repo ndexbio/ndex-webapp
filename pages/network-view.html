@@ -100,9 +100,11 @@
                         &nbsp;&nbsp;
 
                         <div ng-show = "networkController.successfullyQueried">
-                            <span class="networkPropertyName">Query String: </span>{{networkController.currentNetwork.queryString}}
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
                             <br>
-                            <span class="networkPropertyName">Search depth: </span>{{networkController.currentNetwork.queryDepth}}
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryDepth">Search depth: </span>{{networkController.currentNetwork.queryDepth}}
+                            <br>
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter: </span>{{networkController.currentNetwork.edgeFilter}}
                             <br>
 
                         </div>
