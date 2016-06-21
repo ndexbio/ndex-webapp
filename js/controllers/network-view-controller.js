@@ -289,7 +289,7 @@ ndexApp.controller('networkViewController',
                 var attributeValue ="";
 
                 if (attribute instanceof Object) {
-                    if (attribute['v'] && Array.isArray(attribute['v']) && attribute['v'].length > 1) {
+                    if (attribute['v'] && Array.isArray(attribute['v']) && attribute['v'].length > 0) {
 
                         if(attribute['v'].length > 5) {
 
@@ -315,6 +315,13 @@ ndexApp.controller('networkViewController',
                         
                     } else {
                         attributeValue = (attribute['v']) ? attribute['v'] : '';
+
+                        var typeOfAttributevalue = typeof(attributeValue);
+
+                        if (attributeValue && (typeOfAttributevalue === 'string') &&
+                            (attributeValue.toLowerCase().startsWith('http://') || attributeValue.toLowerCase().startsWith('https://'))) {
+                            attributeValue = '<a target="_blank" href="' + attributeValue + '">' + attributeValue + '</a>';
+                        }
                     }
                 } else {
 
@@ -329,7 +336,24 @@ ndexApp.controller('networkViewController',
 
                         } else {
 
-                            attributeValue = attribute;
+                            if (attribute && attribute.toLowerCase().startsWith('ncbi gene:')) {
+
+                                var splitString = attribute.split(":");
+
+                                var t = typeof(splitString[1]);
+
+                                if ((splitString.length == 2) && !isNaN(splitString[1])) {
+                                    var geneId = splitString[1];
+
+                                    attributeValue =
+                                        '<a target="_blank" href="http://identifiers.org/ncbigene/' + geneId + '">'
+                                          + attribute + '</a>';
+                                }
+
+                            } else {
+                                attributeValue = attribute;
+                            }
+
                         }
                     } else {
 
@@ -632,13 +656,13 @@ ndexApp.controller('networkViewController',
 
                 var attributeNames = _.keys(nodeAttributeNameMap);
                 _.forEach(attributeNames, function(attributeName) {
-                    networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
+                    networkController.nodePropertyNames.push(attributeName);
 
                 });
 
                 attributeNames = _.keys(edgeAttributeNameMap);
                 _.forEach(attributeNames, function(attributeName) {
-                    networkController.edgePropertyNamesForAdvancedQuery.push(attributeName);
+                    networkController.edgePropertyNames.push(attributeName);
                 });
             }
 
@@ -650,8 +674,7 @@ ndexApp.controller('networkViewController',
                 var nodeAttributeNameMap = {};
                 var edgeAttributeNameMap = {};
 
-                var cyElements = 
-                    cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap, nodeAttributeNameMap, edgeAttributeNameMap);
+                var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
 
                 populateNodeAndEdgeAttributesForAdvancedQuery(nodeAttributeNameMap, edgeAttributeNameMap);
 
