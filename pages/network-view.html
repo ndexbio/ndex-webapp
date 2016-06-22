@@ -103,9 +103,27 @@
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
                             <br>
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryDepth">Search depth: </span>{{networkController.currentNetwork.queryDepth}}
-                            <br>
-                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter: </span>{{networkController.currentNetwork.edgeFilter}}
-                            <br>
+
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter:
+                                <br>
+                                <span ng-repeat='edgeFilter in networkController.currentNetwork.edgeFilter.propertySpecifications'>
+                                    &nbsp;&nbsp;&nbsp;{{edgeFilter.name}} : <span style="font-weight: normal">{{edgeFilter.value}}</span>
+                                     <br>
+                                </span>
+                            </span>
+
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.nodeFilter">
+                                <br>
+                                Mode : <span style="font-weight: normal">{{networkController.currentNetwork.nodeFilter.mode}}</span>
+                                <br><br>
+                                Node filter:
+                                <br>
+
+                                <span ng-repeat='nodeFilter in networkController.currentNetwork.nodeFilter.propertySpecifications'>
+                                    &nbsp;&nbsp;&nbsp;{{nodeFilter.name}} : <span style="font-weight: normal">{{nodeFilter.value}}</span>
+                                     <br>
+                                </span>
+                            </span>
 
                         </div>
 

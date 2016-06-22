@@ -948,7 +948,8 @@ ndexApp.controller('networkViewController',
                                 "nodeCount": Object.keys(network.nodes).length,
                                 "edgeCount": Object.keys(network.edges).length,
 
-                                "edgeFilter": postData.edgeFilter
+                                "edgeFilter": postData.edgeFilter,
+                                "nodeFilter": postData.nodeFilter
                             };
                             drawCXNetworkOnCanvas(network,true);
                             if (!networkController.tabs[0].active )
