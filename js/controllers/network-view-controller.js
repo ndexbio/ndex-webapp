@@ -853,6 +853,9 @@ ndexApp.controller('networkViewController',
             };
 
             networkController.backToOriginalNetwork = function () {
+
+                var raw = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
+
                 networkService.resetNetwork();
                 networkController.currentNetwork = currentNetworkSummary;
                 drawCXNetworkOnCanvas(networkService.getNiceCX(),false);
@@ -866,6 +869,7 @@ ndexApp.controller('networkViewController',
 
                 enableSimpleQueryElements();
                 $scope.hideAdvancedSearchLink = false;
+
 
             };
 

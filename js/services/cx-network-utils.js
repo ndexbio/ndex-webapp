@@ -62,6 +62,34 @@ angular.module('ndexServiceApp')
           
           return niceCX;
       };
+
+
+      var computePreMetadata = function ( niceCX) {
+          var preMetaData=[];
+          var d = new Date();
+          var currentTime = d.getTime();
+
+          _.forEach( niceCX, function (aspectValues, aspectName) {
+              var metadataElement = {
+                  "consistencyGroup" : 1,
+                  "elementCount" : aspectValues.length,
+                  "lastUpdate" : currentTime,
+                  "name" : aspectName,
+                  "properties" : [ ],
+                  "version" : "1.0"
+              };
+
+              if ( aspectName === 'nodes' ||
+                   aspectName === 'edges' ||
+                   aspectName === 'citations' ||
+                   aspectName === 'supports') {
+                   metadataElement["idCounter"] = Number(aspectValues.keys().reduce (function (a,b) {
+                      return Number(a) > Number(b) ? a: b;
+                    }));
+              }
+
+          });
+      };
       
       self.niceCXToRawCX = function(niceCX) {
         
@@ -69,10 +97,17 @@ angular.module('ndexServiceApp')
 
           if (niceCX.numberVerification) {
               rawCX.push(niceCX.numberVerification);
+          } else {
+              rawCX.push ({
+                  "numberVerification" : [ {
+                      "longNumber" : 281474976710655
+                  }]});
           }
 
           if (niceCX.preMetaData) {
               rawCX.push(niceCX.preMetaData);
+          } else {
+              rawCX.push(computePreMetadata(niceCX));
           }
 
           for (var aspectName in niceCX) {
@@ -233,26 +268,29 @@ angular.module('ndexServiceApp')
        *-----------------------------------------------------------------------*/
       self.convertNetworkInJSONToNiceCX = function (network) {
 
-          var niceCX = {'edges': {}, 'nodes': {}};
+          var niceCX = { 'edges': {},
+                         'nodes': {}};
+
 
           $.each(network.citations, function (citationId, citation) {
-              /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
+                  /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
 
-              var citationElement = {
-                  "@id"            : citation.id ,
-                  "dc:identifier"  : (citation.identifier)  ? citation.identifier : null,
-                  "dc:title"       : citation.title,
-                  "dc:type"        : (citation.idType)      ? citation.idType : null,
-                  "dc:description" : (citation.description) ? citation.description : null,
-                  "dc:contributor" : citation.constructor
-              };
+                  var citationElement = {
+                      "@id": citation.id,
+                      "dc:identifier": (citation.identifier) ? citation.identifier : null,
+                      "dc:title": citation.title,
+                      "dc:type": (citation.idType) ? citation.idType : null,
+                      "dc:description": (citation.description) ? citation.description : null,
+                      "dc:contributor": citation.constructor
+                  };
 
-              // ALSO:  do we want to add citationElement as a lookup with citationID as the key --
-              // if yest, then use addElementToNiceCXForLookup() below instead of addElementToNiceCX()
-              //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citationElement);
+                  // ALSO:  do we want to add citationElement as a lookup with citationID as the key --
+                  // if yest, then use addElementToNiceCXForLookup() below instead of addElementToNiceCX()
+                  //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citationElement);
 
-              addElementToNiceCX(niceCX, 'citations', citationElement);
+                  addElementToNiceCX(niceCX, 'citations', citationElement);
           });
+
 
 
           $.each(network.supports, function (supportId, support) {
