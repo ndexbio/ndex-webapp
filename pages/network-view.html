@@ -583,6 +583,15 @@
 
         <div class="rowWithOneLineTopPad"></div>
 
+        <div class="networkActionsSection pull-left"
+             ng-show="networkController.successfullyQueried && ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
+
+            <a class="btn btn-primary customButtonWidth" ng-click="networkController.saveQueryResult()">
+                Save Query Result
+            </a>
+
+        </div>
+
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
             <span ng-show='networkController.isLoggedIn &&
                         ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
@@ -653,15 +662,6 @@
                                             ndex-network-name='networkController.currentNetwork.name'>
                         Download Namespace
                     </download-bel-namespace>
-                </a>
-            </span>
-
-            <span ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
-                networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
-                <a class="btn btn-primary customButtonWidth">
-                    <save-subnetwork>
-                        Save Query Result
-                    </save-subnetwork>
                 </a>
             </span>
 

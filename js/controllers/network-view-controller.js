@@ -869,6 +869,10 @@ ndexApp.controller('networkViewController',
 
             };
 
+            networkController.saveQueryResult = function() {
+                console.log("networkController.saveQueryResult()");
+            }
+
 
             networkController.runAdvancedQuery = function(networkQueryLimit)
             {
