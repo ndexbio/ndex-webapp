@@ -233,7 +233,7 @@ angular.module('ndexServiceApp')
        *-----------------------------------------------------------------------*/
       self.convertNetworkInJSONToNiceCX = function (network) {
 
-          var niceCX = {};
+          var niceCX = {'edges': {}, 'nodes': {}};
 
           $.each(network.citations, function (citationId, citation) {
               /* ATTENTION: we still need to process citation.contributors and citation.properties fields */

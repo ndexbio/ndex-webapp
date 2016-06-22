@@ -12,9 +12,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         var ndexServerURI = config.ndexServerUri;
 
-        var localNiceCXNetwork ;
+        var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
-        var localNiceCX;
+        var localNiceCX;   // the copy of CX network that are currently displayed. It can be a subnetwork from query
 
         factory.getNdexServerUri = function()
         {
@@ -85,6 +85,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return localNiceCX;
         };
 
+        factory.getOriginalCXNetwork = function () {
+          return localNiceCXNetwork;
+        };
 
         factory.resetNetwork = function () {
             localNiceCX = localNiceCXNetwork;

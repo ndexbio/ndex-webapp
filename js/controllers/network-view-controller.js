@@ -677,7 +677,7 @@ ndexApp.controller('networkViewController',
 
             var populateNodeAndEdgeAttributesForAdvancedQuery = function() {
                 
-                var cxNetwork = networkService.getNiceCX();
+                var cxNetwork = networkService.getOriginalCXNetwork();
                 
                 if (!cxNetwork) {
                     return;
@@ -863,7 +863,7 @@ ndexApp.controller('networkViewController',
 
                 networkController.tabs[3].active = false;
                 networkController.tabs[3].hidden = true;
-                
+
                 enableSimpleQueryElements();
                 $scope.hideAdvancedSearchLink = false;
 
