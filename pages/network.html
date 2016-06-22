@@ -341,29 +341,25 @@
                 </tab>
             </tabset>
 
-        </div>
+            <br>
 
-        <br>
-
-        <div class="row">
-
-            <span ng-show="networkController.queryMode == 'simple' && !networkController.successfullyQueried" class="com-sm-12">
+            <div ng-show="networkController.queryMode == 'simple' && !networkController.successfullyQueried" class="com-sm-12">
                 <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery(config.networkQueryLimit)"
                       class="form-inline pull-left">
 
                     <div class="form-group">
                         <input class="form-control" type="search" ng-model="networkController.searchString"
-                               placeholder="Network Terms" required/>
+                               placeholder="Network Terms" required>
                     </div>
                     <div class="form-group">
                         <label>Depth:</label>
                     </div>
                     <div class="form-group">
-                    <span>
-                        <select class="form-control" id="" ng-model="networkController.searchDepth.value" ng-selected="1"
-                                ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
-                                required></select>
-                    </span>
+                        <div>
+                            <select class="form-control" id="" ng-model="networkController.searchDepth.value" ng-selected="1"
+                                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                                    required></select>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-default btn-primary">Run Query</button>
@@ -371,13 +367,13 @@
 
                 </form>
 
-                <span class="pull-left" style="margin-top:0.5em">
+                <div class="pull-left" style="margin-top:0.5em">
                     <a ng-click="networkController.queryMode = 'advanced'"><u><strong>Advanced Query</strong></u></a>
-                </span>
+                </div>
 
-            </span>
+            </div>
 
-            <span ng-show="networkController.queryMode == 'advanced' && !networkController.successfullyQueried">
+            <div ng-show="networkController.queryMode == 'advanced' && !networkController.successfullyQueried">
                 <form novalidate ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)">
 
                     <div class="row">
@@ -502,7 +498,7 @@
                     </div>
 
                 </form>
-            </span>
+            </div>
             <button type="button"
                     class="btn btn-primary"
                     ng-click="networkController.backToOriginalNetwork()"
