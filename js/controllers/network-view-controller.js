@@ -825,8 +825,8 @@ ndexApp.controller('networkViewController',
                             networkController.successfullyQueried = true;
                             networkController.currentNetwork =
                               {name: "Neighborhood query result on network - " + currentNetworkSummary.name,
-                                  "nodeCount": Object.keys(network.nodes).length,
-                                  "edgeCount": Object.keys(network.edges).length,
+                                  "nodeCount": (network.nodes) ? Object.keys(network.nodes).length : 0,
+                                  "edgeCount": (network.edges) ? Object.keys(network.edges).length : 0,
                                   "queryString": networkController.searchString,
                                   "queryDepth" : networkController.searchDepth.value
                               };
