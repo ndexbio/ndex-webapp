@@ -141,7 +141,7 @@ angular.module('ndexServiceApp')
                 });
             }
 
-            sanitizeAttributeNameMap(attributeNameMap);
+//            sanitizeAttributeNameMap(attributeNameMap);
 
             var edgeAttributes = cxNetworkUtils.getEdgeAttributes(niceCX);
             if (edgeAttributes) {

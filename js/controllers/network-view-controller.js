@@ -46,8 +46,8 @@ ndexApp.controller('networkViewController',
             networkController.advancedQueryEdgeProperties = [{}];
             networkController.advancedQueryNodeProperties = [{}];
 
-            networkController.edgePropertyNamesForAdvancedQuery = [];
-            networkController.nodePropertyNamesForAdvancedQuery = [];
+            networkController.edgePropertyNamesForAdvancedQuery = undefined;
+            networkController.nodePropertyNamesForAdvancedQuery = undefined;
             
             networkController.tabs = [
                     {"heading": "Network Info", 'active':true},
@@ -58,7 +58,9 @@ ndexApp.controller('networkViewController',
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
-            networkController.bgColor = '#8fbdd7';
+            var resetBackgroudColor = function () {
+                networkController.bgColor = '#8fbdd7';
+            }
 
 
             var INCOMPLETE_QUERY_CODE = -1;
@@ -103,15 +105,22 @@ ndexApp.controller('networkViewController',
                 networkController.tabs[3].active = false;
                 networkController.tabs[3].hidden = true;
 
+                networkController.backToOriginalNetwork();
+
+            /*    enableSimpleQueryElements();
+
+                $scope.hideAdvancedSearchLink = false;
+
+                networkController.tabs[0].active = true; */
+            }
+
+            var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
                 for(var i = 0; i < nodes.length; i++){
                     nodes[i].disabled = false;
                 }
+            };
 
-                $scope.hideAdvancedSearchLink = false;
-
-                networkController.tabs[0].active = true;
-            }
 
             // this function gets called when user navigates away from the current Graphic View page.
             // (can also use "$locationChangeStart" instead of "$destroy"
@@ -137,6 +146,16 @@ ndexApp.controller('networkViewController',
 
             $scope.activateAdvancedQueryTab = function() {
 
+                //populate the node and edge properties
+
+                if ( networkController.edgePropertyNamesForAdvancedQuery == undefined) {
+
+                    networkController.edgePropertyNamesForAdvancedQuery = [];
+                    networkController.nodePropertyNamesForAdvancedQuery = [];
+                    populateNodeAndEdgeAttributesForAdvancedQuery();
+                }    
+                
+                
                 networkController.queryMode = 'advanced';
 
                 for (var i = 0; i < 3; i++) {
@@ -152,6 +171,8 @@ ndexApp.controller('networkViewController',
                 for(var i = 0; i < nodes.length; i++){
                     nodes[i].disabled = true;
                 }
+                
+                
             }
             
             
@@ -654,7 +675,10 @@ ndexApp.controller('networkViewController',
             };
 
 
-            var populateNodeAndEdgeAttributesForAdvancedQuery = function(cxNetwork) {
+            var populateNodeAndEdgeAttributesForAdvancedQuery = function() {
+                
+                var cxNetwork = networkService.getNiceCX();
+                
                 if (!cxNetwork) {
                     return;
                 }
@@ -701,20 +725,28 @@ ndexApp.controller('networkViewController',
                     networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
                 });
             }
+            
 
 
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
+                
+                var cyStyle ;
+                if ( noStyle ) {
+                    cyStyle =  cyService.getDefaultStyle()
+                    resetBackgroudColor();
+                } else {
+                    cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
+                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
+                    if ( cxBGColor)
+                        networkController.bgColor = cxBGColor;
+                }
 
-                populateNodeAndEdgeAttributesForAdvancedQuery(cxNetwork);
-
-                var cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
-
-                var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
-                if ( cxBGColor)
-                    networkController.bgColor = cxBGColor;
+           //     var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
+           //     if ( cxBGColor)
+           //         networkController.bgColor = cxBGColor;
 
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
@@ -828,6 +860,12 @@ ndexApp.controller('networkViewController',
                 if (!networkController.tabs[0].active )
                     networkController.tabs[0].active = true;
                 networkController.selectionContainer = {};
+
+                networkController.tabs[3].active = false;
+                networkController.tabs[3].hidden = true;
+                
+                enableSimpleQueryElements();
+                $scope.hideAdvancedSearchLink = false;
 
             };
 
@@ -959,7 +997,7 @@ ndexApp.controller('networkViewController',
                                     || networkController.isAdmin
                                     || networkController.canEdit
                                     || networkController.canRead) {
-
+                                            resetBackgroudColor();
                                             getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
 
                                 }
@@ -1152,6 +1190,8 @@ ndexApp.controller('networkViewController',
                 networkController.advancedQueryNodeProperties = [{}];
                 networkController.validateAdvancedQuery();
             };
+
+
 
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
