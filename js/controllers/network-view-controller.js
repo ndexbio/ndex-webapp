@@ -362,14 +362,48 @@ ndexApp.controller('networkViewController',
 
                                 var splitString = attribute.split(":");
 
-                                var t = typeof(splitString[1]);
-
                                 if ((splitString.length == 2) && !isNaN(splitString[1])) {
                                     var geneId = splitString[1];
 
                                     attributeValue =
                                         '<a target="_blank" href="http://identifiers.org/ncbigene/' + geneId + '">'
                                           + attribute + '</a>';
+                                }
+
+                            } else if (attribute && attribute.toLowerCase().startsWith('uniprot:')) {
+
+                                var splitString = attribute.split(":");
+
+                                if (splitString.length == 2) {
+                                    var uniprotId = splitString[1];
+
+                                    // we assume that Uniprot ID is valid if it starts with a case-insensitive letter,
+                                    // followed by a number, followed by other characters.  For example, Q9M324 and
+                                    // O04086 are valid IDs, whereas EXTRACELLULAR is not
+                                    var isUniprotidValid = /^\w\d.*/.test(uniprotId);
+
+                                    if (isUniprotidValid) {
+                                        attributeValue =
+                                            '<a target="_blank" href="http://identifiers.org/uniprot/' + uniprotId + '">'
+                                            + attribute + '</a>';
+                                    } else {
+                                        attributeValue = attribute;
+                                    }
+                                }
+
+                            } else if (attribute && attribute.toLowerCase().startsWith('tair.locus:')) {
+
+                                var splitString = attribute.split(":");
+
+                                if (splitString.length == 2) {
+                                    var geneId = splitString[1];
+
+                                        attributeValue =
+                                            '<a target="_blank" href="http://identifiers.org/tair.locus/' + geneId + '">'
+                                            + attribute + '</a>';
+                                } else {
+
+                                    attributeValue = attribute;
                                 }
 
                             } else {
