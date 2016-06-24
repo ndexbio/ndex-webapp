@@ -232,6 +232,74 @@ ndexApp.controller('networkViewController',
             };
 
 
+
+            var getStringAttributeValue = function(attribute) {
+
+                if (!attribute) {
+                    return null;
+                }
+
+                var attributeValue = attribute;
+                var attr = attribute.toLowerCase();
+
+                if (attr.startsWith('http://')
+                    && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
+                    && !attr.startsWith('http://purl') && !attr.startsWith('http://www.purl')) {
+
+                    attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
+
+                } else {
+
+                    if (attr.startsWith('ncbi gene:')) {
+
+                        var splitString = attribute.split(":");
+
+                        if ((splitString.length == 2) && !isNaN(splitString[1])) {
+                            var geneId = splitString[1];
+
+                            attributeValue =
+                                '<a target="_blank" href="http://identifiers.org/ncbigene/' + geneId + '">'
+                                + attribute + '</a>';
+                        }
+
+                    } else if (attr.startsWith('uniprot:')) {
+
+                        var splitString = attribute.split(":");
+
+                        if (splitString.length == 2) {
+                            var uniprotId = splitString[1];
+
+                            // we assume that Uniprot ID is valid if it starts with a case-insensitive letter,
+                            // followed by a number, followed by other characters.  For example, Q9M324 and
+                            // O04086 are valid IDs, whereas EXTRACELLULAR is not
+                            var isUniprotidValid = /^\w\d.*/.test(uniprotId);
+
+                            if (isUniprotidValid) {
+                                attributeValue =
+                                    '<a target="_blank" href="http://identifiers.org/uniprot/' + uniprotId + '">'
+                                    + attribute + '</a>';
+                            }
+                        }
+
+                    } else if (attr.startsWith('tair.locus:')) {
+
+                        var splitString = attribute.split(":");
+
+                        if (splitString.length == 2) {
+                            var geneId = splitString[1];
+
+                            attributeValue =
+                                '<a target="_blank" href="http://identifiers.org/tair.locus/' + geneId + '">'
+                                + attribute + '</a>';
+
+                        }
+                    }
+                }
+
+                return attributeValue;
+            }
+
+
             $scope.getNodeName = function(node)
             {
                 if (!node) {
@@ -307,7 +375,7 @@ ndexApp.controller('networkViewController',
                     return attribute;
                 }
 
-                var attributeValue ="";
+                var attributeValue = "";
 
                 if (attribute instanceof Object) {
                     if (attribute['v'] && Array.isArray(attribute['v']) && attribute['v'].length > 0) {
@@ -331,86 +399,23 @@ ndexApp.controller('networkViewController',
                                     attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br> ";
                                 }
                             }
-
                         }
                         
                     } else {
                         attributeValue = (attribute['v']) ? attribute['v'] : '';
 
-                        var typeOfAttributevalue = typeof(attributeValue);
+                        var typeOfAttributeValue = typeof(attributeValue);
 
-                        if (attributeValue && (typeOfAttributevalue === 'string') &&
-                            (attributeValue.toLowerCase().startsWith('http://') || attributeValue.toLowerCase().startsWith('https://'))) {
-                            attributeValue = '<a target="_blank" href="' + attributeValue + '">' + attributeValue + '</a>';
+                        if (attributeValue && (typeOfAttributeValue === 'string')) {
+                            attributeValue = getStringAttributeValue(attributeValue);
                         }
                     }
 
                 } else {
 
                     if (typeof attribute === 'string') {
-                        var attr = attribute.toLowerCase();
 
-                        if (attr.startsWith('http://')
-                            && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
-                            && !attr.startsWith('http://purl') && !attr.startsWith('http://www.purl')) {
-
-                            attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
-
-                        } else {
-
-                            if (attribute && attribute.toLowerCase().startsWith('ncbi gene:')) {
-
-                                var splitString = attribute.split(":");
-
-                                if ((splitString.length == 2) && !isNaN(splitString[1])) {
-                                    var geneId = splitString[1];
-
-                                    attributeValue =
-                                        '<a target="_blank" href="http://identifiers.org/ncbigene/' + geneId + '">'
-                                          + attribute + '</a>';
-                                }
-
-                            } else if (attribute && attribute.toLowerCase().startsWith('uniprot:')) {
-
-                                var splitString = attribute.split(":");
-
-                                if (splitString.length == 2) {
-                                    var uniprotId = splitString[1];
-
-                                    // we assume that Uniprot ID is valid if it starts with a case-insensitive letter,
-                                    // followed by a number, followed by other characters.  For example, Q9M324 and
-                                    // O04086 are valid IDs, whereas EXTRACELLULAR is not
-                                    var isUniprotidValid = /^\w\d.*/.test(uniprotId);
-
-                                    if (isUniprotidValid) {
-                                        attributeValue =
-                                            '<a target="_blank" href="http://identifiers.org/uniprot/' + uniprotId + '">'
-                                            + attribute + '</a>';
-                                    } else {
-                                        attributeValue = attribute;
-                                    }
-                                }
-
-                            } else if (attribute && attribute.toLowerCase().startsWith('tair.locus:')) {
-
-                                var splitString = attribute.split(":");
-
-                                if (splitString.length == 2) {
-                                    var geneId = splitString[1];
-
-                                        attributeValue =
-                                            '<a target="_blank" href="http://identifiers.org/tair.locus/' + geneId + '">'
-                                            + attribute + '</a>';
-                                } else {
-
-                                    attributeValue = attribute;
-                                }
-
-                            } else {
-                                attributeValue = attribute;
-                            }
-
-                        }
+                        attributeValue = getStringAttributeValue(attribute);
 
                     } else {
 
