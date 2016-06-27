@@ -506,18 +506,38 @@ ndexApp.controller('networkViewController',
                 return source + ' ' + predicate + ' ' + target;
             }
 
+
             $scope.getCitation = function (citation) {
 
-                var identfier, retString = 'PMID : unable to get citation info';
+                var retString = 'PMID : unable to get citation info';
 
-                if (citation && citation['dc:type'] && citation['dc:type'].toLowerCase() === 'uri'
-                    && citation['dc:identifier']) {
+                if (citation && citation['dc:identifier']) {
 
-                    identifier = citation['dc:identifier'].split(':')[1];
+                    var splitString = citation['dc:identifier'].split(':');
+                    
+                    if (splitString.length == 2) {
 
-                    retString = '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/' +
-                        identifier + '"><strong>PMID: </strong>' +
-                        identifier + '</a>';
+                        var prefix = splitString[0].toString().toLowerCase();
+
+                        if (prefix === 'pubmed' || prefix === 'pmid') {
+
+                            if (!isNaN(splitString[1])) {
+                                // it is a number
+
+                                retString = '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/' +
+                                    splitString[1] + '"><strong>PMID: </strong>' +
+                                    splitString[1] + '</a>';
+
+                            } else if (typeof splitString[1] === 'string') {
+                                // it is a string -- see if it is a URL. If it is, create a link.
+
+                                if (splitString[1].startsWith('http://') || splitString[1].startsWith('https://')) {
+                                    retString = '<a target="_blank" href="' + splitString[1] + '">' + splitString[1] + '</a>';
+                                }
+
+                            }
+                        }
+                    }
                 }
 
                 return retString;
