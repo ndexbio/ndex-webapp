@@ -293,6 +293,36 @@ ndexApp.controller('networkViewController',
                                 + attribute + '</a>';
 
                         }
+                    } else if (attr.startsWith('hgnc:')) {
+
+                        var splitString = attribute.split(":");
+
+                        if (splitString.length == 2) {
+
+                            var entityId = splitString[1];
+
+                            if (isNaN(entityId)) {
+
+                                attributeValue =
+                                    '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + entityId + '">'
+                                    + attribute + '</a>';
+
+                            } else {
+
+                                // valid  HGNC Entity identifier consists of up to 5 numbers and is described by this
+                                // regular expression: '^((HGNC|hgnc):)?\d{1,5}$'
+
+                                var isHgncIdValid = /^\d{1,5}$/.test(entityId);
+
+                                if (isHgncIdValid) {
+
+                                    attributeValue =
+                                        '<a target="_blank" href="http://identifiers.org/hgnc/' + entityId + '">'
+                                        + attribute + '</a>';
+                                }
+                            }
+
+                        }
                     }
                 }
 
