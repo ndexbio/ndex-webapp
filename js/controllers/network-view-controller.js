@@ -911,14 +911,21 @@ ndexApp.controller('networkViewController',
                 networkService.neighborhoodQueryFromOldAPI(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value)
                     .success(
                         function (network) {
+                            var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
                             networkController.successfullyQueried = true;
                             networkController.currentNetwork =
-                              {name: "Neighborhood query result on network - " + currentNetworkSummary.name,
+                              {name: resultName,
                                   "nodeCount": (network.nodes) ? Object.keys(network.nodes).length : 0,
                                   "edgeCount": (network.edges) ? Object.keys(network.edges).length : 0,
                                   "queryString": networkController.searchString,
                                   "queryDepth" : networkController.searchDepth.value
                               };
+                            var networkAttrList = [];
+                            networkAttrList.push({'n': 'name', 'v': resultName });
+                            networkAttrList.push ( {'n': 'queryString' , 'v': networkController.searchString });
+                            networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
+
+                            network["networkAttributes"] = networkAttrList;
                             drawCXNetworkOnCanvas(network,true);
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;
@@ -942,6 +949,7 @@ ndexApp.controller('networkViewController',
             };
 
             networkController.backToOriginalNetwork = function () {
+
                 networkService.resetNetwork();
                 networkController.currentNetwork = currentNetworkSummary;
                 drawCXNetworkOnCanvas(networkService.getNiceCX(),false);
@@ -956,10 +964,18 @@ ndexApp.controller('networkViewController',
                 enableSimpleQueryElements();
                 $scope.hideAdvancedSearchLink = false;
 
+
             };
 
             networkController.saveQueryResult = function() {
-                console.log("networkController.saveQueryResult()");
+
+                var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
+
+                console.log ( JSON.stringify(rawCX));
+
+                networkService.createCXNetwork(rawCX);
+                
+
             }
 
 

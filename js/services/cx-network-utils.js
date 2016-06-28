@@ -8,7 +8,7 @@
  * Service in the ndexLinkedNetworkViewerApp.
  */
 angular.module('ndexServiceApp')
-  .service('cxNetworkUtils', ['ndexHelper', function (ndexHelper) {
+  .service('cxNetworkUtils', [ function () {
       // AngularJS will instantiate a singleton by calling "new" on this function
 
       var self = this;
@@ -62,6 +62,39 @@ angular.module('ndexServiceApp')
           
           return niceCX;
       };
+
+
+      var computePreMetadata = function ( niceCX) {
+          var preMetaData=[];
+          var d = new Date();
+          var currentTime = d.getTime();
+
+          _.forEach( niceCX, function (aspectValues, aspectName) {
+              var metadataElement = {
+                  "consistencyGroup" : 1,
+              //    "elementCount" : aspectValues.length,
+                  "lastUpdate" : currentTime,
+                  "name" : aspectName,
+                  "properties" : [ ],
+                  "version" : "1.0"
+              };
+
+              if ( aspectName === 'nodes' ||
+                   aspectName === 'edges' ||
+                   aspectName === 'citations' ||
+                   aspectName === 'supports') {
+                   var objids = Object.keys(aspectValues);
+                   metadataElement['elementCount'] = objids.length;
+                   metadataElement["idCounter"] = Number(objids.reduce (function (a,b) {
+                      return Number(a) > Number(b) ? a: b;
+                    }));
+              }
+
+              preMetaData.push (metadataElement);
+          });
+
+          return { "metaData": preMetaData };
+      };
       
       self.niceCXToRawCX = function(niceCX) {
         
@@ -69,61 +102,62 @@ angular.module('ndexServiceApp')
 
           if (niceCX.numberVerification) {
               rawCX.push(niceCX.numberVerification);
+          } else {
+              rawCX.push ({
+                  "numberVerification" : [ {
+                      "longNumber" : 281474976710655
+                  }]});
           }
 
           if (niceCX.preMetaData) {
               rawCX.push(niceCX.preMetaData);
+          } else {
+              rawCX.push(computePreMetadata(niceCX));
           }
 
           for (var aspectName in niceCX) {
+
 
               if ((aspectName === 'preMetaData') || (aspectName === 'postMetaData') ||
                   (aspectName === 'numberVerification') || (aspectName === 'status')) {
                   continue;
 
-              } else if (aspectName === 'nodeAttributes') {
+              }
 
-                  var arrayOfNodeIDs = Object.keys(niceCX[aspectName].nodes);
+              var elements= [];
 
-                  for (var j = 0; j <  arrayOfNodeIDs.length; j++) {
+              if ( aspectName === 'nodes' || aspectName === 'edges' ||
+                          aspectName === 'citations' || aspectName === 'supports') {
 
-                      var nodeId = arrayOfNodeIDs[j];
-                      var nodeAttributeMap  = niceCX[aspectName].nodes[nodeId];
+                  _.forEach( niceCX[aspectName], function (element, id) {
+                      elements.push(element);
+                  });
+              } else if (aspectName === 'nodeAttributes' || aspectName === 'edgeAttributes') {
+                  _.forEach(niceCX[aspectName], function(attributes, id) {
+                     _.forEach ( attributes, function (attribute, attrName) {
+                         elements.push(attribute);
+                     });
+                  });
 
-                      var arrayOfAttributeNames = Object.keys(nodeAttributeMap);
+              } else if ( aspectName === 'edgeCitations' || aspectName === 'nodeCitations' ) {
+                  _.forEach(niceCX[aspectName], function (citationIds, elementId) {
+                      var citation = {'po': [Number(elementId)], 'citations': citationIds} ;
+                      elements.push ( citation);
+                  });
 
-                      for (var k = 0; k < arrayOfAttributeNames.length; k++) {
-                          var attributeName = arrayOfAttributeNames[k];
+              } else if ( aspectName === 'edgeSupports' || aspectName === 'nodeSupports') {
+                  _.forEach(niceCX[aspectName], function (supportIds, elementId) {
+                      var support = {'po': [Number(elementId)], 'supports': supportIds} ;
+                      elements.push ( support);
+                  });
+              }  else {
+                  elements = niceCX[aspectName];
+              }
 
-                          var attributeObject = nodeAttributeMap[attributeName];
-                          var nodeAttributeElement = {po : nodeId, n : attributeName, v : attributeObject.v};
-
-                          if (attributeObject.d) {
-                              nodeAttributeElement.d = attributeObject.d;
-                          }
-
-                          var fragment = {
-                              'nodeAttributes': [ nodeAttributeElement ]
-                          };
-
-                          rawCX.push(fragment);
-                      }
-                  }
-
-              } else {
-
-                  var arrayOfElements = niceCX[aspectName].elements;
-
-                  for (var l = 0; l < arrayOfElements.length; l++) {
-
-                      var element = arrayOfElements[l];
-
-                      var fragment1 = {};
-                      fragment1[aspectName] = [];
-                      fragment1[aspectName].push(element);
-
-                      rawCX.push(fragment1);
-                  }
+              if ( elements.length > 0 ) {
+                  var fragment = {};
+                  fragment[aspectName] = elements;
+                  rawCX.push(fragment);
               }
           }
 
@@ -133,6 +167,13 @@ angular.module('ndexServiceApp')
 
           if (niceCX.status) {
               rawCX.push(niceCX.status);
+          } else {
+              rawCX.push ( {
+                  "status" : [ {
+                      "error" : "",
+                      "success" : true
+                  } ]
+              } );
           }
         
         return rawCX;
@@ -233,26 +274,29 @@ angular.module('ndexServiceApp')
        *-----------------------------------------------------------------------*/
       self.convertNetworkInJSONToNiceCX = function (network) {
 
-          var niceCX = {'edges': {}, 'nodes': {}};
+          var niceCX = { 'edges': {},
+                         'nodes': {}};
+
 
           $.each(network.citations, function (citationId, citation) {
-              /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
+                  /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
 
-              var citationElement = {
-                  "@id"            : citation.id ,
-                  "dc:identifier"  : (citation.identifier)  ? citation.identifier : null,
-                  "dc:title"       : citation.title,
-                  "dc:type"        : (citation.idType)      ? citation.idType : null,
-                  "dc:description" : (citation.description) ? citation.description : null,
-                  "dc:contributor" : citation.constructor
-              };
+                  var citationElement = {
+                      "@id": citation.id,
+                      "dc:identifier": (citation.identifier) ? citation.identifier : null,
+                      "dc:title": citation.title,
+                      "dc:type": (citation.idType) ? citation.idType : null,
+                      "dc:description": (citation.description) ? citation.description : null,
+                      "dc:contributor": citation.constructor
+                  };
 
-              // ALSO:  do we want to add citationElement as a lookup with citationID as the key --
-              // if yest, then use addElementToNiceCXForLookup() below instead of addElementToNiceCX()
-              //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citationElement);
+                  // ALSO:  do we want to add citationElement as a lookup with citationID as the key --
+                  // if yest, then use addElementToNiceCXForLookup() below instead of addElementToNiceCX()
+                  //addElementToNiceCXForLookup(niceCX, 'citations', citationId, citationElement);
 
-              addElementToNiceCX(niceCX, 'citations', citationElement);
+                  addElementToNiceCX(niceCX, 'citations', citationElement);
           });
+
 
 
           $.each(network.supports, function (supportId, support) {
