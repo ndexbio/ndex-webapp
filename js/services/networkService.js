@@ -22,6 +22,14 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
 
+        var getEncodedUser = function () {
+            if (ndexUtility.getLoggedInUserAccountName)
+                return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
+            else
+                return null;
+        };
+
+
         factory.getNetworkSummaryFromNdex = function (networkId) {
 
             // The $http timeout property takes a deferred value that can abort AJAX request
@@ -358,6 +366,36 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
 
+        factory.createCXNetwork = function (rawCX) {
+
+            var url = ndexServerURI + '/network/asCX';
+
+            var XHR = new XMLHttpRequest();
+            var FD  = new FormData();
+
+            var content = JSON.stringify(rawCX);
+
+            var blob = new Blob([content], { type: "application/octet-stream"});
+
+           // data.append("myfile", myBlob, "filename.txt");
+            FD.append('CXNetworkStream', blob);
+
+            XHR.addEventListener('load', function(event) {
+                alert('Yeah! Data sent and response loaded.');
+            });
+
+            // We define what will happen in case of error
+            XHR.addEventListener('error', function(event) {
+                alert('Oups! Something goes wrong.');
+            });
+
+            XHR.open('POST', url);
+            XHR.setRequestHeader("Authorization", "Basic " + getEncodedUser());
+
+            // We just send our FormData object, HTTP headers are set automatically
+            var foo =  XHR.send(FD);
+
+        };
 
         factory.advancedQueryFromOldAPI = function (networkId, postData) {
 

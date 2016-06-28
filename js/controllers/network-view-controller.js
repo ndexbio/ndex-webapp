@@ -943,33 +943,8 @@ ndexApp.controller('networkViewController',
 
                 console.log ( JSON.stringify(rawCX));
 
-                var d = new Date();
-
-                var configProp = angular.injector(['ng', 'ndexServiceApp']).get('config');
-                var ndexServerURI = configProp.ndexServerUri;
-
-                var postData = angular.fromJson(csn.json);
-
-                csn.json = angular.toJson(postData);
-
-                $http.post(ndexServerURI + '/network/asNetwork', csn.json).
-                success(function(data, status, headers, config) {
-                    saveSubnetworkProvenance(data, modal);
-                }).
-                error(function(error, status, headers, config) {
-                    if( error )
-                    {
-                        $scope.errors = error.message;
-                    }
-                    else
-                    {
-                        scope.errors = "There was an unknown error saving the network.";
-                    }
-                    scope.progress = "";
-                });
-
-
-
+                networkService.createCXNetwork(rawCX);
+                
 
             }
 
