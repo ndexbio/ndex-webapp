@@ -94,6 +94,10 @@ ndexApp.controller('networkController',
                 $scope.$parent.showViewMenus = false;
             });
 
+            $scope.setReturnView = function(view) {
+                sharedProperties.setNetworkViewPage(view);
+            }
+
             $scope.getProvenanceTitle = function(provenance)
             {
                 if( typeof provenance == 'undefined' )

@@ -96,6 +96,10 @@ ndexApp.controller('networkViewController',
                 "id": "1"
             }
 
+            $scope.setReturnView = function(view) {
+                sharedProperties.setNetworkViewPage(view);
+            }
+
             $scope.backToSimpleQuery = function(event) {
 
                 // this is needed to Close the Advacned Query tab in case the Close tab sign (x) was clicked
