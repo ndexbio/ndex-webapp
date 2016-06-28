@@ -1,6 +1,6 @@
 ndexApp.controller('editNetworkPropertiesController',
-	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal',
-		function($scope, $location, $routeParams, $route, ndexService, $modal){
+	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties',
+		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties){
 	 //testing
 
 	//              Process the URL to get application state
@@ -324,7 +324,9 @@ ndexApp.controller('editNetworkPropertiesController',
 		ndexService.setNetworkProperties(networkExternalId, editor.propertyValuePairs,
 			function(data) {
 				//$route.reload();
-                $location.path("network/"+editor.networkExternalId);
+                var networkViewPage = sharedProperties.getNetworkViewPage();
+                var networkID = editor.networkExternalId;
+                $location.path(networkViewPage + networkID);
                 $scope.isProcessing = false;
 			},
 			function(error) {

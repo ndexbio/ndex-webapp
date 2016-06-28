@@ -54,6 +54,14 @@ ndexApp.service('sharedProperties', function () {
         getSelectedNetworkIDs: function()
         {
             return this.selectedNetworkIDs;
-        }
+        },
+        setNetworkViewPage: function(networkView)
+        {
+            this.networkView = networkView;
+        },
+        getNetworkViewPage: function()
+        {
+            return this.networkView;
+        },
     }
 });

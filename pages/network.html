@@ -237,7 +237,8 @@
             <h5 ng-show='!networkController.readOnlyChecked'>
                 <a class='btn-link'
                    ng-show='networkController.isAdmin || networkController.canEdit || networkController.canRead || networkController.currentNetwork.visibility == "PUBLIC"'
-                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
+                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}"
+                   ng-click="setReturnView('network/')">
                     Add / Edit Properties
                 </a>
             </h5>

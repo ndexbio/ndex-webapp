@@ -218,7 +218,8 @@
 
                             <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
                                 <a class='btn-link'
-                                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">
+                                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}"
+                                   ng-click="setReturnView('newNetwork/')">
                                     Add / Edit Properties
                                 </a>
                             </h5>
@@ -584,7 +585,8 @@
         <div class="rowWithOneLineTopPad"></div>
 
         <div class="networkActionsSection pull-left"
-             ng-show="networkController.successfullyQueried && ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
+             ng-show="networkController.isLoggedIn && networkController.successfullyQueried &&
+                     ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
             <a class="btn btn-primary customButtonWidth" ng-click="networkController.saveQueryResult()">
                 Save Query Result
