@@ -48,13 +48,16 @@ ndexApp.controller('networkViewController',
 
             networkController.edgePropertyNamesForAdvancedQuery = undefined;
             networkController.nodePropertyNamesForAdvancedQuery = undefined;
-            
+
+
+            networkController.context = {};
+
             networkController.tabs = [
-                    {"heading": "Network Info", 'active':true},
-                    {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
-                    {'heading': 'Provenance', 'active': false},
-                    {'heading': 'Advanced Query', 'hidden': true, 'active': false}
-                ];
+                {"heading": "Network Info", 'active':true},
+                {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
+                {'heading': 'Provenance', 'active': false},
+                {'heading': 'Advanced Query', 'hidden': true, 'active': false}
+            ];
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -195,13 +198,13 @@ ndexApp.controller('networkViewController',
 
 
             var hideSearchMenuItem = function() {
-                var searhMenuItemElemenmt = document.getElementById("searchBarId");
-                searhMenuItemElemenmt.style.display = 'none';
+                var searhMenuItemElement = document.getElementById("searchBarId");
+                searhMenuItemElement.style.display = 'none';
             }
 
             var showSearchMenuItem = function() {
-                var searhMenuItemElemenmt = document.getElementById("searchBarId");
-                searhMenuItemElemenmt.style.display = 'block';
+                var searhMenuItemElement = document.getElementById("searchBarId");
+                searhMenuItemElement.style.display = 'block';
             }
 
 
@@ -694,6 +697,9 @@ ndexApp.controller('networkViewController',
                                 var id= Number(edge.id());
                                 cxEdges.push( networkService.getEdgeInfo(id));
                             });
+
+                            var niceCX = networkService.getNiceCX()['@context'];
+                            networkController.context = (niceCX && niceCX['elements']) ? niceCX['elements'][0] : {};
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
