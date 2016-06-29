@@ -1054,8 +1054,8 @@ ndexApp.controller('networkViewController',
                     templateUrl: 'confirmation-modal.html',
                     scope: $scope,
                     controller: function($scope, $modalInstance, $location) {
-                        $scope.title = 'Save Query result?'
-                        $scope.message = 'The query result for '+currentNetworkSummary.name+' will be saved to your account?';
+                        $scope.title = 'Save query result?'
+                        $scope.message = 'The query result for "'+currentNetworkSummary.name+'" will be saved to your account?';
 
                         $scope.cancel = function() {
                             $scope.errors = null;
@@ -1233,6 +1233,8 @@ ndexApp.controller('networkViewController',
 
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
+
+                provenanceService.resetProvenance();
 
                 // get network summary
                 // keep a reference to the promise

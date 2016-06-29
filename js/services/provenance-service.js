@@ -32,6 +32,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
             return baseUrl + "/network/" + uuid;
         };
 
+        factory.resetProvenance = function () {provenance = undefined;};
 
         factory.getProvenance = function (networkId, onSuccess, onError) {
             if (! provenance ) {
