@@ -3,14 +3,16 @@
  */
 
 
-ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfigs', 'ndexUtility', 'ndexHelper', '$http', '$q',
-    function (cxNetworkUtils, config, ndexConfigs, ndexUtility, ndexHelper, $http, $q) {
+ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'provenanceService','$http', '$q',
+    function (cxNetworkUtils, config, ndexConfigs, ndexUtility, ndexHelper, provenanceService, $http, $q) {
 
         var factory = {};
         
         var currentNetworkSummary = undefined;
 
         var ndexServerURI = config.ndexServerUri;
+        
+        var provenance ;
 
         var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
@@ -29,6 +31,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                 return null;
         };
 
+        factory.getProvenance = function () {return provenance;};
+        
+        factory.setProvenance = function (prov) { provenance = prov};
 
         factory.getNetworkSummaryFromNdex = function (networkId) {
 
@@ -385,6 +390,10 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                 if (XHR.readyState === XHR.DONE) {
                     if (XHR.status === 200) {
                         console.log(XHR.responseText);
+                        var newUUID = XHR.responseText;
+                        
+                        
+                        
                         onSuccess(XHR.responseText);
                     }
                 }

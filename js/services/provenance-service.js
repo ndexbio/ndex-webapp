@@ -3,10 +3,12 @@
  */
 
 
-ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$location', '$filter',
-    function (networkService, ndexService, $location, $filter) {
+ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter',
+    function (ndexService, $location, $filter) {
 
         var factory = {};
+        
+        var provenance = undefined;
         
         var extractUuidFromUri = function( uri )
         {
@@ -31,7 +33,23 @@ ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$lo
         };
 
 
-        factory.getProvenanceTitle = function(provenance)
+        factory.getProvenance = function (networkId, onSuccess, onError) {
+            if (! provenance ) {
+                ndexService.getProvenance(networkId,
+                    function (data) {
+                        provenance = data;
+                        onSuccess(provenance);
+                    }, function (error) {
+                        onError(error);
+
+                    });
+            } else
+              onSuccess(provenance);
+
+        }
+
+
+        factory.getProvenanceTitle = function()
         {
             if( typeof provenance == 'undefined' )
                 return "";
@@ -48,11 +66,11 @@ ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$lo
 
 
         factory.showProvenance = function (controller) {
-            if (!controller.provenance) {
+            if (!provenance) {
                 ndexService.getProvenance(controller.currentNetworkId,
                     function (data) {
 
-                    controller.provenance = data;
+                    provenance = data;
                     build_provenance_view(controller);
                 }, function (error) {
                     controller.showRetrieveMessage = false;
@@ -72,7 +90,7 @@ ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$lo
                 build_provenance_view(controller);  
         };
 
-        var buildGraph = function(prov, level, parent_node, edge_label, merge, nodes, edges, provMap)
+        var buildGraph = function(currentNetworkId, prov, level, parent_node, edge_label, merge, nodes, edges, provMap)
         {
             var node_id = nodes.length;
 
@@ -87,11 +105,11 @@ ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$lo
             var uuid = extractUuidFromUri(prov.uri);
             provMap[node_id].uuid = uuid;
             provMap[node_id].host = extractHostFromUri(prov.uri);
-            if( uuid !== networkService.getCurrentNetworkSummary().externalId )
+            if( uuid !==  currentNetworkId )
             {
                 //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
                 //not be set.
-                (networkService.getNetwork(uuid) )
+                (ndexService.getNetwork(uuid) )
                     .success( function ()
                         {
                             provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);
@@ -149,7 +167,7 @@ ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$lo
                 for(var i = 0; i < inputs.length; i++ )
                 {
                     var edgeLabel = prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate');
-                    buildGraph(inputs[i], level+1, node_id, edgeLabel, merge, nodes, edges, provMap);
+                    buildGraph(currentNetworkId, inputs[i], level+1, node_id, edgeLabel, merge, nodes, edges, provMap);
                 }
             }
             else
@@ -182,7 +200,7 @@ ndexServiceApp.factory('provenanceService', ['networkService','ndexService','$lo
             var edges = [];
             var provMap = [];
 
-            buildGraph(controller.provenance, 1, -1, '', false, nodes, edges, provMap);
+            buildGraph(controller.currentNetworkId, provenance, 1, -1, '', false, nodes, edges, provMap);
 
             // create a network
             var container = document.getElementById('provenanceNetwork');
