@@ -184,9 +184,9 @@ ndexApp.controller('networkViewController',
                 provenanceService.showProvenance(networkController);
             };
 
-            $scope.getProvenanceTitle = function(provenance)
+            $scope.getProvenanceTitle = function()
             {
-               return provenanceService.getProvenanceTitle(provenance);
+               return provenanceService.getProvenanceTitle();
             };
 
 
@@ -1056,9 +1056,44 @@ ndexApp.controller('networkViewController',
 
             networkController.saveQueryResult = function() {
 
-                var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
+                var  modalInstance = $modal.open({
+                    templateUrl: 'confirmation-modal.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance, $location) {
+                        $scope.title = 'Save query result?'
+                        $scope.message = 'The query result for "'+currentNetworkSummary.name+'" will be saved to your account?';
 
-                console.log ( JSON.stringify(rawCX));
+                        $scope.cancel = function() {
+                            $scope.errors = null;
+                            $modalInstance.dismiss();
+                        };
+
+                        $scope.confirm = function() {
+                            if( $scope.isProcessing )
+                                return;
+                            $scope.isProcessing = true;
+                            $scope.progress = 'Save in progress....  You will be redirected to the saved network page when the query is saved successfully.';
+
+                            var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
+
+                            //               console.log ( JSON.stringify(rawCX));
+
+                            networkService.createCXNetwork(rawCX, function (newNetworkId){
+                                $modalInstance.close();
+                                $scope.isProcessing = false;
+                                $location.path("/newNetwork/"+newNetworkId);
+                            }, function (msg) {
+                                $scope.progress = ("Failed to save query result to NDEx. Please try again later. \nErrror message: " + msg );
+
+                            });
+
+                           // saveSubnetwork($modalInstance, $scope);
+
+                        };
+                    }
+                });
+
+
 
                 var newNetworkId = networkService.createCXNetwork(rawCX, function (newNetworkId){
                     $location.path("/newNetwork/"+newNetworkId);
@@ -1204,6 +1239,8 @@ ndexApp.controller('networkViewController',
 
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
+
+                provenanceService.resetProvenance();
 
                 // get network summary
                 // keep a reference to the promise

@@ -446,8 +446,8 @@ ndexApp.controller('networkController',
                     .success(
                     function (network, json) {
                         //console.log("got query results for : " + networkController.searchString);
-                        //csn = network;
-                        //csn.json = json;
+                        csn = network;
+                        csn.json = json;
                         networkController.queryErrors = [];
                         networkController.currentSubnetwork = network;
                         /*

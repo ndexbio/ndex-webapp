@@ -277,6 +277,17 @@ angular.module('ndexServiceApp')
           var niceCX = { 'edges': {},
                          'nodes': {}};
 
+          if ( Object.keys(network.namespaces).length > 0) {
+              var nstable = {};
+              niceCX['@context'] = [nstable];
+
+              $.each(network.namespaces, function (namespaceId, namespace) {
+                nstable[namespace['prefix']] = namespace['uri'];   
+              /*  _.forEach(namespace, function (value, prefix) {
+                    nstable[prefix] = value;
+                }); */
+              });
+          }
 
           $.each(network.citations, function (citationId, citation) {
                   /* ATTENTION: we still need to process citation.contributors and citation.properties fields */
