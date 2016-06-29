@@ -1054,8 +1054,11 @@ ndexApp.controller('networkViewController',
 
                 console.log ( JSON.stringify(rawCX));
 
-                networkService.createCXNetwork(rawCX);
-                
+                var newNetworkId = networkService.createCXNetwork(rawCX, function (newNetworkId){
+                    $location.path("/newNetwork/"+newNetworkId);
+                }, function (msg) {
+                    alert("failed to save query result to NDEx. Please try again later. \nErrror message: " + msg );
+                });
 
             }
 
@@ -1133,14 +1136,43 @@ ndexApp.controller('networkViewController',
                     .success(
                         function (network) {
                             networkController.successfullyQueried = true;
+                            var resultName = "Advanced query result on network - " + currentNetworkSummary.name;
                             networkController.currentNetwork =
-                            {name: "Advanced query result on network - " + currentNetworkSummary.name,
+                            {name: resultName,
                                 "nodeCount": Object.keys(network.nodes).length,
                                 "edgeCount": Object.keys(network.edges).length,
 
                                 "edgeFilter": postData.edgeFilter,
                                 "nodeFilter": postData.nodeFilter
                             };
+
+                            var networkAttrList = [];
+                            networkAttrList.push({'n': 'name', 'v': resultName });
+
+                            if ( postData.edgeFilter && postData.edgeFilter.propertySpecifications.length > 0 ) {
+                                var prop = {'n': 'Edge Filter', 'd' : 'list_of_string'};
+                                var specList = [];
+                                _.forEach(postData.edgeFilter.propertySpecifications, function (filter) {
+                                    var v = filter.name + '=' + filter.value;
+                                    specList.push(v);
+                                });
+                                prop['v'] = specList;
+                                networkAttrList.push ( prop);
+                            }
+                            if ( postData.nodeFilter && postData.nodeFilter.propertySpecifications.length > 0 ) {
+                                var prop = {'n': 'Node Filter', 'd': 'list_of_string'};
+                                var specList = [];
+                                _.forEach(postData.nodeFilter.propertySpecifications, function ( filter){
+                                    var v = filter.name + '=' + filter.value;
+                                    specList.push(v);
+                                });
+                                prop['v'] = specList;
+
+                                networkAttrList.push (prop);
+                            }
+
+                            network["networkAttributes"] = networkAttrList;
+
                             drawCXNetworkOnCanvas(network,true);
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;

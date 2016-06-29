@@ -366,7 +366,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
 
-        factory.createCXNetwork = function (rawCX) {
+        factory.createCXNetwork = function (rawCX, onSuccess, onError) {
 
             var url = ndexServerURI + '/network/asCX';
 
@@ -381,12 +381,20 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             FD.append('CXNetworkStream', blob);
 
             XHR.addEventListener('load', function(event) {
-                alert('Yeah! Data sent and response loaded.');
+
+                if (XHR.readyState === XHR.DONE) {
+                    if (XHR.status === 200) {
+                        console.log(XHR.responseText);
+                        onSuccess(XHR.responseText);
+                    }
+                }
+            //    alert('Yeah! Data sent and response loaded.');
             });
 
             // We define what will happen in case of error
             XHR.addEventListener('error', function(event) {
-                alert('Oups! Something goes wrong.');
+             //   alert('Oups! Something goes wrong.');
+                onError(XHR.responseText);
             });
 
             XHR.open('POST', url);
