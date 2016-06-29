@@ -158,8 +158,7 @@ ndexApp.controller('networkViewController',
                     networkController.nodePropertyNamesForAdvancedQuery = [];
                     populateNodeAndEdgeAttributesForAdvancedQuery();
                 }    
-                
-                
+
                 networkController.queryMode = 'advanced';
 
                 for (var i = 0; i < 3; i++) {
@@ -175,8 +174,6 @@ ndexApp.controller('networkViewController',
                 for(var i = 0; i < nodes.length; i++){
                     nodes[i].disabled = true;
                 }
-                
-                
             }
             
             
@@ -273,10 +270,7 @@ ndexApp.controller('networkViewController',
                         if (splitString.length == 2) {
                             var uniprotId = splitString[1];
 
-                            // we assume that Uniprot ID is valid if it starts with a case-insensitive letter,
-                            // followed by a number, followed by other characters.  For example, Q9M324 and
-                            // O04086 are valid IDs, whereas EXTRACELLULAR is not
-                            var isUniprotidValid = /^\w\d.*/.test(uniprotId);
+                            var isUniprotidValid = /^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$/.test(uniprotId);
 
                             if (isUniprotidValid) {
                                 attributeValue =
@@ -327,7 +321,90 @@ ndexApp.controller('networkViewController',
                             }
 
                         }
+
+                    } else if (attr.startsWith('chebi:')) {
+
+                        var splitString = attribute.split(":");
+
+                        if (splitString.length == 2) {
+
+                            var entityId = splitString[1];
+
+                            if (!isNaN(entityId)) {
+
+                                // valid CHEBI Entity identifier is described by this
+                                // regular expression: '^CHEBI:\d+$'
+                                // but here we already know that entityId is a number, so no need to use regex for
+                                // validating entityId
+
+                                attributeValue =
+                                    '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + entityId + '">'
+                                    + attribute + '</a>';
+                            }
+
+                        } else if (attr.startsWith('chembl.compound:')) {
+
+                            var splitString = attribute.split(":");
+
+                            if (splitString.length == 2) {
+
+                                var entityId = splitString[1];
+
+                                if (!isNaN(entityId)) {
+
+                                    // valid CHEMBL Compound Entity identifier is described by this
+                                    // regular expression: '^CHEMBL\d+$'
+                                    // but here we know that entityId is a number, so no need to use regex for validating
+
+                                    attributeValue =
+                                        '<a target="_blank" href="http://identifiers.org/chembl.compound/CHEMBL' + entityId + '">'
+                                        + attribute + '</a>';
+                                }
+                            }
+
+                        } else if (attr.startsWith('kegg.compound:')) {
+
+                            var splitString = attribute.split(":");
+
+                            if (splitString.length == 2) {
+
+                                var entityId = splitString[1];
+
+                                // valid KEGG Compound Entity identifier is described by this
+                                // regular expression: '^C\d+$'; let's validate it (we allow the Id to start with
+                                // lower- or upper- case "C"  ("C" or "c")
+
+                                var isKeggCompoundIdValid = /^[cC]\d+$/.test(entityId);
+
+                                if (isKeggCompoundIdValid) {
+
+                                    attributeValue =
+                                        '<a target="_blank" href="http://identifiers.org/kegg.compound/' +
+                                            entityId.toUpperCase() + '">' + attribute + '</a>';
+                                }
+
+                            }
+
+                        } else if (attr.startsWith('pubchem.compound:')) {
+
+                            var splitString = attribute.split(":");
+
+                            if (splitString.length == 2) {
+
+                                var entityId = splitString[1];
+
+                                // valid KEGG Compound Entity identifier is described by this
+                                // regular expression: '^\d+$';  we already know that entityId is a number,
+                                // so no need to use regex for validating
+
+                                attributeValue =
+                                    '<a target="_blank" href="http://identifiers.org/pubchem.compound/' +
+                                    entityId + '">' + attribute + '</a>';
+
+                            }
+                        }
                     }
+
                 }
 
                 return attributeValue;
