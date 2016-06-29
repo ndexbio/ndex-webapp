@@ -914,9 +914,6 @@ ndexApp.controller('networkViewController',
                         networkController.bgColor = cxBGColor;
                 }
 
-           //     var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
-           //     if ( cxBGColor)
-           //         networkController.bgColor = cxBGColor;
 
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
@@ -1050,10 +1047,10 @@ ndexApp.controller('networkViewController',
 
             networkController.saveQueryResult = function() {
 
-                var  modalInstance = $modal.open({
+                var  modalInstanceSave = $modal.open({
                     templateUrl: 'confirmation-modal.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance, $location) {
+                    controller: function($scope, $modalInstance) {
                         $scope.title = 'Save query result?'
                         $scope.message = 'The query result for "'+currentNetworkSummary.name+'" will be saved to your account?';
 
@@ -1066,7 +1063,7 @@ ndexApp.controller('networkViewController',
                             if( $scope.isProcessing )
                                 return;
                             $scope.isProcessing = true;
-                            $scope.progress = 'Save in progress....  You will be redirected to the saved network page when the query is saved successfully.';
+                            $scope.progress = 'Save in progress.... ';
 
                             var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
 
@@ -1075,7 +1072,8 @@ ndexApp.controller('networkViewController',
                             networkService.createCXNetwork(rawCX, function (newNetworkId){
                                 $modalInstance.close();
                                 $scope.isProcessing = false;
-                                $location.path("/newNetwork/"+newNetworkId);
+                                networkController.backToOriginalNetwork();
+                                // $location.path("/newNetwork/"+newNetworkId);
                             }, function (msg) {
                                 $scope.progress = ("Failed to save query result to NDEx. Please try again later. \nErrror message: " + msg );
 
