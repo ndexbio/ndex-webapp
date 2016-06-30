@@ -251,161 +251,150 @@ ndexApp.controller('networkViewController',
                     && !attr.startsWith('http://purl') && !attr.startsWith('http://www.purl')) {
 
                     attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
+                    return attributeValue;
+                }
 
-                } else {
+                var splitString = attribute.split(":");
+                if (splitString.length != 2) {
+                    return attributeValue;
+                }
 
-                    if (attr.startsWith('ncbi gene:')) {
+                var prefix = splitString[0].toLowerCase();
+                var value  = splitString[1];
+                var URI;
 
-                        var splitString = attribute.split(":");
+                if (prefix in networkController.context) {
+                    URI = networkController.context[prefix];
+                    if (!URI.endsWith("/")) {
+                        URI = URI + "/";
+                    }
 
-                        if ((splitString.length == 2) && !isNaN(splitString[1])) {
-                            var geneId = splitString[1];
+                    if (URI.endsWith('/chebi/')) {
+                        attributeValue =
+                            '<a target="_blank" href="' + URI + 'CHEBI:' + value + '">' + attribute + '</a>';
 
-                            attributeValue =
-                                '<a target="_blank" href="http://identifiers.org/ncbigene/' + geneId + '">'
-                                + attribute + '</a>';
-                        }
+                    } else {
 
-                    } else if (attr.startsWith('uniprot:')) {
+                        attributeValue =
+                            '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
+                    }
 
-                        var splitString = attribute.split(":");
+                    return attributeValue;
+                }
 
-                        if (splitString.length == 2) {
-                            var uniprotId = splitString[1];
 
-                            var isUniprotidValid = /^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$/.test(uniprotId);
+                if (attr.startsWith('ncbi')) {
 
-                            if (isUniprotidValid) {
-                                attributeValue =
-                                    '<a target="_blank" href="http://identifiers.org/uniprot/' + uniprotId + '">'
-                                    + attribute + '</a>';
-                            }
-                        }
+                    // valid  NCBI gene Entity identifier consists of all numbers and is described by this
+                    // regular expression: '^\d+$';
 
-                    } else if (attr.startsWith('tair.locus:')) {
+                    var isValidNCBIId = /^\d+$/.test(value);
 
-                        var splitString = attribute.split(":");
+                    if (isValidNCBIId) {
 
-                        if (splitString.length == 2) {
-                            var geneId = splitString[1];
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/ncbigene/' + value + '">' + attribute + '</a>';
+                    }
 
-                            attributeValue =
-                                '<a target="_blank" href="http://identifiers.org/tair.locus/' + geneId + '">'
-                                + attribute + '</a>';
+                } else if (attr.startsWith('uniprot')) {
 
-                        }
-                    } else if (attr.startsWith('hgnc:')) {
+                    var isUniprotidValid = /^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$/.test(value);
 
-                        var splitString = attribute.split(":");
+                    if (isUniprotidValid) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/uniprot/' + value + '">'
+                            + attribute + '</a>';
+                    }
 
-                        if (splitString.length == 2) {
+                } else if (attr.startsWith('tair')) {
 
-                            var entityId = splitString[1];
+                    var isValidTair = /^AT[1-5]G\d{5}$/.test(value);
 
-                            if (isNaN(entityId)) {
+                    if (isValidTair) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/tair.locus/' + value + '">'
+                            + attribute + '</a>';
+                    }
 
-                                attributeValue =
-                                    '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + entityId + '">'
-                                    + attribute + '</a>';
+                } else if (attr.startsWith('hgnc:')) {
 
-                            } else {
+                    // namespace: hgnc;  URI: http://identifiers.org/hgnc/;  Pattern: '^((HGNC|hgnc):)?\d{1,5}$'
+                    var isHgncIdValid = /^\d{1,5}$/.test(value);
 
-                                // valid  HGNC Entity identifier consists of up to 5 numbers and is described by this
-                                // regular expression: '^((HGNC|hgnc):)?\d{1,5}$'
+                    if (isHgncIdValid) {
 
-                                var isHgncIdValid = /^\d{1,5}$/.test(entityId);
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/hgnc/' + value + '">'
+                            + attribute + '</a>';
+                    }
 
-                                if (isHgncIdValid) {
+                } else if (attr.startsWith('hgnc.symbol:')) {
 
-                                    attributeValue =
-                                        '<a target="_blank" href="http://identifiers.org/hgnc/' + entityId + '">'
-                                        + attribute + '</a>';
-                                }
-                            }
+                    // namespace: hgnc.symbol;  URI: http://identifiers.org/hgnc.symbol/;  Pattern: '^[A-Za-z-0-9_]+(\@)?$'
+                    var isHgncSymbolIdValid = /^[A-Za-z-0-9_]+(\@)?$/.test(value);
 
-                        }
+                    if (isHgncSymbolIdValid) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + value + '">'
+                            + attribute + '</a>';
 
-                    } else if (attr.startsWith('chebi:')) {
+                    }
 
-                        var splitString = attribute.split(":");
+                } else if (attr.startsWith('chebi')) {
 
-                        if (splitString.length == 2) {
+                    if (!isNaN(value)) {
 
-                            var entityId = splitString[1];
+                        // valid CHEBI Entity identifier is described by this
+                        // regular expression: '^CHEBI:\d+$'
+                        // but here we already know that value is a number, so no need to use regex for
+                        // validating entityId
 
-                            if (!isNaN(entityId)) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + value + '">'
+                            + attribute + '</a>';
+                    }
 
-                                // valid CHEBI Entity identifier is described by this
-                                // regular expression: '^CHEBI:\d+$'
-                                // but here we already know that entityId is a number, so no need to use regex for
-                                // validating entityId
+                } else if (attr.startsWith('chembl')) {
 
-                                attributeValue =
-                                    '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + entityId + '">'
-                                    + attribute + '</a>';
-                            }
+                    if (!isNaN(value)) {
 
-                        } else if (attr.startsWith('chembl.compound:')) {
+                        // valid CHEMBL Compound Entity identifier is described by this
+                        // regular expression: '^CHEMBL\d+$'
+                        // but here we know that value is a number, so no need to use regex for validating
 
-                            var splitString = attribute.split(":");
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/chembl.compound/CHEMBL' + value + '">'
+                            + attribute + '</a>';
+                    }
 
-                            if (splitString.length == 2) {
+                } else if (attr.startsWith('kegg.compound:')) {
 
-                                var entityId = splitString[1];
+                    // valid KEGG Compound Entity identifier is described by this
+                    // regular expression: '^C\d+$'; let's validate it (we allow the Id to start with
+                    // lower- or upper- case "C"  ("C" or "c")
 
-                                if (!isNaN(entityId)) {
+                    var isKeggCompoundIdValid = /^[cC]\d+$/.test(value);
 
-                                    // valid CHEMBL Compound Entity identifier is described by this
-                                    // regular expression: '^CHEMBL\d+$'
-                                    // but here we know that entityId is a number, so no need to use regex for validating
+                    if (isKeggCompoundIdValid) {
 
-                                    attributeValue =
-                                        '<a target="_blank" href="http://identifiers.org/chembl.compound/CHEMBL' + entityId + '">'
-                                        + attribute + '</a>';
-                                }
-                            }
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/kegg.compound/' +
+                                value.toUpperCase() + '">' + attribute + '</a>';
+                    }
 
-                        } else if (attr.startsWith('kegg.compound:')) {
+                } else if (attr.startsWith('pubchem.compound:')) {
 
-                            var splitString = attribute.split(":");
+                    var entityId = splitString[1];
 
-                            if (splitString.length == 2) {
+                    // valid Pubchem Compound Entity identifier is described by this
+                    // regular expression: '^\d+$';
+                    var isBubchemCompoundIdValid = /^\d+$/.test(value);
 
-                                var entityId = splitString[1];
+                    if (isBubchemCompoundIdValid) {
 
-                                // valid KEGG Compound Entity identifier is described by this
-                                // regular expression: '^C\d+$'; let's validate it (we allow the Id to start with
-                                // lower- or upper- case "C"  ("C" or "c")
-
-                                var isKeggCompoundIdValid = /^[cC]\d+$/.test(entityId);
-
-                                if (isKeggCompoundIdValid) {
-
-                                    attributeValue =
-                                        '<a target="_blank" href="http://identifiers.org/kegg.compound/' +
-                                            entityId.toUpperCase() + '">' + attribute + '</a>';
-                                }
-
-                            }
-
-                        } else if (attr.startsWith('pubchem.compound:')) {
-
-                            var splitString = attribute.split(":");
-
-                            if (splitString.length == 2) {
-
-                                var entityId = splitString[1];
-
-                                // valid KEGG Compound Entity identifier is described by this
-                                // regular expression: '^\d+$';  we already know that entityId is a number,
-                                // so no need to use regex for validating
-
-                                attributeValue =
-                                    '<a target="_blank" href="http://identifiers.org/pubchem.compound/' +
-                                    entityId + '">' + attribute + '</a>';
-
-                            }
-                        }
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/pubchem.compound/' +
+                            value + '">' + attribute + '</a>';
                     }
 
                 }
@@ -656,6 +645,31 @@ ndexApp.controller('networkViewController',
 
                 return retString;
             };
+
+            $scope.getContextAspectFromNiceCX = function() {
+
+                var niceCX = networkService.getNiceCX()['@context'];
+                networkController.context =
+                    (niceCX && niceCX['elements']) ? niceCX['elements'][0] : {};
+
+                var keys = Object.keys(networkController.context);
+
+                
+                // now, let's lower-case all keys in networkController.context
+                for (var i = 0; i < keys.length; i++) {
+
+                    var lowerCaseKey = keys[i].toLowerCase();
+                    var value = networkController.context[keys[i]];
+
+                    // delete original entry
+                    delete networkController.context[keys[i]];
+
+                    // add value with lower-case key
+                    networkController.context[lowerCaseKey] = value;
+                }   
+            }
+
+
             /*-----------------------------------------------------------------------*
              * initialize the cytoscape instance from niceCX
              *-----------------------------------------------------------------------*/
@@ -698,8 +712,7 @@ ndexApp.controller('networkViewController',
                                 cxEdges.push( networkService.getEdgeInfo(id));
                             });
 
-                            var niceCX = networkService.getNiceCX()['@context'];
-                            networkController.context = (niceCX && niceCX['elements']) ? niceCX['elements'][0] : {};
+                            $scope.getContextAspectFromNiceCX();
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
