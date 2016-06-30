@@ -174,11 +174,11 @@
 
                 <span ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
                     networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
-                    <a class="btn btn-primary customButtonWidth">
+                    <button id="tableViewSaveSubnetworkButton" class="btn btn-primary customButtonWidth" >
                         <save-subnetwork>
                             Save Query Result
                         </save-subnetwork>
-                    </a>
+                    </button>
                 </span>
 
                 <span class="divider" ng-show='networkController.isAdmin && !networkController.readOnlyChecked || networkController.directIsAdmin

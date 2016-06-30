@@ -113,12 +113,7 @@ ndexApp.controller('networkViewController',
                 networkController.tabs[3].hidden = true;
 
                 networkController.backToOriginalNetwork();
-
-            /*    enableSimpleQueryElements();
-
-                $scope.hideAdvancedSearchLink = false;
-
-                networkController.tabs[0].active = true; */
+                
             }
 
             var enableSimpleQueryElements = function () {
@@ -126,6 +121,9 @@ ndexApp.controller('networkViewController',
                 for(var i = 0; i < nodes.length; i++){
                     nodes[i].disabled = false;
                 }
+                $('#saveQueryButton').prop('disabled', false);
+
+
             };
 
 
@@ -933,9 +931,6 @@ ndexApp.controller('networkViewController',
                         networkController.bgColor = cxBGColor;
                 }
 
-           //     var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
-           //     if ( cxBGColor)
-           //         networkController.bgColor = cxBGColor;
 
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
@@ -1022,8 +1017,8 @@ ndexApp.controller('networkViewController',
                               };
                             var networkAttrList = [];
                             networkAttrList.push({'n': 'name', 'v': resultName });
-                            networkAttrList.push ( {'n': 'queryString' , 'v': networkController.searchString });
-                            networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
+                    //        networkAttrList.push ( {'n': 'queryString' , 'v': networkController.searchString });
+                    //        networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
 
                             network["networkAttributes"] = networkAttrList;
                             drawCXNetworkOnCanvas(network,true);
@@ -1069,10 +1064,10 @@ ndexApp.controller('networkViewController',
 
             networkController.saveQueryResult = function() {
 
-                var  modalInstance = $modal.open({
+                var  modalInstanceSave = $modal.open({
                     templateUrl: 'confirmation-modal.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance, $location) {
+                    controller: function($scope, $modalInstance) {
                         $scope.title = 'Save query result?'
                         $scope.message = 'The query result for "'+currentNetworkSummary.name+'" will be saved to your account?';
 
@@ -1085,16 +1080,18 @@ ndexApp.controller('networkViewController',
                             if( $scope.isProcessing )
                                 return;
                             $scope.isProcessing = true;
-                            $scope.progress = 'Save in progress....  You will be redirected to the saved network page when the query is saved successfully.';
+                            $scope.progress = 'Save in progress.... ';
 
                             var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
 
                             //               console.log ( JSON.stringify(rawCX));
 
-                            networkService.createCXNetwork(rawCX, function (newNetworkId){
+                            networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX, function (){
                                 $modalInstance.close();
                                 $scope.isProcessing = false;
-                                $location.path("/newNetwork/"+newNetworkId);
+
+                                $('#saveQueryButton').prop('disabled', true)
+
                             }, function (msg) {
                                 $scope.progress = ("Failed to save query result to NDEx. Please try again later. \nErrror message: " + msg );
 
@@ -1104,14 +1101,6 @@ ndexApp.controller('networkViewController',
 
                         };
                     }
-                });
-
-
-
-                var newNetworkId = networkService.createCXNetwork(rawCX, function (newNetworkId){
-                    $location.path("/newNetwork/"+newNetworkId);
-                }, function (msg) {
-                    alert("failed to save query result to NDEx. Please try again later. \nErrror message: " + msg );
                 });
 
             }
@@ -1203,7 +1192,7 @@ ndexApp.controller('networkViewController',
                             var networkAttrList = [];
                             networkAttrList.push({'n': 'name', 'v': resultName });
 
-                            if ( postData.edgeFilter && postData.edgeFilter.propertySpecifications.length > 0 ) {
+                        /*    if ( postData.edgeFilter && postData.edgeFilter.propertySpecifications.length > 0 ) {
                                 var prop = {'n': 'Edge Filter', 'd' : 'list_of_string'};
                                 var specList = [];
                                 _.forEach(postData.edgeFilter.propertySpecifications, function (filter) {
@@ -1223,7 +1212,7 @@ ndexApp.controller('networkViewController',
                                 prop['v'] = specList;
 
                                 networkAttrList.push (prop);
-                            }
+                            }*/
 
                             network["networkAttributes"] = networkAttrList;
 
