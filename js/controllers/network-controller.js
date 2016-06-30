@@ -488,6 +488,8 @@ ndexApp.controller('networkController',
 
             networkController.backToOriginalNetwork = function () {
                 initialize();
+                $('#tableViewSaveSubnetworkButton').prop('disabled', false);
+
                 networkController.successfullyQueried = false;
             };
 

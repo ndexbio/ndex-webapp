@@ -3,8 +3,8 @@
  */
 
 
-ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'provenanceService','$http', '$q',
-    function (cxNetworkUtils, config, ndexConfigs, ndexUtility, ndexHelper, provenanceService, $http, $q) {
+ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'provenanceService', 'ndexService','$http', '$q',
+    function (cxNetworkUtils, config, ndexConfigs, ndexUtility, ndexHelper, provenanceService, ndexService, $http, $q) {
 
         var factory = {};
         
@@ -12,8 +12,6 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         var ndexServerURI = config.ndexServerUri;
         
-        var provenance ;
-
         var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
         var localNiceCX;   // the copy of CX network that are currently displayed. It can be a subnetwork from query
@@ -30,10 +28,6 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             else
                 return null;
         };
-
-        factory.getProvenance = function () {return provenance;};
-        
-        factory.setProvenance = function (prov) { provenance = prov};
 
         factory.getNetworkSummaryFromNdex = function (networkId) {
 
@@ -369,6 +363,112 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             return promise;
         };
+
+
+
+        factory.saveQueryResults = function (currentNetworkSummary, currentSubNetwork, rawCX, onSuccess, onError) {
+            factory.createCXNetwork(rawCX, function(newUUID) {
+
+                provenanceService.getProvenance(currentNetworkSummary.externalId, function (provenance) {
+
+                    var eventProperties= [];
+
+                    if (currentSubNetwork['queryString']) { // is neighborhood query
+                        eventProperties = [
+                            {
+                                name: 'query terms',
+                                value: currentSubNetwork['queryString'],
+                                type: 'SimplePropertyValuePair'
+                            },
+                            {
+                                name: 'query depth',
+                                value: currentSubNetwork['queryDepth'],
+                                type: 'SimplePropertyValuePair'
+                            }
+                        ];
+                    } else {
+
+                        if (currentSubNetwork.edgeFilter && currentSubNetwork.edgeFilter.propertySpecifications.length > 0) {
+                            _.forEach(currentSubNetwork.edgeFilter.propertySpecifications, function (filter) {
+                                var prop = {
+                                    'name': 'Edge Filter',
+                                    'value': filter.name + '=' + filter.value,
+                                    'type': 'SimplePropertyValuePair'
+                                };
+
+                                eventProperties.push(prop);
+                            });
+                        }
+
+                        if (currentSubNetwork.nodeFilter && currentSubNetwork.nodeFilter.propertySpecifications.length > 0) {
+                            _.forEach(currentSubNetwork.nodeFilter.propertySpecifications, function (filter) {
+                                var prop = {
+                                    'name': 'node Filter',
+                                    'value': filter.name + '=' + filter.value,
+                                    'type': 'SimplePropertyValuePair'
+                                };
+                                eventProperties.push(prop);
+                            });
+
+                        }
+                    }
+
+                    var newProvenance =
+                    {
+                        uri: ndexServerURI + '/network/' + currentNetworkSummary.externalId,
+                        properties: [
+                            {
+                                name: 'edge count',
+                                value: currentNetworkSummary.edgeCount,
+                                type: 'SimplePropertyValuePair'
+                            },
+                            {
+                                name: 'node count',
+                                value: currentNetworkSummary.nodeCount,
+                                type: 'SimplePropertyValuePair'
+                            },
+                            {
+                                name: 'dc:title',
+                                value: currentNetworkSummary.name,
+                                type: 'SimplePropertyValuePair'
+                            }
+                        ],
+                        creationEvent: {
+                            startedAtTime: currentNetworkSummary.creationTime,
+                            endedAtTime: currentNetworkSummary.creationTime,
+                            inputs: [provenance],
+                            type: 'ProvenanceEvent',
+                            eventType: 'Query',
+                            properties: eventProperties
+
+                        }
+                    };
+
+                    if (currentNetworkSummary.description) {
+                        newProvenance.properties.push({
+                            name: 'description',
+                            value: currentNetworkSummary.description,
+                            type: 'SimplePropertyValuePair'
+                        })
+                    }
+                    if (currentNetworkSummary.version) {
+                        newProvenance.properties.push({
+                            name: 'version',
+                            value: currentNetworkSummary.version,
+                            type: 'SimplePropertyValuePair'
+                        })
+                    }
+
+                    ndexService.setProvenance(newUUID, newProvenance).$promise.then(
+                        onSuccess
+                    );
+                },
+                 onError)
+                },
+                onError);
+        }
+
+
 
 
         factory.createCXNetwork = function (rawCX, onSuccess, onError) {

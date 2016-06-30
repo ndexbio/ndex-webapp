@@ -2015,7 +2015,10 @@
                                 {
                                     modal.close();
                                     $scope.isProcessing = false;
-                                    $location.path('/network/'+networkSummary.externalId);
+
+                                    $('#tableViewSaveSubnetworkButton').prop('disabled', true);
+                                    
+                                   // $location.path('/network/'+networkSummary.externalId);
                                 });
                         })
                 };
@@ -2032,11 +2035,11 @@
                     var postData = angular.fromJson(csn.json);
                     if( terms )
                     {
-                        postData.name = cn.name + ': Simple Query, Terms = ' + terms;
+                        postData.name = "Neighborhood query result on network - " +  cn.name ;
                     }
                     else
                     {
-                        postData.name = cn.name + ': Advanced Query';
+                        postData.name = "Advanced query result on network -" + cn.name ;
                     }
                     if( depth )
                     {
