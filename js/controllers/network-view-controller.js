@@ -253,12 +253,12 @@ ndexApp.controller('networkViewController',
                 }
 
                 var splitString = attribute.split(":");
-                if (splitString.length != 2) {
+                if ((splitString.length != 2) && (splitString.length != 3)) {
                     return attributeValue;
                 }
 
                 var prefix = splitString[0].toLowerCase();
-                var value  = splitString[1];
+                var value  = (splitString.length == 3) ? (splitString[1] + ":" + splitString[2]) : splitString[1];
                 var URI;
 
                 if (prefix in networkController.context) {
@@ -267,15 +267,12 @@ ndexApp.controller('networkViewController',
                         URI = URI + "/";
                     }
 
-                    if (URI.endsWith('/chebi/')) {
-                        attributeValue =
-                            '<a target="_blank" href="' + URI + 'CHEBI:' + value + '">' + attribute + '</a>';
-
-                    } else {
-
-                        attributeValue =
-                            '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
+                    if (value.startsWith('CHEMBL')) {
+                        // remove ":" from  CHEMBL since the pattern for CHEMBL Id is '^CHEMBL\d+$'
+                        value = value.replace(':', '');
                     }
+
+                    attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
 
                     return attributeValue;
                 }
@@ -324,6 +321,7 @@ ndexApp.controller('networkViewController',
                         attributeValue =
                             '<a target="_blank" href="http://identifiers.org/hgnc/' + value + '">'
                             + attribute + '</a>';
+
                     }
 
                 } else if (attr.startsWith('hgnc.symbol:')) {
@@ -646,13 +644,23 @@ ndexApp.controller('networkViewController',
 
             $scope.getContextAspectFromNiceCX = function() {
 
-                var niceCX = networkService.getNiceCX()['@context'];
-                networkController.context =
-                    (niceCX && niceCX['elements']) ? niceCX['elements'][0] : {};
+                var contextAspect = networkService.getNiceCX()['@context'];
+
+                networkController.context = {};
+
+                if (contextAspect) {
+                    if (contextAspect['elements']) {
+                        networkController.context =  contextAspect['elements'][0];
+                    } else {
+                        networkController.context = contextAspect[0];
+                    }
+                }
+
+                //networkController.context =
+                //    (contextAspect && contextAspect['elements']) ? contextAspect['elements'][0] : {};
 
                 var keys = Object.keys(networkController.context);
 
-                
                 // now, let's lower-case all keys in networkController.context
                 for (var i = 0; i < keys.length; i++) {
 
@@ -915,7 +923,7 @@ ndexApp.controller('networkViewController',
 
 
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
-
+                
                 $scope.getContextAspectFromNiceCX();
 
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
