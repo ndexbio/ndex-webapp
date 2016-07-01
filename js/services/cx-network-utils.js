@@ -238,6 +238,8 @@ angular.module('ndexServiceApp')
               case 'nodeSupports':
                   addRelationToRelationAspect(aspect,element,'supports');
                   break;
+              case 'functionTerms':
+                  aspect[element['po']] = element;
               default:
                   // opaque for now
 
@@ -267,6 +269,96 @@ angular.module('ndexServiceApp')
       self.getEdgeAttributes = function (niceCX) {
           return niceCX['edgeAttributes'];
       };
+
+      self.stringifyFunctionTerm = function (functionTerm) {
+          var params = [];
+          angular.forEach(functionTerm.args, function (parameter) {
+              if (parameter.f) {
+                  params.push(self.stringifyFunctionTerm(parameter));
+              } else {
+                  params.push(parameter);
+              }
+          });
+          return abbreviate(functionTerm.f)+ '(' + params.join(', ') + ')';
+      };
+
+
+      var abbreviate = function (functionName) {
+          var pureFunctionName =functionName;
+          var arr = functionName.split(':');
+          if (arr.length=2)
+              pureFunctionName = arr[1];
+
+          switch (pureFunctionName) {
+              case 'abundance':
+                  return 'a';
+              case 'biologicalProcess':
+                  return 'bp';
+              case 'catalyticActivity':
+                  return 'cat';
+              case 'cellSecretion':
+                  return 'sec';
+              case 'cellSurfaceExpression':
+                  return 'surf';
+              case 'chaperoneActivity':
+                  return 'chap';
+              case 'complexAbundance':
+                  return 'complex';
+              case 'compositeAbundance':
+                  return 'composite';
+              case 'degradation':
+                  return 'deg';
+              case 'fusion':
+                  return 'fus';
+              case 'geneAbundance':
+                  return 'g';
+              case 'gtpBoundActivity':
+                  return 'gtp';
+              case 'kinaseActivity':
+                  return 'kin';
+              case 'microRNAAbundance':
+                  return 'm';
+              case 'molecularActivity':
+                  return 'act';
+              case 'pathology':
+                  return 'path';
+              case 'peptidaseActivity':
+                  return 'pep';
+              case 'phosphateActivity':
+                  return 'phos';
+              case 'proteinAbundance':
+                  return 'p';
+              case 'proteinModification':
+                  return 'pmod';
+              case 'reaction':
+                  return 'rxn';
+              case 'ribosylationActivity':
+                  return 'ribo';
+              case 'rnaAbundance':
+                  return 'r';
+              case 'substitution':
+                  return 'sub';
+              case 'translocation':
+                  return 'tloc';
+              case 'transcriptionalActivity':
+                  return 'tscript';
+              case 'transportActivity':
+                  return 'tport';
+              case 'truncation':
+                  return 'trunc';
+              case 'increases':
+                  return '->';
+              case 'decreases':
+                  return '-|';
+              case 'directlyIncreases':
+                  return '=>';
+              case 'directlyDecreases':
+                  return '=|';
+              default:
+                  return pureFunctionName;
+          }
+      };
+
 
       /*-----------------------------------------------------------------------*
        * Convert network received in JSON format to NiceCX;
@@ -560,6 +652,9 @@ angular.module('ndexServiceApp')
 
           niceCX[aspectName][referenceId][attributeName] =  attributeObject;
       };
+
+
+
 
 
   }]);
