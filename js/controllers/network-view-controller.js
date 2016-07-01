@@ -314,7 +314,7 @@ ndexApp.controller('networkViewController',
                             + attribute + '</a>';
                     }
 
-                } else if (attr.startsWith('hgnc:')) {
+                } else if (attr.startsWith('hgnc')) {
 
                     // namespace: hgnc;  URI: http://identifiers.org/hgnc/;  Pattern: '^((HGNC|hgnc):)?\d{1,5}$'
                     var isHgncIdValid = /^\d{1,5}$/.test(value);
@@ -324,18 +324,18 @@ ndexApp.controller('networkViewController',
                         attributeValue =
                             '<a target="_blank" href="http://identifiers.org/hgnc/' + value + '">'
                             + attribute + '</a>';
-                    }
 
-                } else if (attr.startsWith('hgnc.symbol:')) {
+                    } else {
 
-                    // namespace: hgnc.symbol;  URI: http://identifiers.org/hgnc.symbol/;  Pattern: '^[A-Za-z-0-9_]+(\@)?$'
-                    var isHgncSymbolIdValid = /^[A-Za-z-0-9_]+(\@)?$/.test(value);
+                        // namespace: hgnc.symbol;  URI: http://identifiers.org/hgnc.symbol/;  Pattern: '^[A-Za-z-0-9_]+(\@)?$'
+                        var isHgncSymbolIdValid = /^[A-Za-z-0-9_]+(\@)?$/.test(value);
 
-                    if (isHgncSymbolIdValid) {
-                        attributeValue =
-                            '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + value + '">'
-                            + attribute + '</a>';
+                        if (isHgncSymbolIdValid) {
+                            attributeValue =
+                                '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + value + '">'
+                                + attribute + '</a>';
 
+                        }
                     }
 
                 } else if (attr.startsWith('chebi')) {
@@ -646,9 +646,9 @@ ndexApp.controller('networkViewController',
 
             $scope.getContextAspectFromNiceCX = function() {
 
-                var niceCX = networkService.getNiceCX()['@context'];
+                var contextAspect = networkService.getNiceCX()['@context'];
                 networkController.context =
-                    (niceCX && niceCX['elements']) ? niceCX['elements'][0] : {};
+                    (contextAspect && contextAspect['elements']) ? contextAspect['elements'][0] : {};
 
                 var keys = Object.keys(networkController.context);
 
@@ -709,8 +709,6 @@ ndexApp.controller('networkViewController',
                                 var id= Number(edge.id());
                                 cxEdges.push( networkService.getEdgeInfo(id));
                             });
-
-                            $scope.getContextAspectFromNiceCX();
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
@@ -916,6 +914,9 @@ ndexApp.controller('networkViewController',
 
 
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
+                
+                $scope.getContextAspectFromNiceCX();
+
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
