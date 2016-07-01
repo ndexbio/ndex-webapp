@@ -2016,7 +2016,7 @@
                                     modal.close();
                                     $scope.isProcessing = false;
 
-                                    $('#tableViewSaveSubnetworkButton').prop('disabled', tru);
+                                    $('#tableViewSaveSubnetworkButton').prop('disabled', true);
                                     
                                    // $location.path('/network/'+networkSummary.externalId);
                                 });
