@@ -605,9 +605,11 @@ ndexApp.controller('networkViewController',
 
                             for (var i = 0; i < 5; i++) {
                                 if (i == 0) {
-                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br>";
+                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br>";
                                 } else {
-                                    attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br>";
+                                    attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br>";
                                 }
                             }
 
@@ -615,9 +617,11 @@ ndexApp.controller('networkViewController',
 
                             for (var i = 0; i < attribute['v'].length; i++) {
                                 if (i == 0) {
-                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br>";
+                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br>";
                                 } else {
-                                    attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + attribute['v'][i] + "<br> ";
+                                    attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br> ";
                                 }
                             }
                         }
@@ -675,7 +679,7 @@ ndexApp.controller('networkViewController',
                     if (attribute['v'] && Array.isArray(attribute['v'])) {
 
                         for (var i = 0; i < attribute['v'].length; i++) {
-                            attributeValue = attributeValue + attribute['v'][i] + '<br>';
+                            attributeValue = attributeValue + getStringAttributeValue(attribute['v'][i]) + '<br>';
                         }
                     }
                 }
