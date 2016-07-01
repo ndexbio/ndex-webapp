@@ -151,7 +151,7 @@ angular.module('ndexServiceApp')
                       elements.push ( support);
                   });
               }  else {
-                  elements = niceCX[aspectName];
+                  elements = niceCX[aspectName]['elements'];
               }
 
               if ( elements.length > 0 ) {
@@ -383,12 +383,10 @@ angular.module('ndexServiceApp')
               });
           }
 
-          if (network.networkAttributes) {
-              var networkAttrs = [];
-              _.forEach(network.networkAttributes, function (attribute){
-                  networkAttrs.push({});
-              });
-              niceCX['networkAttributes'] = {'elements': networkAttrs};
+          if (network.properties) {
+              _.forEach(network.properties, function (propertyObj){
+                  self.setNetworkProperty(niceCX, propertyObj['predicateString'],propertyObj['value'],
+                      propertyObj['dataType'])});
           }
 
           $.each(network.citations, function (citationId, citation) {
@@ -667,7 +665,7 @@ angular.module('ndexServiceApp')
        self.setNetworkProperty = function ( niceCX, attributeName, attributeValue, attributeDataType)  {
            var dType = attributeDataType ? attributeDataType : 'string';
 
-           var value = ( (attributeDataType.substring(0,7) === 'list_of' && typeof attributeValue === 'string') ? JSON.parse(attributeValue) :  attributeValue);
+           var value = ( (dType.substring(0,7) === 'list_of' && typeof attributeValue === 'string') ? JSON.parse(attributeValue) :  attributeValue);
 
            var attributes = niceCX['networkAttributes'];
            if (!attributes ) {
@@ -675,7 +673,7 @@ angular.module('ndexServiceApp')
                    'd' :  dType,
                    'n' : attributeName
                }]};
-               
+               niceCX['networkAttributes'] = attributes;
            } else {
                var found = false;
                _.forEach ( attributes.elements, function (attr) {

@@ -2016,7 +2016,7 @@
                                     modal.close();
                                     $scope.isProcessing = false;
 
-                                    $('#tableViewSaveSubnetworkButton').prop('disabled', true);
+                                    $('#tableViewSaveSubnetworkButton').prop('disabled', tru);
                                     
                                    // $location.path('/network/'+networkSummary.externalId);
                                 });
@@ -2040,10 +2040,6 @@
                     else
                     {
                         postData.name = "Advanced query result on network -" + cn.name ;
-                    }
-                    if( depth )
-                    {
-                        postData.name += ' at Depth ' + depth;
                     }
 
                     csn.json = angular.toJson(postData);
