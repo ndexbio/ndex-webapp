@@ -127,7 +127,7 @@ angular.module('ndexServiceApp')
               var elements= [];
 
               if ( aspectName === 'nodes' || aspectName === 'edges' ||
-                          aspectName === 'citations' || aspectName === 'supports') {
+                          aspectName === 'citations' || aspectName === 'supports' || aspectName === 'functionTerms') {
 
                   _.forEach( niceCX[aspectName], function (element, id) {
                       elements.push(element);
@@ -360,6 +360,24 @@ angular.module('ndexServiceApp')
       };
 
 
+      
+      var createCXFunctionTerm = function (oldJSONNetwork, jsonFunctionTerm ) {
+         var functionTerm = { 'f': getBaseTermStr(oldJSONNetwork , jsonFunctionTerm.functionTermId)};
+          var parameters = [];
+          _.forEach ( jsonFunctionTerm.parameterIds, function (parameterId) {
+              var baseTerm = oldJSONNetwork['baseTerms'][parameterId];
+              if ( baseTerm ) {
+                  parameters.push ( getBaseTermStr(oldJSONNetwork , parameterId));
+              } else {
+                  var paraFunctionTerm = oldJSONNetwork['functionTerms'] [parameterId];
+                  parameters.push (createCXFunctionTerm(oldJSONNetwork,paraFunctionTerm));
+              }
+          });
+          functionTerm['args'] = parameters;
+
+          return functionTerm;
+      };
+      
       /*-----------------------------------------------------------------------*
        * Convert network received in JSON format to NiceCX;
        * Convert only nodes and edges now.
@@ -387,6 +405,14 @@ angular.module('ndexServiceApp')
               _.forEach(network.properties, function (propertyObj){
                   self.setNetworkProperty(niceCX, propertyObj['predicateString'],propertyObj['value'],
                       propertyObj['dataType'])});
+          }
+
+          var functionTermTable = {};  //functionTermId to CXFunctionTerm maping table.
+          if ( network.functionTerms) {
+              niceCX['functionTerms'] = {};
+              _.forEach (network.functionTerms, function (funcTerm, id) {
+                  functionTermTable[id] = createCXFunctionTerm(network, funcTerm);
+              });
           }
 
           $.each(network.citations, function (citationId, citation) {
@@ -429,18 +455,21 @@ angular.module('ndexServiceApp')
 
           $.each(network.nodes, function (nodeId, node) {
               var element = {
-                  '@id' : nodeId,
-                  'n': node.name
+                  '@id' : nodeId
               };
+
+              if ( node.name )
+                  element['n'] = node.name;
 
               if ( node.represents) {
                   if ( node.representsTermType === 'baseTerm') {
                       element['r'] = getBaseTermStr(network,node.represents);
                   } else if ( node.representsTermType === 'functionTerm') {
-                  //     var funElement = cvtFuctionTermToCXElmt ( network, node.representsId);
-                  //    niceCX.
+                      var cxFunctionTerm = functionTermTable[node.represents];
+                      cxFunctionTerm['po'] = nodeId;
+                      niceCX['functionTerms'][nodeId] = cxFunctionTerm;
                   } else {
-
+                    console.log("unsupported termType found in the network ...");
                   }
               }
 
