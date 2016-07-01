@@ -234,6 +234,126 @@ ndexApp.controller('networkViewController',
             };
 
 
+            var validateEntityID = function(URI, entityId) {
+                var retValue = false;
+
+                if (!URI || !entityId) {
+                    return retValue;
+                }
+                
+                switch (URI.toLowerCase()) {
+
+                    case 'http://identifiers.org/bindingDB/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/cas/':
+                        retValue = /^\d{1,7}\-\d{2}\-\d$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/chebi/':
+                        retValue = /^CHEBI:\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/chembl.compound/':
+                        retValue = /^CHEMBL\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/drugbank/':
+                        retValue = /^DB\d{5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/go/':
+                        retValue = /^GO:\d{7}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/hgnc/':
+                        retValue = /^((HGNC|hgnc):)?\d{1,5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/hgnc.symbol/':
+                        retValue = /^[A-Za-z-0-9_]+(\@)?$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/biogrid/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/intact/':
+                        retValue = /^EBI\-[0-9]+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/kegg.compound/':
+                        retValue = /^C\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/kegg.pathway/':
+                        retValue = /^\w{2,4}\d{5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/ncbigene/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/pubmed/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/reactome/':
+                        retValue = /(^(REACTOME:)?R-[A-Z]{3}-[0-9]+(-[0-9]+)?$)|(^REACT_\d+$)/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/refseq/':
+                        retValue =
+                           /^((AC|AP|NC|NG|NM|NP|NR|NT|NW|XM|XP|XR|YP|ZP)_\d+|(NZ\_[A-Z]{4}\d+))(\.\d+)?$'/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/omim/':
+                        retValue = /^[*#+%^]?\d{6}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/pdb/':
+                        retValue = /^[0-9][A-Za-z0-9]{3}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/rgd/':
+                        retValue = /^\d{4,7}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/uniprot/':
+                        retValue =
+                            /^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/mgd/':
+                        retValue = /^MGI:\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/sgd/':
+                        retValue = /^((S\d+$)|(Y[A-Z]{2}\d{3}[a-zA-Z](\-[A-Z])?))$/.test(entityId);
+                        break;
+
+
+                    case 'http://identifiers.org/ricegap/':
+                        retValue = /^LOC\_Os\d{1,2}g\d{5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/mesh/':
+                        retValue = /^(C|D)\d{6}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/pubchem.compound/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/tair.locus/':
+                        retValue = /^AT[1-5]G\d{5}$/.test(entityId);
+                        break;
+                }
+
+                return retValue;
+            }
+
 
             var getStringAttributeValue = function(attribute) {
 
@@ -272,7 +392,9 @@ ndexApp.controller('networkViewController',
                         value = value.replace(':', '');
                     }
 
-                    attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
+                    if (validateEntityID(URI, value)) {
+                        attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
+                    }
 
                     return attributeValue;
                 }
