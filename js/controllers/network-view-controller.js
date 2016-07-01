@@ -253,12 +253,12 @@ ndexApp.controller('networkViewController',
                 }
 
                 var splitString = attribute.split(":");
-                if (splitString.length != 2) {
+                if ((splitString.length != 2) && (splitString.length != 3)) {
                     return attributeValue;
                 }
 
                 var prefix = splitString[0].toLowerCase();
-                var value  = splitString[1];
+                var value  = (splitString.length == 3) ? (splitString[1] + ":" + splitString[2]) : splitString[1];
                 var URI;
 
                 if (prefix in networkController.context) {
@@ -267,15 +267,7 @@ ndexApp.controller('networkViewController',
                         URI = URI + "/";
                     }
 
-                    if (URI.endsWith('/chebi/')) {
-                        attributeValue =
-                            '<a target="_blank" href="' + URI + 'CHEBI:' + value + '">' + attribute + '</a>';
-
-                    } else {
-
-                        attributeValue =
-                            '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
-                    }
+                    attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
 
                     return attributeValue;
                 }
@@ -314,7 +306,7 @@ ndexApp.controller('networkViewController',
                             + attribute + '</a>';
                     }
 
-                } else if (attr.startsWith('hgnc')) {
+                } else if (attr.startsWith('hgnc:')) {
 
                     // namespace: hgnc;  URI: http://identifiers.org/hgnc/;  Pattern: '^((HGNC|hgnc):)?\d{1,5}$'
                     var isHgncIdValid = /^\d{1,5}$/.test(value);
@@ -325,17 +317,18 @@ ndexApp.controller('networkViewController',
                             '<a target="_blank" href="http://identifiers.org/hgnc/' + value + '">'
                             + attribute + '</a>';
 
-                    } else {
+                    }
 
-                        // namespace: hgnc.symbol;  URI: http://identifiers.org/hgnc.symbol/;  Pattern: '^[A-Za-z-0-9_]+(\@)?$'
-                        var isHgncSymbolIdValid = /^[A-Za-z-0-9_]+(\@)?$/.test(value);
+                } else if (attr.startsWith('hgnc.symbol:')) {
 
-                        if (isHgncSymbolIdValid) {
-                            attributeValue =
-                                '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + value + '">'
-                                + attribute + '</a>';
+                    // namespace: hgnc.symbol;  URI: http://identifiers.org/hgnc.symbol/;  Pattern: '^[A-Za-z-0-9_]+(\@)?$'
+                    var isHgncSymbolIdValid = /^[A-Za-z-0-9_]+(\@)?$/.test(value);
 
-                        }
+                    if (isHgncSymbolIdValid) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + value + '">'
+                            + attribute + '</a>';
+
                     }
 
                 } else if (attr.startsWith('chebi')) {
@@ -647,12 +640,22 @@ ndexApp.controller('networkViewController',
             $scope.getContextAspectFromNiceCX = function() {
 
                 var contextAspect = networkService.getNiceCX()['@context'];
-                networkController.context =
-                    (contextAspect && contextAspect['elements']) ? contextAspect['elements'][0] : {};
+
+                networkController.context = {};
+
+                if (contextAspect) {
+                    if (contextAspect['elements']) {
+                        networkController.context =  contextAspect['elements'][0];
+                    } else {
+                        networkController.context = contextAspect[0];
+                    }
+                }
+
+                //networkController.context =
+                //    (contextAspect && contextAspect['elements']) ? contextAspect['elements'][0] : {};
 
                 var keys = Object.keys(networkController.context);
 
-                
                 // now, let's lower-case all keys in networkController.context
                 for (var i = 0; i < keys.length; i++) {
 
@@ -709,6 +712,7 @@ ndexApp.controller('networkViewController',
                                 var id= Number(edge.id());
                                 cxEdges.push( networkService.getEdgeInfo(id));
                             });
+
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
