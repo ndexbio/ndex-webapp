@@ -267,6 +267,11 @@ ndexApp.controller('networkViewController',
                         URI = URI + "/";
                     }
 
+                    if (value.startsWith('CHEMBL')) {
+                        // remove ":" from  CHEMBL since the pattern for CHEMBL Id is '^CHEMBL\d+$'
+                        value = value.replace(':', '');
+                    }
+
                     attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
 
                     return attributeValue;
