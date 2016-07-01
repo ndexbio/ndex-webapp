@@ -710,7 +710,6 @@ ndexApp.controller('networkViewController',
                                 cxEdges.push( networkService.getEdgeInfo(id));
                             });
 
-                            $scope.getContextAspectFromNiceCX();
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
@@ -916,6 +915,9 @@ ndexApp.controller('networkViewController',
 
 
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
+
+                $scope.getContextAspectFromNiceCX();
+
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
