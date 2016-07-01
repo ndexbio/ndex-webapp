@@ -1017,12 +1017,14 @@ ndexApp.controller('networkViewController',
                                   "queryString": networkController.searchString,
                                   "queryDepth" : networkController.searchDepth.value
                               };
-                            var networkAttrList = [];
-                            networkAttrList.push({'n': 'name', 'v': resultName });
+
+                            cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
+                       //     var networkAttrList = [];
+                        //    networkAttrList.push({'n': 'name', 'v': resultName });
                     //        networkAttrList.push ( {'n': 'queryString' , 'v': networkController.searchString });
                     //        networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
 
-                            network["networkAttributes"] = networkAttrList;
+                         //   network["networkAttributes"] = networkAttrList;
                             drawCXNetworkOnCanvas(network,true);
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;
@@ -1098,8 +1100,6 @@ ndexApp.controller('networkViewController',
                                 $scope.progress = ("Failed to save query result to NDEx. Please try again later. \nErrror message: " + msg );
 
                             });
-
-                           // saveSubnetwork($modalInstance, $scope);
 
                         };
                     }
@@ -1191,8 +1191,9 @@ ndexApp.controller('networkViewController',
                                 "nodeFilter": postData.nodeFilter
                             };
 
-                            var networkAttrList = [];
-                            networkAttrList.push({'n': 'name', 'v': resultName });
+                            cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
+                          //  var networkAttrList = [];
+                          //  networkAttrList.push({'n': 'name', 'v': resultName });
 
                         /*    if ( postData.edgeFilter && postData.edgeFilter.propertySpecifications.length > 0 ) {
                                 var prop = {'n': 'Edge Filter', 'd' : 'list_of_string'};
@@ -1216,7 +1217,7 @@ ndexApp.controller('networkViewController',
                                 networkAttrList.push (prop);
                             }*/
 
-                            network["networkAttributes"] = networkAttrList;
+                        //    network["networkAttributes"] = networkAttrList;
 
                             drawCXNetworkOnCanvas(network,true);
                             if (!networkController.tabs[0].active )

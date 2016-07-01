@@ -366,19 +366,29 @@ angular.module('ndexServiceApp')
        *-----------------------------------------------------------------------*/
       self.convertNetworkInJSONToNiceCX = function (network) {
 
-          var niceCX = { 'edges': {},
-                         'nodes': {}};
+          var niceCX = {
+              'edges': {},
+              'nodes': {}
+          };
 
-          if ( Object.keys(network.namespaces).length > 0) {
+          if (Object.keys(network.namespaces).length > 0) {
               var nstable = {};
-              niceCX['@context'] = [nstable];
+              niceCX['@context'] = { 'elements': [nstable]} ;
 
               $.each(network.namespaces, function (namespaceId, namespace) {
-                nstable[namespace['prefix']] = namespace['uri'];   
-              /*  _.forEach(namespace, function (value, prefix) {
-                    nstable[prefix] = value;
-                }); */
+                  nstable[namespace['prefix']] = namespace['uri'];
+                  /*  _.forEach(namespace, function (value, prefix) {
+                   nstable[prefix] = value;
+                   }); */
               });
+          }
+
+          if (network.networkAttributes) {
+              var networkAttrs = [];
+              _.forEach(network.networkAttributes, function (attribute){
+                  networkAttrs.push({});
+              });
+              niceCX['networkAttributes'] = {'elements': networkAttrs};
           }
 
           $.each(network.citations, function (citationId, citation) {
@@ -654,7 +664,37 @@ angular.module('ndexServiceApp')
       };
 
 
+       self.setNetworkProperty = function ( niceCX, attributeName, attributeValue, attributeDataType)  {
+           var dType = attributeDataType ? attributeDataType : 'string';
 
+           var value = ( (attributeDataType.substring(0,7) === 'list_of' && typeof attributeValue === 'string') ? JSON.parse(attributeValue) :  attributeValue);
+
+           var attributes = niceCX['networkAttributes'];
+           if (!attributes ) {
+               attributes = {'elements':[{'v' : value,
+                   'd' :  dType,
+                   'n' : attributeName
+               }]};
+               
+           } else {
+               var found = false;
+               _.forEach ( attributes.elements, function (attr) {
+                   if ( attr['n'] === attributeName) {
+                       attr['d'] = dType;
+                       attr['v'] = value;
+                       found = true;
+                       return false;
+                   }
+               });
+               if ( !found ) {
+                   attributes['elements'].push ({'v' : value,
+                       'd' :  dType,
+                       'n' : attributeName
+                   } );
+               }
+           }
+           
+       };
 
 
   }]);
