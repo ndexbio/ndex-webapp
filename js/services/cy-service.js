@@ -160,14 +160,16 @@ angular.module('ndexServiceApp')
                 _.forEach(cxNodes, function (nodeElement) {
                     var cxNodeId = nodeElement['@id'];
                     var nodeData = {'id': cxNodeId};
-                    if (nodeElement.n) {
+
+                    nodeData.name = cxNetworkUtils.getDefaultNodeLabel(niceCX, nodeElement);
+                    /*if (nodeElement.n) {
                         nodeData.name = nodeElement.n;
                     } else if (nodeElement.represents) {
                         nodeData.represents = nodeElement.represents;
                     } else if ( niceCX['functionTerms']) {
                         var functionTerm = niceCX['functionTerms'][cxNodeId] ;
                         if ( functionTerm ) { nodeData.name = cxNetworkUtils.stringifyFunctionTerm(functionTerm); }
-                    }
+                    } */
 
                     nodeMap[cxNodeId] = {data: nodeData};
                 });

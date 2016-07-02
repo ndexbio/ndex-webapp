@@ -523,31 +523,16 @@ ndexApp.controller('networkViewController',
 
             $scope.getNodeName = function(node)
             {
-                if (!node) {
-                    return 'unknown';
-                }
-
-                if (node['n']) {
-                    return node['n'];
-                }
-
-                if (node['name'] && node['name']['v']) {
-                    return node['name']['v'];
-                }
-
-                if (node['id']) {
-                    return node['id'];
-                }
-
-                return 'unknown';
+            
+                return node['_cydefaultLabel'];
             };
 
             $scope.getNodeAttributesNames = function(node) {
-                var attributeNames = _.keys(node);
+                var attributeNames = Object.keys(node);
 
                 var resultList = ['id'];
 
-                //First section will these attributes in order if they exists
+                //First section has these attributes in order if they exists
                 var topList = ['n', 'r','alias','relatedTo','citations'];
                 _(topList).forEach(function (value) {
                     if ( node[value]) {
@@ -555,7 +540,7 @@ ndexApp.controller('networkViewController',
                     }
                 });
 
-                var elementsToRemove = topList.concat(['id', '$$hashKey', '$$expanded']);
+                var elementsToRemove = topList.concat([ '_cydefaultLabel','id', '$$hashKey', '$$expanded']);
 
                 for (i = 0; i < elementsToRemove.length; i++) {
 

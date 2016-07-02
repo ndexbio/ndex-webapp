@@ -270,11 +270,11 @@ angular.module('ndexServiceApp')
           return niceCX['edgeAttributes'];
       };
 
-      self.stringifyFunctionTerm = function (functionTerm) {
+      var stringifyFunctionTerm = function (functionTerm) {
           var params = [];
           angular.forEach(functionTerm.args, function (parameter) {
               if (parameter.f) {
-                  params.push(self.stringifyFunctionTerm(parameter));
+                  params.push(stringifyFunctionTerm(parameter));
               } else {
                   params.push(parameter);
               }
@@ -723,5 +723,21 @@ angular.module('ndexServiceApp')
            
        };
 
+
+      self.getDefaultNodeLabel = function (niceCX, nodeElement) {
+          if (nodeElement.n) {
+                 return nodeElement.n;
+          } else if (nodeElement.represents) {
+             return nodeElement.represents;
+          } else if ( niceCX['functionTerms']) {
+              var functionTerm = niceCX['functionTerms'][nodeElement['@id']] ;
+              if ( functionTerm ) {
+                  return stringifyFunctionTerm(functionTerm);
+              }
+          }
+
+          return nodeElement['@id'];
+
+      };
 
   }]);

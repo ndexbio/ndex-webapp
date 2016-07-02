@@ -104,7 +104,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             if (!localNiceCX) return null;
 
             var node = localNiceCX.nodes[nodeId];
+            
             var nodeInfo = {'id': nodeId,
+                             '_cydefaultLabel': cxNetworkUtils.getDefaultNodeLabel(localNiceCX,node),
                             'n': node.n,
                             'r': node.r
                             };
