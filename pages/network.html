@@ -154,7 +154,8 @@
                     </a>
                 </span>
 
-                <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL"' >
+                <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL" &&
+                    networkController.numberOfBelNetworkNamespacesAsInt == 0' >
                     <a class="btn btn-primary customButtonWidth">
                         <archive-bel-namespaces  ndex-data='networkController.currentNetwork.externalId'>
                             Archive BEL Namespaces
