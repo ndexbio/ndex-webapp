@@ -136,9 +136,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
 
-        $scope.main.signout = function () {
+        $scope.main.signout = function (noRedirectToHome) {
             $scope.$emit('LOGGED_OUT');
-            $location.path("/");
+            if (!noRedirectToHome){
+                $location.path("/");
+            }
         };
 
         $scope.main.handleStorageEvent = function(event)
@@ -166,7 +168,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         if( lastHeartbeat )
         {
             if( Date.now() - lastHeartbeat > config.idleTime * 1000 )
-                $scope.main.signout();
+                $scope.main.signout(true); // true = no redirect to home
         }
 
         var recordHeartbeat = function()
@@ -223,6 +225,14 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             Users : "Search for users",
             Groups : "Search for groups"
         };
+
+        $scope.main.searchUsersExamples = [
+            {
+                description: 'Any occurance of "NCI" the name of the user',
+                searchString: 'NCI',
+                searchType: 'Users'
+            }
+        ];
         
         $scope.main.getSearchPlaceholder = function(){
             //console.log("placeholder for " + $scope.main.searchType);
@@ -579,7 +589,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.aboutLink.label = "About";
             }
             if (typeof config.aboutLink.href === 'undefined') {
-                config.aboutLink.href = "http://www.ndexbio.org/about-ndex";
+                config.aboutLink.href = "http://home.ndexbio.org/about-ndex";
             }
             if (typeof config.aboutLink.warning === 'undefined') {
                 config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
@@ -595,7 +605,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.documentationLink.label = "Docs";
             }
             if (typeof config.documentationLink.href === 'undefined') {
-                config.documentationLink.href = "http://www.ndexbio.org/quick-start";
+                config.documentationLink.href = "http://home.ndexbio.org/quick-start";
             }
             if (typeof config.documentationLink.warning === 'undefined') {
                 config.documentationLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
@@ -628,7 +638,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.reportBugLink.label = "Report Bug";
             }
             if (typeof config.reportBugLink.href === 'undefined') {
-                config.reportBugLink.href = "http://www.ndexbio.org/report-a-bug";
+                config.reportBugLink.href = "http://home.ndexbio.org/report-a-bug";
             }
             if (typeof config.reportBugLink.warning === 'undefined') {
                 config.reportBugLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
@@ -644,7 +654,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.contactUsLink.label = "Contact Us";
             }
             if (typeof config.contactUsLink.href === 'undefined') {
-                config.contactUsLink.href = "http://www.ndexbio.org/contact-us/";
+                config.contactUsLink.href = "http://home.ndexbio.org/contact-us/";
             }
             if (typeof config.contactUsLink.warning === 'undefined') {
                 config.contactUsLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
@@ -661,7 +671,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.searchDocLink.label = "Documentation on Searching in NDEx";
             }
             if (typeof config.searchDocLink.href === 'undefined') {
-                config.searchDocLink.href = "http://www.ndexbio.org/finding-and-querying-networks/";
+                config.searchDocLink.href = "http://home.ndexbio.org/finding-and-querying-networks/";
             }
             if (typeof config.searchDocLink.warning === 'undefined') {
                 config.searchDocLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";

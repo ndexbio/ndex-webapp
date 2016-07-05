@@ -54,7 +54,6 @@ h1, h2, h3, h4, h5, h6
 
     font-weight: 200;
     letter-spacing:1px;
-    //margin-bottom: 1em;
 }
 
 legend
@@ -121,7 +120,6 @@ td
 th
 {
     font-size: 1.15em;
-    //font-weight: bold;
     margin: 0;
     padding: 3px 7px;
 }
@@ -137,7 +135,6 @@ textarea
 
 .marginsForNGView {
     margin-left: 20px;
-    //margin-right:20px;
     padding-left: 20px;
     padding-right: 20px;
 }
@@ -704,11 +701,6 @@ ul.ndex-nav-pills > li > a:hover {
     font-size: 1.1em;
     font-weight: bold;
 
-    //padding-left: 10px;
-    //padding-top: 10px;
-    //padding-right: 10px;
-    //padding-bottom: 10px;
-
     line-height: 1;
 }
 
@@ -733,15 +725,13 @@ ul.ndex-nav-pills > li > a:hover {
 
 .selected-navbar-item {
     color: #ffffff !important;
-    background: #555;  // default value in Bootstrap is #333
+    background: #555;
     font-weight: bold;
-    //font-size: 1.1em;
 }
 
 .nav.navbar-nav.navbar-left li a:hover,
 .nav.navbar-nav.navbar-right li a:hover {
     color: #ffffff !important;
-    background: #555;  // default value in Bootstrap is #333
+    background: #555;
     font-weight: bold;
-    //font-size: 1.1em;
 }
