@@ -461,12 +461,16 @@ ndexApp.controller('networkViewController',
 
                 } else if (attr.startsWith('chebi')) {
 
-                    if (!isNaN(value)) {
+                    // valid CHEBI Entity identifier is described by this
+                    // regular expression: '^CHEBI:\d+$'
+                    var isCHEBIIdValid = /^CHEBI:\d+$/.test(value);
 
-                        // valid CHEBI Entity identifier is described by this
-                        // regular expression: '^CHEBI:\d+$'
-                        // but here we already know that value is a number, so no need to use regex for
-                        // validating entityId
+                    if (isCHEBIIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/chebi/' + value + '">' + attribute + '</a>';
+
+                    } else if (!isNaN(value)) {
 
                         attributeValue =
                             '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + value + '">'
