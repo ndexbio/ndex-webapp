@@ -792,7 +792,7 @@ ndexApp.controller('networkViewController',
              *-----------------------------------------------------------------------*/
             var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
-                //console.log(cyElements);
+                console.log(cyElements);
 
                 $(function () { // on dom ready
 
@@ -825,7 +825,8 @@ ndexApp.controller('networkViewController',
 
                             });
                             _.forEach(cy.$("edge:selected"), function (edge) {
-                                var id= Number(edge.id());
+                                var idstr = edge.id();
+                                var id= Number(idstr.substring(1));
                                 cxEdges.push( networkService.getEdgeInfo(id));
                             });
 
@@ -852,7 +853,7 @@ ndexApp.controller('networkViewController',
                                 }
                             });
                         }, 300) ;
-                    });
+                    }); 
 
 
                     // handles the linked networks.

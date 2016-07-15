@@ -225,7 +225,7 @@ angular.module('ndexServiceApp')
                 _.forEach(cxEdges, function (element) {
                     var cxEdgeId = element['@id'];
                     var edgeData = {
-                        id: cxEdgeId,
+                        id: 'e'+cxEdgeId,
                         source: element.s,
                         target: element.t
                     };
@@ -514,7 +514,7 @@ angular.module('ndexServiceApp')
                 var cyVisualAttributePair = {};
                 cyVisualAttributePair[cyVisualAttribute] = cyVisualAttributeValue;
                 var element = {'selector': cySelector, 'css': cyVisualAttributePair};
-                console.log(element);
+             //   console.log(element);
                 elements.push(element);
             });
             return elements;
@@ -532,7 +532,7 @@ angular.module('ndexServiceApp')
 
             var previousTranslatedPoint = null;
 
-            console.log('m =' + JSON.stringify(def.m) );
+//            console.log('m =' + JSON.stringify(def.m) );
 
             _.forEach(def.m, function (point, index) {
 
@@ -555,8 +555,8 @@ angular.module('ndexServiceApp')
                 var greaterSelector = null;
                 var greaterCSS = {};
 
-                console.log('tp = ' + JSON.stringify(translatedPoint));
-                console.log('ptp = ' + JSON.stringify(previousTranslatedPoint));
+//                console.log('tp = ' + JSON.stringify(translatedPoint));
+//                console.log('ptp = ' + JSON.stringify(previousTranslatedPoint));
 
                 var i = parseInt(index);
 
@@ -809,7 +809,7 @@ angular.module('ndexServiceApp')
                                 edgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                             }
                         });
-                        var edgeSelector = 'edge[ id = \'' + edgeId + '\' ]';
+                        var edgeSelector = 'edge[ id = \'e' + edgeId + '\' ]';
                         var edgeStyle = {'selector': edgeSelector, 'css': edgeProperties};
                         edge_specific_styles.push(edgeStyle);
 
