@@ -49,6 +49,7 @@ ndexApp.controller('networkViewController',
             networkController.edgePropertyNamesForAdvancedQuery = undefined;
             networkController.nodePropertyNamesForAdvancedQuery = undefined;
 
+            networkController.numberOfBelNetworkNamespacesAsInt = 0;
 
             networkController.context = {};
 
@@ -460,12 +461,16 @@ ndexApp.controller('networkViewController',
 
                 } else if (attr.startsWith('chebi')) {
 
-                    if (!isNaN(value)) {
+                    // valid CHEBI Entity identifier is described by this
+                    // regular expression: '^CHEBI:\d+$'
+                    var isCHEBIIdValid = /^CHEBI:\d+$/.test(value);
 
-                        // valid CHEBI Entity identifier is described by this
-                        // regular expression: '^CHEBI:\d+$'
-                        // but here we already know that value is a number, so no need to use regex for
-                        // validating entityId
+                    if (isCHEBIIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/chebi/' + value + '">' + attribute + '</a>';
+
+                    } else if (!isNaN(value)) {
 
                         attributeValue =
                             '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + value + '">'
@@ -1402,6 +1407,11 @@ ndexApp.controller('networkViewController',
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
+                            if ("BEL" === networkController.currentNetwork.sourceFormat) {
+                                // for BEL networks, check if Namespaces have been archived
+                                getNumberOfBelNetworkNamespaces();
+                            }
+
                             networkController.currentNetwork.reference = networkService.getNetworkProperty('Reference');
                             networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty('rightsHolder');
                             networkController.currentNetwork.rights = networkService.getNetworkProperty('rights');
@@ -1420,7 +1430,32 @@ ndexApp.controller('networkViewController',
                     );
 
             };
-            
+
+            var getNumberOfBelNetworkNamespaces = function()
+            {
+                ndexService.getNumberOfBelNetworkNamespaces(networkController.currentNetworkId,
+                    function(data)
+                    {
+                        networkController.numberOfBelNetworkNamespaces = "Not Archived";
+
+                        var i = 0;
+                        for (i = 0; i < data.metaData.length; i++) {
+
+                            if (data.metaData[i].name.toLowerCase() === 'belnamespacefiles') {
+                                if (data.metaData[i].elementCount > 0) {
+                                    networkController.numberOfBelNetworkNamespaces = "Archived (" +
+                                        data.metaData[i].elementCount + ")";
+                                    networkController.numberOfBelNetworkNamespacesAsInt = data.metaData[i].elementCount;
+                                }
+                                return;
+                            }
+                        }
+                    },
+                    function(error)
+                    {
+                        networkController.numberOfBelNetworkNamespaces = "Can't retrieve";
+                    });
+            };
 
             var getMembership = function (callback) {
                 ndexService.getMyMembership(networkController.currentNetworkId,

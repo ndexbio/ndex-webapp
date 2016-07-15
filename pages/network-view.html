@@ -162,7 +162,7 @@
                         <div class='wrapLongLine rowWithOneLineTopPad'
                              ng-show="networkController.currentNetwork.description"
                              style="margin-right: 1px;">
-                            <span class="networkPropertyName">Description </span>
+                            <span class="networkPropertyName">Description: </span>
                             <span ng-bind-html="networkController.currentNetwork.description"></span>
                         </div>
 
@@ -182,13 +182,18 @@
                         <div class='wrapLongLine rowWithOneLineTopPad'
                              ng-show="networkController.currentNetwork.reference"
                              style="margin-right: 1px;">
-                            <span class="networkPropertyName">Reference </span>
+                            <span class="networkPropertyName">Reference: </span>
                             <span ng-bind-html="networkController.currentNetwork.reference"></span>
                         </div>
 
                         <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
                             <span class="networkPropertyName">Version: </span>
                             {{networkController.currentNetwork.version}}
+                        </div>
+
+                        <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.sourceFormat=="BEL"'>
+                            <span class="networkPropertyName">BEL Namespaces:</span>
+                            {{networkController.numberOfBelNetworkNamespaces}}
                         </div>
 
                         <div class='rowWithOneLineTopPad'>
@@ -649,7 +654,8 @@
                 </a>
             </span>
 
-            <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL"'>
+            <span ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
+                           networkController.numberOfBelNetworkNamespacesAsInt == 0'>
                 <a class="btn btn-primary customButtonWidth">
                     <archive-bel-namespaces ndex-data='networkController.currentNetwork.externalId'>
                         Archive BEL Namespaces
@@ -657,7 +663,7 @@
                 </a>
             </span>
 
-            <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL" &&
+            <span ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
                 networkController.numberOfBelNetworkNamespacesAsInt > 0'>
                 <a class="btn btn-primary customButtonWidth">
                     <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
