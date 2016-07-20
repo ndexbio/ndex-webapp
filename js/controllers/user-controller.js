@@ -572,11 +572,29 @@ ndexApp.controller('userController',
                     userController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
                 }
 
+                // the table footer may
+                // still show that some networks are selected (must be a bug), so
+                // we manually set the selected count to 0
+                $scope.networkGridApi.grid.selection.selectedCount = 0;
+
+                // we also need to manually set the selectAll property to false in case
+                // user selected all networks and then refreshes the Tasks tab. In this case the Top selector
+                // to the left from Network Name is still on/checked, so wee need to unset it.
+                $scope.networkGridApi.grid.selection.selectAll = false;
+
                 ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks)
                     {
-                        userController.getNetworksWithAdminAccess();
-                        userController.getNetworksWithWriteAccess();
+                        var numberOfNetworksReceived = networks.length;
+                        if (numberOfNetworksReceived > 0) {
+                            userController.getNetworksWithAdminAccess(numberOfNetworksReceived);
+                            userController.getNetworksWithWriteAccess(numberOfNetworksReceived);
+                        } else {
+                            // this might be redundant -- userController.networksWithAdminAccess and
+                            // userController.networksWithWriteAccess must be empty here
+                            userController.networksWithAdminAccess = [];
+                            userController.networksWithWriteAccess = [];
+                        }
                         userController.networkSearchResults = networks;
                         populateNetworkTable();
                     },
@@ -627,7 +645,7 @@ ndexApp.controller('userController',
                 )
             };
 
-            userController.getNetworksWithAdminAccess = function ()
+            userController.getNetworksWithAdminAccess = function (numberOfNetworks)
             {
                 // get all networks for which the current user has ADMIN privilege.
                 // These networks include both networks owned by current user and by other accounts.
@@ -635,7 +653,7 @@ ndexApp.controller('userController',
                     sharedProperties.getCurrentUserId(),
                     "ADMIN",
                     0,
-                    100,
+                    numberOfNetworks,
                     // Success
                     function (networks)
                     {
@@ -653,7 +671,7 @@ ndexApp.controller('userController',
                 )
             };
 
-            userController.getNetworksWithWriteAccess = function ()
+            userController.getNetworksWithWriteAccess = function (numberOfNetworks)
             {
                 // get all networks for which the current user has WRITE privilege.
                 // These networks include both networks owned by current user and by other accounts.
@@ -661,7 +679,7 @@ ndexApp.controller('userController',
                     sharedProperties.getCurrentUserId(),
                     "WRITE",
                     0,
-                    100,
+                    numberOfNetworks,
                     // Success
                     function (networks)
                     {
