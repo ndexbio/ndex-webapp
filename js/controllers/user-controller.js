@@ -587,8 +587,8 @@ ndexApp.controller('userController',
                     {
                         var numberOfNetworksReceived = networks.length;
                         if (numberOfNetworksReceived > 0) {
-                            userController.getNetworksWithAdminAccess(numberOfNetworksReceived);
-                            userController.getNetworksWithWriteAccess(numberOfNetworksReceived);
+                            userController.getNetworksWithAdminAccess();
+                            userController.getNetworksWithWriteAccess();
                         } else {
                             // this might be redundant -- userController.networksWithAdminAccess and
                             // userController.networksWithWriteAccess must be empty here
@@ -645,7 +645,7 @@ ndexApp.controller('userController',
                 )
             };
 
-            userController.getNetworksWithAdminAccess = function (numberOfNetworks)
+            userController.getNetworksWithAdminAccess = function ()
             {
                 // get all networks for which the current user has ADMIN privilege.
                 // These networks include both networks owned by current user and by other accounts.
@@ -653,7 +653,7 @@ ndexApp.controller('userController',
                     sharedProperties.getCurrentUserId(),
                     "ADMIN",
                     0,
-                    numberOfNetworks,
+                    1000000, //numberOfNetworks,
                     // Success
                     function (networks)
                     {
@@ -671,7 +671,7 @@ ndexApp.controller('userController',
                 )
             };
 
-            userController.getNetworksWithWriteAccess = function (numberOfNetworks)
+            userController.getNetworksWithWriteAccess = function ()
             {
                 // get all networks for which the current user has WRITE privilege.
                 // These networks include both networks owned by current user and by other accounts.
@@ -679,7 +679,7 @@ ndexApp.controller('userController',
                     sharedProperties.getCurrentUserId(),
                     "WRITE",
                     0,
-                    numberOfNetworks,
+                    1000000,//numberOfNetworks,
                     // Success
                     function (networks)
                     {

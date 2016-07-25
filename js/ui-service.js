@@ -1011,6 +1011,21 @@
                     $scope.network.visibility = $scope.ndexData.visibility;
                 };
 
+                $scope.getIndexOfReference = function(properties) {
+                    var index = properties.length;
+
+                    for (var i = 0; i < properties.length; i++) {
+
+                        if (properties[i].predicateString &&
+                            properties[i].predicateString.toLowerCase() === 'reference') {
+
+                            return i;
+                        }
+                    }
+
+                    return index;
+                };
+
                 $scope.submit = function() {
                     if( $scope.isProcessing )
                         return;
@@ -1032,7 +1047,9 @@
 
                             properties = $scope.ndexData.properties;
 
-                            properties[properties.length] =
+                            var indexOfReference = $scope.getIndexOfReference(properties);
+
+                            properties[indexOfReference] =
                                 { "predicateString" : "Reference",
                                   "value"           : $scope.network.reference,
                                   "dataType"        : "string",
@@ -1077,7 +1094,7 @@
         }
     });
 
-    // modal to bulk edit networks property (description, version or visibility)
+    // modal to bulk edit networks property (description, reference, version or visibility)
     uiServiceApp.directive('bulkEditNetworkProperty', function() {
         return {
             scope: {
@@ -1099,9 +1116,14 @@
 
                     $scope.network = {};
 
-                    $scope.network.description = null;
-                    $scope.network.version = null;
-                    $scope.network.visibility = null;
+                    // the following properties should be set to "", not to null; null
+                    // doesn't work correctly in case you enter an empty bulk value -- it is
+                    // replaced by string that starts with "\n" and followed by some spaces,
+                    // like "\n      "
+                    $scope.network.description = "";
+                    $scope.network.version = "";
+                    $scope.network.visibility = "";
+                    $scope.network.reference = "";
 
                     var checkWritePrivilege = true;
                     var networksUpdateable =
@@ -1132,6 +1154,42 @@
                     $scope.network = {};
                 };
 
+                $scope.getNetworkProperties = function(networkId, userController) {
+                    var properties = [];
+
+                    if (!userController || !userController.networkSearchResults) {
+                        return properties;
+                    }
+
+                    for (var i = 0; i < userController.networkSearchResults.length; i++) {
+                        var networkObj = userController.networkSearchResults[i]
+
+                        if (networkId === networkObj.externalId) {
+                            if (networkObj.properties) {
+                                properties = networkObj.properties;
+                            }
+                            break;
+                        }
+                    }
+
+                    return properties;
+                }
+
+                $scope.getIndexOfReference = function(properties) {
+                    var index = properties.length;
+
+                    for (var i = 0; i < properties.length; i++) {
+
+                        if (properties[i].predicateString &&
+                            properties[i].predicateString.toLowerCase() === 'reference') {
+
+                            return i;
+                        }
+                    }
+
+                    return index;
+                }
+
                 $scope.submit = function() {
                     if( $scope.isProcessing )
                         return;
@@ -1151,6 +1209,8 @@
                         var myNet = {};
                         myNet.networkId = networkId;
 
+                        var properties = [];
+
                         if (operation === 'description') {
                             myNet.description = $scope.network.description;
 
@@ -1159,32 +1219,71 @@
 
                         } else if (operation === 'visibility') {
                             myNet.visibility = $scope.network.visibility;
+
+                        } else if (operation === 'reference') {
+                            properties  = $scope.getNetworkProperties(networkId, userController);
+                            var indexOfReference = $scope.getIndexOfReference(properties);
+
+                            properties[indexOfReference] =
+                                {
+                                    "predicateString" : "Reference",
+                                    "value"           : $scope.network.reference,
+                                    "dataType"        : "string",
+                                    "subNetworkId"    : null
+                                };
+
+                        }
+
+                        if (operation === 'reference') {
+
+                            ndexService.setNetworkProperties(networkId, properties,
+                                function (data) {
+                                    createdTasksCounter = createdTasksCounter + 1;
+
+                                    if (i == createdTasksCounter) {
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+                                    }
+                                },
+
+                                function (error) {
+                                    createdTasksCounter = createdTasksCounter + 1;
+
+                                    if (i == createdTasksCounter) {
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+
+                                    }
+                                });
+
+                        } else {
+
+                            ndexService.editNetworkSummary(networkId, myNet,
+                                function (data) {
+                                    createdTasksCounter = createdTasksCounter + 1;
+
+                                    if (operation === 'visibility') {
+                                        userController.updateVisibilityOfNetwork(data.networkId, myNet.visibility);
+                                    }
+
+                                    if (i == createdTasksCounter) {
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+                                    }
+                                },
+                                function (error) {
+                                    createdTasksCounter = createdTasksCounter + 1;
+
+                                    if (i == createdTasksCounter) {
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+
+                                    }
+                                }
+                            )
                         }
 
 
-                        ndexService.editNetworkSummary(networkId, myNet,
-                            function(data) {
-                                createdTasksCounter =  createdTasksCounter + 1;
-
-                                if (operation === 'visibility') {
-                                    userController.updateVisibilityOfNetwork(data.networkId, myNet.visibility);
-                                }
-
-                                if (i == createdTasksCounter) {
-                                    $scope.isProcessing = false;
-                                    modalInstance.close();
-                                }
-                            },
-                            function(error) {
-                                createdTasksCounter =  createdTasksCounter + 1;
-
-                                if (i == createdTasksCounter) {
-                                    $scope.isProcessing = false;
-                                    modalInstance.close();
-
-                                }
-                            }
-                        )
                     }
                 };
             }

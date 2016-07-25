@@ -30,6 +30,21 @@
                     </div>
                 </div>
 
+
+                <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='reference'">
+                    <label class="col-sm-3 control-label">Reference</label>
+                    <div class="col-sm-8">
+                        <text-angular
+                                ta-toolbar-class="btn-toolbar"
+                                ta-toolbar-group-class="btn-group btn-group-xs"
+                                ta-toolbar-button-class="btn btn-default"
+                                ta-toolbar-button-active-class="active"
+                                ta-default-wrap="div"
+                                ng-model='network.reference'>
+                        </text-angular>
+                    </div>
+                </div>
+
                 <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='version'">
                     <label class="col-sm-3 control-label">Version</label>
                     <div class="col-sm-8">
@@ -73,6 +88,12 @@
                         ng-disabled='isProcessing'
                         ng-show="action=='description'"
                         ng-click="network.operation='description'">Change Description</button>
+
+                <button class="btn btn-primary"
+                        type='submit'
+                        ng-disabled='isProcessing'
+                        ng-show="action=='reference'"
+                        ng-click="network.operation='reference'">Change Reference</button>
 
                 <button class="btn btn-primary"
                         type='submit'
