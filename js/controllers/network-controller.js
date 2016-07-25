@@ -419,10 +419,12 @@ ndexApp.controller('networkController',
             //                  scope functions
 
             // queries within a network
-            networkController.submitNetworkQuery = function (networkQueryLimit) {
+            networkController.submitNetworkQuery = function () {
 
                 // var to keep the reference to http call to call abort method;
                 var request = null;
+
+                var networkQueryLimit = config.networkQueryLimit;
 
 
                 // replace with in page loader
@@ -442,7 +444,10 @@ ndexApp.controller('networkController',
                 // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
                 // reference and lose access to the .abort method.
                 // David says: The last parameter is the edgeLimit. We are using this in the Web App temporarily.
-                (request = ndexService.queryNetwork(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, networkQueryLimit) )
+                (request = ndexService.queryNetwork(networkController.currentNetworkId,
+                                                    networkController.searchString,
+                                                    networkController.searchDepth.value,
+                                                    networkQueryLimit) )
                     .success(
                     function (network, json) {
                         //console.log("got query results for : " + networkController.searchString);

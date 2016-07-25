@@ -1133,6 +1133,9 @@ ndexApp.controller('networkViewController',
                 networkService.neighborhoodQueryFromOldAPI(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value)
                     .success(
                         function (network) {
+                            // success - remove old error messages, if any
+                            networkController.queryErrors = [];
+
                             var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
                             networkController.successfullyQueried = true;
                             networkController.currentNetwork =
@@ -1161,7 +1164,7 @@ ndexApp.controller('networkViewController',
                             if (error.status != 0) {
                                 if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {
-                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + networkQueryLimit);
+                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + config.networkQueryLimit);
                                 }
                                 else
                                 {
