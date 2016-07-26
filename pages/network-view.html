@@ -128,19 +128,19 @@
                         </div>
 
                         <div ng-show = "!networkController.successfullyQueried">
-                        <span class="networkVisibilityValue">{{networkController.currentNetwork.visibility}} </span>
-                        &nbsp;&nbsp;
+                            <span class="networkVisibilityValue">{{networkController.currentNetwork.visibility}} </span>
+                            &nbsp;&nbsp;
 
-                        <span class="networkPropertyName" ng-show="networkController.isAdmin">
-                            <input type="checkbox"
-                               ng-model="networkController.readOnlyChecked"
-                               ng-change="readOnlyChanged()"> Read Only
-                        </span>
-                        <br />
-                        <br />
+                            <span class="networkPropertyName" ng-show="networkController.isAdmin">
+                                <input type="checkbox"
+                                    ng-model="networkController.readOnlyChecked"
+                                    ng-change="readOnlyChanged()"> Read Only
+                            </span>
+                            <br />
+                            <br />
 
-                        <span class="networkPropertyName">Created: </span>
-                        {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
+                            <span class="networkPropertyName">Created: </span>
+                            {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
 
                             <span ng-show="(networkController.currentNetwork.creationTime | date) !=
                                            (networkController.currentNetwork.modificationTime | date)">
@@ -148,23 +148,23 @@
                                 {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
                             </span>
 
-                        <span class="networkPropertyName">UUID: </span>
-                        {{networkController.currentNetwork.externalId}}<br/>
+                            <span class="networkPropertyName">UUID: </span>
+                            {{networkController.currentNetwork.externalId}}<br/>
 
-                        <span class="networkPropertyName">Format: </span>
-                        {{networkController.currentNetwork.sourceFormat}}<br/>
+                            <span class="networkPropertyName">Format: </span>
+                            {{networkController.currentNetwork.sourceFormat}}<br/>
 
-                            <span ng-show="networkController.privilegeLevel">
+                            <span>
                                 <span class="networkPropertyName">Your Privileges: </span>
                                 {{networkController.privilegeLevel}}<br/>
                             </span>
 
-                        <div class='wrapLongLine rowWithOneLineTopPad'
-                             ng-show="networkController.currentNetwork.description"
-                             style="margin-right: 1px;">
-                            <span class="networkPropertyName">Description: </span>
-                            <span ng-bind-html="networkController.currentNetwork.description"></span>
-                        </div>
+                            <div class='wrapLongLine rowWithOneLineTopPad'
+                                 ng-show="networkController.currentNetwork.description"
+                                 style="margin-right: 1px;">
+                                <span class="networkPropertyName">Description: </span>
+                                <span ng-bind-html="networkController.currentNetwork.description"></span>
+                            </div>
 
                             <span ng-show="networkController.currentNetwork.rightsHolder">
                                 <br/>
@@ -179,58 +179,57 @@
                             </span>
 
 
-                        <div class='wrapLongLine rowWithOneLineTopPad'
-                             ng-show="networkController.currentNetwork.reference"
-                             style="margin-right: 1px;">
-                            <span class="networkPropertyName">Reference: </span>
-                            <span ng-bind-html="networkController.currentNetwork.reference"></span>
-                        </div>
-
-                        <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
-                            <span class="networkPropertyName">Version: </span>
-                            {{networkController.currentNetwork.version}}
-                        </div>
-
-                        <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.sourceFormat=="BEL"'>
-                            <span class="networkPropertyName">BEL Namespaces:</span>
-                            {{networkController.numberOfBelNetworkNamespaces}}
-                        </div>
-
-                        <div class='rowWithOneLineTopPad'>
-                            <span class="networkPropertyName">Properties</span>
-
-                            <div class="networkPropertiesNameMargins">
-
-                                    <span class='' ng-repeat='property in networkController.otherProperties'>
-                                        <span>
-                                           <span class="networkPropertiesNameFont">{{property.predicateString}}:
-                                           </span>
-                                           <span class="networkPropertiesValueFont"
-                                                 ng-hide='property.value.toString().length > 40'
-                                                 ng-bind-html="property.value.toString()">
-                                           </span>
-                                           <span class="networkPropertiesValueFont"
-                                                 ng-show='property.value.toString().length > 40'
-                                                 ng-bind-html="property.value.slice(0, 45 - property.predicateString.length)
-                                                +'&shy'+
-                                               property.value.slice(45 - property.predicateString.length, property.value.length)">
-                                           </span>
-                                           <br/>
-                                        </span>
-                                    </span>
-
+                            <div class='wrapLongLine rowWithOneLineTopPad'
+                                 ng-show="networkController.currentNetwork.reference"
+                                 style="margin-right: 1px;">
+                                <span class="networkPropertyName">Reference: </span>
+                                <span ng-bind-html="networkController.currentNetwork.reference"></span>
                             </div>
 
-                            <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
-                                <a class='btn-link'
-                                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}"
-                                   ng-click="setReturnView('newNetwork/')">
-                                    Add / Edit Properties
-                                </a>
-                            </h5>
+                            <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
+                                <span class="networkPropertyName">Version: </span>
+                                {{networkController.currentNetwork.version}}
+                            </div>
 
-                        </div>
+                            <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.sourceFormat=="BEL"'>
+                                <span class="networkPropertyName">BEL Namespaces:</span>
+                                {{networkController.numberOfBelNetworkNamespaces}}
+                            </div>
 
+                            <div class='rowWithOneLineTopPad'>
+                                <span class="networkPropertyName">Properties:</span>
+
+                                <div class="networkPropertiesNameMargins">
+
+                                        <span class='' ng-repeat='property in networkController.otherProperties'>
+                                            <span>
+                                               <span class="networkPropertiesNameFont">{{property.predicateString}}:
+                                               </span>
+                                               <span class="networkPropertiesValueFont"
+                                                     ng-hide='property.value.toString().length > 40'
+                                                     ng-bind-html="property.value.toString()">
+                                               </span>
+                                               <span class="networkPropertiesValueFont"
+                                                     ng-show='property.value.toString().length > 40'
+                                                     ng-bind-html="property.value.slice(0, 45 - property.predicateString.length)
+                                                    +'&shy'+
+                                                   property.value.slice(45 - property.predicateString.length, property.value.length)">
+                                               </span>
+                                               <br/>
+                                            </span>
+                                        </span>
+
+                                </div>
+
+                                <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
+                                    <a class='btn-link'
+                                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}"
+                                       ng-click="setReturnView('newNetwork/')">
+                                        Add / Edit Properties
+                                    </a>
+                                </h5>
+
+                            </div>
                         </div>
                     </div>
 
@@ -635,8 +634,7 @@
                 </a>
             </span>
 
-            <!--<span ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>-->
-            <span ng-hide='true'>
+            <span ng-hide='!networkController.isLoggedIn || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
                 <a class="btn btn-primary customButtonWidth">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
@@ -645,7 +643,6 @@
                     </create-request-network>
                 </a>
             </span>
-
 
             <span ng-show='networkController.isLoggedIn && networkController.isAdmin'>
                 <a class="btn btn-primary" style="width: 120px;"
