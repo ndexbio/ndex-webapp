@@ -1082,13 +1082,12 @@ ndexApp.controller('networkViewController',
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
-                var displayLimit = config.networkDisplayLimit;
+                var hasLayout = networkService.getNetworkProperty('hasLayout');
+                if ( hasLayout == undefined )
+                    hasLayout = false;
 
-                if ( networkService.getNetworkProperty('hasLayout'))  {
-                    displayLimit = 12000;
-                }
-
-                if ( networkController.currentNetwork.edgeCount > displayLimit) {
+                if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
+                    (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
                     // get edges, convert to CX obj
                     networkController.isSample = true;
                     (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkDisplayLimit) )
