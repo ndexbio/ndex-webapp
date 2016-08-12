@@ -17,21 +17,21 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
             var config =
             {
                 headers: {
-                    'Authorization': "Basic " + btoa($scope.signIn.accountName + ":" + $scope.signIn.password)
+                    'Authorization': "Basic " + btoa($scope.signIn.userName + ":" + $scope.signIn.password)
                 }
             };
             $http.get(url, config).success(function (data, status, headers, config, statusText) {
-                sharedProperties.setCurrentUser(data.externalId, data.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-                ndexUtility.setUserCredentials(data.accountName, data.externalId, $scope.signIn.password);
+                sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                ndexUtility.setUserCredentials(data.userName, data.externalId, $scope.signIn.password);
                 $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
                 $location.path("/user/" + data.externalId);
-                $scope.signIn.accountName = null;
+                $scope.signIn.userName = null;
                 $scope.signIn.password = null;
             }).error(function (data, status, headers, config, statusText) {
                 if (status === 401) {
-                    $scope.signIn.message = "Invalid password for user " + $scope.signIn.accountName + ".";
+                    $scope.signIn.message = "Invalid password for user " + $scope.signIn.userName + ".";
                 } else if (status === 404) {
-                    $scope.signIn.message = "User " + $scope.signIn.accountName + " is not known.";
+                    $scope.signIn.message = "User " + $scope.signIn.userName + " is not known.";
                 } else {
                     $scope.signIn.message = "Unexpected error during sign-in with status " + status + ".";
                 }
@@ -79,8 +79,8 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                 function (userData) {
 
                     if (userData.externalId !== null) {
-                        sharedProperties.setCurrentUser(userData.externalId, userData.accountName);
-                        ndexUtility.setUserInfo(userData.accountName, userData.externalId);
+                        sharedProperties.setCurrentUser(userData.externalId, userData.userName);
+                        ndexUtility.setUserInfo(userData.userName, userData.externalId);
                         $scope.$emit('LOGGED_IN');
                         $scope.signIn.cancelSignUp();// doesnt really cancel
                         $location.path('user/' + userData.externalId);
@@ -115,7 +115,7 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                     $scope.forgot = forgot;
                     $scope.resetPassword = function () {
                         var url = ndexService.getNdexServerUri() + '/user/forgot-password';
-                        $http.post(url, $scope.forgot.accountName).success(function (data, status, headers, config) {
+                        $http.post(url, $scope.forgot.userName).success(function (data, status, headers, config) {
                             forgot.done = true;
                             forgot.errorMsg = null;
                             forgot.successMsg = "A new password has been sent to the email of record."

@@ -25,11 +25,11 @@ ndexApp.service('sharedProperties', function () {
         },
         getCurrentUserAccountName: function () {
             //if (!this.currentUserId) this.currentUserId = "C31R4";   // hardwired for testing
-            return this.accountName;
+            return this.userName;
         },
         setCurrentUser: function (value, accountName) {
             this.currentUserId = value;
-            this.accountName = accountName;
+            this.userName = accountName;
         },
         setCurrentQueryTerms: function(currentQueryTerms)
         {

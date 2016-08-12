@@ -18,12 +18,12 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.$on('LOGGED_IN', function () {
             //listener for changes in log in.
             $scope.main.loggedIn = true;
-            $scope.main.accountName = sharedProperties.getCurrentUserAccountName();
+            $scope.main.userName = sharedProperties.getCurrentUserAccountName();
         });
 
         $scope.$on('LOGGED_OUT', function () {
             $scope.main.loggedIn = false;
-            delete $scope.main.accountName;
+            delete $scope.main.userName;
             ndexUtility.clearUserCredentials();
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
@@ -357,7 +357,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         var accountName = ndexUtility.getLoggedInUserAccountName();
         if (accountName) {
             sharedProperties.setCurrentUser(ndexUtility.getLoggedInUserExternalId(), accountName);
-            $scope.main.accountName = accountName;
+            $scope.main.userName = accountName;
             $scope.$emit('LOGGED_IN');
         }
 

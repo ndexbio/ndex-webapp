@@ -71,7 +71,7 @@ ndexServiceApp.factory('ndexService',
                         method: 'POST',
                         interceptor: {
                             response: function (data) {
-                                ndexUtility.setUserInfo(data.data.accountName, data.data.externalId);
+                                ndexUtility.setUserInfo(data.data.userName, data.data.externalId);
                                 return data.data;
                             },
                             responseError: function (data) {
@@ -1017,7 +1017,7 @@ ndexServiceApp.factory('ndexUtility', function () {
 
     factory.setUserCredentials = function (accountName, externalId, token) {
         var loggedInUser = {};
-        loggedInUser.accountName = accountName;
+        loggedInUser.userName = accountName;
         loggedInUser.token = token;
         loggedInUser.externalId = externalId;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
@@ -1031,7 +1031,7 @@ ndexServiceApp.factory('ndexUtility', function () {
                 if (loggedInUser == null)
                     return null;
                 var userData = {
-                    accountName: loggedInUser.accountName,
+                    userName: loggedInUser.userName,
                     externalId: loggedInUser.externalId,
                     token: loggedInUser.token
                 };
@@ -1051,7 +1051,7 @@ ndexServiceApp.factory('ndexUtility', function () {
     factory.setUserInfo = function (accountName, externalId) {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (!loggedInUser) loggedInUser = {};
-        loggedInUser.accountName = accountName;
+        loggedInUser.userName = accountName;
         loggedInUser.externalId = externalId;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
     };
@@ -1065,7 +1065,7 @@ ndexServiceApp.factory('ndexUtility', function () {
     factory.getLoggedInUserAccountName = function () {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (!loggedInUser) loggedInUser = {};
-        return loggedInUser.accountName;
+        return loggedInUser.userName;
     };
 
     factory.getLoggedInUserAuthToken = function () {

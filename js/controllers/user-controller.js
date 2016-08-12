@@ -519,7 +519,7 @@ ndexApp.controller('userController',
 
                 var query = {};
 
-                query.accountName = userController.displayedUser.accountName;
+                query.userName = userController.displayedUser.userName;
                 query.searchString = userController.groupSearchString
                 if (userController.groupSearchAdmin) query.permission = 'GROUPADMIN';
                 if (userController.groupSearchMember) query.permission = 'MEMBER';
@@ -562,7 +562,7 @@ ndexApp.controller('userController',
                     // from the list of found networks on the Network search page (when we are logged in or anonymously)
                     userController.networkQuery.permission = null;
                     userController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
-                    userController.networkQuery.accountName = cUser.accountName;
+                    userController.networkQuery.userName = cUser.userName;
 
                 } else {
 
@@ -742,7 +742,7 @@ ndexApp.controller('userController',
                     var loggedInUser = ndexUtility.getUserCredentials();
 
                     if (loggedInUser &&
-                        ((user.externalId == loggedInUser.userId) || (user.accountName == loggedInUser.accountName)))
+                        ((user.externalId == loggedInUser.userId) || (user.userName == loggedInUser.userName)))
                         userController.isLoggedInUser = true;
 
                     cUser = user;

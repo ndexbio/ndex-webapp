@@ -136,8 +136,8 @@ ndexApp.controller('manageBulkNetworkAccessController',
             return 'undefined';
         }
 
-        if (user.accountName == 'ndexadministrator') {
-            return user.accountName;
+        if (user.userName == 'ndexadministrator') {
+            return user.userName;
         }
 
         if (user.accountType == 'User') {

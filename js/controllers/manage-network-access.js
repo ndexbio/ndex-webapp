@@ -448,8 +448,8 @@ ndexApp.controller('manageNetworkAccessController',
 			return 'undefined';
 		}
 
-		if ((typeof(user.accountName) !== 'undefined') && (user.accountName === 'ndexadministrator')) {
-			return user.accountName;
+		if ((typeof(user.userName) !== 'undefined') && (user.userName === 'ndexadministrator')) {
+			return user.userName;
 		}
 
 		if ((typeof(user.memberAccountName) !== 'undefined') && (user.memberAccountName === 'ndexadministrator')) {

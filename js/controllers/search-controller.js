@@ -209,7 +209,7 @@ ndexApp.controller('searchController',
 
                 ndexService.findNetworks(
                     searchController.searchString,
-                    searchController.accountName,
+                    searchController.userName,
                     searchController.permission,
                     searchController.networkSearchIncludeNetworksByGroupPermissions,
                     searchController.networkSkipPages,
@@ -314,7 +314,7 @@ ndexApp.controller('searchController',
                 {
                     var user = searchController.userSearchResults[i];
 
-                    var userName = user['accountName'];
+                    var userName = user['userName'];
                     var description = stripHTML(user['description']);
                     var externalId = user['externalId'];
                     var firstName = user['firstName'];
@@ -442,7 +442,7 @@ ndexApp.controller('searchController',
                     var groupName = group['groupName'];
                     var description = stripHTML(group['description']);
                     var externalId = group['externalId'];
-                    //var accountName = group['accountName'];
+                    //var userName = group['userName'];
 
 
                     var row = {
@@ -451,7 +451,7 @@ ndexApp.controller('searchController',
                         "externalId"  :   externalId
 
                         /*
-                        "Group Account"   :   accountName
+                        "Group Account"   :   userName
                         */
                     };
 

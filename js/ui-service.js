@@ -98,7 +98,7 @@
                     // but we also need to supply account name to the Server API --
                     // so we create account name by removing all blanks from  Group name.
                     var accountName = $scope.group.groupName.replace(/\s+/g,"");
-                    $scope.group.accountName = accountName;
+                    $scope.group.userName = accountName;
 
                     ndexService.createGroup($scope.group,
                         function(groupData){
@@ -575,7 +575,7 @@
                             $scope.close = function() {
                                 $scope.request = {};
                                 for(var key in $scope.ndexData) {
-                                    $scope.request.destinationName = $scope.ndexData.accountName;
+                                    $scope.request.destinationName = $scope.ndexData.userName;
                                     $scope.request.destinationUUID = $scope.ndexData.externalId;
                                     $scope.request.permissionLabel ='Is member';
                                 }
@@ -609,7 +609,7 @@
 
                             $scope.$watch('ndexData', function(value) {
                                 $scope.request = {};
-                                $scope.request.destinationName = $scope.ndexData.accountName;
+                                $scope.request.destinationName = $scope.ndexData.userName;
                                 $scope.request.destinationUUID = $scope.ndexData.externalId;
                                 $scope.request.permissionLabel ='Is member';
                             });
@@ -664,7 +664,7 @@
 
                     var length = $scope.accounts.length;
                     for(var ii=0; ii<length; ii++) {
-                        if($scope.accounts[ii].accountName == $scope.request.sourceName)
+                        if($scope.accounts[ii].userName == $scope.request.sourceName)
                             $scope.request.sourceUUID = $scope.accounts[ii].externalId;
                     }
 
@@ -716,7 +716,7 @@
 
                     var query = {};
 
-                    query.accountName = ndexUtility.getLoggedInUserAccountName();
+                    query.userName = ndexUtility.getLoggedInUserAccountName();
                     query.permission = 'GROUPADMIN';
 
                     // TODO 0,50 shouldnt be a set number
@@ -727,7 +727,7 @@
                                 $scope.accounts.push(groups[ii]);
                             }
                             $scope.accounts.push({
-                                accountName: ndexUtility.getLoggedInUserAccountName(),
+                                userName: ndexUtility.getLoggedInUserAccountName(),
                                 externalId: ndexUtility.getLoggedInUserExternalId()
                             });
                         },
@@ -1910,7 +1910,7 @@
                         templateUrl: 'confirmation-modal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
-                            $scope.title = 'Leave '+$scope.group.accountName
+                            $scope.title = 'Leave '+$scope.group.userName
                             $scope.message = 'There must be other admin in the group';
 
                             $scope.cancel = function() {

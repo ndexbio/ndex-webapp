@@ -66,8 +66,8 @@
                                 <hr>
                             </div>
                             <div class="form-group">
-                                <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
-                                required autofocus ng-model="signIn.accountName">
+                                <input name="userName" type="userName" class="form-control" placeholder="Account Name"
+                                required autofocus ng-model="signIn.userName">
                             </div>
                             <div class="form-group">
                                 <input name="password" type="password" class="form-control" placeholder="Password" required
@@ -76,7 +76,7 @@
                             <div class="AlignCenter">
                                 <button class="btn btn-lg btn-danger" type="button" ng-click="signIn.cancel()">Cancel</button>
                                 <button class="btn btn-lg btn-primary" type="submit"
-                                ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
+                                ng-disabled="!signInForm.userName.$valid || !signInForm.password.$valid">
                                 Sign in
                                 </button><br><br>
                                 <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
@@ -166,7 +166,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <input name="accountName" type="text" class="form-control" ng-model="signIn.newUser.accountName"
+                    <input name="userName" type="text" class="form-control" ng-model="signIn.newUser.userName"
                            placeholder="Account Name (e.g. dexterpratt)" required>
                 </div>
                 <div class="form-group">
@@ -201,7 +201,7 @@
                 <a class="btn btn-sm btn-danger" ng-click="signIn.cancelSignUp()">Cancel</a>
                 <button class="btn btn-sm btn-default" type="submit"
                         ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
-                        || !signUpForm.accountName.$valid  || !signUpForm.email.$valid
+                        || !signUpForm.userName.$valid  || !signUpForm.email.$valid
                         || !signUpForm.password.$valid || !signUpForm.confirmPassword.$valid
                         || !termsAndConditionsChecked  || !termsAndConditionsChecked || isProcessing">
                     Sign Up
@@ -246,7 +246,7 @@
     <div class="modal-body">
         <form ng-show="!forgot.done" ng-submit="resetPassword()" role="form">
             <div class="form-group">
-                <input class="form-control" placeholder="Account Name" required ng-model="forgot.accountName"/>
+                <input class="form-control" placeholder="Account Name" required ng-model="forgot.userName"/>
             </div>
             <div class="AlignRight">
                 <button class="btn btn-primary" type="submit">Reset Password</button>

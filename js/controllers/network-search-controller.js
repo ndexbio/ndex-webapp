@@ -158,7 +158,7 @@ ndexApp.controller('searchNetworksController',
         searchController.networkSearchIncludeNetworksByGroupPermissions = true;
 
         (request = ndexService.findNetworks(searchController.searchString, 
-                                            searchController.accountName, 
+                                            searchController.userName,
                                             searchController.permission,
                                             searchController.networkSearchIncludeNetworksByGroupPermissions,
                                             searchController.skip,

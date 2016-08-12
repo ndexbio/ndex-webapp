@@ -39,7 +39,7 @@ ndexApp.controller('groupController',
 
         var query = {};
 
-        query.accountName = groupController.displayedGroup.accountName;
+        query.userName = groupController.displayedGroup.userName;
         query.searchString = groupController.memberSearchString;
         if(groupController.userSearchAdmin) query.permission = 'GROUPADMIN';
         if(groupController.userSearchMember) query.permission = 'MEMBER'
@@ -71,7 +71,7 @@ ndexApp.controller('groupController',
     groupController.submitNetworkSearch = function() {
         groupController.networkSearchResults = [];
 
-        groupController.networkQuery.accountName = groupController.displayedGroup.accountName;
+        groupController.networkQuery.userName = groupController.displayedGroup.userName;
 
         ndexService.getNetworkSummariesOfTheGroup(groupController.identifier,
             function(networks) {

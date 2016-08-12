@@ -90,7 +90,7 @@ ndexApp.controller('manageGroupAccessController',
 				var length = groupManager.memberships.length
 				for(var jj=0; jj<length2; jj++) {
 					for(var ii=0; ii<length; ii++) {
-						if(groupManager.memberships[ii].memberAccountName == users[jj].accountName) 
+						if(groupManager.memberships[ii].memberAccountName == users[jj].userName)
 							users[jj].member = true;
 					}
 				}
@@ -102,9 +102,9 @@ ndexApp.controller('manageGroupAccessController',
 
 	groupManager.addMember = function(member) {
 		var newMembership = {
-			memberAccountName: member.accountName,
+			memberAccountName: member.userName,
 			memberUUID: member.externalId,
-			resourceName: groupManager.group.accountName,
+			resourceName: groupManager.group.userName,
 			resourceUUID: groupManager.group.externalId,
 			permissions: 'MEMBER'
 		}
