@@ -37,7 +37,7 @@ ndexServiceApp.factory('ndexService',
                 return $http(config);
             };
 
-            var UserResource = $resource(ndexServerURI + '/user/:identifier:action/:subResource/:permissions:subId:status/:skipBlocks:membershipDepth/:blockSize',
+            var UserResource = $resource(ndexServerURI + '/user/:identifier:action/:subResource/:sub2Resource/:permissions:subId:status/:skipBlocks:membershipDepth/:blockSize',
                 //parmaDefaults
                 {
                     identifier: '@identifier',
@@ -84,7 +84,8 @@ ndexServiceApp.factory('ndexService',
                         method: 'GET',
                         params: {
                             subResource: 'membership',
-                            membershipDepth: 1
+                            sub2Resource: 'group'
+                            //membershipDepth: 1
                         },
                         interceptor: {
                             response: function (data) {
@@ -96,7 +97,8 @@ ndexServiceApp.factory('ndexService',
                         method: 'GET',
                         params: {
                             subResource: 'membership',
-                            membershipDepth: 2
+                            sub2Resource: 'network',
+                            membershipDepth: 'false'
                         },
                         interceptor: {
                             response: function (data) {
@@ -205,21 +207,21 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.getMyDirectMembership = function (resourceId, successHandler, errorHandler) {
-                var externalId = ndexUtility.getLoggedInUserExternalId();
-                if (externalId == null) {
+           //     var externalId = ndexUtility.getLoggedInUserExternalId();
+             /*   if (externalId == null) {
                     successHandler(null);
                     return;
-                }
-                UserResource.getDirectMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
+                } */
+                UserResource.getDirectMembership({/*identifier: externalId,*/ subId: resourceId}, successHandler, errorHandler);
             };
 
             factory.getMyMembership = function (resourceId, successHandler, errorHandler) {
-                var externalId = ndexUtility.getLoggedInUserExternalId();
-                if (externalId == null) {
+              //  var externalId = ndexUtility.getLoggedInUserExternalId();
+              /*   if (externalId == null) {
                     successHandler(null);
                     return;
-                }
-                UserResource.getMembership({identifier: externalId, subId: resourceId}, successHandler, errorHandler);
+                } */
+                UserResource.getMembership({/*identifier: externalId,*/ subId: resourceId}, successHandler, errorHandler);
             };
 
             factory.searchUsers = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
@@ -641,9 +643,9 @@ ndexServiceApp.factory('ndexService',
                     search: {
                         method: 'POST',
                         params: {
-                            action: 'search'
-                        },
-                        isArray: true
+                            action: 'textsearch'
+                        } //,
+                        //isArray: true
                     },
                     editNetworkSummary: {
                         method: 'POST',
