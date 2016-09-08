@@ -117,7 +117,7 @@ ndexServiceApp.factory('ndexService',
                         method: 'GET',
                         params: {
                             subResource: 'request',
-                            status: 'pending'
+                            sub2Resource: 'pending'
                         },
                         isArray: true
                     },
@@ -173,16 +173,14 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.getSentRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
-                var externalId = ndexUtility.getLoggedInUserExternalId();
                 handleAuthorizationHeader();
-                UserResource.getSentRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
+                UserResource.getSentRequest({skipBlocks: skipBlocks, blockSize: blockSize},
                     successHandler, errorHandler);
             };
 
             factory.getPendingRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
-                var externalId = ndexUtility.getLoggedInUserExternalId();
                 handleAuthorizationHeader();
-                UserResource.getPendingRequest({identifier: externalId, skipBlocks: skipBlocks, blockSize: blockSize},
+                UserResource.getPendingRequest({skipBlocks: skipBlocks, blockSize: blockSize},
                     successHandler, errorHandler);
             };
 
@@ -256,7 +254,7 @@ ndexServiceApp.factory('ndexService',
                     'blockSize': blockSize}, successHandler, errorHandler);
             };
 
-            // /user/{userUUID}/task/{status}/{skipBlocks}/{blockSize}
+            // /user/task/{status}/{skipBlocks}/{blockSize}
             factory.getUserTasks = function (userUUID, taskStatus, skipBlocks, blockSize, successHandler, errorHandler) {
                 if (!taskStatus) {
                     taskStatus = "ALL";
@@ -266,7 +264,6 @@ ndexServiceApp.factory('ndexService',
 
                 handleAuthorizationHeader();
                 UserResource.query({
-                        'identifier': userUUID,
                         'skipBlocks': skipBlocks,
                         'blockSize': blockSize,
                         'subResource': "task",
@@ -1214,6 +1211,9 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // network/{networkId}/edge/{skip}/{top}
         // GET to NetworkAService
         var url = "/network/" + networkId + "/edge/asNetwork/" + skipBlocks + "/" + blockSize;
+
+        //var url = "/network/" + networkId + "/sample/" + skipBlocks + "/" + blockSize;
+
         return this.getGetConfig(url, null);
     };
 
