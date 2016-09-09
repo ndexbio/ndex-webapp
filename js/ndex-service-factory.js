@@ -1217,6 +1217,12 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
+    factory.getNetworkSampleWith500Edges = function (networkId) {
+        // network/{networkId}/sample
+        // GET to NetworkAService
+        var url = "/network/" + networkId + "/sample";
+        return this.getGetConfig(url, null);
+    };
 
     factory.getCompleteCXNetworkConfig = function (networkId) {
         // network/{networkId}/edge/{skip}/{top}

@@ -1077,7 +1077,25 @@ ndexApp.controller('networkViewController',
                 initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
 
             };
-            
+
+            var displayErrorMessage = function(error) {
+                if (error.status != 0) {
+                    var message;
+                    if (error.data && error.data.message) {
+                        message = error.data.message;
+                    }
+                    if (error.status) {
+                        message = message + "  Error Code: " + error.status + ".";
+                    }
+                    if (error.statusText) {
+                        message = message + "  Error Message: " + error.statusText;
+                    }
+                    networkController.errors.push("Unable to get network: " + message);
+                } else {
+                    networkController.errors.push("Unable to get network; Server returned no error information.");
+                }
+            }
+
             var getNetworkAndDisplay = function (networkId, callback) {
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
@@ -1090,28 +1108,22 @@ ndexApp.controller('networkViewController',
                     (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
                     // get edges, convert to CX obj
                     networkController.isSample = true;
-                    (request2 = networkService.getSampleCXNetworkFromOldAPI(networkId, config.networkDisplayLimit) )
+                    var getCompleteCXNetwork = false;
+                    (request2 = networkService.getCXNetwork(networkId, getCompleteCXNetwork) )
                         .success(
                             function (network) {
-
                                 callback(network, true);
                             }
                         )
                         .error(
                             function (error) {
-                                if (error.status != 0) {
-                                    networkController.errors.push({label: "Get Network Edges Request: ", error: error});
-                                } else {
-                                    networkController.errors.push({
-                                        label: "Get Network Edges Request: ",
-                                        error: "Process killed"
-                                    });
-                                }
+                                displayErrorMessage(error);
                             }
                         );
                 } else {
                     // get complete CX stream and build the CX network object.
-                    (request2 = networkService.getCXNetwork(networkId) )
+                    var getCompleteCXNetwork = true;
+                    (request2 = networkService.getCXNetwork(networkId, getCompleteCXNetwork) )
                         .success(
                             function (network) {
 
@@ -1120,14 +1132,7 @@ ndexApp.controller('networkViewController',
                         )
                         .error(
                             function (error) {
-                                if (error.status != 0) {
-                                    networkController.errors.push({label: "Get Network in CX: ", error: error});
-                                } else {
-                                    networkController.errors.push({
-                                        label: "Get network in CX fromat: ",
-                                        error: "Process killed"
-                                    });
-                                }
+                                displayErrorMessage(error);
                             }
                         );
 
@@ -1430,11 +1435,7 @@ ndexApp.controller('networkViewController',
                     .error(
                         function (error) {
                             networkController.showRetrieveMessage = false;
-                            if ((error != null) && (typeof(error.message) !== 'undefined')) {
-                                networkController.errors.push({label: "Unable to retrieve network. ", error: error.message});
-                            } else {
-                                networkController.errors.push({label: "Unable to retrieve network. ", error: "Unknown error."});
-                            }
+                            displayErrorMessage(error);
                         }
                     );
 
@@ -1489,7 +1490,7 @@ ndexApp.controller('networkViewController',
                         callback();
                     },
                     function (error) {
-                        //console.log(error);
+                        displayErrorMessage(error);
                     });
 
             };
