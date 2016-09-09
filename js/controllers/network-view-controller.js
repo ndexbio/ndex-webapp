@@ -1106,10 +1106,9 @@ ndexApp.controller('networkViewController',
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
                     (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
-                    // get edges, convert to CX obj
+                    // get sample CX network
                     networkController.isSample = true;
-                    var getCompleteCXNetwork = false;
-                    (request2 = networkService.getCXNetwork(networkId, getCompleteCXNetwork) )
+                    (request2 = networkService.getSampleCXNetwork(networkId) )
                         .success(
                             function (network) {
                                 callback(network, true);
@@ -1122,11 +1121,10 @@ ndexApp.controller('networkViewController',
                         );
                 } else {
                     // get complete CX stream and build the CX network object.
-                    var getCompleteCXNetwork = true;
-                    (request2 = networkService.getCXNetwork(networkId, getCompleteCXNetwork) )
+                    networkController.isSample = false;
+                    (request2 = networkService.getCXNetwork(networkId) )
                         .success(
                             function (network) {
-
                                 callback(network, false);
                             }
                         )

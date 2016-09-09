@@ -198,16 +198,70 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return edgeInfo;
         }
 
-        factory.getCXNetwork = function (networkId, getCompleteCXNetwork) {
+        factory.getCXNetwork = function (networkId) {
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
 
             // Grab the config for this request. We modify the config to allow for $http request aborts.
             // This may become standard in the client.
-            var config = (getCompleteCXNetwork) ?
-                ndexConfigs.getCompleteCXNetworkConfig(networkId) :
-                ndexConfigs.getNetworkSampleWith500Edges(networkId);
+            var config = ndexConfigs.getCompleteCXNetworkConfig(networkId);
+
+            config.timeout = deferredAbort.promise;
+
+            // We want to perform some operations on the response from the $http request. We can simply wrap the
+            // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
+            // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
+            var request = $http(config);
+            var promise = {};
+
+            promise.success = function (handler) {
+                request.success(
+                    function (network) {
+                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        localNiceCXNetwork = localNiceCX;
+                        handler(localNiceCX);
+                    }
+                );
+                return promise;
+            };
+
+            promise.error = function (handler) {
+                request.then(
+                    null,
+                    function (error) {
+                        handler(error);
+                    }
+                );
+                return promise;
+            };
+
+            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+            promise.abort = function () {
+                deferredAbort.resolve();
+            };
+
+            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+            promise.finally = function () {
+                request.finally(
+                    function () {
+                        promise.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = promise = null;
+                    }
+                );
+            };
+
+            return promise;
+        };
+
+        factory.getSampleCXNetwork = function (networkId) {
+
+            // The $http timeout property takes a deferred value that can abort AJAX request
+            var deferredAbort = $q.defer();
+
+            // Grab the config for this request. We modify the config to allow for $http request aborts.
+            // This may become standard in the client.
+            var config = ndexConfigs.getSampleCXNetworkConfig(networkId);
 
             config.timeout = deferredAbort.promise;
 

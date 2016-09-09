@@ -1217,7 +1217,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
-    factory.getNetworkSampleWith500Edges = function (networkId) {
+    factory.getSampleCXNetworkConfig = function (networkId) {
         // network/{networkId}/sample
         // GET to NetworkAService
         var url = "/network/" + networkId + "/sample";
