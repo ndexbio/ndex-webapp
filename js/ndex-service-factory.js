@@ -242,20 +242,20 @@ ndexServiceApp.factory('ndexService',
                 UserResource.createUser({}, user, successHandler, errorHandler);
             };
 
-            factory.getUserNetworkMemberships = function (userId, membership, skipBlocks, blockSize, successHandler, errorHandler) {
+            factory.getUserNetworkMemberships = function (membership, skipBlocks, blockSize, successHandler, errorHandler) {
                 var externalId = ndexUtility.getLoggedInUserExternalId();
                 if ((typeof externalId === 'undefined') || (externalId == null)) {
                     //successHandler(null);
                     return;
                 }
                 UserResource.getUserNetworkMemberships(
-                    {identifier: userId, permissions: membership,
+                    {permissions: membership,
                     'skipBlocks': skipBlocks,
                     'blockSize': blockSize}, successHandler, errorHandler);
             };
 
             // /user/task/{status}/{skipBlocks}/{blockSize}
-            factory.getUserTasks = function (userUUID, taskStatus, skipBlocks, blockSize, successHandler, errorHandler) {
+            factory.getUserTasks = function (taskStatus, skipBlocks, blockSize, successHandler, errorHandler) {
                 if (!taskStatus) {
                     taskStatus = "ALL";
                 }

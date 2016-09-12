@@ -227,7 +227,6 @@ ndexApp.controller('userController',
 
                 // there may be more tasks on the server; try to get them
                 ndexService.getUserTasks(
-                     sharedProperties.getCurrentUserId(),
                      "ALL",
                      0,
                      100,
@@ -585,7 +584,8 @@ ndexApp.controller('userController',
                 ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks)
                     {
-                        var numberOfNetworksReceived = networks.length;
+                        var numberOfNetworksReceived = //networks.length;
+                            (networks && networks.numFound && networks.numFound > 0) ? networks.numFound : 0;
                         if (numberOfNetworksReceived > 0) {
                             userController.getNetworksWithAdminAccess();
                             userController.getNetworksWithWriteAccess();
@@ -595,11 +595,13 @@ ndexApp.controller('userController',
                             userController.networksWithAdminAccess = [];
                             userController.networksWithWriteAccess = [];
                         }
-                        userController.networkSearchResults = networks;
+                        userController.networkSearchResults = networks.networks;  // (networks && networks.networks) ? networks.networks : "";
+
                         populateNetworkTable();
                     },
                     function (error)
                     {
+                        console.log(error);
                     });
             }
 
@@ -629,7 +631,6 @@ ndexApp.controller('userController',
             userController.refreshTasks = function ()
             {
                 ndexService.getUserTasks(
-                    sharedProperties.getCurrentUserId(),
                     "ALL",
                     0,
                     100,
@@ -650,7 +651,6 @@ ndexApp.controller('userController',
                 // get all networks for which the current user has ADMIN privilege.
                 // These networks include both networks owned by current user and by other accounts.
                 ndexService.getUserNetworkMemberships(
-                    sharedProperties.getCurrentUserId(),
                     "ADMIN",
                     0,
                     1000000, //numberOfNetworks,
@@ -667,6 +667,7 @@ ndexApp.controller('userController',
                     // Error
                     function (response)
                     {
+                        console.log(response);
                     }
                 )
             };
@@ -676,7 +677,6 @@ ndexApp.controller('userController',
                 // get all networks for which the current user has WRITE privilege.
                 // These networks include both networks owned by current user and by other accounts.
                 ndexService.getUserNetworkMemberships(
-                    sharedProperties.getCurrentUserId(),
                     "WRITE",
                     0,
                     1000000,//numberOfNetworks,
@@ -689,11 +689,11 @@ ndexApp.controller('userController',
                             var networkUUID = networks[i].resourceUUID;
                             userController.networksWithWriteAccess.push(networkUUID);
                         }
-                        var i = 10;
                     },
                     // Error
                     function (response)
                     {
+                        console.log(response);
                     }
                 )
             };
