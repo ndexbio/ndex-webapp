@@ -47,6 +47,8 @@ ndexApp.controller('networkViewController',
             networkController.advancedQueryEdgeProperties = [{}];
             networkController.advancedQueryNodeProperties = [{}];
 
+            networkController.networkAdmins = null;
+
             networkController.edgePropertyNamesForAdvancedQuery = undefined;
             networkController.nodePropertyNamesForAdvancedQuery = undefined;
 
@@ -225,7 +227,7 @@ ndexApp.controller('networkViewController',
                     },
                     function(error)
                     {
-
+                        console.log(error);
                     });
             };
 
@@ -1466,31 +1468,30 @@ ndexApp.controller('networkViewController',
             };
 
             var getMembership = function (callback) {
-                ndexService.getMyMembership(networkController.currentNetworkId,
-                    function (membership)
-                    {
-                        if (membership && membership.permissions == 'ADMIN')
-                        {
-                            networkController.isAdmin = true;
-                            networkController.privilegeLevel = "Admin";
-                        }
-                        if (membership && membership.permissions == 'WRITE')
-                        {
-                            networkController.canEdit = true;
-                            networkController.privilegeLevel = "Edit";
-                        }
-                        if (membership && membership.permissions == 'READ')
-                        {
-                            networkController.canRead = true;
-                            networkController.privilegeLevel = "Read";
-
-                        }
-                        callback();
-                    },
-                    function (error) {
-                        displayErrorMessage(error);
-                    });
-
+                if (!networkController.isLoggedIn) {
+                    // if user is anonymous, don't call getMyMembership() because it requires user to be authenticated
+                    callback();
+                } else {
+                    ndexService.getMyMembership(networkController.currentNetworkId,
+                        function (membership) {
+                            if (membership == 'ADMIN') {
+                                networkController.isAdmin = true;
+                                networkController.privilegeLevel = "Admin";
+                            }
+                            if (membership == 'WRITE') {
+                                networkController.canEdit = true;
+                                networkController.privilegeLevel = "Edit";
+                            }
+                            if (membership == 'READ') {
+                                networkController.canRead = true;
+                                networkController.privilegeLevel = "Read";
+                            }
+                            callback();
+                        },
+                        function (error) {
+                            displayErrorMessage(error);
+                        });
+                }
             };
             
             $scope.readOnlyChanged = function()

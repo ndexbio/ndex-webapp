@@ -164,7 +164,7 @@
                             <span class="networkPropertyName">Format: </span>
                             {{networkController.currentNetwork.sourceFormat}}<br/>
 
-                            <span>
+                            <span ng-show="networkController.isLoggedIn">
                                 <span class="networkPropertyName">Your Privileges: </span>
                                 {{networkController.privilegeLevel}}<br/>
                             </span>

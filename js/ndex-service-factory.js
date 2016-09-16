@@ -985,6 +985,14 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+            factory.setVisibility = function (networkId, value)
+            {
+                var config = ndexConfigs.getNetworkSetVisibilityConfig(networkId, value);
+                $http(config)
+                    .success(function()
+                    {
+                    });
+        };
             // return factory object
             return factory;
         }]);
@@ -1180,6 +1188,30 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     };
 
     /*---------------------------------------------------------------------*
+     * PUT request configuration
+     *---------------------------------------------------------------------*/
+    factory.getPutConfig = function (url, putData) {
+        var config = {
+            method: 'PUT',
+            url: ndexServerURI + url,
+            //data: angular.toJson(putData),
+            headers: {}
+        };
+        if( factory.getEncodedUser() )
+        {
+            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+        }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
+        }
+        if (putData) {
+            config.data = JSON.stringify(putData);
+        }
+        return config;
+    };
+
+    /*---------------------------------------------------------------------*
      * Returns the user's credentials as required by Basic Authentication base64
      * encoded.
      *---------------------------------------------------------------------*/
@@ -1268,9 +1300,14 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     factory.getNetworkSetReadOnlyConfig = function (networkId, value)
     {
         var url = "/network/" + networkId + "/setFlag/readOnly=" + value;
-        return this.getGetConfig(url, null);
+        return this.getPutConfig(url, null);
     };
 
+    factory.getNetworkSetVisibilityConfig = function (networkId, value)
+    {
+        var url = "/network/" + networkId + "/setFlag/visibility=" + value;
+        return this.getPutConfig(url, null);
+    };
     return factory;
 
 });

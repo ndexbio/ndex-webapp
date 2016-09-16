@@ -1037,6 +1037,9 @@
                     var updateProperties =
                         ($scope.network.reference === $scope.ndexData.reference) ? false : true;
 
+                    var updateVisibility =
+                        ($scope.network.visibility === $scope.ndexData.visibility) ? false : true;
+
                     var properties = null;
 
                     if (updateProperties) {
@@ -1070,8 +1073,13 @@
                         delete $scope.network.reference;
                     }
 
+                    if (updateVisibility) {
+                        ndexService.setVisibility($scope.ndexData.externalId, $scope.network.visibility);
+                    }
+
+
                     ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
-                        function(data) {
+                        function (data) {
                             modalInstance.close();
                             modalInstance = null;
 
@@ -1080,13 +1088,14 @@
                                     function (data) {
                                         $route.reload();
                                     },
-                                    function (error) {});
+                                    function (error) {
+                                    });
                             } else {
                                 $route.reload();
                             }
                             $scope.isProcessing = false;
                         },
-                        function(error) {
+                        function (error) {
                             $scope.isProcessing = false;
                         })
                 };
