@@ -219,6 +219,7 @@ ndexServiceApp.factory('ndexService',
                     successHandler(null);
                     return;
                 } */
+                handleAuthorizationHeader();
                 UserResource.getMembership({/*identifier: externalId,*/ subId: resourceId}, successHandler, errorHandler);
             };
 
