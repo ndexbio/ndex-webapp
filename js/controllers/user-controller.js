@@ -528,7 +528,7 @@ ndexApp.controller('userController',
                     function (groups)
                     {
                         // Save the results
-                        userController.groupSearchResults = groups;
+                        userController.groupSearchResults = groups.resultList;
 
                     },
                     function (error)
