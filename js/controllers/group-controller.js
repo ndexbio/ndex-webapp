@@ -48,8 +48,7 @@ ndexApp.controller('groupController',
         ndexService.searchUsers(query, 0, 50,
             function (users) {
                 // Save the results
-                groupController.userSearchResults = users;
-                                  
+                groupController.userSearchResults = users.resultList;
             },
             function (error) {
                                          
@@ -68,25 +67,58 @@ ndexApp.controller('groupController',
         groupController.submitUserSearch();
     };
 
+    var getUUIDs = function(data) {
+        var UUIDs = [];
+        if (data) {
+            for (i=0; i<data.length; i++) {
+                var o = data[i];
+                UUIDs.push(o.resourceUUID);
+            }
+        }
+        return UUIDs;
+    }
+            
     groupController.submitNetworkSearch = function() {
-        groupController.networkSearchResults = [];
 
-        groupController.networkQuery.userName = groupController.displayedGroup.userName;
+        /*
+         * To get list of Network Summaries objects we need to:
+         *
+         * 1) Use getGroupNetworkMemberships function at
+         *  /group/{groupId}/network/{permission}/{skipBlocks}/{blockSize}
+         * to get the list of network IDs that this group has permission to.
+         *
+         * 2) Use getNetworkSummaries function at /network/summaries to get a list of network
+         * summaries using the network IDs you got in step 1  (send all network IDs in one call).
+         * These changes should be made in groupController.submitNetworkSearch().
+         *
+         */
 
-        ndexService.getNetworkSummariesOfTheGroup(groupController.identifier,
-            function(networks) {
-                groupController.networkSearchResults = networks;
-                populateNetworkTable();
-            },
-            function(error){
-                if ((typeof error.data !== 'undefined') &&
-                    (typeof error.data.message !== 'undefined')) {
-                    groupController.errors.push(error.data.message);
-                } else {
-                    groupController.errors.push("Server returned HTTP error response code " +
-                        error.status);
-                }
-            })
+        ndexService.getGroupNetworkMemberships(groupController.identifier, 'READ', 0, 500)
+            .success(
+                function (groupUUIDs) {
+                    UUIDs = getUUIDs(groupUUIDs);
+
+                    ndexService.getNetworkSummariesByIDs(UUIDs)
+                        .success(
+                            function (networkSummaries) {
+                                groupController.networkSearchResults = networkSummaries;
+                                populateNetworkTable();
+                            })
+                        .error(
+                            function (error, data) {
+                                // Save the error.
+                                if (error) {
+                                    displayErrorMessage(error);
+                                }
+                            });
+                })
+            .error(
+                function (error, data) {
+                    // Save the error.
+                    if (error) {
+                        displayErrorMessage(error);
+                    }
+                });
     };
 
     //table
@@ -197,18 +229,42 @@ ndexApp.controller('groupController',
         }
     };
 
-
+    var displayErrorMessage = function(error) {
+        if (error.status != 0) {
+            var message;
+            if (error.data && error.data.message) {
+                message = error.data.message;
+            }
+            if (error.status) {
+                message = message + "  Error Code: " + error.status + ".";
+            }
+            if (error.statusText) {
+                message = message + "  Error Message: " + error.statusText;
+            }
+            groupController.errors.push(message);
+        } else {
+            groupController.errors.push("Unknown error; Server returned no error information.");
+        }
+    }
+            
             //              local functions
     var getMembership = function() {
-        ndexService.getMyDirectMembership(groupController.displayedGroup.externalId, 
+
+        if (!groupController.isLoggedIn) {
+            return;
+        }
+
+        ndexService.getMyDirectMembership(groupController.displayedGroup.externalId,
+
             function(membership) {
-                if(membership && membership.permissions == 'GROUPADMIN')
+                if(membership == 'GROUPADMIN')
                     groupController.isAdmin = true;
-                if(membership && membership.permissions == 'MEMBER')
+                if(membership == 'MEMBER')
                     groupController.isMember = true;
             },
             function(error){
-                console.log(error);
+                //console.log(error);
+                displayErrorMessage(error);
             });
     };
 

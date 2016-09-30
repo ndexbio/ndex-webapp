@@ -1,13 +1,13 @@
 <div id="divGroup" class="row" >
 
-    <div ng-show="groupController.errors.length > 0">
-        <p class="alert alert-danger" ng-repeat='error in groupController.errors'>
+    <div style="margin-bottom: 1em" ng-show="groupController.errors.length > 0">
+        <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold" ng-repeat='error in groupController.errors'>
             {{error}}
-              <span class="glyphicon glyphicon-remove pull-right"
-                    style='cursor:pointer'
-                    ng-click='groupController.errors.splice($index,1)'>
-              </span>
-        </p>
+            <span class="glyphicon glyphicon-remove pull-right"
+                  style='cursor:pointer'
+                  ng-click='groupController.errors.splice($index,1)'>
+            </span>
+        </div>
     </div>
 
     <div class="col-md-2">

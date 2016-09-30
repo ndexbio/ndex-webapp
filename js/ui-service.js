@@ -133,7 +133,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/accountImage.html',
             link: function($attrs) {
-                if ($attrs.ndexSrc == null) $attrs.ndexSrc = 'img/no-pic.jpg';
+                if (!$attrs.ndexSrc) $attrs.ndexSrc = 'img/no-pic.jpg';
             }
         }
     });

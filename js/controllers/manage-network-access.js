@@ -116,10 +116,21 @@ ndexApp.controller('manageNetworkAccessController',
 
 				var addedMembership = JSON.parse(JSON.stringify(newMembership));
 
-				ndexService.updateNetworkMember(addedMembership,
-					function(data) {},
-					function(error) {}
-				)
+				if (accessObj.accountType.toLowerCase() == "user") {
+
+					ndexService.updateNetworkUserMembership(
+						accessObj.memberUUID,
+						accessObj.resourceUUID,
+						accessObj.permissions);
+					
+				} else if (accessObj.accountType.toLowerCase() == "group") {
+
+					// updateNetworkGroupMembership
+					ndexService.updateNetworkGroupMembership(
+						accessObj.memberUUID,
+						accessObj.resourceUUID,
+						accessObj.permissions);
+				}
 			}
 		}
 
@@ -246,6 +257,7 @@ ndexApp.controller('manageNetworkAccessController',
 				}
 			},
 			function(error) {
+				console.log("unable to get accounts by UUIDs");
 
 			});
 	};
@@ -278,14 +290,14 @@ ndexApp.controller('manageNetworkAccessController',
 		ndexService.searchUsers(query, 0, 10,
 			function(users) {
 
-				networkManager.newUsers = users;
+				networkManager.newUsers = users.resultList;
 
-				var length2 = users.length;
+				var length2 = users.numFound;
 				var length = networkManager.selectedAccountsForUpdatingAccessPermissions.length
 				for(var jj=0; jj<length2; jj++) {
 					for(var ii=0; ii<length; ii++) {
-						if(networkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == users[jj].externalId)
-							users[jj].member = true;
+						if(networkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == users.resultList[jj].externalId)
+							users.resultList[jj].member = true;
 					}
 				}
 			},
@@ -301,14 +313,14 @@ ndexApp.controller('manageNetworkAccessController',
 		ndexService.searchGroups(query, 0, 10,
 			function(groups) {
 
-				networkManager.newGroups = groups;
+				networkManager.newGroups = groups.resultList;
 
-				var length2 = groups.length;
+				var length2 = groups.numFound;
 				var length = networkManager.selectedAccountsForUpdatingAccessPermissions.length
 				for(var jj=0; jj<length2; jj++) {
 					for(var ii=0; ii<length; ii++) {
-						if(networkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == groups[jj].externalId)
-							groups[jj].member = true;
+						if(networkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == groups.resultList[jj].externalId)
+							groups.resultList[jj].member = true;
 					}
 				}
 			},
@@ -391,6 +403,7 @@ ndexApp.controller('manageNetworkAccessController',
 		}
 	};
 
+
 	networkManager.addMember = function(member) {
 		var newMembership = {
 			memberAccountName: networkManager.getAccountName(member),
@@ -406,6 +419,42 @@ ndexApp.controller('manageNetworkAccessController',
 		}
 
 		member.member = true;
+
+		networkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership);
+	};
+
+			
+	networkManager.addUserMember = function(user) {
+		var newMembership = {
+			memberAccountName: networkManager.getUserAccountName(user),
+			memberUUID: user.externalId,
+			resourceName: networkManager.network.name,
+			resourceUUID: networkManager.network.externalId,
+			permissions: 'READ',
+			firstName: ((typeof(user.firstName) === 'undefined') ? "" : user.firstName),
+			lastName: ((typeof(user.lastName) === 'undefined') ? "" : user.lastName),
+			accountType: 'User',
+			member: true
+		}
+
+		user.member = true;
+
+		networkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership);
+	};
+
+	networkManager.addGroupMember = function(group) {
+		var newMembership = {
+			memberAccountName: networkManager.getGroupAccountName(group),
+			memberUUID: group.externalId,
+			resourceName: networkManager.network.name,
+			resourceUUID: networkManager.network.externalId,
+			permissions: 'READ',
+			groupName: ((typeof(group.groupName) === 'undefined') ? "" : group.groupName),
+			accountType: 'Group',
+			member: true
+		}
+
+		group.member = true;
 
 		networkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership);
 	};
@@ -443,6 +492,7 @@ ndexApp.controller('manageNetworkAccessController',
 		return false;
 	};
 
+
 	networkManager.getAccountName = function(user) {
 		if (typeof(user) === 'undefined') {
 			return 'undefined';
@@ -467,11 +517,51 @@ ndexApp.controller('manageNetworkAccessController',
 		return "unknown account type";
 	};
 
+
+	networkManager.getUserAccountName = function(user) {
+		if (typeof(user) === 'undefined') {
+			return 'undefined';
+		}
+
+		if ((typeof(user.userName) !== 'undefined') && (user.userName === 'ndexadministrator')) {
+			return user.userName;
+		}
+
+		if ((typeof(user.memberAccountName) !== 'undefined') && (user.memberAccountName === 'ndexadministrator')) {
+			return user.memberAccountName;
+		}
+
+		if (user.isIndividual) {
+			if (user.firstName && user.lastName) {
+				return user.firstName + " " + user.lastName;
+			}
+		} else {
+			if (user.displayName) {
+				return user.displayName;
+			}
+		}
+
+		return "unknown user";
+	};
+
+	networkManager.getGroupAccountName = function(group) {
+		if (typeof(group) === 'undefined') {
+			return 'undefined';
+		}
+
+		if (group.groupName) {
+			return group.groupName;
+		}
+		
+		return "unknown group";
+	};
+
+
 	networkManager.checkIfUserAccount = function(member) {
 
 		if (member && member.accountType) {
 			return (member.accountType.toLowerCase() === 'user') ? true : false;
-		}
+		} 
 
 		return false;
 	};

@@ -64,8 +64,7 @@ ndexServiceApp.factory('ndexService',
                         method: 'POST',
                         params: {
                             action: 'search'
-                        },
-                        isArray: true
+                        }
                     },
                     createUser: {
                         method: 'POST',
@@ -210,6 +209,7 @@ ndexServiceApp.factory('ndexService',
                     successHandler(null);
                     return;
                 } */
+                handleAuthorizationHeader();
                 UserResource.getDirectMembership({/*identifier: externalId,*/ subId: resourceId}, successHandler, errorHandler);
             };
 
@@ -302,8 +302,7 @@ ndexServiceApp.factory('ndexService',
                         method: 'POST',
                         params: {
                             action: 'search'
-                        },
-                        isArray: true
+                        }
                     },
                     updateMembership: {
                         method: 'POST',
@@ -331,13 +330,6 @@ ndexServiceApp.factory('ndexService',
                         params: {
                             subResource: 'membership'
                         }
-                    },
-                    getNetwokSummaries: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'networks'
-                        },
-                        isArray: true
                     }
                 }
             );
@@ -430,12 +422,6 @@ ndexServiceApp.factory('ndexService',
                 ////console.log('searching for groups');
                 GroupResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
             };
-
-            factory.getNetworkSummariesOfTheGroup = function (groupUUID, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                GroupResource.getNetwokSummaries({'identifier': groupUUID}, successHandler, errorHandler);
-            };
-
             /*---------------------------------------------------------------------*
              * Requests
              *---------------------------------------------------------------------*/
@@ -617,12 +603,6 @@ ndexServiceApp.factory('ndexService',
                             subResource: 'provenance'
                         }
                     },
-                    updateMember: {
-                        method: 'POST',
-                        params: {
-                            subResource: 'member'
-                        }
-                    },
                     deleteMember: {
                         method: 'DELETE',
                         params: {
@@ -758,12 +738,6 @@ ndexServiceApp.factory('ndexService',
             factory.setProvenance = function(externalId, provenance, successHandler, errorHandler){
                 handleAuthorizationHeader();
                 return NetworkResource.setProvenance({identifier: externalId}, provenance, successHandler, errorHandler);
-            };
-
-            factory.updateNetworkMember = function (membership, successHandler, errorHandler) {
-                membership.membershipType = 'NETWORK';
-                handleAuthorizationHeader();
-                return NetworkResource.updateMember({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
             };
 
             factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
@@ -993,7 +967,136 @@ ndexServiceApp.factory('ndexService',
                     .success(function()
                     {
                     });
-        };
+            };
+            
+
+            factory.getGroupNetworkMemberships = function(groupId, permission, skipBlocks, blockSize) {
+
+                var deferredAbort = $q.defer();
+
+                // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
+                // the first pass. We modify the config to allow for $http request aborts. This may become standard in
+                // the client.
+                var config = ndexConfigs.getGroupNetworkMembershipsConfig(groupId, permission, skipBlocks, blockSize);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+
+            factory.getNetworkSummariesByIDs = function(networksUUIDsList) {
+
+                var deferredAbort = $q.defer();
+
+                // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
+                // the first pass. We modify the config to allow for $http request aborts. This may become standard in
+                // the client.
+                var config = ndexConfigs.getNetworkSummariesByIDsConfig(networksUUIDsList);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+                
+                /*
+                var groupNetworkMembershipsConfig = ndexConfigs.getGroupNetworkMembershipsConfig(groupId, permission, skipBlocks, blockSize);
+                //console.log(JSON.stringify(config));
+
+                $http(groupNetworkMembershipsConfig)
+                    .success(function(membership)
+                    {
+                        var UUIDs = getUUIDs(membership);
+
+                        var networkSummariesByIDsConfig = ndexConfigs.getNetworkSummariesByIDsConfig(UUIDs);
+
+                        $http(networkSummariesByIDsConfig)
+                            .success(function(networkSummaries)
+                            {
+                                groupController.networkSearchResults = networkSummaries;
+                                populateNetworkTable();
+                            })
+                            .error(function(error)
+                            {
+                                displayErrorMessage(error);
+                            });
+
+                            // console.log("successful call to getGroupNetworkMembershipsConfig()")
+                    })
+                    .error(function(error)
+                    {
+                        displayErrorMessage(error);
+                        //console.log("unable to get group membership info: " + error);
+                    });
+                    */
+
+
+            factory.updateNetworkGroupMembership = function (memberUUID, resourceUUID, permissions)
+            {
+
+                /*
+                      updateNetworkGroupMembership
+                            /network/{networkId}/member/user/{userId}
+                     Permission is POSTed as a JSON string. It can be “ADMIN”, “WRITE” or “READ”
+
+                      updateNetworkUserMembersip
+                            /network{networkId}/member/group/{groupId}
+                     Permission is POSTed as a JSON String, can be either “WRITE” or “READ”
+                 */
+
+                var config = ndexConfigs.getUpdateNetworkGroupMembershipConfig(memberUUID, resourceUUID, permissions);
+                $http(config)
+                    .success(function(data)
+                    {
+                        //console.log("success updateNetworkGroupMembershipConfig")
+                    }).error(function(error)
+                    {
+                        console.log("unable to update network group membership");
+                    });
+            };
+
+            factory.updateNetworkUserMembership = function (memberUUID, resourceUUID, permissions)
+            {
+                var config = ndexConfigs.getUpdateNetworkUserMembershipConfig(memberUUID, resourceUUID, permissions);
+                $http(config)
+                    .success(function(data)
+                    {
+                        //console.log("success updateNetworkUserMembershipConfig");
+                    }).error(function(error)
+                    {
+                        console.log("unable to update network user membership");
+                    });
+            };
+
             // return factory object
             return factory;
         }]);
@@ -1308,6 +1411,44 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     {
         var url = "/network/" + networkId + "/setFlag/visibility=" + value;
         return this.getPutConfig(url, null);
+    };
+
+
+    factory.getGroupNetworkMembershipsConfig = function (groupId, permission, skipBlocks, blockSize)
+    {
+        // calls getGroupNetworkMemberships server API at
+        // /group/{groupId}/network/{permission}/{skipBlocks}/{blockSize}
+
+        var url = "/group/" + groupId + "/network/" + permission + "/" + skipBlocks + "/" + blockSize;
+        return this.getGetConfig(url, null);
+    };
+
+    factory.getNetworkSummariesByIDsConfig = function (UUIDs)
+    {
+        // Server API: getGroupNetworkMemberships 
+        // /group/{groupId}/network/{permission}/{skipBlocks}/{blockSize}
+
+        var url = "/network/summaries";
+        return this.getPostConfig(url, UUIDs);
+    };
+
+
+    factory.getUpdateNetworkUserMembershipConfig = function (memberUUID, resourceUUID, permissions) {
+        // Server API: updateNetworkGroupMembership
+        // /network/{networkId}/member/user/{userId}
+        // Permission is POSTed as a JSON string. It can be “ADMIN”, “WRITE” or “READ”
+
+        var url = "/network/" + resourceUUID + "/member/user/" + memberUUID;
+        return this.getPostConfig(url, permissions);
+    };
+
+    factory.getUpdateNetworkGroupMembershipConfig = function (memberUUID, resourceUUID, permissions) {
+        // Server API: updateNetworkUserMembersip
+        // /network{networkId}/member/group/{groupId}
+        // Permission is POSTed as a JSON String, can be either “WRITE” or “READ”
+
+        var url = "/network/" + resourceUUID + "/member/group/" + memberUUID;
+        return this.getPostConfig(url, permissions);
     };
     return factory;
 

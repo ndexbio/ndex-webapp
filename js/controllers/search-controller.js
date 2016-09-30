@@ -345,8 +345,8 @@ ndexApp.controller('searchController',
                     0,
                     searchController.pageSize,
                     function (users) {
-                        if(users.length > 0){
-                            searchController.userSearchResults = users;
+                        if(users.numFound > 0){
+                            searchController.userSearchResults = users.resultList;
                             //console.log(searchController.userSearchResults);
                             populateUserTable();
                         } else {
@@ -437,14 +437,11 @@ ndexApp.controller('searchController',
                 for(var i = 0; i < searchController.groupSearchResults.length; i++ )
                 {
                     var group = searchController.groupSearchResults[i];
-                    console.log(group);
-
                     var groupName = group['groupName'];
                     var description = stripHTML(group['description']);
                     var externalId = group['externalId'];
                     //var userName = group['userName'];
-
-
+                    
                     var row = {
                         "Group Name"  :   groupName,
                         "Description" :   description,
@@ -472,8 +469,8 @@ ndexApp.controller('searchController',
                     0,
                     searchController.pageSize,
                     function (groups) {
-                        if (groups.length > 0){
-                            searchController.groupSearchResults = groups;
+                        if (groups.numFound > 0){
+                            searchController.groupSearchResults = groups.resultList;
                             ////console.log(searchController.groupSearchResults);
                             populateGroupTable();
                         } else {

@@ -800,7 +800,7 @@ ndexApp.controller('networkViewController',
              *-----------------------------------------------------------------------*/
             var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
-                console.log(cyElements);
+                //console.log(cyElements);
 
                 $(function () { // on dom ready
 
