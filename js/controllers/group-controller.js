@@ -92,8 +92,9 @@ ndexApp.controller('groupController',
          * These changes should be made in groupController.submitNetworkSearch().
          *
          */
+        var inclusive = true;
 
-        ndexService.getGroupNetworkMemberships(groupController.identifier, 'READ', 0, 500)
+        ndexService.getGroupNetworkMemberships(groupController.identifier, 'READ', 0, 500, inclusive)
             .success(
                 function (groupUUIDs) {
                     UUIDs = getUUIDs(groupUUIDs);

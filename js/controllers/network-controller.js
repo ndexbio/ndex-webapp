@@ -514,7 +514,7 @@ ndexApp.controller('networkController',
 
             var getNetworkAdmins = function()
             {
-                ndexService.getNetworkMemberships(networkController.currentNetworkId, 'ADMIN',
+                ndexService.getNetworkUserMemberships(networkController.currentNetworkId, 'ADMIN',
                     function(networkAdmins)
                     {
                         for( var i = 0; i < networkAdmins.length; i++ )

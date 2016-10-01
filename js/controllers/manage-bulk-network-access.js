@@ -37,7 +37,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
 
             var networkId = IDs[i];
 
-            ndexService.getNetworkMemberships(networkId, 'ALL',
+            ndexService.getNetworkUserMemberships(networkId, 'ALL',
                 function(memberships) {
 
                     var networkId = memberships[0].resourceUUID;

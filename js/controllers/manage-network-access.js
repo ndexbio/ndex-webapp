@@ -16,7 +16,8 @@ ndexApp.controller('manageNetworkAccessController',
     networkManager.errors = [];
     networkManager.isAdmin = false;
     networkManager.externalId = identifier;
-	networkManager.memberships = [];
+	networkManager.networkUserMemberships = [];
+	networkManager.networkGroupMemberships = [];
 	networkManager.newUsers = {};
 	networkManager.newGroups = {};
 
@@ -96,9 +97,6 @@ ndexApp.controller('manageNetworkAccessController',
 			return;
 		$scope.isProcessing = false;
 
-
-
-
 		var addedAccessObjects = [];
 
 		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
@@ -139,9 +137,6 @@ ndexApp.controller('manageNetworkAccessController',
 			networkManager.selectedAccountsForUpdatingAccessPermissions.splice(addedAccessObjects[i], 1);
 		}
 
-
-
-
 		var deletedAccessObjects = [];
 
 		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
@@ -167,9 +162,6 @@ ndexApp.controller('manageNetworkAccessController',
 				networkManager.originalAccessPermissions.splice(deletedAccessObjects[i], 1);
 			}
 		}
-
-
-
 
 		var modifiedAccessObjects = [];
 
@@ -202,30 +194,94 @@ ndexApp.controller('manageNetworkAccessController',
 
 
 	networkManager.loadMemberships = function() {
-		ndexService.getNetworkMemberships(identifier, 'ALL',
-			function(memberships) {
-				networkManager.memberships = memberships;
+		
+		ndexService.getNetworkUserMemberships(identifier, 'ALL',
+			function(networkUserMemberships) {
+				networkManager.networkUserMemberships = networkUserMemberships;
 
-				networkManager.processReceivedAccessPermissions(memberships);
+
+				// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				//
+				// +++++++++++  get a list of groups that have access to this network ( NetID = identifier ) +++++++++++
+				//
+				// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+				// networkManager.networkGroupMemberships = networkGroupMemberships;
+				networkManager.processReceivedAccessPermissions();
+
 			},
 			function(error) {
 				networkManager.errors.push(error.data);
 			})
 	};
 
-	networkManager.processReceivedAccessPermissions = function(memberships) {
+	networkManager.processReceivedAccessPermissions = function() {
 		networkManager.originalAccessPermissions = [];
 
-		var accountsIds = [];
+		var userAccountIds = [];
+		var groupAccountIds = [];
+
 
 		// build array of accounts IDs
-		for (var i = 0; i < memberships.length; i++) {
-
-			var membership = memberships[i];
-
-			accountsIds.push(membership.memberUUID);
+		for (var i = 0; i < networkManager.networkUserMemberships.length; i++) {
+			var membership = networkManager.networkUserMemberships[i];
+			userAccountIds.push(membership.memberUUID);
 		}
 
+		for (var i = 0; i < networkManager.networkGroupMemberships.length; i++) {
+			var membership = networkManager.networkGroupMemberships[i];
+			groupAccountIds.push(membership.memberUUID);
+		}
+
+		 // get accounts info; we need to know what accounts are user and
+		 // and what accounts are group accounts;  we display First and Last Names for User accounts
+		 //and Group Account Name for group accounts
+
+		if (userAccountIds.length > 0) {
+			ndexService.getUsersByUUIDs(userAccountIds,
+				function (accountsInfo) {
+
+					console.log(" got users by UUIDs");
+
+					/*
+					for (var i = 0; i < userAccountIds.length; i++) {
+
+						var membership = userAccountIds[i];
+
+						var newMembership = {
+							memberAccountName: userAccountIds.memberAccountName,
+							memberUUID: userAccountIds.memberUUID,
+							resourceName: userAccountIds.resourceName,
+							resourceUUID: userAccountIds.resourceUUID,
+							permissions: userAccountIds.permissions,
+							firstName: "",
+							lastName: "",
+							groupName: "",
+							accountType: "",
+							member: true
+						}
+
+
+						//networkManager.getNamesAndAccountType(accountsInfo, newMembership);
+
+						//networkManager.originalAccessPermissions.push(newMembership);
+
+						//networkManager.selectedAccountsForUpdatingAccessPermissions.push(JSON.parse(JSON.stringify(newMembership)));
+					}
+					*/
+				},
+				function (error) {
+					console.log("unable to get users by UUIDs");
+
+				});
+		}
+
+
+
+			console.log(" -- networkManager.processReceivedAccessPermissions() -- ");
+
+		/*
 		// get accounts info; we need to know what accounts are user and
 		// and what accounts are group accounts;  we display First and Last Names for User accounts
 		//and Group Account Name for group accounts
@@ -260,6 +316,7 @@ ndexApp.controller('manageNetworkAccessController',
 				console.log("unable to get accounts by UUIDs");
 
 			});
+			*/
 	};
 
 	networkManager.getNamesAndAccountType = function(accountsInfo, newMembership) {
