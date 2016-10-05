@@ -92,7 +92,7 @@ ndexApp.controller('uploadController',
 
             var uploader = $scope.uploader = new FileUploader({
                 url: ndexService.getNetworkUploadURI(),
-                alias: "fileUpload",
+                alias: "CXNetworkStream",
                 headers: {
                     Authorization: "Basic " + ndexConfigs.getEncodedUser()
                 }
@@ -159,8 +159,7 @@ ndexApp.controller('uploadController',
                 //console.info('onAfterAddingAll', addedFileItems);
             };
             uploader.onBeforeUploadItem = function(item) {
-                //item.formData.push({filename: item.file.name});
-                item.formData.push({CXNetworkStream: item.file.name});
+                item.formData.push({filename: item.file.name});
                 //console.log('onBeforeUploadItem', item);
                 //console.info('onBeforeUploadItem', item);
             };
