@@ -792,7 +792,12 @@
                             }
                         }
                     }
-                    $scope.task.format = $scope.networkType;
+
+                    // As of 5 Oct. 2016, for Release 2.0, we decided to only create tasks in CX format
+                    // before the task format was  $scope.task.format = $scope.networkType; (commented out for now)
+                    // $scope.task.format = $scope.networkType;
+                    $scope.task.format = "CX";
+
                     modalInstance = $modal.open({
                         templateUrl: 'create-export-network-task-modal.html',
                         scope: $scope,
@@ -1031,73 +1036,63 @@
                         return;
                     $scope.isProcessing = true;
 
-                    // check if reference field was modified.  As of Release 1.3, this field
-                    // is not part of NetworkSummary object (it is property); so it needs to be sent to the server
-                    // separately
-                    var updateProperties =
-                        ($scope.network.reference === $scope.ndexData.reference) ? false : true;
+                    var updateReference =
+                        ($scope.network.reference !== $scope.ndexData.reference) ? true : false;
 
+                    // check if visibility was modified
                     var updateVisibility =
-                        ($scope.network.visibility === $scope.ndexData.visibility) ? false : true;
+                        ($scope.network.visibility !== $scope.ndexData.visibility) ? true : false;
 
-                    var properties = null;
+                    // check if any ob network summary fields was modified
+                    var updateNetworkSummary =
+                        ( ($scope.network.name !== $scope.ndexData.name) ||
+                          ($scope.network.description !== $scope.ndexData.description) ||
+                          ($scope.network.version !== $scope.ndexData.version)
+                        )  ? true : false;
 
-                    if (updateProperties) {
-
-                        // properties need to be updated on the server since reference was modified
-                        if ((typeof $scope.ndexData !== 'undefined') &&
-                            (typeof $scope.ndexData.properties !== 'undefined')) {
-
-                            properties = $scope.ndexData.properties;
-
-                            var indexOfReference = $scope.getIndexOfReference(properties);
-
-                            properties[indexOfReference] =
-                                { "predicateString" : "Reference",
-                                  "value"           : $scope.network.reference,
-                                  "dataType"        : "string",
-                                  "subNetworkId"    : null
-                                }
-                        } else {
-                            // properties not found; create the properties array and send it to the server
-                            properties =
-                                { "predicateString" : "Reference",
-                                  "value"           : $scope.network.reference,
-                                  "dataType"        : "string",
-                                  "subNetworkId"    : null
-                                };
-                        }
-                        // remove reference field since $scope.network maps
-                        // to NetworkSummary object on server; this object doesn't have reference field;
-                        // it is safe to send ctation fields to the server, but let's still remove them
-                        delete $scope.network.reference;
-                    }
 
                     if (updateVisibility) {
-                        ndexService.setVisibility($scope.ndexData.externalId, $scope.network.visibility);
+                        ndexService.setVisibility($scope.ndexData.externalId, $scope.network.visibility,
+                            function (data) {
+                                $scope.ndexData.visibility = $scope.network.visibility;
+                            },
+                            function (error) {
+                                console.log("unable to update Network Visibility");
+                            });
                     }
 
+                    if (updateReference) {
+                        var referenceProperty  =
+                            { "predicateString" : "Reference",
+                              "value"           : $scope.network.reference,
+                              "dataType"        : "string",
+                              "subNetworkId"    : null
+                            };
 
-                    ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
-                        function (data) {
-                            modalInstance.close();
-                            modalInstance = null;
+                        ndexService.setNetworkProperties($scope.ndexData.externalId, referenceProperty,
+                            function (data) {
+                                $scope.ndexData.reference = $scope.network.reference;
+                            },
+                            function (error) {
+                                console.log("unable to update Network Reference");
+                            });
+                    }
 
-                            if (updateProperties) {
-                                ndexService.setNetworkProperties($scope.ndexData.externalId, properties,
-                                    function (data) {
-                                        $route.reload();
-                                    },
-                                    function (error) {
-                                    });
-                            } else {
-                                $route.reload();
-                            }
-                            $scope.isProcessing = false;
-                        },
-                        function (error) {
-                            $scope.isProcessing = false;
-                        })
+                    if (updateNetworkSummary) {
+                        ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
+                            function (data) {
+                                $scope.ndexData.name = $scope.network.name;
+                                $scope.ndexData.description = $scope.network.description;
+                                $scope.ndexData.version = $scope.network.version;
+                            },
+                            function (error) {
+                                console.log("unable to update Network Summary");
+                            })
+                    }
+
+                    modalInstance.close();
+                    modalInstance = null;
+                    $scope.isProcessing = false;
                 };
             }
         }

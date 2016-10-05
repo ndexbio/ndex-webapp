@@ -110,7 +110,9 @@ ndexApp.controller('uploadController',
             uploader.filters.push({
                 name: 'fileExtensionFilter',
                 fn: function(item, options){
-                    var allowed = ['xgmml', 'xbel', 'sif', 'owl', 'cx'];
+                    // var allowed = ['xgmml', 'xbel', 'sif', 'owl', 'cx'];
+                    // For Releasee 2.0, as of 5 Oct. 2016, only CX format is allowed.
+                    var allowed = ['cx'];
                     var ext = item.name.split(".").pop().toLowerCase();
                     return $.inArray(ext, allowed) != -1;
                 }
@@ -157,7 +159,8 @@ ndexApp.controller('uploadController',
                 //console.info('onAfterAddingAll', addedFileItems);
             };
             uploader.onBeforeUploadItem = function(item) {
-                item.formData.push({filename: item.file.name});
+                //item.formData.push({filename: item.file.name});
+                item.formData.push({CXNetworkStream: item.file.name});
                 //console.log('onBeforeUploadItem', item);
                 //console.info('onBeforeUploadItem', item);
             };

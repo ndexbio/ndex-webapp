@@ -21,7 +21,8 @@
             </div>
 
             <div class="rowWithOneLineTopPad">
-                Please choose Export Format below:
+                <!--Please choose Export Format below: -->
+                Network can only be exported in CX format.
             </div>
 
             <h5><strong>
@@ -30,6 +31,12 @@
 		      <a href class="dropdown-toggle" data-toggle="dropdown">
                   {{task.format}} <span class="caret"></span>
               </a>
+		      <ul class="dropdown-menu">
+                  <li>
+                      <a class="dropdown-toggle" ng-click='task.format = "CX"'><small>CX</small></a>
+                  </li>
+              </ul>
+                <!--
 		      <ul class="dropdown-menu">
                   <li ng-show="networkType=='XGMML'">
                       <a class="dropdown-toggle" ng-click='task.format = "XGMML"'><small>XGMML</small></a>
@@ -50,6 +57,7 @@
                       <a class="dropdown-toggle" ng-click='task.format = "SIF"'><small>SIF</small></a>
                   </li>
               </ul>
+              -->
 		    </span>
             </strong></h5>
         </div>

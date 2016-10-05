@@ -21,7 +21,8 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.getNetworkUploadURI = function () {
-                return ndexServerURI + "/network/upload";
+                //return ndexServerURI + "/network/upload";
+                return ndexServerURI + "/network/asCX";
             };
 
             /*---------------------------------------------------------------------*
@@ -957,12 +958,17 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.setVisibility = function (networkId, value)
+            factory.setVisibility = function (networkId, value, successHandler, errorhandler)
             {
                 var config = ndexConfigs.getNetworkSetVisibilityConfig(networkId, value);
                 $http(config)
-                    .success(function()
+                    .success(function(data)
                     {
+                        successHandler(data);
+                    })
+                    .error(function(data)
+                    {
+                        errorHandler(data);
                     });
             };
             
