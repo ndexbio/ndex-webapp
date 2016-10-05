@@ -1413,7 +1413,7 @@ ndexApp.controller('networkViewController',
                                 }
                             });
                             
-                            networkController.readOnlyChecked = networkController.currentNetwork.readOnlyCommitId > 0;
+                            networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
                             getNetworkAdmins();
 
                             var sourceFormat =
