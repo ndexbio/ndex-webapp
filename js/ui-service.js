@@ -1703,7 +1703,8 @@
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
-                                        $scope.errors = error.data;
+                                        delete $scope.progress;
+                                        $scope.errors = error.data.message;
                                         $scope.isProcessing = false;
                                     });
                             };
