@@ -1069,7 +1069,10 @@
                               "subNetworkId"    : null
                             };
 
-                        ndexService.setNetworkProperties($scope.ndexData.externalId, referenceProperty,
+                        var referenceList = [];
+                        referenceList.push(referenceProperty);
+
+                        ndexService.setNetworkProperties($scope.ndexData.externalId, referenceList,
                             function (data) {
                                 $scope.ndexData.reference = $scope.network.reference;
                             },
