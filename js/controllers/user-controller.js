@@ -414,7 +414,7 @@ ndexApp.controller('userController',
                         }
 
                         // check if network is read-only
-                        if (userController.networkSearchResults[j].readOnlyCommitId > 0) {
+                        if (userController.networkSearchResults[j].isReadOnly) {
                             // it is read-only; cannot delete or modify
                             return false;
                         }

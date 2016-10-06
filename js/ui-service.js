@@ -1053,11 +1053,11 @@
 
                     if (updateVisibility) {
                         ndexService.setVisibility($scope.ndexData.externalId, $scope.network.visibility,
-                            function (data) {
+                            function (data, networkId) {
                                 $scope.ndexData.visibility = $scope.network.visibility;
                             },
-                            function (error) {
-                                console.log("unable to update Network Visibility");
+                            function (error, networkId) {
+                                console.log("unable to update Network Visibility for Network with Id " + networkId );
                             });
                     }
 
@@ -1217,6 +1217,7 @@
                         myNet.networkId = networkId;
 
                         var properties = [];
+                        var referenceProperty = {};
 
                         if (operation === 'description') {
                             myNet.description = $scope.network.description;
@@ -1228,22 +1229,22 @@
                             myNet.visibility = $scope.network.visibility;
 
                         } else if (operation === 'reference') {
-                            properties  = $scope.getNetworkProperties(networkId, userController);
-                            var indexOfReference = $scope.getIndexOfReference(properties);
 
-                            properties[indexOfReference] =
+                            referenceProperty =
                                 {
                                     "predicateString" : "Reference",
                                     "value"           : $scope.network.reference,
                                     "dataType"        : "string",
                                     "subNetworkId"    : null
                                 };
-
                         }
 
                         if (operation === 'reference') {
 
-                            ndexService.setNetworkProperties(networkId, properties,
+                            var referenceList = [];
+                            referenceList.push(referenceProperty);
+
+                            ndexService.setNetworkProperties(myNet.networkId, referenceList,
                                 function (data) {
                                     createdTasksCounter = createdTasksCounter + 1;
 
@@ -1259,19 +1260,14 @@
                                     if (i == createdTasksCounter) {
                                         $scope.isProcessing = false;
                                         modalInstance.close();
-
                                     }
                                 });
 
-                        } else {
+                        } else if (operation === 'description' || operation === 'version') {
 
-                            ndexService.editNetworkSummary(networkId, myNet,
+                            ndexService.editNetworkSummary(myNet.networkId, myNet,
                                 function (data) {
                                     createdTasksCounter = createdTasksCounter + 1;
-
-                                    if (operation === 'visibility') {
-                                        userController.updateVisibilityOfNetwork(data.networkId, myNet.visibility);
-                                    }
 
                                     if (i == createdTasksCounter) {
                                         $scope.isProcessing = false;
@@ -1284,13 +1280,34 @@
                                     if (i == createdTasksCounter) {
                                         $scope.isProcessing = false;
                                         modalInstance.close();
-
                                     }
                                 }
                             )
+                        } else if (operation === 'visibility') {
+
+                            ndexService.setVisibility(myNet.networkId, myNet.visibility,
+                                function (data, networkId) {
+                                    createdTasksCounter = createdTasksCounter + 1;
+
+                                    userController.updateVisibilityOfNetwork(networkId, myNet.visibility);
+
+                                    if (i == createdTasksCounter) {
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+                                    }
+                                },
+                                function (error, networkId) {
+                                    createdTasksCounter = createdTasksCounter + 1;
+
+                                    console.log("unable to update Network Visibility");
+
+                                    if (i == createdTasksCounter) {
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+                                    }
+                                });
+
                         }
-
-
                     }
                 };
             }
@@ -1364,28 +1381,25 @@
                             continue;
                         }
 
-                        if ((networkObj.readOnlyCommitId > 0) && ($scope.network.readOnly.toUpperCase()==='UNSET')) {
+                        if ((networkObj.isReadOnly) && ($scope.network.readOnly.toUpperCase()==='UNSET')) {
 
                             // the network is read-only and the operation is UNSET, so let's remove the read-only flag
                             ndexService.setReadOnly(networkUUID, false);
 
-                            // set the read-only flags in networkSearchResults to -1 showing that this network
+                            // set the read-only flags in networkSearchResults to false showing that this network
                             // is now read-write
-                            userController.networkSearchResults[i].readOnlyCacheId = -1;
-                            userController.networkSearchResults[i].readOnlyCommitId = -1;
+                            userController.networkSearchResults[i].isReadOnly = false;
 
-
-                        } else  if ((networkObj.readOnlyCommitId < 0) && ($scope.network.readOnly.toUpperCase()==='SET')) {
+                        } else  if (!networkObj.isReadOnly && ($scope.network.readOnly.toUpperCase()==='SET')) {
 
                             // the network is not read-only and the true is SET, so let's make network read-only
                             ndexService.setReadOnly(networkUUID, true);
 
-                            // set the read-only flags to 1 showing that this network is now read-only;
-                            // the readOnlyCacheId and readOnlyCacheId flags will be replaced with correct values
+                            // set the read-only flags to true showing that this network is now read-only;
+                            // the isReadOnly flag will be re-set
                             // when we reload user page and re-populate the userController.networkSearchResults structure;
-                            // But for now, keep the values 1 so that UI behaves correctly with these networks.
-                            userController.networkSearchResults[i].readOnlyCacheId = 1;
-                            userController.networkSearchResults[i].readOnlyCommitId = 1;
+                            // But for now, keep this value as true so that UI behaves correctly with these networks.
+                            userController.networkSearchResults[i].isReadOnly = true;
                         }
                     }
 

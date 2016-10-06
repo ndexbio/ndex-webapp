@@ -678,7 +678,7 @@ ndexApp.controller('networkController',
                                     populateNodeTable(enableFiltering);
                                 });
                         });
-                        networkController.readOnlyChecked = cn.readOnlyCommitId > 0;
+                        networkController.readOnlyChecked = cn.isReadOnly;
                         getNetworkAdmins();
 
                         getNetworkSourceFormat(networkController.currentNetwork.properties);

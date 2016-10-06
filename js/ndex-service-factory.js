@@ -964,11 +964,13 @@ ndexServiceApp.factory('ndexService',
                 $http(config)
                     .success(function(data)
                     {
-                        successHandler(data);
+                        // note that we need to pass the Id of network back in order to correctly update
+                        // visibility of network in the Table while performing Bulk Change Visibility
+                        successHandler(data, networkId);
                     })
                     .error(function(data)
                     {
-                        errorHandler(data);
+                        errorHandler(data, networkId);
                     });
             };
             
