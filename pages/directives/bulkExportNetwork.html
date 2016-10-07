@@ -1,0 +1,58 @@
+<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="bulk-export-network-modal.html">
+    <div class='modal-content'>
+        <div class="modal-header">
+            <h4 class="modal-title">{{title}}</h4>
+        </div>
+
+        <div class='modal-body' ng-hide='false'>
+
+            <div class="rowWithOneLineTopPad">
+                Network export is currently limited to the CX network format.  The NDEx team will be adding other
+                formats, please refer to
+                <a href="http://www.home.ndexbio.org/exporting-networks/" target="_blank">documentation</a>
+                for status and details on network export.
+            </div>
+
+            <!--
+            <div class="rowWithOneLineTopPad">
+                Please choose Export Format below:
+            </div>
+            -->
+
+            <h5><strong>
+                Export Format:
+            <span class="dropdown">
+		      <a href class="dropdown-toggle" data-toggle="dropdown">
+                  {{networkExportFormat}} <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                  <li>
+                      <a class="dropdown-toggle" ng-click='networkExportFormat = "CX"'><small>CX</small></a>
+                  </li>
+              </ul>
+            <!--
+		      <ul class="dropdown-menu">
+                  <li>
+                      <a class="dropdown-toggle" ng-click='networkExportFormat = "Native"'><small>Native</small></a>
+                  </li>
+                  <li>
+                      <a class="dropdown-toggle" ng-click='networkExportFormat = "CX"'><small>CX</small></a>
+                  </li>
+                  <li>
+                      <a class="dropdown-toggle" ng-click='networkExportFormat = "SIF"'><small>SIF</small></a>
+                  </li>
+              </ul>
+              -->
+		    </span>
+            </strong></h5>
+
+        </div>
+
+        <div class='modal-footer' ng-hide='false'>
+            <button class='btn btn-default' ng-click='close()'>Cancel</button>
+            <button class='btn btn-primary' ng-click='exportNetworks()' ng-disabled='isProcessing'>Export Networks</button>
+        </div>
+    </div>
+</script>

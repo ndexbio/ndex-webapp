@@ -809,44 +809,27 @@
         }
     });
 
-    // modal to create bulk network export task
-    uiServiceApp.directive('createBulkExportNetworkTasks', function() {
+    // modal to bulk export selected networks
+    uiServiceApp.directive('bulkExportNetwork', function() {
         return {
             scope: {
                 ndexData: '='
             },
             restrict: 'E',
             transclude: true,
-            templateUrl: 'pages/directives/createBulkExportNetworkTask.html',
+            templateUrl: 'pages/directives/bulkExportNetwork.html',
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
-                //$scope.task.networkType = 'Default 11';
                 $scope.title = 'Export Selected Networks';
-                $scope.export = {};
-
-                $scope.task = {
-                    description: 'bulk network export',
-                    priority: 'MEDIUM',
-                    taskType: 'EXPORT_NETWORK_TO_FILE',
-                    status: 'QUEUED',
-                    progress: 0,
-                    //This old approach doesn't work, because at this point, externalId is undefined.
-                    //We are making resource undefined explicitly and we set it equal to the UUID of the network
-                    //in createTask() function below...
-                    //old - resource: $scope.externalId
-                    //new - resource: undefined
-                    resource: undefined
-                };
 
                 $scope.openMe = function() {
-                    $scope.export.networkType = "Native";
-                    //$scope.task.format = $scope.networkType;
+                    $scope.networkExportFormat = "CX";
 
                     modalInstance = $modal.open({
-                        templateUrl: 'create-bulk-export-network-task-modal.html',
+                        templateUrl: 'bulk-export-network-modal.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
@@ -858,7 +841,7 @@
                     modalInstance.close();
                 };
 
-                $scope.createTasks = function() {
+                $scope.exportNetworks = function() {
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true;
@@ -866,62 +849,23 @@
                     // get reference to userController from user.html
                     var userController = $scope.ndexData;
 
-                    // call the userController.getIDsAndTypesOfSelectedNetworks() function
-                    var IDsAndTypesOfSelectedNetworks = userController.getIDsAndTypesOfSelectedNetworks();
+                    // get IDs of networks to be exported
+                    var networkUUIDsList = userController.getIDsOfSelectedNetworks();
 
-                    //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
-                    // UUID wasn't yet available.
+                    var networkExportFormat = $scope.networkExportFormat;
 
-                    var createdTasksCounter = 0;
+                    ndexService.exportNetwork(networkExportFormat, networkUUIDsList,
+                        function(data) {
+                            ///console.log(data);
+                            $scope.isProcessing = false;
+                            modalInstance.close();
+                        },
+                        function(error) {
+                            //console.log(error);
+                            $scope.isProcessing = false;
+                            modalInstance.close();
+                        });
 
-                    for (i = 0; i < Object.keys(IDsAndTypesOfSelectedNetworks).length; i++) {
-                        // clone $scope.task; myTask should be unique object since it
-                        // will be passed as argment to ndexService.createTask
-                        var myTask = JSON.parse(JSON.stringify($scope.task));
-
-                        myTask.format = ($scope.export.networkType === 'Native') ?
-                            IDsAndTypesOfSelectedNetworks[i]['format'] :
-                            $scope.export.networkType;
-
-                        myTask.resource = IDsAndTypesOfSelectedNetworks[i]['externalId'];
-                        if (myTask.format.toUpperCase() === 'BEL') {
-                            myTask.format = 'XBEL';
-                        }
-                        if (myTask.format.toUpperCase() === 'UNKNOWN') {
-                            myTask.format = 'CX';
-                        }
-
-                        // assign network name  and format to which we export the network
-                        // to the attributes object;  they will be used later for downloading the exported network
-                        var attributes = {
-                            downloadFileName: IDsAndTypesOfSelectedNetworks[i]['networkName'],
-                            downloadFileExtension: IDsAndTypesOfSelectedNetworks[i]['format']
-                        };
-                        myTask.attributes = attributes;
-
-                        ndexService.createTask(myTask,
-                            function (data) {
-                                createdTasksCounter = createdTasksCounter + 1;
-
-                                if (i == createdTasksCounter) {
-                                    //$scope.false = true;
-                                    $scope.isProcessing = false;
-                                    userController.refreshTasks();
-                                    modalInstance.close();
-                                }
-                            },
-                            function (error) {
-                                createdTasksCounter = createdTasksCounter + 1;
-
-                                if (i == createdTasksCounter) {
-                                    //$scope.false = true;
-                                    $scope.isProcessing = false;
-                                    userController.refreshTasks();
-                                    modalInstance.close();
-                                }
-
-                            });
-                    }
                 }
             }
         }

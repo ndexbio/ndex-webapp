@@ -336,23 +336,6 @@ ndexApp.controller('userController',
                 return true;
             }
 
-            userController.getIDsAndTypesOfSelectedNetworks = function ()
-            {
-                var selectedIdsAndTypes = {};   //[];
-
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                var IdsAndTypes = {};
-                for( var i = 0; i < selectedNetworksRows.length; i ++ )
-                {
-                    selectedIdsAndTypes[i] = {};
-                    selectedIdsAndTypes[i]['externalId']  = selectedNetworksRows[i].externalId;
-                    selectedIdsAndTypes[i]['format']      = selectedNetworksRows[i].Format;
-                    selectedIdsAndTypes[i]['networkName'] = selectedNetworksRows[i]["Network Name"];
-                }
-
-                return selectedIdsAndTypes;
-            };
-
             userController.getIDsOfSelectedNetworks = function ()
             {
                 var selectedIds = [];
