@@ -1093,6 +1093,30 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+
+            factory.exportNetwork = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
+            {
+                // Server API: exportNetwork
+                // /network/export
+                // The structure of the export POST request is:
+                //      {
+                //          "networkFormat": "cx",
+                //          "networkIds":  [a list of network UUIDs]
+                //      }
+
+                var config = ndexConfigs.getExportNetworkConfig(networkExportFormat, listOfNetworkIDs);
+                $http(config)
+                    .success(function(data)
+                    {
+                        //console.log("success export network");
+                        successHandler(data);
+                    }).error(function(error)
+                    {
+                        //console.log("unable to export network");
+                        errorHandler(error);
+                    });
+            };
+
             // return factory object
             return factory;
         }]);
@@ -1458,6 +1482,25 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var url = "/network/" + resourceUUID + "/member/group/" + memberUUID;
         return this.getPostConfig(url, permissions);
     };
+
+    factory.getExportNetworkConfig = function (networkExportFormat, listOfNetworkIDs) {
+        // Server API: exportNetwork
+        // /network/export
+        // The structure of the export POST request is:
+        //      {
+        //          "networkFormat": "cx",
+        //          "networkIds":  [a list of network UUIDs]
+        //      }
+
+        var url = "/network/export";
+
+        var postData = {};
+        postData["networkFormat"] = networkExportFormat;
+        postData["networkIds"] = listOfNetworkIDs;
+
+        return this.getPostConfig(url, postData);
+    };
+
     return factory;
 
 });

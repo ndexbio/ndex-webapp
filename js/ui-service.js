@@ -740,66 +740,26 @@
         }
     });
 
-    // modal to create network export task
-    uiServiceApp.directive('createExportNetworkTask', function() {
+    // modal to export network
+    uiServiceApp.directive('exportNetwork', function() {
         return {
             scope: {
                 ndexData: '='
             },
             restrict: 'E',
             transclude: true,
-            templateUrl: 'pages/directives/createExportNetworkTask.html',
+            templateUrl: 'pages/directives/exportNetwork.html',
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
-                $scope.networkType = 'SIF';
-
-                $scope.task = {
-                    description: 'network export',
-                    priority: 'MEDIUM',
-                    taskType: 'EXPORT_NETWORK_TO_FILE',
-                    status: 'QUEUED',
-                    progress: 0,
-                    //This old approach doesn't work, because at this point, externalId is undefined.
-                    //We are making resource undefined explicitly and we set it equal to the UUID of the network
-                    //in createTask() function below...
-                    //old - resource: $scope.externalId
-                    //new - resource: undefined
-                    resource: undefined
-                };
 
                 $scope.openMe = function() {
-                    $scope.networkType = $scope.task.format;
-                    var types = ["CX", "SIF", "XGMML", "BEL", "XBEL", "BIOPAX"];
-                    if (typeof $scope.networkType === 'undefined') {
-                        $scope.networkType = 'CX';
-                    }
-                    if (csn)
-                    {
-                        for (var i = 0; i < csn.properties.length; i++)
-                        {
-                            var property = csn.properties[i];
-                            if (property.predicateString.toUpperCase() == "SOURCEFORMAT")
-                            {
-                                if( $.inArray(property.value.toUpperCase(), types) == -1 )
-                                    break;
-                                $scope.networkType = property.value.toUpperCase();
-                                if( $scope.networkType == 'BEL' )
-                                    $scope.networkType = 'XBEL';
-                                break;
-                            }
-                        }
-                    }
-
-                    // As of 5 Oct. 2016, for Release 2.0, we decided to only create tasks in CX format
-                    // before the task format was  $scope.task.format = $scope.networkType; (commented out for now)
-                    // $scope.task.format = $scope.networkType;
-                    $scope.task.format = "CX";
+                    $scope.networkExportFormat = "CX";
 
                     modalInstance = $modal.open({
-                        templateUrl: 'create-export-network-task-modal.html',
+                        templateUrl: 'export-network-modal.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
@@ -811,27 +771,18 @@
                     modalInstance.close();
                 };
 
-                $scope.createTask = function() {
+                $scope.exportNetwork = function() {
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true;
-                    //This is a hack of sorts. The tasks resource was set to undefined earlier, since the network
-                    // UUID wasn't yet available.
 
-                    myTask = $scope.task;
-                    myTask.resource = $scope.externalId;
+                    var networkExportFormat = $scope.networkExportFormat;
+                    var networkUUIDsList = [];
+                    networkUUIDsList.push($scope.externalId);
 
-                    // assign network name ($scope.name) and format to which we export the network
-                    // to the attributes object;  they will be used later for downloading the exported network
-                    var attributes = {
-                        downloadFileName: $scope.name,
-                        downloadFileExtension: myTask.format
-                    };
-                    myTask.attributes = attributes;
-
-                    ndexService.createTask(myTask,
+                    ndexService.exportNetwork(networkExportFormat, networkUUIDsList,
                         function(data) {
-                            ////console.log(data);
+                            ///console.log(data);
                             $scope.false = true;
                             $scope.isProcessing = false;
                             modalInstance.close();
@@ -839,7 +790,7 @@
                         function(error) {
                             //console.log(error);
                             $scope.isProcessing = false;
-                            //TODO error handling
+                            modalInstance.close();
                         });
                 }
 
