@@ -745,6 +745,7 @@
         return {
             scope: {
                 ndexData: '='
+                //userController: '='
             },
             restrict: 'E',
             transclude: true,
@@ -783,13 +784,16 @@
                     ndexService.exportNetwork(networkExportFormat, networkUUIDsList,
                         function(data) {
                             ///console.log(data);
-                            $scope.false = true;
                             $scope.isProcessing = false;
+                            //var userController = $scope.userController;
+                            //userController.refreshTasks();
                             modalInstance.close();
                         },
                         function(error) {
                             //console.log(error);
                             $scope.isProcessing = false;
+                            //var userController = $scope.userController;
+                            //userController.refreshTasks();
                             modalInstance.close();
                         });
                 }
@@ -803,8 +807,6 @@
                         $scope.ndexData.name :
                         null;
                 });
-
-
             }
         }
     });
@@ -858,11 +860,13 @@
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
+                            userController.refreshTasks();
                             modalInstance.close();
                         },
                         function(error) {
                             //console.log(error);
                             $scope.isProcessing = false;
+                            userController.refreshTasks();
                             modalInstance.close();
                         });
 
