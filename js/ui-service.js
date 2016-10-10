@@ -956,7 +956,7 @@
                                 $scope.ndexData.visibility = $scope.network.visibility;
                             },
                             function (error, networkId) {
-                                console.log("unable to update Network Visibility for Network with Id " + networkId );
+                                console.log("unable to update Network Visibility for Network with Id " + networkId);
                             });
                     }
 
@@ -1198,7 +1198,7 @@
                                 function (error, networkId) {
                                     createdTasksCounter = createdTasksCounter + 1;
 
-                                    console.log("unable to update Network Visibility");
+                                    console.log("unable to update Network Visibility for Network with Id " + networkId);
 
                                     if (i == createdTasksCounter) {
                                         $scope.isProcessing = false;

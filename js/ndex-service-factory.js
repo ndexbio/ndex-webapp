@@ -958,7 +958,7 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.setVisibility = function (networkId, value, successHandler, errorhandler)
+            factory.setVisibility = function (networkId, value, successHandler, errorHandler)
             {
                 var config = ndexConfigs.getNetworkSetVisibilityConfig(networkId, value);
                 $http(config)
