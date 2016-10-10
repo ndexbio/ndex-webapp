@@ -84,6 +84,12 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'userController'
         })
 
+        // route for the MyAccount page
+        .when('/myAccount', {
+            templateUrl: 'pages/myAccount.html',
+            controller: 'myAccountController'
+        })
+            
         // route for the group page
         .when('/group/:identifier', {
             templateUrl: 'pages/group.html',

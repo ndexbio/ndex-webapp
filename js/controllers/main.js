@@ -58,7 +58,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         $scope.main.goToCurrentUser = function(){
             if (sharedProperties.currentUserId) {
-                $location.path("/user/" + sharedProperties.currentUserId);
+                //$location.path("/user/" + sharedProperties.currentUserId);
+                $location.path("/myAccount");
             }
         };
 
