@@ -1447,10 +1447,23 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
+    factory.getUserNetworkMembershipsConfig = function (userId, permission, skipBlocks, blockSize, inclusive)
+    {
+        // calls getUserNetworkMemberships server API at
+        // /user/{userid}/network/{permission}/{skipBlocks}/{blockSize}
+
+        var url = "/user/" + userId + "/network/" + permission + "/" + skipBlocks + "/" + blockSize;
+
+        if (inclusive) {
+            url = url + "?inclusive=true"
+        }
+        return this.getGetConfig(url, null);
+    };
+
     factory.getNetworkSummariesByIDsConfig = function (networksUUIDs)
     {
-        // Server API: getGroupNetworkMemberships
-        // /group/{groupId}/network/{permission}/{skipBlocks}/{blockSize}
+        // Server API: getNetworkSummariesByIDs
+        // /network/summaries
 
         var url = "/network/summaries";
         return this.getPostConfig(url, networksUUIDs);

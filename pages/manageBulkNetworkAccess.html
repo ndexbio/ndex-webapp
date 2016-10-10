@@ -106,7 +106,7 @@
 				            </div>
 
 					        <div class='col-sm-6'>
-								{{bulkNetworkManager.getAccountName(user)}}
+								{{bulkNetworkManager.getUserAccountName(user)}}
 							</div>
 
 						</div>
@@ -115,7 +115,7 @@
 						<div class="row">
 							<button class='btn btn-xs btn-primary pull-right'
 								ng-disabled='user.member'
-								ng-click='bulkNetworkManager.addMember(user)'>
+								ng-click='bulkNetworkManager.addUserMember(user)'>
 								Add
 							</button>
 						</div>
@@ -148,7 +148,7 @@
 				            </div>
 
 					        <div class='col-sm-6'>
-								{{bulkNetworkManager.getAccountName(group)}}
+								{{bulkNetworkManager.getGroupAccountName(group)}}
 							</div>
 
 						</div>
@@ -157,7 +157,7 @@
 						<div class='row'>
 							<button class='btn btn-xs btn-primary pull-right'
 								ng-disabled='group.member'
-								ng-click='bulkNetworkManager.addMember(group)'>
+								ng-click='bulkNetworkManager.addGroupMember(group)'>
 								Add
 							</button>
 						</div>

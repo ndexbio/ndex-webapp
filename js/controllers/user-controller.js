@@ -567,7 +567,7 @@ ndexApp.controller('userController',
                 ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks)
                     {
-                        var numberOfNetworksReceived = //networks.length;
+                        var numberOfNetworksReceived =
                             (networks && networks.numFound && networks.numFound > 0) ? networks.numFound : 0;
                         if (numberOfNetworksReceived > 0) {
                             userController.getNetworksWithAdminAccess();

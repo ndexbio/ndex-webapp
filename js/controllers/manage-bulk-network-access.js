@@ -58,13 +58,14 @@ ndexApp.controller('manageBulkNetworkAccessController',
         ndexService.searchUsers(query, 0, 10,
             function(users) {
 
-                bulkNetworkManager.newUsers = users;
+                bulkNetworkManager.newUsers = users.resultList;
 
-                var length2 = users.length;
+                var length2 = users.numFound;
                 var length = bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.length
                 for(var jj=0; jj<length2; jj++) {
                     for(var ii=0; ii<length; ii++) {
-                        if(bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == users[jj].externalId)
+                        if(bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID ==
+                            users.resultList[jj].externalId)
                             users[jj].member = true;
                     }
                 }
@@ -81,13 +82,14 @@ ndexApp.controller('manageBulkNetworkAccessController',
         ndexService.searchGroups(query, 0, 10,
             function(groups) {
 
-                bulkNetworkManager.newGroups = groups;
+                bulkNetworkManager.newGroups = groups.resultList;
 
-                var length2 = groups.length;
+                var length2 = groups.numFound;
                 var length = bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.length
                 for(var jj=0; jj<length2; jj++) {
                     for(var ii=0; ii<length; ii++) {
-                        if(bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == groups[jj].externalId)
+                        if(bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID ==
+                            groups.resultList[jj].externalId)
                             groups[jj].member = true;
                     }
                 }
@@ -117,6 +119,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
         }
     };
 
+    /*
     bulkNetworkManager.addMember = function(member) {
         var newMembership = {
             memberAccountName: bulkNetworkManager.getAccountName(member),
@@ -130,6 +133,38 @@ ndexApp.controller('manageBulkNetworkAccessController',
         member.member = true;
         bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership);
     }
+    */
+
+    bulkNetworkManager.addUserMember = function(user) {
+        var newMembership = {
+            memberAccountName: bulkNetworkManager.getUserAccountName(user),
+            memberUUID: user.externalId,
+            permissions: 'READ',
+            firstName: ((typeof(user.firstName) === 'undefined') ? "" : user.firstName),
+            lastName: ((typeof(user.lastName) === 'undefined') ? "" : user.lastName),
+            accountType: 'User',
+            member: true
+        }
+
+        user.member = true;
+
+        bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership);
+    };
+
+    bulkNetworkManager.addGroupMember = function(group) {
+        var newMembership = {
+            memberAccountName: bulkNetworkManager.getGroupAccountName(group),
+            memberUUID: group.externalId,
+            permissions: 'READ',
+            groupName: ((typeof(group.groupName) === 'undefined') ? "" : group.groupName),
+            accountType: 'Group',
+            member: true
+        }
+
+        group.member = true;
+
+        bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership);
+    };
 
     bulkNetworkManager.getAccountName = function(user) {
         if (typeof(user) === 'undefined') {
@@ -149,6 +184,44 @@ ndexApp.controller('manageBulkNetworkAccessController',
         }
 
         return "unknown account type";
+    };
+
+    bulkNetworkManager.getUserAccountName = function(user) {
+        if (typeof(user) === 'undefined') {
+            return 'undefined';
+        }
+
+        if ((typeof(user.userName) !== 'undefined') && (user.userName === 'ndexadministrator')) {
+            return user.userName;
+        }
+
+        if ((typeof(user.memberAccountName) !== 'undefined') && (user.memberAccountName === 'ndexadministrator')) {
+            return user.memberAccountName;
+        }
+
+        if (user.isIndividual) {
+            if (user.firstName && user.lastName) {
+                return user.firstName + " " + user.lastName;
+            }
+        } else {
+            if (user.displayName) {
+                return user.displayName;
+            }
+        }
+
+        return "unknown user";
+    };
+
+    bulkNetworkManager.getGroupAccountName = function(group) {
+        if (typeof(group) === 'undefined') {
+            return 'undefined';
+        }
+
+        if (group.groupName) {
+            return group.groupName;
+        }
+
+        return "unknown group";
     };
 
     bulkNetworkManager.checkIfNetworkAccessNeedsUpdating = function(
