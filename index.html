@@ -326,9 +326,9 @@
                     </a>
                 </li>
 
-                <li ng-show="main.loggedIn">
+                <li ng-show="main.loggedIn && showMyAccountMenu">
                     <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser();"
-                        ng-class="{'selected-navbar-item' : isActiveUserView('/user/')}">
+                        ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
                         MyAccount
                     </a>
                 </li>

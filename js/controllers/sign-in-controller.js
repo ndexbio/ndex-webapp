@@ -25,10 +25,6 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                 ndexUtility.setUserCredentials(data.userName, data.externalId, $scope.signIn.password);
                 $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
                 //$location.path("/user/" + data.externalId);
-
-                var identifier = ndexUtility.getUserCredentials()["externalId"];
-                console.log("identifier=" + identifier);
-
                 $location.path("/myAccount");
                 $scope.signIn.userName = null;
                 $scope.signIn.password = null;

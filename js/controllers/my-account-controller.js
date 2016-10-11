@@ -47,7 +47,16 @@ ndexApp.controller('myAccountController',
             // These networks are owned by both the current user and other users.
             myAccountController.networksWithWriteAccess = [];
 
-
+            // when My Account (this current) page loads, we need to hide the My Account menu link
+            $scope.$parent.showMyAccountMenu = false;
+            
+            // this function gets called when user navigates away from the current My Account page.
+            // (can also use "$locationChangeStart" instead of "$destroy"
+            $scope.$on("$destroy", function(){
+                // hide the My Account menu item in Nav Bar
+                $scope.$parent.showMyAccountMenu = true;
+            });
+            
             var calcColumnWidth = function(header, isLastColumn)
             {
                 var result = header.length * 10;
