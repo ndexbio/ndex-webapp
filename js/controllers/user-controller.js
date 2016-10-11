@@ -44,7 +44,11 @@ ndexApp.controller('userController',
             // list of network IDs of all networks for which the current user has WRITE access and therefore can update.
             // These networks are owned by both the current user and other users.
             userController.networksWithWriteAccess = [];
-
+            
+            if (identifier === userController.loggedInIdentifier) {
+                // redirect to My Account page
+                $location.path("/myAccount");
+            }
 
             var calcColumnWidth = function(header, isLastColumn)
             {

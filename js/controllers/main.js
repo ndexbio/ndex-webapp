@@ -19,6 +19,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             //listener for changes in log in.
             $scope.main.loggedIn = true;
             $scope.main.userName = sharedProperties.getCurrentUserAccountName();
+            $scope.showMyAccountMenu = true;
         });
 
         $scope.$on('LOGGED_OUT', function () {
@@ -44,7 +45,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         });
 
         $scope.showViewMenus = false;
-        $scope.showMyAccountMenu = false;
         
         // do not show Search anywhere except on New Network Page
         // This value gets set to true when we load New Network page (in netwrok-view-controller.js), 
