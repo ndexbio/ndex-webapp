@@ -848,11 +848,11 @@
                         return;
                     $scope.isProcessing = true;
 
-                    // get reference to userController from user.html
-                    var userController = $scope.ndexData;
+                    // get reference to myAccountController from user.html
+                    var myAccountController = $scope.ndexData;
 
                     // get IDs of networks to be exported
-                    var networkUUIDsList = userController.getIDsOfSelectedNetworks();
+                    var networkUUIDsList = myAccountController.getIDsOfSelectedNetworks();
 
                     var networkExportFormat = $scope.networkExportFormat;
 
@@ -860,13 +860,13 @@
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
-                            userController.refreshTasks();
+                            myAccountController.refreshTasks();
                             modalInstance.close();
                         },
                         function(error) {
                             //console.log(error);
                             $scope.isProcessing = false;
-                            userController.refreshTasks();
+                            myAccountController.refreshTasks();
                             modalInstance.close();
                         });
 
@@ -1060,6 +1060,7 @@
                     $scope.network = {};
                 };
 
+                /*
                 $scope.getNetworkProperties = function(networkId, userController) {
                     var properties = [];
 
@@ -1080,6 +1081,7 @@
 
                     return properties;
                 }
+                */
 
                 $scope.getIndexOfReference = function(properties) {
                     var index = properties.length;
@@ -1101,8 +1103,8 @@
                         return;
                     $scope.isProcessing = true;
 
-                    var userController = $scope.ndexData;
-                    var IdsOfSelectedNetworks = userController.getIDsOfSelectedNetworks();
+                    var myAccountController = $scope.ndexData;
+                    var IdsOfSelectedNetworks = myAccountController.getIDsOfSelectedNetworks();
 
                     var operation = $scope.network.operation.toLowerCase();
                     delete $scope.network.operation;
@@ -1188,7 +1190,7 @@
                                 function (data, networkId) {
                                     createdTasksCounter = createdTasksCounter + 1;
 
-                                    userController.updateVisibilityOfNetwork(networkId, myNet.visibility);
+                                    myAccountController.updateVisibilityOfNetwork(networkId, myNet.visibility);
 
                                     if (i == createdTasksCounter) {
                                         $scope.isProcessing = false;
@@ -1267,14 +1269,14 @@
 
                 $scope.submit = function() {
 
-                    var userController = $scope.ndexData;
+                    var myAccountController = $scope.ndexData;
 
-                    var IdsOfSelectedNetworks = userController.getIDsOfSelectedNetworks();
+                    var IdsOfSelectedNetworks = myAccountController.getIDsOfSelectedNetworks();
 
-                    for (var i = 0; i < userController.networkSearchResults.length; i++ )
+                    for (var i = 0; i < myAccountController.networkSearchResults.length; i++ )
                     {
-                        var networkObj  = userController.networkSearchResults[i];
-                        var networkUUID = userController.networkSearchResults[i].externalId;
+                        var networkObj  = myAccountController.networkSearchResults[i];
+                        var networkUUID = myAccountController.networkSearchResults[i].externalId;
 
                         if (IdsOfSelectedNetworks.indexOf(networkUUID) == -1) {
                             continue;
@@ -1287,7 +1289,7 @@
 
                             // set the read-only flags in networkSearchResults to false showing that this network
                             // is now read-write
-                            userController.networkSearchResults[i].isReadOnly = false;
+                            myAccountController.networkSearchResults[i].isReadOnly = false;
 
                         } else  if (!networkObj.isReadOnly && ($scope.network.readOnly.toUpperCase()==='SET')) {
 
@@ -1296,9 +1298,9 @@
 
                             // set the read-only flags to true showing that this network is now read-only;
                             // the isReadOnly flag will be re-set
-                            // when we reload user page and re-populate the userController.networkSearchResults structure;
+                            // when we reload user page and re-populate the myAccountController.networkSearchResults structure;
                             // But for now, keep this value as true so that UI behaves correctly with these networks.
-                            userController.networkSearchResults[i].isReadOnly = true;
+                            myAccountController.networkSearchResults[i].isReadOnly = true;
                         }
                     }
 

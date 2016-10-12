@@ -13,7 +13,7 @@ ndexApp.controller('userController',
 
             $scope.userController = {};
             var userController = $scope.userController;
-            userController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            //userController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
             userController.identifier = identifier;
             userController.loggedInIdentifier = sharedProperties.getCurrentUserId();
             userController.displayedUser = {};
@@ -44,11 +44,6 @@ ndexApp.controller('userController',
             // list of network IDs of all networks for which the current user has WRITE access and therefore can update.
             // These networks are owned by both the current user and other users.
             userController.networksWithWriteAccess = [];
-            
-            if (identifier === userController.loggedInIdentifier) {
-                // redirect to My Account page
-                $location.path("/myAccount");
-            }
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -160,7 +155,6 @@ ndexApp.controller('userController',
                         "Visibility"    :   visibility,
                         "Owned By"      :   owner,
                         "Last Modified" :   modified,
-
                         "description"   :   description,
                         "externalId"    :   externalId,
                         "owner"         :   owner
@@ -168,290 +162,6 @@ ndexApp.controller('userController',
                     $scope.networkGridOptions.data.push(row);
                 }
             };
-
-
-            userController.tasksNotificationsTabDisabled = function() {
-
-                if ( (userController.tasks.length > 0) ||
-                     (userController.pendingRequests.length > 0) ||
-                     (userController.sentRequests.length > 0)) {
-                    return false;
-                }
-
-                return true;
-            }
-
-            userController.getTaskFileExt = function(task)
-            {
-                if( !task.format )
-                    return "";
-                if( task.format.toUpperCase() == 'BIOPAX' )
-                    return 'owl';
-                else
-                    return task.format.toLowerCase();
-            };
-
-            userController.getNetworkDownloadName = function(task)
-            {
-                if (typeof task.attributes === 'undefined') {
-                    return;
-                }
-
-                var name = (typeof task.attributes.downloadFileName === 'undefined') ?
-                    task.externalId : task.attributes.downloadFileName.replace(/ /g, "_");
-
-                var extension = (typeof task.attributes.downloadFileExtension === 'undefined') ?
-                    "txt" : userController.getTaskFileExt(task);
-
-                var networkNameForDownload = name + "." + extension;
-
-                return networkNameForDownload;
-            };
-
-            userController.getNetworkName = function(task)
-            {
-                if (typeof task.attributes === 'undefined' ||
-                    typeof task.attributes.downloadFileName === 'undefined') {
-                    return task.externalId;
-                }
-
-                return task.attributes.downloadFileName + " " + "(" +
-                    userController.getTaskFileExt(task).toUpperCase() + ")";
-            };
-
-            // recursive function that deletes all tasks from the server
-            userController.deleteAllTasks = function()
-            {
-
-                // delete all tasks that are visible to the user
-                for (var i = 0; i < userController.tasks.length; i++) {
-                    var task = userController.tasks[i];
-                    userController.deleteTask(task.externalId);
-                }
-
-                // there may be more tasks on the server; try to get them
-                ndexService.getUserTasks(
-                     "ALL",
-                     0,
-                     100,
-                     // Success callback function
-                     function (tasks)
-                     {
-                         if (tasks.length == 0) {
-                             // recursive base case: no task was retrieved from the server
-                             return;
-                         }
-
-                         // recursive general case: more tasks were retrieved -- call itself
-                         // (userController.deleteAllTasks) to delete them
-                         userController.tasks = tasks;
-                         userController.deleteAllTasks();
-                     },
-                     // Error
-                     function (response)
-                     {
-                         return;
-                     }
-                )
-            };
-
-            userController.checkAndDeleteSelectedNetworks = function() {
-                var checkWritePrivilege = false;
-                var networksDeleteable =
-                    userController.checkIfSelectedNetworksCanBeDeletedOrChanged(checkWritePrivilege);
-
-                if (networksDeleteable) {
-                    userController.confirmDeleteSelectedNetworks();
-                } else {
-                    var title = "Cannot Delete Selected Networks";
-                    var message =
-                        "Some selected networks could not be deleted because they are either marked READ-ONLY" +
-                        " or you do not have ADMIN privileges. Please uncheck the READ-ONLY box in each network " +
-                        " page, make sure you have ADMIN access to all selected networks, and try again.";
-
-                    userController.genericInfoModal(title, message);
-                }
-                return;
-            }
-
-            userController.genericInfoModal = function(title, message)
-            {
-                var   modalInstance = $modal.open({
-                    templateUrl: 'pages/generic-info-modal.html',
-                    scope: $scope,
-
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.title = title;
-                        $scope.message = message;
-
-                        $scope.close = function() {
-                            $modalInstance.dismiss();
-                        };
-                    }
-                });
-            }
-
-            userController.confirmDeleteSelectedNetworks = function()
-            {
-                var   modalInstance = $modal.open({
-                    templateUrl: 'confirmation-modal.html',
-                    scope: $scope,
-
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.title = 'Delete Selected Networks';
-                        $scope.message =
-                            'The selected networks will be permanently deleted from NDEx. Are you sure you want to proceed?';
-
-                        $scope.cancel = function() {
-                            $modalInstance.dismiss();
-                            $scope.isProcessing = false;
-                        };
-
-                        $scope.confirm = function() {
-                            $scope.isProcessing = true;
-                            userController.deleteSelectedNetworks();
-                            $modalInstance.dismiss();
-                            $scope.isProcessing = false;
-                        };
-                    }
-                });
-            }
-
-            userController.manageBulkAccess = function(path, currentUserId)
-            {
-                var selectedIDs = userController.getIDsOfSelectedNetworks();
-                sharedProperties.setSelectedNetworkIDs(selectedIDs);
-                sharedProperties.setCurrentUserId(currentUserId);
-                $location.path(path);
-            }
-
-
-            userController.allTasksCompleted = function() {
-                var task;
-
-                for (var i = 0; i < userController.tasks.length; i++) {
-                    task = userController.tasks[i];
-                    if (task.status.toUpperCase() === 'PROCESSING') {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            userController.getIDsOfSelectedNetworks = function ()
-            {
-                var selectedIds = [];
-
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                for( var i = 0; i < selectedNetworksRows.length; i ++ )
-                {
-                    selectedIds.push(selectedNetworksRows[i].externalId);
-                }
-
-                return selectedIds;
-            };
-
-            userController.updateVisibilityOfNetwork = function (networkId, networkVisibility)
-            {
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                for( var i = 0; i < selectedNetworksRows.length; i ++ )
-                {
-                    if (selectedNetworksRows[i].externalId == networkId) {
-                        selectedNetworksRows[i].Visibility = networkVisibility;
-                        break;
-                    }
-                }
-            };
-
-            /*
-             * This function is used by Bulk Network Delete and Bulk Network Edit Properties operations.
-             * It goes through the list of selected networks and checks if the networks
-             * can be deleted (or modified in case checkWriteAccess is set to true).
-             * It makes sure that in the list of selected networks
-             *
-             * 1) there are no read-only networks, and
-             * 2) that the current user can delete the selected networks (i.e., has Admin access to all of them).
-             *
-             * If either of the above conditions is false, than the list of networks cannot be deleted.
-             *
-             * If the function was called with (checkWriteAccess=true) then it also checks if user has
-             * WRITE access to the networks.
-             *
-             * The function returns true if all networks can be deleted or modified, and false otherwise (all or none).
-             */
-            userController.checkIfSelectedNetworksCanBeDeletedOrChanged = function(checkWriteAccess) {
-
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                // iterate through the list of selected networks
-                for (var i = 0; i < selectedNetworksRows.length; i++) {
-                    var externalId1 = selectedNetworksRows[i].externalId;
-
-                    // check if the selected network is read-only and can be deleted by the current account
-                    for (var j = 0; j < userController.networkSearchResults.length; j++) {
-
-                        var externalId2 = userController.networkSearchResults[j].externalId;
-
-                        // find the current network info in the list of networks this user has access to
-                        if (externalId1 !== externalId2) {
-                            continue;
-                        }
-
-                        // check if network is read-only
-                        if (userController.networkSearchResults[j].isReadOnly) {
-                            // it is read-only; cannot delete or modify
-                            return false;
-                        }
-
-                        // check if you have admin privilege for this network
-                        if (userController.networksWithAdminAccess.indexOf(externalId1) == -1) {
-                            // the current user is not admin for this network, therefore, (s)he cannot delete it
-
-                            // see if user has WRITE access in case this function was called to check whether
-                            // network can be modified
-                            if (checkWriteAccess) {
-
-                                if (userController.networksWithWriteAccess.indexOf(externalId1) == -1) {
-                                    // no ADMIN or WRITE priviled for this network.  The current user cannot modify it.
-                                    return false;
-                                }
-
-                            } else {
-                                // we don't check if user has WRITE privilege here (since checkWriteAccess is false)
-                                // and user has no ADMIN access, which means the network cannot be deleted by the current user
-                                return false;
-                            }
-                        }
-                    }
-                }
-
-                return true;
-            }
-
-
-            /*
-             * This function returns true if the current user has ADMIN access to all selected networks,
-             * and false otherwise.
-             */
-            userController.checkAdminPrivilegeOnSelectedNetworks = function(checkWriteAccess) {
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                // iterate through the list of selected networks and check if user has ADMIN access to all of them
-                for (var i = 0; i < selectedNetworksRows.length; i++) {
-                    var networkUUID = selectedNetworksRows[i].externalId;
-
-                    // check if you have admin privilege for this network
-                    if (userController.networksWithAdminAccess.indexOf(networkUUID) == -1) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-
 
             userController.deleteSelectedNetworks = function ()
             {
@@ -502,7 +212,6 @@ ndexApp.controller('userController',
 
             userController.submitGroupSearch = function ()
             {
-
                 var query = {};
 
                 query.userName = userController.displayedUser.userName;
@@ -592,45 +301,9 @@ ndexApp.controller('userController',
                     });
             }
 
-            userController.markTaskForDeletion = function (taskUUID)
-            {
-                ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
-                    function ()
-                    {
-                        userController.refreshTasks();
-                    })
-            };
-
-            userController.deleteTask = function (taskUUID)
-            {
-                ndexService.deleteTask(taskUUID,
-                    function ()
-                    {
-                        userController.refreshTasks();
-                    })
-            };
-
             userController.refreshPage = function()
             {
                 $route.reload();
-            };
-
-            userController.refreshTasks = function ()
-            {
-                ndexService.getUserTasks(
-                    "ALL",
-                    0,
-                    100,
-                    // Success
-                    function (tasks)
-                    {
-                        userController.tasks = tasks;
-                    },
-                    // Error
-                    function (response)
-                    {
-                    }
-                )
             };
 
             userController.getNetworksWithAdminAccess = function ()
@@ -719,41 +392,31 @@ ndexApp.controller('userController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
-            userController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            ndexService.getUser(userController.identifier)
-                .success(
-                function (user)
-                {
-                    userController.displayedUser = user;
-                    var loggedInUser = ndexUtility.getUserCredentials();
+            if ((identifier === userController.loggedInIdentifier) || (identifier === $scope.main.userName)) {
+                
+                $location.path("/myAccount");    // redirect to My Account page
 
-                    if (loggedInUser &&
-                        ((user.externalId == loggedInUser.userId) || (user.userName == loggedInUser.userName)))
-                        userController.isLoggedInUser = true;
+            } else {
 
-                    cUser = user;
-                    // get requests
+                ndexService.getUser(userController.identifier)
+                    .success(
+                    function (user)
+                    {
+                        userController.displayedUser = user;
 
-                    // get requests
-                    if (userController.isLoggedIn)
-                        getRequests();
+                        cUser = user;
 
-                    //get tasks
-                    if (userController.isLoggedIn)
-                        userController.refreshTasks();
+                        // get groups
+                        userController.submitGroupSearch();
 
-                    // get groups
-                    userController.submitGroupSearch();
+                        // get networks
+                        userController.submitNetworkSearch();
 
-                    // get networks
-                    userController.submitNetworkSearch();
+                    })
+                }
 
-
-                })
-
-
-        }]);
+            }]);
 
 
 //------------------------------------------------------------------------------------//
