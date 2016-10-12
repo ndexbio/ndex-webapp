@@ -617,11 +617,6 @@ ndexApp.controller('myAccountController',
                     })
             };
 
-            myAccountController.refreshPage = function()
-            {
-                $route.reload();
-            };
-
             myAccountController.refreshTasks = function ()
             {
                 ndexService.getUserTasks(

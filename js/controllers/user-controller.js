@@ -28,7 +28,6 @@ ndexApp.controller('userController',
             userController.networkSearchResults = [];
             userController.skip = 0;
             userController.skipSize = 10000;
-            userController.allSelected = false;
             userController.atLeastOneSelected = false;
 
             userController.pendingRequests = [];
@@ -36,14 +35,6 @@ ndexApp.controller('userController',
 
             //tasks
             userController.tasks = [];
-
-            // list of network IDs of all networks for which the current user has ADMIN access and therefore can delete.
-            // These networks are owned by both the current user and other users.
-            userController.networksWithAdminAccess = [];
-
-            // list of network IDs of all networks for which the current user has WRITE access and therefore can update.
-            // These networks are owned by both the current user and other users.
-            userController.networksWithWriteAccess = [];
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -202,14 +193,7 @@ ndexApp.controller('userController',
             };
 
             //              scope functions
-
-            // change to use directive. setting of current network should occur controller initialization
-            userController.setAndDisplayCurrentNetwork = function (identifier)
-            {
-                $location.path("/network/" + identifier);
-            };
-
-
+            
             userController.submitGroupSearch = function ()
             {
                 var query = {};
@@ -225,11 +209,11 @@ ndexApp.controller('userController',
                     {
                         // Save the results
                         userController.groupSearchResults = groups.resultList;
-
                     },
                     function (error)
                     {
                         //TODO
+                        console.log("unable to get groups for user " + userController.displayedUser.userName);
                     });
             };
 
@@ -250,48 +234,14 @@ ndexApp.controller('userController',
             {
                 userController.networkSearchResults = [];
 
-                if ((typeof userController.loggedInIdentifier === 'undefined') ||
-                    (cUser.externalId !== userController.loggedInIdentifier))
-                {
-                    // We are getting networks of some user. This is the scenario where we click a user/account name
-                    // from the list of found networks on the Network search page (when we are logged in or anonymously)
-                    userController.networkQuery.permission = null;
-                    userController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
-                    userController.networkQuery.userName = cUser.userName;
-
-                } else {
-
-                    // We are getting networks we (the logged in user) have access to (that we and other accounts own).
-                    // We are getting networks that we have explicit READ permission at minimum.
-                    userController.networkQuery.permission = "READ";
-                    userController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
-                }
-
-                // the table footer may
-                // still show that some networks are selected (must be a bug), so
-                // we manually set the selected count to 0
-                $scope.networkGridApi.grid.selection.selectedCount = 0;
-
-                // we also need to manually set the selectAll property to false in case
-                // user selected all networks and then refreshes the Tasks tab. In this case the Top selector
-                // to the left from Network Name is still on/checked, so wee need to unset it.
-                $scope.networkGridApi.grid.selection.selectAll = false;
+                // We are getting networks of some user. This is the scenario where we click a user/account name
+                // from the list of found networks on the Network search page (when we are logged in or anonymously)
+                userController.networkQuery.accountName = cUser.userName;
 
                 ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks)
                     {
-                        var numberOfNetworksReceived =
-                            (networks && networks.numFound && networks.numFound > 0) ? networks.numFound : 0;
-                        if (numberOfNetworksReceived > 0) {
-                            userController.getNetworksWithAdminAccess();
-                            userController.getNetworksWithWriteAccess();
-                        } else {
-                            // this might be redundant -- userController.networksWithAdminAccess and
-                            // userController.networksWithWriteAccess must be empty here
-                            userController.networksWithAdminAccess = [];
-                            userController.networksWithWriteAccess = [];
-                        }
-                        userController.networkSearchResults = networks.networks;  // (networks && networks.networks) ? networks.networks : "";
+                        userController.networkSearchResults = networks.networks;
 
                         populateNetworkTable();
                     },
@@ -300,63 +250,6 @@ ndexApp.controller('userController',
                         console.log(error);
                     });
             }
-
-            userController.refreshPage = function()
-            {
-                $route.reload();
-            };
-
-            userController.getNetworksWithAdminAccess = function ()
-            {
-                // get all networks for which the current user has ADMIN privilege.
-                // These networks include both networks owned by current user and by other accounts.
-                ndexService.getUserNetworkMemberships(
-                    "ADMIN",
-                    0,
-                    1000000, //numberOfNetworks,
-                    // Success
-                    function (networks)
-                    {
-                        userController.networksWithAdminAccess = [];
-
-                        for (var i = 0; i < networks.length; i++) {
-                            var networkUUID = networks[i].resourceUUID;
-                            userController.networksWithAdminAccess.push(networkUUID);
-                        }
-                    },
-                    // Error
-                    function (response)
-                    {
-                        console.log(response);
-                    }
-                )
-            };
-
-            userController.getNetworksWithWriteAccess = function ()
-            {
-                // get all networks for which the current user has WRITE privilege.
-                // These networks include both networks owned by current user and by other accounts.
-                ndexService.getUserNetworkMemberships(
-                    "WRITE",
-                    0,
-                    1000000,//numberOfNetworks,
-                    // Success
-                    function (networks)
-                    {
-                        userController.networksWithWriteAccess = [];
-
-                        for (var i = 0; i < networks.length; i++) {
-                            var networkUUID = networks[i].resourceUUID;
-                            userController.networksWithWriteAccess.push(networkUUID);
-                        }
-                    },
-                    // Error
-                    function (response)
-                    {
-                        console.log(response);
-                    }
-                )
-            };
 
             userController.refreshRequests = function ()
             {
@@ -408,7 +301,7 @@ ndexApp.controller('userController',
                         cUser = user;
 
                         // get groups
-                        userController.submitGroupSearch();
+                        // userController.submitGroupSearch();
 
                         // get networks
                         userController.submitNetworkSearch();
