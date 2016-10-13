@@ -92,8 +92,9 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Network Name', enableFiltering: true, minWidth: 330,
+                    { field: 'Network Name', enableFiltering: true, minWidth: 400,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
+                    { field: 'Status', enableFiltering: true, minWidth: 70 },
                     { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -141,6 +142,16 @@ ndexApp.controller('myAccountController',
                     var network = myAccountController.networkSearchResults[i];
 
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+
+                    var networkStatus = 'success';
+                    if (!network.isValid) {
+                        if (network.errorMessage) {
+                            networkStatus = "failed";
+                        } else {
+                            networkStatus = "processing";
+                        }
+                    }
+
                     var description = $scope.stripHTML(network['description']);
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
@@ -161,13 +172,13 @@ ndexApp.controller('myAccountController',
 
                     var row = {
                         "Network Name"  :   networkName,
+                        "Status"        :   networkStatus,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,
                         "Owned By"      :   owner,
                         "Last Modified" :   modified,
-
                         "description"   :   description,
                         "externalId"    :   externalId,
                         "owner"         :   owner

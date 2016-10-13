@@ -135,6 +135,7 @@ ndexApp.controller('searchController',
             const NETWORK_COLUMN_FIELDS = [
                 { field: 'Network Name', enableFiltering: true, minWidth: 450,
                     cellTemplate: 'pages/gridTemplates/networkName.html'},
+                { field: 'Status', enableFiltering: true, minWidth: 70 },
                 { field: 'Format', enableFiltering: true, minWidth: 70 },
                 { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                 { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -159,6 +160,16 @@ ndexApp.controller('searchController',
                     var network = searchController.networkSearchResults[i];
 
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+
+                    var networkStatus = 'success';
+                    if (!network.isValid) {
+                        if (network.errorMessage) {
+                            networkStatus = "failed";
+                        } else {
+                            networkStatus = "processing";
+                        }
+                    }
+
                     var description = stripHTML(network['description']);
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
@@ -179,13 +190,13 @@ ndexApp.controller('searchController',
 
                     var row = {
                         "Network Name"  :   networkName,
+                        "Status"        :   networkStatus,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,
                         "Owned By"      :   owner,
                         "Last Modified" :   modified,
-
                         "description"   :   description,
                         "externalId"    :   externalId,
                         "owner"         :   owner
