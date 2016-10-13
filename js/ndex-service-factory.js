@@ -1012,11 +1012,11 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.getUserGroupMemberships = function(permission, skipBlocks, blockSize, inclusive) {
+            factory.getUserGroupMemberships = function(userId, permission, skipBlocks, blockSize, inclusive) {
 
                 var deferredAbort = $q.defer();
 
-                var config = ndexConfigs.getUserGroupMembershipsConfig(permission, skipBlocks, blockSize, inclusive);
+                var config = ndexConfigs.getUserGroupMembershipsConfig(userId, permission, skipBlocks, blockSize, inclusive);
                 config.timeout = deferredAbort.promise;
 
                 // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -1519,12 +1519,12 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
-    factory.getUserGroupMembershipsConfig = function (permission, skipBlocks, blockSize, inclusive)
+    factory.getUserGroupMembershipsConfig = function (userId, permission, skipBlocks, blockSize, inclusive)
     {
         // calls getUserGgroupMemberships server API at
         // /user/group/{permission}/{skipBlocks}/{blockSize}
 
-        var url = "/user/group/" + permission + "/" + skipBlocks + "/" + blockSize;
+        var url = "/user/" + userId + "/group/" + permission + "/" + skipBlocks + "/" + blockSize;
 
         if (inclusive) {
             url = url + "?inclusive=true"

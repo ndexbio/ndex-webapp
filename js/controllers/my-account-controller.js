@@ -545,8 +545,7 @@ ndexApp.controller('myAccountController',
                  */
                 var inclusive = true;
 
-                //getUserNetworkMemberships
-                ndexService.getUserGroupMemberships('MEMBER', 0, 1000000, inclusive)
+                ndexService.getUserGroupMemberships(myAccountController.identifier, 'MEMBER', 0, 1000000, inclusive)
                     .success(
                         function (groups) {
 
