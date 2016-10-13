@@ -300,8 +300,8 @@ ndexApp.controller('userController',
 
                         cUser = user;
 
-                        // get groups
-                        // userController.submitGroupSearch();
+                        // get groups - we do not show groups -- security measure 13 Oct. 2016
+                        //userController.submitGroupSearch();
 
                         // get networks
                         userController.submitNetworkSearch();

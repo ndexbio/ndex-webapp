@@ -459,7 +459,6 @@ ndexApp.controller('myAccountController',
             }
 
 
-
             myAccountController.deleteSelectedNetworks = function ()
             {
                 var selectedIds = [];
@@ -479,6 +478,7 @@ ndexApp.controller('myAccountController',
                         },
                         function (error)
                         {
+                            console.log("unable to delete network");
 
                         });
                 }
@@ -507,30 +507,58 @@ ndexApp.controller('myAccountController',
             };
 
 
+            var getGroupsUUIDs = function(groups) {
+                var groupsUUIDs = [];
+
+                for (var i=0; i<groups.length; i++) {
+                    var groupUUID = groups[i].resourceUUID;
+                    groupsUUIDs.push(groupUUID);
+                }
+                return groupsUUIDs;
+            }
+
             myAccountController.submitGroupSearch = function ()
             {
+                /*
+                 * To get list of Group objects we need to:
+                 *
+                 * 1) Use getUserGroupMemberships function at
+                 *    /user/group/{permission}/skipBlocks/blockSize?inclusive=true;
+                 *    to get the list of GROUPADMIN and MEMBER memberships
+                 *
+                 * 2) Get a list of Group UUIDs from step 1
+                 *
+                 * 3) Use this list of Group UUIDs to get Groups through
+                 *    /group/groups API.
+                 *
+                 */
+                var inclusive = true;
 
-                var query = {};
+                //getUserNetworkMemberships
+                ndexService.getUserGroupMemberships('MEMBER', 0, 1000000, inclusive)
+                    .success(
+                        function (groups) {
 
-                query.userName = myAccountController.displayedUser.userName;
-                query.searchString = myAccountController.groupSearchString
-                if (myAccountController.groupSearchAdmin) query.permission = 'GROUPADMIN';
-                if (myAccountController.groupSearchMember) query.permission = 'MEMBER';
+                            var groupsUUIDs = getGroupsUUIDs(groups);
 
-                //pagination missing
-                ndexService.searchGroups(query, 0, 50,
-                    function (groups)
-                    {
-                        // Save the results
-                        myAccountController.groupSearchResults = groups.resultList;
+                            ndexService.getGroupsByUUIDs(groupsUUIDs)
+                                .success(
+                                    function (groupList) {
+                                        myAccountController.groupSearchResults = groupList;
+                                    })
+                                .error(
+                                    function(error) {
+                                        console.log("unable to get groups by UUIDs");
+                                    }
+                                )
+                        })
+                    .error(
+                        function (error, data) {
+                            console.log("unable to get user group memberships");
+                        });
+            }
 
-                    },
-                    function (error)
-                    {
-                        //TODO
-                    });
-            };
-
+            
             myAccountController.adminCheckBoxClicked = function()
             {
                 myAccountController.groupSearchMember = false;
@@ -543,61 +571,56 @@ ndexApp.controller('myAccountController',
                 myAccountController.submitGroupSearch();
             };
 
-
-            myAccountController.submitNetworkSearch = function ()
+            myAccountController.getNetworksWithAdminAccess = function ()
             {
-                myAccountController.networkSearchResults = [];
-
-                if ((typeof myAccountController.loggedInIdentifier === 'undefined') ||
-                    (cUser.externalId !== myAccountController.loggedInIdentifier))
-                {
-                    // We are getting networks of some user. This is the scenario where we click a user/account name
-                    // from the list of found networks on the Network search page (when we are logged in or anonymously)
-                    myAccountController.networkQuery.permission = null;
-                    myAccountController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
-                    myAccountController.networkQuery.userName = cUser.userName;
-
-                } else {
-
-                    // We are getting networks we (the logged in user) have access to (that we and other accounts own).
-                    // We are getting networks that we have explicit READ permission at minimum.
-                    myAccountController.networkQuery.permission = "READ";
-                    myAccountController.networkQuery.networkSearchIncludeNetworksByGroupPermissions = false;
-                }
-
-                // the table footer may
-                // still show that some networks are selected (must be a bug), so
-                // we manually set the selected count to 0
-                $scope.networkGridApi.grid.selection.selectedCount = 0;
-
-                // we also need to manually set the selectAll property to false in case
-                // user selected all networks and then refreshes the Tasks tab. In this case the Top selector
-                // to the left from Network Name is still on/checked, so wee need to unset it.
-                $scope.networkGridApi.grid.selection.selectAll = false;
-
-                ndexService.searchNetworks(myAccountController.networkQuery, myAccountController.skip, myAccountController.skipSize,
+                // get all networks for which the current user has ADMIN privilege.
+                // These networks include both networks owned by current user and by other accounts.
+                ndexService.getUserNetworkMemberships(
+                    "ADMIN",
+                    0,
+                    1000000, //numberOfNetworks,
+                    // Success
                     function (networks)
                     {
-                        var numberOfNetworksReceived =
-                            (networks && networks.numFound && networks.numFound > 0) ? networks.numFound : 0;
-                        if (numberOfNetworksReceived > 0) {
-                            myAccountController.getNetworksWithAdminAccess();
-                            myAccountController.getNetworksWithWriteAccess();
-                        } else {
-                            // this might be redundant -- myAccountController.networksWithAdminAccess and
-                            // myAccountController.networksWithWriteAccess must be empty here
-                            myAccountController.networksWithAdminAccess = [];
-                            myAccountController.networksWithWriteAccess = [];
-                        }
-                        myAccountController.networkSearchResults = networks.networks;  // (networks && networks.networks) ? networks.networks : "";
+                        myAccountController.networksWithAdminAccess = [];
 
-                        populateNetworkTable();
+                        for (var i = 0; i < networks.length; i++) {
+                            var networkUUID = networks[i].resourceUUID;
+                            myAccountController.networksWithAdminAccess.push(networkUUID);
+                        }
                     },
-                    function (error)
+                    // Error
+                    function (response) {
+                        console.log(response);
+                    }
+                )
+            };
+
+            myAccountController.getNetworksWithWriteAccess = function ()
+            {
+                // get all networks for which the current user has WRITE privilege.
+                // These networks include both networks owned by current user and by other accounts.
+                ndexService.getUserNetworkMemberships(
+                    "WRITE",
+                    0,
+                    1000000, //numberOfNetworks,
+                    // Success
+                    function (networks)
                     {
-                        console.log(error);
-                    });
-            }
+                        userContromyAccountControllerller.networksWithWriteAccess = [];
+
+                        for (var i = 0; i < networks.length; i++) {
+                            var networkUUID = networks[i].resourceUUID;
+                            myAccountController.networksWithWriteAccess.push(networkUUID);
+                        }
+                    },
+                    // Error
+                    function (response)
+                    {
+                        console.log(response);
+                    }
+                )
+            };
 
             myAccountController.markTaskForDeletion = function (taskUUID)
             {
@@ -635,16 +658,20 @@ ndexApp.controller('myAccountController',
                 )
             };
 
+            //myAccountController.identifier, 'READ', 0, 1000000, inclusive)
+
             myAccountController.getNetworksWithAdminAccess = function ()
             {
+                var inclusive = true;
                 // get all networks for which the current user has ADMIN privilege.
                 // These networks include both networks owned by current user and by other accounts.
                 ndexService.getUserNetworkMemberships(
+                    myAccountController.identifier,
                     "ADMIN",
                     0,
-                    1000000, //numberOfNetworks,
-                    // Success
-                    function (networks)
+                    1000000,
+                    inclusive)
+                    .success (function(networks)
                     {
                         myAccountController.networksWithAdminAccess = [];
 
@@ -652,25 +679,25 @@ ndexApp.controller('myAccountController',
                             var networkUUID = networks[i].resourceUUID;
                             myAccountController.networksWithAdminAccess.push(networkUUID);
                         }
-                    },
-                    // Error
-                    function (response)
+                    })
+                    .error (function(response)
                     {
                         console.log(response);
-                    }
-                )
+                    })
             };
 
             myAccountController.getNetworksWithWriteAccess = function ()
             {
+                var inclusive = true;
                 // get all networks for which the current user has WRITE privilege.
                 // These networks include both networks owned by current user and by other accounts.
                 ndexService.getUserNetworkMemberships(
+                    myAccountController.identifier,
                     "WRITE",
                     0,
-                    1000000,//numberOfNetworks,
-                    // Success
-                    function (networks)
+                    1000000,
+                    inclusive)
+                    .success (function(networks)
                     {
                         myAccountController.networksWithWriteAccess = [];
 
@@ -678,21 +705,20 @@ ndexApp.controller('myAccountController',
                             var networkUUID = networks[i].resourceUUID;
                             myAccountController.networksWithWriteAccess.push(networkUUID);
                         }
-                    },
-                    // Error
-                    function (response)
+                    })
+                    .error (function(response)
                     {
                         console.log(response);
-                    }
-                )
+                    })
             };
+
 
             myAccountController.refreshRequests = function ()
             {
                 getRequests();
             };
 
-            //              local functions
+            // local functions
 
             var getRequests = function ()
             {
@@ -710,7 +736,6 @@ ndexApp.controller('myAccountController',
                     function (requests)
                     {
                         myAccountController.sentRequests = requests;
-
                     },
                     function (error)
                     {
@@ -718,9 +743,67 @@ ndexApp.controller('myAccountController',
                     })
             };
 
+            var getUUIDs = function(data) {
+                var UUIDs = [];
+                if (data) {
+                    for (i=0; i<data.length; i++) {
+                        var o = data[i];
+                        UUIDs.push(o.resourceUUID);
+                    }
+                }
+                return UUIDs;
+            }
+            
+            myAccountController.submitNetworkSearchForLoggedInUser = function ()
+            {
+                /*
+                 * To get list of Network Summaries objects we need to:
+                 *
+                 * 1) Use getUserNetworkMemberships function at
+                 *    /user/network/{permission}/{skipBlocks}/{blockSize}
+                 *    to get the list of network IDs that this user has permission to.
+                 *
+                 * 2) Use getNetworkSummaries function at /network/summaries to get a list of network
+                 *    summaries using the network IDs we got in step 1  (send all network IDs in one call).
+                 *
+                 */
+                var inclusive = true;
+
+                ndexService.getUserNetworkMemberships(myAccountController.identifier, 'READ', 0, 1000000, inclusive)
+                    .success(
+                        function (networkUUIDs) {
+                            var UUIDs = getUUIDs(networkUUIDs);
+
+                            ndexService.getNetworkSummariesByIDs(UUIDs)
+                                .success(
+                                    function (networkSummaries) {
+                                        myAccountController.networkSearchResults = networkSummaries;
+
+                                        if (myAccountController.networkSearchResults.length > 0) {
+                                            myAccountController.getNetworksWithAdminAccess();
+                                            myAccountController.getNetworksWithWriteAccess();
+                                        } else {
+                                            // this might be redundant -- myAccountController.networksWithAdminAccess and
+                                            // userController.networksWithWriteAccess must be empty here
+                                            myAccountController.networksWithAdminAccess = [];
+                                            myAccountController.networksWithWriteAccess = [];
+                                        }
+
+                                        populateNetworkTable();
+                                    })
+                                .error(
+                                    function (error, data) {
+                                        console.log("unable to get network summaries by IDs");
+                                    });
+                        })
+                    .error(
+                        function (error, data) {
+                            console.log("unable to get user network memberships");
+                        });
+            }
+
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
-
             myAccountController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
             ndexService.getUser(myAccountController.identifier)
@@ -728,33 +811,21 @@ ndexApp.controller('myAccountController',
                 function (user)
                 {
                     myAccountController.displayedUser = user;
-                    var loggedInUser = ndexUtility.getUserCredentials();
-
-                    if (loggedInUser &&
-                        ((user.externalId == loggedInUser.userId) || (user.userName == loggedInUser.userName)))
-                        myAccountController.isLoggedInUser = true;
 
                     cUser = user;
-                    // get requests
 
                     // get requests
-                    if (myAccountController.isLoggedIn)
-                        getRequests();
+                    getRequests();
 
                     //get tasks
-                    if (myAccountController.isLoggedIn)
-                        myAccountController.refreshTasks();
+                    myAccountController.refreshTasks();
 
                     // get groups
                     myAccountController.submitGroupSearch();
 
                     // get networks
-                    myAccountController.submitNetworkSearch();
-
-
+                    myAccountController.submitNetworkSearchForLoggedInUser();
                 })
-
-
         }]);
 
 

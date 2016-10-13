@@ -97,7 +97,7 @@ ndexApp.controller('groupController',
         ndexService.getGroupNetworkMemberships(groupController.identifier, 'READ', 0, 500, inclusive)
             .success(
                 function (groupUUIDs) {
-                    UUIDs = getUUIDs(groupUUIDs);
+                    var UUIDs = getUUIDs(groupUUIDs);
 
                     ndexService.getNetworkSummariesByIDs(UUIDs)
                         .success(

@@ -126,14 +126,7 @@ ndexServiceApp.factory('ndexService',
                         params: {
                             action: 'password'
                         }
-                    },
-                    getUserNetworkMemberships: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'network'
-                        },
-                        isArray: true
-                    },
+                    }
                 });
 
             factory.getUserApi = function(successHandler, errorHandler)
@@ -242,18 +235,6 @@ ndexServiceApp.factory('ndexService',
                 ndexUtility.setUserAuthToken(user.password);
 
                 UserResource.createUser({}, user, successHandler, errorHandler);
-            };
-
-            factory.getUserNetworkMemberships = function (membership, skipBlocks, blockSize, successHandler, errorHandler) {
-                var externalId = ndexUtility.getLoggedInUserExternalId();
-                if ((typeof externalId === 'undefined') || (externalId == null)) {
-                    //successHandler(null);
-                    return;
-                }
-                UserResource.getUserNetworkMemberships(
-                    {permissions: membership,
-                    'skipBlocks': skipBlocks,
-                    'blockSize': blockSize}, successHandler, errorHandler);
             };
 
             // /user/task/{status}/{skipBlocks}/{blockSize}
@@ -1004,6 +985,85 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
+
+            factory.getUserNetworkMemberships = function(userId, permission, skipBlocks, blockSize, inclusive) {
+
+                var deferredAbort = $q.defer();
+
+                var config = ndexConfigs.getUserNetworkMembershipsConfig(userId, permission, skipBlocks, blockSize, inclusive);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+
+            factory.getUserGroupMemberships = function(permission, skipBlocks, blockSize, inclusive) {
+
+                var deferredAbort = $q.defer();
+
+                var config = ndexConfigs.getUserGroupMembershipsConfig(permission, skipBlocks, blockSize, inclusive);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+
+            factory.getGroupsByUUIDs = function(UUIDs) {
+
+                var deferredAbort = $q.defer();
+
+                var config = ndexConfigs.getGroupsByUUIDsConfig(UUIDs);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+
             factory.getNetworkSummariesByIDs = function(networksUUIDsList) {
 
                 var deferredAbort = $q.defer();
@@ -1092,7 +1152,6 @@ ndexServiceApp.factory('ndexService',
                         console.log("unable to update network user membership");
                     });
             };
-
 
             factory.exportNetwork = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
             {
@@ -1450,15 +1509,39 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     factory.getUserNetworkMembershipsConfig = function (userId, permission, skipBlocks, blockSize, inclusive)
     {
         // calls getUserNetworkMemberships server API at
-        // /user/{userid}/network/{permission}/{skipBlocks}/{blockSize}
+        // /user/network/{permission}/{skipBlocks}/{blockSize}
 
-        var url = "/user/" + userId + "/network/" + permission + "/" + skipBlocks + "/" + blockSize;
+        var url = "/user/network/" + permission + "/" + skipBlocks + "/" + blockSize;
 
         if (inclusive) {
             url = url + "?inclusive=true"
         }
         return this.getGetConfig(url, null);
     };
+
+    factory.getUserGroupMembershipsConfig = function (permission, skipBlocks, blockSize, inclusive)
+    {
+        // calls getUserGgroupMemberships server API at
+        // /user/group/{permission}/{skipBlocks}/{blockSize}
+
+        var url = "/user/group/" + permission + "/" + skipBlocks + "/" + blockSize;
+
+        if (inclusive) {
+            url = url + "?inclusive=true"
+        }
+        return this.getGetConfig(url, null);
+    };
+
+    factory.getGroupsByUUIDsConfig = function (UUIDs)
+    {
+        // calls getGroupsByUUIDs server API at
+        // /group/groups
+
+        var postData = UUIDs;
+        var url = "/group/groups";
+        return this.getPostConfig(url, postData);
+    };
+
 
     factory.getNetworkSummariesByIDsConfig = function (networksUUIDs)
     {
