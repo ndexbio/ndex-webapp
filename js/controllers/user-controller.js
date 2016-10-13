@@ -204,30 +204,56 @@ ndexApp.controller('userController',
                 userController.atLeastOneSelected = false;
             };
 
-            //              scope functions
-            
+            var getGroupsUUIDs = function(groups) {
+                var groupsUUIDs = [];
+
+                for (var i=0; i<groups.length; i++) {
+                    var groupUUID = groups[i].resourceUUID;
+                    groupsUUIDs.push(groupUUID);
+                }
+                return groupsUUIDs;
+            }
+
             userController.submitGroupSearch = function ()
             {
-                var query = {};
+                /*
+                 * To get list of Group objects we need to:
+                 *
+                 * 1) Use getUserGroupMemberships function at
+                 *    /user/{userId}/group/{permission}/skipBlocks/blockSize?inclusive=true;
+                 *    to get the list of GROUPADMIN and MEMBER memberships
+                 *
+                 * 2) Get a list of Group UUIDs from step 1
+                 *
+                 * 3) Use this list of Group UUIDs to get Groups through
+                 *    /group/groups API.
+                 *
+                 */
+                var inclusive = true;
 
-                query.userName = userController.displayedUser.userName;
-                query.searchString = userController.groupSearchString
-                if (userController.groupSearchAdmin) query.permission = 'GROUPADMIN';
-                if (userController.groupSearchMember) query.permission = 'MEMBER';
+                ndexService.getUserGroupMemberships(userController.identifier, 'MEMBER', 0, 1000000, inclusive)
+                    .success(
+                        function (groups) {
 
-                //pagination missing
-                ndexService.searchGroups(query, 0, 50,
-                    function (groups)
-                    {
-                        // Save the results
-                        userController.groupSearchResults = groups.resultList;
-                    },
-                    function (error)
-                    {
-                        //TODO
-                        console.log("unable to get groups for user " + userController.displayedUser.userName);
-                    });
-            };
+                            var groupsUUIDs = getGroupsUUIDs(groups);
+
+                            ndexService.getGroupsByUUIDs(groupsUUIDs)
+                                .success(
+                                    function (groupList) {
+                                        userController.groupSearchResults = groupList;
+                                    })
+                                .error(
+                                    function(error) {
+                                        console.log("unable to get groups by UUIDs");
+                                    }
+                                )
+                        })
+                    .error(
+                        function (error, data) {
+                            console.log("unable to get user group memberships");
+                        });
+            }
+
 
             userController.adminCheckBoxClicked = function()
             {
@@ -313,7 +339,7 @@ ndexApp.controller('userController',
                         cUser = user;
 
                         // get groups - we do not show groups -- security measure 13 Oct. 2016
-                        //userController.submitGroupSearch();
+                        userController.submitGroupSearch();
 
                         // get networks
                         userController.submitNetworkSearch();

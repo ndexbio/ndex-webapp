@@ -534,7 +534,7 @@ ndexApp.controller('myAccountController',
                  * To get list of Group objects we need to:
                  *
                  * 1) Use getUserGroupMemberships function at
-                 *    /user/group/{permission}/skipBlocks/blockSize?inclusive=true;
+                 *    /user/{userId}/group/{permission}/skipBlocks/blockSize?inclusive=true;
                  *    to get the list of GROUPADMIN and MEMBER memberships
                  *
                  * 2) Get a list of Group UUIDs from step 1
