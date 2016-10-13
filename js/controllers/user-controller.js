@@ -13,7 +13,7 @@ ndexApp.controller('userController',
 
             $scope.userController = {};
             var userController = $scope.userController;
-            //userController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            userController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
             userController.identifier = identifier;
             userController.loggedInIdentifier = sharedProperties.getCurrentUserId();
             userController.displayedUser = {};
@@ -338,8 +338,11 @@ ndexApp.controller('userController',
 
                         cUser = user;
 
-                        // get groups - we do not show groups -- security measure 13 Oct. 2016
-                        userController.submitGroupSearch();
+                        // get groups. Server-side API requires authentication,
+                        // so only show groups if a user is logged in.
+                        if (userController.isLoggedInUser) {
+                            userController.submitGroupSearch();
+                        }
 
                         // get networks
                         userController.submitNetworkSearch();
