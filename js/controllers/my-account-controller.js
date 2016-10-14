@@ -205,8 +205,10 @@ ndexApp.controller('myAccountController',
                     return "";
                 if( task.format.toUpperCase() == 'BIOPAX' )
                     return 'owl';
-                else
-                    return task.format.toLowerCase();
+                else {
+                    var networkFileExtension = task.format.toLowerCase();
+                    return networkFileExtension + ".gz";
+                }
             };
 
             myAccountController.getNetworkDownloadName = function(task)
