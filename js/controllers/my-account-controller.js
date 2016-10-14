@@ -206,8 +206,8 @@ ndexApp.controller('myAccountController',
                 if( task.format.toUpperCase() == 'BIOPAX' )
                     return 'owl';
                 else {
-                    var networkFileExtension = task.format.toLowerCase();
-                    return networkFileExtension + ".gz";
+                    var networkFileExtension = task.format.toLowerCase() + ".gz";
+                    return networkFileExtension;
                 }
             };
 
