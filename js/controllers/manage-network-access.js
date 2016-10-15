@@ -24,6 +24,8 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.selectedAccountsForUpdatingAccessPermissions = [];
 	networkManager.originalAccessPermissions = [];
 
+	networkManager.mapOfGroupPermissions = {};
+
 	networkManager.accessWasRemoved = function(accessObj) {
 
 		if ((typeof(accessObj) === 'undefined') ||
@@ -81,6 +83,46 @@ ndexApp.controller('manageNetworkAccessController',
 		return false;
 	}
 
+	var updateNetworkMembership = function(newMembership) {
+		if (newMembership.accountType == "user") {
+
+			ndexService.updateNetworkUserMembership(
+				newMembership.memberUUID,
+				newMembership.resourceUUID,
+				newMembership.permissions);
+
+		} else if (newMembership.accountType == "group") {
+
+			// updateNetworkGroupMembership
+			ndexService.updateNetworkGroupMembership(
+				newMembership.memberUUID,
+				newMembership.resourceUUID,
+				newMembership.permissions);
+		}
+	}
+
+	var deleteNetworkMembership = function(membershipObj) {
+		if (membershipObj.accountType == "user") {
+
+			ndexService.deleteNetworkUserMembership(membershipObj.resourceUUID, membershipObj.memberUUID,
+				function(data) {
+					// successs
+				},
+				function(error) {
+					console.log("unable to delete network user membership");
+				});
+
+		} else if (membershipObj.accountType == "group") {
+
+			ndexService.deleteNetworkGroupMembership(membershipObj.resourceUUID, membershipObj.memberUUID,
+				function(data) {
+					// successs
+				},
+				function(error) {
+					console.log("unable to delete network group membership");
+				});
+		}
+	}
 
 	networkManager.save = function() {
 
@@ -89,7 +131,7 @@ ndexApp.controller('manageNetworkAccessController',
 			// the "Save Changes" button is unavailable on the Manage Access page and
 			// this function cannot be called since it is invoked by clicking the "Save Changes" button
 			$scope.isProcessing = false;
-			$location.path("network/"+ $scope.networkManager.externalId);
+			$location.path("newNetwork/"+ $scope.networkManager.externalId);
 			return;
 		}
 
@@ -109,26 +151,11 @@ ndexApp.controller('manageNetworkAccessController',
 				var newMembership = {
 					memberUUID: accessObj.memberUUID,
 					resourceUUID: accessObj.resourceUUID,
-					permissions: accessObj.permissions
+					permissions: networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions,
+					accountType: accessObj.accountType.toLowerCase()
 				}
 
-				var addedMembership = JSON.parse(JSON.stringify(newMembership));
-
-				if (accessObj.accountType.toLowerCase() == "user") {
-
-					ndexService.updateNetworkUserMembership(
-						accessObj.memberUUID,
-						accessObj.resourceUUID,
-						accessObj.permissions);
-					
-				} else if (accessObj.accountType.toLowerCase() == "group") {
-
-					// updateNetworkGroupMembership
-					ndexService.updateNetworkGroupMembership(
-						accessObj.memberUUID,
-						accessObj.resourceUUID,
-						accessObj.permissions);
-				}
+				updateNetworkMembership(newMembership);
 			}
 		}
 
@@ -146,13 +173,7 @@ ndexApp.controller('manageNetworkAccessController',
 				// remember index of the deleted element
 				deletedAccessObjects.push(i);
 
-				var networkId = accessObj.resourceUUID;
-				var memberId = accessObj.memberUUID;
-
-				ndexService.removeNetworkMember(networkId, memberId,
-					function(data) {},
-					function(error) {}
-				)
+				deleteNetworkMembership(accessObj);
 			}
 		}
 
@@ -175,19 +196,15 @@ ndexApp.controller('manageNetworkAccessController',
 				var newMembership = {
 					memberUUID: accessObj.memberUUID,
 					resourceUUID: accessObj.resourceUUID,
-					permissions: networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions
+					permissions: networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions,
+					accountType: accessObj.accountType.toLowerCase()
 				}
 
-				var modifiedMembership = JSON.parse(JSON.stringify(newMembership));
-
-				ndexService.updateNetworkMember(modifiedMembership,
-					function(data) {},
-					function(error) {}
-				)
+				updateNetworkMembership(newMembership);
 			}
 		}
 
-		$location.path("network/"+ $scope.networkManager.externalId);
+		$location.path("newNetwork/"+ $scope.networkManager.externalId);
 		$scope.isProcessing = false;
 
 	};
@@ -198,17 +215,34 @@ ndexApp.controller('manageNetworkAccessController',
 		ndexService.getNetworkUserMemberships(identifier, 'ALL',
 			function(networkUserMemberships) {
 				networkManager.networkUserMemberships = networkUserMemberships;
-
-
-				// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-				//
-				// +++++++++++  get a list of groups that have access to this network ( NetID = identifier ) +++++++++++
-				//
-				// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				networkManager.processUserAccessPermissions();
 
 
 				// networkManager.networkGroupMemberships = networkGroupMemberships;
-				networkManager.processReceivedAccessPermissions();
+
+				ndexService.getAllGroupsPermissionsOnNetwork(networkManager.externalId, "group", 0, 1000000)
+					.success(
+						function (mapOfGroupPermissions) {
+
+							var groupsUUIDs = Object.keys(mapOfGroupPermissions);
+							networkManager.mapOfGroupPermissions = mapOfGroupPermissions;
+
+							ndexService.getGroupsByUUIDs(groupsUUIDs)
+								.success(
+									function (groupList) {
+										networkManager.networkGroupMemberships = groupList;
+										networkManager.processGroupAccessPermissions();
+									})
+								.error(
+									function(error) {
+										console.log("unable to get groups by UUIDs");
+									}
+								)
+						})
+					.error(
+						function (error, data) {
+							console.log("unable to get group permissions on network");
+						});
 
 			},
 			function(error) {
@@ -216,12 +250,43 @@ ndexApp.controller('manageNetworkAccessController',
 			})
 	};
 
-	networkManager.processReceivedAccessPermissions = function() {
+	networkManager.processGroupAccessPermissions = function() {
+
+		var groupAccountIds = [];
+
+		for (var i = 0; i < networkManager.networkGroupMemberships.length; i++) {
+			var membership = networkManager.networkGroupMemberships[i];
+			groupAccountIds.push(membership.externalId);
+		}
+
+		console.log("groupAccountIds=" + groupAccountIds);
+
+		// get accounts info; we need to know what accounts are user and
+		// and what accounts are group accounts;  we display First and Last Names for User accounts
+		// and Group Account Name for group accounts
+
+		for (var i = 0; i < networkManager.networkGroupMemberships.length; i++) {
+			var group = networkManager.networkGroupMemberships[i];
+
+			var newMembership = {
+
+				memberUUID: group.externalId,
+				groupName: group.groupName,
+				resourceUUID: networkManager.externalId,
+				permissions: networkManager.mapOfGroupPermissions[group.externalId],
+				accountType: "group",
+				member: true
+			}
+
+			networkManager.originalAccessPermissions.push(newMembership);
+			networkManager.selectedAccountsForUpdatingAccessPermissions.push(JSON.parse(JSON.stringify(newMembership)));
+		}
+	}
+
+	networkManager.processUserAccessPermissions = function() {
 		networkManager.originalAccessPermissions = [];
 
 		var userAccountIds = [];
-		var groupAccountIds = [];
-
 
 		// build array of accounts IDs
 		for (var i = 0; i < networkManager.networkUserMemberships.length; i++) {
@@ -229,95 +294,72 @@ ndexApp.controller('manageNetworkAccessController',
 			userAccountIds.push(membership.memberUUID);
 		}
 
-		for (var i = 0; i < networkManager.networkGroupMemberships.length; i++) {
-			var membership = networkManager.networkGroupMemberships[i];
-			groupAccountIds.push(membership.memberUUID);
-		}
-
-		 // get accounts info; we need to know what accounts are user and
-		 // and what accounts are group accounts;  we display First and Last Names for User accounts
-		 //and Group Account Name for group accounts
-
 		if (userAccountIds.length > 0) {
-			ndexService.getUsersByUUIDs(userAccountIds,
-				function (accountsInfo) {
+			ndexService.getUsersByUUIDs(userAccountIds)
+				.success(
+					function (accountsInfo) {
 
-					console.log(" got users by UUIDs");
+						for (var i = 0; i < networkManager.networkUserMemberships.length; i++) {
+							var user = networkManager.networkUserMemberships[i];
 
-					/*
-					for (var i = 0; i < userAccountIds.length; i++) {
+							var newMembership = {
 
-						var membership = userAccountIds[i];
+								memberAccountName: user.memberAccountName,
+								memberUUID: user.memberUUID,
+								resourceName: user.resourceName,
+								resourceUUID: user.resourceUUID,
+								permissions: user.permissions,
+								firstName: "",
+								lastName: "",
+								accountType: "user",
+								member: true
+							}
 
-						var newMembership = {
-							memberAccountName: userAccountIds.memberAccountName,
-							memberUUID: userAccountIds.memberUUID,
-							resourceName: userAccountIds.resourceName,
-							resourceUUID: userAccountIds.resourceUUID,
-							permissions: userAccountIds.permissions,
-							firstName: "",
-							lastName: "",
-							groupName: "",
-							accountType: "",
-							member: true
-						}
-
-
-						//networkManager.getNamesAndAccountType(accountsInfo, newMembership);
-
-						//networkManager.originalAccessPermissions.push(newMembership);
-
-						//networkManager.selectedAccountsForUpdatingAccessPermissions.push(JSON.parse(JSON.stringify(newMembership)));
+							networkManager.getUserAccountNames(accountsInfo, newMembership);
+						 	networkManager.originalAccessPermissions.push(newMembership);
+						 	networkManager.selectedAccountsForUpdatingAccessPermissions.push(JSON.parse(JSON.stringify(newMembership)));
+						 }
 					}
-					*/
-				},
-				function (error) {
-					console.log("unable to get users by UUIDs");
-
-				});
+				)
+				.error(
+					function (error) {
+						console.log("unable to get users by UUIDs");
+					}
+				);
 		}
 
-
-
-			console.log(" -- networkManager.processReceivedAccessPermissions() -- ");
-
-		/*
-		// get accounts info; we need to know what accounts are user and
-		// and what accounts are group accounts;  we display First and Last Names for User accounts
-		//and Group Account Name for group accounts
-		ndexService.getAccountsByUUIDs(accountsIds,
-			function(accountsInfo) {
-
-				for (var i = 0; i < memberships.length; i++) {
-
-					var membership = memberships[i];
-
-					var newMembership = {
-						memberAccountName: membership.memberAccountName,
-						memberUUID: membership.memberUUID,
-						resourceName: membership.resourceName,
-						resourceUUID: membership.resourceUUID,
-						permissions: membership.permissions,
-						firstName: "",
-						lastName: "",
-						groupName: "",
-						accountType: "",
-						member: true
-					}
-
-					networkManager.getNamesAndAccountType(accountsInfo, newMembership);
-
-					networkManager.originalAccessPermissions.push(newMembership);
-
-					networkManager.selectedAccountsForUpdatingAccessPermissions.push(JSON.parse(JSON.stringify(newMembership)));
-				}
-			},
-			function(error) {
-				console.log("unable to get accounts by UUIDs");
-
-			});
-			*/
 	};
+
+	networkManager.getUserAccountNames = function(accountsInfo, newMembership) {
+
+		var accountUUID = newMembership.memberUUID;
+
+		for (var i = 0; i < accountsInfo.length; i++)
+		{
+			if (accountUUID === accountsInfo[i].externalId)
+			{
+				newMembership.firstName = accountsInfo[i].firstName;
+				newMembership.lastName = accountsInfo[i].lastName;
+				break;
+			}
+		}
+		return;
+	}
+
+	networkManager.getGroupPermissions = function(accountsInfo, newMembership) {
+
+		var accountUUID = newMembership.memberUUID;
+
+		for (var i = 0; i < accountsInfo.length; i++)
+		{
+			if (accountUUID === accountsInfo[i].externalId)
+			{
+				newMembership.groupName = accountsInfo[i].groupName;
+				break;
+			}
+		}
+		return;
+	}
 
 	networkManager.getNamesAndAccountType = function(accountsInfo, newMembership) {
 
@@ -550,25 +592,25 @@ ndexApp.controller('manageNetworkAccessController',
 	};
 
 
-	networkManager.getAccountName = function(user) {
-		if (typeof(user) === 'undefined') {
+	networkManager.getAccountName = function(account) {
+		if (typeof(account) === 'undefined') {
 			return 'undefined';
 		}
 
-		if ((typeof(user.userName) !== 'undefined') && (user.userName === 'ndexadministrator')) {
-			return user.userName;
+		if ((typeof(account.userName) !== 'undefined') && (account.userName === 'ndexadministrator')) {
+			return account.userName;
 		}
 
-		if ((typeof(user.memberAccountName) !== 'undefined') && (user.memberAccountName === 'ndexadministrator')) {
-			return user.memberAccountName;
+		if ((typeof(account.memberAccountName) !== 'undefined') && (account.memberAccountName === 'ndexadministrator')) {
+			return account.memberAccountName;
 		}
 
-		if (user.accountType == 'User') {
-			return user.firstName + " " + user.lastName;
+		if (account.accountType.toLowerCase() == 'user') {
+			return account.firstName + " " + account.lastName;
 		}
 
-		if (user.accountType == 'Group') {
-			return user.groupName;
+		if (account.accountType.toLowerCase() == 'group') {
+			return account.groupName;
 		}
 
 		return "unknown account type";

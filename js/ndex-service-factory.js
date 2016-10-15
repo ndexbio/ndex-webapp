@@ -1038,6 +1038,32 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
+            factory.getAllGroupsPermissionsOnNetwork = function(networkId, type, startPage, size) {
+
+                var deferredAbort = $q.defer();
+
+                var config = ndexConfigs.getAllPermissionsOnNetworkConfig(networkId, type, startPage, size);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+
             factory.getGroupsByUUIDs = function(UUIDs) {
 
                 var deferredAbort = $q.defer();
@@ -1175,6 +1201,41 @@ ndexServiceApp.factory('ndexService',
                         errorHandler(error);
                     });
             };
+
+            factory.deleteNetworkUserMembership = function (networkId, userId, successHandler, errorHandler)
+            {
+                // Server API: deleteNetworkUserMembership
+                // /network/{networkId}/member/user/{userIdId}
+
+                var config = ndexConfigs.getDeleteNetworkUserMembershipConfig(networkId, userId);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+            factory.deleteNetworkGroupMembership = function (networkId, userId, successHandler, errorHandler)
+            {
+                // Server API: deleteNetworkGroupMembership
+                // /network/{networkId}/member/group/{groupId}
+
+                var config = ndexConfigs.getDeleteNetworkGroupMembershipConfig(networkId, userId);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
 
             // return factory object
             return factory;
@@ -1394,6 +1455,22 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return config;
     };
 
+    factory.getDeleteConfig = function (url) {
+        var config = {
+            method: 'DELETE',
+            url: ndexServerURI + url,
+            headers: {}
+        };
+        if( factory.getEncodedUser() )
+        {
+            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+        }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
+        }
+        return config;
+    };
     /*---------------------------------------------------------------------*
      * Returns the user's credentials as required by Basic Authentication base64
      * encoded.
@@ -1532,6 +1609,17 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
+
+    factory.getAllPermissionsOnNetworkConfig = function (networkId, type, startPage, size)
+    {
+        // calls NetworkServiceV2.getNetworkUserMemberships server API at
+        // /network/{networkID}/permission?type=group&start={startPage}&size={size}
+
+        var url = "/v2/network/" + networkId + "/permission?type=" + type + "&start=" + startPage + "&size=" + size;
+
+        return this.getGetConfig(url, null);
+    };
+
     factory.getGroupsByUUIDsConfig = function (UUIDs)
     {
         // calls getGroupsByUUIDs server API at
@@ -1555,9 +1643,9 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     factory.getUsersByUUIDsConfig = function (usersUUIDs)
     {
         // Server API: getUsersByUUIDs
-        // /user/users
+        // /v2/batch/user
 
-        var url = "/user/users";
+        var url = "/v2/batch/user";
         return this.getPostConfig(url, usersUUIDs);
     };
 
@@ -1572,7 +1660,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
     factory.getUpdateNetworkGroupMembershipConfig = function (memberUUID, resourceUUID, permissions) {
         // Server API: updateNetworkUserMembersip
-        // /network{networkId}/member/group/{groupId}
+        // /network/{networkId}/member/group/{groupId}
         // Permission is POSTed as a JSON String, can be either “WRITE” or “READ”
 
         var url = "/network/" + resourceUUID + "/member/group/" + memberUUID;
@@ -1596,6 +1684,23 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
         return this.getPostConfig(url, postData);
     };
+
+    factory.getDeleteNetworkUserMembershipConfig = function (networkId, userId) {
+        // Server API: deleteNetworkUserMembership
+        // /network/{networkId}/member/user/{userIdId}
+
+        var url = "/network/" + networkId + "/member/user/" + userId;
+        return this.getDeleteConfig(url);
+    }
+
+    factory.getDeleteNetworkGroupMembershipConfig = function (networkId, groupId) {
+        // Server API: deleteNetworkGgroupMembership
+        // /network/{networkId}/member/group/{groupId}
+
+        var url = "/network/" + networkId + "/member/group/" + groupId;
+        return this.getDeleteConfig(url);
+    };
+
 
     return factory;
 
