@@ -481,7 +481,9 @@ ndexApp.controller('editNetworkPropertiesController',
                     i = i + 1;
                 }
 
-                ndexService.getNetworkNamespaces(networkExternalId,
+
+                //ndexService.getNetworkNamespaces(networkExternalId,
+                ndexService.getNetworkAspectAsCX(networkExternalId, encodeURIComponent("@context"),
                     function(namespaces) {
 
                         editor.namespaces = namespaces;
@@ -539,13 +541,18 @@ ndexApp.controller('editNetworkPropertiesController',
 
                     },
                     function(error) {
+                        editor.disableSaveChangesButton = editor.checkIfFormIsValidOnLoad();
+                        
                         editor.propertyValuePairs.push({predicatePrefix: 'none', labelValue: "none:''",
                                                         valuePrefix: 'none', predicateString: "", value: ""});
 
                         editor.networkName = network.name;
 
-                        editor.errors.push(error)
+                        //editor.errors.push(error)
+
+                        console.log("unable to get @context aspect for network ")
                     });
+
             }
         )
         .error(
@@ -556,11 +563,11 @@ ndexApp.controller('editNetworkPropertiesController',
 
     ndexService.getMyMembership(networkExternalId, 
         function(membership) {
-            if(membership && membership.permissions == 'ADMIN')
+            if(membership == 'ADMIN')
                 editor.isAdmin = true;
-            if(membership && membership.permissions == 'WRITE')
+            if(membership == 'WRITE')
                 editor.canEdit = true;
-            if(membership && membership.permissions == 'READ')
+            if(membership == 'READ')
                 editor.canRead = true;
             
         },

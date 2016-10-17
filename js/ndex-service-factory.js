@@ -1183,6 +1183,26 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+
+            factory.getNetworkAspectAsCX = function(networkId, aspectName, successHandler, errorHandler) {
+
+                // Server API: exportNetwork
+                // /network/{networkid}/aspect/{aspectName}?size={limit}
+                //
+
+                var config = ndexConfigs.getNetworkAspectAsCXConfig(networkId, aspectName);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            }
+
+
             factory.exportNetwork = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
             {
                 // Server API: exportNetwork
@@ -1670,6 +1690,20 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var url = "/network/" + resourceUUID + "/member/group/" + memberUUID;
         return this.getPostConfig(url, permissions);
     };
+
+
+
+    factory.getNetworkAspectAsCXConfig = function (networkId, aspectName) {
+
+        // /network/{networkid}/aspect/{aspectName}
+        var url = "/network/" + networkId + "/aspect/" + aspectName;
+
+        return this.getGetConfig(url, null);
+    };
+
+
+
+
 
     factory.getExportNetworkConfig = function (networkExportFormat, listOfNetworkIDs) {
         // Server API: exportNetwork
