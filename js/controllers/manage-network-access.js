@@ -274,8 +274,6 @@ ndexApp.controller('manageNetworkAccessController',
 			groupAccountIds.push(membership.externalId);
 		}
 
-		console.log("groupAccountIds=" + groupAccountIds);
-
 		// get accounts info; we need to know what accounts are user and
 		// and what accounts are group accounts;  we display First and Last Names for User accounts
 		// and Group Account Name for group accounts

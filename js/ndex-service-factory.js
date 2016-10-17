@@ -14,12 +14,18 @@ ndexServiceApp.factory('ndexService',
             var factory = {};
 
             var ndexServerURI = config.ndexServerUri;
+            var ndexServerURIV2 = config.ndexServerUriV2;            
 
             factory.getNdexServerUri = function()
             {
                 return ndexServerURI;
             };
-
+            
+            factory.getNdexServerUriV2 = function()
+            {
+                return ndexServerURIV2;
+            };
+            
             factory.getNetworkUploadURI = function () {
                 //return ndexServerURI + "/network/upload";
                 return ndexServerURI + "/network/asCX";
@@ -1408,6 +1414,8 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     var factory = {};
 
     var ndexServerURI = config.ndexServerUri;
+    var ndexServerURIV2 = config.ndexServerUriV2;
+
 
     /*---------------------------------------------------------------------*
      * GET request configuration
@@ -1416,6 +1424,28 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var config = {
             method: 'GET',
             url: ndexServerURI + url,
+            headers: {
+                //Authorization: "Basic " + factory.getEncodedUser()
+            }
+        };
+        if( factory.getEncodedUser() )
+        {
+            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+        }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
+        }
+        if (queryArgs) {
+            config.data = JSON.stringify(queryArgs);
+        }
+        return config;
+    };
+
+    factory.getGetConfigV2 = function (url, queryArgs) {
+        var config = {
+            method: 'GET',
+            url: ndexServerURIV2 + url,
             headers: {
                 //Authorization: "Basic " + factory.getEncodedUser()
             }
@@ -1454,7 +1484,23 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         }
         return config;
     };
-
+    factory.getPostConfigV2 = function (url, postData) {
+        var config = {
+            method: 'POST',
+            url: ndexServerURIV2 + url,
+            data: angular.toJson(postData),
+            headers: {}
+        };
+        if( factory.getEncodedUser() )
+        {
+            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+        }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
+        }
+        return config;
+    };
     /*---------------------------------------------------------------------*
      * PUT request configuration
      *---------------------------------------------------------------------*/
@@ -1639,9 +1685,9 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // calls NetworkServiceV2.getNetworkUserMemberships server API at
         // /network/{networkID}/permission?type=group&start={startPage}&size={size}
 
-        var url = "/v2/network/" + networkId + "/permission?type=" + type + "&start=" + startPage + "&size=" + size;
+        var url = "/network/" + networkId + "/permission?type=" + type + "&start=" + startPage + "&size=" + size;
 
-        return this.getGetConfig(url, null);
+        return this.getGetConfigV2(url, null);
     };
 
     factory.getGroupsByUUIDsConfig = function (UUIDs)
@@ -1669,8 +1715,8 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // Server API: getUsersByUUIDs
         // /v2/batch/user
 
-        var url = "/v2/batch/user";
-        return this.getPostConfig(url, usersUUIDs);
+        var url = "/batch/user";
+        return this.getPostConfigV2(url, usersUUIDs);
     };
 
     factory.getUpdateNetworkUserMembershipConfig = function (memberUUID, resourceUUID, permissions) {
@@ -1698,7 +1744,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // /network/{networkid}/aspect/{aspectName}
         var url = "/network/" + networkId + "/aspect/" + aspectName;
 
-        return this.getGetConfig(url, null);
+        return this.getGetConfigV2(url, null);
     };
 
 
