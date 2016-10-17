@@ -89,7 +89,15 @@ ndexApp.controller('manageNetworkAccessController',
 			ndexService.updateNetworkUserMembership(
 				newMembership.memberUUID,
 				newMembership.resourceUUID,
-				newMembership.permissions);
+				newMembership.permissions,
+					function(success){
+						; // do nothing
+					},
+					function(error){
+						console.log("unable to update network user membership for Network=" + newMembership.resourceUUID +
+							" user=" + newMembership.memberUUID + " permission=" + newMembership.permissions );
+					})
+
 
 		} else if (newMembership.accountType == "group") {
 
@@ -97,7 +105,14 @@ ndexApp.controller('manageNetworkAccessController',
 			ndexService.updateNetworkGroupMembership(
 				newMembership.memberUUID,
 				newMembership.resourceUUID,
-				newMembership.permissions);
+				newMembership.permissions,
+					function(success){
+						; // do nothing
+					},
+					function(error){
+						console.log("unable to update network group membership for Network=" + newMembership.resourceUUID +
+							" group=" + newMembership.memberUUID + " permission=" + newMembership.permissions );
+					})	
 		}
 	}
 
@@ -532,7 +547,7 @@ ndexApp.controller('manageNetworkAccessController',
 			permissions: 'READ',
 			firstName: ((typeof(user.firstName) === 'undefined') ? "" : user.firstName),
 			lastName: ((typeof(user.lastName) === 'undefined') ? "" : user.lastName),
-			accountType: 'User',
+			accountType: 'user',
 			member: true
 		}
 
@@ -549,7 +564,7 @@ ndexApp.controller('manageNetworkAccessController',
 			resourceUUID: networkManager.network.externalId,
 			permissions: 'READ',
 			groupName: ((typeof(group.groupName) === 'undefined') ? "" : group.groupName),
-			accountType: 'Group',
+			accountType: 'group',
 			member: true
 		}
 

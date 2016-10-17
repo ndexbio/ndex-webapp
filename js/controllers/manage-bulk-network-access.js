@@ -119,22 +119,6 @@ ndexApp.controller('manageBulkNetworkAccessController',
         }
     };
 
-    /*
-    bulkNetworkManager.addMember = function(member) {
-        var newMembership = {
-            memberAccountName: bulkNetworkManager.getAccountName(member),
-            memberUUID: member.externalId,
-            //resourceName: bulkNetworkManager.network.name,
-            //resourceUUID: bulkNetworkManager.network.externalId,
-            permissions: 'WRITE',
-            accountType: member.accountType
-        }
-
-        member.member = true;
-        bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership);
-    }
-    */
-
     bulkNetworkManager.addUserMember = function(user) {
         var newMembership = {
             memberAccountName: bulkNetworkManager.getUserAccountName(user),
@@ -142,7 +126,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
             permissions: 'READ',
             firstName: ((typeof(user.firstName) === 'undefined') ? "" : user.firstName),
             lastName: ((typeof(user.lastName) === 'undefined') ? "" : user.lastName),
-            accountType: 'User',
+            accountType: 'user',
             member: true
         }
 
@@ -157,7 +141,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
             memberUUID: group.externalId,
             permissions: 'READ',
             groupName: ((typeof(group.groupName) === 'undefined') ? "" : group.groupName),
-            accountType: 'Group',
+            accountType: 'group',
             member: true
         }
 
@@ -175,11 +159,11 @@ ndexApp.controller('manageBulkNetworkAccessController',
             return user.userName;
         }
 
-        if (user.accountType == 'User') {
+        if (user.accountType == 'user') {
             return user.firstName + " " + user.lastName;
         }
 
-        if (user.accountType == 'Group') {
+        if (user.accountType == 'group') {
             return user.groupName;
         }
 
@@ -265,8 +249,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
 
         return (weightOfSelectedAccess > weightOfExistingAccess) ? true : false;
     };
-
-
+            
     bulkNetworkManager.getNetworkPermissions(bulkNetworkManager.selectedIDs);
 }]);
 

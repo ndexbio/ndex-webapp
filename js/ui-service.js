@@ -1381,20 +1381,42 @@
                     // remove membership object from the list of memberships to send
                     membershipToSend = membershipsForSending.shift();
 
-
                     $scope.progress = "Granting " + membershipToSend.permissions +
-                        " access to '" + membershipToSend.memberAccountName +
-                            "' for network '" + membershipToSend.resourceName + "'";
+                        " access to " + membershipToSend.memberAccountName +
+                            " for network " + membershipToSend.resourceName;
 
-                    ndexService.updateNetworkMember(membershipToSend,
-                        function(success){
-                            $scope.summary = $scope.summary +
+                    if (membershipToSend.accountType == "user") {
+
+                        ndexService.updateNetworkUserMembership(
+                            membershipToSend.memberUUID,
+                            membershipToSend.resourceUUID,
+                            membershipToSend.permissions,
+
+                            function(success){
+                                $scope.summary = $scope.summary +
                                     $scope.progress.replace("Granting", "Granted") + "\n";
-                            $scope.updateMembershipsOnServer(membershipsForSending);
-                        },
-                        function(error){
-                            $scope.updateMembershipsOnServer(membershipsForSending);
-                        })
+                                $scope.updateMembershipsOnServer(membershipsForSending);
+                            },
+                            function(error){
+                                $scope.updateMembershipsOnServer(membershipsForSending);
+                            })
+
+                    } else if (membershipToSend.accountType == "group") {
+                        
+                        ndexService.updateNetworkGroupMembership(
+                            membershipToSend.memberUUID,
+                            membershipToSend.resourceUUID,
+                            membershipToSend.permissions,
+
+                            function(success){
+                                $scope.summary = $scope.summary +
+                                    $scope.progress.replace("Granting", "Granted") + "\n";
+                                $scope.updateMembershipsOnServer(membershipsForSending);
+                            },
+                            function(error){
+                                $scope.updateMembershipsOnServer(membershipsForSending);
+                            })
+                    }
                 }
 
                 $scope.submit = function() {
@@ -1441,7 +1463,8 @@
                                     memberUUID: accountForUpdating.memberUUID,
                                     resourceName: networkPermissionsObjs[0].resourceName,
                                     resourceUUID: networkId,
-                                    permissions: accessTypeSelected
+                                    permissions: accessTypeSelected,
+                                    accountType: accountForUpdating.accountType.toLowerCase()
                                 }
 
                                 if ((accountForUpdating.accountType.toUpperCase() === "GROUP") &&

@@ -1145,24 +1145,27 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.updateNetworkGroupMembership = function (memberUUID, resourceUUID, permissions)
+            factory.updateNetworkGroupMembership = function (memberUUID, resourceUUID,
+                                                             permissions, successHandler, errorHandler)
             {
                  //  updateNetworkGroupMembership
                  //  /network/{networkId}/member/user/{userId}
                  //  Permission is POSTed as a JSON string. It can be “ADMIN”, “WRITE” or “READ”
 
-                var config = ndexConfigs.getUpdateNetworkGroupMembershipConfig(memberUUID, resourceUUID, permissions);
+                var config = ndexConfigs.getUpdateNetworkGroupMembershipConfig(memberUUID, resourceUUID, permissions)
                 $http(config)
                     .success(function(data)
                     {
-                        //console.log("success updateNetworkGroupMembershipConfig")
+                        successHandler(data);
+
                     }).error(function(error)
                     {
-                        console.log("unable to update network group membership");
+                        errorHandler(error);
                     });
             };
 
-            factory.updateNetworkUserMembership = function (memberUUID, resourceUUID, permissions)
+            factory.updateNetworkUserMembership = function (memberUUID, resourceUUID,
+                                                            permissions, successHandler, errorHandler)
             {
                 //  updateNetworkUserMembersip
                 //  /network/{networkId}/member/group/{groupId}
@@ -1172,10 +1175,11 @@ ndexServiceApp.factory('ndexService',
                 $http(config)
                     .success(function(data)
                     {
-                        //console.log("success updateNetworkUserMembershipConfig");
+                        successHandler(data);
+
                     }).error(function(error)
                     {
-                        console.log("unable to update network user membership");
+                        errorHandler(error);
                     });
             };
 
