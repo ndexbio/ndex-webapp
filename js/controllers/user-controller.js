@@ -80,7 +80,7 @@ ndexApp.controller('userController',
                     { field: 'Visibility', enableFiltering: true, minWidth: 90 },
                     { field: 'Owned By', enableFiltering: true, minWidth: 70,
                         cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: 'date:\'MMM dd, yyyy hh:MM:ssa\'',  sort: {direction: 'desc', priority: 0}  }
+                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0}  }
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();

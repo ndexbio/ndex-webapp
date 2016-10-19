@@ -31,29 +31,59 @@ ndexApp.controller('groupController',
     //              scope functions
     // called on Networks belonging to group displayed on page
     groupController.setAndDisplayCurrentNetwork = function (identifier) {
-        $location.path("/network/" + identifier);
+        $location.path("/newNetwork/" + identifier);
     };
 
+    var getUsersUUIDs = function(users) {
+        var usersUUIDs = [];
+
+        for (var i=0; i<users.length; i++) {
+            var userUUID = users[i].memberUUID;
+            usersUUIDs.push(userUUID);
+        }
+        return usersUUIDs;
+    }
 
     groupController.submitUserSearch = function() {
+        /*
+         * To get list of User objects we need to:
+         *
+         * 1) Use getGroupUserMemberships function at
+         *    /group/{groupId}/user/{permission}/skipBlocks/blockSize?inclusive=true;
+         *    to get the list of USER and GROUP memberships
+         *
+         * 2) Get a list of User UUIDs from step 1
+         *
+         * 3) Use this list of User UUIDs to get Users through
+         *    /batch/user API.
+         *
+         */
+        var inclusive = true;
 
-        var query = {};
+        ndexService.getGroupUserMemberships(groupController.identifier, 'MEMBER', 0, 1000000, inclusive)
+            .success(
+                function (users) {
 
-        query.userName = groupController.displayedGroup.userName;
-        query.searchString = groupController.memberSearchString;
-        if(groupController.userSearchAdmin) query.permission = 'GROUPADMIN';
-        if(groupController.userSearchMember) query.permission = 'MEMBER'
-                          
-        //pagination missing
-        ndexService.searchUsers(query, 0, 50,
-            function (users) {
-                // Save the results
-                groupController.userSearchResults = users.resultList;
-            },
-            function (error) {
-                                         
-            });
-    };
+                    var usersUUIDs = getUsersUUIDs(users);
+
+                    ndexService.getUsersByUUIDs(usersUUIDs)
+                        .success(
+                            function (users) {
+                                groupController.userSearchResults = users;
+                                console.log("success!!!");
+                            }
+                        )
+                        .error(
+                            function (error) {
+                                console.log("unable to get users by UUIDs");
+                            }
+                        );
+                })
+            .error(
+                function (error, data) {
+                    console.log("unable to get group user memberships");
+                });
+    }
 
     groupController.adminCheckBoxClicked = function()
     {
@@ -301,4 +331,4 @@ ndexApp.controller('groupController',
 
             //------------------------------------------------------------------------------------//
 
-        }]);
+}]);
