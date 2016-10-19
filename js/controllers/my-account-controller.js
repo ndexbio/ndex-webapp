@@ -516,7 +516,7 @@ ndexApp.controller('myAccountController',
             // change to use directive. setting of current network should occur controller initialization
             myAccountController.setAndDisplayCurrentNetwork = function (identifier)
             {
-                $location.path("/network/" + identifier);
+                $location.path("/newNetwork/" + identifier);
             };
 
 

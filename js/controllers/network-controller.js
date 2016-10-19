@@ -709,17 +709,17 @@ ndexApp.controller('networkController',
                 ndexService.getMyMembership(networkController.currentNetworkId,
                     function (membership)
                     {
-                        if (membership && membership.permissions == 'ADMIN')
+                        if (membership == 'ADMIN')
                         {
                             networkController.isAdmin = true;
                             networkController.privilegeLevel = "Admin";
                         }
-                        if (membership && membership.permissions == 'WRITE')
+                        if (membership == 'WRITE')
                         {
                             networkController.canEdit = true;
                             networkController.privilegeLevel = "Edit";
                         }
-                        if (membership && membership.permissions == 'READ')
+                        if (membership == 'READ')
                         {
                             networkController.canRead = true;
                             networkController.privilegeLevel = "Read";
@@ -736,11 +736,11 @@ ndexApp.controller('networkController',
             var getDirectMembership = function (callback) {
                 ndexService.getMyDirectMembership(networkController.currentNetworkId,
                     function (membership) {
-                        if (membership && membership.permissions == 'ADMIN')
+                        if (membership  == 'ADMIN')
                             networkController.directIsAdmin = true;
-                        if (membership && membership.permissions == 'WRITE')
+                        if (membership == 'WRITE')
                             networkController.directCanEdit = true;
-                        if (membership && membership.permissions == 'READ')
+                        if (membership == 'READ')
                             networkController.directCanRead = true;
                         callback();
                     },

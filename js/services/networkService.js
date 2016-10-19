@@ -16,6 +16,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         
         var localNiceCX;   // the copy of CX network that are currently displayed. It can be a subnetwork from query
 
+        var localNetworkUUID = undefined;
+
+
         factory.getNdexServerUri = function()
         {
             return ndexServerURI;
@@ -98,6 +101,14 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         factory.resetNetwork = function () {
             localNiceCX = localNiceCXNetwork;
+        };
+
+        factory.getLocalNetworkUUID = function() {
+            return localNetworkUUID;
+        };
+
+        factory.setLocalNetworkUUID = function(networkUUID) {
+            localNetworkUUID = networkUUID;
         };
 
         factory.getNodeInfo = function (nodeId) {
