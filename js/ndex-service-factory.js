@@ -1645,6 +1645,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfig(url, postData);
     };
 
+    /*
     factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, edgeLimit, skipBlocks, blockSize) {
         var url = "/network/" + networkId + "/asNetwork/query/";
         var postData = {
@@ -1653,6 +1654,18 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             edgeLimit: edgeLimit
         };
         return this.getPostConfig(url, postData);
+    };
+    */
+
+
+    factory.getNetworkQueryConfig = function (networkId, searchString, searchDepth, edgeLimit) {
+        var url = "/search/network/" + networkId + "/query";
+        var postData = {
+            searchString: searchString,
+            searchDepth: searchDepth,
+            edgeLimit: edgeLimit
+        };
+        return this.getPostConfigV2(url, postData);
     };
 
     factory.getNetworkSetReadOnlyConfig = function (networkId, value)

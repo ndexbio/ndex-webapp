@@ -1345,11 +1345,17 @@ ndexApp.controller('networkViewController',
             {
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
-                var edgeKeys = Object.keys(edges);
+
 
                 var longestSubject = "";    // source
                 var longestPredicate = "";
                 var longestObject = "";     // target
+
+                if (!edges) {
+                    return;
+                }
+
+                var edgeKeys = Object.keys(edges);
 
                 // determine the longest subject, predicate and object
                 for( var i = 0; i < edgeKeys.length; i++ )
@@ -1495,7 +1501,11 @@ ndexApp.controller('networkViewController',
             {
                 var nodes = network.nodes;
                 var nodeCitations = network.nodeCitations;
-                var nodeKeys = Object.keys(nodes);
+                var numOfNodeKeys = 0;
+
+                if (!nodes) {
+                    return;
+                }
 
                 var longestName = "Label";
                 for (var key in nodes) {
@@ -1503,11 +1513,12 @@ ndexApp.controller('networkViewController',
                     if (nodes[key].n) {
                         longestName = (nodes[key].n.length > longestName.length) ? nodes[key].n : longestName;
                     }
+                    numOfNodeKeys = numOfNodeKeys + 1;
                 }
 
                 // enable filtering if number of edges in the network is no greater than 500;
                 // we still check number of edges even though we populate node headers in this routine
-                var filteringEnabled = (nodeKeys.length <= 500) ? true : false;
+                var filteringEnabled = (numOfNodeKeys <= 500) ? true : false;
 
                 if (enableFiltering) {
                     // enable filtering even if the number of edges in the network is greater than 500;
@@ -1636,7 +1647,8 @@ ndexApp.controller('networkViewController',
             };
 
             networkController.queryNetworkAndDisplay = function () {
-                networkService.neighborhoodQueryFromOldAPI(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value)
+                var edgeLimit = config.networkQueryLimit;
+                networkService.neighborhoodQuery(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
                         function (network) {
                             // success - remove old error messages, if any
@@ -1681,6 +1693,7 @@ ndexApp.controller('networkViewController',
                     );  
             };
 
+            /*
             networkController.backToOriginalNetwork = function () {
 
                 networkService.resetNetwork();
@@ -1696,10 +1709,13 @@ ndexApp.controller('networkViewController',
 
                 enableSimpleQueryElements();
                 $scope.hideAdvancedSearchLink = false;
-
-
             };
+            */
 
+            networkController.backToOriginalNetwork = function () {
+                $route.reload();
+            };
+            
             networkController.saveQueryResult = function() {
 
                 var  modalInstanceSave = $modal.open({
@@ -2135,8 +2151,6 @@ ndexApp.controller('networkViewController',
             hideSearchMenuItem();
 
             initialize();
-
-
         }
         
      ]

@@ -321,15 +321,11 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return promise;
         };
 
-        factory.neighborhoodQueryFromOldAPI = function (networkId, searchString, searchDepth) {
+        factory.neighborhoodQuery = function (networkId, searchString, searchDepth, edgeLimit) {
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
-
-            // Grab the config for this request. We modify the config to allow for $http request aborts.
-            // This may become standard in the client.
-            var edgeLimit = config.networkQueryLimit;
-            var urlConfig = ndexConfigs.getNetworkQueryConfig(networkId, searchString, searchDepth, edgeLimit, 0, edgeLimit);
+            var urlConfig = ndexConfigs.getNetworkQueryConfig(networkId, searchString, searchDepth, edgeLimit);
             urlConfig.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
@@ -341,8 +337,13 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
+                        //localNiceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
+                        //handler(localNiceCX);
+
+                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
+                        localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
+
                     }
                 );
                 return promise;
@@ -375,7 +376,6 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             return promise;
         };
-
 
 
         factory.saveQueryResults = function (currentNetworkSummary, currentSubNetwork, rawCX, onSuccess, onError) {
