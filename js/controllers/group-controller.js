@@ -70,7 +70,6 @@ ndexApp.controller('groupController',
                         .success(
                             function (users) {
                                 groupController.userSearchResults = users;
-                                console.log("success!!!");
                             }
                         )
                         .error(

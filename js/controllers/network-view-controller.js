@@ -2,11 +2,11 @@ ndexApp.controller('networkViewController',
     ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
-        '$route', '$location', /*'$filter', '$location','$q',*/
+        '$route', '$location', 'uiGridConstants', /*'$filter', '$location','$q',*/
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
-                  $route , $location/*, $filter /*, $location, $q */)
+                  $route , $location, uiGridConstants /*, $filter /*, $location, $q */)
         {
             var self = this;
 
@@ -69,6 +69,104 @@ ndexApp.controller('networkViewController',
                 networkController.bgColor = '#8fbdd7';
             }
 
+            var localNetwork = undefined;
+
+            $scope.showEdgeCitations = function(edgeKey)
+            {
+                if (localNetwork && localNetwork.edgeCitations && localNetwork.edgeCitations[edgeKey])
+                {
+                    // get list/array of citation IDs
+                    var citationsIDs = localNetwork.edgeCitations[edgeKey];
+                    var edgeCitations = getCitations(citationsIDs);
+                    showCitations(edgeCitations);
+                }
+            };
+
+            $scope.showNodeCitations = function(nodeKey)
+            {
+                if (localNetwork && localNetwork.nodeCitations && localNetwork.nodeCitations[nodeKey])
+                {
+                    // get list/array of citation IDs
+                    var citationsIDs = localNetwork.nodeCitations[nodeKey];
+                    var nodeCitations = getCitations(citationsIDs);
+                    showCitations(nodeCitations);
+                }
+            };
+
+            $scope.linkify = function(cellContents)
+            {
+                if (typeof(cellContents) === "undefined" || cellContents === "") {
+                    return "";
+                }
+                if( cellContents.startsWith("http") )
+                {
+                    return '&nbsp;<a target="_blank" href="'+cellContents+'">External Link</a>'
+                }
+                else
+                {
+                    return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
+                }
+            };
+
+            $scope.getNumEdgeCitations = function(edgeKey)
+            {
+                var numOfCitations = 0;
+                
+                if (localNetwork && localNetwork.edgeCitations && localNetwork.edgeCitations[edgeKey]) {
+                    numOfCitations = localNetwork.edgeCitations[edgeKey].length;
+                }
+                return numOfCitations;
+            };
+
+            $scope.getNumNodeCitations = function(nodeKey)
+            {
+                var numOfCitations = 0;
+
+                if (localNetwork && localNetwork.nodeCitations && localNetwork.nodeCitations[nodeKey]) {
+                    numOfCitations = localNetwork.nodeCitations[nodeKey].length;
+                }
+                return numOfCitations;
+            };
+
+            $scope.getNumNodeAttributes = function(nodeAttributesObj)
+            {
+                var numOfNodeAttributes = 0;
+                if (nodeAttributesObj && nodeAttributesObj['v']) {
+                    numOfNodeAttributes = nodeAttributesObj['v'].length;
+                }
+                return numOfNodeAttributes;
+            };
+
+            $scope.showNodeAttributes = function(attributesObj)
+            {
+                if (attributesObj && attributesObj['n'] && attributesObj['v'] && attributesObj['v'].length > 0) {
+                    var attributeName = attributesObj['n'];
+                    networkController.showMoreAttributes(attributeName, attributesObj);
+                }
+            };
+
+            $scope.edgeGridOptions =
+            {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                onRegisterApi: function( gridApi )
+                {
+                    $scope.edgeGridApi = gridApi;
+                }
+            };
+
+            $scope.nodeGridOptions =
+            {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                onRegisterApi: function( gridApi )
+                {
+                    $scope.nodeGridApi = gridApi;
+                }
+            };
+
 
             var INCOMPLETE_QUERY_CODE = -1;
             var EMPTY_QUERY_CODE = 0;
@@ -101,6 +199,35 @@ ndexApp.controller('networkViewController',
                 "description": "1-step",
                 "value": 1,
                 "id": "1"
+            }
+
+
+            $scope.currentView = "Graphic";
+            $scope.buttonLabel = "Switch To Table View"
+
+            $scope.switchView = function() {
+                if ("Graphic" == $scope.currentView) {
+                    // switch to table view
+                    $scope.currentView = "Table";
+                    $scope.buttonLabel = "Switch To Graphic View"
+
+                    var enableFiltering = true;
+                    localNetwork = networkService.getNiceCX();
+                    populateEdgeTable(localNetwork, enableFiltering);
+                    populateNodeTable(localNetwork, enableFiltering);
+
+                    //$scope.edgeGridApi.core.queueRefresh();
+                    //$scope.edgeGridApi.core.queueGridRefresh();
+
+                    //$scope.edgeGridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+
+                    //gridApi.core.notifyDataChange( uiGridConstants.dataChange.ALL)
+
+                } else if  ("Table" == $scope.currentView) {
+                    // switch to graphic view
+                    $scope.currentView = "Graphic";
+                    $scope.buttonLabel = "Switch To Table View"
+                }
             }
 
             $scope.setReturnView = function(view) {
@@ -151,6 +278,73 @@ ndexApp.controller('networkViewController',
                 console.log('oldPath = ' + oldPath + '  newPath = ' + newPath );
             })
             */
+
+            var getCitationLink = function (identifier) {
+                //if( !networkController.hasCitation(citationId) )
+                //    return "javaScript:void(0)";
+                var retLink = "";
+
+                if (identifier) {
+                    if (identifier.startsWith('http')) {
+                        retLink = identifier;
+                    } else {
+                        retLink = 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
+                    }
+                }
+                return retLink;
+            };
+
+            var getCitations = function(citationsIDs)
+            {
+                var citations = (localNetwork && localNetwork.citations) ? localNetwork.citations : "";
+
+                var result = [];
+                for (var i=0; i<citationsIDs.length; i++)
+                {
+                    var citationObj = citations[citationsIDs[i]];
+                    var citation = {};
+
+                    if (citationObj['@id']) {
+                        citation['id'] = citationObj['@id'];
+                    }
+                    if (citationObj['dc:contributor']) {
+                        citation['contributor'] = citationObj['dc:contributor'];
+                    }
+                    if (citationObj['dc:description']) {
+                        citation['description'] = citationObj['dc:description'];
+                    }
+                    if (citationObj['dc:identifier']) {
+                        citation['identifier'] = citationObj['dc:identifier'];
+                    }
+                    if (citationObj['dc:title']) {
+                        citation['title'] = citationObj['dc:title'];
+                    }
+                    if (citationObj['dc:type']) {
+                        citation['type'] = citationObj['dc:type'];
+                    }
+                    if (citationObj['attributes'].length>0) {
+                        citation['attributes'] = JSON.stringify(citationObj['attributes']);
+                    }
+                    citation['link'] = getCitationLink(citation['identifier']);
+
+                    result.push( citation );
+                }
+                return result;
+            };
+
+            var showCitations = function(citations)
+            {
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: 'citations.html',
+                    controller: 'CitationModalCtrl',
+                    resolve: {
+                        citations: function () {
+                            return citations;
+                        }
+                    }
+                });
+            };
 
 
             $scope.activateAdvancedQueryTab = function() {
@@ -1135,9 +1329,310 @@ ndexApp.controller('networkViewController',
                                 displayErrorMessage(error);
                             }
                         );
+                }
+            };
 
+            var calcColumnWidth = function(header, isLastColumn)
+            {
+                var result = header.length * 10;
+                result = result < 100 ? 100 : result;
+                if( isLastColumn )
+                    result += 40;
+                return result > 250 ? 250 : result;
+            };
+
+            var populateEdgeTable = function(network, enableFiltering)
+            {
+                var edges = network.edges;
+                var edgeCitations = network.edgeCitations;
+                var edgeKeys = Object.keys(edges);
+
+                var longestSubject = "";    // source
+                var longestPredicate = "";
+                var longestObject = "";     // target
+
+                // determine the longest subject, predicate and object
+                for( var i = 0; i < edgeKeys.length; i++ )
+                {
+                    var edgeKey = edgeKeys[i];
+
+                    var predicate = (edges[edgeKey].i) ? (edges[edgeKey].i) : "";
+                    var subject = network.nodes[edges[edgeKey].s].n;
+                    var object = network.nodes[edges[edgeKey].t].n;
+
+                    longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
+                    longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
+                    longestObject = longestObject.length < object.length ? object : longestObject;
                 }
 
+                // enable filtering if number of edges in the network is no greater than 500
+                var filteringEnabled = (edgeKeys.length <= 500) ? true : false;
+
+                if (enableFiltering) {
+                    // enable filtering even if the number of edges in the network is greater than 500;
+                    // this is the case when we want filtering on after running simple or advance query
+                    filteringEnabled = true;
+                }
+                var columnDefs = [
+                    {
+                        field: 'Subject',
+                        displayName: 'Subject',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestSubject, false)
+                    },
+                    {
+                        field: 'Predicate',
+                        displayName: 'Predicate',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestPredicate, false)
+                    },
+                    {
+                        field: 'Object',
+                        displayName: 'Object',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestObject, false)
+                    }
+                ];
+
+                if (edgeCitations) {
+                    var citationsHeader =
+                    {
+                        field: 'Citations',
+                        displayName: 'Citations',
+                        cellToolTip: false,
+                        //minWidth: calcColumnWidth('Citations'),
+                        enableFiltering: false,
+                        enableSorting: false,
+                        cellTemplate: "<div class='text-center'><h6>" +
+                            "<a ng-click='grid.appScope.showEdgeCitations(COL_FIELD)' ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0'>" +
+                            "{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}" +
+                            "</h6></div>"
+                     }
+                    columnDefs.push(citationsHeader);
+                }
+
+
+                var edgeAttributes = network.edgeAttributes;
+                var edgeAttributesHeaders = {};
+
+                if (edgeAttributes) {
+
+                    var edgeAttributesKeys = Object.keys(edgeAttributes);
+
+                    for (var i=0; i<edgeAttributesKeys.length; i++)
+                    {
+                        var edgeAttributeKey = edgeAttributesKeys[i];
+
+                        var edgeAttributePropertiesKeys = Object.keys(edgeAttributes[edgeAttributeKey]);
+
+                        for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
+                            var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
+
+                            var columnDef = {
+                                field: edgeAttributteProperty,
+                                displayName: edgeAttributteProperty,
+                                cellTooltip: true,
+                                minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                enableFiltering: filteringEnabled,
+                                cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                            };
+                            edgeAttributesHeaders[edgeAttributteProperty] = columnDef;
+                        }
+                    }
+                }
+
+                for (var key in edgeAttributesHeaders) {
+                    var col = edgeAttributesHeaders[key];
+                    columnDefs.push(col);
+                }
+
+                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.edgeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                //$scope.edgeGridApi.grid.gridHeight = $('#cytoscape-canvas').height();
+
+               refreshEdgeTable(network);
+            };
+
+            var refreshEdgeTable = function (network) {
+
+                var edges = network.edges;
+                var edgeCitations = network.edgeCitations;
+                var edgeKeys = Object.keys(edges);
+
+                $scope.edgeGridOptions.data = [];
+
+                var edgeAttributes = network.edgeAttributes;
+
+                for( i = 0; i < edgeKeys.length; i++ )
+                {
+                    var edgeKey = edgeKeys[i];
+
+                    var predicate = edges[edgeKey].i;
+                    var subject = network.nodes[edges[edgeKey].s].n;
+                    var object = network.nodes[edges[edgeKey].t].n;
+
+                    var row = {"Subject": subject, "Predicate": predicate, "Object": object};
+                    
+                    if (edgeCitations) {
+                        row["Citations"] = (edgeCitations[edgeKey]) ? edgeKey : "";
+                    }
+
+                    if (edgeAttributes) {
+                        for (var key in edgeAttributes[edgeKey]) {
+                            var attributeValue = edgeAttributes[edgeKey][key]['v'];
+                            row[key] = (attributeValue) ? attributeValue : "";
+                        }
+                    }
+                    $scope.edgeGridOptions.data.push( row );
+                }
+            };
+
+
+            var populateNodeTable = function(network, enableFiltering)
+            {
+                var nodes = network.nodes;
+                var nodeCitations = network.nodeCitations;
+                var nodeKeys = Object.keys(nodes);
+
+                var longestName = "Label";
+                for (var key in nodes) {
+
+                    if (nodes[key].n) {
+                        longestName = (nodes[key].n.length > longestName.length) ? nodes[key].n : longestName;
+                    }
+                }
+
+                // enable filtering if number of edges in the network is no greater than 500;
+                // we still check number of edges even though we populate node headers in this routine
+                var filteringEnabled = (nodeKeys.length <= 500) ? true : false;
+
+                if (enableFiltering) {
+                    // enable filtering even if the number of edges in the network is greater than 500;
+                    // this is the case when we want filtering on after running simple or advance query.
+                    // we still check number of edges even though we populate node header in this routine
+                    filteringEnabled = true;
+                }
+                var columnDefs = [
+                    {
+                        field: 'Label',
+                        displayName: 'Label',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestName)
+                    }
+                ];
+
+                if (nodeCitations) {
+                    var citationsHeader =
+                    {
+                        field: 'Citations',
+                        displayName: 'Citations',
+                        cellToolTip: false,
+                        enableFiltering: false,
+                        enableSorting: false,
+                        cellTemplate: "<div class='text-center'><h6>" +
+                        "<a ng-click='grid.appScope.showNodeCitations(COL_FIELD)' ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0'>" +
+                        "{{grid.appScope.getNumNodeCitations(COL_FIELD)}}" +
+                        "</h6></div>"
+                    }
+                    columnDefs.push(citationsHeader);
+                }
+                
+
+                var nodeAttributes = network.nodeAttributes;
+                var nodeAttributesHeaders = {};
+
+                if (nodeAttributes) {
+
+                    var nodeAttributesKeys = Object.keys(nodeAttributes);
+
+                    for (var i=0; i<nodeAttributesKeys.length; i++)
+                    {
+                        var nodeAttributeKey = nodeAttributesKeys[i];
+
+                        var nodeAttributePropertiesKeys = Object.keys(nodeAttributes[nodeAttributeKey]);
+
+                        for (var j=0; j<nodeAttributePropertiesKeys.length; j++) {
+                            var nodeAttributteProperty = nodeAttributePropertiesKeys[j];
+
+                            var columnDef;
+                            if ((nodeAttributteProperty == "alias") || (nodeAttributteProperty == "relatedTo")) {
+                                columnDef = {
+                                    field: nodeAttributteProperty,
+                                    displayName: nodeAttributteProperty,
+                                    cellTooltip: true,
+                                    minWidth: calcColumnWidth(nodeAttributteProperty, false),
+                                    enableFiltering: filteringEnabled,
+                                    //cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+
+                                    cellTemplate: "<div class='text-center'><h6>" +
+                                    "<a ng-click='grid.appScope.showNodeAttributes(COL_FIELD)' ng-show='grid.appScope.getNumNodeAttributes(COL_FIELD) > 0'>" +
+                                    "{{grid.appScope.getNumNodeAttributes(COL_FIELD)}}" +
+                                    "</h6></div>"
+                                };
+                            } else {
+                                columnDef = {
+                                    field: nodeAttributteProperty,
+                                    displayName: nodeAttributteProperty,
+                                    cellTooltip: true,
+                                    minWidth: calcColumnWidth(nodeAttributteProperty, false),
+                                    enableFiltering: filteringEnabled,
+                                    cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                                }
+                            }
+                            nodeAttributesHeaders[nodeAttributteProperty] = columnDef;
+                        }
+                    }
+                }
+
+                for (var key in nodeAttributesHeaders) {
+                    var col = nodeAttributesHeaders[key];
+                    columnDefs.push(col);
+                }
+
+                $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.nodeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                //$scope.nodeGridApi.grid.gridHeight = $('#cytoscape-canvas').height();
+
+                refreshNodeTable(network);
+            };
+
+            var refreshNodeTable = function(network)
+            {
+                var nodes = network.nodes;
+                var nodeKeys = Object.keys(nodes);
+
+                $scope.nodeGridOptions.data = [];
+
+                var nodeAttributes = network.nodeAttributes;
+
+                for (var key in nodeKeys)
+                {
+                    var nodeAttributeIndex = nodeKeys[key];
+                    var nodeAttrs = nodeAttributes[nodeAttributeIndex];
+
+                    var label = (nodes[nodeAttributeIndex].n) ? (nodes[nodeAttributeIndex].n) : "";
+
+                    var row = {"Label": label};
+
+                    if (nodeAttributes) {
+                        for (var key1 in nodeAttrs) {
+                            var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+                            var attributeObjName = attributeObj['n'];
+
+                            if (attributeObjName && ((attributeObjName == 'alias') || (attributeObjName == 'relatedTo')) ) {
+                                row[key1] = attributeObj;
+                            } else {
+                                row[key1] = (attributeObj['v']) ? attributeObj['v'] : "";
+                            }
+                        }
+                    }
+
+                    $scope.nodeGridOptions.data.push( row );
+                }
             };
 
             networkController.queryNetworkAndDisplay = function () {
@@ -1634,7 +2129,7 @@ ndexApp.controller('networkViewController',
 
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            $("#cytoscape-canvas").height($(window).height() - 185);
+            $("#cytoscape-canvas").height($(window).height() - 222);
             $("#divNetworkTabs").height($(window).height() - 185);
 
             hideSearchMenuItem();
@@ -1646,3 +2141,17 @@ ndexApp.controller('networkViewController',
         
      ]
 );
+
+
+ndexApp.controller('CitationModalCtrl', function ($scope, $modalInstance, citations)
+{
+    $scope.citations = citations;
+
+    $scope.ok = function () {
+        $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});

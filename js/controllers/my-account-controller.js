@@ -57,15 +57,6 @@ ndexApp.controller('myAccountController',
                 $scope.$parent.showMyAccountMenu = true;
             });
             
-            var calcColumnWidth = function(header, isLastColumn)
-            {
-                var result = header.length * 10;
-                result = result < 100 ? 100 : result;
-                if( isLastColumn )
-                    result += 40;
-                return result > 250 ? 250 : result;
-            };
-
             //table
             $scope.networkGridOptions =
             {

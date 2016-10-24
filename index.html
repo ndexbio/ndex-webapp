@@ -312,6 +312,7 @@
                     </a>
                 </li>
 
+                <!--
                 <li ng-show="showViewMenus">
                     <a ng-click="collapseHamburgerMenu(); main.goToNetworkView('/newNetwork/');"
                        ng-class="{'selected-navbar-item' : isActiveNetworkView('/newNetwork/')}">
@@ -319,12 +320,14 @@
                     </a>
                 </li>
 
+
                 <li ng-show="showViewMenus">
                     <a ng-click="collapseHamburgerMenu(); main.goToNetworkView('/network/');"
                          ng-class="{'selected-navbar-item' : isActiveNetworkView('/network/')}">
                         Table View
                     </a>
                 </li>
+                -->
 
                 <li ng-show="main.loggedIn && showMyAccountMenu">
                     <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser();"
@@ -386,9 +389,8 @@
 
 <script>
     $(window).resize(function() {
-        $('#cytoscape-canvas').height($(window).height() - 185);
+        $('#cytoscape-canvas').height($(window).height() - 222);
         $("#divNetworkTabs").height($(window).height() - 185);
-
     });
 
     $(window).trigger('resize');

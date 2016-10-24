@@ -13,11 +13,22 @@
     <div class="col-md-7">
 
         <div class="row">
-            <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}">
-                <div id = "messageOverlay"
+            <button type="button" class="btn btn-primary" ng-click="switchView()">{{buttonLabel}}</button>
+
+            <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}" ng-show="currentView == 'Graphic'">
+                <div id="messageOverlay"
                      style="float:left; vdisplay: inline-block; position: absolute; top: 40px; left: 40px;font-size: 1.5em; color: #FF0000"
-                   ng-show="networkController.isSample"  >(Showing top {{networkController.displayLimit}} edges)</div>
+                   ng-show="networkController.isSample">(Showing top {{networkController.displayLimit}} edges)</div>
             </div>
+
+            <tabset ng-show="currentView == 'Table'">
+                <tab heading="Edges" ng-click="edgeGridApi.core.handleWindowResize()">
+                    <div id="edgeGrid" ui-grid="edgeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
+                </tab>
+                <tab heading="Nodes" ng-click="nodeGridApi.core.handleWindowResize()">
+                    <div id="nodeGrid" ui-grid="nodeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
+                </tab>
+            </tabset>
 
             <div class="rowWithOneLineTopPad"></div>
 
@@ -714,7 +725,78 @@
                 </a>
             </span>
         </div>
-
     </div>
-
 </div>
+
+
+<script type="text/ng-template" id="citations.html">
+    <form>
+        <div>
+            <div class="modal-header">
+                <h3>Citations</h3>
+            </div>
+            <span class="modal-body">
+                <span ng-repeat="citation in citations">
+                    <dl class="dl-horizontal">
+                        <!--
+                        <dt>Citation ID</dt>
+                        <dd>{{citation.id}}</dd>
+                        -->
+                        <dt ng-show="citation.title">
+                            Title
+                        </dt>
+                        <dd ng-show="citation.title">
+                            {{citation.title}}
+                        </dd>
+
+                        <dt ng-show="citation.description">
+                            Description
+                        </dt>
+                        <dd ng-show="citation.description">
+                            {{citation.description}}
+                        </dd>
+
+                        <dt ng-show="citation.type">
+                            Type
+                        </dt>
+                        <dd ng-show="citation.type">
+                            {{citation.type}}
+                        </dd>
+
+                        <dt ng-show="citation.identifier">
+                            Identifier
+                        </dt>
+                        <dd ng-show="citation.identifier">
+                            {{citation.identifier}}
+                        </dd>
+
+                        <dt ng-show="citation.contributor">
+                            Contributor
+                        </dt>
+                        <dd ng-show="citation.contributor">
+                            {{citation.contributors}}
+                        </dd>
+
+                        <dt ng-show="citation.attributes">
+                            Attributes
+                        </dt>
+                        <dd ng-show="citation.attributes">
+                            {{citation.attributes}}
+                        </dd>
+
+                        <dt ng-show="citation.link">
+                            Link
+                        </dt>
+                        <dd ng-show="citation.link">
+                            <a ng-href="{{citation.link}}" target="_blank">{{citation.link}}</a>
+                        </dd>
+                    </dl>
+                </span>
+            </span>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-enter="ok()" ng-click="ok()">OK</button>
+            </div>
+        </div>
+    </form>
+
+</script>
