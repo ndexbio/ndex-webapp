@@ -406,23 +406,30 @@ ndexApp.controller('networkViewController',
 
             var getNetworkAdmins = function()
             {
-                ndexService.getNetworkUserMemberships(networkController.currentNetworkId, 'ADMIN',
-                    function(networkAdmins)
-                    {
-                        for( var i = 0; i < networkAdmins.length; i++ )
-                        {
-                            var networkAdmin = networkAdmins[i];
-                            if( networkAdmin.memberUUID == sharedProperties.getCurrentUserId() )
-                            {
-                                networkAdmins.splice(i, 1);
+                if (networkController.isLoggedIn) {
+                    ndexService.getNetworkUserMemberships(networkController.currentNetworkId, 'ADMIN',
+                        function (networkAdmins) {
+                            for (var i = 0; i < networkAdmins.length; i++) {
+                                var networkAdmin = networkAdmins[i];
+                                if (networkAdmin.memberUUID == sharedProperties.getCurrentUserId()) {
+                                    networkAdmins.splice(i, 1);
+                                }
                             }
-                        }
-                        networkController.networkAdmins = networkAdmins;
-                    },
-                    function(error)
-                    {
-                        console.log(error);
-                    });
+                            networkController.networkAdmins = networkAdmins;
+                        },
+                        function (error) {
+                            var errorMessageText;
+                            if (error) {
+                                if (error.status) {
+                                    errorMessageText = "HTTP response code: " + error.status + ". ";
+                                }
+                                if (error.data && error.data.message) {
+                                    errorMessageText = errorMessageText + error.data.message;
+                                }
+                            }
+                            console.log(errorMessageText);
+                        });
+                }
             };
 
 
