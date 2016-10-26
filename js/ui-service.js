@@ -485,62 +485,49 @@
 
                 $scope.accept = function() {
 
-                    var membership = {
-                        resourceUUID: $scope.request.destinationUUID,
-                        permissions: $scope.request.permission,
-                        memberUUID: $scope.request.sourceUUID
-                    }
+                    var networkId     = $scope.request.destinationUUID;
+                    var userOrGroupId = $scope.request.sourceUUID;
+                    var type = ($scope.request.requestType.toLowerCase() == "usernetworkaccess") ? "user" : "group";
+                    var permission = $scope.request.permission;
 
-                    if($scope.request.permission == 'MEMBER' || $scope.request.permission == 'GROUPADMIN') {
 
-                        ndexService.updateGroupMember(membership,
-                            function(data){
+                    ndexService.updateNetworkPermission(networkId, type, userOrGroupId, permission,
+                        function(data){
 
-                                $scope.request.response = 'ACCEPTED'
-                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
-                                    function(data) {
-                                        ////console.log($scope.request)
-                                        modalInstance.close();
-                                        $scope.userController.refreshRequests();
-                                    },
-                                    function(error){
-                                        //TODO
-                                    });
-                            },
-                            function(error){
-                                //TODO
-                            });
-                    } else {
-                        ndexService.updateNetworkMember(membership,
-                            function(data){
-                                //TODO
-                                $scope.request.response = 'ACCEPTED'
-                                ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
-                                    function(data) {
-                                        modalInstance.close();
-                                        $scope.userController.refreshRequests();
-                                    },
-                                    function(error){
-                                        //TODO
-                                    });
-                            },
-                            function(error){
-                                //TODO
-                            });
-                    }
+                            var recipientId = $scope.userController.identifier;
+                            var requestId   = $scope.request.externalId;
+                            var action      = "accept";
+                            var message     = $scope.request.responseMessage;
 
+                            ndexService.acceptOrDenyPermissionRequest(recipientId, requestId, action, message,
+                                function(data) {
+                                    modalInstance.close();
+                                    $scope.userController.refreshRequests();
+                                },
+                                function(error){
+                                    console.log("unable to accept network permission request");
+                                });
+                        },
+                        function(error){
+                            console.log("unable to update network permission request");
+                        });
                 };
 
                 $scope.decline = function() {
-                    $scope.request.response = 'DECLINED'
-                    ndexService.updateRequest($scope.ndexData.externalId, $scope.request,
+
+                    var recipientId = $scope.userController.identifier;
+                    var requestId   = $scope.request.externalId;
+                    var action      = "deny";
+                    var message     = $scope.request.responseMessage;
+
+                    ndexService.acceptOrDenyPermissionRequest(recipientId, requestId, action, message,
                         function(data) {
                             modalInstance.close();
                             $scope.userController.refreshRequests();
                         },
                         function(error){
-                            //TODO
-                        })
+                            console.log("unable to deny network permission request");
+                        });
                 }
 
                 $scope.$watch('ndexData', function(value) {
@@ -638,6 +625,8 @@
                 $scope.request = {};
                 $scope.modal = {};
                 $scope.accounts = [];
+                $scope.selected = {};
+                $scope.selected.account = undefined;
 
                 $scope.openMe = function() {
                     intialize();
@@ -662,26 +651,46 @@
                     if($scope.modal.permissionLabel == 'Can read')
                         $scope.request.permission = 'READ';
 
-                    var length = $scope.accounts.length;
-                    for(var ii=0; ii<length; ii++) {
-                        if($scope.accounts[ii].userName == $scope.request.sourceName)
-                            $scope.request.sourceUUID = $scope.accounts[ii].externalId;
-                    }
+                    var requestType =  $scope.selected.account.accountType;
 
-                    ndexService.createRequest($scope.request,
-                        function(request) {
-                            //TODO some modal
-                            $scope.close();
-                        },
-                        function(error) {
-                            if ((typeof error.data !== 'undefined') &&
-                                (typeof error.data.message !== 'undefined')) {
-                                $scope.request.error = error.data.message;
-                            } else {
-                                $scope.request.error = "Server returned HTTP error response code " +
-                                        error.status;
-                            }
-                        });
+                    if (requestType == 'user') {
+
+                        // Create a request to ask a network permission for the authenticated user.
+                        var userPermissionRequest = {
+                            "networkid"  : $scope.request.destinationUUID,
+                            "permission" : $scope.request.permission,
+                            "message"    : $scope.request.message,
+                        }
+                        var userUUID = $scope.selected.account.externalId;
+
+                        ndexService.createUserPermissionRequest(userUUID, userPermissionRequest,
+                            function(data) {
+                                $scope.close();
+                            },
+                            function(error) {
+                                console.log("unable to send network permission request for the authenticated user");
+                                $scope.close();
+                            })
+
+                    } else if (requestType == 'group') {
+
+                        // Create a request to ask a network permission for a group.
+                        var groupPermissionRequest = {
+                            "networkid"  : $scope.request.destinationUUID,
+                            "permission" : $scope.request.permission,
+                            "message"    : $scope.request.message,
+                        }
+                        var groupUUID = $scope.selected.account.externalId;
+
+                        ndexService.createGroupPermissionRequest(groupUUID, groupPermissionRequest,
+                            function(data) {
+                                $scope.close();
+                            },
+                            function(error) {
+                                console.log("unable to send network permission request for the group");
+                                $scope.close();
+                            })
+                    }
                 };
 
                 $scope.$watch('ndexData', function(value) {
@@ -698,6 +707,15 @@
                 //    $scope.request.privileges = $scope.privileges;
                 //});
 
+                var getGroupsUUIDs = function(groups) {
+                    var groupsUUIDs = [];
+
+                    for (var i=0; i<groups.length; i++) {
+                        var groupUUID = groups[i].resourceUUID;
+                        groupsUUIDs.push(groupUUID);
+                    }
+                    return groupsUUIDs;
+                }
 
                 var intialize = function() {
                     $scope.accounts = [];
@@ -708,34 +726,51 @@
                     $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
                     $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
 
-                    //$scope.request.privileges = $scope.privileges;
+                    $scope.request.accountType = undefined;
 
                     $scope.modal.permissionLabel ='Can edit';
-                    if( $scope.privileges == 'Edit' )
-                        $scope.modal.permissionLabel ='Is admin';
 
-                    var query = {};
+                    $scope.selected.account = undefined;
 
-                    query.userName = ndexUtility.getLoggedInUserAccountName();
-                    query.permission = 'GROUPADMIN';
+                    //if( $scope.privileges == 'Edit' )
+                    //    $scope.modal.permissionLabel ='Is admin';
 
-                    // TODO 0,50 shouldnt be a set number
-                    ndexService.searchGroups(query, 0, 50,
-                        function (groups) {
-                            var length = groups.length;
-                            for(var ii=0; ii < length; ii++) {
-                                $scope.accounts.push(groups[ii]);
-                            }
-                            $scope.accounts.push({
-                                userName: ndexUtility.getLoggedInUserAccountName(),
-                                externalId: ndexUtility.getLoggedInUserExternalId()
+                    var inclusive = true;
+
+                    ndexService.getUserGroupMemberships(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000, inclusive)
+                        .success(
+                            function (groups) {
+
+                                var groupsUUIDs = getGroupsUUIDs(groups);
+
+                                ndexService.getGroupsByUUIDs(groupsUUIDs)
+                                    .success(
+                                        function (groupList) {
+
+                                            for(var i=0; i < groupList.length; i++) {
+                                                var groupAccount = groupList[i];
+                                                groupAccount['accountType'] = 'group';
+                                                $scope.accounts.push(groupAccount);
+                                            }
+                                            var currentUserAccount = {
+                                                accountType: 'user',
+                                                userName: ndexUtility.getLoggedInUserAccountName(),
+                                                externalId: ndexUtility.getLoggedInUserExternalId()
+                                            }
+                                            $scope.accounts.push(currentUserAccount);
+                                            $scope.selected.account = currentUserAccount;
+                                        })
+                                    .error(
+                                        function(error) {
+                                            console.log("unable to get groups by UUIDs");
+                                        }
+                                    )
+                            })
+                        .error(
+                            function (error, data) {
+                                console.log("unable to get user group memberships");
                             });
-                        },
-                        function (error) {
-
-                        });
                 }
-
             }
         }
     });

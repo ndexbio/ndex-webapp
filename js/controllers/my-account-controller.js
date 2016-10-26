@@ -725,7 +725,8 @@ ndexApp.controller('myAccountController',
 
             var getRequests = function ()
             {
-                ndexService.getPendingRequests(0, 20,
+                // get all pending requests
+                ndexService.getUserPermissionRequests(myAccountController.identifier, "received",
                     function (requests)
                     {
                         myAccountController.pendingRequests = requests;
@@ -735,7 +736,8 @@ ndexApp.controller('myAccountController',
                         console.log("unable to get pending requests");
                     });
 
-                ndexService.getSentRequests(0, 20,
+                // get all sent requests
+                ndexService.getUserPermissionRequests(myAccountController.identifier, "sent",
                     function (requests)
                     {
                         myAccountController.sentRequests = requests;

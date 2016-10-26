@@ -298,25 +298,26 @@ ndexApp.controller('userController',
 
             var getRequests = function ()
             {
-                ndexService.getPendingRequests(0, 20,
+                // get all pending requests
+                ndexService.getUserPermissionRequests(myAccountController.identifier, "received",
                     function (requests)
                     {
-                        userController.pendingRequests = requests;
+                        myAccountController.pendingRequests = requests;
                     },
                     function (error)
                     {
-                        //console.log(error);
+                        console.log("unable to get pending requests");
                     });
 
-                ndexService.getSentRequests(0, 20,
+                // get all sent requests
+                ndexService.getUserPermissionRequests(myAccountController.identifier, "sent",
                     function (requests)
                     {
-                        userController.sentRequests = requests;
-
+                        myAccountController.sentRequests = requests;
                     },
                     function (error)
                     {
-                        //console.log(error);
+                        console.log("unable to get sent requests");
                     })
             };
 

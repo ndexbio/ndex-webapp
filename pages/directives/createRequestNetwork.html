@@ -15,15 +15,19 @@
 		        {{modal.permissionLabel}}<span class="caret"></span>
 		      </a>
 		      <ul class="dropdown-menu">
+				  <!--
 		      	<li>
 		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Is admin"'><small>Is Admin</small></a>
 		        </li>
+		        -->
 		        <li ng-hide="privileges=='Edit'">
 		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can edit"'><small>Can edit</small></a>
 		        </li>
+				  <!--
 		        <li ng-hide="privileges=='Edit' || privileges=='Read'">
 		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can read"'><small>Can read</small></a>
 		        </li>
+		        -->
 		      </ul>
 		    </span>
 
@@ -35,8 +39,9 @@
 		      </a>
 		      <ul class="dropdown-menu">
 		      	<li ng-repeat='account in accounts'>
-		          <a class="dropdown-toggle" ng-click='request.sourceName = account.accountName'>
-		          	<small>{{account.accountName}}</small>
+		          <a class="dropdown-toggle"
+					 ng-click='request.sourceName = ((account.groupName) ? account.groupName : account.userName); selected.account=account'>
+		          	<small>{{account.groupName}} {{account.userName}}</small>
 		          </a>
 		        </li>
 		      </ul>

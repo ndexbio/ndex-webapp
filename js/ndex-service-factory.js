@@ -112,21 +112,6 @@ ndexServiceApp.factory('ndexService',
                             }
                         }
                     },
-                    getSentRequest: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'request'
-                        },
-                        isArray: true
-                    },
-                    getPendingRequest: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'request',
-                            sub2Resource: 'pending'
-                        },
-                        isArray: true
-                    },
                     changePassword: {
                         method: 'POST',
                         params: {
@@ -169,18 +154,6 @@ ndexServiceApp.factory('ndexService',
                         successHandler(data);
                     },
                     errorHandler)
-            };
-
-            factory.getSentRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                UserResource.getSentRequest({skipBlocks: skipBlocks, blockSize: blockSize},
-                    successHandler, errorHandler);
-            };
-
-            factory.getPendingRequests = function (skipBlocks, blockSize, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                UserResource.getPendingRequest({skipBlocks: skipBlocks, blockSize: blockSize},
-                    successHandler, errorHandler);
             };
 
             factory.editUserProfile = function (user, successHandler, errorHandler) {
@@ -1294,6 +1267,77 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+            factory.createUserPermissionRequest = function (userUUID, userPermissionRequest, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getCreateUserPermissionRequestConfig(userUUID, userPermissionRequest);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+            factory.createGroupPermissionRequest = function (groupUUID, groupPermissionRequest, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getCreateGroupPermissionRequestConfig(groupUUID, groupPermissionRequest);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+            factory.getUserPermissionRequests = function (userUUID, type, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getGetUserPermissionRequestsConfig(userUUID, type);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+            factory.updateNetworkPermission = function (networkId, type, userOrGroupId, permission, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getUpdateNetworkPermissionConfig(networkId, type, userOrGroupId, permission);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+
+            factory.acceptOrDenyPermissionRequest = function (recipientId, requestId, action, message, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getAcceptOrDenyPermissionRequestConfig(recipientId, requestId, action, message);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
 
             // return factory object
             return factory;
@@ -1536,6 +1580,27 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var config = {
             method: 'PUT',
             url: ndexServerURI + url,
+            //data: angular.toJson(putData),
+            headers: {}
+        };
+        if( factory.getEncodedUser() )
+        {
+            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+        }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
+        }
+        if (putData) {
+            config.data = JSON.stringify(putData);
+        }
+        return config;
+    };
+    
+    factory.getPutConfigV2 = function (url, putData) {
+        var config = {
+            method: 'PUT',
+            url: ndexServerURIV2 + url,
             //data: angular.toJson(putData),
             headers: {}
         };
@@ -1831,13 +1896,65 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     }
 
     factory.getDeleteNetworkGroupMembershipConfig = function (networkId, groupId) {
-        // Server API: deleteNetworkGgroupMembership
+        // Server API: deleteNetworkGroupMembership
         // /network/{networkId}/member/group/{groupId}
 
         var url = "/network/" + networkId + "/member/group/" + groupId;
         return this.getDeleteConfig(url);
     };
 
+    factory.getCreateUserPermissionRequestConfig = function (userUUID, userPermissionRequest) {
+        // Server API: Create User Permission Request
+        // /user/{userId}/permissionrequest
+        var url = "/user/" + userUUID + "/permissionrequest";
+        return this.getPostConfigV2(url, userPermissionRequest);
+    };
+
+    factory.getCreateGroupPermissionRequestConfig = function (groupUUID, groupPermissionRequest) {
+        // Server API: Create Group Permission Request
+        // /group/{groupId}/permissionrequest
+        var url = "/group/" + groupUUID + "/permissionrequest";
+        return this.getPostConfigV2(url, groupPermissionRequest);
+    };
+
+    factory.getGetUserPermissionRequestsConfig = function (userUUID, type) {
+        // Server API: Get a User’s Permission Requests
+        // /user/{userId}/permissionrequest?type={sent|received}
+
+        var url = "/user/" + userUUID + "/permissionrequest";
+        if (type && ((type.toLowerCase() == "sent") || (type.toLowerCase() == "received"))) {
+            url = url + "?type=" + type;
+        }
+
+        return this.getGetConfigV2(url, null);
+    };
+
+    factory.getUpdateNetworkPermissionConfig = function (networkId, type, userOrGroupId, permission) {
+        // Server API: Update Network Permission
+        // /network/{networkId}/permission?(userid={uuid}|groupid={uuid})&permission={permission}
+
+        var url = "/network/" + networkId + "/permission?";
+
+        if (type && (type.toLowerCase() == "user")) {
+            url = url + "userid=" + userOrGroupId;
+        } else if (type && (type.toLowerCase() == "group")) {
+            url = url + "groupid=" + userOrGroupId;
+        }
+        url = url + "&permission=" + permission;
+
+        return this.getPutConfigV2(url, null);
+    };
+
+
+    factory.getAcceptOrDenyPermissionRequestConfig = function (recipientId, requestId, action, message) {
+        // Server API: Accept or Deny a permission request
+        // /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}
+
+        var url = 
+            "/user/" + recipientId + "/permissionrequest/" + requestId + "?action=" + action + "&message=" + message;
+
+        return this.getPutConfigV2(url, null);
+    };
 
     return factory;
 
