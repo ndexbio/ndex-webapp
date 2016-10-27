@@ -214,7 +214,7 @@ ndexApp.controller('userController',
                 return groupsUUIDs;
             }
 
-            userController.submitGroupSearch = function ()
+            userController.submitGroupSearch = function (member, inclusive)
             {
                 /*
                  * To get list of Group objects we need to:
@@ -229,9 +229,7 @@ ndexApp.controller('userController',
                  *    /group/groups API.
                  *
                  */
-                var inclusive = true;
-
-                ndexService.getUserGroupMemberships(userController.identifier, 'MEMBER', 0, 1000000, inclusive)
+                ndexService.getUserGroupMemberships(userController.identifier, member, 0, 1000000, inclusive)
                     .success(
                         function (groups) {
 
@@ -257,14 +255,28 @@ ndexApp.controller('userController',
 
             userController.adminCheckBoxClicked = function()
             {
+                //userController.groupSearchMember = false;
+                //userController.submitGroupSearch();
+
+                var member    = (userController.groupSearchAdmin) ? "GROUPADMIN" : "MEMBER";
+                var inclusive = (userController.groupSearchAdmin) ? false : true;
+
                 userController.groupSearchMember = false;
-                userController.submitGroupSearch();
+
+                userController.submitGroupSearch(member, inclusive);
             };
 
             userController.memberCheckBoxClicked = function()
             {
+               // userController.groupSearchAdmin = false;
+               // userController.submitGroupSearch();
+
+                var member    = "MEMBER";
+                var inclusive = (userController.groupSearchMember) ? false : true;
+
                 userController.groupSearchAdmin = false;
-                userController.submitGroupSearch();
+
+                userController.submitGroupSearch(member, inclusive);
             };
 
 
@@ -342,12 +354,13 @@ ndexApp.controller('userController',
                         // get groups. Server-side API requires authentication,
                         // so only show groups if a user is logged in.
                         if (userController.isLoggedInUser) {
-                            userController.submitGroupSearch();
+                            var member = "MEMBER";
+                            var inclusive = true;
+                            userController.submitGroupSearch(member, inclusive);
                         }
 
                         // get networks
                         userController.submitNetworkSearch();
-
                     })
                 }
 

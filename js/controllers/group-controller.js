@@ -44,7 +44,7 @@ ndexApp.controller('groupController',
         return usersUUIDs;
     }
 
-    groupController.submitUserSearch = function() {
+    groupController.submitUserSearch = function(member, inclusive) {
         /*
          * To get list of User objects we need to:
          *
@@ -58,9 +58,7 @@ ndexApp.controller('groupController',
          *    /batch/user API.
          *
          */
-        var inclusive = true;
-
-        ndexService.getGroupUserMemberships(groupController.identifier, 'MEMBER', 0, 1000000, inclusive)
+        ndexService.getGroupUserMemberships(groupController.identifier, member, 0, 1000000, inclusive)
             .success(
                 function (users) {
 
@@ -86,14 +84,22 @@ ndexApp.controller('groupController',
 
     groupController.adminCheckBoxClicked = function()
     {
+        var member    = (groupController.userSearchAdmin) ? "GROUPADMIN" : "MEMBER";
+        var inclusive = (groupController.userSearchAdmin) ? false : true;
+
         groupController.userSearchMember = false;
-        groupController.submitUserSearch();
+
+        groupController.submitUserSearch(member, inclusive);
     };
 
     groupController.memberCheckBoxClicked = function()
     {
+        var member    = "MEMBER";
+        var inclusive = (groupController.userSearchMember) ? false : true;
+
         groupController.userSearchAdmin = false;
-        groupController.submitUserSearch();
+
+        groupController.submitUserSearch(member, inclusive);
     };
 
     var getUUIDs = function(data) {
@@ -322,7 +328,9 @@ ndexApp.controller('groupController',
 
             getMembership();
 
-            groupController.submitUserSearch();
+            var member    = "MEMBER";
+            var inclusive = true;
+            groupController.submitUserSearch(member, inclusive);
 
             groupController.submitNetworkSearch();
 

@@ -441,8 +441,7 @@ ndexApp.controller('myAccountController',
 
                 return true;
             }
-
-
+            
             /*
              * This function returns true if the current user has ADMIN access to all selected networks,
              * and false otherwise.
@@ -461,7 +460,6 @@ ndexApp.controller('myAccountController',
                 }
                 return true;
             }
-
 
             myAccountController.deleteSelectedNetworks = function ()
             {
@@ -521,7 +519,7 @@ ndexApp.controller('myAccountController',
                 return groupsUUIDs;
             }
 
-            myAccountController.submitGroupSearch = function ()
+            myAccountController.submitGroupSearch = function (member, inclusive)
             {
                 /*
                  * To get list of Group objects we need to:
@@ -536,9 +534,7 @@ ndexApp.controller('myAccountController',
                  *    /group/groups API.
                  *
                  */
-                var inclusive = true;
-
-                ndexService.getUserGroupMemberships(myAccountController.identifier, 'MEMBER', 0, 1000000, inclusive)
+                ndexService.getUserGroupMemberships(myAccountController.identifier, member, 0, 1000000, inclusive)
                     .success(
                         function (groups) {
 
@@ -560,18 +556,25 @@ ndexApp.controller('myAccountController',
                             console.log("unable to get user group memberships");
                         });
             }
-
             
             myAccountController.adminCheckBoxClicked = function()
             {
+                var member    = (myAccountController.groupSearchAdmin) ? "GROUPADMIN" : "MEMBER";
+                var inclusive = (myAccountController.groupSearchAdmin) ? false : true;
+
                 myAccountController.groupSearchMember = false;
-                myAccountController.submitGroupSearch();
+
+                myAccountController.submitGroupSearch(member, inclusive);
             };
 
             myAccountController.memberCheckBoxClicked = function()
             {
+                var member    = "MEMBER";
+                var inclusive = (myAccountController.groupSearchMember) ? false : true;
+
                 myAccountController.groupSearchAdmin = false;
-                myAccountController.submitGroupSearch();
+
+                myAccountController.submitGroupSearch(member, inclusive);
             };
 
             myAccountController.getNetworksWithAdminAccess = function ()
@@ -826,7 +829,9 @@ ndexApp.controller('myAccountController',
                     myAccountController.refreshTasks();
 
                     // get groups
-                    myAccountController.submitGroupSearch();
+                    var member = "MEMBER";
+                    var inclusive = true;
+                    myAccountController.submitGroupSearch(member, inclusive);
 
                     // get networks
                     myAccountController.submitNetworkSearchForLoggedInUser();
