@@ -277,15 +277,6 @@ ndexServiceApp.factory('ndexService',
                             subResource: 'member'
                         }
                     },
-                    getMemberships: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'user',
-                            skipBlocks: 0,
-                            blockSize: 1000
-                        },
-                        isArray: true
-                    },
                     getMembership: {
                         method: 'GET',
                         params: {
@@ -304,34 +295,6 @@ ndexServiceApp.factory('ndexService',
                 handleAuthorizationHeader();
 
                 return NetworkResource.getMembership({identifier: groupExternalId, subId: networkExternalId}, successHandler, errorHandler);
-            };
-
-            factory.getGroupMemberships = function(externalId, permission, successHandler, errorHandler) {
-
-                handleAuthorizationHeader();
-
-                if(permission === 'ALL') {
-                    var memberships = [];
-
-                    $q.all([
-                        GroupResource.getMemberships({identifier: externalId, permissionType: 'GROUPADMIN'}).$promise,
-                        GroupResource.getMemberships({identifier: externalId, permissionType: 'MEMBER'}).$promise
-                    ]).then(
-                        function(arrays) {
-                            memberships = memberships.concat(arrays[0]);
-                            memberships = memberships.concat(arrays[1]);
-
-                            successHandler(memberships);
-                        },
-                        function(errors) {
-                            errorHandler(errors)
-                        });
-
-                }
-                else {
-                    GroupResource.getMemberships({identifer: externalId, permissionType: permission}, successHandler, errorHandler)
-                }
-
             };
 
             factory.deleteGroup = function(externalId, successHandler, errorHandler) {
@@ -359,11 +322,6 @@ ndexServiceApp.factory('ndexService',
                         group.website = "http://" + group.website;
                 }
                 GroupResource.save({identifier: group.externalId}, group, successHandler, errorHandler);
-            };
-
-            factory.getGroup = function (groupUUID, successHandler, errorHandler) {
-                ////console.log("retrieving group with UUID " + groupUUID);
-                GroupResource.get({'identifier': groupUUID}, successHandler, errorHandler);
             };
 
             factory.createGroup = function (group, successHandler, errorHandler) {
@@ -1323,10 +1281,51 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-
             factory.acceptOrDenyPermissionRequest = function (recipientId, requestId, action, message, successHandler, errorHandler) {
 
                 var config = ndexConfigs.getAcceptOrDenyPermissionRequestConfig(recipientId, requestId, action, message);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+            factory.addOrUpdateGroupMember = function (groupId, userId, type, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getAddOrUpdateGroupMemberConfig(groupId, userId, type);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+            factory.removeGroupMember = function (groupId, userId, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getRemoveGroupMemberConfig(groupId, userId);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
+            factory.getGroup = function (groupId, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getGetGroupConfig(groupId);
                 $http(config)
                     .success(function(data)
                     {
@@ -1634,6 +1633,24 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         }
         return config;
     };
+    
+    factory.getDeleteConfigV2 = function (url) {
+        var config = {
+            method: 'DELETE',
+            url: ndexServerURIV2 + url,
+            headers: {}
+        };
+        if( factory.getEncodedUser() )
+        {
+            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
+        }
+        else
+        {
+            config['headers']['Authorization'] = undefined;
+        }
+        return config;
+    };
+    
     /*---------------------------------------------------------------------*
      * Returns the user's credentials as required by Basic Authentication base64
      * encoded.
@@ -1855,8 +1872,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfig(url, permissions);
     };
 
-
-
     factory.getNetworkAspectAsCXConfig = function (networkId, aspectName) {
 
         // /network/{networkid}/aspect/{aspectName}
@@ -1864,10 +1879,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
         return this.getGetConfigV2(url, null);
     };
-
-
-
-
 
     factory.getExportNetworkConfig = function (networkExportFormat, listOfNetworkIDs) {
         // Server API: exportNetwork
@@ -1945,7 +1956,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPutConfigV2(url, null);
     };
 
-
     factory.getAcceptOrDenyPermissionRequestConfig = function (recipientId, requestId, action, message) {
         // Server API: Accept or Deny a permission request
         // /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}
@@ -1954,6 +1964,27 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             "/user/" + recipientId + "/permissionrequest/" + requestId + "?action=" + action + "&message=" + message;
 
         return this.getPutConfigV2(url, null);
+    };
+
+    factory.getAddOrUpdateGroupMemberConfig = function (groupId, userId, type) {
+        // Server API: Add or Update a Group Member
+        // /group/{groupid}/membership?userid={userid}&type={GROUPADMIN|MEMBER}
+        var url = "/group/" + groupId + "/membership?userid=" + userId + "&type=" + type;
+        return this.getPutConfigV2(url, null);
+    };
+
+    factory.getRemoveGroupMemberConfig = function (groupId, userId) {
+        // Server API: Remove a Group Member
+        // /group/{groupid}/membership?userid={userid}
+        var url = "/group/" + groupId + "/membership?userid=" + userId;
+        return this.getDeleteConfigV2(url, null);
+    };
+
+    factory.getGetGroupConfig = function (groupId) {
+        // Server API: Get a Group
+        // /group/{groupid}
+        var url = "/group/" + groupId;
+        return this.getGetConfigV2(url, null);
     };
 
     return factory;
