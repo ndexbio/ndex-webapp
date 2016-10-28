@@ -1,6 +1,6 @@
 ndexApp.controller('groupController',
-    ['ndexService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal', '$route',
-        function (ndexService, ndexUtility, ndexNavigation, sharedProperties, $scope, $location, $routeParams, $modal, $route) {
+    ['ndexService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal', '$route', 'uiMisc',
+        function (ndexService, ndexUtility, ndexNavigation, sharedProperties, $scope, $location, $routeParams, $modal, $route, uiMisc) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -189,7 +189,7 @@ ndexApp.controller('groupController',
         var columnDefs = [
             { field: 'Network Name', enableFiltering: true, minWidth: 400,
                 cellTemplate: 'pages/gridTemplates/networkName.html'},
-            { field: 'Status', enableFiltering: true, minWidth: 70 },
+            { field: 'Status', enableFiltering: true, minWidth: 70, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
             { field: 'Format', enableFiltering: true, minWidth: 70 },
             { field: 'Nodes', enableFiltering: false, minWidth: 70 },
             { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -233,13 +233,17 @@ ndexApp.controller('groupController',
 
             var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
 
-            var networkStatus = 'success';
+            var networkStatus = "success";
             if (!network.isValid) {
                 if (network.errorMessage) {
                     networkStatus = "failed";
                 } else {
                     networkStatus = "processing";
                 }
+            }
+
+            if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
+                networkStatus = "warning";
             }
 
             var description = $scope.stripHTML(network['description']);
@@ -315,6 +319,15 @@ ndexApp.controller('groupController',
                 displayErrorMessage(error);
             });
     };
+
+    $scope.showWarningsOrErrors = function(rowEntity) {
+
+        if (!rowEntity && !rowEntity.externalId) {
+            return;
+        }
+
+        uiMisc.showNetworkWarningsOrErrors(rowEntity, groupController.networkSearchResults);
+    }
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //----------------------------------------------------------------------------

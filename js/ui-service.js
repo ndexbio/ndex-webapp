@@ -51,6 +51,23 @@
                     })
                 };
 
+                factory.genericInfoModal = function(title, message)
+                {
+                    var modalInstance = $modal.open({
+                        templateUrl: 'pages/generic-info-modal.html',
+
+                        controller: function($scope, $modalInstance) {
+
+                            $scope.title = title;
+                            $scope.message = message;
+
+                            $scope.close = function() {
+                                $modalInstance.dismiss();
+                            };
+                        }
+                    });
+                }
+
                 // return factory object
                 return factory;
             }]);

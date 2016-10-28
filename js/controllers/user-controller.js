@@ -1,6 +1,6 @@
 ndexApp.controller('userController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$route', '$modal',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $route, $modal)
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$route', '$modal', 'uiMisc',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $route, $modal, uiMisc)
         {
 
             //              Process the URL to get application state
@@ -73,7 +73,7 @@ ndexApp.controller('userController',
                 var columnDefs = [
                     { field: 'Network Name', enableFiltering: true, minWidth: 400,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
-                    { field: 'Status', enableFiltering: true, minWidth: 70 },
+                    { field: 'Status', enableFiltering: true, minWidth: 70, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -122,13 +122,17 @@ ndexApp.controller('userController',
 
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
 
-                    var networkStatus = 'success';
+                    var networkStatus = "success";
                     if (!network.isValid) {
                         if (network.errorMessage) {
                             networkStatus = "failed";
                         } else {
                             networkStatus = "processing";
                         }
+                    }
+
+                    if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
+                        networkStatus = "warning";
                     }
 
                     var description = $scope.stripHTML(network['description']);
@@ -333,6 +337,14 @@ ndexApp.controller('userController',
                     })
             };
 
+            $scope.showWarningsOrErrors = function(rowEntity) {
+
+                if (!rowEntity && !rowEntity.externalId) {
+                    return;
+                }
+
+                uiMisc.showNetworkWarningsOrErrors(rowEntity, userController.networkSearchResults);
+            }
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 

@@ -743,3 +743,8 @@ ul.ndex-nav-pills > li > a:hover {
     background: #555;
     font-weight: bold;
 }
+
+#networkStatusTemplate.ui-grid-cell-contents{
+    text-align: center;
+    vertical-align: middle;
+}

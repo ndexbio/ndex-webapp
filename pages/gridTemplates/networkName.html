@@ -1,4 +1,6 @@
 <div class="ui-grid-cell-contents" title="{{ row.entity.description }}">
-    <span ng-if="row.entity.Status != 'success'" style="cursor: not-allowed">{{COL_FIELD}}</span>
     <a ng-if="row.entity.Status == 'success'" href="#/newNetwork/{{ row.entity.externalId}}">{{COL_FIELD}} </a>
+    <a ng-if="row.entity.Status == 'warning'" href="#/newNetwork/{{ row.entity.externalId}}">{{COL_FIELD}} </a>
+    <span ng-if="row.entity.Status == 'failed'" style="cursor: not-allowed">{{COL_FIELD}}</span>
+    <span ng-if="row.entity.Status == 'processing'" style="cursor: not-allowed">{{COL_FIELD}}</span>
 </div>
