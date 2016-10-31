@@ -186,6 +186,10 @@ ndexApp.controller('manageGroupAccessController',
 			},
 			function(error) {
 				console.log("unable to remove group member with Id=" + userId + " from group=" + groupId);
+
+				if (error && error.message) {
+					groupManager.errors.push(error.message);
+				}
 			});
 	} 
 			

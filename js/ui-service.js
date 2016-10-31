@@ -1908,10 +1908,11 @@
                         templateUrl: 'confirmation-modal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
-                            $scope.title = 'Leave '+$scope.group.userName
+                            $scope.title = 'Leave '+ $scope.group.groupName;
                             $scope.message = 'There must be other admin in the group';
 
                             $scope.cancel = function() {
+                                $scope.isProcessing = false;
                                 $modalInstance.dismiss();
                             };
 
@@ -1926,8 +1927,10 @@
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
-                                        $scope.errors = error.data;
-                                        $scope.isProcessing = false;
+                                        if (error && error.message) {
+                                            $scope.errors = error.message;
+                                        }
+                                        //$scope.isProcessing = false;
                                     });
                             };
                         }
