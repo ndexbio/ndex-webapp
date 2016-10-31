@@ -206,15 +206,16 @@ ndexApp.controller('networkViewController',
             $scope.buttonLabel = "Switch To Table View"
 
             $scope.switchView = function() {
-                if ("Graphic" == $scope.currentView) {
+                if ($scope.currentView == "Graphic") {
                     // switch to table view
                     $scope.currentView = "Table";
                     $scope.buttonLabel = "Switch To Graphic View"
 
                     var enableFiltering = true;
+                    var setGridWidth = true;
                     localNetwork = networkService.getNiceCX();
-                    populateEdgeTable(localNetwork, enableFiltering);
-                    populateNodeTable(localNetwork, enableFiltering);
+                    populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                    populateNodeTable(localNetwork, enableFiltering, setGridWidth);
 
                     //$scope.edgeGridApi.core.queueRefresh();
                     //$scope.edgeGridApi.core.queueGridRefresh();
@@ -223,7 +224,7 @@ ndexApp.controller('networkViewController',
 
                     //gridApi.core.notifyDataChange( uiGridConstants.dataChange.ALL)
 
-                } else if  ("Table" == $scope.currentView) {
+                } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
                     $scope.currentView = "Graphic";
                     $scope.buttonLabel = "Switch To Table View"
@@ -1348,7 +1349,7 @@ ndexApp.controller('networkViewController',
                 return result > 250 ? 250 : result;
             };
 
-            var populateEdgeTable = function(network, enableFiltering)
+            var populateEdgeTable = function(network, enableFiltering, setGridWidth)
             {
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
@@ -1461,9 +1462,11 @@ ndexApp.controller('networkViewController',
                     var col = edgeAttributesHeaders[key];
                     columnDefs.push(col);
                 }
-
+                
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
-                $scope.edgeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                if (setGridWidth) {
+                    $scope.edgeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                }
                 //$scope.edgeGridApi.grid.gridHeight = $('#cytoscape-canvas').height();
 
                refreshEdgeTable(network);
@@ -1504,7 +1507,7 @@ ndexApp.controller('networkViewController',
             };
 
 
-            var populateNodeTable = function(network, enableFiltering)
+            var populateNodeTable = function(network, enableFiltering, setGridWidth)
             {
                 var nodes = network.nodes;
                 var nodeCitations = network.nodeCitations;
@@ -1612,7 +1615,10 @@ ndexApp.controller('networkViewController',
                 }
 
                 $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
-                $scope.nodeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                if (setGridWidth) {
+                    $scope.nodeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                }
+
                 //$scope.nodeGridApi.grid.gridHeight = $('#cytoscape-canvas').height();
 
                 refreshNodeTable(network);
@@ -1682,6 +1688,14 @@ ndexApp.controller('networkViewController',
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;
                             networkController.selectionContainer = {};
+
+                            if ($scope.currentView == "Table") {
+                                var enableFiltering = true;
+                                var setGridWidth = false;
+                                localNetwork = networkService.getNiceCX();
+                                populateNodeTable(localNetwork, enableFiltering, setGridWidth);
+                                populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                            }
                         }
                     )
                     .error(

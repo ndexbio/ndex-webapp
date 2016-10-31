@@ -343,7 +343,6 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                         localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
                         localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
-
                     }
                 );
                 return promise;
