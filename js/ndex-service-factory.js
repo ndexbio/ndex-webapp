@@ -1337,6 +1337,18 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+            factory.searchGroupsV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getSearchGroupsConfig(searchString, skipBlocks, blockSize);
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data);
+                    })
+                    .error(function(error) {
+                        errorHandler(error);
+                    })
+            }
 
             // return factory object
             return factory;
@@ -1985,6 +1997,22 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // /group/{groupid}
         var url = "/group/" + groupId;
         return this.getGetConfigV2(url, null);
+    };
+
+
+    factory.getSearchGroupsConfig = function (searchString, skipBlocks, blockSize) {
+        // Server API: Search Groups
+        // /search/group?start={skipBlocks}&size={blockSize}
+
+        if (searchString == null) {
+            searchString = '';
+        }
+
+        var url = "/search/group?start=" + skipBlocks + "&size=" + blockSize;
+        var postData = {
+            searchString: searchString
+        };
+        return this.getPostConfigV2(url, postData);
     };
 
     return factory;

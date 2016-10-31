@@ -24,6 +24,7 @@ ndexApp.controller('myAccountController',
             myAccountController.groupSearchAdmin = false; // this state needs to be saved to avoid browser refresh
             myAccountController.groupSearchMember = false;
             myAccountController.groupSearchResults = [];
+            myAccountController.originalGroupSearchResults = [];
 
             //networks
             myAccountController.networkQuery = {};
@@ -524,6 +525,43 @@ ndexApp.controller('myAccountController',
                 return groupsUUIDs;
             }
 
+            var checkGroupSearchResultObject = function(groupObj) {
+                var found = false;
+
+                for (var i = 0; i < myAccountController.originalGroupSearchResults.length; i++ ) {
+                    if (groupObj.externalId == myAccountController.originalGroupSearchResults[i].externalId) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                return found;
+            }
+
+            myAccountController.searchGroupsForUsersInput = function() {
+                var searchString = myAccountController.groupSearchString;
+
+                ndexService.searchGroupsV2(searchString, 0, 1000000,
+                    function(groupObjectsFound) {
+
+                        myAccountController.groupSearchResults = [];
+
+                        if (groupObjectsFound && groupObjectsFound.resultList && groupObjectsFound.resultList.length > 0) {
+
+                            for (var i = 0; i < groupObjectsFound.resultList.length; i++) {
+                                var groupObj = groupObjectsFound.resultList[i];
+
+                                if (checkGroupSearchResultObject(groupObj)) {
+                                    myAccountController.groupSearchResults.push(groupObj);
+                                }
+                            }
+                        }
+                    },
+                    function(error) {
+                        console.log("unable to search groups");
+                    });
+            }
+
             myAccountController.submitGroupSearch = function (member, inclusive)
             {
                 /*
@@ -549,6 +587,7 @@ ndexApp.controller('myAccountController',
                                 .success(
                                     function (groupList) {
                                         myAccountController.groupSearchResults = groupList;
+                                        myAccountController.originalGroupSearchResults = groupList;
                                     })
                                 .error(
                                     function(error) {
