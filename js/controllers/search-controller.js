@@ -354,13 +354,13 @@ ndexApp.controller('searchController',
             };
 
             searchController.submitUserSearch = function(){
-                var userQuery = {searchString: searchController.searchString};
+                var searchString = searchController.searchString;
                 searchController.userSearchResults = null;
                 searchController.userSearchInProgress = true;
                 searchController.userSearchNoResults = false;
                 // We find only one page of users. No paging.
                 ndexService.searchUsers(
-                    userQuery,
+                    searchString,
                     0,
                     searchController.pageSize,
                     function (users) {

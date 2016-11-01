@@ -305,10 +305,9 @@ ndexApp.controller('manageGroupAccessController',
 	};
 			
 	groupManager.findUsers = function() {
-		var query = {};
-		query.searchString = groupManager.searchString;
+		var searchString = groupManager.searchString;
 
-		ndexService.searchUsers(query, 0, 10,
+		ndexService.searchUsers(searchString, 0, 10,
 			function(users) {
 
 				groupManager.newUsers = users.resultList;

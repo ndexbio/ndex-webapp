@@ -15,7 +15,7 @@ ndexApp.controller('searchUsersController', [ 'ndexService', 'sharedProperties',
         
         searchController.submitUserSearch = function () {
             
-            ndexService.searchUsers(searchController.query, searchController.skip, searchController.skipSize,
+            ndexService.searchUsers(searchController.query.searchString, searchController.skip, searchController.skipSize,
                 function (users) {
                     if(users.length == 0)
                         searchController.errors.push('No results found that match your criteria')

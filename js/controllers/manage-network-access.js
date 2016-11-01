@@ -396,10 +396,9 @@ ndexApp.controller('manageNetworkAccessController',
 	}
 
 	networkManager.findUsers = function() {
-		var query = {};
-		query.searchString = networkManager.searchString;
+		var searchString = networkManager.searchString;
 
-		ndexService.searchUsers(query, 0, 10,
+		ndexService.searchUsers(searchString, 0, 10,
 			function(users) {
 
 				networkManager.newUsers = users.resultList;

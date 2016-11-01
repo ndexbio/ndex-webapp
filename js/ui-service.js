@@ -345,7 +345,7 @@
                 $scope.$watch('query', function(query) {
                     if(query.searchString !=null) {
                         if(query.searchString.length > 0) {
-                            ndexService.searchUsers(query, 0, 5,
+                            ndexService.searchUsers(query.searchString, 0, 5,
                                 function (users) {
                                     ////console.log('got '+users.length+' user search results')
                                     var key = 0;

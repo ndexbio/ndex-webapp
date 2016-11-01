@@ -101,7 +101,7 @@ ndexApp.controller('groupController',
     groupController.searchMembersFromUserInput = function() {
         var searchString = groupController.memberSearchString;
 
-        ndexService.searchUsersV2(searchString, 0, 1000000,
+        ndexService.searchUsers(searchString, 0, 1000000,
             function(userObjectsFound) {
 
                 groupController.userSearchResults = [];
