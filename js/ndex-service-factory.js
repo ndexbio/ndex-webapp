@@ -1333,8 +1333,20 @@ ndexServiceApp.factory('ndexService',
                     .error(function(error) {
                         errorHandler(error);
                     })
-            }
+            };
 
+            factory.searchUsersV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getSearchUsersConfig(searchString, skipBlocks, blockSize);
+                $http(config)
+                    .success(function(data) {
+                        successHandler(data);
+                    })
+                    .error(function(error) {
+                        errorHandler(error);
+                    })
+            };
+            
             // return factory object
             return factory;
         }]);
@@ -2000,6 +2012,20 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfigV2(url, postData);
     };
 
+    factory.getSearchUsersConfig = function (searchString, skipBlocks, blockSize) {
+        // Server API: Search Users
+        // /search/user?start={number}&size={number}
+
+        if (searchString == null) {
+            searchString = '';
+        }
+
+        var url = "/search/user?start=" + skipBlocks + "&size=" + blockSize;
+        var postData = {
+            searchString: searchString
+        };
+        return this.getPostConfigV2(url, postData);
+    };
     return factory;
 
 });

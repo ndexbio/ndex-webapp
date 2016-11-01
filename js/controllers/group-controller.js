@@ -21,6 +21,8 @@ ndexApp.controller('groupController',
     groupController.userSearchAdmin = false; 
     groupController.userSearchMember = false;
     groupController.userSearchResults = [];
+    groupController.originalUserSearchResults = [];
+
 
     // networks
     groupController.networkSearchResults = [];
@@ -68,6 +70,7 @@ ndexApp.controller('groupController',
                         .success(
                             function (users) {
                                 groupController.userSearchResults = users;
+                                groupController.originalUserSearchResults = users;
                             }
                         )
                         .error(
@@ -80,6 +83,44 @@ ndexApp.controller('groupController',
                 function (error, data) {
                     console.log("unable to get group user memberships");
                 });
+    }
+
+    var checkUserSearchResultObject = function(userObj) {
+        var found = false;
+
+        for (var i = 0; i < groupController.originalUserSearchResults.length; i++ ) {
+            if (userObj.externalId == groupController.originalUserSearchResults[i].externalId) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    groupController.searchMembersFromUserInput = function() {
+        var searchString = groupController.memberSearchString;
+
+        ndexService.searchUsersV2(searchString, 0, 1000000,
+            function(userObjectsFound) {
+
+                groupController.userSearchResults = [];
+
+                if (userObjectsFound && userObjectsFound.resultList && userObjectsFound.resultList.length > 0) {
+
+                    for (var i = 0; i < userObjectsFound.resultList.length; i++) {
+                        var userObj = userObjectsFound.resultList[i];
+
+                        if (checkUserSearchResultObject(userObj)) {
+                            groupController.userSearchResults.push(userObj);
+                        }
+                    }
+                }
+            },
+            function(error) {
+                console.log("unable to search users");
+            });
+
     }
 
     groupController.adminCheckBoxClicked = function()

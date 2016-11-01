@@ -538,7 +538,7 @@ ndexApp.controller('myAccountController',
                 return found;
             }
 
-            myAccountController.searchGroupsForUsersInput = function() {
+            myAccountController.searchGroupsFromUserInput = function() {
                 var searchString = myAccountController.groupSearchString;
 
                 ndexService.searchGroups(searchString, 0, 1000000,
