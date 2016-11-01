@@ -67,12 +67,6 @@ ndexServiceApp.factory('ndexService',
                         isArray: true
                     },
 
-                    search: {
-                        method: 'POST',
-                        params: {
-                            action: 'search'
-                        }
-                    },
                     createUser: {
                         method: 'POST',
                         interceptor: {
@@ -194,18 +188,6 @@ ndexServiceApp.factory('ndexService',
                 } */
                 handleAuthorizationHeader();
                 UserResource.getMembership({/*identifier: externalId,*/ subId: resourceId}, successHandler, errorHandler);
-            };
-
-            factory.searchUsers = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
-                ////console.log('searching for users with params: \n    ' + JSON.stringify(queryObject));
-                if (queryObject.searchString == null)
-                    queryObject.searchString = '';
-                return UserResource.search({
-                        'skipBlocks': skipBlocks,
-                        'blockSize': blockSize},
-                    queryObject,
-                    successHandler,
-                    errorHandler);
             };
 
             factory.createUser = function (user, successHandler, errorHandler) {
@@ -1335,7 +1317,7 @@ ndexServiceApp.factory('ndexService',
                     })
             };
 
-            factory.searchUsersV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+            factory.searchUsers = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
 
                 var config = ndexConfigs.getSearchUsersConfig(searchString, skipBlocks, blockSize);
                 $http(config)
