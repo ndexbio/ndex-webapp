@@ -419,10 +419,8 @@ ndexApp.controller('manageNetworkAccessController',
 	};
 
 	networkManager.findGroups = function() {
-		var query = {};
-		query.searchString = networkManager.groupSearchString;
 
-		ndexService.searchGroups(query, 0, 10,
+		ndexService.searchGroups(networkManager.groupSearchString, 0, 10,
 			function(groups) {
 
 				networkManager.newGroups = groups.resultList;

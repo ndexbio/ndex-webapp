@@ -14,7 +14,7 @@ ndexApp.controller('searchGroupsController', [ 'ndexService', 'sharedProperties'
 
         searchController.submitGroupSearch = function () {
 
-            ndexService.searchGroups(searchController.query, searchController.skip, searchController.skipSize,
+            ndexService.searchGroups(searchController.query.searchString, searchController.skip, searchController.skipSize,
                 function (groups) {
 
                     if(groups.length == 0)

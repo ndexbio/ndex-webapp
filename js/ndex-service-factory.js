@@ -259,12 +259,6 @@ ndexServiceApp.factory('ndexService',
                         },
                         isArray: true
                     },
-                    search: {
-                        method: 'POST',
-                        params: {
-                            action: 'search'
-                        }
-                    },
                     updateMembership: {
                         method: 'POST',
                         params: {
@@ -333,14 +327,7 @@ ndexServiceApp.factory('ndexService',
 
                 GroupResource.save({}, group, successHandler, errorHandler);
             };
-
-            factory.searchGroups = function (queryObject, skipBlocks, blockSize, successHandler, errorHandler) {
-                //an empty js object will cause the request to be canceled
-                if (queryObject.searchString == null)
-                    queryObject.searchString = '';
-                ////console.log('searching for groups');
-                GroupResource.search({'skipBlocks': skipBlocks, 'blockSize': blockSize}, queryObject, successHandler, errorHandler);
-            };
+            
             /*---------------------------------------------------------------------*
              * Requests
              *---------------------------------------------------------------------*/
@@ -1327,8 +1314,7 @@ ndexServiceApp.factory('ndexService',
 
                 var config = ndexConfigs.getGetGroupConfig(groupId);
                 $http(config)
-                    .success(function(data)
-                    {
+                    .success(function(data) {
                         successHandler(data);
                     })
                     .error(function(error)
@@ -1337,12 +1323,11 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.searchGroupsV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+            factory.searchGroups = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
 
                 var config = ndexConfigs.getSearchGroupsConfig(searchString, skipBlocks, blockSize);
                 $http(config)
-                    .success(function(data)
-                    {
+                    .success(function(data) {
                         successHandler(data);
                     })
                     .error(function(error) {

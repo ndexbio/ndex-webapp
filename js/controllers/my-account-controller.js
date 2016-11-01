@@ -541,7 +541,7 @@ ndexApp.controller('myAccountController',
             myAccountController.searchGroupsForUsersInput = function() {
                 var searchString = myAccountController.groupSearchString;
 
-                ndexService.searchGroupsV2(searchString, 0, 1000000,
+                ndexService.searchGroups(searchString, 0, 1000000,
                     function(groupObjectsFound) {
 
                         myAccountController.groupSearchResults = [];

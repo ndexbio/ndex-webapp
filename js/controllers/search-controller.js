@@ -478,13 +478,12 @@ ndexApp.controller('searchController',
 
 
             searchController.submitGroupSearch = function(){
-                var groupQuery = {searchString: searchController.searchString};
                 searchController.groupSearchResults = null;
                 searchController.groupSearchInProgress = true;
                 searchController.groupSearchNoResults = false;
                 // We find only one page of groups. No paging.
                 ndexService.searchGroups(
-                    groupQuery,
+                    searchController.searchString,
                     0,
                     searchController.pageSize,
                     function (groups) {
