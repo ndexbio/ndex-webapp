@@ -1,4 +1,4 @@
-<div id="networkStatusTemplate" class="ui-grid-cell-contents" title="{{row.entity.description}}">
+<div id="networkStatusTemplate" class="ui-grid-cell-contents">
 
     <span ng-if="row.entity.Status == 'success'" >
         <img src="img/success.png" width="20px" height="20px" align="center">
@@ -6,14 +6,14 @@
 
     <span ng-if="row.entity.Status == 'warning'">
         <a ng-href="{{$location.path()}}"
-           ng-click="grid.appScope.showWarningsOrErrors(row.entity)">
+           ng-click="grid.appScope.showWarningsOrErrors(row.entity)" title="Click to see warning(s)">
             <img src="img/warning.png" width="20px" height="20px" align="center">
         </a>
     </span>
 
     <span ng-if="row.entity.Status == 'failed'" >
         <a ng-href="{{$location.path()}}"
-           ng-click="grid.appScope.showWarningsOrErrors(row.entity)">
+           ng-click="grid.appScope.showWarningsOrErrors(row.entity)" title="Click to see error message">
             <img src="img/failed.png" width="20px" height="20px" align="center">
         </a>
     </span>

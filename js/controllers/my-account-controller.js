@@ -84,9 +84,9 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Network Name', enableFiltering: true, minWidth: 400,
+                    { field: 'Network Name', enableFiltering: true, minWidth: 390,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
-                    { field: 'Status', enableFiltering: true, minWidth: 70, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },

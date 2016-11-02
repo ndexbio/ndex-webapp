@@ -133,9 +133,9 @@ ndexApp.controller('searchController',
             };
             
             const NETWORK_COLUMN_FIELDS = [
-                { field: 'Network Name', enableFiltering: true, minWidth: 450,
+                { field: 'Network Name', enableFiltering: true, minWidth: 440,
                     cellTemplate: 'pages/gridTemplates/networkName.html'},
-                { field: 'Status', enableFiltering: true, minWidth: 70, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                 { field: 'Format', enableFiltering: true, minWidth: 70 },
                 { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                 { field: 'Edges', enableFiltering: false, minWidth: 70 },
