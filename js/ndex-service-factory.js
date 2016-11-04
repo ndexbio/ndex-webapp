@@ -28,8 +28,18 @@ ndexServiceApp.factory('ndexService',
             
             factory.getNetworkUploadURI = function () {
                 //return ndexServerURI + "/network/upload";
-                return ndexServerURI + "/network/asCX";
+                return ndexServerURIV2 + "/network";
             };
+
+            factory.sendHTTPRequest = function(config, successHandler, errorHandler) {
+                $http(config)
+                    .success(function(data) {
+                        successHandler(data);
+                    })
+                    .error(function(error) {
+                        errorHandler(error);
+                    })
+            }
 
             /*---------------------------------------------------------------------*
              * Users
@@ -38,9 +48,9 @@ ndexServiceApp.factory('ndexService',
             //
             //getUserQuery
             //
-            factory.getUser = function (userId) {
+            factory.getUserV2 = function (userId) {
                 ////console.log("retrieving user with id " + userId);
-                var config = ndexConfigs.getUserConfig(userId);
+                var config = ndexConfigs.getUserByUUIDConfigV2(userId);
                 return $http(config);
             };
 
@@ -105,12 +115,6 @@ ndexServiceApp.factory('ndexService',
                                 return data.data;
                             }
                         }
-                    },
-                    changePassword: {
-                        method: 'POST',
-                        params: {
-                            action: 'password'
-                        }
                     }
                 });
 
@@ -127,40 +131,45 @@ ndexServiceApp.factory('ndexService',
                     $http.defaults.headers.common['Authorization'] = undefined;
             }
 
-            factory.deleteUser = function(successHandler, errorHandler){
-                handleAuthorizationHeader();
-                UserResource.delete({}, null,
-                    function(data) {
-                        ndexUtility.clearUserCredentials();
-                        delete $http.defaults.headers.common['Authorization'];
-                        successHandler(data);
-                    },
-                    errorHandler);
+            factory.deleteUserV2 = function(successHandler, errorHandler){
+                // Server API: Delete User
+                // DELETE /user/{userId}
+                
+                var userId = sharedProperties.getCurrentUserId();
+                var url = "/user/" + userId ;
+
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.changeAccountPassword = function(oldPassword, newPassword, successHandler, errorHandler) {
-                // not using old password because api doesnt, but might be used in the future
-                handleAuthorizationHeader();
-                UserResource.changePassword({}, newPassword,
-                    function(data) {
-                        //intercepting here to use auth token provided by user
-                        ndexUtility.setUserAuthToken(newPassword);
-                        successHandler(data);
-                    },
-                    errorHandler)
+            factory.changeAccountPasswordV2 = function(newPassword, successHandler, errorHandler) {
+                // Server API: Change Password
+                // PUT /user/{userId}/password
+
+                var userId = sharedProperties.getCurrentUserId();
+                var url = "/user/" + userId + "/password";
+
+                var config = ndexConfigs.getPutConfigV2(url, newPassword);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.editUserProfile = function (user, successHandler, errorHandler) {
-                user.accountType = 'User';
-                var externalId = ndexUtility.getLoggedInUserExternalId();
-                if( user.website )
+            factory.editUserProfileV2 = function (user, successHandler, errorHandler) {
+                // Server API: Update User
+                // PUT /user/{userId}
+
+                var userId = ndexUtility.getLoggedInUserExternalId();
+                var url = "/user/" + userId;
+
+                if (user.website)
                 {
                     if( !user.website.startsWith("http") )
                         user.website = "http://" + user.website;
                 }
-                handleAuthorizationHeader();
-                UserResource.save({identifier: externalId}, user, successHandler, errorHandler);
+
+                var config = ndexConfigs.getPutConfigV2(url, user);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
+
 
             factory.getDirectMembership = function (resourceExternalId, memberExternalId, successHandler, errorHandler) {
                 return UserResource.getDirectMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
@@ -241,18 +250,6 @@ ndexServiceApp.factory('ndexService',
                         },
                         isArray: true
                     },
-                    updateMembership: {
-                        method: 'POST',
-                        params: {
-                            subResource: 'member'
-                        }
-                    },
-                    removeMembership: {
-                        method: 'DELETE',
-                        params: {
-                            subResource: 'member'
-                        }
-                    },
                     getMembership: {
                         method: 'GET',
                         params: {
@@ -276,17 +273,6 @@ ndexServiceApp.factory('ndexService',
             factory.deleteGroup = function(externalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 GroupResource.delete({identifier: externalId}, null, successHandler, errorHandler);
-            };
-
-            factory.removeGroupMember = function (groupExternalId, memberExternalId, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                return GroupResource.removeMembership({identifier: groupExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
-            };
-
-            factory.updateGroupMember = function (membership, successHandler, errorHandler) {
-                membership.membershipType = 'GROUP';
-                handleAuthorizationHeader();
-                return GroupResource.updateMembership({identifier: membership.resourceUUID}, membership, successHandler, errorHandler);
             };
 
             factory.editGroupProfile = function (group, successHandler, errorHandler) {
@@ -783,7 +769,7 @@ ndexServiceApp.factory('ndexService',
                 // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
                 // the first pass. We modify the config to allow for $http request aborts. This may become standard in
                 // the client.
-                var config = ndexConfigs.getNetworkQueryConfig(networkId, terms, searchDepth, edgeLimit, 0, 500);
+                var config = ndexConfigs.getQueryNetworkAsCXConfigV2(networkId, terms, searchDepth, edgeLimit, 0, 500);
                 config.timeout = deferredAbort.promise;
 
                 // We want to perform some operations on the response from the $http request. We can simply wrap the
@@ -972,11 +958,11 @@ ndexServiceApp.factory('ndexService',
             }
             
             
-            factory.getAllGroupsPermissionsOnNetwork = function(networkId, type, startPage, size) {
+            factory.getAllGroupsPermissionsOnNetworkV2 = function(networkId, type, startPage, size) {
 
                 var deferredAbort = $q.defer();
 
-                var config = ndexConfigs.getAllPermissionsOnNetworkConfig(networkId, type, startPage, size);
+                var config = ndexConfigs.getAllPermissionsOnNetworkConfigV2(networkId, type, startPage, size);
                 config.timeout = deferredAbort.promise;
 
                 // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -998,11 +984,11 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.getGroupsByUUIDs = function(UUIDs) {
+            factory.getGroupsByUUIDsV2 = function(UUIDs) {
 
                 var deferredAbort = $q.defer();
 
-                var config = ndexConfigs.getGroupsByUUIDsConfig(UUIDs);
+                var config = ndexConfigs.getGroupsByUUIDsConfigV2(UUIDs);
                 config.timeout = deferredAbort.promise;
 
                 // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -1053,11 +1039,11 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.getUsersByUUIDs = function(usersUUIDsList) {
+            factory.getUsersByUUIDsV2 = function(usersUUIDsList) {
 
                 var deferredAbort = $q.defer();
 
-                var config = ndexConfigs.getUsersByUUIDsConfig(usersUUIDsList);
+                var config = ndexConfigs.getUsersByUUIDsConfigV2(usersUUIDsList);
                 config.timeout = deferredAbort.promise;
 
                 // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -1118,13 +1104,13 @@ ndexServiceApp.factory('ndexService',
             };
 
 
-            factory.getNetworkAspectAsCX = function(networkId, aspectName, successHandler, errorHandler) {
+            factory.getNetworkAspectAsCXV2 = function(networkId, aspectName, successHandler, errorHandler) {
 
                 // Server API: exportNetwork
                 // /network/{networkid}/aspect/{aspectName}?size={limit}
                 //
 
-                var config = ndexConfigs.getNetworkAspectAsCXConfig(networkId, aspectName);
+                var config = ndexConfigs.getNetworkAspectAsCXConfigV2(networkId, aspectName);
                 $http(config)
                     .success(function(data)
                     {
@@ -1194,9 +1180,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.createUserPermissionRequest = function (userUUID, userPermissionRequest, successHandler, errorHandler) {
+            factory.createUserPermissionRequestV2 = function (userUUID, userPermissionRequest, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getCreateUserPermissionRequestConfig(userUUID, userPermissionRequest);
+                var config = ndexConfigs.getCreateUserPermissionRequestConfigV2(userUUID, userPermissionRequest);
                 $http(config)
                     .success(function(data)
                     {
@@ -1208,9 +1194,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.createGroupPermissionRequest = function (groupUUID, groupPermissionRequest, successHandler, errorHandler) {
+            factory.createGroupPermissionRequestV2 = function (groupUUID, groupPermissionRequest, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getCreateGroupPermissionRequestConfig(groupUUID, groupPermissionRequest);
+                var config = ndexConfigs.getCreateGroupPermissionRequestConfigV2(groupUUID, groupPermissionRequest);
                 $http(config)
                     .success(function(data)
                     {
@@ -1222,9 +1208,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.getUserPermissionRequests = function (userUUID, type, successHandler, errorHandler) {
+            factory.getUserPermissionRequestsV2 = function (userUUID, type, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getGetUserPermissionRequestsConfig(userUUID, type);
+                var config = ndexConfigs.getGetUserPermissionRequestsConfigV2(userUUID, type);
                 $http(config)
                     .success(function(data)
                     {
@@ -1236,9 +1222,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.updateNetworkPermission = function (networkId, type, userOrGroupId, permission, successHandler, errorHandler) {
+            factory.updateNetworkPermissionV2 = function (networkId, type, userOrGroupId, permission, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getUpdateNetworkPermissionConfig(networkId, type, userOrGroupId, permission);
+                var config = ndexConfigs.getUpdateNetworkPermissionConfigV2(networkId, type, userOrGroupId, permission);
                 $http(config)
                     .success(function(data)
                     {
@@ -1250,9 +1236,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.acceptOrDenyPermissionRequest = function (recipientId, requestId, action, message, successHandler, errorHandler) {
+            factory.acceptOrDenyPermissionRequestV2 = function (recipientId, requestId, action, message, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getAcceptOrDenyPermissionRequestConfig(recipientId, requestId, action, message);
+                var config = ndexConfigs.getAcceptOrDenyPermissionRequestConfigV2(recipientId, requestId, action, message);
                 $http(config)
                     .success(function(data)
                     {
@@ -1264,9 +1250,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.addOrUpdateGroupMember = function (groupId, userId, type, successHandler, errorHandler) {
+            factory.addOrUpdateGroupMemberV2 = function (groupId, userId, type, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getAddOrUpdateGroupMemberConfig(groupId, userId, type);
+                var config = ndexConfigs.getAddOrUpdateGroupMemberConfigV2(groupId, userId, type);
                 $http(config)
                     .success(function(data)
                     {
@@ -1278,9 +1264,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.removeGroupMember = function (groupId, userId, successHandler, errorHandler) {
+            factory.removeGroupMemberV2 = function (groupId, userId, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getRemoveGroupMemberConfig(groupId, userId);
+                var config = ndexConfigs.getRemoveGroupMemberConfigV2(groupId, userId);
                 $http(config)
                     .success(function(data)
                     {
@@ -1292,9 +1278,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.getGroup = function (groupId, successHandler, errorHandler) {
+            factory.getGroupV2 = function (groupId, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getGetGroupConfig(groupId);
+                var config = ndexConfigs.getGetGroupConfigV2(groupId);
                 $http(config)
                     .success(function(data) {
                         successHandler(data);
@@ -1305,9 +1291,9 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.searchGroups = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+            factory.searchGroupsV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getSearchGroupsConfig(searchString, skipBlocks, blockSize);
+                var config = ndexConfigs.getSearchGroupsConfigV2(searchString, skipBlocks, blockSize);
                 $http(config)
                     .success(function(data) {
                         successHandler(data);
@@ -1317,9 +1303,9 @@ ndexServiceApp.factory('ndexService',
                     })
             };
 
-            factory.searchUsers = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+            factory.searchUsersV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getSearchUsersConfig(searchString, skipBlocks, blockSize);
+                var config = ndexConfigs.getSearchUsersConfigV2(searchString, skipBlocks, blockSize);
                 $http(config)
                     .success(function(data) {
                         successHandler(data);
@@ -1603,7 +1589,11 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             config['headers']['Authorization'] = undefined;
         }
         if (putData) {
-            config.data = JSON.stringify(putData);
+            if ( typeof putData == "string") {
+                config.data = putData;
+            } else {
+                config.data = JSON.stringify(putData);
+            }
         }
         return config;
     };
@@ -1656,16 +1646,16 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     /*---------------------------------------------------------------------*
      * Users
      *---------------------------------------------------------------------*/
-    factory.getUserConfig = function (userId) {
+    factory.getUserByUUIDConfigV2 = function (userId) {
         var url = "/user/" + userId;
-        return this.getGetConfig(url, null);
+        return this.getGetConfigV2(url, null);
     };
     /*---------------------------------------------------------------------*
      * Networks
      *---------------------------------------------------------------------*/
 
     factory.getNetworkConfig = function (networkId) {
-        // networks/{networkId}
+        // network/{networkId}
         var url = "/network/" + networkId;
         return this.getGetConfig(url, null);
     };
@@ -1675,23 +1665,23 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // GET to NetworkAService
         var url = "/network/" + networkId + "/edge/asNetwork/" + skipBlocks + "/" + blockSize;
 
-        //var url = "/network/" + networkId + "/sample/" + skipBlocks + "/" + blockSize;
-
         return this.getGetConfig(url, null);
     };
 
-    factory.getSampleCXNetworkConfig = function (networkId) {
+    factory.getNetworkSampleConfigV2 = function (networkId) {
+        // Get Network Sample
         // network/{networkId}/sample
-        // GET to NetworkAService
+
         var url = "/network/" + networkId + "/sample";
-        return this.getGetConfig(url, null);
+        return this.getGetConfigV2(url, null);
     };
 
-    factory.getCompleteCXNetworkConfig = function (networkId) {
-        // network/{networkId}/edge/{skip}/{top}
-        // GET to NetworkAService
-        var url = "/network/" + networkId + "/asCX";
-        return this.getGetConfig(url, null);
+    factory.getCompleteNetworkInCXConfigV2 = function (networkId) {
+        // Get Complete Network in CX
+        // network/{networkId}
+
+        var url = "/network/" + networkId ;
+        return this.getGetConfigV2(url, null);
     };
 
 
@@ -1731,7 +1721,10 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     */
 
 
-    factory.getNetworkQueryConfig = function (networkId, searchString, searchDepth, edgeLimit) {
+    factory.getQueryNetworkAsCXConfigV2 = function (networkId, searchString, searchDepth, edgeLimit) {
+        // queryNetworkAsCX server API at
+        // /search/network/{networkId}/query?size={limit}
+
         var url = "/search/network/" + networkId + "/query";
         var postData = {
             searchString: searchString,
@@ -1782,8 +1775,8 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
     factory.getUserGroupMembershipsConfig = function (userId, permission, skipBlocks, blockSize, inclusive)
     {
-        // calls getUserGgroupMemberships server API at
-        // /user/group/{permission}/{skipBlocks}/{blockSize}
+        // calls getUserGroupMemberships server API at
+        // /user/{userId}/group/{permission}/{skipBlocks}/{blockSize}
 
         var url = "/user/" + userId + "/group/" + permission + "/" + skipBlocks + "/" + blockSize;
 
@@ -1806,7 +1799,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfig(url, null);
     };
 
-    factory.getAllPermissionsOnNetworkConfig = function (networkId, type, startPage, size)
+    factory.getAllPermissionsOnNetworkConfigV2 = function (networkId, type, startPage, size)
     {
         // calls NetworkServiceV2.getNetworkUserMemberships server API at
         // /network/{networkID}/permission?type=group&start={startPage}&size={size}
@@ -1816,14 +1809,14 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfigV2(url, null);
     };
 
-    factory.getGroupsByUUIDsConfig = function (UUIDs)
+    factory.getGroupsByUUIDsConfigV2 = function (UUIDs)
     {
         // calls getGroupsByUUIDs server API at
-        // /group/groups
+        // /batch/group
 
         var postData = UUIDs;
-        var url = "/group/groups";
-        return this.getPostConfig(url, postData);
+        var url = "/batch/group";
+        return this.getPostConfigV2(url, postData);
     };
 
 
@@ -1836,7 +1829,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfig(url, networksUUIDs);
     };
 
-    factory.getUsersByUUIDsConfig = function (usersUUIDs)
+    factory.getUsersByUUIDsConfigV2 = function (usersUUIDs)
     {
         // Server API: getUsersByUUIDs
         // /v2/batch/user
@@ -1863,8 +1856,8 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfig(url, permissions);
     };
 
-    factory.getNetworkAspectAsCXConfig = function (networkId, aspectName) {
-
+    factory.getNetworkAspectAsCXConfigV2 = function (networkId, aspectName) {
+        // Server API: getAspectElements
         // /network/{networkid}/aspect/{aspectName}
         var url = "/network/" + networkId + "/aspect/" + aspectName;
 
@@ -1905,21 +1898,21 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getDeleteConfig(url);
     };
 
-    factory.getCreateUserPermissionRequestConfig = function (userUUID, userPermissionRequest) {
+    factory.getCreateUserPermissionRequestConfigV2 = function (userUUID, userPermissionRequest) {
         // Server API: Create User Permission Request
         // /user/{userId}/permissionrequest
         var url = "/user/" + userUUID + "/permissionrequest";
         return this.getPostConfigV2(url, userPermissionRequest);
     };
 
-    factory.getCreateGroupPermissionRequestConfig = function (groupUUID, groupPermissionRequest) {
+    factory.getCreateGroupPermissionRequestConfigV2 = function (groupUUID, groupPermissionRequest) {
         // Server API: Create Group Permission Request
         // /group/{groupId}/permissionrequest
         var url = "/group/" + groupUUID + "/permissionrequest";
         return this.getPostConfigV2(url, groupPermissionRequest);
     };
 
-    factory.getGetUserPermissionRequestsConfig = function (userUUID, type) {
+    factory.getGetUserPermissionRequestsConfigV2 = function (userUUID, type) {
         // Server API: Get a User’s Permission Requests
         // /user/{userId}/permissionrequest?type={sent|received}
 
@@ -1931,7 +1924,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getGetConfigV2(url, null);
     };
 
-    factory.getUpdateNetworkPermissionConfig = function (networkId, type, userOrGroupId, permission) {
+    factory.getUpdateNetworkPermissionConfigV2 = function (networkId, type, userOrGroupId, permission) {
         // Server API: Update Network Permission
         // /network/{networkId}/permission?(userid={uuid}|groupid={uuid})&permission={permission}
 
@@ -1947,7 +1940,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPutConfigV2(url, null);
     };
 
-    factory.getAcceptOrDenyPermissionRequestConfig = function (recipientId, requestId, action, message) {
+    factory.getAcceptOrDenyPermissionRequestConfigV2 = function (recipientId, requestId, action, message) {
         // Server API: Accept or Deny a permission request
         // /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}
 
@@ -1957,21 +1950,21 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPutConfigV2(url, null);
     };
 
-    factory.getAddOrUpdateGroupMemberConfig = function (groupId, userId, type) {
+    factory.getAddOrUpdateGroupMemberConfigV2 = function (groupId, userId, type) {
         // Server API: Add or Update a Group Member
         // /group/{groupid}/membership?userid={userid}&type={GROUPADMIN|MEMBER}
         var url = "/group/" + groupId + "/membership?userid=" + userId + "&type=" + type;
         return this.getPutConfigV2(url, null);
     };
 
-    factory.getRemoveGroupMemberConfig = function (groupId, userId) {
+    factory.getRemoveGroupMemberConfigV2 = function (groupId, userId) {
         // Server API: Remove a Group Member
         // /group/{groupid}/membership?userid={userid}
         var url = "/group/" + groupId + "/membership?userid=" + userId;
         return this.getDeleteConfigV2(url, null);
     };
 
-    factory.getGetGroupConfig = function (groupId) {
+    factory.getGetGroupConfigV2 = function (groupId) {
         // Server API: Get a Group
         // /group/{groupid}
         var url = "/group/" + groupId;
@@ -1979,7 +1972,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     };
 
 
-    factory.getSearchGroupsConfig = function (searchString, skipBlocks, blockSize) {
+    factory.getSearchGroupsConfigV2 = function (searchString, skipBlocks, blockSize) {
         // Server API: Search Groups
         // /search/group?start={skipBlocks}&size={blockSize}
 
@@ -1994,7 +1987,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfigV2(url, postData);
     };
 
-    factory.getSearchUsersConfig = function (searchString, skipBlocks, blockSize) {
+    factory.getSearchUsersConfigV2 = function (searchString, skipBlocks, blockSize) {
         // Server API: Search Users
         // /search/user?start={number}&size={number}
 

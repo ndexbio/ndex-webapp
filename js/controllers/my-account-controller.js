@@ -183,7 +183,6 @@ ndexApp.controller('myAccountController',
                 }
             };
 
-
             myAccountController.tasksNotificationsTabDisabled = function() {
 
                 if ( (myAccountController.tasks.length > 0) ||
@@ -238,7 +237,6 @@ ndexApp.controller('myAccountController',
             // recursive function that deletes all tasks from the server
             myAccountController.deleteAllTasks = function()
             {
-
                 // delete all tasks that are visible to the user
                 for (var i = 0; i < myAccountController.tasks.length; i++) {
                     var task = myAccountController.tasks[i];
@@ -290,7 +288,6 @@ ndexApp.controller('myAccountController',
                 return;
             }
 
-            
             myAccountController.genericInfoModal = function(title, message)
             {
                 var   modalInstance = $modal.open({
@@ -343,7 +340,6 @@ ndexApp.controller('myAccountController',
                 sharedProperties.setCurrentUserId(currentUserId);
                 $location.path(path);
             }
-
 
             myAccountController.allTasksCompleted = function() {
                 var task;
@@ -541,7 +537,7 @@ ndexApp.controller('myAccountController',
             myAccountController.searchGroupsFromUserInput = function() {
                 var searchString = myAccountController.groupSearchString;
 
-                ndexService.searchGroups(searchString, 0, 1000000,
+                ndexService.searchGroupsV2(searchString, 0, 1000000,
                     function(groupObjectsFound) {
 
                         myAccountController.groupSearchResults = [];
@@ -583,7 +579,7 @@ ndexApp.controller('myAccountController',
 
                             var groupsUUIDs = getGroupsUUIDs(groups);
 
-                            ndexService.getGroupsByUUIDs(groupsUUIDs)
+                            ndexService.getGroupsByUUIDsV2(groupsUUIDs)
                                 .success(
                                     function (groupList) {
                                         myAccountController.groupSearchResults = groupList;
@@ -773,7 +769,7 @@ ndexApp.controller('myAccountController',
             var getRequests = function ()
             {
                 // get all pending requests
-                ndexService.getUserPermissionRequests(myAccountController.identifier, "received",
+                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
                     function (requests)
                     {
                         myAccountController.pendingRequests = requests;
@@ -784,7 +780,7 @@ ndexApp.controller('myAccountController',
                     });
 
                 // get all sent requests
-                ndexService.getUserPermissionRequests(myAccountController.identifier, "sent",
+                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "sent",
                     function (requests)
                     {
                         myAccountController.sentRequests = requests;
@@ -868,7 +864,7 @@ ndexApp.controller('myAccountController',
             //----------------------------------------------------------------------------
             myAccountController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            ndexService.getUser(myAccountController.identifier)
+            ndexService.getUserV2(myAccountController.identifier)
                 .success(
                 function (user)
                 {

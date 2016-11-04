@@ -483,7 +483,7 @@ ndexApp.controller('editNetworkPropertiesController',
 
 
                 //ndexService.getNetworkNamespaces(networkExternalId,
-                ndexService.getNetworkAspectAsCX(networkExternalId, encodeURIComponent("@context"),
+                ndexService.getNetworkAspectAsCXV2(networkExternalId, encodeURIComponent("@context"),
                     function(namespaces) {
 
                         editor.namespaces = namespaces;

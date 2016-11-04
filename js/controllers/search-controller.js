@@ -359,7 +359,7 @@ ndexApp.controller('searchController',
                 searchController.userSearchInProgress = true;
                 searchController.userSearchNoResults = false;
                 // We find only one page of users. No paging.
-                ndexService.searchUsers(
+                ndexService.searchUsersV2(
                     searchString,
                     0,
                     searchController.pageSize,
@@ -482,7 +482,7 @@ ndexApp.controller('searchController',
                 searchController.groupSearchInProgress = true;
                 searchController.groupSearchNoResults = false;
                 // We find only one page of groups. No paging.
-                ndexService.searchGroups(
+                ndexService.searchGroupsV2(
                     searchController.searchString,
                     0,
                     searchController.pageSize,

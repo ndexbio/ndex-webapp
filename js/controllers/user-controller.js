@@ -239,7 +239,7 @@ ndexApp.controller('userController',
 
                             var groupsUUIDs = getGroupsUUIDs(groups);
 
-                            ndexService.getGroupsByUUIDs(groupsUUIDs)
+                            ndexService.getGroupsByUUIDsV2(groupsUUIDs)
                                 .success(
                                     function (groupList) {
                                         userController.groupSearchResults = groupList;
@@ -315,7 +315,7 @@ ndexApp.controller('userController',
             var getRequests = function ()
             {
                 // get all pending requests
-                ndexService.getUserPermissionRequests(myAccountController.identifier, "received",
+                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
                     function (requests)
                     {
                         myAccountController.pendingRequests = requests;
@@ -326,7 +326,7 @@ ndexApp.controller('userController',
                     });
 
                 // get all sent requests
-                ndexService.getUserPermissionRequests(myAccountController.identifier, "sent",
+                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "sent",
                     function (requests)
                     {
                         myAccountController.sentRequests = requests;
@@ -355,7 +355,7 @@ ndexApp.controller('userController',
 
             } else {
 
-                ndexService.getUser(userController.identifier)
+                ndexService.getUserV2(userController.identifier)
                     .success(
                     function (user)
                     {
