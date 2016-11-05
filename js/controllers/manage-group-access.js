@@ -165,7 +165,7 @@ ndexApp.controller('manageGroupAccessController',
 		var userId  = newMembership.memberUUID;
 		var type    = newMembership.permissions;
 
-		ndexService.addOrUpdateGroupMember(groupId, userId, type,
+		ndexService.addOrUpdateGroupMemberV2(groupId, userId, type,
 			function(success){
 				//console.log("addOrUpdateGroupMember -- success"); // do nothing
 			},
@@ -180,7 +180,7 @@ ndexApp.controller('manageGroupAccessController',
 		var groupId = membershipObj.resourceUUID;
 		var userId  = membershipObj.memberUUID;
 
-		ndexService.removeGroupMember(groupId, userId,
+		ndexService.removeGroupMemberV2(groupId, userId,
 			function(data) {
 				//console.log("removeGroupMember -- success"); // do nothing
 			},
@@ -228,7 +228,7 @@ ndexApp.controller('manageGroupAccessController',
 
 					var usersUUIDs = getUsersUUIDs(users);
 
-					ndexService.getUsersByUUIDs(usersUUIDs)
+					ndexService.getUsersByUUIDsV2(usersUUIDs)
 						.success(
 							function (userAccounts) {
 								groupManager.originalAccessPermissions = [];
@@ -307,7 +307,7 @@ ndexApp.controller('manageGroupAccessController',
 	groupManager.findUsers = function() {
 		var searchString = groupManager.searchString;
 
-		ndexService.searchUsers(searchString, 0, 10,
+		ndexService.searchUsersV2(searchString, 0, 10,
 			function(users) {
 
 				groupManager.newUsers = users.resultList;
@@ -434,7 +434,7 @@ ndexApp.controller('manageGroupAccessController',
 	//              INTIALIZATIONS
     //------------------------------------------------------------------------------------
 
-    ndexService.getGroup(identifier,
+    ndexService.getGroupV2(identifier,
     	function(group){
     		groupManager.group = group;
     	},

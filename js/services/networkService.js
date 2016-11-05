@@ -11,7 +11,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         var currentNetworkSummary = undefined;
 
         var ndexServerURI = config.ndexServerUri;
-        
+        var ndexServerURIV2 = config.ndexServerUriV2;
+
         var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
         var localNiceCX;   // the copy of CX network that are currently displayed. It can be a subnetwork from query
@@ -209,14 +210,14 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return edgeInfo;
         }
 
-        factory.getCXNetwork = function (networkId) {
+        factory.getCompleteNetworkInCXV2 = function (networkId) {
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
 
             // Grab the config for this request. We modify the config to allow for $http request aborts.
             // This may become standard in the client.
-            var config = ndexConfigs.getCompleteCXNetworkConfig(networkId);
+            var config = ndexConfigs.getCompleteNetworkInCXConfigV2(networkId);
 
             config.timeout = deferredAbort.promise;
 
@@ -265,14 +266,14 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return promise;
         };
 
-        factory.getSampleCXNetwork = function (networkId) {
+        factory.getNetworkSampleV2 = function (networkId) {
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
 
             // Grab the config for this request. We modify the config to allow for $http request aborts.
             // This may become standard in the client.
-            var config = ndexConfigs.getSampleCXNetworkConfig(networkId);
+            var config = ndexConfigs.getNetworkSampleConfigV2(networkId);
 
             config.timeout = deferredAbort.promise;
 
@@ -325,7 +326,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
-            var urlConfig = ndexConfigs.getNetworkQueryConfig(networkId, searchString, searchDepth, edgeLimit);
+            var urlConfig = ndexConfigs.getQueryNetworkAsCXConfigV2(networkId, searchString, searchDepth, edgeLimit);
             urlConfig.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
@@ -484,7 +485,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         factory.createCXNetwork = function (rawCX, onSuccess, onError) {
 
-            var url = ndexServerURI + '/network/asCX';
+            var url = ndexServerURIV2 + '/network';
 
             var XHR = new XMLHttpRequest();
             var FD  = new FormData();

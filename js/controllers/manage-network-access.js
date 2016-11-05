@@ -232,17 +232,16 @@ ndexApp.controller('manageNetworkAccessController',
 				networkManager.networkUserMemberships = networkUserMemberships;
 				networkManager.processUserAccessPermissions();
 
+				//networkManager.networkGroupMemberships = networkGroupMemberships;
 
-				// networkManager.networkGroupMemberships = networkGroupMemberships;
-
-				ndexService.getAllGroupsPermissionsOnNetwork(networkManager.externalId, "group", 0, 1000000)
+				ndexService.getAllGroupsPermissionsOnNetworkV2(networkManager.externalId, "group", 0, 1000000)
 					.success(
 						function (mapOfGroupPermissions) {
 
 							var groupsUUIDs = Object.keys(mapOfGroupPermissions);
 							networkManager.mapOfGroupPermissions = mapOfGroupPermissions;
 
-							ndexService.getGroupsByUUIDs(groupsUUIDs)
+							ndexService.getGroupsByUUIDsV2(groupsUUIDs)
 								.success(
 									function (groupList) {
 										networkManager.networkGroupMemberships = groupList;
@@ -258,6 +257,7 @@ ndexApp.controller('manageNetworkAccessController',
 						function (error, data) {
 							console.log("unable to get group permissions on network");
 						});
+
 
 			},
 			function(error) {
@@ -308,7 +308,7 @@ ndexApp.controller('manageNetworkAccessController',
 		}
 
 		if (userAccountIds.length > 0) {
-			ndexService.getUsersByUUIDs(userAccountIds)
+			ndexService.getUsersByUUIDsV2(userAccountIds)
 				.success(
 					function (accountsInfo) {
 
@@ -398,7 +398,7 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.findUsers = function() {
 		var searchString = networkManager.searchString;
 
-		ndexService.searchUsers(searchString, 0, 10,
+		ndexService.searchUsersV2(searchString, 0, 10,
 			function(users) {
 
 				networkManager.newUsers = users.resultList;
@@ -419,7 +419,7 @@ ndexApp.controller('manageNetworkAccessController',
 
 	networkManager.findGroups = function() {
 
-		ndexService.searchGroups(networkManager.groupSearchString, 0, 10,
+		ndexService.searchGroupsV2(networkManager.groupSearchString, 0, 10,
 			function(groups) {
 
 				networkManager.newGroups = groups.resultList;

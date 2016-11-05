@@ -205,13 +205,13 @@
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true
-                    ndexService.editUserProfile($scope.user,
+                    ndexService.editUserProfileV2($scope.user,
                         function(userData){
                             $scope.isProcessing = false;
+                            var userId = $scope.user.externalId;
                             $scope.user = {};
                             modalInstance.close();
-                            $route.reload();
-                            $location.path('/user/'+userData.externalId);
+                            $location.path('/user/' + userId);
                         },
                         function(error){
                             $scope.isProcessing = false;
@@ -345,7 +345,7 @@
                 $scope.$watch('query', function(query) {
                     if(query.searchString !=null) {
                         if(query.searchString.length > 0) {
-                            ndexService.searchUsers(query.searchString, 0, 5,
+                            ndexService.searchUsersV2(query.searchString, 0, 5,
                                 function (users) {
                                     ////console.log('got '+users.length+' user search results')
                                     var key = 0;
@@ -508,7 +508,7 @@
                     var permission = $scope.request.permission;
 
 
-                    ndexService.updateNetworkPermission(networkId, type, userOrGroupId, permission,
+                    ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
                         function(data){
 
                             var recipientId = $scope.userController.identifier;
@@ -516,7 +516,7 @@
                             var action      = "accept";
                             var message     = $scope.request.responseMessage;
 
-                            ndexService.acceptOrDenyPermissionRequest(recipientId, requestId, action, message,
+                            ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                                 function(data) {
                                     modalInstance.close();
                                     $scope.userController.refreshRequests();
@@ -537,7 +537,7 @@
                     var action      = "deny";
                     var message     = $scope.request.responseMessage;
 
-                    ndexService.acceptOrDenyPermissionRequest(recipientId, requestId, action, message,
+                    ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                         function(data) {
                             modalInstance.close();
                             $scope.userController.refreshRequests();
@@ -680,7 +680,7 @@
                         }
                         var userUUID = $scope.selected.account.externalId;
 
-                        ndexService.createUserPermissionRequest(userUUID, userPermissionRequest,
+                        ndexService.createUserPermissionRequestV2(userUUID, userPermissionRequest,
                             function(data) {
                                 $scope.close();
                             },
@@ -699,7 +699,7 @@
                         }
                         var groupUUID = $scope.selected.account.externalId;
 
-                        ndexService.createGroupPermissionRequest(groupUUID, groupPermissionRequest,
+                        ndexService.createGroupPermissionRequestV2(groupUUID, groupPermissionRequest,
                             function(data) {
                                 $scope.close();
                             },
@@ -760,7 +760,7 @@
 
                                 var groupsUUIDs = getGroupsUUIDs(groups);
 
-                                ndexService.getGroupsByUUIDs(groupsUUIDs)
+                                ndexService.getGroupsByUUIDsV2(groupsUUIDs)
                                     .success(
                                         function (groupList) {
 
@@ -1592,7 +1592,7 @@
                         $scope.isProcessing = false;
                         return;
                     }
-                    ndexService.changeAccountPassword($scope.change.password, $scope.change.newPassword,
+                    ndexService.changeAccountPasswordV2($scope.change.newPassword,
                         function(data) {
                             $route.reload();
                             modalInstance.close();
@@ -1920,7 +1920,7 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
-                                ndexService.removeGroupMember($scope.group.externalId, ndexUtility.getLoggedInUserExternalId(),
+                                ndexService.removeGroupMemberV2($scope.group.externalId, ndexUtility.getLoggedInUserExternalId(),
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
@@ -2020,7 +2020,7 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
-                                ndexService.deleteUser(
+                                ndexService.deleteUserV2(
                                     function(data) {
                                         $modalInstance.close();
                                         $scope.$emit('LOGGED_OUT'); //emit event to clear up variables in main controller scope, route refresh does not clear those variables, probably because they are probably of the rootscope

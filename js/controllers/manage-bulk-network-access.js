@@ -54,7 +54,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
     bulkNetworkManager.findUsers = function() {
         var searchString = bulkNetworkManager.searchString;
 
-        ndexService.searchUsers(searchString, 0, 10,
+        ndexService.searchUsersV2(searchString, 0, 10,
             function(users) {
 
                 bulkNetworkManager.newUsers = users.resultList;
@@ -76,7 +76,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
 
     bulkNetworkManager.findGroups = function() {
 
-        ndexService.searchGroups(bulkNetworkManager.groupSearchString, 0, 10,
+        ndexService.searchGroupsV2(bulkNetworkManager.groupSearchString, 0, 10,
             function(groups) {
 
                 bulkNetworkManager.newGroups = groups.resultList;

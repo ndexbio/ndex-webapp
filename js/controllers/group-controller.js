@@ -66,7 +66,7 @@ ndexApp.controller('groupController',
 
                     var usersUUIDs = getUsersUUIDs(users);
 
-                    ndexService.getUsersByUUIDs(usersUUIDs)
+                    ndexService.getUsersByUUIDsV2(usersUUIDs)
                         .success(
                             function (users) {
                                 groupController.userSearchResults = users;
@@ -101,7 +101,7 @@ ndexApp.controller('groupController',
     groupController.searchMembersFromUserInput = function() {
         var searchString = groupController.memberSearchString;
 
-        ndexService.searchUsers(searchString, 0, 1000000,
+        ndexService.searchUsersV2(searchString, 0, 1000000,
             function(userObjectsFound) {
 
                 groupController.userSearchResults = [];
@@ -374,7 +374,7 @@ ndexApp.controller('groupController',
     //----------------------------------------------------------------------------
     groupController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-    ndexService.getGroup(groupController.identifier,
+    ndexService.getGroupV2(groupController.identifier,
         function (group) {
  
             groupController.displayedGroup = group;
