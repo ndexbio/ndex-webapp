@@ -655,8 +655,15 @@ angular.module('ndexServiceApp')
         factory.cyBackgroundColorFromNiceCX = function (niceCX) {
             //console.log(niceCX);
             var result = null;
-            if ( niceCX.visualProperties) {
-                _.forEach(niceCX.visualProperties, function (vpAspectElement) {
+            var visualProps ;
+            if ( niceCX.cyVisualProperties )
+                visualProps = niceCX.cyVisualProperties;
+            else if ( niceCX.visualProperties )
+                visualProps = niceCX.visualProperties;
+            else
+                return null;
+
+            _.forEach(visualProps, function (vpAspectElement) {
                     _.forEach(vpAspectElement, function (vpElement) {
                         var elementType = vpElement['properties_of'];
                         if (elementType === 'network') {
@@ -664,8 +671,8 @@ angular.module('ndexServiceApp')
                             return false;
                         } 
                     });
-                });
-            }
+            });
+
             return result;
         };
 
@@ -682,13 +689,18 @@ angular.module('ndexServiceApp')
             var edge_selected_styles = [];
 
 
-            if ( !niceCX.visualProperties || niceCX.visualProperties.length ==0)
+            var visualProperties;
+            if ( niceCX.cyVisualProperties ) {
+                visualProperties = niceCX.cyVisualProperties;
+            } else if ( niceCX.visualProperties ) {
+               visualProperties = niceCX.visualProperties;
+            } else
                 return DEF_VISUAL_STYLE;
 
             // TODO handle cases with multiple views
 
 
-            _.forEach(niceCX.visualProperties, function (vpAspectElement) {
+            _.forEach(visualProperties, function (vpAspectElement) {
                 _.forEach(vpAspectElement, function (vpElement) {
                     console.log(vpElement);
                     var elementType = vpElement['properties_of'];
