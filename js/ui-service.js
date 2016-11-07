@@ -117,12 +117,16 @@
                     var accountName = $scope.group.groupName.replace(/\s+/g,"");
                     $scope.group.userName = accountName;
 
-                    ndexService.createGroup($scope.group,
-                        function(groupData){
-                            modalInstance.close();
-                            ////console.log(groupData);
-                            $location.path('/group/'+groupData.externalId);
-                            $scope.isProcessing = false;
+                    ndexService.createGroupV2($scope.group,
+                        function(url){
+                            if (url) {
+                                var groupId = url.split('/').pop();
+                                modalInstance.close();
+                                ////console.log(groupData);
+
+                                $location.path('/group/' + groupId);
+                                $scope.isProcessing = false;
+                            }
                         },
                         function(error){
                             if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
@@ -209,6 +213,11 @@
                         function(userData){
                             $scope.isProcessing = false;
                             var userId = $scope.user.externalId;
+                            //$scope.ndexData.firstName = $scope.user.firstName;
+                            //$scope.ndexData.lastName = $scope.user.lastName;
+                            //$scope.ndexData.website = $scope.user.website;
+                            //$scope.ndexData.description = $scope.user.description;
+                            //$scope.ndexData.image = $scope.user.image;
                             $scope.user = {};
                             modalInstance.close();
                             $location.path('/user/' + userId);
@@ -261,6 +270,7 @@
                         $scope.group[key] = $scope.ndexData[key];
                     }
                     modalInstance.close();
+                    delete $scope.errors;
                     modalInstance = null;
                 };
 
@@ -268,16 +278,17 @@
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true;
-                    ndexService.editGroupProfile($scope.group,
+                    ndexService.updateGroupV2($scope.group,
                         function(group){
+                            var groupId = $scope.group.externalId;
                             $scope.group = {};
                             modalInstance.close();
                             $route.reload();
-                            $location.path('/group/'+group.externalId);
+                            $location.path('/group/' + groupId);
                             $scope.isProcessing = false;
                         },
                         function(error){
-                            $scope.errors = error;
+                            $scope.errors = error.message;
                             $scope.isProcessing = false;
                         });
                 };
@@ -1972,7 +1983,7 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
-                                ndexService.deleteGroup($scope.externalId,
+                                ndexService.deleteGroupV2($scope.externalId,
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());

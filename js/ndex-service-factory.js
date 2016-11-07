@@ -212,12 +212,6 @@ ndexServiceApp.factory('ndexService',
                             action: 'api'
                         },
                         isArray: true
-                    },
-                    getMembership: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'membership'
-                        }
                     }
                 }
             );
@@ -233,32 +227,57 @@ ndexServiceApp.factory('ndexService',
                 return NetworkResource.getMembership({identifier: groupExternalId, subId: networkExternalId}, successHandler, errorHandler);
             };
 
-            factory.deleteGroup = function(externalId, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                GroupResource.delete({identifier: externalId}, null, successHandler, errorHandler);
+            factory.deleteGroupV2 = function(groupId, successHandler, errorHandler) {
+                // Server API: Delete Group
+                // DELETE /group/{groupid}
+                
+                var url = "/group/" + groupId ;
+
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.editGroupProfile = function (group, successHandler, errorHandler) {
-                group.accountType = 'Group';
-                handleAuthorizationHeader();
-                if( group.website )
-                {
-                    if( !group.website.startsWith("http") )
-                        group.website = "http://" + group.website;
-                }
-                GroupResource.save({identifier: group.externalId}, group, successHandler, errorHandler);
+            factory.updateGroupV2 = function (group, successHandler, errorHandler) {
+                // Server API: Update Group
+                // PUT /group/{groupid}
+
+                var url = "/group/" + group.externalId;
+
+                var config = ndexConfigs.getPutConfigV2(url, group);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.createGroup = function (group, successHandler, errorHandler) {
-                // be sure accountType is set
-                group.accountType = "Group";
-                // ensure authorization header is set.
-                // May become superfluous if we update headers on sign-in, sign-out, initialization
-                handleAuthorizationHeader();
+            factory.createGroupV2 = function (group, successHandler, errorHandler) {
+                // Server API: Create Group
+                // POST /group
 
-                GroupResource.save({}, group, successHandler, errorHandler);
+                var url = "/group";
+
+                var config = ndexConfigs.getPostConfigV2(url, group);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            
+
+
+            factory.addOrUpdateGroupMemberV2 = function (groupId, userId, type, successHandler, errorHandler) {
+                // Server API: Add or Update a Group Member
+                // /group/{groupid}/membership?userid={userid}&type={GROUPADMIN|MEMBER}
+
+                var url = "/group/" + groupId + "/membership?userid=" + userId + "&type=" + type;
+                var config = ndexConfigs.getPutConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.removeGroupMemberV2 = function (groupId, userId, successHandler, errorHandler) {
+                // Server API: Remove a Group Member
+                // /group/{groupid}/membership?userid={userid}
+
+                var url = "/group/" + groupId + "/membership?userid=" + userId;
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             /*---------------------------------------------------------------------*
              * Requests
              *---------------------------------------------------------------------*/
@@ -1213,34 +1232,6 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-            factory.addOrUpdateGroupMemberV2 = function (groupId, userId, type, successHandler, errorHandler) {
-
-                var config = ndexConfigs.getAddOrUpdateGroupMemberConfigV2(groupId, userId, type);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
-
-            factory.removeGroupMemberV2 = function (groupId, userId, successHandler, errorHandler) {
-
-                var config = ndexConfigs.getRemoveGroupMemberConfigV2(groupId, userId);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
-
             factory.getGroupV2 = function (groupId, successHandler, errorHandler) {
 
                 var config = ndexConfigs.getGetGroupConfigV2(groupId);
@@ -1913,27 +1904,12 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPutConfigV2(url, null);
     };
 
-    factory.getAddOrUpdateGroupMemberConfigV2 = function (groupId, userId, type) {
-        // Server API: Add or Update a Group Member
-        // /group/{groupid}/membership?userid={userid}&type={GROUPADMIN|MEMBER}
-        var url = "/group/" + groupId + "/membership?userid=" + userId + "&type=" + type;
-        return this.getPutConfigV2(url, null);
-    };
-
-    factory.getRemoveGroupMemberConfigV2 = function (groupId, userId) {
-        // Server API: Remove a Group Member
-        // /group/{groupid}/membership?userid={userid}
-        var url = "/group/" + groupId + "/membership?userid=" + userId;
-        return this.getDeleteConfigV2(url, null);
-    };
-
     factory.getGetGroupConfigV2 = function (groupId) {
         // Server API: Get a Group
         // /group/{groupid}
         var url = "/group/" + groupId;
         return this.getGetConfigV2(url, null);
     };
-
 
     factory.getSearchGroupsConfigV2 = function (searchString, skipBlocks, blockSize) {
         // Server API: Search Groups
