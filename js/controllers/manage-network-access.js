@@ -691,12 +691,19 @@ ndexApp.controller('manageNetworkAccessController',
     		networkManager.errors.push(error.data);
     	})
 
-    ndexService.getMyMembership(identifier,
+	var userId = sharedProperties.getCurrentUserId();
+	var networkId = identifier;
+	var directonly = false;
+
+    ndexService.getUserPermissionForNetworkV2(userId, networkId, directonly,
     	function(membership) {
-    		if(membership != null) {
-    			if(membership.permission == 'ADMIN')
-    				networkManager.isAdmin = true;
-    		}
+			if (membership) {
+				var myMembership = membership[networkId];
+
+				if (myMembership == 'ADMIN') {
+					networkManager.isAdmin = true;
+				}
+			}
     	},
     	function(error) {
     		networkManager.errors.push(error.data)

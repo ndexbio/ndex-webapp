@@ -706,7 +706,12 @@ ndexApp.controller('networkController',
             };
 
             var getMembership = function (callback) {
-                ndexService.getMyMembership(networkController.currentNetworkId,
+                
+                var userId = sharedProperties.getCurrentUserId();
+                var networkId = networkController.currentNetworkId;
+                var directonly = false;
+                
+                ndexService.getUserPermissionForNetworkV2(userId, networkId, directonly,
                     function (membership)
                     {
                         if (membership == 'ADMIN')

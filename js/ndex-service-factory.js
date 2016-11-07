@@ -75,46 +75,6 @@ ndexServiceApp.factory('ndexService',
                             action: 'api'
                         },
                         isArray: true
-                    },
-
-                    createUser: {
-                        method: 'POST',
-                        interceptor: {
-                            response: function (data) {
-                                ndexUtility.setUserInfo(data.data.userName, data.data.externalId);
-                                return data.data;
-                            },
-                            responseError: function (data) {
-                                ndexUtility.clearUserCredentials();
-                                return data;
-                            }
-                        }
-                    },
-                    getDirectMembership: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'membership',
-                            sub2Resource: 'group'
-                            //membershipDepth: 1
-                        },
-                        interceptor: {
-                            response: function (data) {
-                                return data.data;
-                            }
-                        }
-                    },
-                    getMembership: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'membership',
-                            sub2Resource: 'network',
-                            membershipDepth: 'false'
-                        },
-                        interceptor: {
-                            response: function (data) {
-                                return data.data;
-                            }
-                        }
                     }
                 });
 
@@ -169,61 +129,64 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getPutConfigV2(url, user);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
+            
+            factory.getUserMembershipInGroupV2 = function (userId, groupId, successHandler, errorHandler) {
+                // Server API: Get User's Membership in Group
+                // GET /user/{userId}/membership?groupid={groupid}
+                
+                var url = "/user/" + userId + "/membership?groupid=" + groupId;
 
-
-            factory.getDirectMembership = function (resourceExternalId, memberExternalId, successHandler, errorHandler) {
-                return UserResource.getDirectMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getMembership = function (resourceExternalId, memberExternalId, successHandler, errorHandler) {
-                return UserResource.getMembership({identifier: memberExternalId, subId: resourceExternalId}, successHandler, errorHandler);
-            };
+            factory.getUserPermissionForNetworkV2 = function (userId, networkId, directonly, successHandler, errorHandler) {
+                // Server API: Get User's Permission for Network
+                // GET /user/{userid}/permission?networkid={networkId}&directonly={true|false}
 
-            factory.getMyDirectMembership = function (resourceId, successHandler, errorHandler) {
-           //     var externalId = ndexUtility.getLoggedInUserExternalId();
-             /*   if (externalId == null) {
-                    successHandler(null);
-                    return;
-                } */
-                handleAuthorizationHeader();
-                UserResource.getDirectMembership({/*identifier: externalId,*/ subId: resourceId}, successHandler, errorHandler);
-            };
-
-            factory.getMyMembership = function (resourceId, successHandler, errorHandler) {
-              //  var externalId = ndexUtility.getLoggedInUserExternalId();
-              /*   if (externalId == null) {
-                    successHandler(null);
-                    return;
-                } */
-                handleAuthorizationHeader();
-                UserResource.getMembership({/*identifier: externalId,*/ subId: resourceId}, successHandler, errorHandler);
-            };
-
-            factory.createUser = function (user, successHandler, errorHandler) {
-                ////console.log('creating user with params:\n    ' + JSON.stringify(user));
-                user.accountType = 'User';
-                ndexUtility.setUserAuthToken(user.password);
-
-                UserResource.createUser({}, user, successHandler, errorHandler);
-            };
-
-            // /user/task/{status}/{skipBlocks}/{blockSize}
-            factory.getUserTasks = function (taskStatus, skipBlocks, blockSize, successHandler, errorHandler) {
-                if (!taskStatus) {
-                    taskStatus = "ALL";
+                var url = "/user/" + userId + "/permission?networkid=" + networkId;
+                if (directonly) {
+                    url = url + "&directonly=" + directonly
                 }
-                ////console.log("retrieving tasks for user with id " + userUUID + " status = " + taskStatus);
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+             };
 
+            factory.authenticateUserV2 = function (userName, password, successHandler, errorHandler) {
+                // Server API: Authenticate User
+                // GET /user?valid=true
 
-                handleAuthorizationHeader();
-                UserResource.query({
-                        'skipBlocks': skipBlocks,
-                        'blockSize': blockSize,
-                        'subResource': "task",
-                        'status': taskStatus
-                    },
-                    successHandler,
-                    errorHandler)
+                var url = "/user?valid=true";
+                var headers = {
+                    'Authorization': "Basic " + btoa(userName + ":" + password)
+                };
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                config['headers'] = headers;
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            }
+
+            factory.createUserV2 = function (user, successHandler, errorHandler) {
+                // Server API: Create User
+                // POST /user
+
+                var url = "/user";
+                var config = ndexConfigs.getPostConfigV2(url, user);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.getUserTasksV2 = function (status, startPage, pageSize, successHandler, errorHandler) {
+                // Server API: Get User's Tasks
+                // GET /task?status={status}&start={startPage}&size={pageSize}
+
+                if (!status) {
+                    status = "ALL";
+                }
+
+                var url = "/task?status=" + status + "&start=" + startPage + "&size=" + pageSize ;
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
             /*---------------------------------------------------------------------*

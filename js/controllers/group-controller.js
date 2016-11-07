@@ -346,14 +346,23 @@ ndexApp.controller('groupController',
         if (!groupController.isLoggedIn) {
             return;
         }
+        
+        var userId = sharedProperties.getCurrentUserId();
+        var groupId = groupController.displayedGroup.externalId
 
-        ndexService.getMyDirectMembership(groupController.displayedGroup.externalId,
+        ndexService.getUserMembershipInGroupV2(userId, groupId,
 
             function(membership) {
-                if(membership == 'GROUPADMIN')
-                    groupController.isAdmin = true;
-                if(membership == 'MEMBER')
-                    groupController.isMember = true;
+                if (membership) {
+                    var myMembership = membership[groupId];
+
+                    if (myMembership == 'GROUPADMIN') {
+                        groupController.isAdmin = true;
+                    }
+                    if (myMembership == 'MEMBER') {
+                        groupController.isMember = true;
+                    }
+                }
             },
             function(error){
                 //console.log(error);

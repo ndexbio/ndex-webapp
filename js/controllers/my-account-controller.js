@@ -244,7 +244,7 @@ ndexApp.controller('myAccountController',
                 }
 
                 // there may be more tasks on the server; try to get them
-                ndexService.getUserTasks(
+                ndexService.getUserTasksV2(
                      "ALL",
                      0,
                      100,
@@ -688,7 +688,7 @@ ndexApp.controller('myAccountController',
 
             myAccountController.refreshTasks = function ()
             {
-                ndexService.getUserTasks(
+                ndexService.getUserTasksV2(
                     "ALL",
                     0,
                     100,

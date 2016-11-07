@@ -13,29 +13,26 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
 
         $scope.signIn.submitSignIn = function () {
             ndexUtility.clearUserCredentials();
-            var url = ndexService.getNdexServerUri() + '/user/authenticate';
-            var config =
-            {
-                headers: {
-                    'Authorization': "Basic " + btoa($scope.signIn.userName + ":" + $scope.signIn.password)
-                }
-            };
-            $http.get(url, config).success(function (data, status, headers, config, statusText) {
-                sharedProperties.setCurrentUser(data.externalId, data.accountName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-                ndexUtility.setUserCredentials(data.accountName, data.externalId, $scope.signIn.password);
-                $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
-                //$location.path("/user/" + data.externalId);
-                $location.path("/myAccount");
-                $scope.signIn.userName = null;
-                $scope.signIn.password = null;
-            }).error(function (data, status, headers, config, statusText) {
-                if (status === 401) {
-                    $scope.signIn.message = "Invalid password for user " + $scope.signIn.userName + ".";
-                } else if (status === 404) {
-                    $scope.signIn.message = "User " + $scope.signIn.userName + " is not known.";
-                } else {
-                    $scope.signIn.message = "Unexpected error during sign-in with status " + status + ".";
-                }
+
+            var userName = $scope.signIn.userName;
+            var password = $scope.signIn.password;
+
+            ndexService.authenticateUserV2(userName, password,
+                 function(data) {
+                    sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                    ndexUtility.setUserCredentials(data.userName, data.externalId, $scope.signIn.password);
+                    $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
+                    //$location.path("/user/" + data.externalId);
+                    $location.path("/myAccount");
+                    $scope.signIn.userName = null;
+                    $scope.signIn.password = null;
+                },
+                function(error) { //.error(function (data, status, headers, config, statusText) {
+                    if (error && error.message) {
+                        $scope.signIn.message = error.message;
+                    } else {
+                        $scope.signIn.message = "Unexpected error during sign-in with status " + error.status;
+                    }
             });
         };
 
@@ -76,15 +73,21 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                 return;
             }
 
-            ndexService.createUser($scope.signIn.newUser,
-                function (userData) {
+            ndexService.createUserV2($scope.signIn.newUser,
+                function (url) {
 
-                    if (userData.externalId !== null) {
-                        sharedProperties.setCurrentUser(userData.externalId, userData.userName);
-                        ndexUtility.setUserInfo(userData.userName, userData.externalId);
+                    if (url) {
+                        var newUserId = url.split('/').pop();
+                        var userName = $scope.signIn.newUser.userName;
+                        var password = $scope.signIn.newUser.password;
+
+                        sharedProperties.setCurrentUser(newUserId, userName);
+                        ndexUtility.setUserInfo(userName, newUserId);
+                        ndexUtility.setUserCredentials(userName, newUserId, password);
+
                         $scope.$emit('LOGGED_IN');
                         $scope.signIn.cancelSignUp();// doesnt really cancel
-                        $location.path('user/' + userData.externalId);
+                        $location.path('user/' + newUserId);
                         $scope.isProcessing = false;
 
                     } else {

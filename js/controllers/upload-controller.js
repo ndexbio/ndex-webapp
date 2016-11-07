@@ -38,7 +38,7 @@ ndexApp.controller('uploadController',
 
 
             $scope.refreshTasks = function(){
-                ndexService.getUserTasks(
+                ndexService.getUserTasksV2(
                     "ALL",
                     $scope.taskSkipBlocks,
                     $scope.taskBlockSize,

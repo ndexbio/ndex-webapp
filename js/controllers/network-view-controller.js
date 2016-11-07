@@ -2004,19 +2004,28 @@ ndexApp.controller('networkViewController',
                     // if user is anonymous, don't call getMyMembership() because it requires user to be authenticated
                     callback();
                 } else {
-                    ndexService.getMyMembership(networkController.currentNetworkId,
+
+                    var userId = sharedProperties.getCurrentUserId();
+                    var networkId = networkController.currentNetworkId;
+                    var directonly = false;
+
+                    ndexService.getUserPermissionForNetworkV2(userId, networkId, directonly,
                         function (membership) {
-                            if (membership == 'ADMIN') {
-                                networkController.isAdmin = true;
-                                networkController.privilegeLevel = "Admin";
-                            }
-                            if (membership == 'WRITE') {
-                                networkController.canEdit = true;
-                                networkController.privilegeLevel = "Edit";
-                            }
-                            if (membership == 'READ') {
-                                networkController.canRead = true;
-                                networkController.privilegeLevel = "Read";
+                            if (membership) {
+                                var myMembership = membership[networkId];
+
+                                if (myMembership == 'ADMIN') {
+                                    networkController.isAdmin = true;
+                                    networkController.privilegeLevel = "Admin";
+                                }
+                                if (myMembership == 'WRITE') {
+                                    networkController.canEdit = true;
+                                    networkController.privilegeLevel = "Edit";
+                                }
+                                if (myMembership == 'READ') {
+                                    networkController.canRead = true;
+                                    networkController.privilegeLevel = "Read";
+                                }
                             }
                             callback();
                         },

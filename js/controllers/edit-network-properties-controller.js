@@ -561,15 +561,26 @@ ndexApp.controller('editNetworkPropertiesController',
             }
         );
 
-    ndexService.getMyMembership(networkExternalId, 
+    var userId = sharedProperties.getCurrentUserId();
+    var networkId = networkExternalId;
+    var directonly = false;
+
+    ndexService.getUserPermissionForNetworkV2(userId, networkId, directonly,
         function(membership) {
-            if(membership == 'ADMIN')
-                editor.isAdmin = true;
-            if(membership == 'WRITE')
-                editor.canEdit = true;
-            if(membership == 'READ')
-                editor.canRead = true;
-            
+
+            if (membership) {
+                var myMembership = membership[networkId];
+
+                if (myMembership == 'ADMIN') {
+                    editor.isAdmin = true;
+                }
+                if (myMembership == 'WRITE') {
+                    editor.canEdit = true;
+                }
+                if (myMembership == 'READ') {
+                    editor.canRead = true;;
+                }
+            }
         },
         function(error){
             editor.errors.push(error)
