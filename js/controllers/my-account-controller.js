@@ -667,23 +667,19 @@ ndexApp.controller('myAccountController',
                     }
                 )
             };
-
-            myAccountController.markTaskForDeletion = function (taskUUID)
-            {
-                ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
-                    function ()
-                    {
-                        myAccountController.refreshTasks();
-                    })
-            };
-
+            
             myAccountController.deleteTask = function (taskUUID)
             {
-                ndexService.deleteTask(taskUUID,
-                    function ()
+                ndexService.deleteTaskV2(taskUUID,
+                    function (data)
                     {
                         myAccountController.refreshTasks();
-                    })
+                    },
+                    function (error)
+                    {
+                        console.log("unable to delete task");
+                    }
+                )
             };
 
             myAccountController.refreshTasks = function ()
@@ -697,9 +693,9 @@ ndexApp.controller('myAccountController',
                     {
                         myAccountController.tasks = tasks;
                     },
-                    // Error
-                    function (response)
+                    function (error)
                     {
+                        console.log("unable to get user's tasks");
                     }
                 )
             };
@@ -768,27 +764,56 @@ ndexApp.controller('myAccountController',
 
             var getRequests = function ()
             {
-                // get all pending requests
+                // get all user pending requests
                 ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
                     function (requests)
                     {
                         myAccountController.pendingRequests = requests;
+
+                        // get all group pending requests
+                        ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "received",
+                            function (requests)
+                            {
+                                if (requests && requests.length > 0) {
+                                    myAccountController.pendingRequests =
+                                        myAccountController.pendingRequests.concat(requests);
+                                }
+                            },
+                            function (error)
+                            {
+                                console.log("unable to get pending requests");
+                            });
                     },
                     function (error)
                     {
                         console.log("unable to get pending requests");
                     });
 
-                // get all sent requests
+                // get all user sent requests
                 ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "sent",
                     function (requests)
                     {
                         myAccountController.sentRequests = requests;
+
+                        // get all group sent requests
+                        ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "sent",
+                            function (requests)
+                            {
+                                if (requests && requests.length > 0) {
+                                    myAccountController.sentRequests =
+                                        myAccountController.sentRequests.concat(requests);
+                                }
+                            },
+                            function (error)
+                            {
+                                console.log("unable to get pending requests");
+                            });
                     },
                     function (error)
                     {
                         console.log("unable to get sent requests");
                     })
+
             };
 
             var getUUIDs = function(data) {

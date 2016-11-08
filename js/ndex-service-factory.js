@@ -42,7 +42,7 @@ ndexServiceApp.factory('ndexService',
             }
 
             /*---------------------------------------------------------------------*
-             * Users
+             * User
              *---------------------------------------------------------------------*/
 
             //
@@ -91,6 +91,15 @@ ndexServiceApp.factory('ndexService',
                     $http.defaults.headers.common['Authorization'] = undefined;
             }
 
+            factory.createUserV2 = function (user, successHandler, errorHandler) {
+                // Server API: Create User
+                // POST /user
+
+                var url = "/user";
+                var config = ndexConfigs.getPostConfigV2(url, user);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.deleteUserV2 = function(successHandler, errorHandler){
                 // Server API: Delete User
                 // DELETE /user/{userId}
@@ -101,19 +110,8 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getDeleteConfigV2(url, null);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-
-            factory.changeAccountPasswordV2 = function(newPassword, successHandler, errorHandler) {
-                // Server API: Change Password
-                // PUT /user/{userId}/password
-
-                var userId = sharedProperties.getCurrentUserId();
-                var url = "/user/" + userId + "/password";
-
-                var config = ndexConfigs.getPutConfigV2(url, newPassword);
-                this.sendHTTPRequest(config, successHandler, errorHandler);
-            };
-
-            factory.editUserProfileV2 = function (user, successHandler, errorHandler) {
+            
+            factory.updateUserV2 = function (user, successHandler, errorHandler) {
                 // Server API: Update User
                 // PUT /user/{userId}
 
@@ -129,7 +127,32 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getPutConfigV2(url, user);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            
+
+            factory.authenticateUserV2 = function (userName, password, successHandler, errorHandler) {
+                // Server API: Authenticate User
+                // GET /user?valid=true
+
+                var url = "/user?valid=true";
+                var headers = {
+                    'Authorization': "Basic " + btoa(userName + ":" + password)
+                };
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                config['headers'] = headers;
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            }
+
+            factory.changePasswordV2 = function(newPassword, successHandler, errorHandler) {
+                // Server API: Change Password
+                // PUT /user/{userId}/password
+
+                var userId = sharedProperties.getCurrentUserId();
+                var url = "/user/" + userId + "/password";
+
+                var config = ndexConfigs.getPutConfigV2(url, newPassword);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.getUserMembershipInGroupV2 = function (userId, groupId, successHandler, errorHandler) {
                 // Server API: Get User's Membership in Group
                 // GET /user/{userId}/membership?groupid={groupid}
@@ -152,42 +175,6 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
              };
 
-            factory.authenticateUserV2 = function (userName, password, successHandler, errorHandler) {
-                // Server API: Authenticate User
-                // GET /user?valid=true
-
-                var url = "/user?valid=true";
-                var headers = {
-                    'Authorization': "Basic " + btoa(userName + ":" + password)
-                };
-
-                var config = ndexConfigs.getGetConfigV2(url, null);
-                config['headers'] = headers;
-                this.sendHTTPRequest(config, successHandler, errorHandler);
-            }
-
-            factory.createUserV2 = function (user, successHandler, errorHandler) {
-                // Server API: Create User
-                // POST /user
-
-                var url = "/user";
-                var config = ndexConfigs.getPostConfigV2(url, user);
-                this.sendHTTPRequest(config, successHandler, errorHandler);
-            };
-
-            factory.getUserTasksV2 = function (status, startPage, pageSize, successHandler, errorHandler) {
-                // Server API: Get User's Tasks
-                // GET /task?status={status}&start={startPage}&size={pageSize}
-
-                if (!status) {
-                    status = "ALL";
-                }
-
-                var url = "/task?status=" + status + "&start=" + startPage + "&size=" + pageSize ;
-
-                var config = ndexConfigs.getGetConfigV2(url, null);
-                this.sendHTTPRequest(config, successHandler, errorHandler);
-            };
 
             /*---------------------------------------------------------------------*
              * Groups
@@ -303,33 +290,27 @@ ndexServiceApp.factory('ndexService',
                 RequestResource.getApi({}, successHandler, errorHandler);
             };
 
-            factory.createRequest = function (request, successHandler, errorHandler) {
-                request.type = 'Request';
+            factory.createMembershipRequestV2 = function (request, successHandler, errorHandler) {
+                // Server API: Create Membership Request
+                // POST /user/{userid}/membershiprequest
 
-                handleAuthorizationHeader();
-                RequestResource.save({}, request, successHandler, errorHandler);
-            };
+                var postData = {
+                    "groupid" : request["destinationUUID"],
+                    "type" : request["permission"]
+                };
 
-            factory.updateRequest = function (externalId, request, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                request.responder = ndexUtility.getLoggedInUserAccountName();
-                RequestResource.save({identifier: externalId}, request, successHandler, errorHandler);
-            };
+                if (request["message"]) {
+                    postData["message"] = request["message"];
+                }
 
-            factory.deleteRequest = function (externalId, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                RequestResource.delete({identifier: externalId}, successHandler, errorHandler);
+                var url = "/user/" + request["sourceUUID"] + "/membershiprequest";
+                var config = ndexConfigs.getPostConfigV2(url, postData);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
             /*---------------------------------------------------------------------*
              * Tasks
-             *
-             * 	GET	    /task/api		RestResource[]
-             *  GET	    /task/{taskUUID}		Task
-             *  POST	/task/{taskUUID}	Task
-             *  POST	/task	Task	UUID
-             *  DELETE	/task/{taskUUID}
-             *  PUT	    /task/{taskUUID}/status/{status}	Task
              *---------------------------------------------------------------------*/
 
             var TaskResource = $resource(ndexServerURI + '/task/:taskId/:action/:status/',
@@ -346,14 +327,6 @@ ndexServiceApp.factory('ndexService',
                             action: 'api'
                         },
                         isArray: true
-                    },
-
-
-                    setStatus: {
-                        method: 'PUT',
-                        params: {
-                            action: 'status'
-                        }
                     }
                 }
             );
@@ -363,47 +336,29 @@ ndexServiceApp.factory('ndexService',
                 TaskResource.getApi({}, successHandler, errorHandler);
             };
 
-            factory.getTask = function (taksUUID, successHandler, errorHandler) {
-                ////console.log("retrieving task with UUID " + taskUUID);
-                TaskResource.get({'taskId': taskUUID}, successHandler, errorHandler);
-            };
+            factory.getUserTasksV2 = function (status, startPage, pageSize, successHandler, errorHandler) {
+                // Server API: Get User's Tasks
+                // GET /task?status={status}&start={startPage}&size={pageSize}
 
-            factory.createTask = function (task, successHandler, errorHandler) {
-                ////console.log("creating task with task = " + task.taskType);
-                handleAuthorizationHeader();
-                TaskResource.save({}, task, successHandler, errorHandler);
-            };
-
-            factory.deleteTask = function (taskUUID, successHandler, errorHandler) {
-                ////console.log("deleting task with UUID " + taskUUID);
-                TaskResource.delete({'taskId': taskUUID}, null, successHandler, errorHandler);
-            };
-
-            factory.setTaskStatus = function (taskUUID, statusType, successHandler, errorHandler) {
-
-                ////console.log('updating status to ' + statusType + " for task " + taskUUID);
-                TaskResource.setStatus(
-                    {
-                        'taskId': taskUUID,
-                        'statusType': statusType
-                    },
-                    {},
-                    successHandler,
-                    errorHandler
-                );
-            };
-
-
-            /*---------------------------------------------------------------------*
-             * AdminService APIs
-             *---------------------------------------------------------------------*/
-            var AdminResource = $resource(ndexServerURI + '/admin/:action/:subResource',
-                //paramDefaults
-                {
-                    action: '@action',
-                    subResource: '@subResource'
+                if (!status) {
+                    status = "ALL";
                 }
-            );
+
+                var url = "/task?status=" + status + "&start=" + startPage + "&size=" + pageSize ;
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.deleteTaskV2 = function (taskId, successHandler, errorHandler) {
+                // Server API: Delete A Task
+                // DELETE /task/{taskid}
+
+                var url = "/task/" + taskId;
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
 
 
             /*---------------------------------------------------------------------*
@@ -1162,6 +1117,11 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+
+            /*---------------------------------------------------------------------*
+             * Request and Response
+             *---------------------------------------------------------------------*/
+
             factory.createUserPermissionRequestV2 = function (userUUID, userPermissionRequest, successHandler, errorHandler) {
 
                 var config = ndexConfigs.getCreateUserPermissionRequestConfigV2(userUUID, userPermissionRequest);
@@ -1191,19 +1151,35 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.getUserPermissionRequestsV2 = function (userUUID, type, successHandler, errorHandler) {
+                // Server API: Get a User’s Permission Requests
+                // /user/{userId}/permissionrequest?type={sent|received}
 
-                var config = ndexConfigs.getGetUserPermissionRequestsConfigV2(userUUID, type);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
+                var url = "/user/" + userUUID + "/permissionrequest";
+
+                if (type && ((type.toLowerCase() == "sent") || (type.toLowerCase() == "received"))) {
+                    url = url + "?type=" + type;
+                }
+
+                var config =  ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.getUserMembershipRequestsV2 = function (userUUID, type, successHandler, errorHandler) {
+                // Server API: Get a User’s Membership Requests
+                // /user/{userId}/membershiprequest?type={sent|received}
+
+                var url = "/user/" + userUUID + "/membershiprequest";
+
+                if (type && ((type.toLowerCase() == "sent") || (type.toLowerCase() == "received"))) {
+                    url = url + "?type=" + type;
+                }
+
+                var config =  ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+            
             factory.updateNetworkPermissionV2 = function (networkId, type, userOrGroupId, permission, successHandler, errorHandler) {
 
                 var config = ndexConfigs.getUpdateNetworkPermissionConfigV2(networkId, type, userOrGroupId, permission);
@@ -1231,6 +1207,32 @@ ndexServiceApp.factory('ndexService',
                         errorHandler(error);
                     });
             };
+
+
+            factory.deleteRequestV2 = function (request, successHandler, errorHandler) {
+                // Server API: Delete a Permission Request or Delete a Membership Request (depending on request.requestType)
+                //    DELETE /user/{sender_id}/permissionrequest/{requestid}
+                // or DELETE /user/{sender_id}/membershiprequest/{requestid}
+                
+                if (!request && !request.requestType) {
+                    errorHandler()
+                }
+
+                var senderId  = request.requesterId;
+                var requestId = request.externalId;
+                var type      = (request.requestType.toLowerCase() == 'usernetworkaccess') ? 'permissionrequest' :
+                   'membershiprequest';
+
+                var url = "/user/" + senderId + "/" + type + "/" + requestId;
+
+                var config =  ndexConfigs.getDeleteConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
+
+
 
             factory.getGroupV2 = function (groupId, successHandler, errorHandler) {
 
@@ -1864,18 +1866,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // /group/{groupId}/permissionrequest
         var url = "/group/" + groupUUID + "/permissionrequest";
         return this.getPostConfigV2(url, groupPermissionRequest);
-    };
-
-    factory.getGetUserPermissionRequestsConfigV2 = function (userUUID, type) {
-        // Server API: Get a User’s Permission Requests
-        // /user/{userId}/permissionrequest?type={sent|received}
-
-        var url = "/user/" + userUUID + "/permissionrequest";
-        if (type && ((type.toLowerCase() == "sent") || (type.toLowerCase() == "received"))) {
-            url = url + "?type=" + type;
-        }
-
-        return this.getGetConfigV2(url, null);
     };
 
     factory.getUpdateNetworkPermissionConfigV2 = function (networkId, type, userOrGroupId, permission) {

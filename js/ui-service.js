@@ -209,7 +209,7 @@
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true
-                    ndexService.editUserProfileV2($scope.user,
+                    ndexService.updateUserV2($scope.user,
                         function(userData){
                             $scope.isProcessing = false;
                             var userId = $scope.user.externalId;
@@ -460,7 +460,7 @@
                 }
 
                 $scope.delete = function() {
-                    ndexService.deleteRequest($scope.request.externalId,
+                    ndexService.deleteRequestV2($scope.request,
                         function(data) {
                             modalInstance.close();
 
@@ -468,7 +468,7 @@
                             userController.refreshRequests();
                         },
                         function(error){
-                            //TODO
+                            console.log("unable to delete request");
                         })
                 }
 
@@ -586,6 +586,7 @@
                         backdrop: 'static',
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
                             $scope.request = {};
+                            $scope.request.groupName = $scope.$parent.ndexData.groupName;
                             $scope.request.permissionLabel ='Is member';
                             $scope.close = function() {
                                 $scope.request = {};
@@ -606,7 +607,7 @@
                                 $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
                                 $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
 
-                                ndexService.createRequest($scope.request,
+                                ndexService.createMembershipRequestV2($scope.request,
                                     function(request) {
                                         //TODO some modal
                                         $scope.close();
@@ -1603,7 +1604,7 @@
                         $scope.isProcessing = false;
                         return;
                     }
-                    ndexService.changeAccountPasswordV2($scope.change.newPassword,
+                    ndexService.changePasswordV2($scope.change.newPassword,
                         function(data) {
                             $route.reload();
                             modalInstance.close();

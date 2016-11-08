@@ -315,10 +315,10 @@ ndexApp.controller('userController',
             var getRequests = function ()
             {
                 // get all pending requests
-                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
+                ndexService.getUserPermissionRequestsV2(userController.identifier, "received",
                     function (requests)
                     {
-                        myAccountController.pendingRequests = requests;
+                        userController.pendingRequests = requests;
                     },
                     function (error)
                     {
@@ -326,10 +326,10 @@ ndexApp.controller('userController',
                     });
 
                 // get all sent requests
-                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "sent",
+                ndexService.getUserPermissionRequestsV2(userController.identifier, "sent",
                     function (requests)
                     {
-                        myAccountController.sentRequests = requests;
+                        userController.sentRequests = requests;
                     },
                     function (error)
                     {

@@ -68,7 +68,7 @@ ndexApp.controller('uploadController',
                 for(var i = $scope.tasks.length - 1; i >= 0; i-- )
                 {
                     var task = $scope.tasks[i];
-                    ndexService.deleteTask(task.externalId,
+                    ndexService.deleteTaskV2(task.externalId,
                         function()
                         {
                         });
@@ -76,15 +76,17 @@ ndexApp.controller('uploadController',
                 $scope.tasks = [];
             };
 
-            $scope.markTaskForDeletion= function(taskUUID){
+            /*
+            $scope.markTaskForDeletion= function(taskUUID) {
                 ndexService.setTaskStatus(taskUUID, "QUEUED_FOR_DELETION",
                     function(){
                         $scope.refreshTasks();
                     })
             };
+            */
 
             $scope.deleteTask= function(taskUUID){
-                ndexService.deleteTask(taskUUID,
+                ndexService.deleteTaskV2(taskUUID,
                     function(){
                         $scope.refreshTasks();
                     })
