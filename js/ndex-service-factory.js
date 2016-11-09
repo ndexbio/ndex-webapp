@@ -465,6 +465,127 @@ ndexServiceApp.factory('ndexService',
                 NetworkResource.getApi({}, successHandler, errorHandler);
             };
 
+            factory.deleteNetworkV2 = function(networkId, successHandler, errorHandler) {
+                // Server API: Delete a Network
+                // DELETE /network/{networkId}
+
+                var url = "/network/" + networkId;
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
+            factory.getNetworkSummaryV2 = function (networkId) {
+                // Server API: Get Network Summary
+                // GET /network/{networkid}/summary
+
+                // The $http timeout property takes a deferred value that can abort AJAX request
+                var deferredAbort = $q.defer();
+
+
+                var url = "/network/" + networkId + "/summary";
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            };
+            
+            factory.setNetworkSystemPropertiesV2 = function(networkId, property, value, successHandler, errorHandler) {
+                // Server API: Set Network System Properties
+                // PUT /network/{networkId}/systemproperty
+
+                var url = "/network/" + networkId + "/systemproperty";
+                var putData = {};
+                putData[property] = value;
+                var config = ndexConfigs.getPutConfigV2(url, putData);
+
+                $http(config)
+                    .success(function(data)
+                    {
+                        // note that we need to pass the Id of network back in order to correctly update
+                        // visibility of network in the Table while performing Bulk Change Visibility
+                        successHandler(data, networkId);
+                    })
+                    .error(function(data)
+                    {
+                        errorHandler(data, networkId);
+                    });
+            }
+
+            factory.getAllPermissionsOnNetworkV2 = function(networkId, type, permission, startPage, size) {
+
+                var deferredAbort = $q.defer();
+
+                // calls NetworkServiceV2.getNetworkUserMemberships server API at
+                // /network/{networkID}/permission?type={user|group}&start={startPage}&size={size}
+
+                var url = "/network/" + networkId + "/permission?type=" + type;
+
+                if (permission) {
+                    url = url + "&permission=" + permission;
+                }
+                url = url + "&start=" + startPage + "&size=" + size;
+
+
+                //var config = ndexConfigs.getAllPermissionsOnNetworkConfigV2(networkId, type, startPage, size);
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+
+            factory.updateNetworkPermissionV2 = function (networkId, type, userOrGroupId, permission, successHandler, errorHandler) {
+                // Server API: Update Network Permission
+                // /network/{networkId}/permission?(userid={uuid}|groupid={uuid})&permission={permission}
+
+                var url = "/network/" + networkId + "/permission?";
+
+                if (type && (type.toLowerCase() == "user")) {
+                    url = url + "userid=" + userOrGroupId;
+                } else if (type && (type.toLowerCase() == "group")) {
+                    url = url + "groupid=" + userOrGroupId;
+                }
+                url = url + "&permission=" + permission;
+
+                var config = ndexConfigs.getPutConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
             factory.addNamespaceToNetwork = function(externalId, namespace, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 NetworkResource.addNamespace({identifier: externalId}, namespace, successHandler, errorHandler)
@@ -522,10 +643,7 @@ ndexServiceApp.factory('ndexService',
                 handleAuthorizationHeader();
                 NetworkResource.setNetworkProperties({identifier: externalId}, properties, successHandler, errorHandler);
             };
-            factory.deleteNetwork = function(externalId, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                NetworkResource.delete({identifier: externalId}, null, successHandler, errorHandler);
-            };
+
             factory.archiveBelNamespaces = function(externalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 NetworkResource.archiveBelNamespaces({identifier: externalId}, null, successHandler, errorHandler);
@@ -563,101 +681,7 @@ ndexServiceApp.factory('ndexService',
             };
 
             //old http calls below
-
-            //
-            // getNetwork
-            //
-            factory.getNetwork = function (networkId) {
-                ////console.log("retrieving network " + networkId);
-
-                // The $http timeout property takes a deferred value that can abort AJAX request
-                var deferredAbort = $q.defer();
-
-                // Grab the config for this request. We modify the config to allow for $http request aborts.
-                // This may become standard in the client.
-                var config = ndexConfigs.getNetworkConfig(networkId);
-                config.timeout = deferredAbort.promise;
-
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
-            };
-
-            //
-            // getNetworkByEdges
-            //
-            // Get a block of edges
-            factory.getNetworkByEdges = function (networkId, skipBlocks, blockSize) {
-                ////console.log("retrieving edges (" + skipBlocks + ", " + (skipBlocks + blockSize) + ")");
-
-                // The $http timeout property takes a deferred value that can abort AJAX request
-                var deferredAbort = $q.defer();
-
-                // Grab the config for this request. We modify the config to allow for $http request aborts.
-                // This may become standard in the client.
-                var config = ndexConfigs.getNetworkByEdgesConfig(networkId, skipBlocks, blockSize);
-                config.timeout = deferredAbort.promise;
-
-                // We want to perform some operations on the response from the $http request. We can simply wrap the
-                // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
-                // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
-                var request = $http(config);
-                var promise = {};
-
-                promise.success = function (handler) {
-                    request.success(
-                        function (network) {
-                            ndexUtility.setNetwork(network);
-                            ndexHelper.updateNodeLabels(network);
-                            //ndexHelper.updateTermLabels(network);
-                            handler(network);
-                        }
-                    );
-                    return promise;
-                };
-
-                promise.error = function (handler) {
-                    request.then(
-                        null,
-                        function (error) {
-                            handler(error);
-                        }
-                    );
-                    return promise;
-                };
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                promise.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                promise.finally = function () {
-                    request.finally(
-                        function () {
-                            promise.abort = angular.noop; // angular.noop is an empty function
-                            deferredAbort = request = promise = null;
-                        }
-                    );
-                };
-
-                return promise;
-            };
-
+            
             //
             // findNetworks
             //
@@ -758,33 +782,6 @@ ndexServiceApp.factory('ndexService',
                 return promise;
             };
 
-
-            factory.setReadOnly = function (networkId, value)
-            {
-                var config = ndexConfigs.getNetworkSetReadOnlyConfig(networkId, value);
-                $http(config)
-                    .success(function()
-                    {
-                    });
-            };
-
-            factory.setVisibility = function (networkId, value, successHandler, errorHandler)
-            {
-                var config = ndexConfigs.getNetworkSetVisibilityConfig(networkId, value);
-                $http(config)
-                    .success(function(data)
-                    {
-                        // note that we need to pass the Id of network back in order to correctly update
-                        // visibility of network in the Table while performing Bulk Change Visibility
-                        successHandler(data, networkId);
-                    })
-                    .error(function(data)
-                    {
-                        errorHandler(data, networkId);
-                    });
-            };
-            
-
             factory.getGroupNetworkMemberships = function(groupId, permission, skipBlocks, blockSize, inclusive) {
 
                 var deferredAbort = $q.defer();
@@ -873,33 +870,6 @@ ndexServiceApp.factory('ndexService',
                 var deferredAbort = $q.defer();
 
                 var config = ndexConfigs.getGroupUserMembershipsConfig(groupId, permission, skipBlocks, blockSize, inclusive);
-                config.timeout = deferredAbort.promise;
-
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
-            }
-            
-            
-            factory.getAllGroupsPermissionsOnNetworkV2 = function(networkId, type, startPage, size) {
-
-                var deferredAbort = $q.defer();
-
-                var config = ndexConfigs.getAllPermissionsOnNetworkConfigV2(networkId, type, startPage, size);
                 config.timeout = deferredAbort.promise;
 
                 // We keep a reference ot the http-promise. This way we can augment it with an abort method.
@@ -1040,7 +1010,6 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
-
             factory.getNetworkAspectAsCXV2 = function(networkId, aspectName, successHandler, errorHandler) {
 
                 // Server API: exportNetwork
@@ -1058,7 +1027,6 @@ ndexServiceApp.factory('ndexService',
                         errorHandler(error);
                     });
             }
-
 
             factory.exportNetwork = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
             {
@@ -1179,20 +1147,6 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            
-            factory.updateNetworkPermissionV2 = function (networkId, type, userOrGroupId, permission, successHandler, errorHandler) {
-
-                var config = ndexConfigs.getUpdateNetworkPermissionConfigV2(networkId, type, userOrGroupId, permission);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
 
             factory.acceptOrDenyPermissionRequestV2 = function (recipientId, requestId, action, message, successHandler, errorHandler) {
 
@@ -1207,7 +1161,6 @@ ndexServiceApp.factory('ndexService',
                         errorHandler(error);
                     });
             };
-
 
             factory.deleteRequestV2 = function (request, successHandler, errorHandler) {
                 // Server API: Delete a Permission Request or Delete a Membership Request (depending on request.requestType)
@@ -1229,10 +1182,6 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-
-
-
-
 
             factory.getGroupV2 = function (groupId, successHandler, errorHandler) {
 
@@ -1610,20 +1559,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
      * Networks
      *---------------------------------------------------------------------*/
 
-    factory.getNetworkConfig = function (networkId) {
-        // network/{networkId}
-        var url = "/network/" + networkId;
-        return this.getGetConfig(url, null);
-    };
-
-    factory.getNetworkByEdgesConfig = function (networkId, skipBlocks, blockSize) {
-        // network/{networkId}/edge/{skip}/{top}
-        // GET to NetworkAService
-        var url = "/network/" + networkId + "/edge/asNetwork/" + skipBlocks + "/" + blockSize;
-
-        return this.getGetConfig(url, null);
-    };
-
     factory.getNetworkSampleConfigV2 = function (networkId) {
         // Get Network Sample
         // network/{networkId}/sample
@@ -1631,15 +1566,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var url = "/network/" + networkId + "/sample";
         return this.getGetConfigV2(url, null);
     };
-
-    factory.getCompleteNetworkInCXConfigV2 = function (networkId) {
-        // Get Complete Network in CX
-        // network/{networkId}
-
-        var url = "/network/" + networkId ;
-        return this.getGetConfigV2(url, null);
-    };
-
 
     factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
         var url = "/network/textsearch/" + skipBlocks.toString() + "/" + blockSize.toString();
@@ -1676,7 +1602,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     };
     */
 
-
     factory.getQueryNetworkAsCXConfigV2 = function (networkId, searchString, searchDepth, edgeLimit) {
         // queryNetworkAsCX server API at
         // /search/network/{networkId}/query?size={limit}
@@ -1689,19 +1614,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         };
         return this.getPostConfigV2(url, postData);
     };
-
-    factory.getNetworkSetReadOnlyConfig = function (networkId, value)
-    {
-        var url = "/network/" + networkId + "/setFlag/readOnly=" + value;
-        return this.getPutConfig(url, null);
-    };
-
-    factory.getNetworkSetVisibilityConfig = function (networkId, value)
-    {
-        var url = "/network/" + networkId + "/setFlag/visibility=" + value;
-        return this.getPutConfig(url, null);
-    };
-
 
     factory.getGroupNetworkMembershipsConfig = function (groupId, permission, skipBlocks, blockSize, inclusive)
     {
@@ -1867,23 +1779,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var url = "/group/" + groupUUID + "/permissionrequest";
         return this.getPostConfigV2(url, groupPermissionRequest);
     };
-
-    factory.getUpdateNetworkPermissionConfigV2 = function (networkId, type, userOrGroupId, permission) {
-        // Server API: Update Network Permission
-        // /network/{networkId}/permission?(userid={uuid}|groupid={uuid})&permission={permission}
-
-        var url = "/network/" + networkId + "/permission?";
-
-        if (type && (type.toLowerCase() == "user")) {
-            url = url + "userid=" + userOrGroupId;
-        } else if (type && (type.toLowerCase() == "group")) {
-            url = url + "groupid=" + userOrGroupId;
-        }
-        url = url + "&permission=" + permission;
-
-        return this.getPutConfigV2(url, null);
-    };
-
+    
     factory.getAcceptOrDenyPermissionRequestConfigV2 = function (recipientId, requestId, action, message) {
         // Server API: Accept or Deny a permission request
         // /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}

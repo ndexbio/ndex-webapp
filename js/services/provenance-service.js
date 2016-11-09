@@ -110,7 +110,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
             {
                 //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
                 //not be set.
-                (ndexService.getNetwork(uuid) )
+                (ndexService.getNetworkSummaryV2(uuid) )
                     .success( function ()
                         {
                             provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);

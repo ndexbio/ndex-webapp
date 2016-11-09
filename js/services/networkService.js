@@ -33,14 +33,16 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                 return null;
         };
 
-        factory.getNetworkSummaryFromNdex = function (networkId) {
+        factory.getNetworkSummaryFromNdexV2 = function (networkId) {
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
 
-            // Grab the config for this request. We modify the config to allow for $http request aborts.
-            // This may become standard in the client.
-            var config = ndexConfigs.getNetworkConfig(networkId);
+            // Server API: Get Network Summary
+            // GET /network/{networkid}/summary
+            var url = "/network/" + networkId + "/summary";
+            var config = ndexConfigs.getGetConfigV2(url, null);
+
             config.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
@@ -217,7 +219,11 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             // Grab the config for this request. We modify the config to allow for $http request aborts.
             // This may become standard in the client.
-            var config = ndexConfigs.getCompleteNetworkInCXConfigV2(networkId);
+
+            // Get Complete Network in CX
+            // network/{networkId}
+            var url = "/network/" + networkId ;
+            var config = ndexConfigs.getGetConfigV2(url, null);
 
             config.timeout = deferredAbort.promise;
 

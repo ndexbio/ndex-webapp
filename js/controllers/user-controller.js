@@ -182,7 +182,7 @@ ndexApp.controller('userController',
                 for (i = 0; i < selectedIds.length; i++ )
                 {
                     var selectedId = selectedIds[i];
-                    ndexService.deleteNetwork(selectedId,
+                    ndexService.deleteNetworkV2(selectedId,
                         function (data)
                         {
 

@@ -154,7 +154,7 @@ ndexApp.controller('networkController',
                 {
                     //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
                     //not be set.
-                    (ndexService.getNetwork(uuid) )
+                    (ndexService.getNetworkSummaryV2(uuid) )
                         .success( function (network)
                         {
                             provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);
@@ -645,7 +645,7 @@ ndexApp.controller('networkController',
 
                 // get network summary
                 // keep a reference to the promise
-                (request1 = ndexService.getNetwork(networkController.currentNetworkId) )
+                (request1 = ndexService.getNetworkSummaryV2(networkController.currentNetworkId) )
                     .success(
                     function (network) {
                         cn = network;

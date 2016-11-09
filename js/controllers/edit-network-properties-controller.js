@@ -454,7 +454,7 @@ ndexApp.controller('editNetworkPropertiesController',
 
     //				API initializations
     //------------------------------------------------------------------------------------
-    ndexService.getNetwork(networkExternalId)
+    ndexService.getNetworkSummaryV2(networkExternalId)
         .success(
             function(network) {
                 editor.propertyValuePairs = network.properties;

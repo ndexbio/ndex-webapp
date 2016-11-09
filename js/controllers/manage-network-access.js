@@ -234,7 +234,10 @@ ndexApp.controller('manageNetworkAccessController',
 
 				//networkManager.networkGroupMemberships = networkGroupMemberships;
 
-				ndexService.getAllGroupsPermissionsOnNetworkV2(networkManager.externalId, "group", 0, 1000000)
+				// no permission means return all permissions
+				var permission = null;
+
+				ndexService.getAllPermissionsOnNetworkV2(networkManager.externalId, "group", permission, 0, 1000000)
 					.success(
 						function (mapOfGroupPermissions) {
 
@@ -681,7 +684,7 @@ ndexApp.controller('manageNetworkAccessController',
 	//              INTIALIZATIONS
     //------------------------------------------------------------------------------------
 
-    ndexService.getNetwork(identifier)
+    ndexService.getNetworkSummaryV2(identifier)
     	.success(
     	function(network){
     		networkManager.network = network;

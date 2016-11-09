@@ -1015,7 +1015,8 @@
 
 
                     if (updateVisibility) {
-                        ndexService.setVisibility($scope.ndexData.externalId, $scope.network.visibility,
+
+                        ndexService.setNetworkSystemPropertiesV2($scope.ndexData.externalId, "visibility", $scope.network.visibility,
                             function (data, networkId) {
                                 $scope.ndexData.visibility = $scope.network.visibility;
                             },
@@ -1250,7 +1251,8 @@
                             )
                         } else if (operation === 'visibility') {
 
-                            ndexService.setVisibility(myNet.networkId, myNet.visibility,
+                            ndexService.setNetworkSystemPropertiesV2(myNet.networkId, "visibility", myNet.visibility,
+                            //ndexService.setVisibility(myNet.networkId, myNet.visibility,
                                 function (data, networkId) {
                                     createdTasksCounter = createdTasksCounter + 1;
 
@@ -1349,7 +1351,13 @@
                         if ((networkObj.isReadOnly) && ($scope.network.readOnly.toUpperCase()==='UNSET')) {
 
                             // the network is read-only and the operation is UNSET, so let's remove the read-only flag
-                            ndexService.setReadOnly(networkUUID, false);
+                            ndexService.setNetworkSystemPropertiesV2(networkUUID, "readOnly", false,
+                                function(data, networkId) {
+                                    // success, do nothing
+                                },
+                                function(error, networkId) {
+                                    console.log("unable to un-set Read-Only");
+                                });
 
                             // set the read-only flags in networkSearchResults to false showing that this network
                             // is now read-write
@@ -1358,7 +1366,17 @@
                         } else  if (!networkObj.isReadOnly && ($scope.network.readOnly.toUpperCase()==='SET')) {
 
                             // the network is not read-only and the true is SET, so let's make network read-only
-                            ndexService.setReadOnly(networkUUID, true);
+                            ndexService.setNetworkSystemPropertiesV2(networkUUID, "readOnly", true,
+                                function(data, networkId) {
+                                    // success, do nothing
+                                },
+                                function(error, networkId) {
+                                    console.log("unable to make network Read-Only");
+                                });
+
+
+
+
 
                             // set the read-only flags to true showing that this network is now read-only;
                             // the isReadOnly flag will be re-set
@@ -1700,7 +1718,7 @@
                                     return;
                                 $scope.isProcessing = true;
                                 $scope.progress = 'Delete in progress....';
-                                ndexService.deleteNetwork($scope.externalId,
+                                ndexService.deleteNetworkV2($scope.externalId,
                                     function(data) {
                                         sharedProperties.setCurrentNetworkId(null);
                                         $modalInstance.close();

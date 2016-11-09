@@ -1920,7 +1920,7 @@ ndexApp.controller('networkViewController',
 
                 // get network summary
                 // keep a reference to the promise
-                networkService.getNetworkSummaryFromNdex(networkExternalId) 
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId) 
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
@@ -2037,10 +2037,16 @@ ndexApp.controller('networkViewController',
             
             $scope.readOnlyChanged = function()
             {
-                ndexService.setReadOnly(networkController.currentNetworkId, networkController.readOnlyChecked);
+                ndexService.setNetworkSystemPropertiesV2(networkController.currentNetworkId,
+                    "readOnly", networkController.readOnlyChecked,
+                    function(data, networkId) {
+                        // success, do nothing
+                    },
+                    function(error, networkId) {
+                        console.log("unable to make network Read-Only");
+                    });
             };
-
-
+            
             networkController.addQueryEdgeProperty = function () {
                 networkController.advancedQueryEdgeProperties.push({});
                 networkController.validateAdvancedQuery();
