@@ -321,7 +321,7 @@ ndexApp.controller('editNetworkPropertiesController',
         }
 
 
-		ndexService.setNetworkProperties(networkExternalId, editor.propertyValuePairs,
+		ndexService.setNetworkPropertiesV2(networkExternalId, editor.propertyValuePairs,
 			function(data) {
 				//$route.reload();
                 var networkViewPage = sharedProperties.getNetworkViewPage();

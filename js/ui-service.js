@@ -1013,7 +1013,6 @@
                           ($scope.network.version !== $scope.ndexData.version)
                         )  ? true : false;
 
-
                     if (updateVisibility) {
 
                         ndexService.setNetworkSystemPropertiesV2($scope.ndexData.externalId, "visibility", $scope.network.visibility,
@@ -1033,10 +1032,18 @@
                               "subNetworkId"    : null
                             };
 
-                        var referenceList = [];
-                        referenceList.push(referenceProperty);
+                        var propertyList = $scope.ndexData.properties;
+                        for (var i = 0; i < propertyList.length; i++) {
+                            var property = propertyList[i];
+                            if (property.predicateString && property.predicateString.toLowerCase() == 'reference') {
+                                propertyList.splice(i, 1);
+                                break;
+                            }
+                        }
 
-                        ndexService.setNetworkProperties($scope.ndexData.externalId, referenceList,
+                        propertyList.push(referenceProperty);
+
+                        ndexService.setNetworkPropertiesV2($scope.ndexData.externalId, propertyList,
                             function (data) {
                                 $scope.ndexData.reference = $scope.network.reference;
                             },
@@ -1046,7 +1053,7 @@
                     }
 
                     if (updateNetworkSummary) {
-                        ndexService.editNetworkSummary($scope.ndexData.externalId, $scope.network,
+                        ndexService.updateNetworkProfileV2($scope.ndexData.externalId, $scope.network,
                             function (data) {
                                 $scope.ndexData.name = $scope.network.name;
                                 $scope.ndexData.description = $scope.network.description;
@@ -1210,7 +1217,7 @@
                             var referenceList = [];
                             referenceList.push(referenceProperty);
 
-                            ndexService.setNetworkProperties(myNet.networkId, referenceList,
+                            ndexService.setNetworkPropertiesV2(myNet.networkId, referenceList,
                                 function (data) {
                                     createdTasksCounter = createdTasksCounter + 1;
 
@@ -1231,7 +1238,7 @@
 
                         } else if (operation === 'description' || operation === 'version') {
 
-                            ndexService.editNetworkSummary(myNet.networkId, myNet,
+                            ndexService.updateNetworkProfileV2(myNet.networkId, myNet,
                                 function (data) {
                                     createdTasksCounter = createdTasksCounter + 1;
 

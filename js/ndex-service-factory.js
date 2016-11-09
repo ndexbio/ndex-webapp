@@ -420,18 +420,6 @@ ndexServiceApp.factory('ndexService',
                         } //,
                         //isArray: true
                     },
-                    editNetworkSummary: {
-                        method: 'POST',
-                        params: {
-                            subAction: 'summary'
-                        }
-                    },
-                    setNetworkProperties: {
-                        method: 'PUT',
-                        params: {
-                            subResource: 'properties'
-                        }
-                    },
                     getNamespaces: {
                         method: 'GET',
                         params: {
@@ -474,7 +462,6 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-
 
             factory.getNetworkSummaryV2 = function (networkId) {
                 // Server API: Get Network Summary
@@ -543,8 +530,6 @@ ndexServiceApp.factory('ndexService',
                 }
                 url = url + "&start=" + startPage + "&size=" + size;
 
-
-                //var config = ndexConfigs.getAllPermissionsOnNetworkConfigV2(networkId, type, startPage, size);
                 var config = ndexConfigs.getGetConfigV2(url, null);
                 config.timeout = deferredAbort.promise;
 
@@ -639,10 +624,30 @@ ndexServiceApp.factory('ndexService',
  */
             };
 
-            factory.setNetworkProperties = function(externalId, properties, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                NetworkResource.setNetworkProperties({identifier: externalId}, properties, successHandler, errorHandler);
+            factory.setNetworkPropertiesV2 = function(networkId, properties, successHandler, errorHandler) {
+                // Server API: Set Network Properties
+                // PUT /network/{networkId}/properties
+
+                var url = "/network/" + networkId + "/properties";
+
+                var config = ndexConfigs.getPutConfigV2(url, properties);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
+
+
+            factory.updateNetworkProfileV2 = function (networkId, profile, successHandler, errorHandler) {
+                // Server API: Update Network Profile
+                // PUT /network/{networkId}/profile
+
+                var url = "/network/" + networkId + "/profile";
+
+                var config = ndexConfigs.getPutConfigV2(url, profile);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+                
+            };
+
 
             factory.archiveBelNamespaces = function(externalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
@@ -651,10 +656,6 @@ ndexServiceApp.factory('ndexService',
             factory.getNumberOfBelNetworkNamespaces = function(externalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 NetworkResource.getNumberOfBelNetworkNamespaces({identifier: externalId}, null, successHandler, errorHandler);
-            };
-            factory.editNetworkSummary = function (externalId, summary, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                NetworkResource.editNetworkSummary({identifier: externalId}, summary, successHandler, errorHandler);
             };
 
             factory.getProvenance = function (externalId, successHandler, errorHandler) {
@@ -1665,16 +1666,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             url = url + "?inclusive=true"
         }
         return this.getGetConfig(url, null);
-    };
-
-    factory.getAllPermissionsOnNetworkConfigV2 = function (networkId, type, startPage, size)
-    {
-        // calls NetworkServiceV2.getNetworkUserMemberships server API at
-        // /network/{networkID}/permission?type=group&start={startPage}&size={size}
-
-        var url = "/network/" + networkId + "/permission?type=" + type + "&start=" + startPage + "&size=" + size;
-
-        return this.getGetConfigV2(url, null);
     };
 
     factory.getGroupsByUUIDsConfigV2 = function (UUIDs)
