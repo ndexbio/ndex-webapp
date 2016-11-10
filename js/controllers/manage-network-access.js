@@ -200,29 +200,27 @@ ndexApp.controller('manageNetworkAccessController',
 		// no permission means return all permissions
 		var permission = null;
 
-		ndexService.getAllPermissionsOnNetworkV2(networkManager.externalId, "user", permission, 0, 1000000)
-			.success(
-				function (mapOfUserPermissions) {
+		ndexService.getAllPermissionsOnNetworkV2(networkManager.externalId, "user", permission, 0, 1000000,
+			function (mapOfUserPermissions, networkId) {
 
-					var userUUIDs = Object.keys(mapOfUserPermissions);
-					networkManager.mapOfUserPermissions = mapOfUserPermissions;
+				var userUUIDs = Object.keys(mapOfUserPermissions);
+				networkManager.mapOfUserPermissions = mapOfUserPermissions;
 
-					ndexService.getUsersByUUIDsV2(userUUIDs)
-						.success(
-							function (userList) {
-								networkManager.networkUserMemberships = userList;
-								networkManager.processUserAccessPermissions();
-							})
-						.error(
-							function(error) {
-								console.log("unable to get groups by UUIDs");
-							}
-						)
-				})
-			.error(
-				function (error, data) {
-					console.log("unable to get group permissions on network");
-				});
+				ndexService.getUsersByUUIDsV2(userUUIDs)
+					.success(
+						function (userList) {
+							networkManager.networkUserMemberships = userList;
+							networkManager.processUserAccessPermissions();
+						})
+					.error(
+						function(error) {
+							console.log("unable to get users by UUIDs");
+						}
+					)
+			}),
+			function (error, networkId) {
+				console.log("unable to get user permissions on network");
+			};
 
 	};
 
@@ -231,29 +229,27 @@ ndexApp.controller('manageNetworkAccessController',
 		// no permission means return all permissions
 		var permission = null;
 
-		ndexService.getAllPermissionsOnNetworkV2(networkManager.externalId, "group", permission, 0, 1000000)
-			.success(
-				function (mapOfGroupPermissions) {
+		ndexService.getAllPermissionsOnNetworkV2(networkManager.externalId, "group", permission, 0, 1000000,
+			function (mapOfGroupPermissions, groupId) {
 
-					var groupsUUIDs = Object.keys(mapOfGroupPermissions);
-					networkManager.mapOfGroupPermissions = mapOfGroupPermissions;
+				var groupsUUIDs = Object.keys(mapOfGroupPermissions);
+				networkManager.mapOfGroupPermissions = mapOfGroupPermissions;
 
-					ndexService.getGroupsByUUIDsV2(groupsUUIDs)
-						.success(
-							function (groupList) {
-								networkManager.networkGroupMemberships = groupList;
-								networkManager.processGroupAccessPermissions();
-							})
-						.error(
-							function(error) {
-								console.log("unable to get groups by UUIDs");
-							}
-						)
-				})
-			.error(
-				function (error, data) {
-					console.log("unable to get group permissions on network");
-				});
+				ndexService.getGroupsByUUIDsV2(groupsUUIDs)
+					.success(
+						function (groupList) {
+							networkManager.networkGroupMemberships = groupList;
+							networkManager.processGroupAccessPermissions();
+						})
+					.error(
+						function(error) {
+							console.log("unable to get groups by UUIDs");
+						}
+					)
+			}),
+			function (error, groupId) {
+				console.log("unable to get group permissions on network");
+			};
 
 	};
 

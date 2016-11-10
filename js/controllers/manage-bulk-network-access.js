@@ -25,6 +25,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
     bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions = {};
 
 
+
     bulkNetworkManager.getNetworkPermissions = function(IDs) {
 
         if (typeof(IDs) === 'undefined') {
@@ -33,23 +34,39 @@ ndexApp.controller('manageBulkNetworkAccessController',
             $scope.noNetworksSelected = true;
             return;
         }
+
+        var permission = null;
+
         for (var i = 0; i <  IDs.length; i++) {
 
             var networkId = IDs[i];
 
-            ndexService.getNetworkUserMemberships(networkId, 'ALL',
-                function(memberships) {
+            ndexService.getAllPermissionsOnNetworkV2(networkId, "user", permission, 0, 1000000,
 
-                    var networkId = memberships[0].resourceUUID;
-                    bulkNetworkManager.
-                        selectedNetworksForUpdatingAccessPermissions[networkId] = memberships;
+                function (mapOfUserPermissions, networkUUID) {
 
-                },
-                function(error) {
-                    bulkNetworkManager.errors.push(error.data);
-                })
+                    var userMembershipsForNetwork = [];
+                    for (userId in mapOfUserPermissions) {
+
+                        var membership = {
+                            memberUUID: userId,
+                            resourceUUID: networkUUID,
+                            permissions: mapOfUserPermissions[userId],
+                            accountType: "user"
+                        };
+                        userMembershipsForNetwork.push(membership);
+                    }
+
+                    bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions[networkUUID] =
+                        userMembershipsForNetwork;
+
+                }),
+                function (error, networkUUID) {
+                    console.log("unable to get user permissions on network");
+                };
         }
     };
+
 
     bulkNetworkManager.findUsers = function() {
         var searchString = bulkNetworkManager.searchString;

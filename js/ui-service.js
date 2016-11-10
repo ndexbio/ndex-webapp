@@ -1503,8 +1503,7 @@
                     var updateAccessRequestsSent = 0;
                     var updateAccessRequestsResponsesReceived = 0;
 
-                    var IDsOfSelectedNetworks =
-                        Object.keys(bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions);
+                    var IDsOfSelectedNetworks = Object.keys(bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions);
 
                     var membershipToUpdateReadyForSending = [];
 
@@ -1512,8 +1511,7 @@
                     for (var i = 0;  i < IDsOfSelectedNetworks.length; i++) {
 
                         var networkId = IDsOfSelectedNetworks[i];
-                        var networkPermissionsObjs =
-                            bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions[networkId];
+                        var networkPermissionsObjs = bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions[networkId];
 
                         // loop through the list of accounts whose access for the networks we modify
                         for (var j = 0;
@@ -1529,9 +1527,9 @@
                             if (updateNetworkAccessPermissions) {
 
                                 var updatedMembership = {
-                                    memberAccountName: accountForUpdating.memberAccountName,
+                                    //memberAccountName: accountForUpdating.memberAccountName,
                                     memberUUID: accountForUpdating.memberUUID,
-                                    resourceName: networkPermissionsObjs[0].resourceName,
+                                    //resourceName: networkPermissionsObjs[0].resourceName,
                                     resourceUUID: networkId,
                                     permissions: accessTypeSelected,
                                     accountType: accountForUpdating.accountType.toLowerCase()

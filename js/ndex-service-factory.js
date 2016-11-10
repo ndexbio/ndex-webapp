@@ -404,15 +404,6 @@ ndexServiceApp.factory('ndexService',
                             subResource: 'member'
                         }
                     },
-                    getNetworkUserMemberships: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'user',
-                            skipBlocks: 0,
-                            blockSize: 1000
-                        },
-                        isArray: true
-                    },
                     getNamespaces: {
                         method: 'GET',
                         params: {
@@ -509,10 +500,8 @@ ndexServiceApp.factory('ndexService',
                     });
             }
 
-            factory.getAllPermissionsOnNetworkV2 = function(networkId, type, permission, startPage, size) {
 
-                var deferredAbort = $q.defer();
-
+            factory.getAllPermissionsOnNetworkV2 = function(networkId, type, permission, startPage, size, successHandler, errorHandler) {
                 // calls NetworkServiceV2.getNetworkUserMemberships server API at
                 // /network/{networkID}/permission?type={user|group}&start={startPage}&size={size}
 
@@ -524,25 +513,16 @@ ndexServiceApp.factory('ndexService',
                 url = url + "&start=" + startPage + "&size=" + size;
 
                 var config = ndexConfigs.getGetConfigV2(url, null);
-                config.timeout = deferredAbort.promise;
 
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data, networkId);
+                    })
+                    .error(function(data)
+                    {
+                        errorHandler(data, networkId);
+                    });
             }
 
             factory.updateNetworkPermissionV2 = function (networkId, type, resourceId, permission, successHandler, errorHandler) {
@@ -588,49 +568,7 @@ ndexServiceApp.factory('ndexService',
                 handleAuthorizationHeader();
                 NetworkResource.getNamespaces({identifier: externalId}, successHandler, errorHandler)
             };
-
-            factory.getNetworkUserMemberships = function(externalId, permission, successHandler, errorHandler) {
-
-                handleAuthorizationHeader();
-
-                var memberships = [];
-
-                $q.all([
-                    NetworkResource.getNetworkUserMemberships({identifier: externalId, permissionType: permission}).$promise
-                ]).then(
-                    function(arrays) {
-                        memberships = memberships.concat(arrays[0]);
-                        successHandler(memberships);
-                    },
-                    function(errors) {
-                        errorHandler(errors)
-                    });
-
-/*
-                if(permission === 'ALL') {
-                    var memberships = [];
-
-                    $q.all([
-                        //NetworkResource.getMemberships({identifier: externalId, permissionType: 'ADMIN'}).$promise,
-                        //NetworkResource.getMemberships({identifier: externalId, permissionType: 'WRITE'}).$promise,
-                        NetworkResource.getMemberships({identifier: externalId, permissionType: 'READ'}).$promise
-                    ]).then(
-                        function(arrays) {
-                            memberships = memberships.concat(arrays[0]);
-                            //memberships = memberships.concat(arrays[1]);
-                            //memberships = memberships.concat(arrays[2]);
-
-                            successHandler(memberships);
-                        },
-                        function(errors) {
-                            errorHandler(errors)
-                        });
-                }
-                else {
-                    NetworkResource.getMemberships({identifier: externalId, permissionType: permission}, successHandler, errorHandler)
-                }
- */
-            };
+            
 
             factory.setNetworkPropertiesV2 = function(networkId, properties, successHandler, errorHandler) {
                 // Server API: Set Network Properties
