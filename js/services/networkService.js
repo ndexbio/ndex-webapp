@@ -383,11 +383,20 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return promise;
         };
 
+        var extractUuidFromUri = function( uri )
+        {
+            var uuidRegExPattern = /[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/i;
+
+            var n = uri.search(uuidRegExPattern);
+            var uuid = uri.substr(n, 36);
+
+            return uuid;
+        };
 
         factory.saveQueryResults = function (currentNetworkSummary, currentSubNetwork, rawCX, onSuccess, onError) {
-            factory.createCXNetwork(rawCX, function(newUUID) {
+            factory.createCXNetwork(rawCX, function(newNetworkURL) {
 
-                provenanceService.getProvenance(currentNetworkSummary.externalId, function (provenance) {
+                provenanceService.getNetworkProvenance(currentNetworkSummary.externalId, function (provenance) {
 
                     var eventProperties= [];
 
@@ -477,9 +486,16 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                         })
                     }
 
-                    ndexService.setProvenance(newUUID, newProvenance).$promise.then(
-                        onSuccess
-                    );
+                    var newUUID = extractUuidFromUri(newNetworkURL);
+
+                    ndexService.setNetworkProvenanceV2(newUUID, newProvenance,
+                        function(success){
+                            onSuccess;
+                        },
+                        function(error){
+                            console.log("unable to update network provenance");
+                            onError(error);
+                        })
                 },
                  onError)
                 },
@@ -506,7 +522,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             XHR.addEventListener('load', function(event) {
 
                 if (XHR.readyState === XHR.DONE) {
-                    if (XHR.status === 200) {
+                    if (XHR.status === 200 || XHR.status === 201) {
                         console.log(XHR.responseText);
                         var newUUID = XHR.responseText;
                         

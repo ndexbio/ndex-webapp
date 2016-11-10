@@ -786,7 +786,7 @@ ndexApp.controller('networkController',
             };
 
             var getProvenance = function () {
-                ndexService.getProvenance(networkController.currentNetworkId,
+                ndexService.getNetworkProvenanceV2(networkController.currentNetworkId,
                     function (data) {
                         // fake data
                         // provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());

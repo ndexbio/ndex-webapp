@@ -12,8 +12,12 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
         
         var extractUuidFromUri = function( uri )
         {
-            var idStart = uri.lastIndexOf('/');
-            return uri.substring(idStart + 1);
+            var uuidRegExPattern = /[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/i;
+
+            var n = uri.search(uuidRegExPattern);
+            var uuid = uri.substr(n, 36);
+
+            return uuid;
         };
 
         var extractHostFromUri = function( uri )
@@ -34,9 +38,9 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
         factory.resetProvenance = function () {provenance = undefined;};
 
-        factory.getProvenance = function (networkId, onSuccess, onError) {
+        factory.getNetworkProvenance = function (networkId, onSuccess, onError) {
             if (! provenance ) {
-                ndexService.getProvenance(networkId,
+                ndexService.getNetworkProvenanceV2(networkId,
                     function (data) {
                         provenance = data;
                         onSuccess(provenance);
@@ -68,7 +72,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
         factory.showProvenance = function (controller) {
             if (!provenance) {
-                ndexService.getProvenance(controller.currentNetworkId,
+                ndexService.getNetworkProvenanceV2(controller.currentNetworkId,
                     function (data) {
 
                     provenance = data;

@@ -385,19 +385,6 @@ ndexServiceApp.factory('ndexService',
                         },
                         isArray: true
                     },
-
-                    getProvenance: {
-                        method: 'GET',
-                        params: {
-                            subResource: 'provenance'
-                        }
-                    },
-                    setProvenance: {
-                        method: 'PUT',
-                        params: {
-                            subResource: 'provenance'
-                        }
-                    },
                     deleteMember: {
                         method: 'DELETE',
                         params: {
@@ -602,15 +589,30 @@ ndexServiceApp.factory('ndexService',
                 handleAuthorizationHeader();
                 NetworkResource.getNumberOfBelNetworkNamespaces({identifier: externalId}, null, successHandler, errorHandler);
             };
+            
+            factory.getNetworkProvenanceV2 = function (networkId, successHandler, errorHandler) {
+                // Server API: Get Network Provenance
+                // GET /network/{networkId}/provenance
 
-            factory.getProvenance = function (externalId, successHandler, errorHandler) {
-                handleAuthorizationHeader();
-                return NetworkResource.getProvenance({identifier: externalId}, successHandler, errorHandler);
+                var url = "/network/" + networkId + "/provenance";
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            factory.setProvenance = function(externalId, provenance, successHandler, errorHandler){
-                handleAuthorizationHeader();
-                return NetworkResource.setProvenance({identifier: externalId}, provenance, successHandler, errorHandler);
+
+
+            factory.setNetworkProvenanceV2 = function(networkId, provenance, successHandler, errorHandler){
+                // Server API: Set Network Provenance
+                // PUT /network/{networkId}/provenance
+
+                var url = "/network/" + networkId + "/provenance";
+
+                var config = ndexConfigs.getPutConfigV2(url, provenance);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
+            
 
             factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();

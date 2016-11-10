@@ -1769,11 +1769,10 @@ ndexApp.controller('networkViewController',
 
                                 $('#saveQueryButton').prop('disabled', true)
 
-                            }, function (msg) {
-                                $scope.progress = ("Failed to save query result to NDEx. Please try again later. \nErrror message: " + msg );
-
+                            }, function (error) {
+                                delete $scope.progress;
+                                $scope.errors = (error && error.message) ? error.message : "Unable to save Query results"
                             });
-
                         };
                     }
                 });

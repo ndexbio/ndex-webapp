@@ -2069,7 +2069,7 @@
                     var terms = sharedProperties.getCurrentQueryTerms();
                     var depth = sharedProperties.getCurrentQueryDepth();
 
-                    var subPromise = ndexService.getProvenance(sharedProperties.currentNetworkId).$promise;
+                    var subPromise = ndexService.getNetworkProvenanceV2(sharedProperties.currentNetworkId).$promise;
                     return subPromise.then(
                         function(provenance)
                         {
@@ -2126,15 +2126,16 @@
                                 newProvenance.properties.push( {name:'version', value:networkSummary.version, type:'SimplePropertyValuePair'}  )
                             }
 
-                            ndexService.setProvenance(networkSummary.externalId, newProvenance).$promise.then(
-                                function(res)
-                                {
+                            ndexService.setNetworkProvenanceV2(networkSummary.externalId, newProvenance,
+                                function(success){
+                                    console.log("success");
                                     modal.close();
                                     $scope.isProcessing = false;
 
                                     $('#tableViewSaveSubnetworkButton').prop('disabled', true);
-                                    
-                                   // $location.path('/network/'+networkSummary.externalId);
+                                },
+                                function(error){
+                                    console.log("unable to update network provenance");
                                 });
                         })
                 };
