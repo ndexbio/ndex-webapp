@@ -1317,7 +1317,7 @@ ndexApp.controller('networkViewController',
                     (request2 = networkService.getNetworkSampleV2(networkId) )
                         .success(
                             function (network) {
-                                callback(network, true);
+                                callback(network, false);
                             }
                         )
                         .error(
@@ -1686,7 +1686,7 @@ ndexApp.controller('networkViewController',
                     //        networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
 
                          //   network["networkAttributes"] = networkAttrList;
-                            drawCXNetworkOnCanvas(network,true);
+                            drawCXNetworkOnCanvas(network,false);
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;
                             networkController.selectionContainer = {};
