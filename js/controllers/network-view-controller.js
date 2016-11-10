@@ -47,7 +47,7 @@ ndexApp.controller('networkViewController',
             networkController.advancedQueryEdgeProperties = [{}];
             networkController.advancedQueryNodeProperties = [{}];
 
-            networkController.networkAdmins = null;
+            //networkController.networkAdmins = null;
 
             networkController.edgePropertyNamesForAdvancedQuery = undefined;
             networkController.nodePropertyNamesForAdvancedQuery = undefined;
@@ -405,6 +405,7 @@ ndexApp.controller('networkViewController',
             }
 
 
+            /*
             var getNetworkAdmins = function()
             {
                 if (networkController.isLoggedIn) {
@@ -432,6 +433,7 @@ ndexApp.controller('networkViewController',
                         });
                 }
             };
+            */
 
 
             var parseNdexMarkupValue = function ( value ) {
@@ -1946,7 +1948,7 @@ ndexApp.controller('networkViewController',
                             });
                             
                             networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
-                            getNetworkAdmins();
+                            //getNetworkAdmins();
 
                             var sourceFormat =
                                 networkService.getNetworkProperty('sourceFormat');

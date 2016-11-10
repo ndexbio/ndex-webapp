@@ -290,9 +290,10 @@ ndexApp.controller('userController',
 
                 // We are getting networks of some user. This is the scenario where we click a user/account name
                 // from the list of found networks on the Network search page (when we are logged in or anonymously)
+                
                 userController.networkQuery.accountName = cUser.userName;
 
-                ndexService.searchNetworks(userController.networkQuery, userController.skip, userController.skipSize,
+                ndexService.searchNetworksV2(userController.networkQuery, userController.skip, userController.skipSize,
                     function (networks)
                     {
                         userController.networkSearchResults = networks.networks;

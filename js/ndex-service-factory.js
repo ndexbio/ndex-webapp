@@ -413,13 +413,6 @@ ndexServiceApp.factory('ndexService',
                         },
                         isArray: true
                     },
-                    search: {
-                        method: 'POST',
-                        params: {
-                            action: 'textsearch'
-                        } //,
-                        //isArray: true
-                    },
                     getNamespaces: {
                         method: 'GET',
                         params: {
@@ -552,24 +545,39 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.updateNetworkPermissionV2 = function (networkId, type, userOrGroupId, permission, successHandler, errorHandler) {
+            factory.updateNetworkPermissionV2 = function (networkId, type, resourceId, permission, successHandler, errorHandler) {
                 // Server API: Update Network Permission
-                // /network/{networkId}/permission?(userid={uuid}|groupid={uuid})&permission={permission}
+                // PUT /network/{networkid}/permission?(userid={uuid}|groupid={uuid})&permission={permission}
 
                 var url = "/network/" + networkId + "/permission?";
-
-                if (type && (type.toLowerCase() == "user")) {
-                    url = url + "userid=" + userOrGroupId;
-                } else if (type && (type.toLowerCase() == "group")) {
-                    url = url + "groupid=" + userOrGroupId;
+                if (type == 'user') {
+                    url = url + 'userid=';
+                } else if (type == 'group') {
+                    url = url + 'groupid=';
                 }
-                url = url + "&permission=" + permission;
+                url = url + resourceId + '&permission=' + permission;
 
                 var config = ndexConfigs.getPutConfigV2(url, null);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.deleteNetworkPermissionV2 = function (networkId, type, resourceId, successHandler, errorHandler) {
+                // Server API: Delete Network Permission
+                // DELETE /network/{networkid}/permission?(userid={uuid}|groupid={uuid})
+
+                var url = "/network/" + networkId + "/permission?";
+                if (type == 'user') {
+                    url = url + 'userid=';
+                } else if (type == 'group') {
+                    url = url + 'groupid=';
+                }
+                url = url + resourceId;
+
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
 
             factory.addNamespaceToNetwork = function(externalId, namespace, successHandler, errorHandler) {
                 handleAuthorizationHeader();
@@ -645,7 +653,6 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getPutConfigV2(url, profile);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
-                
             };
 
 
@@ -670,15 +677,6 @@ ndexServiceApp.factory('ndexService',
             factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 return NetworkResource.deleteMember({identifier: networkExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
-            };
-
-            factory.searchNetworks = function (query, skipBlocks, blockSize, successHandler, errorHandler) {
-                if (query.searchString == null)
-                    query.searchString = '';
-
-                if (ndexUtility.getLoggedInUserAccountName() != null)
-                    handleAuthorizationHeader();
-                NetworkResource.search({skipBlocks: skipBlocks, blockSize: blockSize}, query, successHandler, errorHandler);
             };
 
             //old http calls below
@@ -972,45 +970,7 @@ ndexServiceApp.factory('ndexService',
 
                 return request;
             }
-
-            factory.updateNetworkGroupMembership = function (memberUUID, resourceUUID,
-                                                             permissions, successHandler, errorHandler)
-            {
-                 //  updateNetworkGroupMembership
-                 //  /network/{networkId}/member/user/{userId}
-                 //  Permission is POSTed as a JSON string. It can be “ADMIN”, “WRITE” or “READ”
-
-                var config = ndexConfigs.getUpdateNetworkGroupMembershipConfig(memberUUID, resourceUUID, permissions)
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-
-                    }).error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
-
-            factory.updateNetworkUserMembership = function (memberUUID, resourceUUID,
-                                                            permissions, successHandler, errorHandler)
-            {
-                //  updateNetworkUserMembersip
-                //  /network/{networkId}/member/group/{groupId}
-                //  Permission is POSTed as a JSON String, can be either “WRITE” or “READ”
-
-                var config = ndexConfigs.getUpdateNetworkUserMembershipConfig(memberUUID, resourceUUID, permissions);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-
-                    }).error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
-
+            
             factory.getNetworkAspectAsCXV2 = function(networkId, aspectName, successHandler, errorHandler) {
 
                 // Server API: exportNetwork
@@ -1051,41 +1011,6 @@ ndexServiceApp.factory('ndexService',
                         errorHandler(error);
                     });
             };
-
-            factory.deleteNetworkUserMembership = function (networkId, userId, successHandler, errorHandler)
-            {
-                // Server API: deleteNetworkUserMembership
-                // /network/{networkId}/member/user/{userIdId}
-
-                var config = ndexConfigs.getDeleteNetworkUserMembershipConfig(networkId, userId);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
-
-            factory.deleteNetworkGroupMembership = function (networkId, userId, successHandler, errorHandler)
-            {
-                // Server API: deleteNetworkGroupMembership
-                // /network/{networkId}/member/group/{groupId}
-
-                var config = ndexConfigs.getDeleteNetworkGroupMembershipConfig(networkId, userId);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
-
 
             /*---------------------------------------------------------------------*
              * Request and Response
@@ -1197,6 +1122,21 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+            /*---------------------------------------------------------------------*
+             * Search
+             *---------------------------------------------------------------------*/
+            factory.searchUsersV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getSearchUsersConfigV2(searchString, skipBlocks, blockSize);
+                $http(config)
+                    .success(function(data) {
+                        successHandler(data);
+                    })
+                    .error(function(error) {
+                        errorHandler(error);
+                    })
+            };
+
             factory.searchGroupsV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
 
                 var config = ndexConfigs.getSearchGroupsConfigV2(searchString, skipBlocks, blockSize);
@@ -1209,18 +1149,20 @@ ndexServiceApp.factory('ndexService',
                     })
             };
 
-            factory.searchUsersV2 = function (searchString, skipBlocks, blockSize, successHandler, errorHandler) {
+            factory.searchNetworksV2 = function (query, start, size, successHandler, errorHandler) {
+                // Server API: Search Networks
+                // POST /search/network?start={number}&size={number}
 
-                var config = ndexConfigs.getSearchUsersConfigV2(searchString, skipBlocks, blockSize);
-                $http(config)
-                    .success(function(data) {
-                        successHandler(data);
-                    })
-                    .error(function(error) {
-                        errorHandler(error);
-                    })
+                if (query.searchString == null)
+                    query.searchString = '';
+
+                var url = "/search/network?start=" + start + "&size=" + size;
+                var config = ndexConfigs.getPostConfigV2(url, query);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            
+
+
             // return factory object
             return factory;
         }]);
@@ -1697,24 +1639,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfigV2(url, usersUUIDs);
     };
 
-    factory.getUpdateNetworkUserMembershipConfig = function (memberUUID, resourceUUID, permissions) {
-        // Server API: updateNetworkGroupMembership
-        // /network/{networkId}/member/user/{userId}
-        // Permission is POSTed as a JSON string. It can be “ADMIN”, “WRITE” or “READ”
-
-        var url = "/network/" + resourceUUID + "/member/user/" + memberUUID;
-        return this.getPostConfig(url, permissions);
-    };
-
-    factory.getUpdateNetworkGroupMembershipConfig = function (memberUUID, resourceUUID, permissions) {
-        // Server API: updateNetworkUserMembersip
-        // /network/{networkId}/member/group/{groupId}
-        // Permission is POSTed as a JSON String, can be either “WRITE” or “READ”
-
-        var url = "/network/" + resourceUUID + "/member/group/" + memberUUID;
-        return this.getPostConfig(url, permissions);
-    };
-
     factory.getNetworkAspectAsCXConfigV2 = function (networkId, aspectName) {
         // Server API: getAspectElements
         // /network/{networkid}/aspect/{aspectName}
@@ -1739,22 +1663,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         postData["networkIds"] = listOfNetworkIDs;
 
         return this.getPostConfig(url, postData);
-    };
-
-    factory.getDeleteNetworkUserMembershipConfig = function (networkId, userId) {
-        // Server API: deleteNetworkUserMembership
-        // /network/{networkId}/member/user/{userIdId}
-
-        var url = "/network/" + networkId + "/member/user/" + userId;
-        return this.getDeleteConfig(url);
-    }
-
-    factory.getDeleteNetworkGroupMembershipConfig = function (networkId, groupId) {
-        // Server API: deleteNetworkGroupMembership
-        // /network/{networkId}/member/group/{groupId}
-
-        var url = "/network/" + networkId + "/member/group/" + groupId;
-        return this.getDeleteConfig(url);
     };
 
     factory.getCreateUserPermissionRequestConfigV2 = function (userUUID, userPermissionRequest) {
