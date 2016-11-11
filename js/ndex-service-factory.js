@@ -896,8 +896,27 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             }
 
+            factory.exportNetworksV2 = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
+            {
+                // Server API: Export NEtworks
+                // POST /network/export
+                // The structure of the export POST request is:
+                //      {
+                //          "networkFormat": "cx",
+                //          "networkIds":  [a list of network UUIDs]
+                //      }
 
-            
+                var url = "/batch/network/export";
+
+                var postData = {};
+                postData["exportFormat"] = networkExportFormat;
+                postData["networkIds"] = listOfNetworkIDs;
+
+                var config = ndexConfigs.getPostConfigV2(url, postData);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
 
             factory.getNetworkAspectAsCXV2 = function(networkId, aspectName, successHandler, errorHandler) {
 
@@ -916,29 +935,6 @@ ndexServiceApp.factory('ndexService',
                         errorHandler(error);
                     });
             }
-
-            factory.exportNetwork = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
-            {
-                // Server API: exportNetwork
-                // /network/export
-                // The structure of the export POST request is:
-                //      {
-                //          "networkFormat": "cx",
-                //          "networkIds":  [a list of network UUIDs]
-                //      }
-
-                var config = ndexConfigs.getExportNetworkConfig(networkExportFormat, listOfNetworkIDs);
-                $http(config)
-                    .success(function(data)
-                    {
-                        //console.log("success export network");
-                        successHandler(data);
-                    }).error(function(error)
-                    {
-                        //console.log("unable to export network");
-                        errorHandler(error);
-                    });
-            };
 
             /*---------------------------------------------------------------------*
              * Request and Response
@@ -1563,24 +1559,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var url = "/network/" + networkId + "/aspect/" + aspectName;
 
         return this.getGetConfigV2(url, null);
-    };
-
-    factory.getExportNetworkConfig = function (networkExportFormat, listOfNetworkIDs) {
-        // Server API: exportNetwork
-        // /network/export
-        // The structure of the export POST request is:
-        //      {
-        //          "networkFormat": "cx",
-        //          "networkIds":  [a list of network UUIDs]
-        //      }
-
-        var url = "/network/export";
-
-        var postData = {};
-        postData["networkFormat"] = networkExportFormat;
-        postData["networkIds"] = listOfNetworkIDs;
-
-        return this.getPostConfig(url, postData);
     };
 
     factory.getCreateUserPermissionRequestConfigV2 = function (userUUID, userPermissionRequest) {

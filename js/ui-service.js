@@ -845,7 +845,7 @@
                     var networkUUIDsList = [];
                     networkUUIDsList.push($scope.externalId);
 
-                    ndexService.exportNetwork(networkExportFormat, networkUUIDsList,
+                    ndexService.exportNetworksV2(networkExportFormat, networkUUIDsList,
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
@@ -920,7 +920,7 @@
 
                     var networkExportFormat = $scope.networkExportFormat;
 
-                    ndexService.exportNetwork(networkExportFormat, networkUUIDsList,
+                    ndexService.exportNetworksV2(networkExportFormat, networkUUIDsList,
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
