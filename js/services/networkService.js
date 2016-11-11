@@ -490,10 +490,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
                     ndexService.setNetworkProvenanceV2(newUUID, newProvenance,
                         function(success){
-                            onSuccess;
+                            onSuccess(success);
                         },
                         function(error){
-                            console.log("unable to update network provenance");
                             onError(error);
                         })
                 },
@@ -523,11 +522,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
                 if (XHR.readyState === XHR.DONE) {
                     if (XHR.status === 200 || XHR.status === 201) {
-                        console.log(XHR.responseText);
                         var newUUID = XHR.responseText;
-                        
-                        
-                        
                         onSuccess(XHR.responseText);
                     }
                 }

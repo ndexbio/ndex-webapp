@@ -23,6 +23,9 @@ ndexApp.controller('editNetworkPropertiesController',
 
     editor.disableSaveChangesButton = false;
 
+    editor.namespaces = [];
+
+    editor.showNameSpaces = false;
 
     editor.buildAttributeDictionary = function() {
         var dict = {};
@@ -357,6 +360,7 @@ ndexApp.controller('editNetworkPropertiesController',
                 editor.namespaces.push(namespace);
                 editor.newPrefix = null;
                 editor.newURI = null;
+                editor.showNameSpaces = (editor.namespaces.length > 0) ? true : false;
             },
             function(error) {
                 editor.errors.push(error.data)
@@ -487,6 +491,7 @@ ndexApp.controller('editNetworkPropertiesController',
                     function(namespaces) {
 
                         editor.namespaces = namespaces;
+                        editor.showNameSpaces = (editor.namespaces.length > 0) ? true : false;
 
                         var namespaceSet = {};
                         for( var i = 0; i < namespaces.length; i++ )
@@ -585,5 +590,7 @@ ndexApp.controller('editNetworkPropertiesController',
         function(error){
             editor.errors.push(error)
         });
+
+    editor.showNameSpaces = (editor.namespaces.length > 0) ? true : false;
 
 }]);

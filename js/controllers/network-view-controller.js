@@ -1763,16 +1763,17 @@ ndexApp.controller('networkViewController',
 
                             //               console.log ( JSON.stringify(rawCX));
 
-                            networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX, function (){
-                                $modalInstance.close();
-                                $scope.isProcessing = false;
+                            networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX,
+                                function (data) {
+                                    $modalInstance.close();
+                                    $scope.isProcessing = false;
 
-                                $('#saveQueryButton').prop('disabled', true)
-
-                            }, function (error) {
-                                delete $scope.progress;
-                                $scope.errors = (error && error.message) ? error.message : "Unable to save Query results"
-                            });
+                                    $('#saveQueryButton').prop('disabled', true);
+                                },
+                                function (error) {
+                                    delete $scope.progress;
+                                    $scope.errors = (error && error.message) ? error.message : "Unable to save Query results"
+                                });
                         };
                     }
                 });

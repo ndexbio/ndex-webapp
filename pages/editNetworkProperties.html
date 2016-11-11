@@ -23,7 +23,7 @@
 
 <div class='row'>
 
-	<div class='col-sm-3 well well-lg'>
+	<div ng-show='editor.showNameSpaces()' class='col-sm-3 well well-lg'>
 		<div class='row' >
 			<div class='col-sm-12'>
 				<h6><strong>Namespaces in This Network</strong></h6>
@@ -31,7 +31,7 @@
 
 			<div class='panel panel-default'>
 				<ul class='list-group'>
-					<li class='list-group-item' ng-repeat='namespace in editor.namespaces'> 
+					<li class='list-group-item' ng-repeat='namespace in editor.namespaces'>
 						<span>{{namespace.prefix || namespace.uri}}</span>
 						<span class="glyphicon glyphicon-remove text-muted pull-right"
 							style='cursor:pointer'
@@ -44,7 +44,10 @@
 		    </div>
 		</div>
 
+
+		<!--
 		<br>
+
 
 		<div ng-show='editor.isAdmin || editor.canEdit'>
 		<h6><strong>Add an Ontology</strong></h6>
@@ -63,6 +66,7 @@
 		  <button type="submit" class="btn btn-sm btn-default pull-right">Add</button>
 		</form>
 		</div>
+		-->
 
 	</div>
 
