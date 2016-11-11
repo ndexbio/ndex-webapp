@@ -830,6 +830,36 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
+
+            /*---------------------------------------------------------------------*
+             * Batch Operations
+             *---------------------------------------------------------------------*/
+            factory.getUsersByUUIDsV2 = function(usersUUIDsList) {
+
+                var deferredAbort = $q.defer();
+
+                var config = ndexConfigs.getUsersByUUIDsConfigV2(usersUUIDsList);
+                config.timeout = deferredAbort.promise;
+
+                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
+                var request = $http(config);
+
+                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
+                request.abort = function () {
+                    deferredAbort.resolve();
+                };
+
+                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
+                request.finally(
+                    function () {
+                        request.abort = angular.noop; // angular.noop is an empty function
+                        deferredAbort = request = null;
+                    }
+                );
+
+                return request;
+            }
+
             factory.getGroupsByUUIDsV2 = function(UUIDs) {
 
                 var deferredAbort = $q.defer();
@@ -856,61 +886,19 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.getNetworkSummariesByIDs = function(networksUUIDsList) {
+            factory.getNetworkSummariesByUUIDsV2 = function(networksUUIDsList, successHandler, errorHandler) {
+                // Server API: Get Network Summaries by UUIDs
+                // POST /network/summaries
 
-                var deferredAbort = $q.defer();
+                var url = "/batch/network/summary";
+                var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
 
-                // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
-                // the first pass. We modify the config to allow for $http request aborts. This may become standard in
-                // the client.
-                var config = ndexConfigs.getNetworkSummariesByIDsConfig(networksUUIDsList);
-                config.timeout = deferredAbort.promise;
-
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             }
 
-            factory.getUsersByUUIDsV2 = function(usersUUIDsList) {
 
-                var deferredAbort = $q.defer();
-
-                var config = ndexConfigs.getUsersByUUIDsConfigV2(usersUUIDsList);
-                config.timeout = deferredAbort.promise;
-
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
-            }
             
+
             factory.getNetworkAspectAsCXV2 = function(networkId, aspectName, successHandler, errorHandler) {
 
                 // Server API: exportNetwork
@@ -1558,16 +1546,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         var postData = UUIDs;
         var url = "/batch/group";
         return this.getPostConfigV2(url, postData);
-    };
-
-
-    factory.getNetworkSummariesByIDsConfig = function (networksUUIDs)
-    {
-        // Server API: getNetworkSummariesByIDs
-        // /network/summaries
-
-        var url = "/network/summaries";
-        return this.getPostConfig(url, networksUUIDs);
     };
 
     factory.getUsersByUUIDsConfigV2 = function (usersUUIDs)

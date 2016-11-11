@@ -847,27 +847,25 @@ ndexApp.controller('myAccountController',
                         function (networkUUIDs) {
                             var UUIDs = getUUIDs(networkUUIDs);
 
-                            ndexService.getNetworkSummariesByIDs(UUIDs)
-                                .success(
-                                    function (networkSummaries) {
-                                        myAccountController.networkSearchResults = networkSummaries;
+                            ndexService.getNetworkSummariesByUUIDsV2(UUIDs,
+                                function (networkSummaries) {
+                                    myAccountController.networkSearchResults = networkSummaries;
 
-                                        if (myAccountController.networkSearchResults.length > 0) {
-                                            myAccountController.getNetworksWithAdminAccess();
-                                            myAccountController.getNetworksWithWriteAccess();
-                                        } else {
-                                            // this might be redundant -- myAccountController.networksWithAdminAccess and
-                                            // userController.networksWithWriteAccess must be empty here
-                                            myAccountController.networksWithAdminAccess = [];
-                                            myAccountController.networksWithWriteAccess = [];
-                                        }
+                                    if (myAccountController.networkSearchResults.length > 0) {
+                                        myAccountController.getNetworksWithAdminAccess();
+                                        myAccountController.getNetworksWithWriteAccess();
+                                    } else {
+                                        // this might be redundant -- myAccountController.networksWithAdminAccess and
+                                        // userController.networksWithWriteAccess must be empty here
+                                        myAccountController.networksWithAdminAccess = [];
+                                        myAccountController.networksWithWriteAccess = [];
+                                    }
 
-                                        populateNetworkTable();
-                                    })
-                                .error(
-                                    function (error, data) {
-                                        console.log("unable to get network summaries by IDs");
-                                    });
+                                    populateNetworkTable();
+                                },
+                                function (error, data) {
+                                    console.log("unable to get network summaries by IDs");
+                                })
                         })
                     .error(
                         function (error, data) {

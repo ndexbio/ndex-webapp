@@ -175,19 +175,17 @@ ndexApp.controller('groupController',
                 function (groupUUIDs) {
                     var UUIDs = getUUIDs(groupUUIDs);
 
-                    ndexService.getNetworkSummariesByIDs(UUIDs)
-                        .success(
-                            function (networkSummaries) {
-                                groupController.networkSearchResults = networkSummaries;
-                                populateNetworkTable();
-                            })
-                        .error(
-                            function (error, data) {
-                                // Save the error.
-                                if (error) {
-                                    displayErrorMessage(error);
-                                }
-                            });
+                    ndexService.getNetworkSummariesByUUIDsV2(UUIDs,
+                        function (networkSummaries) {
+                            groupController.networkSearchResults = networkSummaries;
+                            populateNetworkTable();
+                        },
+                        function (error, data) {
+                            // Save the error.
+                            if (error) {
+                                displayErrorMessage(error);
+                            }
+                        })
                 })
             .error(
                 function (error, data) {
