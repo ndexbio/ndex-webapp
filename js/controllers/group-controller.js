@@ -46,13 +46,13 @@ ndexApp.controller('groupController',
         return usersUUIDs;
     }
 
-    groupController.submitUserSearch = function(member, inclusive) {
+    groupController.getMembersOfGroup = function(member) {
         /*
          * To get list of User objects we need to:
          *
-         * 1) Use getGroupUserMemberships function at
-         *    /group/{groupId}/user/{permission}/skipBlocks/blockSize?inclusive=true;
-         *    to get the list of USER and GROUP memberships
+         * 1) Use Get Members of a Group API:
+         *    GET /group/{groupid}/membership?type={membershiptype}&start={start}&size={size}
+         *    to get the GROUP memberships
          *
          * 2) Get a list of User UUIDs from step 1
          *
@@ -60,29 +60,27 @@ ndexApp.controller('groupController',
          *    /batch/user API.
          *
          */
-        ndexService.getGroupUserMemberships(groupController.identifier, member, 0, 1000000, inclusive)
-            .success(
-                function (users) {
+        ndexService.getMembersOfGroupV2(groupController.identifier, member, 0, 1000000,
+            function (users) {
 
-                    var usersUUIDs = getUsersUUIDs(users);
+                var usersUUIDs = getUsersUUIDs(users);
 
-                    ndexService.getUsersByUUIDsV2(usersUUIDs)
-                        .success(
-                            function (users) {
-                                groupController.userSearchResults = users;
-                                groupController.originalUserSearchResults = users;
-                            }
-                        )
-                        .error(
-                            function (error) {
-                                console.log("unable to get users by UUIDs");
-                            }
-                        );
-                })
-            .error(
-                function (error, data) {
-                    console.log("unable to get group user memberships");
-                });
+                ndexService.getUsersByUUIDsV2(usersUUIDs)
+                    .success(
+                        function (users) {
+                            groupController.userSearchResults = users;
+                            groupController.originalUserSearchResults = users;
+                        }
+                    )
+                    .error(
+                        function (error) {
+                            console.log("unable to get users by UUIDs");
+                        }
+                    );
+            },
+            function (error, data) {
+                console.log("unable to get group user memberships");
+            });
     }
 
     var checkUserSearchResultObject = function(userObj) {
@@ -123,25 +121,25 @@ ndexApp.controller('groupController',
 
     }
 
+
     groupController.adminCheckBoxClicked = function()
     {
-        var member    = (groupController.userSearchAdmin) ? "GROUPADMIN" : "MEMBER";
-        var inclusive = (groupController.userSearchAdmin) ? false : true;
+        var member = (groupController.userSearchAdmin) ? "GROUPADMIN" : null;
 
         groupController.userSearchMember = false;
 
-        groupController.submitUserSearch(member, inclusive);
+        groupController.getMembersOfGroup(member);
     };
 
     groupController.memberCheckBoxClicked = function()
     {
-        var member    = "MEMBER";
-        var inclusive = (groupController.userSearchMember) ? false : true;
+        var member = (groupController.userSearchMember) ? "MEMBER" : null;
 
         groupController.userSearchAdmin = false;
 
-        groupController.submitUserSearch(member, inclusive);
+        groupController.getMembersOfGroup(member);
     };
+
 
     var getUUIDs = function(data) {
         var UUIDs = [];
@@ -389,9 +387,10 @@ ndexApp.controller('groupController',
 
             getMembership();
 
-            var member    = "MEMBER";
-            var inclusive = true;
-            groupController.submitUserSearch(member, inclusive);
+            // passing null as type to the Use Get Members of a Group API will
+            // find both MEMBER and GROUPADMIN members of the group
+            var member = null;
+            groupController.getMembersOfGroup(member);
 
             groupController.submitNetworkSearch();
 

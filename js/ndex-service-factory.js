@@ -803,33 +803,21 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
+            factory.getMembersOfGroupV2 = function(groupId, type, start, size, successHandler, errorHandler) {
+                // API: Get Members of a Group
+                // GET /group/{groupid}/membership?type={membershiptype}&start={start}&size={size}
 
-            factory.getGroupUserMemberships = function(groupId, permission, skipBlocks, blockSize, inclusive) {
+                var url = "/group/" + groupId + "/membership";
 
-                var deferredAbort = $q.defer();
+                if (type) {
+                    url = url + "?type=" + type + "&start=" + start + "&size=" + size;
+                } else {
+                    url = url + "?start=" + start + "&size=" + size;
+                }
+                var config = ndexConfigs.getGetConfigV2(url, null);
 
-                var config = ndexConfigs.getGroupUserMembershipsConfig(groupId, permission, skipBlocks, blockSize, inclusive);
-                config.timeout = deferredAbort.promise;
-
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             }
-
 
             /*---------------------------------------------------------------------*
              * Batch Operations
@@ -1514,19 +1502,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         // /user/{userId}/group/{permission}/{skipBlocks}/{blockSize}
 
         var url = "/user/" + userId + "/group/" + permission + "/" + skipBlocks + "/" + blockSize;
-
-        if (inclusive) {
-            url = url + "?inclusive=true"
-        }
-        return this.getGetConfig(url, null);
-    };
-
-    factory.getGroupUserMembershipsConfig = function (groupId, permission, skipBlocks, blockSize, inclusive)
-    {
-        // calls getGroupUserMemberships server API at
-        // /group/{groupId}/user/{permission}/{skipBlocks}/{blockSize}
-
-        var url = "/group/" + groupId + "/user/" + permission + "/" + skipBlocks + "/" + blockSize;
 
         if (inclusive) {
             url = url + "?inclusive=true"

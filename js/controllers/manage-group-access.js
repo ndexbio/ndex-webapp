@@ -204,13 +204,13 @@ ndexApp.controller('manageGroupAccessController',
 		return usersUUIDs;
 	}
 
-	groupManager.loadMemberships = function() {
+	groupManager.getMembersOfGroup = function() {
 		/*
 		 * To get list of User objects we need to:
 		 *
-		 * 1) Use getGroupUserMemberships function at
-		 *    /group/{groupId}/user/{permission}/skipBlocks/blockSize?inclusive=true;
-		 *    to get the list of USER and GROUP memberships
+		 * 1) Use Get Members of a Group API:
+		 *    GET /group/{groupid}/membership?type={membershiptype}&start={start}&size={size}
+		 *    to get the GROUP memberships
 		 *
 		 * 2) Get a list of User UUIDs from step 1
 		 *
@@ -218,10 +218,8 @@ ndexApp.controller('manageGroupAccessController',
 		 *    /batch/user API.
 		 *
 		 */
-		var inclusive = true;
-
-		ndexService.getGroupUserMemberships(groupManager.externalId, 'MEMBER', 0, 1000000, inclusive)
-			.success(
+		var member = null;
+		ndexService.getMembersOfGroupV2(groupManager.externalId, member, 0, 1000000,
 				function (users) {
 
 					groupManager.userGroupMemberships = users;
@@ -261,8 +259,7 @@ ndexApp.controller('manageGroupAccessController',
 								console.log("unable to get users by UUIDs");
 							}
 						);
-				})
-			.error(
+				},
 				function (error, data) {
 					console.log("unable to get group user memberships");
 				});
@@ -442,6 +439,6 @@ ndexApp.controller('manageGroupAccessController',
     		groupManager.errors.push(error.data);
     	})
 
-    groupManager.loadMemberships();
+    groupManager.getMembersOfGroup();
 
 }]);
