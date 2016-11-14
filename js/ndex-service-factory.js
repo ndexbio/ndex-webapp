@@ -264,6 +264,36 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
+            
+            factory.getMembersOfGroupV2 = function(groupId, type, start, size, successHandler, errorHandler) {
+                // API: Get Members of a Group
+                // GET /group/{groupid}/membership?type={membershiptype}&start={start}&size={size}
+
+                var url = "/group/" + groupId + "/membership";
+
+                if (type) {
+                    url = url + "?type=" + type + "&start=" + start + "&size=" + size;
+                } else {
+                    url = url + "?start=" + start + "&size=" + size;
+                }
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            }
+
+            factory.getNetworkPermissionsOfGroupV2 =
+                function(groupId, permission, startPage, pageSize, successHandler, errorHandler) {
+                    // API: Get Network Permissions of a Group
+                    // GET /group/{groupid}/permission?permission={permission}&start={startPage}&size={pageSize}
+
+                    var url = "/group/" + groupId + "/permission?permission=" + permission;
+                    url = url + "&start=" + startPage + "&size=" + pageSize;
+
+                    var config = ndexConfigs.getGetConfigV2(url, null);
+
+                    this.sendHTTPRequest(config, successHandler, errorHandler);
+                }
+
 
             /*---------------------------------------------------------------------*
              * Requests
@@ -720,37 +750,7 @@ ndexServiceApp.factory('ndexService',
 
                 return promise;
             };
-
-            factory.getGroupNetworkMemberships = function(groupId, permission, skipBlocks, blockSize, inclusive) {
-
-                var deferredAbort = $q.defer();
-
-                // Grab the config for this request, the last two parameters (skip blocks, block size) are hard coded in
-                // the first pass. We modify the config to allow for $http request aborts. This may become standard in
-                // the client.
-                var config = ndexConfigs.getGroupNetworkMembershipsConfig(groupId, permission, skipBlocks, blockSize, inclusive);
-                config.timeout = deferredAbort.promise;
-
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
-            }
-
-
+            
             factory.getUserNetworkMemberships = function(userId, permission, skipBlocks, blockSize, inclusive) {
 
                 var deferredAbort = $q.defer();
@@ -803,21 +803,6 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.getMembersOfGroupV2 = function(groupId, type, start, size, successHandler, errorHandler) {
-                // API: Get Members of a Group
-                // GET /group/{groupid}/membership?type={membershiptype}&start={start}&size={size}
-
-                var url = "/group/" + groupId + "/membership";
-
-                if (type) {
-                    url = url + "?type=" + type + "&start=" + start + "&size=" + size;
-                } else {
-                    url = url + "?start=" + start + "&size=" + size;
-                }
-                var config = ndexConfigs.getGetConfigV2(url, null);
-
-                this.sendHTTPRequest(config, successHandler, errorHandler);
-            }
 
             /*---------------------------------------------------------------------*
              * Batch Operations
@@ -903,8 +888,6 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getPostConfigV2(url, postData);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-
-
 
             factory.getNetworkAspectAsCXV2 = function(networkId, aspectName, successHandler, errorHandler) {
 
@@ -1074,13 +1057,9 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-
             // return factory object
             return factory;
         }]);
-
-
-
 
 /****************************************************************************
  * NDEx Utility Service
@@ -1111,7 +1090,6 @@ ndexServiceApp.factory('ndexUtility', function () {
         loggedInUser.externalId = externalId;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
     };
-
 
     factory.getUserCredentials = function () {
         if (factory.checkLocalStorage()) {
@@ -1468,19 +1446,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             edgeLimit: edgeLimit
         };
         return this.getPostConfigV2(url, postData);
-    };
-
-    factory.getGroupNetworkMembershipsConfig = function (groupId, permission, skipBlocks, blockSize, inclusive)
-    {
-        // calls getGroupNetworkMemberships server API at
-        // /group/{groupId}/network/{permission}/{skipBlocks}/{blockSize}
-
-        var url = "/group/" + groupId + "/network/" + permission + "/" + skipBlocks + "/" + blockSize;
-
-        if (inclusive) {
-            url = url + "?inclusive=true"
-        }
-        return this.getGetConfig(url, null);
     };
 
     factory.getUserNetworkMembershipsConfig = function (userId, permission, skipBlocks, blockSize, inclusive)

@@ -139,55 +139,38 @@ ndexApp.controller('groupController',
 
         groupController.getMembersOfGroup(member);
     };
-
-
-    var getUUIDs = function(data) {
-        var UUIDs = [];
-        if (data) {
-            for (i=0; i<data.length; i++) {
-                var o = data[i];
-                UUIDs.push(o.resourceUUID);
-            }
-        }
-        return UUIDs;
-    }
             
-    groupController.submitNetworkSearch = function() {
+    groupController.getNetworksOfGroup = function() {
 
         /*
          * To get list of Network Summaries objects we need to:
          *
-         * 1) Use getGroupNetworkMemberships function at
-         *  /group/{groupId}/network/{permission}/{skipBlocks}/{blockSize}
+         * 1) Use getNetworkPermissionsOfGroup function at
+         *  /group/{groupid}/permission?permission={permission}&start={startPage}&size={pageSize}
          * to get the list of network IDs that this group has permission to.
          *
          * 2) Use getNetworkSummaries function at /network/summaries to get a list of network
          * summaries using the network IDs you got in step 1  (send all network IDs in one call).
-         * These changes should be made in groupController.submitNetworkSearch().
          *
          */
-        var inclusive = true;
 
-        ndexService.getGroupNetworkMemberships(groupController.identifier, 'READ', 0, 500, inclusive)
-            .success(
-                function (groupUUIDs) {
-                    var UUIDs = getUUIDs(groupUUIDs);
+        ndexService.getNetworkPermissionsOfGroupV2(groupController.identifier, 'READ', 0, 1000,
+            
+                function (networkPermissionsMap) {
+                    var networkUUIDs = Object.keys(networkPermissionsMap);
 
-                    ndexService.getNetworkSummariesByUUIDsV2(UUIDs,
+                    ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
                         function (networkSummaries) {
                             groupController.networkSearchResults = networkSummaries;
                             populateNetworkTable();
                         },
-                        function (error, data) {
-                            // Save the error.
+                        function (error) {
                             if (error) {
                                 displayErrorMessage(error);
                             }
                         })
-                })
-            .error(
-                function (error, data) {
-                    // Save the error.
+                },
+                function (error) {
                     if (error) {
                         displayErrorMessage(error);
                     }
@@ -319,21 +302,8 @@ ndexApp.controller('groupController',
     };
 
     var displayErrorMessage = function(error) {
-        if (error.status != 0) {
-            var message;
-            if (error.data && error.data.message) {
-                message = error.data.message;
-            }
-            if (error.status) {
-                message = message + "  Error Code: " + error.status + ".";
-            }
-            if (error.statusText) {
-                message = message + "  Error Message: " + error.statusText;
-            }
-            groupController.errors.push(message);
-        } else {
-            groupController.errors.push("Unknown error; Server returned no error information.");
-        }
+        var message = (error && error.message) ? error.message: "Unknown error; Server returned no error information.";
+        groupController.errors.push(message);
     }
             
             //              local functions
@@ -387,15 +357,13 @@ ndexApp.controller('groupController',
 
             getMembership();
 
+            groupController.getNetworksOfGroup();
+
             // passing null as type to the Use Get Members of a Group API will
             // find both MEMBER and GROUPADMIN members of the group
             var member = null;
             groupController.getMembersOfGroup(member);
-
-            groupController.submitNetworkSearch();
-
         });
 
-            //------------------------------------------------------------------------------------//
-
+    //------------------------------------------------------------------------------------//
 }]);
