@@ -104,9 +104,8 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                     }
                 },
                 function (error) {
-                    $scope.signIn.signUpErrors = error.data.message;
+                    $scope.signIn.signUpErrors = error.message;
                     $scope.isProcessing = false;
-                    //console.log(error)
                 });
         };
 
