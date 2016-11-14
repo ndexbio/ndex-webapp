@@ -616,57 +616,6 @@ ndexApp.controller('myAccountController',
 
                 myAccountController.submitGroupSearch(member, inclusive);
             };
-
-            myAccountController.getNetworksWithAdminAccess = function ()
-            {
-                // get all networks for which the current user has ADMIN privilege.
-                // These networks include both networks owned by current user and by other accounts.
-                ndexService.getUserNetworkMemberships(
-                    "ADMIN",
-                    0,
-                    1000000, //numberOfNetworks,
-                    // Success
-                    function (networks)
-                    {
-                        myAccountController.networksWithAdminAccess = [];
-
-                        for (var i = 0; i < networks.length; i++) {
-                            var networkUUID = networks[i].resourceUUID;
-                            myAccountController.networksWithAdminAccess.push(networkUUID);
-                        }
-                    },
-                    // Error
-                    function (response) {
-                        console.log(response);
-                    }
-                )
-            };
-
-            myAccountController.getNetworksWithWriteAccess = function ()
-            {
-                // get all networks for which the current user has WRITE privilege.
-                // These networks include both networks owned by current user and by other accounts.
-                ndexService.getUserNetworkMemberships(
-                    "WRITE",
-                    0,
-                    1000000, //numberOfNetworks,
-                    // Success
-                    function (networks)
-                    {
-                        userContromyAccountControllerller.networksWithWriteAccess = [];
-
-                        for (var i = 0; i < networks.length; i++) {
-                            var networkUUID = networks[i].resourceUUID;
-                            myAccountController.networksWithWriteAccess.push(networkUUID);
-                        }
-                    },
-                    // Error
-                    function (response)
-                    {
-                        console.log(response);
-                    }
-                )
-            };
             
             myAccountController.deleteTask = function (taskUUID)
             {
@@ -699,61 +648,6 @@ ndexApp.controller('myAccountController',
                     }
                 )
             };
-
-            //myAccountController.identifier, 'READ', 0, 1000000, inclusive)
-
-            myAccountController.getNetworksWithAdminAccess = function ()
-            {
-                var inclusive = true;
-                // get all networks for which the current user has ADMIN privilege.
-                // These networks include both networks owned by current user and by other accounts.
-                ndexService.getUserNetworkMemberships(
-                    myAccountController.identifier,
-                    "ADMIN",
-                    0,
-                    1000000,
-                    inclusive)
-                    .success (function(networks)
-                    {
-                        myAccountController.networksWithAdminAccess = [];
-
-                        for (var i = 0; i < networks.length; i++) {
-                            var networkUUID = networks[i].resourceUUID;
-                            myAccountController.networksWithAdminAccess.push(networkUUID);
-                        }
-                    })
-                    .error (function(response)
-                    {
-                        console.log(response);
-                    })
-            };
-
-            myAccountController.getNetworksWithWriteAccess = function ()
-            {
-                var inclusive = true;
-                // get all networks for which the current user has WRITE privilege.
-                // These networks include both networks owned by current user and by other accounts.
-                ndexService.getUserNetworkMemberships(
-                    myAccountController.identifier,
-                    "WRITE",
-                    0,
-                    1000000,
-                    inclusive)
-                    .success (function(networks)
-                    {
-                        myAccountController.networksWithWriteAccess = [];
-
-                        for (var i = 0; i < networks.length; i++) {
-                            var networkUUID = networks[i].resourceUUID;
-                            myAccountController.networksWithWriteAccess.push(networkUUID);
-                        }
-                    })
-                    .error (function(response)
-                    {
-                        console.log(response);
-                    })
-            };
-
 
             myAccountController.refreshRequests = function ()
             {
@@ -816,61 +710,60 @@ ndexApp.controller('myAccountController',
 
             };
 
-            var getUUIDs = function(data) {
-                var UUIDs = [];
-                if (data) {
-                    for (i=0; i<data.length; i++) {
-                        var o = data[i];
-                        UUIDs.push(o.resourceUUID);
-                    }
-                }
-                return UUIDs;
-            }
-            
-            myAccountController.submitNetworkSearchForLoggedInUser = function ()
+            myAccountController.getNetworksForLoggedInUser = function ()
             {
                 /*
                  * To get list of Network Summaries objects we need to:
                  *
-                 * 1) Use getUserNetworkMemberships function at
-                 *    /user/network/{permission}/{skipBlocks}/{blockSize}
-                 *    to get the list of network IDs that this user has permission to.
+                 * 1) Use Get User Network Permissions API at
+                 *   /user/{userid}/permission?permission={permission}&start={startPage}&size={pageSize}&directonly={true|false}
+                 *   to get the list of network IDs that this user has permissions to.
                  *
                  * 2) Use getNetworkSummaries function at /network/summaries to get a list of network
                  *    summaries using the network IDs we got in step 1  (send all network IDs in one call).
-                 *
                  */
-                var inclusive = true;
+                var directOnly = false;
+                ndexService.getUserNetworkPermissionsV2(myAccountController.identifier, 'READ', 0, 1000000, directOnly,
+                    function (networkPermissionsMap) {
 
-                ndexService.getUserNetworkMemberships(myAccountController.identifier, 'READ', 0, 1000000, inclusive)
-                    .success(
-                        function (networkUUIDs) {
-                            var UUIDs = getUUIDs(networkUUIDs);
+                        var networkUUIDs = Object.keys(networkPermissionsMap);
 
-                            ndexService.getNetworkSummariesByUUIDsV2(UUIDs,
-                                function (networkSummaries) {
-                                    myAccountController.networkSearchResults = networkSummaries;
+                        ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
+                            function (networkSummaries) {
+                                myAccountController.networkSearchResults = networkSummaries;
 
-                                    if (myAccountController.networkSearchResults.length > 0) {
-                                        myAccountController.getNetworksWithAdminAccess();
-                                        myAccountController.getNetworksWithWriteAccess();
-                                    } else {
-                                        // this might be redundant -- myAccountController.networksWithAdminAccess and
-                                        // userController.networksWithWriteAccess must be empty here
-                                        myAccountController.networksWithAdminAccess = [];
-                                        myAccountController.networksWithWriteAccess = [];
+                                myAccountController.networksWithAdminAccess = [];
+                                myAccountController.networksWithWriteAccess = [];
+
+                                // loop through the network summaries and fill in lists of UUIDs
+                                // for networks with ADMIN and WRITE permissions
+                                for (var i=0; i<myAccountController.networkSearchResults.length; i++) {
+                                    var networkUUID = myAccountController.networkSearchResults[i].externalId;
+
+                                    if (networkUUID in networkPermissionsMap) {
+                                        var networkPermission = networkPermissionsMap[networkUUID];
+
+                                        if (networkPermission) {
+                                            networkPermission = networkPermission.toUpperCase();
+
+                                            if (networkPermission == "ADMIN") {
+                                                myAccountController.networksWithAdminAccess.push(networkUUID);
+                                            } else if (networkPermission == "WRITE") {
+                                                myAccountController.networksWithWriteAccess.push(networkUUID);
+                                            }
+                                        }
                                     }
+                                }
 
-                                    populateNetworkTable();
-                                },
-                                function (error, data) {
-                                    console.log("unable to get network summaries by IDs");
-                                })
-                        })
-                    .error(
-                        function (error, data) {
-                            console.log("unable to get user network memberships");
-                        });
+                                populateNetworkTable();
+                            },
+                            function (error, data) {
+                                console.log("unable to get network summaries by IDs");
+                            })
+                    },
+                    function (error, data) {
+                        console.log("unable to get user network memberships");
+                    });
             };
 
             $scope.showWarningsOrErrors = function(rowEntity) {
@@ -901,13 +794,13 @@ ndexApp.controller('myAccountController',
                     //get tasks
                     myAccountController.refreshTasks();
 
+                    // get networks
+                    myAccountController.getNetworksForLoggedInUser();
+
                     // get groups
                     var member = "MEMBER";
                     var inclusive = true;
                     myAccountController.submitGroupSearch(member, inclusive);
-
-                    // get networks
-                    myAccountController.submitNetworkSearchForLoggedInUser();
                 })
         }]);
 

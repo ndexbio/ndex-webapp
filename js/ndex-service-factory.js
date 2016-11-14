@@ -175,6 +175,23 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
              };
 
+            factory.getUserNetworkPermissionsV2 =
+                function(userId, permission, startPage, pageSize, directOnly, successHandler, errorHandler) {
+                    // API: Get User's Network Permissions
+                    // GET /user/{userid}/permission?permission={permission}&start={startPage}&size={pageSize}&directonly={true|false}
+
+                    var url = "/user/" + userId + "/permission?permission=" + permission;
+                    url = url + "&start=" + startPage + "&size=" + pageSize;
+
+                    if (directOnly) {
+                        url = url + "&directonly=" + directOnly;
+                    }
+
+                    var config = ndexConfigs.getGetConfigV2(url, null);
+
+                    this.sendHTTPRequest(config, successHandler, errorHandler);
+
+                }
 
             /*---------------------------------------------------------------------*
              * Groups
@@ -264,7 +281,7 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            
+
             factory.getMembersOfGroupV2 = function(groupId, type, start, size, successHandler, errorHandler) {
                 // API: Get Members of a Group
                 // GET /group/{groupid}/membership?type={membershiptype}&start={start}&size={size}
@@ -632,7 +649,7 @@ ndexServiceApp.factory('ndexService',
             };
 
 
-            factory.setNetworkProvenanceV2 = function(networkId, provenance, successHandler, errorHandler){
+            factory.setNetworkProvenanceV2 = function(networkId, provenance, successHandler, errorHandler) {
                 // Server API: Set Network Provenance
                 // PUT /network/{networkId}/provenance
 
@@ -750,33 +767,8 @@ ndexServiceApp.factory('ndexService',
 
                 return promise;
             };
+
             
-            factory.getUserNetworkMemberships = function(userId, permission, skipBlocks, blockSize, inclusive) {
-
-                var deferredAbort = $q.defer();
-
-                var config = ndexConfigs.getUserNetworkMembershipsConfig(userId, permission, skipBlocks, blockSize, inclusive);
-                config.timeout = deferredAbort.promise;
-
-                // We keep a reference ot the http-promise. This way we can augment it with an abort method.
-                var request = $http(config);
-
-                // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-                request.abort = function () {
-                    deferredAbort.resolve();
-                };
-
-                // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-                request.finally(
-                    function () {
-                        request.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = null;
-                    }
-                );
-
-                return request;
-            }
-
             factory.getUserGroupMemberships = function(userId, permission, skipBlocks, blockSize, inclusive) {
 
                 var deferredAbort = $q.defer();
@@ -1446,19 +1438,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             edgeLimit: edgeLimit
         };
         return this.getPostConfigV2(url, postData);
-    };
-
-    factory.getUserNetworkMembershipsConfig = function (userId, permission, skipBlocks, blockSize, inclusive)
-    {
-        // calls getUserNetworkMemberships server API at
-        // /user/network/{permission}/{skipBlocks}/{blockSize}
-
-        var url = "/user/network/" + permission + "/" + skipBlocks + "/" + blockSize;
-
-        if (inclusive) {
-            url = url + "?inclusive=true"
-        }
-        return this.getGetConfig(url, null);
     };
 
     factory.getUserGroupMembershipsConfig = function (userId, permission, skipBlocks, blockSize, inclusive)
