@@ -208,17 +208,7 @@ ndexApp.controller('userController',
                 userController.atLeastOneSelected = false;
             };
 
-            var getGroupsUUIDs = function(groups) {
-                var groupsUUIDs = [];
-
-                for (var i=0; i<groups.length; i++) {
-                    var groupUUID = groups[i].resourceUUID;
-                    groupsUUIDs.push(groupUUID);
-                }
-                return groupsUUIDs;
-            }
-
-            userController.submitGroupSearch = function (member, inclusive)
+            userController.getUserGroupMemberships = function (member)
             {
                 /*
                  * To get list of Group objects we need to:
@@ -231,13 +221,11 @@ ndexApp.controller('userController',
                  *
                  * 3) Use this list of Group UUIDs to get Groups through
                  *    /group/groups API.
-                 *
                  */
-                ndexService.getUserGroupMemberships(userController.identifier, member, 0, 1000000, inclusive)
-                    .success(
-                        function (groups) {
+                ndexService.getUserGroupMembershipsV2(userController.identifier, member, 0, 1000000,
+                        function (userMembershipsMap) {
 
-                            var groupsUUIDs = getGroupsUUIDs(groups);
+                            var groupsUUIDs = Object.keys(userMembershipsMap);
 
                             ndexService.getGroupsByUUIDsV2(groupsUUIDs)
                                 .success(
@@ -249,8 +237,7 @@ ndexApp.controller('userController',
                                         console.log("unable to get groups by UUIDs");
                                     }
                                 )
-                        })
-                    .error(
+                        },
                         function (error, data) {
                             console.log("unable to get user group memberships");
                         });
@@ -259,28 +246,20 @@ ndexApp.controller('userController',
 
             userController.adminCheckBoxClicked = function()
             {
-                //userController.groupSearchMember = false;
-                //userController.submitGroupSearch();
-
-                var member    = (userController.groupSearchAdmin) ? "GROUPADMIN" : "MEMBER";
-                var inclusive = (userController.groupSearchAdmin) ? false : true;
+                var member = (userController.groupSearchAdmin) ? "GROUPADMIN" : null;
 
                 userController.groupSearchMember = false;
 
-                userController.submitGroupSearch(member, inclusive);
+                userController.getUserGroupMemberships(member);
             };
 
             userController.memberCheckBoxClicked = function()
             {
-               // userController.groupSearchAdmin = false;
-               // userController.submitGroupSearch();
-
-                var member    = "MEMBER";
-                var inclusive = (userController.groupSearchMember) ? false : true;
+                var member = (userController.groupSearchMember) ? "MEMBER" : null;
 
                 userController.groupSearchAdmin = false;
 
-                userController.submitGroupSearch(member, inclusive);
+                userController.getUserGroupMemberships(member);
             };
 
 
@@ -367,9 +346,8 @@ ndexApp.controller('userController',
                         // get groups. Server-side API requires authentication,
                         // so only show groups if a user is logged in.
                         if (userController.isLoggedInUser) {
-                            var member = "MEMBER";
-                            var inclusive = true;
-                            userController.submitGroupSearch(member, inclusive);
+                            var member = null;
+                            userController.getUserGroupMemberships(member);
                         }
 
                         // get networks

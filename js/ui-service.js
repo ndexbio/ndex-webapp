@@ -736,16 +736,6 @@
                 //    $scope.request.privileges = $scope.privileges;
                 //});
 
-                var getGroupsUUIDs = function(groups) {
-                    var groupsUUIDs = [];
-
-                    for (var i=0; i<groups.length; i++) {
-                        var groupUUID = groups[i].resourceUUID;
-                        groupsUUIDs.push(groupUUID);
-                    }
-                    return groupsUUIDs;
-                }
-
                 var intialize = function() {
                     $scope.accounts = [];
 
@@ -764,41 +754,37 @@
                     //if( $scope.privileges == 'Edit' )
                     //    $scope.modal.permissionLabel ='Is admin';
 
-                    var inclusive = true;
+                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
+                        function (userMembershipsMap) {
 
-                    ndexService.getUserGroupMemberships(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000, inclusive)
-                        .success(
-                            function (groups) {
+                            var groupsUUIDs = Object.keys(userMembershipsMap);
 
-                                var groupsUUIDs = getGroupsUUIDs(groups);
+                            ndexService.getGroupsByUUIDsV2(groupsUUIDs)
+                                .success(
+                                    function (groupList) {
 
-                                ndexService.getGroupsByUUIDsV2(groupsUUIDs)
-                                    .success(
-                                        function (groupList) {
-
-                                            for(var i=0; i < groupList.length; i++) {
-                                                var groupAccount = groupList[i];
-                                                groupAccount['accountType'] = 'group';
-                                                $scope.accounts.push(groupAccount);
-                                            }
-                                            var currentUserAccount = {
-                                                accountType: 'user',
-                                                userName: ndexUtility.getLoggedInUserAccountName(),
-                                                externalId: ndexUtility.getLoggedInUserExternalId()
-                                            }
-                                            $scope.accounts.push(currentUserAccount);
-                                            $scope.selected.account = currentUserAccount;
-                                        })
-                                    .error(
-                                        function(error) {
-                                            console.log("unable to get groups by UUIDs");
+                                        for(var i=0; i < groupList.length; i++) {
+                                            var groupAccount = groupList[i];
+                                            groupAccount['accountType'] = 'group';
+                                            $scope.accounts.push(groupAccount);
                                         }
-                                    )
-                            })
-                        .error(
-                            function (error, data) {
-                                console.log("unable to get user group memberships");
-                            });
+                                        var currentUserAccount = {
+                                            accountType: 'user',
+                                            userName: ndexUtility.getLoggedInUserAccountName(),
+                                            externalId: ndexUtility.getLoggedInUserExternalId()
+                                        }
+                                        $scope.accounts.push(currentUserAccount);
+                                        $scope.selected.account = currentUserAccount;
+                                    })
+                                .error(
+                                    function(error) {
+                                        console.log("unable to get groups by UUIDs");
+                                    }
+                                )
+                        },
+                        function (error, data) {
+                            console.log("unable to get user group memberships");
+                        });
                 }
             }
         }

@@ -510,17 +510,6 @@ ndexApp.controller('myAccountController',
                 $location.path("/newNetwork/" + identifier);
             };
 
-
-            var getGroupsUUIDs = function(groups) {
-                var groupsUUIDs = [];
-
-                for (var i=0; i<groups.length; i++) {
-                    var groupUUID = groups[i].resourceUUID;
-                    groupsUUIDs.push(groupUUID);
-                }
-                return groupsUUIDs;
-            }
-
             var checkGroupSearchResultObject = function(groupObj) {
                 var found = false;
 
@@ -558,26 +547,25 @@ ndexApp.controller('myAccountController',
                     });
             }
 
-            myAccountController.submitGroupSearch = function (member, inclusive)
+            myAccountController.getUserGroupMemberships = function (member)
             {
                 /*
                  * To get list of Group objects we need to:
                  *
-                 * 1) Use getUserGroupMemberships function at
-                 *    /user/{userId}/group/{permission}/skipBlocks/blockSize?inclusive=true;
+                 * 1) Use Get User’s Group Memberships API at
+                 *    /user/{userid}/membership?type={membershiptype}&start={startPage}&size={pageSize}
                  *    to get the list of GROUPADMIN and MEMBER memberships
                  *
                  * 2) Get a list of Group UUIDs from step 1
                  *
                  * 3) Use this list of Group UUIDs to get Groups through
                  *    /group/groups API.
-                 *
                  */
-                ndexService.getUserGroupMemberships(myAccountController.identifier, member, 0, 1000000, inclusive)
-                    .success(
-                        function (groups) {
+                ndexService.getUserGroupMembershipsV2(myAccountController.identifier, member, 0, 1000000,
 
-                            var groupsUUIDs = getGroupsUUIDs(groups);
+                        function (userMembershipsMap) {
+
+                            var groupsUUIDs = Object.keys(userMembershipsMap);
 
                             ndexService.getGroupsByUUIDsV2(groupsUUIDs)
                                 .success(
@@ -590,8 +578,7 @@ ndexApp.controller('myAccountController',
                                         console.log("unable to get groups by UUIDs");
                                     }
                                 )
-                        })
-                    .error(
+                        },
                         function (error, data) {
                             console.log("unable to get user group memberships");
                         });
@@ -599,22 +586,20 @@ ndexApp.controller('myAccountController',
             
             myAccountController.adminCheckBoxClicked = function()
             {
-                var member    = (myAccountController.groupSearchAdmin) ? "GROUPADMIN" : "MEMBER";
-                var inclusive = (myAccountController.groupSearchAdmin) ? false : true;
+                var member = (myAccountController.groupSearchAdmin) ? "GROUPADMIN" : null;
 
                 myAccountController.groupSearchMember = false;
 
-                myAccountController.submitGroupSearch(member, inclusive);
+                myAccountController.getUserGroupMemberships(member);
             };
 
             myAccountController.memberCheckBoxClicked = function()
             {
-                var member    = "MEMBER";
-                var inclusive = (myAccountController.groupSearchMember) ? false : true;
+                var member = (myAccountController.groupSearchMember) ? "MEMBER" : null;
 
                 myAccountController.groupSearchAdmin = false;
 
-                myAccountController.submitGroupSearch(member, inclusive);
+                myAccountController.getUserGroupMemberships(member);
             };
             
             myAccountController.deleteTask = function (taskUUID)
@@ -798,9 +783,8 @@ ndexApp.controller('myAccountController',
                     myAccountController.getNetworksForLoggedInUser();
 
                     // get groups
-                    var member = "MEMBER";
-                    var inclusive = true;
-                    myAccountController.submitGroupSearch(member, inclusive);
+                    var member = null;
+                    myAccountController.getUserGroupMemberships(member);
                 })
         }]);
 
