@@ -509,53 +509,116 @@
                         $scope.request[key] = $scope.ndexData[key];
                     }
                     modalInstance.close();
+                    delete $scope.request.error;
                 };
 
                 $scope.accept = function() {
 
-                    var networkId     = $scope.request.destinationUUID;
-                    var userOrGroupId = $scope.request.sourceUUID;
                     var type = ($scope.request.requestType.toLowerCase() == "usernetworkaccess") ? "user" : "group";
-                    var permission = $scope.request.permission;
 
+                    if (type == 'user') {
 
-                    ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
-                        function(data){
+                        var networkId     = $scope.request.destinationUUID;
+                        var userOrGroupId = $scope.request.sourceUUID;
 
-                            var recipientId = $scope.userController.identifier;
-                            var requestId   = $scope.request.externalId;
-                            var action      = "accept";
-                            var message     = $scope.request.responseMessage;
+                        var permission = $scope.request.permission
 
-                            ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
-                                function(data) {
-                                    modalInstance.close();
-                                    $scope.userController.refreshRequests();
-                                },
-                                function(error){
-                                    console.log("unable to accept network permission request");
-                                });
-                        },
-                        function(error){
-                            console.log("unable to update network permission request");
-                        });
+                        ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
+                            function (data) {
+
+                                var recipientId = $scope.userController.identifier;
+                                var requestId = $scope.request.externalId;
+                                var action = "accept";
+                                var message = $scope.request.responseMessage;
+
+                                ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
+                                    function (data) {
+                                        modalInstance.close();
+                                        $scope.userController.refreshRequests();
+                                    },
+                                    function (error) {
+                                        console.log("unable to accept network permission request");
+                                    });
+                            },
+                            function (error) {
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                }
+                            });
+
+                    } else {
+
+                        var groupId = $scope.request.destinationUUID;
+                        var requesterId = $scope.request.requesterId;
+                        var permission = $scope.request.permission;
+
+                        ndexService.addOrUpdateGroupMemberV2(groupId, requesterId, permission,
+                            function(success) {
+
+                                var recipientId = $scope.userController.identifier;
+                                var requestId = $scope.request.externalId;
+                                var action = "accept";
+                                var message = $scope.request.responseMessage;
+
+                                ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
+                                    function (data) {
+                                        modalInstance.close();
+                                        $scope.userController.refreshRequests();
+                                    },
+                                    function (error) {
+                                        if (error && error.message) {
+                                            $scope.request.error = error.message;
+                                        }
+                                    });
+                            },
+                            function(error){
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                }
+                            });
+                    }
                 };
 
                 $scope.decline = function() {
 
-                    var recipientId = $scope.userController.identifier;
-                    var requestId   = $scope.request.externalId;
-                    var action      = "deny";
-                    var message     = $scope.request.responseMessage;
+                    var type = ($scope.request.requestType.toLowerCase() == "usernetworkaccess") ? "user" : "group";
 
-                    ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
-                        function(data) {
-                            modalInstance.close();
-                            $scope.userController.refreshRequests();
-                        },
-                        function(error){
-                            console.log("unable to deny network permission request");
-                        });
+                    if (type == 'user') {
+
+                        var recipientId = $scope.userController.identifier;
+                        var requestId   = $scope.request.externalId;
+                        var action      = "deny";
+                        var message     = $scope.request.responseMessage;
+
+                        ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
+                            function (data) {
+                                modalInstance.close();
+                                $scope.userController.refreshRequests();
+                            },
+                            function (error) {
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                }
+                            });
+
+                    } else {
+
+                        var recipientId = $scope.userController.identifier;
+                        var requestId = $scope.request.externalId;
+                        var action = "deny";
+                        var message = $scope.request.responseMessage;
+
+                        ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
+                            function (data) {
+                                modalInstance.close();
+                                $scope.userController.refreshRequests();
+                            },
+                            function (error) {
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                }
+                            });
+                    }
                 }
 
                 $scope.$watch('ndexData', function(value) {

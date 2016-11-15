@@ -182,7 +182,7 @@ ndexApp.controller('manageGroupAccessController',
 
 		ndexService.removeGroupMemberV2(groupId, userId,
 			function(data) {
-				//console.log("removeGroupMember -- success"); // do nothing
+				; // do nothing
 			},
 			function(error) {
 				console.log("unable to remove group member with Id=" + userId + " from group=" + groupId);

@@ -13,6 +13,13 @@
 			<hr>
 			<strong>Response Message</strong>
 			<textarea class='form-control' rows='3' ng-model='request.responseMessage'></textarea>
+
+			<div class='text-danger'>
+				<strong>
+					<br>
+					{{request.error}}
+				</strong>
+			</div>
 		</div>
 
 		<div class='modal-footer' ng-hide='false'>

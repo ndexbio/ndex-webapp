@@ -239,13 +239,13 @@ ndexServiceApp.factory('ndexService',
                 GroupResource.getApi({}, successHandler, errorHandler);
             };
 
-            factory.deleteGroupV2 = function(groupId, successHandler, errorHandler) {
-                // Server API: Delete Group
-                // DELETE /group/{groupid}
-                
-                var url = "/group/" + groupId ;
+            factory.createGroupV2 = function (group, successHandler, errorHandler) {
+                // Server API: Create Group
+                // POST /group
 
-                var config = ndexConfigs.getDeleteConfigV2(url, null);
+                var url = "/group";
+
+                var config = ndexConfigs.getPostConfigV2(url, group);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
@@ -259,16 +259,25 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.createGroupV2 = function (group, successHandler, errorHandler) {
-                // Server API: Create Group
-                // POST /group
+            factory.deleteGroupV2 = function(groupId, successHandler, errorHandler) {
+                // Server API: Delete Group
+                // DELETE /group/{groupid}
 
-                var url = "/group";
+                var url = "/group/" + groupId ;
 
-                var config = ndexConfigs.getPostConfigV2(url, group);
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            
+
+            factory.getGroupV2 = function (groupId, successHandler, errorHandler) {
+                // Server API: Get a Group
+                // /group/{groupid}
+                var url = "/group/" + groupId;
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.addOrUpdateGroupMemberV2 = function (groupId, userId, type, successHandler, errorHandler) {
                 // Server API: Add or Update a Group Member
                 // /group/{groupid}/membership?userid={userid}&type={GROUPADMIN|MEMBER}
@@ -420,36 +429,28 @@ ndexServiceApp.factory('ndexService',
              *---------------------------------------------------------------------*/
 
             factory.createUserPermissionRequestV2 = function (userUUID, userPermissionRequest, successHandler, errorHandler) {
+                // Server API: Create User Permission Request
+                // POST /user/{userId}/permissionrequest
 
-                var config = ndexConfigs.getCreateUserPermissionRequestConfigV2(userUUID, userPermissionRequest);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
+                var url = "/user/" + userUUID + "/permissionrequest";
+                var config = ndexConfigs.getPostConfigV2(url, userPermissionRequest);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
             factory.createGroupPermissionRequestV2 = function (groupUUID, groupPermissionRequest, successHandler, errorHandler) {
+                // Server API: Create Group Permission Request
+                // POST /group/{groupId}/permissionrequest
 
-                var config = ndexConfigs.getCreateGroupPermissionRequestConfigV2(groupUUID, groupPermissionRequest);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
+                var url = "/group/" + groupUUID + "/permissionrequest";
+                var config = ndexConfigs.getPostConfigV2(url, groupPermissionRequest);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
             factory.getUserPermissionRequestsV2 = function (userUUID, type, successHandler, errorHandler) {
                 // Server API: Get a User’s Permission Requests
-                // /user/{userId}/permissionrequest?type={sent|received}
+                // GET /user/{userId}/permissionrequest?type={sent|received}
 
                 var url = "/user/" + userUUID + "/permissionrequest";
 
@@ -464,7 +465,7 @@ ndexServiceApp.factory('ndexService',
 
             factory.getUserMembershipRequestsV2 = function (userUUID, type, successHandler, errorHandler) {
                 // Server API: Get a User’s Membership Requests
-                // /user/{userId}/membershiprequest?type={sent|received}
+                // GET /user/{userId}/membershiprequest?type={sent|received}
 
                 var url = "/user/" + userUUID + "/membershiprequest";
 
@@ -478,17 +479,27 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.acceptOrDenyPermissionRequestV2 = function (recipientId, requestId, action, message, successHandler, errorHandler) {
+                // Server API: Accept or Deny a permission request
+                // PUT /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}
 
-                var config = ndexConfigs.getAcceptOrDenyPermissionRequestConfigV2(recipientId, requestId, action, message);
-                $http(config)
-                    .success(function(data)
-                    {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
+                var url =
+                    "/user/" + recipientId + "/permissionrequest/" + requestId +
+                    "?action=" + action + "&message=" + message;
+
+                var config = ndexConfigs.getPutConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.acceptOrDenyMembershipRequestV2 = function (recipientId, requestId, action, message, successHandler, errorHandler) {
+                // Server API: Accept or Deny a membership request
+                // PUT /user/{recipient_id}/membershiprequest/{requestid}?action={accept|deny}&message={message}
+
+                var url =
+                    "/user/" + recipientId + "/membershiprequest/" + requestId +
+                    "?action=" + action + "&message=" + message;
+
+                var config = ndexConfigs.getPutConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
             factory.deleteRequestV2 = function (request, successHandler, errorHandler) {
@@ -511,20 +522,6 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-
-            factory.getGroupV2 = function (groupId, successHandler, errorHandler) {
-
-                var config = ndexConfigs.getGetGroupConfigV2(groupId);
-                $http(config)
-                    .success(function(data) {
-                        successHandler(data);
-                    })
-                    .error(function(error)
-                    {
-                        errorHandler(error);
-                    });
-            };
-
 
             /*---------------------------------------------------------------------*
              * Networks
@@ -652,7 +649,6 @@ ndexServiceApp.factory('ndexService',
                     });
             }
 
-
             factory.getAllPermissionsOnNetworkV2 = function(networkId, type, permission, startPage, size, successHandler, errorHandler) {
                 // calls NetworkServiceV2.getNetworkUserMemberships server API at
                 // /network/{networkID}/permission?type={user|group}&start={startPage}&size={size}
@@ -778,7 +774,6 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
             
-
             factory.removeNetworkMember = function(networkExternalId, memberExternalId, successHandler, errorHandler) {
                 handleAuthorizationHeader();
                 return NetworkResource.deleteMember({identifier: networkExternalId, subId: memberExternalId}, null, successHandler, errorHandler);
@@ -1396,18 +1391,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return this.getPostConfig(url, postData);
     };
 
-    /*
-    factory.getNetworkQueryConfig = function (networkId, startingTerms, searchDepth, edgeLimit, skipBlocks, blockSize) {
-        var url = "/network/" + networkId + "/asNetwork/query/";
-        var postData = {
-            searchString: startingTerms,
-            searchDepth: searchDepth,
-            edgeLimit: edgeLimit
-        };
-        return this.getPostConfig(url, postData);
-    };
-    */
-
     factory.getQueryNetworkAsCXConfigV2 = function (networkId, searchString, searchDepth, edgeLimit) {
         // queryNetworkAsCX server API at
         // /search/network/{networkId}/query?size={limit}
@@ -1447,38 +1430,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
         return this.getGetConfigV2(url, null);
     };
-
-    factory.getCreateUserPermissionRequestConfigV2 = function (userUUID, userPermissionRequest) {
-        // Server API: Create User Permission Request
-        // /user/{userId}/permissionrequest
-        var url = "/user/" + userUUID + "/permissionrequest";
-        return this.getPostConfigV2(url, userPermissionRequest);
-    };
-
-    factory.getCreateGroupPermissionRequestConfigV2 = function (groupUUID, groupPermissionRequest) {
-        // Server API: Create Group Permission Request
-        // /group/{groupId}/permissionrequest
-        var url = "/group/" + groupUUID + "/permissionrequest";
-        return this.getPostConfigV2(url, groupPermissionRequest);
-    };
     
-    factory.getAcceptOrDenyPermissionRequestConfigV2 = function (recipientId, requestId, action, message) {
-        // Server API: Accept or Deny a permission request
-        // /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}
-
-        var url = 
-            "/user/" + recipientId + "/permissionrequest/" + requestId + "?action=" + action + "&message=" + message;
-
-        return this.getPutConfigV2(url, null);
-    };
-
-    factory.getGetGroupConfigV2 = function (groupId) {
-        // Server API: Get a Group
-        // /group/{groupid}
-        var url = "/group/" + groupId;
-        return this.getGetConfigV2(url, null);
-    };
-
     factory.getSearchGroupsConfigV2 = function (searchString, skipBlocks, blockSize) {
         // Server API: Search Groups
         // /search/group?start={skipBlocks}&size={blockSize}
