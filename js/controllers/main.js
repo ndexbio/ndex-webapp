@@ -616,6 +616,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.documentationLink.showWarning = false;
             }
 
+            /*
             if (typeof config.apiLink === 'undefined') {
                 config.apiLink = {};
             }
@@ -632,6 +633,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             if (typeof config.apiLink.warn === 'undefined') {
                 config.apiLink.warn = false;
             }
+            */
 
             if (typeof config.reportBugLink === 'undefined') {
                 config.reportBugLink = {};
