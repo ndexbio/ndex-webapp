@@ -353,7 +353,6 @@ ndexApp.controller('groupController',
         function (group) {
  
             groupController.displayedGroup = group;
-            cGroup = group;
 
             getMembership();
 

@@ -283,8 +283,8 @@
                             var groupId = $scope.group.externalId;
                             $scope.group = {};
                             modalInstance.close();
-                            $route.reload();
                             $location.path('/group/' + groupId);
+                            $route.reload();
                             $scope.isProcessing = false;
                         },
                         function(error){

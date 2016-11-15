@@ -243,6 +243,11 @@ ndexServiceApp.factory('ndexService',
                 // Server API: Create Group
                 // POST /group
 
+                if (group.website)
+                {
+                    if( !group.website.startsWith("http") )
+                        group.website = "http://" + group.website;
+                }
                 var url = "/group";
 
                 var config = ndexConfigs.getPostConfigV2(url, group);
@@ -253,6 +258,11 @@ ndexServiceApp.factory('ndexService',
                 // Server API: Update Group
                 // PUT /group/{groupid}
 
+                if (group.website)
+                {
+                    if( !group.website.startsWith("http") )
+                        group.website = "http://" + group.website;
+                }
                 var url = "/group/" + group.externalId;
 
                 var config = ndexConfigs.getPutConfigV2(url, group);
