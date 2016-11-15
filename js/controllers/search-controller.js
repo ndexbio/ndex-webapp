@@ -222,40 +222,37 @@ ndexApp.controller('searchController',
             searchController.submitNetworkSearch = function () {
 
                 searchController.numberOfNetworksFound = 0;
-                searchController.networkSearchIncludeNetworksByGroupPermissions = true;
                 searchController.networkSearchInProgress = true;
                 searchController.networkSearchNoResults = false;
 
-                ndexService.findNetworks(
-                    searchController.searchString,
-                    searchController.userName,
-                    searchController.permission,
-                    searchController.networkSearchIncludeNetworksByGroupPermissions,
-                    searchController.networkSkipPages,
-                    searchController.pageSize)
-                    .success(
-                        function (searchResult) {
-                            searchController.numberOfNetworksFound = searchResult.numFound;
-                            searchController.networkSearchResultStart = searchResult.start;
-                            var networks = searchResult.networks;
-                            if(networks.length > 0){
-                                searchController.networkSearchResults = networks;
-                                populateNetworkTable();
-                            } else {
-                                searchController.networkSearchNoResults = true;
-                            }
+                searchController.networkQuery = {};
+                searchController.networkQuery.accountName = searchController.userName;
+                searchController.networkQuery.searchString = searchController.searchString;
+
+
+                ndexService.searchNetworksV2(searchController.networkQuery, searchController.networkSkipPages, searchController.pageSize,
+                    function (searchResult)
+                    {
+                        searchController.numberOfNetworksFound = searchResult.numFound;
+                        searchController.networkSearchResultStart = searchResult.start;
+                        var networks = searchResult.networks;
+                        if(networks.length > 0){
+                            searchController.networkSearchResults = networks;
+                            populateNetworkTable();
+                        } else {
+                            searchController.networkSearchNoResults = true;
+                        }
+                        searchController.networkSearchInProgress = false;
+                    },
+                    function (error)
+                    {
+                        if (error) {
+                            searchController.networkSearchResults = null;
+                            searchController.errors.push(error.message);
                             searchController.networkSearchInProgress = false;
-                        })
-                    .error(
-                        function (error, data) {
-                            // Save the error.
-                            if (error) {
-                                searchController.networkSearchResults = null;
-                                searchController.errors.push(error.message);
-                                searchController.networkSearchInProgress = false;
-                                searchController.networkSearchNoResults = true;
-                            }
-                        })
+                            searchController.networkSearchNoResults = true;
+                        }
+                    });
             };
 
             /*---------------------------

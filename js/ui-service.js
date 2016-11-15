@@ -1674,6 +1674,7 @@
     });
 
     // modal to remove own access to network
+    /*
     uiServiceApp.directive('leaveNetwork', function(){
         return {
             scope: {
@@ -1722,7 +1723,7 @@
             }
         }
     });
-
+*/
     // modal to delete network
     uiServiceApp.directive('deleteNetwork', function(){
         return {
