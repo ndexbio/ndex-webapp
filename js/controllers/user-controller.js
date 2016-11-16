@@ -335,7 +335,7 @@ ndexApp.controller('userController',
 
             } else {
 
-                ndexService.getUserV2(userController.identifier)
+                ndexService.getUserByUUIDV2(userController.identifier)
                     .success(
                     function (user)
                     {

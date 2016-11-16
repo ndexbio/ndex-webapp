@@ -1422,7 +1422,7 @@ ndexApp.controller('networkController',
                     };
                 }
 
-                var config = ndexConfigs.getPostConfig(url, postData);
+                var config = ndexConfigs.getPostConfigV2(url, postData);
                 var canceler = $q.defer();
                 config.timeout = canceler.promise;
 

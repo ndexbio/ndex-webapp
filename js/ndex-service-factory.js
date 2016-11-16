@@ -48,9 +48,13 @@ ndexServiceApp.factory('ndexService',
             //
             //getUserQuery
             //
-            factory.getUserV2 = function (userId) {
-                ////console.log("retrieving user with id " + userId);
-                var config = ndexConfigs.getUserByUUIDConfigV2(userId);
+            factory.getUserByUUIDV2 = function (userId) {
+                // Server API : Get User By UUID
+                // GET /user/{userId}
+
+                var url = "/user/" + userId;
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
                 return $http(config);
             };
 
@@ -1076,28 +1080,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     /*---------------------------------------------------------------------*
      * GET request configuration
      *---------------------------------------------------------------------*/
-    factory.getGetConfig = function (url, queryArgs) {
-        var config = {
-            method: 'GET',
-            url: ndexServerURI + url,
-            headers: {
-                //Authorization: "Basic " + factory.getEncodedUser()
-            }
-        };
-        if( factory.getEncodedUser() )
-        {
-            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
-        }
-        else
-        {
-            config['headers']['Authorization'] = undefined;
-        }
-        if (queryArgs) {
-            config.data = JSON.stringify(queryArgs);
-        }
-        return config;
-    };
-
     factory.getGetConfigV2 = function (url, queryArgs) {
         var config = {
             method: 'GET',
@@ -1123,23 +1105,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     /*---------------------------------------------------------------------*
      * POST request configuration
      *---------------------------------------------------------------------*/
-    factory.getPostConfig = function (url, postData) {
-        var config = {
-            method: 'POST',
-            url: ndexServerURI + url,
-            data: angular.toJson(postData),
-            headers: {}
-        };
-        if( factory.getEncodedUser() )
-        {
-            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
-        }
-        else
-        {
-            config['headers']['Authorization'] = undefined;
-        }
-        return config;
-    };
     factory.getPostConfigV2 = function (url, postData) {
         var config = {
             method: 'POST',
@@ -1157,30 +1122,10 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         }
         return config;
     };
+    
     /*---------------------------------------------------------------------*
      * PUT request configuration
      *---------------------------------------------------------------------*/
-    factory.getPutConfig = function (url, putData) {
-        var config = {
-            method: 'PUT',
-            url: ndexServerURI + url,
-            //data: angular.toJson(putData),
-            headers: {}
-        };
-        if( factory.getEncodedUser() )
-        {
-            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
-        }
-        else
-        {
-            config['headers']['Authorization'] = undefined;
-        }
-        if (putData) {
-            config.data = JSON.stringify(putData);
-        }
-        return config;
-    };
-    
     factory.getPutConfigV2 = function (url, putData) {
         var config = {
             method: 'PUT',
@@ -1205,24 +1150,10 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         }
         return config;
     };
-
-    factory.getDeleteConfig = function (url) {
-        var config = {
-            method: 'DELETE',
-            url: ndexServerURI + url,
-            headers: {}
-        };
-        if( factory.getEncodedUser() )
-        {
-            config['headers']['Authorization'] = "Basic " + factory.getEncodedUser();
-        }
-        else
-        {
-            config['headers']['Authorization'] = undefined;
-        }
-        return config;
-    };
     
+    /*---------------------------------------------------------------------*
+     * DELETE request configuration
+     *---------------------------------------------------------------------*/
     factory.getDeleteConfigV2 = function (url) {
         var config = {
             method: 'DELETE',
@@ -1249,61 +1180,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
         else
             return null;
-    };
-
-    /*---------------------------------------------------------------------*
-     * Users
-     *---------------------------------------------------------------------*/
-    factory.getUserByUUIDConfigV2 = function (userId) {
-        var url = "/user/" + userId;
-        return this.getGetConfigV2(url, null);
-    };
-    /*---------------------------------------------------------------------*
-     * Networks
-     *---------------------------------------------------------------------*/
-
-    factory.getNetworkSampleConfigV2 = function (networkId) {
-        // Get Network Sample
-        // network/{networkId}/sample
-
-        var url = "/network/" + networkId + "/sample";
-        return this.getGetConfigV2(url, null);
-    };
-
-    factory.getNetworkSearchConfig = function (searchString, accountName, permission, includeGroups, skipBlocks, blockSize) {
-        var url = "/network/textsearch/" + skipBlocks.toString() + "/" + blockSize.toString();
-        var postData = {};
-        if( accountName )
-        {
-            postData = {
-                searchString: searchString,
-                accountName: accountName
-            };
-        }
-        else
-        {
-            postData = {
-                searchString: searchString
-            };
-        }
-
-        if (permission) postData.permission = permission;
-        if (includeGroups) postData.includeGroups = includeGroups;
-
-        return this.getPostConfig(url, postData);
-    };
-
-    factory.getQueryNetworkAsCXConfigV2 = function (networkId, searchString, searchDepth, edgeLimit) {
-        // queryNetworkAsCX server API at
-        // /search/network/{networkId}/query?size={limit}
-
-        var url = "/search/network/" + networkId + "/query";
-        var postData = {
-            searchString: searchString,
-            searchDepth: searchDepth,
-            edgeLimit: edgeLimit
-        };
-        return this.getPostConfigV2(url, postData);
     };
 
     return factory;

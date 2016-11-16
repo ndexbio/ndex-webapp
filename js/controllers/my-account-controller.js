@@ -765,7 +765,7 @@ ndexApp.controller('myAccountController',
             //----------------------------------------------------------------------------
             myAccountController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            ndexService.getUserV2(myAccountController.identifier)
+            ndexService.getUserByUUIDV2(myAccountController.identifier)
                 .success(
                 function (user)
                 {

@@ -273,13 +273,14 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
         factory.getNetworkSampleV2 = function (networkId) {
+            // Server API: Get Network Sample
+            // GET /network/{networkId}/sample
+
+            var url = "/network/" + networkId + "/sample";
+            var config = ndexConfigs.getGetConfigV2(url, null);
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
-
-            // Grab the config for this request. We modify the config to allow for $http request aborts.
-            // This may become standard in the client.
-            var config = ndexConfigs.getNetworkSampleConfigV2(networkId);
 
             config.timeout = deferredAbort.promise;
 
@@ -329,10 +330,21 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
         factory.neighborhoodQuery = function (networkId, searchString, searchDepth, edgeLimit) {
+            // Server API : Querey Network As CX
+            // POST /search/network/{networkId}/query?size={limit}
+
+            var url = "/search/network/" + networkId + "/query";
+            var postData = {
+                searchString: searchString,
+                searchDepth: searchDepth,
+                edgeLimit: edgeLimit
+            };
+
+            var urlConfig = ndexConfigs.getPostConfigV2(url, postData);
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
-            var urlConfig = ndexConfigs.getQueryNetworkAsCXConfigV2(networkId, searchString, searchDepth, edgeLimit);
+            
             urlConfig.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
@@ -551,7 +563,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
 
-            var urlConfig = ndexConfigs.getPostConfig(url, postData);
+            var urlConfig = ndexConfigs.getPostConfigV2(url, postData);
             urlConfig.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
