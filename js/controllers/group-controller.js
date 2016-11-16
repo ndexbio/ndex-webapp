@@ -23,6 +23,7 @@ ndexApp.controller('groupController',
     groupController.userSearchResults = [];
     groupController.originalUserSearchResults = [];
 
+    groupController.adminsCount = 0;
 
     // networks
     groupController.networkSearchResults = [];
@@ -46,6 +47,22 @@ ndexApp.controller('groupController',
         return usersUUIDs;
     }
 
+    var countAdmins = function(users) {
+        groupController.adminsUUIDs = [];
+
+        if (!users) {
+            return;
+        }
+
+        for (var i in users) {
+            var user = users[i];
+
+            if (user.permissions.toUpperCase() == 'GROUPADMIN') {
+                groupController.adminsCount = groupController.adminsCount + 1;
+            }
+        }
+    }
+
     groupController.getMembersOfGroup = function(member) {
         /*
          * To get list of User objects we need to:
@@ -62,6 +79,8 @@ ndexApp.controller('groupController',
          */
         ndexService.getMembersOfGroupV2(groupController.identifier, member, 0, 1000000,
             function (users) {
+
+                countAdmins(users);
 
                 var usersUUIDs = getUsersUUIDs(users);
 

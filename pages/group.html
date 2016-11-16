@@ -54,13 +54,17 @@
                         ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
                         Manage Members
                     </a>
+                 </span>
 
+                 <span>
                     <a class="btn btn-primary customButtonWidth">
-                        <leave-group ndex-data='groupController.displayedGroup'>
-                            Leave Group
-                        </leave-group>
+                       <leave-group ndex-data='groupController'>
+                          Leave Group
+                       </leave-group>
                     </a>
+                 </span>
 
+                 <span ng-show='groupController.isAdmin'>
                     <a class="btn btn-primary customButtonWidth">
                         <delete-group
                             ndex-data='groupController.displayedGroup.externalId'>

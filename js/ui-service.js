@@ -1975,7 +1975,19 @@
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
                             $scope.title = 'Leave '+ $scope.group.groupName;
-                            $scope.message = 'There must be other admin in the group';
+
+                            var groupController = $scope.ndexData;
+                            var isAdmin  = groupController.isAdmin;
+
+                            $scope.message = 'You are about to leave this group and will loose access to all ' +
+                                'networks shared with the group. Would you like to proceed?';
+
+                            if (isAdmin &&  groupController.adminsCount == 1) {
+                                $scope.message = 'You are the admin of this group and cannot leave it ' +
+                                 'unless you designate another admin.';
+
+                                $scope.isProcessing = true;  // this disables the Confirm button in the Confirmation modal
+                            }
 
                             $scope.cancel = function() {
                                 $scope.isProcessing = false;
@@ -2003,7 +2015,7 @@
                     });
                 };
 
-                $scope.$watch('ndexData', function(value) {
+                $scope.$watch('ndexData.displayedGroup', function(value) {
                     $scope.group = value
                 });
 
