@@ -226,9 +226,9 @@ ndexApp.controller('groupController',
     var populateNetworkTable = function()
     {
         var columnDefs = [
+            { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
             { field: 'Network Name', enableFiltering: true, minWidth: 390,
                 cellTemplate: 'pages/gridTemplates/networkName.html'},
-            { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
             { field: 'Format', enableFiltering: true, minWidth: 70 },
             { field: 'Nodes', enableFiltering: false, minWidth: 70 },
             { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -304,8 +304,8 @@ ndexApp.controller('groupController',
             }
 
             var row = {
-                "Network Name"  :   networkName,
                 "Status"        :   networkStatus,
+                "Network Name"  :   networkName,
                 "Format"        :   format,
                 "Nodes"         :   nodes,
                 "Edges"         :   edges,

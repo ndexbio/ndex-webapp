@@ -84,15 +84,18 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
+                    { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Network Name', enableFiltering: true, minWidth: 390,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
-                    { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Format', enableFiltering: true, minWidth: 70 },
-                    { field: 'Nodes', enableFiltering: false, minWidth: 70 },
-                    { field: 'Edges', enableFiltering: false, minWidth: 70 },
-                    { field: 'Visibility', enableFiltering: true, minWidth: 90 },
-                    { field: 'Owned By', enableFiltering: true, minWidth: 70, cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0}  }
+                    { field: 'Format', enableFiltering: true, width: 100, cellClass: 'grid-align-cell' },
+                    { field: 'Nodes', enableFiltering: false, width: 90 },
+                    { field: 'Edges', enableFiltering: false, width: 90 },
+                    { field: 'Visibility', enableFiltering: true, width: 100, cellClass: 'grid-align-cell' },
+                    { field: 'Owned By', enableFiltering: true, width: 120, cellTemplate: 'pages/gridTemplates/ownedBy.html'},
+                    { field: 'Last Modified', enableFiltering: false, width: 200,
+                        cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0},
+                        cellClass: 'grid-align-cell'},
+                    { field: 'Showcase', enableFiltering: false, width: 100, cellTemplate: 'pages/gridTemplates/showCase.html'}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();
@@ -154,6 +157,7 @@ ndexApp.controller('myAccountController',
                     var owner = network['owner'];
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
+                    var showcase = network['isShowcase'];
 
                     var format = "Unknown";
                     for(var j = 0; j < network['properties'].length; j++ )
@@ -166,17 +170,18 @@ ndexApp.controller('myAccountController',
                     }
 
                     var row = {
-                        "Network Name"  :   networkName,
                         "Status"        :   networkStatus,
+                        "Network Name"  :   networkName,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,
                         "Owned By"      :   owner,
                         "Last Modified" :   modified,
+                        "Showcase"      :   showcase,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "ownerUUID"     :   network['ownerUUID']
+                        "ownerUUID"     :   network['ownerUUID'],
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
@@ -760,6 +765,25 @@ ndexApp.controller('myAccountController',
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, myAccountController.networkSearchResults);
             }
 
+            $scope.switchShowcase = function(row) {
+
+                if (row && row.entity) {
+
+                    if (row.entity.Showcase) {
+                        row.entity.Showcase = false;
+                    } else {
+                        row.entity.Showcase = true;
+                    }
+
+                    ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Showcase,
+                        function (data, networkId) {
+                            ; // success
+                        },
+                        function (error, networkId) {
+                            console.log("unable to update showcase for Network with Id " + networkId);
+                        });
+                }
+            }
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
