@@ -136,7 +136,6 @@ ndexApp.controller('searchNetworksController',
                         "Last Modified" :   modified,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "owner"         :   owner,
                         "ownerUUID"     :   network['ownerUUID']
                     };
 

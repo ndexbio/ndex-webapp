@@ -164,7 +164,6 @@ ndexApp.controller('userController',
                         "Last Modified" :   modified,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "owner"         :   owner,
                         "ownerUUID"     :   network['ownerUUID']
                     };
                     $scope.networkGridOptions.data.push(row);
