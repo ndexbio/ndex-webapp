@@ -207,7 +207,8 @@ ndexApp.controller('searchController',
                         "Last Modified" :   modified,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "owner"         :   owner
+                        "owner"         :   owner,
+                        "ownerUUID"     :   network['ownerUUID']
                     };
 
                     $scope.networkSearchGridOptions.data.push(row);

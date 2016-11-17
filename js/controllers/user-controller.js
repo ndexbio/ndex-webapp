@@ -164,7 +164,8 @@ ndexApp.controller('userController',
                         "Last Modified" :   modified,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "owner"         :   owner
+                        "owner"         :   owner,
+                        "ownerUUID"     :   network['ownerUUID']
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
@@ -262,7 +263,6 @@ ndexApp.controller('userController',
                 userController.getUserGroupMemberships(member);
             };
 
-
             userController.submitNetworkSearch = function ()
             {
                 userController.networkSearchResults = [];
@@ -282,6 +282,20 @@ ndexApp.controller('userController',
                     function (error)
                     {
                         console.log(error);
+                    });
+            }
+
+            userController.getUserShowcaseNetworks = function ()
+            {
+                ndexService.getUserShowCaseNetworksV2(userController.identifier,
+                    function (networks)
+                    {
+                        userController.networkSearchResults = networks;
+                        populateNetworkTable();
+                    },
+                    function (error)
+                    {
+                        console.log("unable to get user show case networks");
                     });
             }
 
@@ -351,7 +365,9 @@ ndexApp.controller('userController',
                         }
 
                         // get networks
-                        userController.submitNetworkSearch();
+                        //userController.submitNetworkSearch();
+
+                        userController.getUserShowcaseNetworks();
                     })
                 }
 

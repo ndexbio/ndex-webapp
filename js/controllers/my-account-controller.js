@@ -91,8 +91,7 @@ ndexApp.controller('myAccountController',
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
                     { field: 'Visibility', enableFiltering: true, minWidth: 90 },
-                    { field: 'Owned By', enableFiltering: true, minWidth: 70,
-                        cellTemplate: 'pages/gridTemplates/ownedBy.html'},
+                    { field: 'Owned By', enableFiltering: true, minWidth: 70, cellTemplate: 'pages/gridTemplates/ownedBy.html'},
                     { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0}  }
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
@@ -177,7 +176,7 @@ ndexApp.controller('myAccountController',
                         "Last Modified" :   modified,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "owner"         :   owner
+                        "ownerUUID"     :   network['ownerUUID']
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
@@ -695,7 +694,7 @@ ndexApp.controller('myAccountController',
 
             };
 
-            myAccountController.getNetworksForLoggedInUser = function ()
+            myAccountController.getUserAccountPageNetworks = function ()
             {
                 /*
                  * To get list of Network Summaries objects we need to:
@@ -711,10 +710,8 @@ ndexApp.controller('myAccountController',
                 ndexService.getUserNetworkPermissionsV2(myAccountController.identifier, 'READ', 0, 1000000, directOnly,
                     function (networkPermissionsMap) {
 
-                        var networkUUIDs = Object.keys(networkPermissionsMap);
-
-                        ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
-                            function (networkSummaries) {
+                        ndexService.getUserAccountPageNetworksV2(myAccountController.identifier,
+                            function(networkSummaries) {
                                 myAccountController.networkSearchResults = networkSummaries;
 
                                 myAccountController.networksWithAdminAccess = [];
@@ -741,15 +738,18 @@ ndexApp.controller('myAccountController',
                                 }
 
                                 populateNetworkTable();
+
                             },
-                            function (error, data) {
-                                console.log("unable to get network summaries by IDs");
-                            })
+                            function(error) {
+                               console.log("unable to get user account page networks");
+                            });
+
                     },
                     function (error, data) {
                         console.log("unable to get user network memberships");
                     });
             };
+
 
             $scope.showWarningsOrErrors = function(rowEntity) {
 
@@ -780,7 +780,8 @@ ndexApp.controller('myAccountController',
                     myAccountController.refreshTasks();
 
                     // get networks
-                    myAccountController.getNetworksForLoggedInUser();
+                    myAccountController.getUserAccountPageNetworks();
+
 
                     // get groups
                     var member = null;

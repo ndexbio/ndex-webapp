@@ -211,6 +211,26 @@ ndexServiceApp.factory('ndexService',
                     this.sendHTTPRequest(config, successHandler, errorHandler);
                 }
 
+            factory.getUserShowCaseNetworksV2 = function (userId, successHandler, errorHandler) {
+                // Server API: Get User’s Showcase Networks
+                // GET /user/{userid}/showcase
+
+                var url = "/user/" + userId + "/showcase";
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.getUserAccountPageNetworksV2 = function (userId, successHandler, errorHandler) {
+                // Server API: Get User’s Account Page Networks (used for MyAccount page)
+                // GET /user/{userid}/networksummary
+
+                var url = "/user/" + userId + "/networksummary";
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             /*---------------------------------------------------------------------*
              * Groups
              *---------------------------------------------------------------------*/

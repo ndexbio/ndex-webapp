@@ -314,7 +314,8 @@ ndexApp.controller('groupController',
                 "Last Modified" :   modified,
                 "description"   :   description,
                 "externalId"    :   externalId,
-                "owner"         :   owner
+                "owner"         :   owner,
+                "ownerUUID"     :   network['ownerUUID']
             };
             $scope.networkGridOptions.data.push(row);
         }
