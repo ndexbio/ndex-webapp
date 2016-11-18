@@ -883,7 +883,7 @@ ndexServiceApp.factory('ndexService',
 
             factory.exportNetworksV2 = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
             {
-                // Server API: Export NEtworks
+                // Server API: Export Networks
                 // POST /network/export
                 // The structure of the export POST request is:
                 //      {

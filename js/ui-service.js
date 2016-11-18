@@ -999,7 +999,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/editNetworkSummaryModal.html',
             transclude: true,
-            controller: function($scope, $modal, ndexService, $route) {
+            controller: function($scope, $modal, ndexService, $route, ndexNavigation) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.network = {};
@@ -1062,10 +1062,41 @@
                           ($scope.network.version !== $scope.ndexData.version)
                         )  ? true : false;
 
+
                     if (updateVisibility) {
 
-                        ndexService.setNetworkSystemPropertiesV2($scope.ndexData.externalId, "visibility", $scope.network.visibility,
+                        ndexService.setNetworkSystemPropertiesV2($scope.ndexData.externalId,
+                            "visibility", $scope.network.visibility,
+
                             function (data, networkId) {
+
+                                if (($scope.ndexData.visibility.toUpperCase() == 'PRIVATE') &&
+                                    ($scope.network.visibility.toUpperCase() == 'PUBLIC') ) {
+
+                                    ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", true,
+                                        function (data, networkId) {
+                                            var title = "This Network is Now Public and Showcased";
+                                            var message =
+                                                "This network is now public and showcased on your account page. " +
+                                                "You can decide to disable the showcase feature for this network " +
+                                                "by clicking the corresponding eye icon on your My Account page.";
+                                            ndexNavigation.genericInfoModal(title, message);
+                                        },
+                                        function (error, networkId) {
+                                            console.log("unable to change showcase for Network with Id " + networkId);
+                                        })
+
+                                } else {
+
+                                    ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", false,
+                                        function (data, networkId) {
+                                            ;
+                                        },
+                                        function (error, networkId) {
+                                            console.log("unable to change showcase for Network with Id " + networkId);
+                                        })
+                                }
+
                                 $scope.ndexData.visibility = $scope.network.visibility;
                             },
                             function (error, networkId) {
@@ -1979,7 +2010,7 @@
                             var groupController = $scope.ndexData;
                             var isAdmin  = groupController.isAdmin;
 
-                            $scope.message = 'You are about to leave this group and will loose access to all ' +
+                            $scope.message = 'You are about to leave this group and will lose access to all ' +
                                 'networks shared with the group. Would you like to proceed?';
 
                             if (isAdmin &&  groupController.adminsCount == 1) {
