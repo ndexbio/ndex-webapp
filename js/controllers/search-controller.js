@@ -189,7 +189,7 @@ ndexApp.controller('searchController',
                     var format = "Unknown";
                     for(var j = 0; j < network['properties'].length; j++ )
                     {
-                        if( network['properties'][j]['predicateString'] == "sourceFormat" )
+                        if( network['properties'][j]['predicateString'] == "ndex:sourceFormat" )
                         {
                             format = network['properties'][j]['value'];
                             break;
