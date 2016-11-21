@@ -150,6 +150,15 @@ ndexApp.controller('myAccountController',
                         networkStatus = "warning";
                     }
 
+                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+                    if (networkStatus == "failed") {
+                        if (network.errorMessage.length > 60) {
+                            networkName = network.errorMessage.substr(0, 60) + " ...";
+                        }  else {
+                            networkName = network.errorMessage;
+                        }
+                    }
+
                     var description = $scope.stripHTML(network['description']);
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
