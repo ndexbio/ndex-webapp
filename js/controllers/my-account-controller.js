@@ -218,7 +218,7 @@ ndexApp.controller('myAccountController',
                         }
                     }
 
-                    var download;
+                    var download = "Download " + networkName;
 
                     var row =   {
                         "Status"        :   networkStatus,
@@ -235,6 +235,7 @@ ndexApp.controller('myAccountController',
                         "description"   :   description,
                         "externalId"    :   externalId,
                         "ownerUUID"     :   network['ownerUUID'],
+                        "name"          :   networkName
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
