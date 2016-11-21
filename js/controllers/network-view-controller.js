@@ -1951,7 +1951,7 @@ ndexApp.controller('networkViewController',
                             //getNetworkAdmins();
 
                             var sourceFormat =
-                                networkService.getNetworkProperty('sourceFormat');
+                                networkService.getNetworkProperty('ndex:sourceFormat');
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
@@ -1963,7 +1963,7 @@ ndexApp.controller('networkViewController',
                             networkController.currentNetwork.reference = networkService.getNetworkProperty('Reference');
                             networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty('rightsHolder');
                             networkController.currentNetwork.rights = networkService.getNetworkProperty('rights');
-                            networkController.otherProperties = networkService.getPropertiesExcluding(['rights','rightsHolder','Reference','sourceFormat']);
+                            networkController.otherProperties = networkService.getPropertiesExcluding(['rights','rightsHolder','Reference','ndex:sourceFormat']);
                         }
                     )
                     .error(
