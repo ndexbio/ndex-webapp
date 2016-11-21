@@ -1,0 +1,7 @@
+<div id="downloadNetworkTemplate" class="ui-grid-cell-contents">
+    <span ng-if="(row.entity.Status == 'warning') || (row.entity.Status == 'success')">
+        <a href="/exported-networks/{{row.entity.externalId}}.cx" download="{{row.entity.externalId}}" title="Download {{row.entity.description}}">
+            <img src="img/download.png" width="20px" height="20px" align="center">
+        </a>
+    </span>
+</div>

@@ -85,17 +85,19 @@ ndexApp.controller('myAccountController',
             {
                 var columnDefs = [
                     { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Network Name', enableFiltering: true, minWidth: 390,
+                    { field: 'Download', enableFiltering: true, width: 85, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
+                    { field: 'Network Name', enableFiltering: true, minWidth: 350,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
-                    { field: 'Format', enableFiltering: true, width: 100, cellClass: 'grid-align-cell' },
+                    //{ field: 'Reference', enableFiltering: true, width: 200, cellTemplate: 'pages/gridTemplates/reference.html' },
+                    { field: 'Format', enableFiltering: true, width: 70, cellClass: 'grid-align-cell' },
                     { field: 'Nodes', enableFiltering: false, width: 90 },
                     { field: 'Edges', enableFiltering: false, width: 90 },
-                    { field: 'Visibility', enableFiltering: true, width: 100, cellClass: 'grid-align-cell' },
-                    { field: 'Owned By', enableFiltering: true, width: 120, cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, width: 200,
+                    { field: 'Visibility', enableFiltering: true, width: 70, cellClass: 'grid-align-cell' },
+                    { field: 'Owned By', enableFiltering: true, width: 100, cellTemplate: 'pages/gridTemplates/ownedBy.html'},
+                    { field: 'Last Modified', enableFiltering: false, width: 170,
                         cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0},
                         cellClass: 'grid-align-cell'},
-                    { field: 'Showcase', enableFiltering: false, width: 100, cellTemplate: 'pages/gridTemplates/showCase.html'}
+                    { field: 'Showcase', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/showCase.html'}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();
@@ -127,6 +129,45 @@ ndexApp.controller('myAccountController',
                 return markDownFinal;
             }
 
+            /*
+            var getNetworkReference = function(network) {
+                var reference = "";
+
+                if (!network && !network.properties) {
+                    return reference;
+                }
+
+                for (var i = 0; i < network.properties.length; i++) {
+                    var property = network.properties[i];
+                    if (property.predicateString && property.predicateString.toLowerCase() == "reference") {
+                        reference = property.value;
+                        break;
+                    }
+                }
+
+                var referenceInPlainText = jQuery(reference).text().trim();
+                var url = jQuery(reference).find('a').attr('href');
+
+                if (!url && referenceInPlainText) {
+                    if (referenceInPlainText.startsWith("http:") || referenceInPlainText.startsWith("https:")) {
+                        url = referenceInPlainText;
+                    }
+                }
+
+                var referenceObj = {
+                    referenceText: referenceInPlainText ? referenceInPlainText : "",
+                    referenceHTML: reference ? reference : "",
+                    url: url ? url : ""
+                };
+
+                //console.log("plainText=" + plainText);
+                //console.log("URL=" + url);
+                //console.log("reference=" + reference);
+
+                return referenceObj;
+            }
+            */
+
             var refreshNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
@@ -134,8 +175,6 @@ ndexApp.controller('myAccountController',
                 for(var i = 0; i < myAccountController.networkSearchResults.length; i++ )
                 {
                     var network = myAccountController.networkSearchResults[i];
-
-                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
 
                     var networkStatus = "success";
                     if (!network.isValid) {
@@ -159,6 +198,7 @@ ndexApp.controller('myAccountController',
                         }
                     }
 
+                    //var reference   = getNetworkReference(network);
                     var description = $scope.stripHTML(network['description']);
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
@@ -178,9 +218,13 @@ ndexApp.controller('myAccountController',
                         }
                     }
 
+                    var download;
+
                     var row =   {
                         "Status"        :   networkStatus,
+                        "Download"      :   download,
                         "Network Name"  :   networkName,
+                        //"Reference"     :   reference,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
