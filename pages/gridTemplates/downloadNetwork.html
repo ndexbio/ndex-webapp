@@ -1,6 +1,8 @@
 <div id="downloadNetworkTemplate" class="ui-grid-cell-contents">
     <span ng-if="(row.entity.Visibility == 'PUBLIC') && ((row.entity.Status == 'warning') || (row.entity.Status == 'success'))">
-        <a href="#/data/{{row.entity.externalId}}/network.cx" download="{{row.entity.name}}.cx" title="{{COL_FIELD}}">
+        <a ng-href="{{$location.path()}}"
+           ng-click="grid.appScope.getNetworkFromServerAndSaveToDisk(row.entity)"
+           title="{{COL_FIELD}}">
             <img src="img/download.png" width="20px" height="20px" align="center">
         </a>
     </span>

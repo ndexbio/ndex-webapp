@@ -221,7 +221,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             // This may become standard in the client.
 
             // Get Complete Network in CX
-            // network/{networkId}
+            // GET /network/{networkId}
             var url = "/network/" + networkId ;
             var config = ndexConfigs.getGetConfigV2(url, null);
 

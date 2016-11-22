@@ -673,6 +673,16 @@ ndexServiceApp.factory('ndexService',
 
                 return request;
             };
+
+            factory.getCompleteNetworkInCXV2 = function(networkId, successHandler, errorHandler) {
+                // Server API: Get Complete Network in CX
+                // GET /network/{networkId}
+
+                var url = "/network/" + networkId ;
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            }
             
             factory.setNetworkSystemPropertiesV2 = function(networkId, property, value, successHandler, errorHandler) {
                 // Server API: Set Network System Properties

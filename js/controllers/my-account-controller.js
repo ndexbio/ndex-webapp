@@ -1,6 +1,8 @@
 ndexApp.controller('myAccountController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$route', '$modal', 'uiMisc',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $route, $modal, uiMisc)
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope',
+        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'networkService',
+        function (ndexService, ndexUtility, sharedProperties, $scope,
+                  $location, $routeParams, $route, $modal, uiMisc, networkService)
         {
 
             //              Process the URL to get application state
@@ -838,6 +840,37 @@ ndexApp.controller('myAccountController',
                         });
                 }
             }
+
+            $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+
+                if (!rowEntity && !rowEntity.externalId) {
+                    return;
+                }
+
+                ndexService.getCompleteNetworkInCXV2(rowEntity.externalId,
+                    function (network) {
+
+                        var networkInJSON = angular.toJson(network);
+
+                        var downloadFileName = rowEntity.name;
+                        downloadFileName = downloadFileName.replace(/ /g,"_");
+
+                        var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
+
+                        downloadFileName = downloadFileName + "." + networkType;
+
+                        var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
+                        var downloadLink = angular.element('<a></a>');
+                        downloadLink.attr('href',window.URL.createObjectURL(blob));
+                        downloadLink.attr('download', downloadFileName);
+                        downloadLink[0].click();
+                    },
+                    function (error) {
+                        console.log("unabel to get network in CX");
+                    }
+                );
+            }
+            
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
