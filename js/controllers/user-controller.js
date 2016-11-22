@@ -74,6 +74,7 @@ ndexApp.controller('userController',
                     { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Network Name', enableFiltering: true, minWidth: 390,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
+                    { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -153,9 +154,12 @@ ndexApp.controller('userController',
                         }
                     }
 
+                    var download = "Download " + networkName;
+
                     var row = {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
+                        " "             :   download,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
@@ -338,6 +342,12 @@ ndexApp.controller('userController',
 
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, userController.networkSearchResults);
             }
+
+            $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+
+                uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
+            }
+
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
