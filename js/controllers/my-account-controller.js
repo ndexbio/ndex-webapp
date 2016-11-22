@@ -822,7 +822,6 @@ ndexApp.controller('myAccountController',
             }
 
             $scope.switchShowcase = function(row) {
-
                 if (row && row.entity) {
 
                     if (row.entity.Showcase) {
@@ -842,7 +841,6 @@ ndexApp.controller('myAccountController',
             }
 
             $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
-
                 if (!rowEntity && !rowEntity.externalId) {
                     return;
                 }
@@ -856,17 +854,15 @@ ndexApp.controller('myAccountController',
                         downloadFileName = downloadFileName.replace(/ /g,"_");
 
                         var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
-
                         downloadFileName = downloadFileName + "." + networkType;
 
                         var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
-                        var downloadLink = angular.element('<a></a>');
-                        downloadLink.attr('href',window.URL.createObjectURL(blob));
-                        downloadLink.attr('download', downloadFileName);
-                        downloadLink[0].click();
+
+                        // saveAs is defined in FileServer.js
+                        saveAs(blob, downloadFileName);
                     },
                     function (error) {
-                        console.log("unabel to get network in CX");
+                        console.log("unable to get network in CX");
                     }
                 );
             }
