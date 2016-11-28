@@ -1,8 +1,8 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope',
-        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'networkService',
+        '$location', '$routeParams', '$route', '$modal', 'uiMisc',
         function (ndexService, ndexUtility, sharedProperties, $scope,
-                  $location, $routeParams, $route, $modal, uiMisc, networkService)
+                  $location, $routeParams, $route, $modal, uiMisc)
         {
 
             //              Process the URL to get application state
@@ -66,6 +66,9 @@ ndexApp.controller('myAccountController',
                 enableSorting: true,
                 enableFiltering: true,
                 showGridFooter: true,
+                // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
+                // otherwise it will not show all columns if we display more than 10 columns in our table
+                columnVirtualizationThreshold: 20,
 
                 onRegisterApi: function( gridApi )
                 {
@@ -87,19 +90,24 @@ ndexApp.controller('myAccountController',
             {
                 var columnDefs = [
                     { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Network Name', enableFiltering: true, minWidth: 350,
-                      cellTemplate: 'pages/gridTemplates/networkName.html'},
+                    { field: 'Network Name', enableFiltering: true, minWidth: 200,
+                      cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    //{ field: 'Reference', enableFiltering: true, width: 200, cellTemplate: 'pages/gridTemplates/reference.html' },
-                    { field: 'Format', enableFiltering: true, width: 70, cellClass: 'grid-align-cell' },
-                    { field: 'Nodes', enableFiltering: false, width: 90 },
-                    { field: 'Edges', enableFiltering: false, width: 90 },
-                    { field: 'Visibility', enableFiltering: true, width: 70, cellClass: 'grid-align-cell' },
-                    { field: 'Owned By', enableFiltering: true, width: 100, cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, width: 170,
+                    { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
+                    { field: 'Format', enableFiltering: true, width:70 },
+                    { field: 'Nodes', enableFiltering: false, width:90 },
+                    { field: 'Edges', enableFiltering: false, width:90 },
+                    { field: 'Visibility', enableFiltering: true, width:70, cellClass: 'grid-align-cell' },
+                    { field: 'Owned By', enableFiltering: true, width:100, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
+                    { field: 'Last Modified', enableFiltering: false, width:170,
                         cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0},
-                        cellClass: 'grid-align-cell'},
-                    { field: 'Showcase', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/showCase.html'}
+                        cellClass: 'grid-align-cell' },
+                    { field: 'Showcase', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/showCase.html' },
+
+                    { field: 'description', enableFiltering: false,  visible: false},
+                    { field: 'externalId',  enableFiltering: false,  visible: false},
+                    { field: 'ownerUUID',   enableFiltering: false,  visible: false},
+                    { field: 'name',        enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();
@@ -131,11 +139,11 @@ ndexApp.controller('myAccountController',
                 return markDownFinal;
             }
 
-            /*
-            var getNetworkReference = function(network) {
+
+            var getNetworkReferenceObj = function(network) {
                 var reference = "";
 
-                if (!network && !network.properties) {
+                if (!network || !network.properties) {
                     return reference;
                 }
 
@@ -150,25 +158,17 @@ ndexApp.controller('myAccountController',
                 var referenceInPlainText = jQuery(reference).text().trim();
                 var url = jQuery(reference).find('a').attr('href');
 
-                if (!url && referenceInPlainText) {
-                    if (referenceInPlainText.startsWith("http:") || referenceInPlainText.startsWith("https:")) {
-                        url = referenceInPlainText;
-                    }
-                }
+                var countURLs = (reference.toLowerCase().match(/a href=/g) || []).length;
 
                 var referenceObj = {
                     referenceText: referenceInPlainText ? referenceInPlainText : "",
                     referenceHTML: reference ? reference : "",
-                    url: url ? url : ""
+                    url: url ? url : "",
+                    urlCount: countURLs
                 };
 
-                //console.log("plainText=" + plainText);
-                //console.log("URL=" + url);
-                //console.log("reference=" + reference);
-
                 return referenceObj;
-            }
-            */
+            };
 
             var refreshNetworkTable = function()
             {
@@ -200,7 +200,6 @@ ndexApp.controller('myAccountController',
                         }
                     }
 
-                    //var reference   = getNetworkReference(network);
                     var description = $scope.stripHTML(network['description']);
                     var externalId = network['externalId'];
                     var nodes = network['nodeCount'];
@@ -221,17 +220,18 @@ ndexApp.controller('myAccountController',
                     }
 
                     var download = "Download " + networkName;
+                    var reference = getNetworkReferenceObj(network);
 
                     var row =   {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
                         " "             :   download,
-                        //"Reference"     :   reference,
+                        "Reference"     :   reference,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,
-                        "Owned By"      :   owner,
+                        "Owned By"      :   owner ,
                         "Last Modified" :   modified,
                         "Showcase"      :   showcase,
                         "description"   :   description,
@@ -243,6 +243,8 @@ ndexApp.controller('myAccountController',
                 }
             };
 
+
+
             myAccountController.tasksNotificationsTabDisabled = function() {
 
                 if ( (myAccountController.tasks.length > 0) ||
@@ -252,7 +254,7 @@ ndexApp.controller('myAccountController',
                 }
 
                 return true;
-            }
+            };
 
             myAccountController.getTaskFileExt = function(task)
             {
@@ -346,7 +348,7 @@ ndexApp.controller('myAccountController',
                     myAccountController.genericInfoModal(title, message);
                 }
                 return;
-            }
+            };
 
             myAccountController.genericInfoModal = function(title, message)
             {
@@ -364,7 +366,7 @@ ndexApp.controller('myAccountController',
                         };
                     }
                 });
-            }
+            };
 
             myAccountController.confirmDeleteSelectedNetworks = function()
             {
@@ -391,7 +393,7 @@ ndexApp.controller('myAccountController',
                         };
                     }
                 });
-            }
+            };
 
             myAccountController.manageBulkAccess = function(path, currentUserId)
             {
@@ -399,7 +401,7 @@ ndexApp.controller('myAccountController',
                 sharedProperties.setSelectedNetworkIDs(selectedIDs);
                 sharedProperties.setCurrentUserId(currentUserId);
                 $location.path(path);
-            }
+            };
 
             myAccountController.allTasksCompleted = function() {
                 var task;
@@ -411,7 +413,7 @@ ndexApp.controller('myAccountController',
                     }
                 }
                 return true;
-            }
+            };
 
             myAccountController.getIDsOfSelectedNetworks = function ()
             {
@@ -488,10 +490,9 @@ ndexApp.controller('myAccountController',
                             if (checkWriteAccess) {
 
                                 if (myAccountController.networksWithWriteAccess.indexOf(externalId1) == -1) {
-                                    // no ADMIN or WRITE priviled for this network.  The current user cannot modify it.
+                                    // no ADMIN or WRITE privilege for this network.  The current user cannot modify it.
                                     return false;
                                 }
-
                             } else {
                                 // we don't check if user has WRITE privilege here (since checkWriteAccess is false)
                                 // and user has no ADMIN access, which means the network cannot be deleted by the current user
@@ -502,7 +503,7 @@ ndexApp.controller('myAccountController',
                 }
 
                 return true;
-            }
+            };
             
             /*
              * This function returns true if the current user has ADMIN access to all selected networks,
@@ -521,7 +522,7 @@ ndexApp.controller('myAccountController',
                     }
                 }
                 return true;
-            }
+            };
 
             myAccountController.deleteSelectedNetworks = function ()
             {
@@ -538,12 +539,11 @@ ndexApp.controller('myAccountController',
                     ndexService.deleteNetworkV2(selectedId,
                         function (data)
                         {
-
+                            //;
                         },
                         function (error)
                         {
                             console.log("unable to delete network");
-
                         });
                 }
 
@@ -581,7 +581,7 @@ ndexApp.controller('myAccountController',
                 }
 
                 return found;
-            }
+            };
 
             myAccountController.searchGroupsFromUserInput = function() {
                 var searchString = myAccountController.groupSearchString;
@@ -605,7 +605,7 @@ ndexApp.controller('myAccountController',
                     function(error) {
                         console.log("unable to search groups");
                     });
-            }
+            };
 
             myAccountController.getUserGroupMemberships = function (member)
             {
@@ -642,7 +642,7 @@ ndexApp.controller('myAccountController',
                         function (error, data) {
                             console.log("unable to get user group memberships");
                         });
-            }
+            };
             
             myAccountController.adminCheckBoxClicked = function()
             {
@@ -819,7 +819,7 @@ ndexApp.controller('myAccountController',
                 }
                 
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, myAccountController.networkSearchResults);
-            }
+            };
 
             $scope.switchShowcase = function(row) {
                 if (row && row.entity) {
@@ -832,18 +832,18 @@ ndexApp.controller('myAccountController',
 
                     ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Showcase,
                         function (data, networkId) {
-                            ; // success
+                            // success
                         },
                         function (error, networkId) {
                             console.log("unable to update showcase for Network with Id " + networkId);
                         });
                 }
-            }
+            };
 
             $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
 
                 uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
-            }
+            };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

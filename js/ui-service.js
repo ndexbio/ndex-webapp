@@ -1152,6 +1152,47 @@
         }
     });
 
+
+    // modal to show network reference
+    uiServiceApp.directive('showNetworkReference', function() {
+        return {
+            scope: {
+                reference: '=',
+                action: '@directiveAction',
+                title:  '@directiveTitle',
+                text:   '@directiveDescription'
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/showNetworkReferenceModal.html',
+            transclude: true,
+            
+            controller: function($scope, $modal) {
+
+                var modalInstance;
+                $scope.errors = null;
+                $scope.network = {};
+
+                $scope.openMe = function() {
+
+                    $scope.network = {};
+                    $scope.network.reference = $scope.reference;
+
+                    modalInstance = $modal.open({
+                        templateUrl: 'show-network-reference-modal.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.close = function() {
+                    modalInstance.close();
+                    modalInstance = null;
+                    $scope.network = {};
+                };
+
+            }
+        }
+    });
+    
     // modal to bulk edit networks property (description, reference, version or visibility)
     uiServiceApp.directive('bulkEditNetworkProperty', function() {
         return {

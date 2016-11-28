@@ -1,0 +1,17 @@
+<div id="networkReferenceTemplate" class="ui-grid-cell-contents">
+
+    <span ng-if="((row.entity.Reference.referenceText.length > 0) && (row.entity.Reference.url && row.entity.Reference.url.length > 0) && (row.entity.Reference.urlCount == 1))">
+        <a ng-href="{{row.entity.Reference.url}}" target="_blank">CiteRef</a>
+    </span>
+
+    <span ng-if="((row.entity.Reference.referenceText.length > 0) && (row.entity.Reference.urlCount != 1))">
+            <a>
+               <show-network-reference
+                       reference='row.entity.Reference.referenceHTML'
+                       directive-title={{row.entity.name}}>
+                    CiteRef
+                </show-network-reference>
+            </a>
+    </span>
+
+</div>
