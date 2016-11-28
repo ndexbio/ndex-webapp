@@ -1,8 +1,10 @@
+<span ng-click="openMe()" ng-transclude></span>
+
 <script type="text/ng-template" id="show-network-reference-modal.html">
 
     <div class='modal-content'>
 
-        <form class="form-horizontal" role="form">
+        <form class="form-horizontal" role="form" ng-submit='submit()'>
 
             <div class="modal-header">
                 <h4 class="modal-title">{{title}}</h4>
