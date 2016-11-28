@@ -6,7 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', function (ndexNavigation) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService',
+                function (ndexNavigation, ndexService) {
 
         var self = this;
 
@@ -42,6 +43,34 @@ angular.module('ndexServiceApp')
              var title = (status == 'failed') ? "Failed Error Message" : "Warnings";
 
              ndexNavigation.genericInfoModal(title, message);
+        }
+
+        
+        self.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+            if (!rowEntity && !rowEntity.externalId) {
+                return;
+            }
+
+            ndexService.getCompleteNetworkInCXV2(rowEntity.externalId,
+                function (network) {
+
+                    var networkInJSON = angular.toJson(network);
+
+                    var downloadFileName = rowEntity.name;
+                    downloadFileName = downloadFileName.replace(/ /g,"_");
+
+                    var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
+                    downloadFileName = downloadFileName + "." + networkType;
+
+                    var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
+
+                    // saveAs is defined in FileServer.js
+                    saveAs(blob, downloadFileName);
+                },
+                function (error) {
+                    console.log("unable to get network in CX");
+                }
+            );
         }
 
     }

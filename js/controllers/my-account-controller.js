@@ -87,9 +87,9 @@ ndexApp.controller('myAccountController',
             {
                 var columnDefs = [
                     { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Download', enableFiltering: true, width: 85, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Network Name', enableFiltering: true, minWidth: 350,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
+                    { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     //{ field: 'Reference', enableFiltering: true, width: 200, cellTemplate: 'pages/gridTemplates/reference.html' },
                     { field: 'Format', enableFiltering: true, width: 70, cellClass: 'grid-align-cell' },
                     { field: 'Nodes', enableFiltering: false, width: 90 },
@@ -224,8 +224,8 @@ ndexApp.controller('myAccountController',
 
                     var row =   {
                         "Status"        :   networkStatus,
-                        "Download"      :   download,
                         "Network Name"  :   networkName,
+                        " "             :   download,
                         //"Reference"     :   reference,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
@@ -841,32 +841,9 @@ ndexApp.controller('myAccountController',
             }
 
             $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
-                if (!rowEntity && !rowEntity.externalId) {
-                    return;
-                }
 
-                ndexService.getCompleteNetworkInCXV2(rowEntity.externalId,
-                    function (network) {
-
-                        var networkInJSON = angular.toJson(network);
-
-                        var downloadFileName = rowEntity.name;
-                        downloadFileName = downloadFileName.replace(/ /g,"_");
-
-                        var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
-                        downloadFileName = downloadFileName + "." + networkType;
-
-                        var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
-
-                        // saveAs is defined in FileServer.js
-                        saveAs(blob, downloadFileName);
-                    },
-                    function (error) {
-                        console.log("unable to get network in CX");
-                    }
-                );
+                uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
             }
-            
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

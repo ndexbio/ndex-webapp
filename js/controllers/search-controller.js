@@ -136,6 +136,7 @@ ndexApp.controller('searchController',
                 { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                 { field: 'Network Name', enableFiltering: true, minWidth: 440,
                     cellTemplate: 'pages/gridTemplates/networkName.html'},
+                { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                 { field: 'Format', enableFiltering: true, minWidth: 70 },
                 { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                 { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -194,11 +195,14 @@ ndexApp.controller('searchController',
                             format = network['properties'][j]['value'];
                             break;
                         }
+
                     }
+                    var download = "Download " + networkName;
 
                     var row = {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
+                        " "             :   download,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
@@ -207,7 +211,8 @@ ndexApp.controller('searchController',
                         "Last Modified" :   modified,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "ownerUUID"     :   network['ownerUUID']
+                        "ownerUUID"     :   network['ownerUUID'],
+                        "name"          :   networkName
                     };
 
                     $scope.networkSearchGridOptions.data.push(row);
@@ -508,6 +513,11 @@ ndexApp.controller('searchController',
                 }
 
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, searchController.networkSearchResults);
+            }
+
+            $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+
+                uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
             }
 
 
