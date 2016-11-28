@@ -135,7 +135,7 @@ ndexApp.controller('searchController',
             
             const NETWORK_COLUMN_FIELDS = [
                 { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                { field: 'Network Name', enableFiltering: true, minWidth: 200,
+                { field: 'Network Name', enableFiltering: true, minWidth: 440,
                     cellTemplate: 'pages/gridTemplates/networkName.html'},
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                 { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },

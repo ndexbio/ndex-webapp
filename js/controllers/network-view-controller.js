@@ -2048,10 +2048,10 @@ ndexApp.controller('networkViewController',
             {
                 ndexService.setNetworkSystemPropertiesV2(networkController.currentNetworkId,
                     "readOnly", networkController.readOnlyChecked,
-                    function(data, networkId) {
+                    function(data, networkId, property, value) {
                         // success, do nothing
                     },
-                    function(error, networkId) {
+                    function(error, networkId, property, value) {
                         console.log("unable to make network Read-Only");
                     });
             };

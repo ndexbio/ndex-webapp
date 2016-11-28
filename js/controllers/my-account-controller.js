@@ -90,7 +90,7 @@ ndexApp.controller('myAccountController',
             {
                 var columnDefs = [
                     { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Network Name', enableFiltering: true, minWidth: 200,
+                    { field: 'Network Name', enableFiltering: true, minWidth: 350,
                       cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
@@ -397,6 +397,24 @@ ndexApp.controller('myAccountController',
                 return selectedIds;
             };
 
+            /*
+            myAccountController.getSelectedNetworks = function ()
+            {
+                var selectedNetworks = {};
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                for (var i = 0; i < selectedNetworksRows.length; i ++)
+                {
+                    selectedNetworks[selectedNetworksRows[i].externalId] = {
+                        Showcase : selectedNetworksRows[i].Showcase,
+                        Visibility: selectedNetworksRows[i].Visibility
+                    }
+
+                }
+
+                return selectedNetworks;
+            };\*/
+
             myAccountController.updateVisibilityOfNetwork = function (networkId, networkVisibility)
             {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
@@ -409,7 +427,20 @@ ndexApp.controller('myAccountController',
                     }
                 }
             };
+            
+            myAccountController.updateShowcaseOfNetwork = function (networkId, networkShowcase)
+            {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
+                for( var i = 0; i < selectedNetworksRows.length; i ++ )
+                {
+                    if (selectedNetworksRows[i].externalId == networkId) {
+                        selectedNetworksRows[i].Showcase = networkShowcase;
+                        break;
+                    }
+                }
+            };
+            
             /*
              * This function is used by Bulk Network Delete and Bulk Network Edit Properties operations.
              * It goes through the list of selected networks and checks if the networks
@@ -800,10 +831,10 @@ ndexApp.controller('myAccountController',
                     }
 
                     ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Showcase,
-                        function (data, networkId) {
+                        function (data, networkId, property, value) {
                             // success
                         },
-                        function (error, networkId) {
+                        function (error, networkId, property, value) {
                             console.log("unable to update showcase for Network with Id " + networkId);
                         });
                 }

@@ -1068,13 +1068,13 @@
                         ndexService.setNetworkSystemPropertiesV2($scope.ndexData.externalId,
                             "visibility", $scope.network.visibility,
 
-                            function (data, networkId) {
+                            function (data, networkId, property, value) {
 
                                 if (($scope.ndexData.visibility.toUpperCase() == 'PRIVATE') &&
                                     ($scope.network.visibility.toUpperCase() == 'PUBLIC') ) {
 
                                     ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", true,
-                                        function (data, networkId) {
+                                        function (data, networkId, property, value) {
                                             var title = "This Network is Now Public and Showcased";
                                             var message =
                                                 "This network is now public and showcased on your account page. " +
@@ -1082,24 +1082,24 @@
                                                 "by clicking the corresponding eye icon on your My Account page.";
                                             ndexNavigation.genericInfoModal(title, message);
                                         },
-                                        function (error, networkId) {
+                                        function (error, networkId, property, value) {
                                             console.log("unable to change showcase for Network with Id " + networkId);
                                         })
 
                                 } else {
 
                                     ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", false,
-                                        function (data, networkId) {
+                                        function (data, networkId, property, value) {
                                             ;
                                         },
-                                        function (error, networkId) {
+                                        function (error, networkId, property, value) {
                                             console.log("unable to change showcase for Network with Id " + networkId);
                                         })
                                 }
 
                                 $scope.ndexData.visibility = $scope.network.visibility;
                             },
-                            function (error, networkId) {
+                            function (error, networkId, property, value) {
                                 console.log("unable to update Network Visibility for Network with Id " + networkId);
                             });
                     }
@@ -1205,7 +1205,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
             transclude: true,
-            controller: function($scope, $modal, ndexService) {
+            controller: function($scope, $modal, ndexService, ndexNavigation) {
 
                 var modalInstance;
                 $scope.errors = null;
@@ -1253,29 +1253,6 @@
                     $scope.network = {};
                 };
 
-                /*
-                $scope.getNetworkProperties = function(networkId, userController) {
-                    var properties = [];
-
-                    if (!userController || !userController.networkSearchResults) {
-                        return properties;
-                    }
-
-                    for (var i = 0; i < userController.networkSearchResults.length; i++) {
-                        var networkObj = userController.networkSearchResults[i]
-
-                        if (networkId === networkObj.externalId) {
-                            if (networkObj.properties) {
-                                properties = networkObj.properties;
-                            }
-                            break;
-                        }
-                    }
-
-                    return properties;
-                }
-                */
-
                 $scope.getIndexOfReference = function(properties) {
                     var index = properties.length;
 
@@ -1298,8 +1275,8 @@
 
                     var myAccountController = $scope.ndexData;
                     var IdsOfSelectedNetworks = myAccountController.getIDsOfSelectedNetworks();
-
                     var operation = $scope.network.operation.toLowerCase();
+                    
                     delete $scope.network.operation;
 
                     var createdTasksCounter = 0;
@@ -1380,18 +1357,47 @@
                         } else if (operation === 'visibility') {
 
                             ndexService.setNetworkSystemPropertiesV2(myNet.networkId, "visibility", myNet.visibility,
-                            //ndexService.setVisibility(myNet.networkId, myNet.visibility,
-                                function (data, networkId) {
+                                function (data, networkId, property, value) {
                                     createdTasksCounter = createdTasksCounter + 1;
 
                                     myAccountController.updateVisibilityOfNetwork(networkId, myNet.visibility);
 
+                                    if (value == 'PUBLIC') {
+
+                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", true,
+                                            function (data, networkId, property, value) {
+                                                myAccountController.updateShowcaseOfNetwork(networkId, true);
+                                            },
+                                            function (error, networkId, property, value) {
+                                                console.log("unable to change showcase for Network with Id " + networkId);
+                                            })
+
+                                    } else {
+
+                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", false,
+                                            function (data, networkId, property, value) {
+                                                myAccountController.updateShowcaseOfNetwork(networkId, false);
+                                            },
+                                            function (error, networkId, property, value) {
+                                                console.log("unable to change showcase for Network with Id " + networkId);
+                                            })
+                                    }
                                     if (i == createdTasksCounter) {
                                         $scope.isProcessing = false;
                                         modalInstance.close();
+
+                                        if (value == 'PUBLIC') {
+                                            var title = "The Selected Networks are Now Public and Showcased";
+                                            var message =
+                                                "The selected networks are now public and showcased on your account page. " +
+                                                "You can decide to disable the showcase feature for these networks " +
+                                                "by clicking the corresponding eye icon on your My Account page.";
+                                            ndexNavigation.genericInfoModal(title, message);
+
+                                        }
                                     }
                                 },
-                                function (error, networkId) {
+                                function (error, networkId, property, value) {
                                     createdTasksCounter = createdTasksCounter + 1;
 
                                     console.log("unable to update Network Visibility for Network with Id " + networkId);
@@ -1401,6 +1407,7 @@
                                         modalInstance.close();
                                     }
                                 });
+                            ///}
 
                         }
                     }
@@ -1480,10 +1487,10 @@
 
                             // the network is read-only and the operation is UNSET, so let's remove the read-only flag
                             ndexService.setNetworkSystemPropertiesV2(networkUUID, "readOnly", false,
-                                function(data, networkId) {
+                                function(data, networkId, property, value) {
                                     // success, do nothing
                                 },
-                                function(error, networkId) {
+                                function(error, networkId, property, value) {
                                     console.log("unable to un-set Read-Only");
                                 });
 
@@ -1495,10 +1502,10 @@
 
                             // the network is not read-only and the true is SET, so let's make network read-only
                             ndexService.setNetworkSystemPropertiesV2(networkUUID, "readOnly", true,
-                                function(data, networkId) {
+                                function(data, networkId, property, value) {
                                     // success, do nothing
                                 },
-                                function(error, networkId) {
+                                function(error, networkId, property, value) {
                                     console.log("unable to make network Read-Only");
                                 });
 
