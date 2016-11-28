@@ -67,7 +67,7 @@ ndexApp.controller('networkViewController',
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroudColor = function () {
                 networkController.bgColor = '#8fbdd7';
-            }
+            };
 
             var localNetwork = undefined;
 
@@ -95,9 +95,16 @@ ndexApp.controller('networkViewController',
 
             $scope.linkify = function(cellContents)
             {
-                if (typeof(cellContents) === "undefined" || cellContents === "") {
+                if (typeof(cellContents) === "undefined" || cellContents === "" || cellContents == null) {
                     return "";
                 }
+
+                if (typeof(cellContents) === 'object') {
+                    // this is the case where cellContents is as list/array ... so just
+                    // return it wraped in <title>. It will be converted to a comma-separated string of values
+                    return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
+                }
+
                 if( cellContents.startsWith("http") )
                 {
                     return '&nbsp;<a target="_blank" href="'+cellContents+'">External Link</a>'
@@ -199,17 +206,17 @@ ndexApp.controller('networkViewController',
                 "description": "1-step",
                 "value": 1,
                 "id": "1"
-            }
+            };
 
 
             $scope.currentView = "Graphic";
-            $scope.buttonLabel = "Switch To Table View"
+            $scope.buttonLabel = "Switch To Table View";
 
             $scope.switchView = function() {
                 if ($scope.currentView == "Graphic") {
                     // switch to table view
                     $scope.currentView = "Table";
-                    $scope.buttonLabel = "Switch To Graphic View"
+                    $scope.buttonLabel = "Switch To Graphic View";
 
                     var enableFiltering = true;
                     var setGridWidth = true;
@@ -229,11 +236,11 @@ ndexApp.controller('networkViewController',
                     $scope.currentView = "Graphic";
                     $scope.buttonLabel = "Switch To Table View"
                 }
-            }
+            };
 
             $scope.setReturnView = function(view) {
                 sharedProperties.setNetworkViewPage(view);
-            }
+            };
 
             $scope.backToSimpleQuery = function(event) {
 
@@ -246,7 +253,7 @@ ndexApp.controller('networkViewController',
 
                 networkController.backToOriginalNetwork();
                 
-            }
+            };
 
             var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
@@ -374,7 +381,7 @@ ndexApp.controller('networkViewController',
                 for(var i = 0; i < nodes.length; i++){
                     nodes[i].disabled = true;
                 }
-            }
+            };
             
             
             $scope.build_provenance_view = function() {
@@ -397,12 +404,12 @@ ndexApp.controller('networkViewController',
             var hideSearchMenuItem = function() {
                 var searhMenuItemElement = document.getElementById("searchBarId");
                 searhMenuItemElement.style.display = 'none';
-            }
+            };
 
             var showSearchMenuItem = function() {
                 var searhMenuItemElement = document.getElementById("searchBarId");
                 searhMenuItemElement.style.display = 'block';
-            }
+            };
 
 
             /*
@@ -560,7 +567,7 @@ ndexApp.controller('networkViewController',
                 }
 
                 return retValue;
-            }
+            };
 
 
             var getStringAttributeValue = function(attribute) {
@@ -730,7 +737,7 @@ ndexApp.controller('networkViewController',
                 }
 
                 return attributeValue;
-            }
+            };
 
 
             $scope.getNodeName = function(node)
@@ -846,7 +853,7 @@ ndexApp.controller('networkViewController',
                 }
 
                 return attributeValue;
-            }
+            };
 
             $scope.checkHowManyAttributes = function(attributeName, attribute) {
 
@@ -863,7 +870,7 @@ ndexApp.controller('networkViewController',
                 }
 
                 return false;
-            }
+            };
 
 
             networkController.showMoreAttributes = function(attributeName, attribute) {
@@ -902,7 +909,7 @@ ndexApp.controller('networkViewController',
                     };
                 }
                 });
-            }
+            };
 
 
             $scope.getEdgeLabel = function(edge) {
@@ -926,7 +933,7 @@ ndexApp.controller('networkViewController',
                 }
 
                 return source + ' ' + predicate + ' ' + target;
-            }
+            };
 
 
             $scope.getCitation = function (citation) {
@@ -996,7 +1003,7 @@ ndexApp.controller('networkViewController',
                     // add value with lower-case key
                     networkController.context[lowerCaseKey] = value;
                 }   
-            }
+            };
 
 
             /*-----------------------------------------------------------------------*
@@ -1242,7 +1249,7 @@ ndexApp.controller('networkViewController',
                 _.forEach(attributeNames, function(attributeName) {
                     networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
                 });
-            }
+            };
             
 
 
@@ -1256,7 +1263,7 @@ ndexApp.controller('networkViewController',
                 
                 var cyStyle ;
                 if ( noStyle ) {
-                    cyStyle =  cyService.getDefaultStyle()
+                    cyStyle =  cyService.getDefaultStyle();
                     resetBackgroudColor();
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
@@ -1300,7 +1307,7 @@ ndexApp.controller('networkViewController',
                 } else {
                     networkController.errors.push("Unable to get network; Server returned no error information.");
                 }
-            }
+            };
 
             var getNetworkAndDisplay = function (networkId, callback) {
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
@@ -1426,7 +1433,7 @@ ndexApp.controller('networkViewController',
                             "<a ng-click='grid.appScope.showEdgeCitations(COL_FIELD)' ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0'>" +
                             "{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}" +
                             "</h6></div>"
-                     }
+                     };
                     columnDefs.push(citationsHeader);
                 }
 
@@ -1560,7 +1567,7 @@ ndexApp.controller('networkViewController',
                         "<a ng-click='grid.appScope.showNodeCitations(COL_FIELD)' ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0'>" +
                         "{{grid.appScope.getNumNodeCitations(COL_FIELD)}}" +
                         "</h6></div>"
-                    }
+                    };
                     columnDefs.push(citationsHeader);
                 }
                 
@@ -1745,7 +1752,7 @@ ndexApp.controller('networkViewController',
                     templateUrl: 'confirmation-modal.html',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
-                        $scope.title = 'Save query result?'
+                        $scope.title = 'Save query result?';
                         $scope.message = 'The query result for "'+currentNetworkSummary.name+'" will be saved to your account?';
 
                         $scope.cancel = function() {
@@ -2076,19 +2083,19 @@ ndexApp.controller('networkViewController',
              */
 
             networkController.advancedEdgeQueryIsValid = function () {
-                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery()) ? true : false;
-            }
+                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery());
+            };
 
             networkController.advancedNodeQueryIsValid = function () {
-                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery()) ? true : false;
-            }
+                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery());
+            };
 
             networkController.isStringEmpty = function(s) {
                 if (typeof(s) === 'undefined' || s == null) {
                     return true;
                 }
                 return ((s.trim()).length > 0) ? false : true;
-            }
+            };
 
             networkController.validateAdvancedQuery = function () {
                 var advancedEdgeQueryState = networkController.validateAdvancedEdgeQuery();
@@ -2123,7 +2130,7 @@ ndexApp.controller('networkViewController',
 
                 networkController.advancedQueryIsValid = false;
                 return;
-            }
+            };
 
             networkController.validateAdvancedEdgeQuery = function () {
                 var i;
@@ -2145,7 +2152,7 @@ ndexApp.controller('networkViewController',
                 }
 
                 return VALID_QUERY_CODE;
-            }
+            };
 
             networkController.validateAdvancedNodeQuery = function () {
                 var i;
@@ -2167,7 +2174,7 @@ ndexApp.controller('networkViewController',
                 }
 
                 return VALID_QUERY_CODE;
-            }
+            };
 
             networkController.resetForm = function () {
                 networkController.advancedQueryEdgeProperties = [{}];
