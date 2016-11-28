@@ -138,38 +138,7 @@ ndexApp.controller('myAccountController',
 
                 return markDownFinal;
             }
-
-
-            var getNetworkReferenceObj = function(network) {
-                var reference = "";
-
-                if (!network || !network.properties) {
-                    return reference;
-                }
-
-                for (var i = 0; i < network.properties.length; i++) {
-                    var property = network.properties[i];
-                    if (property.predicateString && property.predicateString.toLowerCase() == "reference") {
-                        reference = property.value;
-                        break;
-                    }
-                }
-
-                var referenceInPlainText = jQuery(reference).text().trim();
-                var url = jQuery(reference).find('a').attr('href');
-
-                var countURLs = (reference.toLowerCase().match(/a href=/g) || []).length;
-
-                var referenceObj = {
-                    referenceText: referenceInPlainText ? referenceInPlainText : "",
-                    referenceHTML: reference ? reference : "",
-                    url: url ? url : "",
-                    urlCount: countURLs
-                };
-
-                return referenceObj;
-            };
-
+            
             var refreshNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
@@ -220,7 +189,7 @@ ndexApp.controller('myAccountController',
                     }
 
                     var download = "Download " + networkName;
-                    var reference = getNetworkReferenceObj(network);
+                    var reference = uiMisc.getNetworkReferenceObj(network);
 
                     var row =   {
                         "Status"        :   networkStatus,

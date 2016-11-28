@@ -51,6 +51,7 @@ ndexApp.controller('userController',
                 enableSorting: true,
                 enableFiltering: true,
                 showGridFooter: true,
+                columnVirtualizationThreshold: 20,
 
                 onRegisterApi: function( gridApi )
                 {
@@ -72,16 +73,22 @@ ndexApp.controller('userController',
             {
                 var columnDefs = [
                     { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Network Name', enableFiltering: true, minWidth: 390,
+                    { field: 'Network Name', enableFiltering: true, minWidth: 200,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
+                    { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
                     { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
                     { field: 'Visibility', enableFiltering: true, minWidth: 90 },
                     { field: 'Owned By', enableFiltering: true, minWidth: 70,
                         cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0}  }
+                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0}},
+
+                    { field: 'description', enableFiltering: false,  visible: false},
+                    { field: 'externalId',  enableFiltering: false,  visible: false},
+                    { field: 'ownerUUID',   enableFiltering: false,  visible: false},
+                    { field: 'name',        enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();
@@ -155,11 +162,13 @@ ndexApp.controller('userController',
                     }
 
                     var download = "Download " + networkName;
+                    var reference = uiMisc.getNetworkReferenceObj(network);
 
                     var row = {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
                         " "             :   download,
+                        "Reference"     :   reference,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
@@ -168,7 +177,8 @@ ndexApp.controller('userController',
                         "Last Modified" :   modified,
                         "description"   :   description,
                         "externalId"    :   externalId,
-                        "ownerUUID"     :   network['ownerUUID']
+                        "ownerUUID"     :   network['ownerUUID'],
+                        "name"          :   networkName
                     };
                     $scope.networkGridOptions.data.push(row);
                 }

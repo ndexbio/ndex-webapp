@@ -43,7 +43,7 @@ angular.module('ndexServiceApp')
              var title = (status == 'failed') ? "Failed Error Message" : "Warnings";
 
              ndexNavigation.genericInfoModal(title, message);
-        }
+        };
 
         
         self.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
@@ -71,7 +71,37 @@ angular.module('ndexServiceApp')
                     console.log("unable to get network in CX");
                 }
             );
-        }
+        };
+
+        self.getNetworkReferenceObj = function(network) {
+            var reference = "";
+
+            if (!network || !network.properties) {
+                return reference;
+            }
+
+            for (var i = 0; i < network.properties.length; i++) {
+                var property = network.properties[i];
+                if (property.predicateString && property.predicateString.toLowerCase() == "reference") {
+                    reference = property.value;
+                    break;
+                }
+            }
+
+            var referenceInPlainText = jQuery(reference).text().trim();
+            var url = jQuery(reference).find('a').attr('href');
+
+            var countURLs = (reference.toLowerCase().match(/a href=/g) || []).length;
+
+            var referenceObj = {
+                referenceText: referenceInPlainText ? referenceInPlainText : "",
+                referenceHTML: reference ? reference : "",
+                url: url ? url : "",
+                urlCount: countURLs
+            };
+
+            return referenceObj;
+        };                   
 
     }
 ]);

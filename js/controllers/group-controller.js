@@ -206,6 +206,7 @@ ndexApp.controller('groupController',
         enableRowSelection: false,
         multiSelect: false,
         enableRowHeaderSelection: false,
+        columnVirtualizationThreshold: 20,
 
         onRegisterApi: function( gridApi )
         {
@@ -230,6 +231,7 @@ ndexApp.controller('groupController',
             { field: 'Network Name', enableFiltering: true, minWidth: 390,
                 cellTemplate: 'pages/gridTemplates/networkName.html'},
             { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
+            { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
             { field: 'Format', enableFiltering: true, minWidth: 70 },
             { field: 'Nodes', enableFiltering: false, minWidth: 70 },
             { field: 'Edges', enableFiltering: false, minWidth: 70 },
@@ -305,11 +307,13 @@ ndexApp.controller('groupController',
             }
 
             var download = "Download " + networkName;
+            var reference = uiMisc.getNetworkReferenceObj(network);
 
             var row = {
                 "Status"        :   networkStatus,
                 "Network Name"  :   networkName,
                 " "             :   download,
+                "Reference"     :   reference,
                 "Format"        :   format,
                 "Nodes"         :   nodes,
                 "Edges"         :   edges,

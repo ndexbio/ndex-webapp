@@ -116,6 +116,7 @@ ndexApp.controller('searchController',
                 enableRowSelection: false,
                 multiSelect: false,
                 enableRowHeaderSelection: false,
+                columnVirtualizationThreshold: 20,
 
 
                 onRegisterApi: function( gridApi )
@@ -134,16 +135,22 @@ ndexApp.controller('searchController',
             
             const NETWORK_COLUMN_FIELDS = [
                 { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                { field: 'Network Name', enableFiltering: true, minWidth: 440,
+                { field: 'Network Name', enableFiltering: true, minWidth: 200,
                     cellTemplate: 'pages/gridTemplates/networkName.html'},
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
+                { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
                 { field: 'Format', enableFiltering: true, minWidth: 70 },
                 { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                 { field: 'Edges', enableFiltering: false, minWidth: 70 },
                 { field: 'Visibility', enableFiltering: true, minWidth: 90 },
                 { field: 'Owned By', enableFiltering: true, minWidth: 70,
                     cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: "date:'short'" }
+                { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: "date:'short'" },
+
+                { field: 'description', enableFiltering: false,  visible: false},
+                { field: 'externalId',  enableFiltering: false,  visible: false},
+                { field: 'ownerUUID',   enableFiltering: false,  visible: false},
+                { field: 'name',        enableFiltering: false,  visible: false}
             ];
 
             var populateNetworkTable = function()
@@ -198,11 +205,13 @@ ndexApp.controller('searchController',
 
                     }
                     var download = "Download " + networkName;
+                    var reference = uiMisc.getNetworkReferenceObj(network);
 
                     var row = {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
                         " "             :   download,
+                        "Reference"     :   reference,
                         "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
