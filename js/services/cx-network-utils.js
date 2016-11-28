@@ -180,7 +180,7 @@ angular.module('ndexServiceApp')
       };
 
 
-      var addElementToAspactValueMap = function (aspectValueMap, element) {
+      var addElementToAspectValueMap = function (aspectValueMap, element) {
           var attributes = aspectValueMap[element.po];
 
           if (!attributes) {
@@ -225,10 +225,10 @@ angular.module('ndexServiceApp')
                   aspect[element['@id']] = element;
                   break;
               case 'nodeAttributes':
-                  addElementToAspactValueMap(aspect, element);
+                  addElementToAspectValueMap(aspect, element);
                   break;
               case 'edgeAttributes':
-                  addElementToAspactValueMap(aspect, element);
+                  addElementToAspectValueMap(aspect, element);
                   break;
               case 'edgeCitations':
               case 'nodeCitations':
