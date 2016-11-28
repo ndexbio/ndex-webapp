@@ -2150,6 +2150,50 @@
         }
     });
 
+    // modal to delete user
+    uiServiceApp.directive('confirmAdminRemoval', function(){
+        return {
+            scope: {
+                checkAdminRemoval: "&",
+                successCall: "&"
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/confirmationModal.html',
+            transclude: true,
+            controller: function($scope, $modal, $location, ndexService) {
+
+                $scope.openMe = function() {
+                    if(!$scope.checkAdminRemoval()){
+                        $scope.successCall();
+                        $modalInstance.dismiss();
+                    }
+                    modalInstance = $modal.open({
+                        templateUrl: 'confirmation-modal.html',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
+                            $scope.title = 'Remove admin privileges'
+                            $scope.message = 'Your admin privileges will be removed. Proceed?';
+
+                            $scope.cancel = function() {
+                                $modalInstance.dismiss();
+                            };
+
+                            $scope.confirm = function() {
+                                if( $scope.isProcessing )
+                                    return;
+                                $scope.isProcessing = true;
+
+                                $scope.successCall();
+                                $modalInstance.dismiss();
+                            };
+                        }
+                    });
+                };
+
+            }
+        }
+    });
+
     uiServiceApp.directive('saveSubnetwork', function(){
         return {
             restrict: 'E',

@@ -1,6 +1,6 @@
 ndexApp.controller('editNetworkPropertiesController',
-	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties',
-		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties){
+	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout',
+		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout){
 	 //testing
 
 	//              Process the URL to get application state
@@ -372,6 +372,12 @@ ndexApp.controller('editNetworkPropertiesController',
 	};
 
     editor.refresh = $route.reload;
+
+    //Initialize the autocomplete dropdown after dom is loaded
+    $timeout(function() {
+        $('.chosen-select').chosen();
+        $('.chosen-select-deselect').chosen({ allow_single_deselect: true });
+    }, 1000);
 
     editor.preloadedOntologies = [
         {

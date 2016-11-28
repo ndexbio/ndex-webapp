@@ -110,6 +110,22 @@ ndexApp.controller('manageNetworkAccessController',
 			});
 	}
 
+	networkManager.isSelfAdminRemoval = function(){
+		//Determine if the user is going to remove themselves as admin
+		var userId = sharedProperties.getCurrentUserId();
+
+		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
+			var accessObj = networkManager.originalAccessPermissions[i];
+			if(accessObj["memberUUID"] === userId){
+				if (networkManager.accessWasRemoved(accessObj)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	networkManager.save = function() {
 
 		if (!networkManager.changesWereMade()) {
