@@ -159,10 +159,46 @@
 		  	<div class="pull-right">
 		      <button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
 		      <button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save Changes</button>
+<!--		      <button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save Changes</button>-->
+
+
+
+
 		    </div>
 		  </div>
+
+
+<!--			<div class="form-group" ng-repeat='property in editor.propertyValuePairs'>
+				<select data-placeholder="Choose a property" style="width: 200px;" class="chosen-select"
+						ng-model='property.predicateString'
+						ng-change='editor.changed($index, property.predicateString, property)'>
+					<option value=""></option>
+					<option value="name">name</option>
+					<option value="description">description</option>
+					<option value="version">version</option>
+					<option value="organism">organism</option>
+					<option value="selected">selected</option>
+					<option value="disease">disease</option>
+					<option value="tissue">tissue</option>
+					<option value="rightsHolder">rightsHolder</option>
+					<option value="rights">rights</option>
+				</select>
+				{{property.predicateString}}
+			</div>
+				-->
+
 		</form>
 
 	</div>
 </div>
+<script>
+//	$(function() {
+//		$('.chosen-select').chosen();
+//		$('.chosen-select-deselect').chosen({ allow_single_deselect: true });
+//	});
+</script>
+
+<link type="text/css" rel="stylesheet" href="css/selectize.bootstrap2.css" />
+
+
 
