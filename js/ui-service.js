@@ -961,11 +961,12 @@
                         return;
                     $scope.isProcessing = true;
 
-                    // get reference to myAccountController from user.html
-                    var myAccountController = $scope.ndexData;
+                    // get reference to myAccountController or userController
+                    // accountController is either myAccountController or userController
+                    var accountController = $scope.ndexData;
 
                     // get IDs of networks to be exported
-                    var networkUUIDsList = myAccountController.getIDsOfSelectedNetworks();
+                    var networkUUIDsList = accountController.getIDsOfSelectedNetworks();
 
                     var networkExportFormat = $scope.networkExportFormat;
 
@@ -973,13 +974,17 @@
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
-                            myAccountController.refreshTasks();
+                            if (accountController.refreshTasks) {
+                                accountController.refreshTasks();
+                            }
                             modalInstance.close();
                         },
                         function(error) {
                             //console.log(error);
                             $scope.isProcessing = false;
-                            myAccountController.refreshTasks();
+                            if (accountController.refreshTasks) {
+                                accountController.refreshTasks();
+                            }
                             modalInstance.close();
                         });
 
@@ -1276,7 +1281,7 @@
                     var myAccountController = $scope.ndexData;
                     var IdsOfSelectedNetworks = myAccountController.getIDsOfSelectedNetworks();
                     var operation = $scope.network.operation.toLowerCase();
-                    
+
                     delete $scope.network.operation;
 
                     var createdTasksCounter = 0;

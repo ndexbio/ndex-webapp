@@ -33,7 +33,6 @@ ndexApp.controller('myAccountController',
             myAccountController.networkSearchResults = [];
             myAccountController.skip = 0;
             myAccountController.skipSize = 10000;
-            myAccountController.allSelected = false;
             myAccountController.atLeastOneSelected = false;
 
             myAccountController.pendingRequests = [];

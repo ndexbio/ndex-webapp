@@ -257,6 +257,18 @@ ndexApp.controller('userController',
                         });
             }
 
+            userController.getIDsOfSelectedNetworks = function ()
+            {
+                var selectedIds = [];
+
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                for( var i = 0; i < selectedNetworksRows.length; i ++ )
+                {
+                    selectedIds.push(selectedNetworksRows[i].externalId);
+                }
+
+                return selectedIds;
+            };
 
             userController.adminCheckBoxClicked = function()
             {

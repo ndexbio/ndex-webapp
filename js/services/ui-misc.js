@@ -83,10 +83,7 @@ angular.module('ndexServiceApp')
             for (var i = 0; i < network.properties.length; i++) {
                 var property = network.properties[i];
                 if (property.predicateString && property.predicateString.toLowerCase() == "reference") {
-                    reference = property.value;
-                    if (reference == null) {
-                        reference = "";
-                    }
+                    reference = (property.value) ? property.value : "";
                     break;
                 }
             }
