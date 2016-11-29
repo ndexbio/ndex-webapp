@@ -21,6 +21,7 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                  function(data) {
                     sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
                     ndexUtility.setUserCredentials(data.userName, data.externalId, $scope.signIn.password);
+                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId);
                     $scope.$emit('LOGGED_IN'); //Angular service capability, shoot a signal up the scope tree notifying parent scopes this event occurred, see mainController
                     //$location.path("/user/" + data.externalId);
                     $location.path("/myAccount");
@@ -78,11 +79,13 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
 
                     if (url) {
                         var newUserId = url.split('/').pop();
-                        var userName = $scope.signIn.newUser.userName;
-                        var password = $scope.signIn.newUser.password;
+                        var userName  = $scope.signIn.newUser.userName;
+                        var firstName = $scope.signIn.newUser.firstName;
+                        var lastName  = $scope.signIn.newUser.lastName;
+                        var password  = $scope.signIn.newUser.password;
 
                         sharedProperties.setCurrentUser(newUserId, userName);
-                        ndexUtility.setUserInfo(userName, newUserId);
+                        ndexUtility.setUserInfo(userName, firstName, lastName, newUserId);
                         ndexUtility.setUserCredentials(userName, newUserId, password);
 
                         $scope.$emit('LOGGED_IN');

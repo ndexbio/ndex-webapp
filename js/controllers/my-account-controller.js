@@ -700,27 +700,78 @@ ndexApp.controller('myAccountController',
 
             // local functions
 
+            var getUsersUUIDs = function(requests) {
+                var UUIDs = [];
+
+                if (!requests || requests.length == 0) {
+                    return UUIDs;
+                }
+
+                for (var i=0; i<requests.length; i++) {
+                    var requesterId = requests[i].requesterId;
+
+                    if (UUIDs.indexOf(requesterId) < 0) {
+                        UUIDs.push(requesterId);
+                    }
+                }
+
+                return UUIDs;
+            }
+
+            var getNamesOfRequesters = function(requests, users) {
+
+                if (!users || !requests || users.length == 0 || requests.length == 0) {
+                    return;
+                }
+
+                for (var i = 0; i < requests.length; i++) {
+                    var requesterId = requests[i].requesterId;
+
+                    for (var j = 0; j < users.length; j++) {
+                        if (requesterId == users[j].externalId) {
+                            requests[i].sourceName = users[j].firstName + " " + users[j].lastName;
+                            continue;
+                        }
+                    }
+                }
+            }
+
             var getRequests = function ()
             {
                 // get all user pending requests
                 ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
                     function (requests)
                     {
-                        myAccountController.pendingRequests = requests;
+                        var userUUIDs = getUsersUUIDs(requests);
 
-                        // get all group pending requests
-                        ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "received",
-                            function (requests)
-                            {
-                                if (requests && requests.length > 0) {
-                                    myAccountController.pendingRequests =
-                                        myAccountController.pendingRequests.concat(requests);
+                        ndexService.getUsersByUUIDsV2(userUUIDs)
+                            .success(
+                                function (userList) {
+                                    // make sure that sourceName has "First Name  Second Name" instead of "Account Name"
+                                    getNamesOfRequesters(requests, userList);
+
+                                    myAccountController.pendingRequests = requests;
+
+                                    // get all group pending requests
+                                    ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "received",
+                                        function (requests)
+                                        {
+                                            if (requests && requests.length > 0) {
+                                                myAccountController.pendingRequests =
+                                                    myAccountController.pendingRequests.concat(requests);
+                                            }
+                                        },
+                                        function (error)
+                                        {
+                                            console.log("unable to get pending requests");
+                                        });
+                                })
+                            .error(
+                                function(error) {
+                                    console.log("unable to get users by UUIDs");
                                 }
-                            },
-                            function (error)
-                            {
-                                console.log("unable to get pending requests");
-                            });
+                            )
+
                     },
                     function (error)
                     {
@@ -731,21 +782,35 @@ ndexApp.controller('myAccountController',
                 ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "sent",
                     function (requests)
                     {
-                        myAccountController.sentRequests = requests;
+                        var userUUIDs = getUsersUUIDs(requests);
 
-                        // get all group sent requests
-                        ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "sent",
-                            function (requests)
-                            {
-                                if (requests && requests.length > 0) {
-                                    myAccountController.sentRequests =
-                                        myAccountController.sentRequests.concat(requests);
+                        ndexService.getUsersByUUIDsV2(userUUIDs)
+                            .success(
+                                function (userList) {
+                                    // make sure that sourceName has "First Name  Second Name" instead of "Account Name"
+                                    getNamesOfRequesters(requests, userList);
+
+                                    myAccountController.sentRequests = requests;
+
+                                    // get all group sent requests
+                                    ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "sent",
+                                        function (requests)
+                                        {
+                                            if (requests && requests.length > 0) {
+                                                myAccountController.sentRequests =
+                                                    myAccountController.sentRequests.concat(requests);
+                                            }
+                                        },
+                                        function (error)
+                                        {
+                                            console.log("unable to get sent requests");
+                                        });
+                                })
+                            .error(
+                                function(error) {
+                                    console.log("unable to get users by UUIDs");
                                 }
-                            },
-                            function (error)
-                            {
-                                console.log("unable to get pending requests");
-                            });
+                            )
                     },
                     function (error)
                     {

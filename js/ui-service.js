@@ -805,7 +805,7 @@
                     $scope.request.destinationName = $scope.ndexData.name;
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
 
-                    $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
+                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
                     $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
 
                     $scope.request.accountType = undefined;
@@ -833,7 +833,7 @@
                                         }
                                         var currentUserAccount = {
                                             accountType: 'user',
-                                            userName: ndexUtility.getLoggedInUserAccountName(),
+                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
                                             externalId: ndexUtility.getLoggedInUserExternalId()
                                         }
                                         $scope.accounts.push(currentUserAccount);
