@@ -72,18 +72,17 @@ ndexApp.controller('userController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: 'Status', enableFiltering: false, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Network Name', enableFiltering: true, minWidth: 390,
                       cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
-                    { field: 'Format', enableFiltering: true, minWidth: 70 },
                     { field: 'Nodes', enableFiltering: false, minWidth: 70 },
                     { field: 'Edges', enableFiltering: false, minWidth: 70 },
                     { field: 'Visibility', enableFiltering: true, minWidth: 90 },
                     { field: 'Owned By', enableFiltering: true, minWidth: 70,
                         cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0}},
+                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}},
 
                     { field: 'description', enableFiltering: false,  visible: false},
                     { field: 'externalId',  enableFiltering: false,  visible: false},
@@ -151,16 +150,6 @@ ndexApp.controller('userController',
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
 
-                    var format = "Unknown";
-                    for(var j = 0; j < network['properties'].length; j++ )
-                    {
-                        if( network['properties'][j]['predicateString'] == "ndex:sourceFormat" )
-                        {
-                            format = network['properties'][j]['value'];
-                            break;
-                        }
-                    }
-
                     var download = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(network);
 
@@ -169,7 +158,6 @@ ndexApp.controller('userController',
                         "Network Name"  :   networkName,
                         " "             :   download,
                         "Reference"     :   reference,
-                        "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,

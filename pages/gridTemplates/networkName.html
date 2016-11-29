@@ -1,4 +1,4 @@
-<div class="ui-grid-cell-contents" title="{{ row.entity.description }}">
+<div class="ui-grid-cell-contents" title="{{ row.entity.name }} &#x0D;&#x0D; {{ row.entity.description }}">
     <a ng-if="row.entity.Status == 'success'" href="#/newNetwork/{{ row.entity.externalId}}">{{COL_FIELD}} </a>
     <a ng-if="row.entity.Status == 'warning'" href="#/newNetwork/{{ row.entity.externalId}}">{{COL_FIELD}} </a>
     <span ng-if="row.entity.Status == 'failed'" style="cursor: not-allowed">{{COL_FIELD}}</span>
