@@ -35,8 +35,8 @@ angular.module('ndexServiceApp')
              if (status == "failed") {
                 message = foundNetwork.errorMessage;
              } else {
-                for (var i=0; i<foundNetwork.warnings.length; i++) {
-                    message = message + foundNetwork.warnings[i] + "<br>";
+                for (var j=0; j<foundNetwork.warnings.length; j++) {
+                    message = message + foundNetwork.warnings[j] + "<br>";
                 }
              }
 
@@ -59,7 +59,9 @@ angular.module('ndexServiceApp')
                     var downloadFileName = rowEntity.name;
                     downloadFileName = downloadFileName.replace(/ /g,"_");
 
-                    var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
+                    //var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
+
+                    var networkType = "cx"; // network is in CX format, so we save it in CX
                     downloadFileName = downloadFileName + "." + networkType;
 
                     var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
@@ -68,7 +70,11 @@ angular.module('ndexServiceApp')
                     saveAs(blob, downloadFileName);
                 },
                 function (error) {
-                    console.log("unable to get network in CX");
+                    var message = "Unable to get network in CX";
+                    if (error && error.message) {
+                        message = message + ": "  + error.message;
+                    }
+                    console.log(message);
                 }
             );
         };
@@ -88,19 +94,34 @@ angular.module('ndexServiceApp')
                 }
             }
 
-            var referenceInPlainText = jQuery(reference).text().trim();
-            var url = jQuery(reference).find('a').attr('href');
+            var referenceInPlainText;
+
+            // reference can be plain text (has no HTML tags), in which case the text() method of jQuery
+            // will throw exception.  In this case, don't convert reference to text
+            try {
+                referenceInPlainText = jQuery(reference).text();
+            } catch(err) {
+                referenceInPlainText = reference;
+            }
+
+            var url;
+
+            // in case jQuery can't find URL and throws exception, initialize URL to an empty string
+            try {
+                url = jQuery(reference).find('a').attr('href');
+            } catch(err) {
+                url = "";
+            }
 
             var countURLs = (reference.toLowerCase().match(/a href=/g) || []).length;
 
-            var referenceObj = {
+            return {
                 referenceText: referenceInPlainText ? referenceInPlainText : "",
                 referenceHTML: reference ? reference : "",
                 url: url ? url : "",
                 urlCount: countURLs
             };
 
-            return referenceObj;
         };                   
 
     }
