@@ -17,6 +17,7 @@ angular.module('ndexServiceApp')
          *
          */
         self.showNetworkWarningsOrErrors = function (rowEntity, networks) {
+            var foundNetwork;
 
             for (var i=0; i<networks.length; i++) {
                 var network = networks[i];
@@ -26,8 +27,6 @@ angular.module('ndexServiceApp')
                     break;
                 }
              }
-
-             var foundNetwork;
 
              var status = rowEntity.Status.toLowerCase();
              var message = "";
@@ -61,7 +60,8 @@ angular.module('ndexServiceApp')
 
                     //var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
 
-                    var networkType = "cx"; // network is in CX format, so we save it in CX
+                    // network is in CX format, so we save it in file with extension ".cx"
+                    var networkType = "cx";
                     downloadFileName = downloadFileName + "." + networkType;
 
                     var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
