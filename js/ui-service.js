@@ -999,7 +999,8 @@
     uiServiceApp.directive('editNetworkSummaryModal', function() {
         return {
             scope: {
-                ndexData: '='
+                ndexData: '=',
+                subNetworkId: "="
             },
             restrict: 'E',
             templateUrl: 'pages/directives/editNetworkSummaryModal.html',
@@ -1053,8 +1054,8 @@
                         return;
                     $scope.isProcessing = true;
 
-                    var updateReference =
-                        ($scope.network.reference !== $scope.ndexData.reference) ? true : false;
+             //       var updateReference =
+             //           ($scope.network.reference !== $scope.ndexData.reference) ? true : false;
 
                     // check if visibility was modified
                     var updateVisibility =
@@ -1109,44 +1110,84 @@
                             });
                     }
 
-                    if (updateReference) {
-                        var referenceProperty  =
-                            { "predicateString" : "Reference",
-                              "value"           : $scope.network.reference,
-                              "dataType"        : "string",
-                              "subNetworkId"    : null
-                            };
+                    var propertyList = $scope.ndexData.properties;
+                    var needUpdateProperties = false;
 
-                        var propertyList = $scope.ndexData.properties;
+                    var upsertProperty = function ( propertyName, propertyValue) {
+                        var newProp = { "predicateString" : propertyName,
+                            "value"           : propertyValue,
+                            "dataType"        : "string",
+                            "subNetworkId"    : $scope.subNetworkId
+                        };
+
                         for (var i = 0; i < propertyList.length; i++) {
                             var property = propertyList[i];
-                            if (property.predicateString && property.predicateString.toLowerCase() == 'reference') {
+                            if (property.subNetworkId == $scope.subNetworkId &&
+                                   property.predicateString && property.predicateString.toLowerCase() == propertyName.toLowerCase()) {
                                 propertyList.splice(i, 1);
                                 break;
                             }
                         }
 
-                        propertyList.push(referenceProperty);
-
-                        ndexService.setNetworkPropertiesV2($scope.ndexData.externalId, propertyList,
-                            function (data) {
-                                $scope.ndexData.reference = $scope.network.reference;
-                            },
-                            function (error) {
-                                console.log("unable to update Network Reference");
-                            });
+                        propertyList.push(newProp);
                     }
 
                     if (updateNetworkSummary) {
-                        ndexService.updateNetworkProfileV2($scope.ndexData.externalId, $scope.network,
-                            function (data) {
-                                $scope.ndexData.name = $scope.network.name;
+                       if ($scope.subNetworkId == null) {  // not from cytoscape.
+
+                           ndexService.updateNetworkProfileV2($scope.ndexData.externalId, $scope.network,
+                               function (data) {
+                                   $scope.ndexData.name = $scope.network.name;
+                                   $scope.ndexData.description = $scope.network.description;
+                                   $scope.ndexData.version = $scope.network.version;
+                               },
+                               function (error) {
+                                   console.log("unable to update Network Summary");
+                               })
+                       } else { // current edit is on a subnetwork
+                            if ( $scope.network.name !== $scope.ndexData.name) {
+                                upsertProperty("name", $scope.network.name);
+                                needUpdateProperties = true;
+                                ndexService.updateNetworkProfileV2($scope.ndexData.externalId, {"name" : $scope.network.name},
+                                    function (data) {
+                                        $scope.ndexData.name = $scope.network.name;
+                                    },
+                                    function (error) {
+                                        console.log("unable to update Network Summary");
+                                    });
+                            }
+
+                            if ($scope.network.description !== $scope.ndexData.description) {
+                                upsertProperty("description", $scope.network.description);
+                                needUpdateProperties = true;
                                 $scope.ndexData.description = $scope.network.description;
+
+                            }
+
+                            if ($scope.network.version !== $scope.ndexData.version ) {
+                                upsertProperty("version", $scope.network.version);
+                                needUpdateProperties = true;
                                 $scope.ndexData.version = $scope.network.version;
+
+                            }
+                       }
+
+                    }
+
+                    if ($scope.network.reference !== $scope.ndexData.reference) {
+                        upsertProperty("reference", $scope.network.reference)
+                        needUpdateProperties = true;
+                        $scope.ndexData.reference = $scope.network.reference;
+                    }
+
+                    // do an update here
+                    if ( needUpdateProperties) {
+                        ndexService.setNetworkPropertiesV2($scope.ndexData.externalId, propertyList,
+                            function (data) {
                             },
                             function (error) {
-                                console.log("unable to update Network Summary");
-                            })
+                                console.log("unable to update Network properites");
+                            });
                     }
 
                     modalInstance.close();

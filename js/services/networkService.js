@@ -612,14 +612,16 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
 
         /**
-         * Return the value of a given property in the network. I assume the perperty names a unique in network.
+         * Return the value of a given property in the network. I assume the property names a unique in each subnetwork.
          * Property name is case insensitive.
          * @param networkProperties
+         * @param subNetworkId
          * @param propertyName
+         *
          * @returns {undefined}
          */
 
-        factory.getNetworkProperty = function( propertyName)
+        factory.getNetworkProperty = function( subNetworkId, propertyName)
         {
             if ('undefined'===typeof(currentNetworkSummary) || !propertyName) {
                 return undefined;
@@ -628,14 +630,15 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             var networkProperties = currentNetworkSummary.properties;
             for( var i = 0; i < networkProperties.length; i++ ) {
 
-                if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase())) {
+                if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase()) &&
+                    subNetworkId == networkProperties[i].subNetworkId) {
                     return networkProperties[i].value ;
                 }
             }
             return undefined;
         }
 
-        factory.getPropertiesExcluding = function (excludeList) {
+        factory.getPropertiesExcluding = function (subNetworkId,excludeList) {
             var result = [];
             var excludeSet = new Set();
             for ( var i = 0 ; i < excludeList.length ; i++ ) {
@@ -643,8 +646,10 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             }
             var networkProperties = currentNetworkSummary.properties;
             for( i = 0; i < networkProperties.length; i++ ) {
-                if (!excludeSet.has(networkProperties[i].predicateString.toLowerCase()) ){
-                    result.push(networkProperties[i]) ;
+                if ( subNetworkId == networkProperties[i].subNetworkId &&
+                    !excludeSet.has(networkProperties[i].predicateString.toLowerCase())) {
+                        result.push(networkProperties[i]);
+
                 }
             }
             return result;
