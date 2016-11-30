@@ -207,6 +207,7 @@ ndexApp.controller('groupController',
         multiSelect: false,
         enableRowHeaderSelection: false,
         columnVirtualizationThreshold: 20,
+        enableColumnMenus: false,
 
         onRegisterApi: function( gridApi )
         {

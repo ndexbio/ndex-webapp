@@ -68,6 +68,7 @@ ndexApp.controller('myAccountController',
                 // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
                 // otherwise it will not show all columns if we display more than 10 columns in our table
                 columnVirtualizationThreshold: 20,
+                enableColumnMenus: false,
 
                 onRegisterApi: function( gridApi )
                 {

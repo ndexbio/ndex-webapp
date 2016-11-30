@@ -117,6 +117,7 @@ ndexApp.controller('searchController',
                 multiSelect: false,
                 enableRowHeaderSelection: false,
                 columnVirtualizationThreshold: 20,
+                enableColumnMenus: false,
 
 
                 onRegisterApi: function( gridApi )
@@ -288,6 +289,7 @@ ndexApp.controller('searchController',
                 enableRowSelection: false,
                 multiSelect: false,
                 enableRowHeaderSelection: false,
+                enableColumnMenus: false,
 
 
                 onRegisterApi: function( gridApi )
@@ -411,6 +413,7 @@ ndexApp.controller('searchController',
                 enableRowSelection: false,
                 multiSelect: false,
                 enableRowHeaderSelection: false,
+                enableColumnMenus: false,
 
 
                 onRegisterApi: function( gridApi )

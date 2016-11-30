@@ -52,6 +52,7 @@ ndexApp.controller('userController',
                 enableFiltering: true,
                 showGridFooter: true,
                 columnVirtualizationThreshold: 20,
+                enableColumnMenus: false,
 
                 onRegisterApi: function( gridApi )
                 {
