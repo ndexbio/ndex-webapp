@@ -89,8 +89,7 @@ ndexApp.controller('myAccountController',
             {
                 var columnDefs = [
                     { field: 'Status', enableFiltering: false, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Network Name', enableFiltering: true,
-                      cellTemplate: 'pages/gridTemplates/networkName.html' },
+                    { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Reference', enableFiltering: false, maxWidth: 80, cellTemplate: 'pages/gridTemplates/reference.html' },
                     { field: 'Nodes', enableFiltering: false, maxWidth:70 },
@@ -142,7 +141,7 @@ ndexApp.controller('myAccountController',
                 var markDownFinal  = $("<html>"+markDown+"</html>").text();
 
                 return markDownFinal;
-            }
+            };
             
             var refreshNetworkTable = function()
             {

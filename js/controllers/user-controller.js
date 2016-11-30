@@ -73,16 +73,15 @@ ndexApp.controller('userController',
             {
                 var columnDefs = [
                     { field: 'Status', enableFiltering: false, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Network Name', enableFiltering: true, minWidth: 390,
-                      cellTemplate: 'pages/gridTemplates/networkName.html'},
+                    { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
-                    { field: 'Nodes', enableFiltering: false, minWidth: 70 },
-                    { field: 'Edges', enableFiltering: false, minWidth: 70 },
-                    { field: 'Visibility', enableFiltering: true, minWidth: 90 },
-                    { field: 'Owned By', enableFiltering: true, minWidth: 70,
+                    { field: 'Reference', enableFiltering: false, maxWidth: 80, cellTemplate: 'pages/gridTemplates/reference.html' },
+                    { field: 'Nodes', enableFiltering: false, maxWidth:70 },
+                    { field: 'Edges', enableFiltering: false, maxWidth:70 },
+                    { field: 'Visibility', enableFiltering: true, maxWidth:70 },
+                    { field: 'Owned By', enableFiltering: true, maxWidth:80,
                         cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, minWidth: 150, cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}},
+                    { field: 'Last Modified', enableFiltering: false, maxWidth:140, cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}},
 
                     { field: 'description', enableFiltering: false,  visible: false},
                     { field: 'externalId',  enableFiltering: false,  visible: false},
@@ -117,7 +116,7 @@ ndexApp.controller('userController',
                 var markDownFinal  = $("<html>"+markDown+"</html>").text();
 
                 return markDownFinal;
-            }
+            };
 
             var refreshNetworkTable = function()
             {
@@ -351,12 +350,12 @@ ndexApp.controller('userController',
                 }
 
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, userController.networkSearchResults);
-            }
+            };
 
             $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
 
                 uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
-            }
+            };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
