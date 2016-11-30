@@ -89,17 +89,17 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Status', enableFiltering: false, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    { field: 'Reference', enableFiltering: false, maxWidth: 80, cellTemplate: 'pages/gridTemplates/reference.html' },
+                    { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
                     { field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
                     { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
                     { field: 'Owned By', enableFiltering: true, maxWidth:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
-                    { field: 'Last Modified', enableFiltering: false, maxWidth:140,
-                        cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0},
-                        cellClass: 'grid-align-cell' },
+                    { field: 'Last Modified', enableFiltering: false, maxWidth:120,
+                        cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
+                    },
 
                     /*
                     { field: 'Last Modified', enableFiltering: false, width:170,
@@ -107,7 +107,7 @@ ndexApp.controller('myAccountController',
                         cellClass: 'grid-align-cell' },
                     */
 
-                    { field: 'Showcase', enableFiltering: false, maxWidth: 80, cellTemplate: 'pages/gridTemplates/showCase.html' },
+                    { field: 'Showcase', enableFiltering: false, maxWidth: 75, cellTemplate: 'pages/gridTemplates/showCase.html' },
 
                     { field: 'description', enableFiltering: false,  visible: false},
                     { field: 'externalId',  enableFiltering: false,  visible: false},
