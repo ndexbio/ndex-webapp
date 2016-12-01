@@ -2225,7 +2225,7 @@
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
                             $scope.title = 'Remove admin privileges'
-                            $scope.message = 'Your admin privileges will be removed. Proceed?';
+                            $scope.message = 'Your admin privileges will be downgraded. Proceed?';
 
                             $scope.cancel = function() {
                                 $modalInstance.dismiss();

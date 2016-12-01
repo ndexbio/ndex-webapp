@@ -373,12 +373,6 @@ ndexApp.controller('editNetworkPropertiesController',
 
     editor.refresh = $route.reload;
 
-    //Initialize the autocomplete dropdown after dom is loaded
-    $timeout(function() {
-        $('.chosen-select').chosen();
-        $('.chosen-select-deselect').chosen({ allow_single_deselect: true });
-    }, 1000);
-
     editor.preloadedOntologies = [
         {
             prefix: 'GO',

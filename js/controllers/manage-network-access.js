@@ -122,6 +122,23 @@ ndexApp.controller('manageNetworkAccessController',
 				}
 			}
 		}
+		var multiple_admin_count = 1;
+		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
+
+			if (accessObj.memberUUID ===
+				networkManager.selectedAccountsForUpdatingAccessPermissions[i].memberUUID) {
+				if(networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions != 'ADMIN'){
+					return true;
+				}
+			} else if(networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions == 'ADMIN'){
+				multiple_admin_count++;
+			}
+
+
+			if(multiple_admin_count > 1){
+				return true;
+			}
+		}
 
 		return false;
 	}
