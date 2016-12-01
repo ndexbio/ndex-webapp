@@ -106,15 +106,29 @@
                         </ul>
 			    	</div>
 
-					<input class="form-control input-sm"
+					<!--<input class="form-control input-sm"
 						   type="text"
 						   placeholder="Label"
 						   ng-model='property.predicateString'
 						   ng-change='editor.changed($index, property.predicateString, property)'
 						   typeahead="nameForIndexing for nameForIndexing in namesForSolrIndexing |
-						              filter:$viewValue | orderBy:nameForIndexing | limitTo:12"
+						              orderBy:nameForIndexing | limitTo:15"
+						   typeahead-min-length="0"
 						   typeahead-on-select='editor.changed($index, property.predicateString, property)'
 						   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+-->
+
+					<input class="form-control input-sm"
+						   type="text"
+						   placeholder="Label"
+						   ng-model='property.predicateString'
+						   ng-model="selected"
+						   ng-change='editor.changed($index, property.predicateString, property)'
+						   typeahead="nameForIndexing for nameForIndexing in namesForSolrIndexing | filter:$viewValue:emptyOrMatch | limitTo:15"
+						   typeahead-on-select='editor.changed($index, property.predicateString, property)'
+						   ng-readonly='!(editor.isAdmin || editor.canEdit)'
+						   typeahead-focus >
+
 				</div>
 
 				<span class='text-danger'>
