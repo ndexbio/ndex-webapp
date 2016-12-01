@@ -61,7 +61,7 @@ ndexApp.controller('editNetworkPropertiesController',
         var attributeDictionary = editor.buildAttributeDictionary();
 
 
-		if(index == (editor.propertyValuePairs.length - 1)) {
+		if((index == (editor.propertyValuePairs.length - 1)) && (value.trim().length > 0)) {
 
             if ((!action) || (action.toLowerCase() !== 'del')) {
                 editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none', predicateString: "", value: ""});
@@ -372,12 +372,6 @@ ndexApp.controller('editNetworkPropertiesController',
 	};
 
     editor.refresh = $route.reload;
-
-    //Initialize the autocomplete dropdown after dom is loaded
-    $timeout(function() {
-        $('.chosen-select').chosen();
-        $('.chosen-select-deselect').chosen({ allow_single_deselect: true });
-    }, 1000);
 
     editor.preloadedOntologies = [
         {

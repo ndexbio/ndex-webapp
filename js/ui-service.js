@@ -2405,6 +2405,41 @@
         }
     });
 
+    // Directive originally authored by Yohai Rosen August 4th 2015
+    uiServiceApp.directive('typeaheadFocus', function () {
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attr, ngModel) {
+
+                //trigger the popup on 'click' because 'focus'
+                //is also triggered after the item selection
+                element.bind('click', function () {
+
+                    var viewValue = ngModel.$viewValue;
+
+                    //restore to null value so that the typeahead can detect a change
+                    if (ngModel.$viewValue == ' ') {
+                        ngModel.$setViewValue(null);
+                    }
+
+                    //force trigger the popup
+                    ngModel.$setViewValue(' ');
+
+                    //set the actual value in case there was already a value in the input
+                    ngModel.$setViewValue(viewValue || ' ');
+                });
+
+                //compare function that treats the empty space as a match
+                scope.emptyOrMatch = function (actual, expected) {
+                    if (expected == ' ') {
+                        return true;
+                    }
+                    return actual.indexOf(expected) > -1;
+                };
+            }
+        };
+    });
+
     // modal to delete user
     uiServiceApp.directive('confirmAdminRemoval', function(){
         return {
@@ -2427,7 +2462,7 @@
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
                             $scope.title = 'Remove admin privileges'
-                            $scope.message = 'Your admin privileges will be removed. Proceed?';
+                            $scope.message = 'Your admin privileges will be downgraded. Proceed?';
 
                             $scope.cancel = function() {
                                 $modalInstance.dismiss();
