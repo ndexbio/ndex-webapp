@@ -810,7 +810,7 @@
 
                     $scope.request.accountType = undefined;
 
-                    $scope.modal.permissionLabel ='Can edit';
+                    $scope.modal.permissionLabel ='Can read';
 
                     $scope.selected.account = undefined;
 
@@ -852,6 +852,167 @@
             }
         }
     });
+
+
+    // modal to request access to network
+    uiServiceApp.directive('bulkCreateRequestNetwork', function() {
+        return {
+            scope: {
+                ndexData: '=',
+                privileges: '='
+            },
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/createRequestNetwork.html',
+            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.request = {};
+                $scope.modal = {};
+                $scope.accounts = [];
+                $scope.selected = {};
+                $scope.selected.account = undefined;
+
+                $scope.openMe = function() {
+                    intialize();
+                    modalInstance = $modal.open({
+                        templateUrl: 'create-request-network-modal.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
+
+                $scope.close = function() {
+                    modalInstance.close();
+                    $scope.request = {};
+                };
+
+                $scope.submitRequest = function() {
+
+                    if($scope.modal.permissionLabel == 'Can edit')
+                        $scope.request.permission = 'WRITE';
+                    if($scope.modal.permissionLabel == 'Can read')
+                        $scope.request.permission = 'READ';
+
+                    var requestType =  $scope.selected.account.accountType;
+
+                    var UUIDsOfSelectedNetworks = $scope.ndexData.getIDsOfSelectedNetworks();
+
+
+                    for (var i = 0; i < UUIDsOfSelectedNetworks.length; i++) {
+                        var networkUUID = UUIDsOfSelectedNetworks[i];
+                        if (requestType == 'user') {
+
+                            // Create a request to ask a network permission for the authenticated user.
+                            var userPermissionRequest = {
+                                "networkid": networkUUID,
+                                "permission": $scope.request.permission,
+                                "message": $scope.request.message,
+                            }
+
+                            var userUUID = $scope.selected.account.externalId;
+
+                            ndexService.createUserPermissionRequestV2(userUUID, userPermissionRequest,
+                                function(data) {
+                                    //$scope.close();
+                                },
+                                function(error) {
+                                    console.log("unable to send network permission request for the authenticated user");
+                                    //$scope.close();
+                                })
+
+
+                        } else if (requestType == 'group') {
+
+                            // Create a request to ask a network permission for a group.
+                            var groupPermissionRequest = {
+                                "networkid": $scope.networkUUID,
+                                "permission": $scope.request.permission,
+                                "message": $scope.request.message,
+                            }
+                            var groupUUID = $scope.selected.account.externalId;
+
+                            ndexService.createGroupPermissionRequestV2(groupUUID, groupPermissionRequest,
+                                function(data) {
+                                    //$scope.close();
+                                },
+                                function(error) {
+                                    console.log("unable to send network permission request for the group");
+                                    //$scope.close();
+                                })
+                        }
+                    }
+                    $scope.close();
+                };
+
+                $scope.$watch('ndexData', function(value) {
+                    $scope.request.destinationName = ($scope.ndexData && $scope.ndexData.name) ?
+                        $scope.ndexData.name :
+                        null;
+
+                    $scope.request.destinationUUID = ($scope.ndexData && $scope.ndexData.externalId) ?
+                        $scope.ndexData.externalId :
+                        null;
+                });
+
+                //$scope.$watch('privileges', function(value) {
+                //    $scope.request.privileges = $scope.privileges;
+                //});
+
+                var intialize = function() {
+                    $scope.accounts = [];
+
+                    $scope.request.destinationName = "selected networks";
+                    $scope.request.destinationUUID = $scope.ndexData.externalId;
+
+                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
+                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+
+                    $scope.request.accountType = undefined;
+
+                    $scope.modal.permissionLabel ='Can read';
+
+                    $scope.selected.account = undefined;
+
+                    //if( $scope.privileges == 'Edit' )
+                    //    $scope.modal.permissionLabel ='Is admin';
+
+                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
+                        function (userMembershipsMap) {
+
+                            var groupsUUIDs = Object.keys(userMembershipsMap);
+
+                            ndexService.getGroupsByUUIDsV2(groupsUUIDs)
+                                .success(
+                                    function (groupList) {
+
+                                        for(var i=0; i < groupList.length; i++) {
+                                            var groupAccount = groupList[i];
+                                            groupAccount['accountType'] = 'group';
+                                            $scope.accounts.push(groupAccount);
+                                        }
+                                        var currentUserAccount = {
+                                            accountType: 'user',
+                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
+                                            externalId: ndexUtility.getLoggedInUserExternalId()
+                                        }
+                                        $scope.accounts.push(currentUserAccount);
+                                        $scope.selected.account = currentUserAccount;
+                                    })
+                                .error(
+                                    function(error) {
+                                        console.log("unable to get groups by UUIDs");
+                                    }
+                                )
+                        },
+                        function (error, data) {
+                            console.log("unable to get user group memberships");
+                        });
+                }
+            }
+        }
+    });
+
 
     // modal to export network
     uiServiceApp.directive('exportNetwork', function() {

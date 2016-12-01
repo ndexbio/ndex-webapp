@@ -36,6 +36,12 @@ ndexApp.controller('userController',
             //tasks
             userController.tasks = [];
 
+            userController.showAskForMoreAccessButton = false;
+
+            userController.userPageNetworksUUIDs = [];
+            userController.loggedInUsersNetworkPermissionsMap = {};
+
+
             var calcColumnWidth = function(header, isLastColumn)
             {
                 var result = header.length * 10;
@@ -61,10 +67,14 @@ ndexApp.controller('userController',
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
 
+                        showOrHideAskforMoreAccessButton();
+
                     });
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
+
+                        showOrHideAskforMoreAccessButton();
                     });
 
                 }
@@ -75,6 +85,7 @@ ndexApp.controller('userController',
                 var columnDefs = [
                     { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
+                    { field: 'Disease', enableFiltering: true, maxWidth: 76, cellTemplate: 'pages/gridTemplates/disease.html'},
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
                     { field: 'Nodes', enableFiltering: false, maxWidth:70 },
@@ -118,7 +129,47 @@ ndexApp.controller('userController',
 
                 return markDownFinal;
             };
+            
+            var showOrHideAskforMoreAccessButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
+                if (selectedNetworksRows.length == 0) {
+                    // nothing is selected (all rows un-selected)
+                    userController.showAskForMoreAccessButton = false;
+                    return;
+                }
+
+                var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
+
+                for (var i = 0; i < selectedNetworksRows.length; i++) {
+                    var networkUUID = selectedNetworksRows[i].externalId;
+                    var ownerUUID = selectedNetworksRows[i].ownerUUID;
+
+                    if (ownerUUID == loggedInUserId) {
+                        // if there is at least one network owned by Logged In User (s)he selected
+                        // on a Users page, we do not show the Ask For More Access button.
+                        userController.showAskForMoreAccessButton = false;
+                        return;
+                    }
+
+                    if (networkUUID in userController.loggedInUsersNetworkPermissionsMap) {
+                        var permission = userController.loggedInUsersNetworkPermissionsMap[networkUUID];
+
+                        if (permission && (permission.toUpperCase()=="WRITE" || (permission.toUpperCase()=="ADMIN"))) {
+                            // if there is at least one network among selected networks on the User page where
+                            // Logged In User has WRITE or ADMIN privileges (there should be no networks with ADMIN
+                            // privilege for the logged in user on a User page though),
+                            // we do not show the Ask For More Access button.
+                            userController.showAskForMoreAccessButton = false;
+                            return;
+                        }
+                    }
+                }
+
+                userController.showAskForMoreAccessButton = true;
+            }
+
+            
             var refreshNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
@@ -152,10 +203,12 @@ ndexApp.controller('userController',
 
                     var download = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(network);
+                    var disease   = uiMisc.getDisease(network);
 
                     var row = {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
+                        "Disease"       :   disease,
                         " "             :   download,
                         "Reference"     :   reference,
                         "Nodes"         :   nodes,
@@ -304,6 +357,25 @@ ndexApp.controller('userController',
                     function (networks)
                     {
                         userController.networkSearchResults = networks;
+
+                        var directOnly = false;
+                        var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
+
+                        // get IDs of all networks shown on User page
+                        getNetworksUUIDs(networks);
+
+
+                        if (userController.userPageNetworksUUIDs.length > 0) {
+                            // get permissions of all networks for the logged in user
+                            ndexService.getUserNetworkPermissionsV2(loggedInUserId, 'READ', 0, 1000000, directOnly,
+                                function (networkPermissionsMap) {
+                                    userController.loggedInUsersNetworkPermissionsMap = networkPermissionsMap;
+                                },
+                                function (error, data) {
+                                    console.log("unable to get user network memberships");
+                                });
+                        }
+
                         populateNetworkTable();
                     },
                     function (error)
@@ -317,7 +389,25 @@ ndexApp.controller('userController',
                 getRequests();
             };
 
-            //              local functions
+
+
+            //  local functions
+
+            var getNetworksUUIDs = function(networks) {
+                userController.userPageNetworksUUIDs = [];
+
+                if (!networks || networks.length == 0) {
+                    return;
+                }
+
+                for (var i=0; i<networks.length; i++) {
+                    var networkUUID = networks[i].externalId;
+
+                    if (userController.userPageNetworksUUIDs.indexOf(networkUUID) < 0) {
+                        userController.userPageNetworksUUIDs.push(networkUUID);
+                    }
+                }
+            }
 
             var getRequests = function ()
             {
@@ -356,6 +446,11 @@ ndexApp.controller('userController',
             $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
 
                 uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
+            };
+
+            $scope.getFirstWordFromDisease = function(diseaseDescription) {
+
+                return uiMisc.getFirstWordFromDisease(diseaseDescription);
             };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS

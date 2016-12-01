@@ -21,7 +21,8 @@
 
             <div ng-bind-html="userController.displayedUser.description"></div>
 
-            <span ng-show="userController.isLoggedInUser && userController.atLeastOneSelected">
+            <span class="btn-group btn-group-vertical buttonWithMarginBottom"
+                  ng-show="userController.isLoggedInUser && userController.atLeastOneSelected">
                 <hr>
                 <h5><strong>Bulk Actions:</strong></h5>
 
@@ -32,6 +33,15 @@
                         </bulk-export-network>
                     </a>
                 </span>
+
+                <span ng-show="userController.showAskForMoreAccessButton">
+                    <a class="btn btn-primary customButtonWidth">
+                        <bulk-create_request-network ndex-data='userController' ng-model="selection">
+                            Ask for More Access!
+                        </bulk-create_request-network>
+                    </a>
+                </span>
+
             </span>
 
         </div>

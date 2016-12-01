@@ -122,7 +122,34 @@ angular.module('ndexServiceApp')
                 urlCount: countURLs
             };
 
-        };                   
+        };
+
+        self.getDisease = function(network) {
+            var disease = "";
+
+            if (!network || !network.properties) {
+                return disease;
+            }
+
+            for (var i = 0; i < network.properties.length; i++) {
+                var property = network.properties[i];
+                if (property.predicateString && property.predicateString.toLowerCase() == "disease") {
+                    disease = (property.value) ? property.value : "";
+                    break;
+                }
+            }
+
+            return disease
+        };
+
+        self.getFirstWordFromDisease = function(diseaseDescription) {
+
+            if (!diseaseDescription) {
+                return "";
+            }
+
+            return diseaseDescription.split(/[ .,;:]+/).shift();
+        };
 
     }
 ]);

@@ -138,6 +138,7 @@ ndexApp.controller('searchController',
                 { field: 'Status', enableFiltering: false, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                 { field: 'Network Name', enableFiltering: true, minWidth: 440,
                     cellTemplate: 'pages/gridTemplates/networkName.html'},
+                { field: 'Disease', enableFiltering: true, cellTemplate: 'pages/gridTemplates/disease.html'},
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                 { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
                 { field: 'Nodes', enableFiltering: false, minWidth: 70 },
@@ -196,10 +197,12 @@ ndexApp.controller('searchController',
 
                     var download = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(network);
+                    var disease   = uiMisc.getDisease(network);
 
                     var row = {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
+                        "Disease"       :   disease,
                         " "             :   download,
                         "Reference"     :   reference,
                         "Nodes"         :   nodes,
@@ -519,6 +522,11 @@ ndexApp.controller('searchController',
 
                 uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
             }
+
+            $scope.getFirstWordFromDisease = function(diseaseDescription) {
+
+                return uiMisc.getFirstWordFromDisease(diseaseDescription);
+            };
 
 
             /*---------------------------
