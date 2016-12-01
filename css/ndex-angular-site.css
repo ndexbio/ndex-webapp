@@ -615,7 +615,15 @@ ul.ndex-nav-pills > li > a:hover {
 
 .ndex-citation-landing-page {
     font-size:18px;
-    line-height:2;
+    line-height:1.5;
+    margin:2em;
+    text-align: center;
+    padding-top: 2em;
+}
+
+.ndex-featured-collections {
+    font-size:14px;
+    line-height:1.5;
     margin:2em;
     text-align: center;
 }

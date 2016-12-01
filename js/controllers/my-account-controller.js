@@ -68,6 +68,7 @@ ndexApp.controller('myAccountController',
                 // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
                 // otherwise it will not show all columns if we display more than 10 columns in our table
                 columnVirtualizationThreshold: 20,
+                enableColumnMenus: false,
 
                 onRegisterApi: function( gridApi )
                 {
@@ -88,20 +89,25 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                    { field: 'Network Name', enableFiltering: true, minWidth: 350,
-                      cellTemplate: 'pages/gridTemplates/networkName.html' },
+                    { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
-                    { field: 'Format', enableFiltering: true, width:70 },
-                    { field: 'Nodes', enableFiltering: false, width:90 },
-                    { field: 'Edges', enableFiltering: false, width:90 },
-                    { field: 'Visibility', enableFiltering: true, width:70, cellClass: 'grid-align-cell' },
-                    { field: 'Owned By', enableFiltering: true, width:100, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
+                    { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
+                    { field: 'Nodes', enableFiltering: false, maxWidth:70 },
+                    { field: 'Edges', enableFiltering: false, maxWidth:70 },
+                    { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
+                    { field: 'Owned By', enableFiltering: true, maxWidth:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
+                    { field: 'Last Modified', enableFiltering: false, maxWidth:120,
+                        cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
+                    },
+
+                    /*
                     { field: 'Last Modified', enableFiltering: false, width:170,
                         cellFilter: 'date:\'MMM dd, yyyy hh:mm:ssa\'',  sort: {direction: 'desc', priority: 0},
                         cellClass: 'grid-align-cell' },
-                    { field: 'Showcase', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/showCase.html' },
+                    */
+
+                    { field: 'Showcase', enableFiltering: false, maxWidth: 75, cellTemplate: 'pages/gridTemplates/showCase.html' },
 
                     { field: 'description', enableFiltering: false,  visible: false},
                     { field: 'externalId',  enableFiltering: false,  visible: false},
@@ -136,7 +142,7 @@ ndexApp.controller('myAccountController',
                 var markDownFinal  = $("<html>"+markDown+"</html>").text();
 
                 return markDownFinal;
-            }
+            };
             
             var refreshNetworkTable = function()
             {
@@ -177,16 +183,6 @@ ndexApp.controller('myAccountController',
                     var modified = new Date( network['modificationTime'] );
                     var showcase = network['isShowcase'];
 
-                    var format = "Unknown";
-                    for(var j = 0; j < network['properties'].length; j++ )
-                    {
-                        if( network['properties'][j]['predicateString'] == "ndex:sourceFormat" )
-                        {
-                            format = network['properties'][j]['value'];
-                            break;
-                        }
-                    }
-
                     var download = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(network);
 
@@ -195,7 +191,6 @@ ndexApp.controller('myAccountController',
                         "Network Name"  :   networkName,
                         " "             :   download,
                         "Reference"     :   reference,
-                        "Format"        :   format,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,
