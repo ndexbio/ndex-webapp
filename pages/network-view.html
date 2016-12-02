@@ -157,6 +157,11 @@
                                     ng-model="networkController.readOnlyChecked"
                                     ng-change="readOnlyChanged()"> Read Only
                             </span>
+                            <span class="networkPropertyName" ng-show="!networkController.isAdmin">
+                                <input type="checkbox"  disabled readonly
+                                       ng-model="networkController.readOnlyChecked"
+                                       title="Only network owners can set/unset Read Only flag"> Read Only
+                            </span>
                             <br />
                             <br />
 
@@ -645,21 +650,21 @@
             </span>
 
 
-            <span ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead'>
+            <span ng-show='networkController.isLoggedIn && networkController.canRead'>
                 <a class="btn btn-primary customButtonWidth">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
-                            privileges="networkController.privilegeLevel">
+                            privileges='networkController.privilegeLevel'>
                         Ask for More Access!
                     </create-request-network>
                 </a>
             </span>
 
-            <span ng-hide='!networkController.isLoggedIn || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+            <span ng-show='networkController.isLoggedIn && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
                 <a class="btn btn-primary customButtonWidth">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
-                            privileges="networkController.privilegeLevel">
+                            privileges='networkController.privilegeLevel'>
                         Ask for Access Privileges!
                     </create-request-network>
                 </a>

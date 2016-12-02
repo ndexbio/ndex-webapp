@@ -810,7 +810,7 @@
 
                     $scope.request.accountType = undefined;
 
-                    $scope.modal.permissionLabel ='Can read';
+                    $scope.modal.permissionLabel = ($scope.privileges == 'None') ? 'Can read' : 'Can edit';
 
                     $scope.selected.account = undefined;
 
@@ -859,7 +859,7 @@
         return {
             scope: {
                 ndexData: '=',
-                privileges: '='
+                privileges: '@privileges'
             },
             restrict: 'E',
             transclude: true,
@@ -970,7 +970,7 @@
 
                     $scope.request.accountType = undefined;
 
-                    $scope.modal.permissionLabel ='Can read';
+                    $scope.modal.permissionLabel = ($scope.privileges == 'None') ? 'Can read' : 'Can edit';
 
                     $scope.selected.account = undefined;
 

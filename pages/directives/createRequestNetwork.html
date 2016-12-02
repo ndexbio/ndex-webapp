@@ -20,11 +20,11 @@
 		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Is admin"'><small>Is Admin</small></a>
 		        </li>
 		        -->
-		        <li ng-hide="privileges=='Edit'">
+		        <li ng-show="privileges=='None' || privileges=='Read'">
 		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can edit"'><small>Can edit</small></a>
 		        </li>
 
-		        <li ng-hide="privileges=='Edit' || privileges=='Read'">
+		        <li ng-show="privileges=='None'">
 		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can read"'><small>Can read</small></a>
 		        </li>
 		      </ul>
