@@ -230,9 +230,10 @@ ndexApp.controller('groupController',
         var columnDefs = [
             { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
             { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
-            { field: 'Disease', enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/disease.html'},
             { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
             { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
+            { field: 'Disease', enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/disease.html'},
+            { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
             { field: 'Nodes', enableFiltering: false, maxWidth: 70 },
             { field: 'Edges', enableFiltering: false, maxWidth: 70 },
             { field: 'Visibility', enableFiltering: true, maxWidth: 70 },
@@ -299,13 +300,15 @@ ndexApp.controller('groupController',
             var download = "Download " + networkName;
             var reference = uiMisc.getNetworkReferenceObj(network);
             var disease   = uiMisc.getDisease(network);
+            var tissue    = uiMisc.getTissue(network);
 
             var row = {
                 "Status"        :   networkStatus,
                 "Network Name"  :   networkName,
-                "Disease"       :   disease,
                 " "             :   download,
                 "Reference"     :   reference,
+                "Disease"       :   disease,
+                "Tissue"        :   tissue,
                 "Nodes"         :   nodes,
                 "Edges"         :   edges,
                 "Visibility"    :   visibility,

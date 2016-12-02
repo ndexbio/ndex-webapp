@@ -139,7 +139,25 @@ angular.module('ndexServiceApp')
                 }
             }
 
-            return disease
+            return disease;
+        };
+
+        self.getTissue = function(network) {
+            var tissue = "";
+
+            if (!network || !network.properties) {
+                return tissue;
+            }
+
+            for (var i = 0; i < network.properties.length; i++) {
+                var property = network.properties[i];
+                if (property.predicateString && property.predicateString.toLowerCase() == "tissue") {
+                    tissue = (property.value) ? property.value : "";
+                    break;
+                }
+            }
+
+            return tissue;
         };
 
         self.getFirstWordFromDisease = function(diseaseDescription) {
