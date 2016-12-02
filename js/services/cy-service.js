@@ -795,6 +795,14 @@ angular.module('ndexServiceApp')
                             edge_default_mappings = edge_default_mappings.concat(styles);
                         });
 
+                        _.forEach(vpElement.dependencies, function(value, vp) {
+                            if ( vp === 'arrowColorMatchesEdge') {
+                                defaultEdgeProperties['source-arrow-color'] = defaultEdgeProperties['line-color'];
+                                defaultEdgeProperties['target-arrow-color'] = defaultEdgeProperties['line-color'];
+                             }
+
+                        });
+
                     } else if (elementType === 'nodes'){
                         // 'bypass' setting node specific properties
                         var nodeId = vpElement['applies_to'];
