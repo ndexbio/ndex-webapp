@@ -1,7 +1,9 @@
 <div id="networkReferenceTemplate" class="ui-grid-cell-contents">
 
     <span ng-if="((row.entity.Reference.referenceText.length > 0) && (row.entity.Reference.url && row.entity.Reference.url.length > 0) && (row.entity.Reference.urlCount == 1))">
-        <a ng-href="{{row.entity.Reference.url}}" target="_blank">View Ref</a>
+        <a ng-href="{{row.entity.Reference.url}}" target="_blank">
+            <img src="img/ref-icon.png" width="20px" height="20px" align="center">
+        </a>
     </span>
 
     <span ng-if="((row.entity.Reference.referenceText.length > 0) && (row.entity.Reference.urlCount != 1))">
@@ -9,7 +11,7 @@
                <show-network-reference
                        reference='row.entity.Reference.referenceHTML'
                        directive-title={{row.entity.name}}>
-                    View Ref
+                    <img src="img/ref-icon.png" width="20px" height="20px" align="center">
                 </show-network-reference>
             </a>
     </span>

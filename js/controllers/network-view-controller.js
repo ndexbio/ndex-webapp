@@ -56,6 +56,8 @@ ndexApp.controller('networkViewController',
 
             networkController.context = {};
 
+            networkController.isAdmin = false;
+
             networkController.tabs = [
                 {"heading": "Network Info", 'active':true},
                 {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},

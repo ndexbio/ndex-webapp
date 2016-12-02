@@ -135,17 +135,18 @@ ndexApp.controller('searchController',
             };
             
             const NETWORK_COLUMN_FIELDS = [
-                { field: 'Status', enableFiltering: false, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
-                { field: 'Network Name', enableFiltering: true, minWidth: 440,
-                    cellTemplate: 'pages/gridTemplates/networkName.html'},
+                { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                { field: 'Reference', enableFiltering: false, width: 90, cellTemplate: 'pages/gridTemplates/reference.html' },
-                { field: 'Nodes', enableFiltering: false, minWidth: 70 },
-                { field: 'Edges', enableFiltering: false, minWidth: 70 },
-                { field: 'Visibility', enableFiltering: true, minWidth: 90 },
-                { field: 'Owned By', enableFiltering: true, minWidth: 70,
+                { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
+                { field: 'Disease', enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/disease.html'},
+                { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
+                { field: 'Nodes', enableFiltering: false, maxWidth:70 },
+                { field: 'Edges', enableFiltering: false, maxWidth:70 },
+                { field: 'Visibility', enableFiltering: true, maxWidth:70 },
+                { field: 'Owned By', enableFiltering: true, maxWidth:80,
                     cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                { field: 'Last Modified', enableFiltering: false, minWidth: 100, cellFilter: "date:'short'" },
+                { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" },
 
                 { field: 'description', enableFiltering: false,  visible: false},
                 { field: 'externalId',  enableFiltering: false,  visible: false},
@@ -196,12 +197,16 @@ ndexApp.controller('searchController',
 
                     var download = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(network);
+                    var disease   = uiMisc.getDisease(network);
+                    var tissue    = uiMisc.getTissue(network);
 
                     var row = {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
                         " "             :   download,
                         "Reference"     :   reference,
+                        "Disease"       :   disease,
+                        "Tissue"        :   tissue,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,
@@ -519,6 +524,11 @@ ndexApp.controller('searchController',
 
                 uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
             }
+
+            $scope.getFirstWordFromDisease = function(diseaseDescription) {
+
+                return uiMisc.getFirstWordFromDisease(diseaseDescription);
+            };
 
 
             /*---------------------------

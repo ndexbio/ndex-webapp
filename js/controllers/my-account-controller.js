@@ -93,6 +93,8 @@ ndexApp.controller('myAccountController',
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
+                    { field: 'Disease', enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/disease.html'},
+                    { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
                     { field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
                     { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
@@ -183,14 +185,18 @@ ndexApp.controller('myAccountController',
                     var modified = new Date( network['modificationTime'] );
                     var showcase = network['isShowcase'];
 
-                    var download = "Download " + networkName;
+                    var download  = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(network);
+                    var disease   = uiMisc.getDisease(network);
+                    var tissue    = uiMisc.getTissue(network);
 
                     var row =   {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
                         " "             :   download,
                         "Reference"     :   reference,
+                        "Disease"       :   disease,
+                        "Tissue"        :   tissue,
                         "Nodes"         :   nodes,
                         "Edges"         :   edges,
                         "Visibility"    :   visibility,
@@ -902,6 +908,11 @@ ndexApp.controller('myAccountController',
             $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
 
                 uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
+            };
+
+            $scope.getFirstWordFromDisease = function(diseaseDescription) {
+
+                return uiMisc.getFirstWordFromDisease(diseaseDescription);
             };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
