@@ -14,7 +14,16 @@ ndexApp.filter('encodeURIComponent', function() {
 });
 
 //Internet Explorer solution???
-ndexApp.config(['$httpProvider', function ($httpProvider) {
+ndexApp.service('authInterceptor', function($q, $location) {
+    var service = this;
+
+    service.responseError = function(response) {
+        if (response.status == 401){
+            $location.url('signIn');
+        }
+        return $q.reject(response);
+    };
+}).config(['$httpProvider', function ($httpProvider) {
 
     //First, test if this is IE. If it is not, don't mess with caching.
     var ua = window.navigator.userAgent;
@@ -30,6 +39,7 @@ ndexApp.config(['$httpProvider', function ($httpProvider) {
         $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
     }
 
+    $httpProvider.interceptors.push('authInterceptor');
 }]);
 
 

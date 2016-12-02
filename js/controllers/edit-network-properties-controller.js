@@ -224,19 +224,15 @@ ndexApp.controller('editNetworkPropertiesController',
     // They are found in the server's ndexbio-rest/src/main/resources/solr/ndex-networks/conf/schema.xml
     // under the "Collaborator required index fields" comment
     $scope.namesForSolrIndexing = [
-        "objectCategory",
         "organism",
-        "platform",
         "disease",
         "tissue",
-        "rightsHolder",
         "author",
-        "createdAt",
         "methods",
-        "subnetworkType",
-        "subnetworkFilter",
-        "graphHash",
-        "rights"
+        "labels",
+        "rights",
+        "rightsHolder",
+        "networkType"
     ];
 
     $scope.namesForSolrIndexingDictionary = {};
