@@ -137,7 +137,7 @@ ndexApp.controller('searchController',
             const NETWORK_COLUMN_FIELDS = [
                 { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                 { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
-                { field: 'Disease', enableFiltering: true, maxWidth: 76, cellTemplate: 'pages/gridTemplates/disease.html'},
+                { field: 'Disease', enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/disease.html'},
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                 { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
                 { field: 'Nodes', enableFiltering: false, maxWidth:70 },
