@@ -19,7 +19,7 @@ ndexApp.service('authInterceptor', function($q, $location) {
 
     service.responseError = function(response) {
         if (response.status == 401){
-            $location.url('signIn');
+            $location.path('/signIn').search('returnTo', $location.path());;
         }
         return $q.reject(response);
     };
