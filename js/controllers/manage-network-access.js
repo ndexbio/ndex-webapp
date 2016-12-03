@@ -112,35 +112,50 @@ ndexApp.controller('manageNetworkAccessController',
 
 	networkManager.isSelfAdminRemoval = function(){
 		//Determine if the user is going to remove themselves as admin
+
+		var return_dict = {'adminIssue': false, 'issueSeverity': 'none'};
 		var userId = sharedProperties.getCurrentUserId();
 
 		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
 			var accessObj = networkManager.originalAccessPermissions[i];
 			if(accessObj["memberUUID"] === userId){
 				if (networkManager.accessWasRemoved(accessObj)) {
-					return true;
+					return_dict['adminIssue'] = true;
+					return_dict['issueSeverity'] = 'WARNING';
+					return return_dict;
 				}
 			}
 		}
-		var multiple_admin_count = 1;
+		var multiple_admin_count = 0;
+		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
+			if(networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions == 'ADMIN'){
+				multiple_admin_count++;
+			}
+		}
+
+		if(multiple_admin_count > 1){ //We do not support multiple admins
+			return_dict['adminIssue'] = true;
+			return_dict['issueSeverity'] = 'WARNING';
+			return return_dict;
+		} else if(multiple_admin_count === 0){ //User removed admin (self) but did not specify new admin
+			return_dict['adminIssue'] = true;
+			return_dict['issueSeverity'] = 'ABORT';
+			return return_dict;
+		}
+
 		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
 
 			if (accessObj.memberUUID ===
 				networkManager.selectedAccountsForUpdatingAccessPermissions[i].memberUUID) {
-				if(networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions != 'ADMIN'){
-					return true;
+				if (networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions != 'ADMIN') {
+					return_dict['adminIssue'] = true;
+					return_dict['issueSeverity'] = 'WARNING';
+					return return_dict;
 				}
-			} else if(networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions == 'ADMIN'){
-				multiple_admin_count++;
-			}
-
-
-			if(multiple_admin_count > 1){
-				return true;
 			}
 		}
 
-		return false;
+			return return_dict;
 	}
 
 	networkManager.save = function() {
