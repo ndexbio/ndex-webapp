@@ -1308,9 +1308,15 @@ ndexApp.controller('networkViewController',
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
-                var hasLayout = networkService.getNetworkProperty('hasLayout') || networkController.subNetworkId != null;
-                if ( hasLayout == undefined )
-                    hasLayout = false;
+                var hasLayout = networkService.getNetworkProperty(networkController.subNetworkId,'hasLayout');
+
+                if ( hasLayout == undefined ) {
+                    if ( networkController.subNetworkId != null)
+                        hasLayout = true;
+                    else
+                        hasLayout = false;
+
+                }
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
                     (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
