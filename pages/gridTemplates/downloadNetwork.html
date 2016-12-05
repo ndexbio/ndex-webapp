@@ -1,5 +1,5 @@
 <div id="downloadNetworkTemplate" class="ui-grid-cell-contents">
-    <span ng-if="((row.entity.Status == 'warning') || (row.entity.Status == 'success'))">
+    <span ng-if="row.entity.Status != 'processing'">
         <a ng-href="{{$location.path()}}"
                    ng-click="grid.appScope.getNetworkFromServerAndSaveToDisk(row.entity)"
                    title="{{COL_FIELD}}">
