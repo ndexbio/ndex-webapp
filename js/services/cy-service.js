@@ -71,6 +71,10 @@ angular.module('ndexServiceApp')
             var cyAttributeName = attributeNameMap[attributeName];
 
             if (!cyAttributeName) {
+                cyAttributeName = specialCaseAttributeMap[attributeName];
+                if(cyAttributeName)
+                    return cyAttributeName;
+
                 attributeNameMap[attributeName] = attributeName; // direct mapping
                 cyAttributeName = attributeName;
             }
@@ -86,7 +90,8 @@ angular.module('ndexServiceApp')
             'id' : 'cx_id',
             'target' : 'cx_target',
             'source' : 'cx_source',
-            'shared name' : 'name'
+            'shared name' : 'name',
+            'shared interaction': 'interaction'
 
         };
 
@@ -769,17 +774,48 @@ angular.module('ndexServiceApp')
                         var selectedEdgeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
                             //console.log('default node property ' + vp + ' = ' + value);
-                            var cyVisualAttribute = getCyVisualAttributeForVP(vp);
-                            if (cyVisualAttribute) {
-                                var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
-                                defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
-                            } else if (vp === 'EDGE_STROKE_SELECTED_PAINT'){
-                                selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
-                            } else if (vp === 'EDGE_SOURCE_ARROW_SELECTED_PAINT'){
-                                selectedEdgeProperties['source-arrow-color'] = getCyVisualAttributeValue(value, 'color');
-                            } else if (vp === 'EDGE_TARGET_ARROW_SELECTED_PAINT'){
-                                selectedEdgeProperties['target-arrow-color'] = getCyVisualAttributeValue(value, 'color');
+                            //special cases for locked edge color
+                            if (vpElement.dependencies.arrowColorMatchesEdge) {
+                                if(vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" &&
+                                    vp !== "EDGE_TARGET_ARROW_UNSELECTED_PAINT" ) {
+                                    if ( vp == "EDGE_UNSELECTED_PAINT") {   // add extra handling since the color is locked
+                                        var cyVisualAttribute = getCyVisualAttributeForVP("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
+                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
+                                        defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                                        cyVisualAttribute = getCyVisualAttributeForVP("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
+                                        defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                                    }
+                                    var cyVisualAttribute = getCyVisualAttributeForVP(vp);
+                                    if (cyVisualAttribute) {
+                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                        defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                                    } else if (vp === 'EDGE_STROKE_SELECTED_PAINT'){
+                                        selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
+                                    } else if (vp === 'EDGE_SOURCE_ARROW_SELECTED_PAINT'){
+                                        selectedEdgeProperties['source-arrow-color'] = getCyVisualAttributeValue(value, 'color');
+                                    } else if (vp === 'EDGE_TARGET_ARROW_SELECTED_PAINT'){
+                                        selectedEdgeProperties['target-arrow-color'] = getCyVisualAttributeValue(value, 'color');
+                                    }
+
+                                }
+                            } else {
+                                if ( vp != "EDGE_UNSELECTED_PAINT") {
+                                    var cyVisualAttribute = getCyVisualAttributeForVP(vp);
+                                    if (cyVisualAttribute) {
+                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                        defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                                    } else if (vp === 'EDGE_STROKE_SELECTED_PAINT') {
+                                        selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
+                                    } else if (vp === 'EDGE_SOURCE_ARROW_SELECTED_PAINT') {
+                                        selectedEdgeProperties['source-arrow-color'] = getCyVisualAttributeValue(value, 'color');
+                                    } else if (vp === 'EDGE_TARGET_ARROW_SELECTED_PAINT') {
+                                        selectedEdgeProperties['target-arrow-color'] = getCyVisualAttributeValue(value, 'color');
+                                    }
+                                }
                             }
+
+
                         });
                         if (_.keys(selectedEdgeProperties).length > 0){
                             edge_selected_styles.push({'selector': 'edge:selected', 'css': selectedEdgeProperties});
@@ -791,17 +827,34 @@ angular.module('ndexServiceApp')
                             //console.log(mapping);
                             //console.log('VP = ' + vp);
                             elementType = 'edge';
-                            var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                            edge_default_mappings = edge_default_mappings.concat(styles);
+
+                            if (vpElement.dependencies.arrowColorMatchesEdge ) {
+                                if(vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" &&
+                                    vp !== "EDGE_TARGET_ARROW_UNSELECTED_PAINT" ) {
+
+                                    if (vp == "EDGE_UNSELECTED_PAINT") {
+                                        var styles = mappingStyle(elementType, "EDGE_TARGET_ARROW_UNSELECTED_PAINT" , mapping.type, mapping.definition, attributeNameMap);
+                                        edge_default_mappings = edge_default_mappings.concat(styles);
+                                        styles = mappingStyle(elementType, "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" , mapping.type, mapping.definition, attributeNameMap);
+                                        edge_default_mappings = edge_default_mappings.concat(styles);
+                                    }
+                                    var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
+                                    edge_default_mappings = edge_default_mappings.concat(styles);
+                                }
+                            } else {
+
+                                var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
+                                edge_default_mappings = edge_default_mappings.concat(styles);
+                            }
                         });
 
-                        _.forEach(vpElement.dependencies, function(value, vp) {
+                     /*   _.forEach(vpElement.dependencies, function(value, vp) {
                             if ( vp === 'arrowColorMatchesEdge') {
                                 defaultEdgeProperties['source-arrow-color'] = defaultEdgeProperties['line-color'];
                                 defaultEdgeProperties['target-arrow-color'] = defaultEdgeProperties['line-color'];
                              }
 
-                        });
+                        }); */
 
                     } else if (elementType === 'nodes'){
                         // 'bypass' setting node specific properties

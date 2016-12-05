@@ -28,7 +28,8 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                     $scope.signIn.userName = null;
                     $scope.signIn.password = null;
                 },
-                function(error) { //.error(function (data, status, headers, config, statusText) {
+                function(error, status) { //.error(function (data, status, headers, config, statusText) {
+
                     if (error && error.message) {
                         $scope.signIn.message = error.message;
                     } else {

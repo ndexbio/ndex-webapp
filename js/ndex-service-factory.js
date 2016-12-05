@@ -36,8 +36,8 @@ ndexServiceApp.factory('ndexService',
                     .success(function(data) {
                         successHandler(data);
                     })
-                    .error(function(error) {
-                        errorHandler(error);
+                    .error(function(error, status) {
+                        errorHandler(error, status);
                     })
             }
 
