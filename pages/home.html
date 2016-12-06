@@ -1,25 +1,43 @@
 <div class="row">
-    <div class='col-md-2'></div>
-    <div class='col-md-8 AlignCenter' style="margin-bottom:20px; margin-top:30px">
+    <div class='col-md-12 AlignCenter'>
         <img src='img/ndex-logo.png' style="align:center"/>
     </div>
 </div>
 
 <div class="row">
-    <div class='col-md-2' style="margin-top:10px; margin-bottom:10px" ></div>
-    <div class='col-md-8 AlignCenter'>
-        <h3>{{config.welcome}}</h3>
-    </div>
-</div>
-
-
-<div class="row">
-    <div class='col-md-12' >
-        <div style="margin-top:10px; max-width: 1000px; margin-left: auto; margin-right: auto;">
+    <div class='col-md-12'>
+        <div style="margin-top:10px; max-width: 900px; margin-left: auto; margin-right: auto;">
             <ng-include src="'search_bar.html'"></ng-include>
         </div>
     </div>
 </div>
+
+<div class="ndex-featured-collections">
+    <strong>Featured Collections:</strong>
+    &nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/301a91c6-a37b-11e4-bda0-000c29202374" target="_blank">
+        Pathway Interaction Database (NCI-PID)
+    </a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/b47268a6-8112-11e6-b0a6-06603eb7f303" target="_blank">
+        Cancer Cell Maps Initiative (CCMI)
+    </a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/08cd9aae-08af-11e6-b550-06603eb7f303" target="_blank">
+        The NDEx Butler
+    </a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/user/ab10afd9-e488-11e4-951c-000c29cb28fb" target="_blank">
+        NetPath
+    </a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="http://public.ndexbio.org/#/group/a75465c5-72a3-11e5-b435-06603eb7f303" target="_blank">
+        Ideker Lab
+    </a>
+</div>
+
+
+<!--
 
 <div class="row">
     <div class='col-md-2'></div>
@@ -89,206 +107,57 @@
                     <span class="text-danger">{{signIn.message}}</span>
                     </div>
                 </div>
-                -->
-
     </div>
 </div>
+-->
 
-<div class="ndex-featured-collections">Featured Collections:
-       &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://public.ndexbio.org/#/user/301a91c6-a37b-11e4-bda0-000c29202374" target="_blank">
-        NCI - Pathway Interaction Database (PID)
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://public.ndexbio.org/#/user/08cd9aae-08af-11e6-b550-06603eb7f303" target="_blank">
-        The NDEx Butler
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://public.ndexbio.org/#/user/581b0295-c6b6-11e4-951c-000c29cb28fb" target="_blank">
-        The Binding Database
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://public.ndexbio.org/#/user/ab10afd9-e488-11e4-951c-000c29cb28fb" target="_blank">
-        NetPath
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://public.ndexbio.org/#/group/a75465c5-72a3-11e5-b435-06603eb7f303" target="_blank">
-        Ideker Lab
-    </a>
-</div>
+<div class="row" ng-show="!main.showSignIn && !config.requireAuthentication" id="logos-citation-above-footer">
 
-<div class="ndex-citation-landing-page">Cite NDEx: Pratt <em>et al.</em>
-    <a href="http://dx.doi.org/10.1016/j.cels.2015.10.001" target="_blank">
-        NDEx, the Network Data Exchange.
-    </a>
-    Cell Systems, Volume 1, Issue 4, 302-305 (2015).
-</div>
+    <div style="max-width: 1000px; margin: auto;">
+        <div class='col-md-7'>
 
-<div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
-    <span class='col-md-12'>
-        <span class="home-margins">
-
-            <div class="home-support AlignCenter">
-
-                <a href="http://itcr.nci.nih.gov/" target="_blank"><img
+            <div class="home-support">
+                <a href="http://itcr.nci.nih.gov/" target="_blank">
+                    <img
                         src="img/ITCR-logo.png"
-                        style="padding: 20px 15px"></a>
-                <a href="http://www.roche.com/" target="_blank"><img
+                        style="padding: 20px 15px; width: 30%; height: auto;">
+                </a>
+                <a href="http://www.roche.com/" target="_blank">
+                    <img
                         src="img/Roche-Logox50.jpg"
-                        style="padding: 20px 0 20px 15px"></a>
-                <a href="http://www.pfizer.com/" target="_blank"><img
+                        style="padding: 20px 0 20px 15px; width: 12%; height: auto;">
+                </a>
+                <a href="http://www.pfizer.com/" target="_blank">
+                    <img
                         src="img/pfizer_logox501.png"
-                        style="padding: 20px 15px 20px 0"></a>
-                <a href="http://www.janssenrnd.com/" target="_blank"><img
+                        style="padding: 20px 15px 20px 0; width: 12%; height: auto;">
+                </a>
+                <a href="http://www.janssenrnd.com/" target="_blank">
+                    <img
                         src="img/janssen_logo.png"
-                        style="padding: 20px 5px 20px 15px"></a>
-                <a href="http://www.nrnb.org/" target="_blank"><img
+                        style="padding: 20px 5px 20px 15px; width: 24%; height: auto;">
+                </a>
+                <a href="http://www.nrnb.org/" target="_blank">
+                    <img
                         src="img/NRNB_black_5001.png"
-                        style="padding: 25px 0 15px 5px"></a>
+                        style="padding: 25px 0 15px 5px; width: 12%; height: auto;">
+                </a>
             </div>
-        </span>
-    </span>
-</div>
-<!--
-
-<div class="row" ng-show="!main.showSignIn && !config.requireAuthentication">
-    <span class='col-md-2'>
-    </span>
-    <span class='col-md-8'>
-        <div class="home-center AlignCenter" >
-            <br><br>
-            <a href="http://www.cancer.gov/" target="_blank">The National Cancer Institute</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href="http://www.janssenrnd.com/" target="_blank">Janssen Research and Development, LLC</a><br>
-            <a href="http://www.roche.com/" target="_blank">F. Hoffmann-La Roche Ltd</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href="http://www.pfizer.com/" target="_blank">Pfizer, Inc.</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;
-            <a href="http://nrnb.org" target="_blank">National Resource for Network Biology</a>
-        </div>
-    </span>
-
-</div>
--->
-
-<!--
-<script type="text/ng-template" id="signUp.html">
-    <div class="modal-content">
-        <form name="signUpForm" role="form" ng-submit="signIn.signUp()">
-            <div class="modal-header">
-                <h4>Sign Up for NDEx</h4>
-            </div>
-            <span style="position: relative; left: 20px;"> All fields are required.</span>
-
-            <div class="modal-body text-center">
-
-                <div class="row">
-                    <div class="form-group col-md-6">
-                        <input name="firstName" type="text" class="form-control" ng-model="signIn.newUser.firstName"
-                               placeholder="First Name" required>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <input name="lastName" type="text" class="form-control" ng-model="signIn.newUser.lastName"
-                               placeholder="Last Name" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <input name="userName" type="text" class="form-control" ng-model="signIn.newUser.userName"
-                           placeholder="Account Name (e.g. dexterpratt)" required>
-                </div>
-                <div class="form-group">
-                    <input name="email" type="email" class="form-control" ng-model="signIn.newUser.emailAddress"
-                           placeholder="Email Address" required>
-                </div>
-                <div class="form-group">
-                    <input name="password" type="password" class="form-control" ng-model="signIn.newUser.password"
-                           placeholder="Password" required>
-                </div>
-                <div class="form-group">
-                    <input name="confirmPassword" type="password" class="form-control"
-                           ng-model="signIn.newUser.passwordConfirm"
-                           placeholder="Confirm Password" required>
-                </div>
-
-                <div class="rowWithTwoLinesTopPadAnd11EmFont">
-                    <input required ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
-                    <label>I have read and accept the
-                        <a ng-href="http://www.ndexbio.org/disclaimer-license/" target="_blank">Terms & Conditions</a>
-                    </label>
-                </div>
-
-                <div class='text-danger'>
-                    <strong>
-                        {{signIn.signUpErrors}}
-                    </strong>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <a class="btn btn-sm btn-danger" ng-click="signIn.cancelSignUp()">Cancel</a>
-                <button class="btn btn-sm btn-default" type="submit"
-                        ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
-                        || !signUpForm.userName.$valid  || !signUpForm.email.$valid
-                        || !signUpForm.password.$valid || !signUpForm.confirmPassword.$valid
-                        || !termsAndConditionsChecked  || !termsAndConditionsChecked || isProcessing">
-                    Sign Up
-                </button>
-            </div>
-
-        </form>
-    </div>
-</script>
-
-
-<script type="text/ng-template" id="signUpSuccess.html">
-    <div class="modal-content">
-
-        <div class="modal-header">
-            <h4 class="modal-title">Check Your Email</h4>
         </div>
 
-        <div class="modal-body">
-            <div>
-                   ALMOST DONE!
+        <div class='col-md-5'>
+            <div class="ndex-citation-landing-page">Cite NDEx: Pratt <em>et al.</em>
+                <a href="http://dx.doi.org/10.1016/j.cels.2015.10.001" target="_blank">
+                    NDEx, the Network Data Exchange.
+                </a>
                 <br>
-                   We sent a verification link to the e-mail address you provided.
-                   Please check your email and follow the instructions to complete your registration.
-                   You must complete your registration within 24 hours.
-                   Can't find the email? Make sure to check your
-                   SPAM folder and add "support@ndexbio.org" to your safe-senders list.
+                Cell Systems, Volume 1, Issue 4, 302-305 (2015).
             </div>
         </div>
+    </div>
 
-        <div class="modal-footer">
-            <button class="btn btn-default" ng-click="signIn.cancelSignUp()">Close</button>
-        </div>
+</div>
 
-    </div>
-</script>
-
-<script type="text/ng-template" id="forgotPassword.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Forgot Password?</h3>
-    </div>
-    <div class="modal-body">
-        <form ng-show="!forgot.done" ng-submit="resetPassword()" role="form">
-            <div class="form-group">
-                <input class="form-control" placeholder="Account Name" required ng-model="forgot.userName"/>
-            </div>
-            <div class="AlignRight">
-                <button class="btn btn-primary" type="submit">Reset Password</button>
-            </div>
-        </form>
-        <div class='text-danger'>
-            <strong> {{forgot.errorMsg}} </strong>
-        </div>
-        <div class='text-success'>
-            <strong> {{forgot.successMsg}} </strong>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button ng-show="!forgot.done" class="btn btn-danger" ng-click="cancel()">Cancel</button>
-        <button id="forgotPasswordDoneButton" ng-show="forgot.done" class="btn btn-primary" ng-click="cancel()">Done</button>
-    </div>
-</script>
--->
 
 <script type="text/ng-template" id="quoteNDEx.html">
     <div class="modal-content">

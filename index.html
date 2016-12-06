@@ -137,11 +137,11 @@
 <body ng-controller="mainController" style="padding-bottom: 20em;height: 100%;">
 
 <!-- template for search bar -->
-<script type="text/ng-template" id="search_bar.html">
+<script type="text/ng-template" id=" search_bar.html">
     <div class="" style="background-color:white; color:black; padding-top:0px; padding-bottom:15px; ">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-
               ng-submit="main.search()">
+
             <div class="input-group">
                 <div class="input-group-btn dropdown" style="padding-right:20px;">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="border-radius: 5px;">
@@ -352,14 +352,6 @@
         </div>
 
     </div>
-
-    <!-- Include the search bar --
-    <div class="marginsForNGView" ng-hide="true" style="background-color: white;  ">
-        <div style="max-width: 1000px; margin-left: auto; margin-right: auto;">
-            <ng-include src="'search_bar.html'"></ng-include>
-        </div>
-    </div>
-    -->
 
 </nav>
 
