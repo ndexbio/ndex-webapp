@@ -16,11 +16,11 @@
             <button type="button" class="btn btn-primary" ng-click="switchView()">{{buttonLabel}}</button>
 
             <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}" ng-show="currentView == 'Graphic'">
+                <div id="spinner"></div>
                 <div id="messageOverlay"
                      style="float:left; vdisplay: inline-block; position: absolute; top: 40px; left: 40px;font-size: 1.5em; color: #FF0000"
                    ng-show="networkController.isSample">(Showing top {{networkController.displayLimit}} edges)</div>
             </div>
-
             <tabset ng-show="currentView == 'Table'">
                 <tab heading="Edges" ng-click="edgeGridApi.core.handleWindowResize()">
                     <div id="edgeGrid" ui-grid="edgeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
