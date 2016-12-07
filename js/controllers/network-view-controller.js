@@ -73,6 +73,8 @@ ndexApp.controller('networkViewController',
 
             var localNetwork = undefined;
 
+            var spinner = undefined;
+
             $scope.showEdgeCitations = function(edgeKey)
             {
                 if (localNetwork && localNetwork.edgeCitations && localNetwork.edgeCitations[edgeKey])
@@ -1023,6 +1025,7 @@ ndexApp.controller('networkViewController',
 
                         ready: function () {
                             window.cy = this;
+                            stopSpinner();
                         }
                     });
 
@@ -1308,9 +1311,15 @@ ndexApp.controller('networkViewController',
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
-                var hasLayout = networkService.getNetworkProperty('hasLayout') || networkController.subNetworkId != null;
-                if ( hasLayout == undefined )
-                    hasLayout = false;
+                var hasLayout = networkService.getNetworkProperty(networkController.subNetworkId,'hasLayout');
+
+                if ( hasLayout == undefined ) {
+                    if ( networkController.subNetworkId != null)
+                        hasLayout = true;
+                    else
+                        hasLayout = false;
+
+                }
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
                     (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
@@ -1664,6 +1673,7 @@ ndexApp.controller('networkViewController',
             };
 
             networkController.queryNetworkAndDisplay = function () {
+                startSpinner();
                 var edgeLimit = config.networkQueryLimit;
                 networkService.neighborhoodQuery(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
@@ -1704,6 +1714,7 @@ ndexApp.controller('networkViewController',
                     )
                     .error(
                         function (error) {
+                            stopSpinner();
                             if (error.status != 0) {
                                 if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {
@@ -2189,6 +2200,45 @@ ndexApp.controller('networkViewController',
             };
 
 
+            var startSpinner = function () {
+                // please see more info about this spinner at http://spin.js.org/
+                if (!spinner) {
+                    var opts = {
+                        lines: 11 // The number of lines to draw
+                        , length: 19 // The length of each line
+                        , width: 13 // The line thickness
+                        , radius: 26 // The radius of the inner circle
+                        , scale: 0.5 // Scales overall size of the spinner
+                        , corners: 1 // Corner roundness (0..1)
+                        , color: '#fff' // #rgb or #rrggbb or array of colors
+                        , opacity: 0.25 // Opacity of the lines
+                        , rotate: 11 // The rotation offset
+                        , direction: 1 // 1: clockwise, -1: counterclockwise
+                        , speed: 0.6 // Rounds per second
+                        , trail: 100 // Afterglow percentage
+                        , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+                        , zIndex: 2e9 // The z-index (defaults to 2000000000)
+                        , className: 'spinner' // The CSS class to assign to the spinner
+                        , top: '50%' // Top position relative to parent
+                        , left: '51%' // Left position relative to parent
+                        , shadow: true // Whether to render a shadow
+                        , hwaccel: false // Whether to use hardware acceleration
+                        , position: 'absolute' // Element positioning
+                    }
+
+                    var target = document.getElementById('spinner')
+                    spinner = new Spinner(opts).spin(target);
+
+                } else {
+                    var target = document.getElementById('spinner')
+                    spinner.spin(target);
+                }
+            }
+
+            var stopSpinner = function() {
+                spinner.stop();
+            }
+
 
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
@@ -2198,6 +2248,8 @@ ndexApp.controller('networkViewController',
 
             $("#cytoscape-canvas").height($(window).height() - 222);
             $("#divNetworkTabs").height($(window).height() - 185);
+            
+            startSpinner();
 
             hideSearchMenuItem();
 

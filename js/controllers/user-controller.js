@@ -367,8 +367,7 @@ ndexApp.controller('userController',
                         // get IDs of all networks shown on User page
                         getNetworksUUIDs(networks);
 
-
-                        if (userController.userPageNetworksUUIDs.length > 0) {
+                        if ((userController.userPageNetworksUUIDs.length > 0) && loggedInUserId) {
                             // get permissions of all networks for the logged in user
                             ndexService.getUserNetworkPermissionsV2(loggedInUserId, 'READ', 0, 1000000, directOnly,
                                 function (networkPermissionsMap) {

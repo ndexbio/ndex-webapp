@@ -614,17 +614,17 @@ ul.ndex-nav-pills > li > a:hover {
 }
 
 .ndex-citation-landing-page {
-    font-size:18px;
+    font-size: 1.1em;
     line-height:1.5;
-    margin:2em;
-    text-align: center;
-    padding-top: 2em;
+    /*margin:2em;*/
+    text-align: right;
+    padding-top: 1em;
 }
 
 .ndex-featured-collections {
-    font-size:14px;
-    line-height:1.5;
-    margin:2em;
+    /*font-size:1.1em;*/
+    line-height:1.5em;
+    margin:1em;
     text-align: center;
 }
 
@@ -763,3 +763,14 @@ ul.ndex-nav-pills > li > a:hover {
 .grid-align-cell {
     text-align: center;
 }
+
+
+#logos-citation-above-footer {
+    bottom: 3em;
+    position: fixed;
+
+    width: 80%;
+    margin: 0 0 0 -40%;
+    left: 50%;
+}
+
