@@ -2448,7 +2448,7 @@
                 successCall: "&"
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
+            templateUrl: 'pages/directives/warningModal.html',
             transclude: true,
             controller: function($scope, $modal, $location, ndexService) {
 

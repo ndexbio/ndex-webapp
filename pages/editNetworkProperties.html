@@ -148,13 +148,15 @@
 						   ng-readonly='!(editor.isAdmin || editor.canEdit)'
 						   typeahead-focus >
 						   -->
-				<span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;"><i class="fa fa-link" style="width: 1px; color: white;" aria-hidden="true"></i></span>
+					<span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;" ng-show="property.predicateString != 'custom...'"> </span>
+					<!--<span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;"><i class="fa fa-link" style="width: 1px; color: white;" aria-hidden="true"></i></span>-->
 					<input class="form-control input-sm" ng-show="property.predicateString == 'custom...'"
 					   type="text"
-					   placeholder="Custom Type..."
+					   placeholder="Enter Custom Type..."
 					   ng-model='property.predicateStringCustom'
 					   ng-model="selected"
 					   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+					<span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;" ng-show="property.predicateString == 'custom...'"> </span>
 
 				</div>
 

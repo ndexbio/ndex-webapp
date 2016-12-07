@@ -116,16 +116,6 @@ ndexApp.controller('manageNetworkAccessController',
 		var return_dict = {'adminIssue': false, 'issueSeverity': 'none'};
 		var userId = sharedProperties.getCurrentUserId();
 
-		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
-			var accessObj = networkManager.originalAccessPermissions[i];
-			if(accessObj["memberUUID"] === userId){
-				if (networkManager.accessWasRemoved(accessObj)) {
-					return_dict['adminIssue'] = true;
-					return_dict['issueSeverity'] = 'WARNING';
-					return return_dict;
-				}
-			}
-		}
 		var multiple_admin_count = 0;
 		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
 			if(networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions == 'ADMIN'){
@@ -143,6 +133,16 @@ ndexApp.controller('manageNetworkAccessController',
 			return return_dict;
 		}
 
+		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
+			var accessObj = networkManager.originalAccessPermissions[i];
+			if(accessObj["memberUUID"] === userId){
+				if (networkManager.accessWasRemoved(accessObj)) {
+					return_dict['adminIssue'] = true;
+					return_dict['issueSeverity'] = 'WARNING';
+					return return_dict;
+				}
+			}
+		}
 		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
 
 			if (accessObj.memberUUID ===

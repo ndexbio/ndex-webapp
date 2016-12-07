@@ -14,15 +14,34 @@ ndexApp.filter('encodeURIComponent', function() {
 });
 
 //Internet Explorer solution???
-ndexApp.service('authInterceptor', function($q, $location) {
-    var service = this;
-
-    service.responseError = function(response) {
-        if (response.status == 401){
-            $location.path('/signIn').search('returnTo', $location.path());;
+ndexApp.service('authInterceptor', function($q, $rootScope, $location) {
+    return {
+        request: function (config) {
+            return config || $q.when(config);
+        },
+        requestError: function(request){
+            return $q.reject(request);
+        },
+        response: function (response) {
+            return response || $q.when(response);
+        },
+        responseError: function (response) {
+            if (response.status == 401){
+                $location.path('/signIn').search('returnTo', $location.path());;
+            }
+            return $q.reject(response);
         }
-        return $q.reject(response);
     };
+
+
+//    var service = this;
+
+//    service.responseError = function(response) {
+ //       if (response.status == 401){
+ //           $location.path('/signIn').search('returnTo', $location.path());;
+ //       }
+  //      return $q.reject(response);
+    //};
 }).config(['$httpProvider', function ($httpProvider) {
 
     //First, test if this is IE. If it is not, don't mess with caching.
