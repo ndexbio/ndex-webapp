@@ -207,13 +207,13 @@ ndexApp.controller('networkViewController',
 
 
             $scope.currentView = "Graphic";
-            $scope.buttonLabel = "Go To Table View"
+            $scope.buttonLabel = "Table View"
 
             $scope.switchView = function() {
                 if ($scope.currentView == "Graphic") {
                     // switch to table view
                     $scope.currentView = "Table";
-                    $scope.buttonLabel = "Go To Graphic View"
+                    $scope.buttonLabel = "Graph View"
 
                     var enableFiltering = true;
                     var setGridWidth = true;
@@ -231,7 +231,7 @@ ndexApp.controller('networkViewController',
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
                     $scope.currentView = "Graphic";
-                    $scope.buttonLabel = "Go To Table View"
+                    $scope.buttonLabel = "Table View"
                 }
             }
 

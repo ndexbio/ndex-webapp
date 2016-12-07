@@ -83,6 +83,7 @@
                     &nbsp;
                 </form>
 
+                <!--
                 <span class="pull-left" style="margin-top:0.5em" ng-show="!hideAdvancedSearchLink">
                     <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
                         <u>Advanced Query</u>
@@ -91,6 +92,11 @@
                 <span class="pull-left" style="margin-top:0.5em; color:#999999;" ng-show="hideAdvancedSearchLink">
                     <u>Advanced Query</u>
                 </span>
+                -->
+                <a class="pull-left" style="margin-top:0.5em; color:#999999; cursor: not-allowed">
+                    Advanced Query
+                    <img src="img/coming_soon.png">
+                </a>
 
             </div>
         </div>
@@ -253,6 +259,13 @@
                                        ng-click="setReturnView('newNetwork/')">
                                         Add / Edit Properties
                                     </a>
+                                    <a class='btn-link'
+                                       style="margin-top:0.5em; color:#999999; cursor: not-allowed"
+                                       ng-if="networkController.currentNetwork.subnetworkIds.length > 1">
+                                        Add / Edit Properties
+                                        <img src="img/coming_soon.png">
+                                    </a>
+
                                 </h5>
 
                             </div>
