@@ -89,6 +89,7 @@
 		  <div class="form-group" ng-repeat='property in editor.propertyValuePairs'>
 		    <div class="col-sm-offset-1 col-sm-5">
 		    	<div class='input-group'>
+					<!--
 			    	<div class='input-group-btn dropdown'>
 			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'
 								data-toggle="dropdown"
@@ -105,6 +106,7 @@
                             </li>
                         </ul>
 			    	</div>
+					-->
 
 					<!--<input class="form-control input-sm"
 						   type="text"
@@ -117,8 +119,25 @@
 						   typeahead-on-select='editor.changed($index, property.predicateString, property)'
 						   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 -->
+					<!--<div class="input-group-btn">
+						<button type="button" class="btn btn-default dropdown-toggle input-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
+						<ul class="dropdown-menu" ng-model='property.predicateString'>
+							<li><a href="#">Action</a></li>
+							<li><a href="#">Another action</a></li>
+							<li><a href="#">Something else here</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+					</div> -->
 
-					<input class="form-control input-sm"
+
+						<select class="form-control input-sm" ng-options="item as item for item in namesForSolrIndexing" ng-model="property.predicateString"
+								ng-change='editor.changed($index, property.predicateString, property)'
+								ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+							<option style="display:none" value="">select a type</option>
+						</select>
+
+					<!--<input class="form-control input-sm"
 						   type="text"
 						   placeholder="Label"
 						   ng-model='property.predicateString'
@@ -128,6 +147,14 @@
 						   typeahead-on-select='editor.changed($index, property.predicateString, property)'
 						   ng-readonly='!(editor.isAdmin || editor.canEdit)'
 						   typeahead-focus >
+						   -->
+				<span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;"><i class="fa fa-link" style="width: 1px; color: white;" aria-hidden="true"></i></span>
+					<input class="form-control input-sm" ng-show="property.predicateString == 'custom...'"
+					   type="text"
+					   placeholder="Custom Type..."
+					   ng-model='property.predicateStringCustom'
+					   ng-model="selected"
+					   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 
 				</div>
 
@@ -138,7 +165,7 @@
 		    </div>
 
 		    <div class="col-sm-5">
-		    	<div class='input-group'>
+		    	<!--<div class='input-group'>
 		    		<div class='input-group-btn dropdown'>
 			    		<button type='button' class='btn btn-sm btn-default dropdown-toggle'
 								data-toggle="dropdown"
@@ -152,11 +179,11 @@
                             </a>
                             </li>
                         </ul>
-			    	</div>
+			    	</div>-->
 			        <input class="form-control input-sm" placeholder="Value" 
 			      	  ng-model='property.value'
 			      	  ng-readonly='!(editor.isAdmin || editor.canEdit) || !(property.predicateString)'>
-		      	</div>
+		      	<!--</div>-->
 
 		    </div>
 
