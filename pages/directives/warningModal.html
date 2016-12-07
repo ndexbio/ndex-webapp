@@ -1,0 +1,35 @@
+<span ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="confirmation-modal.html">
+
+
+	<div class="modal-content">
+		WARNING
+	    <div class="modal-header">
+	        <h4 class="modal-title">{{title}}</h4>
+	    </div>
+
+	    <div class="modal-body">
+			<div>
+				<br>
+				{{message}}
+			</div>
+
+		    <div class='text-danger'>
+			    <strong>{{errors}}</strong>
+            </div>
+
+            <div class='text-success'>
+                <strong>{{progress}}</strong>
+            </div>
+		</div>
+
+		<div class="modal-footer">
+			<button class="btn btn-default" ng-click="cancel()" ng-if="!canProceed">OK</button>
+			<button class="btn btn-default" ng-click="cancel()" ng-if="canProceed">Cancel</button>
+			<button class="btn btn-primary" ng-click="confirm()" ng-disabled="isProcessing" ng-if="canProceed">Confirm</button>
+		</div>
+
+	</div>
+
+</script>

@@ -84,6 +84,11 @@ ndexApp.controller('editNetworkPropertiesController',
                     "cannot be used as predicate.";
                 editor.disableSaveChangesButton = true;
 
+            } else if (value.toLowerCase() === 'custom...' && !property.predicateStringCustom) {
+
+                property.labelError = "Custom field is empty";
+                editor.disableSaveChangesButton = true;
+
             } else {
 
                 property.labelValue = property.predicatePrefix + ":" + property.predicateString;
@@ -224,16 +229,17 @@ ndexApp.controller('editNetworkPropertiesController',
     // They are found in the server's ndexbio-rest/src/main/resources/solr/ndex-networks/conf/schema.xml
     // under the "Collaborator required index fields" comment
     $scope.namesForSolrIndexing = [
-        "organism",
-        "disease",
-        "tissue",
         "author",
-        "methods",
+        "disease",
         "labels",
+        "methods",
+        "organism",
+        "networkType",
         "rights",
         "rightsHolder",
-        "networkType"
+        "tissue"
     ];
+
 
     $scope.namesForSolrIndexingDictionary = {};
 
@@ -295,6 +301,10 @@ ndexApp.controller('editNetworkPropertiesController',
 
 		for(var ii=0; ii<length; ii++){
 			var pair = editor.propertyValuePairs[ii];
+
+            if(pair.predicateString === 'custom...')
+                pair.predicateString = pair.predicateStringCustom;
+
 			if((typeof pair.predicatePrefix !== 'undefined') && (pair.predicatePrefix != 'none') )
 				pair.predicateString = pair.predicatePrefix+':'+pair.predicateString
 
@@ -466,6 +476,9 @@ ndexApp.controller('editNetworkPropertiesController',
                 // "sourceformat" element sent by the  server; we want to make sure we remove them
                 // all in case server by mistake sends multiple "sourceformat" elements.
                 while ( i < arrayLength ) {
+                    if($scope.namesForSolrIndexing.indexOf(editor.propertyValuePairs[i].predicateString) == -1){
+                        $scope.namesForSolrIndexing.push(editor.propertyValuePairs[i].predicateString);
+                    }
                     if ((editor.propertyValuePairs[i].predicateString.toLowerCase() === "sourceformat") ||
                         (editor.propertyValuePairs[i].predicateString.toLowerCase() === "reference")) {
 
@@ -480,7 +493,10 @@ ndexApp.controller('editNetworkPropertiesController',
                     }
                     i = i + 1;
                 }
-
+                if($scope.namesForSolrIndexing.indexOf("custom...") > -1) {
+                    $scope.namesForSolrIndexing.splice($scope.namesForSolrIndexing.indexOf("custom..."))
+                }
+                $scope.namesForSolrIndexing.push("custom...");
 
                 //ndexService.getNetworkNamespaces(networkExternalId,
                 var size = null;
