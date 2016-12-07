@@ -13,13 +13,12 @@
     <div class="col-md-7">
 
         <div class="row">
-            <button type="button" class="btn btn-primary" ng-click="switchView()">{{buttonLabel}}</button>
 
             <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}" ng-show="currentView == 'Graphic'">
                 <div id="spinner"></div>
                 <div id="messageOverlay"
-                     style="float:left; vdisplay: inline-block; position: absolute; top: 40px; left: 40px;font-size: 1.5em; color: #FF0000"
-                   ng-show="networkController.isSample">(Showing top {{networkController.displayLimit}} edges)</div>
+                     style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
+                   ng-show="networkController.isSample">(Sample: {{networkController.displayLimit}} edges)</div>
             </div>
             <tabset ng-show="currentView == 'Table'">
                 <tab heading="Edges" ng-click="edgeGridApi.core.handleWindowResize()">
@@ -99,6 +98,8 @@
 
 
     <div class="col-md-5">
+
+        <button type="button" class="btn btn-primary pull-right" ng-click="switchView()">{{buttonLabel}}</button>
 
         <div id="divNetworkTabs" class="networkPropertiesTabset">
             <tabset>

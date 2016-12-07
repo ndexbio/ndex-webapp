@@ -2210,7 +2210,7 @@ ndexApp.controller('networkViewController',
                         , radius: 26 // The radius of the inner circle
                         , scale: 0.5 // Scales overall size of the spinner
                         , corners: 1 // Corner roundness (0..1)
-                        , color: '#fff' // #rgb or #rrggbb or array of colors
+                        , color: '#ff0000' // #rgb or #rrggbb or array of colors
                         , opacity: 0.25 // Opacity of the lines
                         , rotate: 11 // The rotation offset
                         , direction: 1 // 1: clockwise, -1: counterclockwise
@@ -2246,7 +2246,7 @@ ndexApp.controller('networkViewController',
 
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            $("#cytoscape-canvas").height($(window).height() - 222);
+            $("#cytoscape-canvas").height($(window).height() - 185);
             $("#divNetworkTabs").height($(window).height() - 185);
             
             startSpinner();
