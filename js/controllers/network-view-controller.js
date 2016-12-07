@@ -207,13 +207,13 @@ ndexApp.controller('networkViewController',
 
 
             $scope.currentView = "Graphic";
-            $scope.buttonLabel = "Switch To Table View"
+            $scope.buttonLabel = "Go To Table View"
 
             $scope.switchView = function() {
                 if ($scope.currentView == "Graphic") {
                     // switch to table view
                     $scope.currentView = "Table";
-                    $scope.buttonLabel = "Switch To Graphic View"
+                    $scope.buttonLabel = "Go To Graphic View"
 
                     var enableFiltering = true;
                     var setGridWidth = true;
@@ -231,7 +231,7 @@ ndexApp.controller('networkViewController',
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
                     $scope.currentView = "Graphic";
-                    $scope.buttonLabel = "Switch To Table View"
+                    $scope.buttonLabel = "Go To Table View"
                 }
             }
 
@@ -2246,8 +2246,8 @@ ndexApp.controller('networkViewController',
 
             networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-            $("#cytoscape-canvas").height($(window).height() - 185);
-            $("#divNetworkTabs").height($(window).height() - 185);
+            $("#cytoscape-canvas").height($(window).height() - 200);
+            $("#divNetworkTabs").height($(window).height() - 200);
             
             startSpinner();
 

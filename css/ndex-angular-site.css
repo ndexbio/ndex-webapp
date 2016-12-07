@@ -717,11 +717,11 @@ ul.ndex-nav-pills > li > a:hover {
     font-size: 1.1em;
     font-weight: bold;
 
-    line-height: 1;
+    line-height: 1em;
 }
 
 .actionsLabel {
-    margin-bottom: 10px;
+    margin-bottom: 4px;
 }
 
 .wrappedCell {
