@@ -162,7 +162,7 @@
     <div class="col-md-10" ng-show="myAccountController.displayedUser">
 
         <tabset justified="false">
-            <tab heading="Networks">
+            <tab heading="My Networks">
                 <!-- adding ui-grid-auto-resize fixes the issue of distorted Networks Tab (NDEX-578).
                  Resolution is described here: http://ui-grid.info/docs/#/tutorial/108_hidden_grids
                  The use ng-if="tabShown" ... described on the page above introduces another issue:
@@ -181,7 +181,7 @@
                 </div>
             </tab>
 
-            <tab heading="Groups">
+            <tab heading="My Groups">
                 <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
@@ -252,7 +252,7 @@
                  1) user is logged in (it is not an anonymous search), and
                  2) selected user is the same as the one who logged in.  In other words, this tab will be hidden if
                  a user logged in as say "aaa" and gets networks for user "bbb" --->
-            <tab heading="Tasks & Notifications"
+            <tab heading="My Tasks & Notifications"
                  ng-show="(myAccountController.isLoggedInUser) && (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)"
                  disabled="myAccountController.tasksNotificationsTabDisabled()">
 
