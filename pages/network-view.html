@@ -642,10 +642,7 @@
 
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
             <span>
-                <!--
-                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="background-color: #8064A2;">{{buttonLabel}}</button>
-                -->
-                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="background-color: #87CEEB;">{{buttonLabel}}</button>
+                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="border: 5px double white;">{{buttonLabel}}</button>
             </span>
 
             <span ng-show='networkController.isLoggedIn &&
@@ -678,22 +675,22 @@
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
                             privileges='networkController.privilegeLevel'>
-                        Ask for More Access!
+                        Upgrade Permission
                     </create-request-network>
                 </a>
             </span>
 
             <span ng-show='networkController.isLoggedIn && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
-                <a class="actionsLabel btn btn-primary customButtonWidth">
+                <a class="actionsLabel btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
                             privileges='networkController.privilegeLevel'>
-                        Ask for Access Privileges!
+                        Upgrade Permission
                     </create-request-network>
                 </a>
             </span>
 
-            <span ng-show='networkController.isLoggedIn && networkController.isAdmin'>
+            <span ng-show='networkController.isLoggedIn && networkController.isAdmin' title="Request Read, Edit or Admin privilege">
                 <a class="actionsLabel btn btn-primary"
                    ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                         Manage Access

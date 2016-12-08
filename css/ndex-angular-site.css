@@ -774,3 +774,7 @@ ul.ndex-nav-pills > li > a:hover {
     left: 50%;
 }
 
+.btn {
+    border-radius: 24px;
+    outline:none !important;
+}
