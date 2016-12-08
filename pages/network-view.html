@@ -639,7 +639,10 @@
 
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
             <span>
-                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()">{{buttonLabel}}</button>
+                <!--
+                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="background-color: #8064A2;">{{buttonLabel}}</button>
+                -->
+                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="background-color: #87CEEB;">{{buttonLabel}}</button>
             </span>
 
             <span ng-show='networkController.isLoggedIn &&
