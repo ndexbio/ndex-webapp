@@ -56,17 +56,18 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
         factory.getProvenanceTitle = function()
         {
-            if( typeof provenance == 'undefined' )
-                return "";
-            if( provenance.properties == null )
-                return provenance.uri;
+            var untitled = "Untitled Network";
+
+            if( typeof provenance == 'undefined' || provenance.properties == null )
+                return untitled;
+
             for( var i = 0; i < provenance.properties.length; i++ )
             {
                 var p = provenance.properties[i];
                 if(p.name.toLowerCase() == "dc:title")
                     return p.value;
             }
-            return provenance.uri;
+            return untitled; //provenance.uri;
         };
 
 
