@@ -153,7 +153,7 @@
                             Users, and Groups:
                         </li>
                         <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchAllExamples">
-                            <a ng-click="main.runSearchExample(item)">
+                            <a ng-click="main.runSearchExample(item); closeModal()">
                                 {{item.description}}
                             </a>
                         </li>
@@ -163,7 +163,7 @@
                         <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Users:
                         </li>
                         <li class="AlignLeft" style="padding-left: 5px;" ng-repeat="item in main.searchUsersExamples">
-                            <a ng-click="main.runSearchExample(item)">
+                            <a ng-click="main.runSearchExample(item); closeModal()">
                                 {{item.description}}
                             </a>
                         </li>
@@ -173,7 +173,7 @@
                         <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Networks:</li>
                         <li class="AlignLeft" style="padding-left: 5px;"
                             ng-repeat="item in main.searchNetworksExamples">
-                            <a ng-click="main.runSearchExample(item)">
+                            <a ng-click="main.runSearchExample(item); closeModal()">
                                 {{item.description}}
                             </a>
                         </li>
@@ -181,14 +181,15 @@
                         <li class="divider"></li>
 
                         <li class="AlignLeft" ng-show="config.searchDocLink">
-                            <a style="color:#428bca; background-color:white;" ng-click="redirectToExternalLink(config.searchDocLink)"><u>{{config.searchDocLink.label}}</u>
+                            <a style="color:#428bca; background-color:white;" ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
+                                <u>{{config.searchDocLink.label}}</u>
                             </a>
                         </li>
                     </ul>
                 </div>
 
                 <div class="input-group-btn" style="padding-right:20px;">
-                    <button type="button" ng-click="main.browse()" class="btn btn-default">Browse</button>
+                    <button type="button" ng-click="main.browse(); closeModal()" class="btn btn-default">Browse</button>
                 </div>
 
                 <div class="input-group-btn dropdown AlignLeft">
