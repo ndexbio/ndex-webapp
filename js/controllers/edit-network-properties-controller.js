@@ -64,7 +64,7 @@ ndexApp.controller('editNetworkPropertiesController',
 		if((index == (editor.propertyValuePairs.length - 1)) && (value.trim().length > 0)) {
 
             if ((!action) || (action.toLowerCase() !== 'del')) {
-                editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none', predicateString: "", value: ""});
+                editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none', predicateString: "", value: "", isReadOnlyLabel: false});
             }
         }
 
@@ -476,8 +476,13 @@ ndexApp.controller('editNetworkPropertiesController',
                 // "sourceformat" element sent by the  server; we want to make sure we remove them
                 // all in case server by mistake sends multiple "sourceformat" elements.
                 while ( i < arrayLength ) {
+                    editor.propertyValuePairs[i].isReadOnlyLabel = true;
+
                     if($scope.namesForSolrIndexing.indexOf(editor.propertyValuePairs[i].predicateString) == -1){
-                        $scope.namesForSolrIndexing.push(editor.propertyValuePairs[i].predicateString);
+                        //$scope.namesForSolrIndexing.push(editor.propertyValuePairs[i].predicateString);
+                    } else {
+                        var dropdownIndex = $scope.namesForSolrIndexing.indexOf(editor.propertyValuePairs[i].predicateString);
+                        $scope.namesForSolrIndexing.splice(dropdownIndex, 1);
                     }
                     if ((editor.propertyValuePairs[i].predicateString.toLowerCase() === "sourceformat") ||
                         (editor.propertyValuePairs[i].predicateString.toLowerCase() === "reference")) {

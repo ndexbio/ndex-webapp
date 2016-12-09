@@ -130,12 +130,20 @@
 						</ul>
 					</div> -->
 
+					<input class="form-control input-sm"
+						   ng-if="property.isReadOnlyLabel"
+						   type="text"
+						   placeholder="Label"
+						   disabled
+						   ng-model='property.predicateString'>
 
-						<select class="form-control input-sm" ng-options="item as item for item in namesForSolrIndexing" ng-model="property.predicateString"
-								ng-change='editor.changed($index, property.predicateString, property)'
-								ng-readonly='!(editor.isAdmin || editor.canEdit)'>
-							<option style="display:none" value="">select a type</option>
-						</select>
+					<!--<div ng-if="property.isReadOnlyLabel" class="btn btn-default btn-sm">{{property.predicateString}}</div>-->
+
+					<select ng-if="!property.isReadOnlyLabel" class="form-control input-sm" ng-options="item as item for item in namesForSolrIndexing" ng-model="property.predicateString"
+							ng-change='editor.changed($index, property.predicateString, property)'
+							ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+						<option style="display:none" value="">select a type</option>
+					</select>
 
 					<!--<input class="form-control input-sm"
 						   type="text"
