@@ -36,8 +36,6 @@ ndexApp.controller('userController',
             //tasks
             userController.tasks = [];
 
-            userController.showAskForMoreAccessButton = false;
-
             userController.userPageNetworksUUIDs = [];
             userController.loggedInUsersNetworkPermissionsMap = {};
 
@@ -66,15 +64,10 @@ ndexApp.controller('userController',
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
-
-                        showOrHideAskforMoreAccessButton();
-
                     });
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
-
-                        showOrHideAskforMoreAccessButton();
                     });
 
                 }
@@ -130,14 +123,14 @@ ndexApp.controller('userController',
 
                 return markDownFinal;
             };
-            
-            var showOrHideAskforMoreAccessButton = function() {
+
+            userController.getUUIDsOfNetworksForSendingPermissionRequests = function() {
+                var UUIDs = [];
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
                 if (selectedNetworksRows.length == 0) {
                     // nothing is selected (all rows un-selected)
-                    userController.showAskForMoreAccessButton = false;
-                    return;
+                    return UUIDs;
                 }
 
                 var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
@@ -147,30 +140,35 @@ ndexApp.controller('userController',
                     var ownerUUID = selectedNetworksRows[i].ownerUUID;
 
                     if (ownerUUID == loggedInUserId) {
-                        // if there is at least one network owned by Logged In User (s)he selected
-                        // on a Users page, we do not show the Ask For More Access button.
-                        userController.showAskForMoreAccessButton = false;
-                        return;
+                        // if this network is owned by Logged In User, do not send permission request for this
+                        // network ( .e., skip it)
+                        continue;
                     }
 
                     if (networkUUID in userController.loggedInUsersNetworkPermissionsMap) {
                         var permission = userController.loggedInUsersNetworkPermissionsMap[networkUUID];
 
                         if (permission && (permission.toUpperCase()=="WRITE" || (permission.toUpperCase()=="ADMIN"))) {
-                            // if there is at least one network among selected networks on the User page where
+                            // if this is a network among selected networks on the User page where
                             // Logged In User has WRITE or ADMIN privileges (there should be no networks with ADMIN
                             // privilege for the logged in user on a User page though),
-                            // we do not show the Ask For More Access button.
-                            userController.showAskForMoreAccessButton = false;
-                            return;
+                            // do not send permission request for this network ( .e., skip it)
+                            continue;
                         }
                     }
+
+                    UUIDs.push(
+                        {
+                            'networkUUID': networkUUID,
+                            'owner': selectedNetworksRows[i]['Owned By'],
+                            'name': selectedNetworksRows[i]['name']
+                        });
                 }
 
-                userController.showAskForMoreAccessButton = true;
+                return UUIDs;
             }
 
-            
+
             var refreshNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];

@@ -896,11 +896,10 @@
 
                     var requestType =  $scope.selected.account.accountType;
 
-                    var UUIDsOfSelectedNetworks = $scope.ndexData.getIDsOfSelectedNetworks();
-
+                    var UUIDsOfSelectedNetworks = $scope.ndexData.getUUIDsOfNetworksForSendingPermissionRequests();
 
                     for (var i = 0; i < UUIDsOfSelectedNetworks.length; i++) {
-                        var networkUUID = UUIDsOfSelectedNetworks[i];
+                        var networkUUID = UUIDsOfSelectedNetworks[i]['networkUUID'];
                         if (requestType == 'user') {
 
                             // Create a request to ask a network permission for the authenticated user.
@@ -911,6 +910,9 @@
                             }
 
                             var userUUID = $scope.selected.account.externalId;
+
+                            $scope.request.progress = "Sending " + $scope.request.permission +
+                                " permission request for network " + UUIDsOfSelectedNetworks[i]['name'];
 
                             ndexService.createUserPermissionRequestV2(userUUID, userPermissionRequest,
                                 function(data) {
@@ -926,11 +928,14 @@
 
                             // Create a request to ask a network permission for a group.
                             var groupPermissionRequest = {
-                                "networkid": $scope.networkUUID,
+                                "networkid": networkUUID,
                                 "permission": $scope.request.permission,
                                 "message": $scope.request.message,
                             }
                             var groupUUID = $scope.selected.account.externalId;
+
+                            $scope.request.progress = "Sending " + $scope.request.permission +
+                                " permission request for network " + UUIDsOfSelectedNetworks[i]['name'];
 
                             ndexService.createGroupPermissionRequestV2(groupUUID, groupPermissionRequest,
                                 function(data) {
