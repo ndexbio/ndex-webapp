@@ -488,7 +488,13 @@ ndexApp.controller('editNetworkPropertiesController',
     ndexService.getNetworkSummaryV2(networkExternalId)
         .success(
             function(network) {
-                editor.propertyValuePairs = network.properties;
+                //editor.propertyValuePairs = network.properties;
+                editor.propertyValuePairs = [];
+                for(var i=0; i< network.properties.length; i++){
+                  if(["description", "version", "description"].indexOf(network.properties[i].predicateString) === -1){
+                      editor.propertyValuePairs.push(network.properties[i])
+                  }
+                }
 
                 var arrayLength = editor.propertyValuePairs.length;
                 var i = 0;
