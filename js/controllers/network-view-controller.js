@@ -65,6 +65,8 @@ ndexApp.controller('networkViewController',
                 {'heading': 'Advanced Query', 'hidden': true, 'active': false}
             ];
 
+            networkController.queryWarnings = [];
+
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroudColor = function () {
@@ -1715,6 +1717,10 @@ ndexApp.controller('networkViewController',
                                 localNetwork = networkService.getNiceCX();
                                 populateNodeTable(localNetwork, enableFiltering, setGridWidth);
                                 populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                            }
+
+                            if (networkController.currentNetwork.nodeCount == 0) {
+                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
                             }
                         }
                     )

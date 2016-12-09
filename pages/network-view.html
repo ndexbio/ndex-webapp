@@ -41,6 +41,16 @@
                 </p>
             </div>
 
+            <div ng-show="networkController.queryWarnings.length > 0">
+                <p class="alert alert-success" ng-repeat='warning in networkController.queryWarnings'>
+                    {{warning}}
+                    <span class="glyphicon glyphicon-remove pull-right"
+                          style='cursor:pointer'
+                          ng-click='networkController.queryWarnings.splice($index,1)'>
+                    </span>
+                </p>
+            </div>
+
             <button type="button"
                     class="btn btn-primary"
                     ng-click="networkController.backToOriginalNetwork()"
