@@ -42,7 +42,7 @@ ndexApp.controller('searchNetworksController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: 'Status', enableFiltering: true, width: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false},
                     { field: 'Network Name', enableFiltering: true, minWidth: 390,
                         cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: 'Format', enableFiltering: true, minWidth: 70 },

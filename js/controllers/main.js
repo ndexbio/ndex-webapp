@@ -47,7 +47,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.showViewMenus = false;
         
         // do not show Search anywhere except on New Network Page
-        // This value gets set to true when we load New Network page (in netwrok-view-controller.js), 
+        // This value gets set to true when we load New Network page (in network-view-controller.js),
         // and gets set back to false before we navigate away from New Network.
         $scope.showSearchMenu = false;
 

@@ -1031,7 +1031,7 @@
                 $scope.modal = {};
 
                 $scope.openMe = function() {
-                    $scope.networkExportFormat = "CX";
+                    $scope.networkExportFormat = "CX compressed (.gz)";
 
                     modalInstance = $modal.open({
                         templateUrl: 'export-network-modal.html',
@@ -1052,6 +1052,9 @@
                     $scope.isProcessing = true;
 
                     var networkExportFormat = $scope.networkExportFormat;
+                    if ('CX compressed (.gz)' == networkExportFormat) {
+                        networkExportFormat = 'CX';
+                    }
                     var networkUUIDsList = [];
                     networkUUIDsList.push($scope.externalId);
 
@@ -1102,7 +1105,7 @@
                 $scope.title = 'Export Selected Networks';
 
                 $scope.openMe = function() {
-                    $scope.networkExportFormat = "CX";
+                    $scope.networkExportFormat = "CX compressed (.gz)";
 
                     modalInstance = $modal.open({
                         templateUrl: 'bulk-export-network-modal.html',
@@ -1130,6 +1133,9 @@
                     var networkUUIDsList = accountController.getIDsOfSelectedNetworks();
 
                     var networkExportFormat = $scope.networkExportFormat;
+                    if ('CX compressed (.gz)' == networkExportFormat) {
+                        networkExportFormat = 'CX';
+                    }
 
                     ndexService.exportNetworksV2(networkExportFormat, networkUUIDsList,
                         function(data) {

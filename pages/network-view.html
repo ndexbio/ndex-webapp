@@ -13,13 +13,12 @@
     <div class="col-md-7">
 
         <div class="row">
-            <button type="button" class="btn btn-primary" ng-click="switchView()">{{buttonLabel}}</button>
 
             <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}" ng-show="currentView == 'Graphic'">
                 <div id="spinner"></div>
                 <div id="messageOverlay"
-                     style="float:left; vdisplay: inline-block; position: absolute; top: 40px; left: 40px;font-size: 1.5em; color: #FF0000"
-                   ng-show="networkController.isSample">(Showing top {{networkController.displayLimit}} edges)</div>
+                     style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
+                   ng-show="networkController.isSample">(Sample: {{networkController.displayLimit}} edges)</div>
             </div>
             <tabset ng-show="currentView == 'Table'">
                 <tab heading="Edges" ng-click="edgeGridApi.core.handleWindowResize()">
@@ -84,6 +83,7 @@
                     &nbsp;
                 </form>
 
+                <!--
                 <span class="pull-left" style="margin-top:0.5em" ng-show="!hideAdvancedSearchLink">
                     <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
                         <u>Advanced Query</u>
@@ -92,6 +92,11 @@
                 <span class="pull-left" style="margin-top:0.5em; color:#999999;" ng-show="hideAdvancedSearchLink">
                     <u>Advanced Query</u>
                 </span>
+                -->
+                <a class="pull-left" style="margin-top:0.5em; color:#999999; cursor: not-allowed">
+                    Advanced Query
+                    <img src="img/coming_soon.png">
+                </a>
 
             </div>
         </div>
@@ -254,6 +259,13 @@
                                        ng-click="setReturnView('newNetwork/')">
                                         Add / Edit Properties
                                     </a>
+                                    <a class='btn-link'
+                                       style="margin-top:0.5em; color:#999999; cursor: not-allowed"
+                                       ng-if="networkController.currentNetwork.subnetworkIds.length > 1">
+                                        Add / Edit Properties
+                                        <img src="img/coming_soon.png">
+                                    </a>
+
                                 </h5>
 
                             </div>
@@ -398,32 +410,35 @@
                             <span ng-show="networkController.displayProvenance.webapp_url">
                                 <a target="_blank" href="{{networkController.displayProvenance.webapp_url}}">
                                     <span ng-bind="getProvenanceTitle(networkController.displayProvenance)"></span>
-                                </a><br/>
+                                </a><br>
                             </span>
                             <span ng-show="!networkController.displayProvenance.webapp_url">
-                                {{getProvenanceTitle()}}<br/>
+                                {{getProvenanceTitle()}}<br/><br/>
                             </span>
                             <span ng-show="(networkController.displayProvenance.properties == null ? 0 : networkController.displayProvenance.properties.length) > 0">
                                 <table style="width:100%">
-                                <!--<caption>Entity Properties</caption>-->
-                                <tr><th>Name</th><th>Value</th></tr>
-                                <tr><td>uuid</td><td>{{networkController.displayProvenance.uuid}}</td></tr>
-                                <tr><td>host</td><td>{{networkController.displayProvenance.host}}</td></tr>
+                                    <!--<caption>Entity Properties</caption>-->
+                                    <tr><th>Name</th><th>Value</th></tr>
+                                    <tr><td>uuid</td><td>{{networkController.displayProvenance.uuid}}</td></tr>
+                                    <tr><td>host</td><td>{{networkController.displayProvenance.host}}</td></tr>
 
-                                <tr ng-repeat="property in networkController.displayProvenance.properties">
-                                    <td>
-                                        {{property.name}}
-                                    </td>
-                                    <td class="wrappedCell">
-                                        <span ng-bind-html="property.value"></span>
-                                    </td>
-                                </tr>
+                                    <tr ng-repeat="property in networkController.displayProvenance.properties">
+                                        <td>
+                                            {{property.name}}
+                                        </td>
+                                        <td class="wrappedCell">
+                                            <span ng-bind-html="property.value"></span>
+                                        </td>
+                                    </tr>
 
-                            </table>
-                                                        <br>
+                                </table>
+                                <br>
+                            </span>
 
                             Generated By:
+
                             <b>{{networkController.displayProvenance.creationEvent.eventType}}</b>
+
                             <table style="width:100%">
                                 <!--<caption>Event Properties</caption>-->
                                 <tr>
@@ -457,7 +472,7 @@
                                     </td>
                                 </tr>
                             </table>
-                            </span>
+                            <!--</span> -->
 
 
                         </div>
@@ -594,11 +609,11 @@
 
                                 <button ng-disabled="!networkController.advancedQueryIsValid"
                                         type="submit"
-                                        class="btn btn-primary btn-default">Run Query
+                                        class="actionsLabel btn btn-primary btn-default">Run Query
                                 </button>
 
                                 <button type="button"
-                                        class="btn btn-primary btn-default"
+                                        class="actionsLabel btn btn-primary btn-default"
                                         ng-click="networkController.resetForm()">Reset Query
                                 </button>
                             </div>
@@ -619,19 +634,23 @@
              ng-show="networkController.isLoggedIn && networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
-            <button id="saveQueryButton" class="btn btn-primary customButtonWidth" ng-click="networkController.saveQueryResult()" >
+            <button id="saveQueryButton" class="actionsLabel btn btn-primary customButtonWidth" ng-click="networkController.saveQueryResult()" >
                 Save Query Result
             </button>
 
         </div>
 
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
+            <span>
+                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="border: 5px double white;">{{buttonLabel}}</button>
+            </span>
+
             <span ng-show='networkController.isLoggedIn &&
                         ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
-                <a class="btn btn-primary" style="width: 150px;">
+                <a class="actionsLabel btn btn-primary">
                     <edit-network-summary-modal
                             ndex-data='networkController.currentNetwork' sub-network-id="networkController.subNetworkId">
-                    Edit Network Profile
+                    Edit Profile
                     </edit-network-summary-modal>
                 </a>
             </span>
@@ -642,37 +661,37 @@
                     || networkController.canEdit
                     || networkController.canRead)'>
 
-                    <a class="btn btn-primary" style="width: 120px;">
+                    <a class="actionsLabel btn btn-primary">
                         <export-network
                                 ndex-data='networkController.currentNetwork'>
-                            Export Network
+                            Export
                         </export-network>
                     </a>
             </span>
 
 
             <span ng-show='networkController.isLoggedIn && networkController.canRead'>
-                <a class="btn btn-primary customButtonWidth">
+                <a class="actionsLabel btn btn-primary customButtonWidth">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
                             privileges='networkController.privilegeLevel'>
-                        Ask for More Access!
+                        Upgrade Permission
                     </create-request-network>
                 </a>
             </span>
 
             <span ng-show='networkController.isLoggedIn && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
-                <a class="btn btn-primary customButtonWidth">
+                <a class="actionsLabel btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
                             privileges='networkController.privilegeLevel'>
-                        Ask for Access Privileges!
+                        Upgrade Permission
                     </create-request-network>
                 </a>
             </span>
 
-            <span ng-show='networkController.isLoggedIn && networkController.isAdmin'>
-                <a class="btn btn-primary" style="width: 120px;"
+            <span ng-show='networkController.isLoggedIn && networkController.isAdmin' title="Request Read, Edit or Admin privilege">
+                <a class="actionsLabel btn btn-primary"
                    ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                         Manage Access
                 </a>
@@ -691,7 +710,7 @@
 
             <span ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
                 networkController.numberOfBelNetworkNamespacesAsInt > 0'>
-                <a class="btn btn-primary customButtonWidth">
+                <a class="actionsLabel btn btn-primary customButtonWidth">
                     <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
                                             ndex-network-name='networkController.currentNetwork.name'>
                         Download Namespace
@@ -722,15 +741,15 @@
 
             <span ng-show='networkController.isLoggedIn && networkController.isAdmin &&
                           !networkController.readOnlyChecked'>
-                <a class="btn btn-primary" style="width: 120px;">
+                <a class=" actionsLabel btn btn-primary">
                     <delete-network ndex-data='networkController.currentNetwork.externalId'>
-                        Delete Network
+                        Delete
                     </delete-network>
                 </a>
             </span>
 
             <span ng-show='!networkController.isLoggedIn'>
-                <a class="btn btn-primary" ng-click="main.startSignIn()">
+                <a class="actionsLabel btn btn-primary" ng-click="main.startSignIn()">
                     Log in to operate on this network
                 </a>
             </span>
