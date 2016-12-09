@@ -99,8 +99,14 @@ ndexApp.controller('networkViewController',
 
             $scope.linkify = function(cellContents)
             {
-                if (typeof(cellContents) === "undefined" || cellContents === "") {
+                if (typeof(cellContents) === "undefined" || cellContents === "" || cellContents == null) {
                     return "";
+                }
+
+                if (typeof(cellContents) === 'object') {
+                    // this is the case where cellContents is as list/array ... so just
+                    // return it wraped in <title>. It will be converted to a comma-separated string of values
+                    return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
                 }
                 if( cellContents.startsWith("http") )
                 {
@@ -2060,15 +2066,15 @@ ndexApp.controller('networkViewController',
                         });
                 }
             };
-            
+
             $scope.readOnlyChanged = function()
             {
                 ndexService.setNetworkSystemPropertiesV2(networkController.currentNetworkId,
                     "readOnly", networkController.readOnlyChecked,
-                    function(data, networkId) {
+                    function(data, networkId, property, value) {
                         // success, do nothing
                     },
-                    function(error, networkId) {
+                    function(error, networkId, property, value) {
                         console.log("unable to make network Read-Only");
                     });
             };
@@ -2100,12 +2106,12 @@ ndexApp.controller('networkViewController',
              */
 
             networkController.advancedEdgeQueryIsValid = function () {
-                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery()) ? true : false;
-            }
+                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery());
+            };
 
             networkController.advancedNodeQueryIsValid = function () {
-                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery()) ? true : false;
-            }
+                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery());
+            };
 
             networkController.isStringEmpty = function(s) {
                 if (typeof(s) === 'undefined' || s == null) {
