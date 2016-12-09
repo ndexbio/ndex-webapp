@@ -68,6 +68,15 @@ ndexApp.controller('editNetworkPropertiesController',
             }
         }
 
+        //If user deletes a property we need to add the property label back into the dropdown (if applicable)
+        if(action === 'del' && value){
+            if($scope.namesForSolrIndexing.indexOf(value) === -1){
+                if($scope.permaNamesForSolrIndexing.indexOf(value) > -1){
+                    $scope.namesForSolrIndexing.push(value);
+                }
+            }
+        }
+
         // there are 2 reserved case-incensitive words, "reference" and "sourceFormat"
         // check if user entered one of them and if yes, then give an error.
         if (value) {
@@ -240,6 +249,18 @@ ndexApp.controller('editNetworkPropertiesController',
         "tissue"
     ];
 
+    //This is for comparison
+    $scope.permaNamesForSolrIndexing = [
+        "author",
+        "disease",
+        "labels",
+        "methods",
+        "organism",
+        "networkType",
+        "rights",
+        "rightsHolder",
+        "tissue"
+    ];
 
     $scope.namesForSolrIndexingDictionary = {};
 
