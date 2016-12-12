@@ -74,7 +74,8 @@ angular.module('ndexServiceApp')
                     if (error && error.message) {
                         message = message + ": "  + error.message;
                     }
-                    console.log(message);
+                    var title = "Unable to Download This Network";
+                    ndexNavigation.genericInfoModal(title, message);
                 }
             );
         };
