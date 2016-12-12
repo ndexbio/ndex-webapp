@@ -13,12 +13,12 @@ ndexServiceApp.factory('ndexService',
             // define and initialize factory object
             var factory = {};
 
-            var ndexServerURI = config.ndexServerUri;
+            var ndexServerURI = config.ndexServerUriV2;
             var ndexServerURIV2 = config.ndexServerUriV2;            
 
             factory.getNdexServerUri = function()
             {
-                return ndexServerURI;
+                return ndexServerURIV2;
             };
             
             factory.getNdexServerUriV2 = function()
@@ -132,6 +132,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.getUserByUserNameV2 = function (userName, successHandler, errorHandler) {
+                // Server API: Get User By userName
+                // GET /user?username={userName}
+
+                var url = "/user?username=" + userName;
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            }
+
             factory.authenticateUserV2 = function (userName, password, successHandler, errorHandler) {
                 // Server API: Authenticate User
                 // GET /user?valid=true
@@ -156,7 +166,17 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getPutConfigV2(url, newPassword);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
+            
+            factory.emailNewPasswordV2 = function(userId, successHandler, errorHandler) {
+                // Server API: Email New Password
+                // PUT /user/{userId}/password?forgot=true
 
+                var url = "/user/" + userId + "/password?forgot=true";
+
+                var config = ndexConfigs.getPutConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+            
             factory.getUserMembershipInGroupV2 = function (userId, groupId, successHandler, errorHandler) {
                 // Server API: Get User's Membership in Group
                 // GET /user/{userId}/membership?groupid={groupid}

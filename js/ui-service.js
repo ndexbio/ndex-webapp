@@ -2189,7 +2189,7 @@
                                 var networkUUID = $scope.ndexNetworkUuid;
                                 var prefix = $scope.namespace.selectedNameSpace.prefix;
 
-                                var URI = ndexService.getNdexServerUri() + '/network/' + networkUUID + '/namespaceFile/' + prefix;
+                                var URI = ndexService.getNdexServerUriV2() + '/network/' + networkUUID + '/namespaceFile/' + prefix;
 
                                 // since the server REST API returns String (text/plain), we need to use the $http service.
                                 // When server was returning String as application/json,  the client (Web UI) was unable to pase the expected JSON and threw errors,

@@ -121,14 +121,32 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                 controller: function ($scope, $modalInstance, $log, forgot) {
                     $scope.forgot = forgot;
                     $scope.resetPassword = function () {
-                        var url = ndexService.getNdexServerUri() + '/user/forgot-password';
-                        $http.post(url, $scope.forgot.userName).success(function (data, status, headers, config) {
-                            forgot.done = true;
-                            forgot.errorMsg = null;
-                            forgot.successMsg = "A new password has been sent to the email of record."
-                        }).error(function (data, status, headers, config) {
-                            forgot.errorMsg = data.message;
-                        });
+
+
+                        ndexService.getUserByUserNameV2($scope.forgot.accountName,
+                            function(data) {
+                                var userId = (data && data.externalId) ? data.externalId : null;
+                                if (userId) {
+
+                                    ndexService.emailNewPasswordV2(userId,
+                                        function (data) {
+                                            forgot.done = true;
+                                            forgot.errorMsg = null;
+                                            forgot.successMsg = "A new password has been sent to the email of record."
+                                        },
+                                        function (error) {
+                                            forgot.errorMsg = error.message;
+                                        })
+                                }
+                                else {
+                                    forgot.errorMsg = "Unable to get User Id for user " + $scope.forgot.accountName +
+                                        " and request password reset."
+                                }
+                            },
+                            function(error){
+                                forgot.errorMsg =  error.message;
+                            })
+
                     };
 
                     $scope.cancel = function () {
