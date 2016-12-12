@@ -1919,7 +1919,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/changePasswordModal.html',
             transclude: true,
-            controller: function($scope, $modal, $route, ndexService) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.change = {};
@@ -1956,10 +1956,20 @@
                     }
                     ndexService.changePasswordV2($scope.change.newPassword,
                         function(data) {
+                            var userCredentials = ndexUtility.getUserCredentials();
+                            var userName = userCredentials['userName'];
+                            var externalId = userCredentials['externalId'];
+
+                            ndexUtility.setUserCredentials(userName, externalId, $scope.change.newPassword);
                             $route.reload();
                             modalInstance.close();
                             modalInstance = null;
                             $scope.isProcessing = false;
+
+                            var title = "Password Change Success";
+                            var message =
+                                "Password has been successfully changed.";
+                            ndexNavigation.genericInfoModal(title, message);
                         },
                         function(error){
                             $scope.errors =  error.data;
