@@ -12,6 +12,9 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
         
         var extractUuidFromUri = function( uri )
         {
+            if (uri == null)
+                return null;
+
             var uuidRegExPattern = /[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/i;
 
             var n = uri.search(uuidRegExPattern);
@@ -108,24 +111,23 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
             nodes.push(node);
             provMap[node_id] = prov;
-            var uuid = extractUuidFromUri(prov.uri);
-            provMap[node_id].uuid = uuid;
-            provMap[node_id].host = extractHostFromUri(prov.uri);
-            if( uuid !==  currentNetworkId )
-            {
-                //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
-                //not be set.
-                (ndexService.getNetworkSummaryV2(uuid) )
-                    .success( function ()
-                        {
-                            provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);
-                        }
-                    )
-                    .error( function (error)
-                        {
+            if ( prov.uri ) {
+                var uuid = extractUuidFromUri(prov.uri);
+                provMap[node_id].uuid = uuid;
+                provMap[node_id].host = extractHostFromUri(prov.uri);
+                if (uuid !== currentNetworkId) {
+                    //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
+                    //not be set.
+                    (ndexService.getNetworkSummaryV2(uuid) )
+                        .success(function () {
+                                provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);
+                            }
+                        )
+                        .error(function (error) {
 
-                        }
-                    );
+                            }
+                        );
+                }
             }
 
             if( parent_node != -1 )
