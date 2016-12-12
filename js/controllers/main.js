@@ -90,7 +90,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.config = config;
 
         //Test whether the server is up or not.
-        var ndexServerUri = ndexService.getNdexServerUri();
+        var ndexServerUri = ndexService.getNdexServerUriV2();
         $scope.main.serverIsDown = false;
         $http.get(ndexServerUri + '/admin/status').
             success(function(data, status, headers, config) {
