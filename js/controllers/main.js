@@ -559,7 +559,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.logoLink = {};
             }
             if (typeof config.logoLink.href === 'undefined') {
-                config.logoLink.href = "http://public.ndexbio.org";
+                config.logoLink.href = "http://preview.ndexbio.org";
             }
             if (typeof config.logoLink.warning === 'undefined') {
                 config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";

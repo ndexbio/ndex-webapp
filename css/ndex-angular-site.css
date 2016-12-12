@@ -550,6 +550,13 @@ hr {
     padding-bottom: 1em;
 }
 
+.rowWithTwoLinesBottomPad {
+    padding-bottom: 2em;
+}
+.rowWithThreeLinesBottomPad {
+    padding-bottom: 3em;
+}
+
 .rowWithFourLinesBottomPad {
     padding-bottom: 4em;
 }
