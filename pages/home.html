@@ -1,19 +1,22 @@
 <div class="row">
-    <div class='col-md-12 AlignCenter'>
-        <img src='img/ndex-logo.png' style="align:center"/>
+    <div class='col-md-12 AlignCenter show-large'>
+        <img src='img/ndex2.0-new-logo_850w.png' style="align:center"/>
+    </div>
+    <div class='col-md-12 AlignCenter show-small'>
+        <img src='img/ndex2.0-new-logo_500w.png' style="align:center"/>
     </div>
 </div>
 
-<div class="row">
     <div class='col-md-12'>
+<div class="row v-center-calc" style="border: 1px solid white;">
 
         <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: center;">
-            <p><h3>Welcome to the NDEx 2.0 Preview</h3></p>
+            <p><h3 class="hx3">Welcome to the NDEx 2.0 Preview</h3></p>
         </div>
 
         <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: left">
             <p>
-                <h6>
+                <h6 class="hx6">
                     NDEx 2.0 provides a major improvement in performance, scalability and reliability.
                     This NDEx 2.0 Preview Server mimics the official NDEx Public Server and will be available for a
                     limited time for community testing. We encourage you to try it out and provide feedback.
@@ -29,41 +32,41 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row v-center-calc" style="border: 1px solid white;">
     <div class='col-md-12'>
         <div style="margin-top:1.5em; max-width: 900px; margin-left: auto; margin-right: auto;">
             <ng-include src="'search_bar.html'"></ng-include>
         </div>
+        <div class="ndex-featured-collections v-center-calc-small" style="border: 1px solid white;">
+            <strong>Featured Collections:</strong>
+            &nbsp;&nbsp;&nbsp;
+            <a href="http://preview.ndexbio.org/#/user/301a91c6-a37b-11e4-bda0-000c29202374" target="_blank">
+                <strong>Pathway Interaction Database (NCI-PID)</strong>
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="http://preview.ndexbio.org/#/user/b47268a6-8112-11e6-b0a6-06603eb7f303" target="_blank">
+                <strong>Cancer Cell Maps Initiative (CCMI)</strong>
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="http://preview.ndexbio.org/#/user/08cd9aae-08af-11e6-b550-06603eb7f303" target="_blank">
+                <strong>The NDEx Butler</strong>
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="http://preview.ndexbio.org/#/user/ab10afd9-e488-11e4-951c-000c29cb28fb" target="_blank">
+                <strong>NetPath</strong>
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="http://preview.ndexbio.org/#/group/a75465c5-72a3-11e5-b435-06603eb7f303" target="_blank">
+                <strong>Ideker Lab</strong>
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="ndex-featured-collections">
-    <strong>Featured Collections:</strong>
-    &nbsp;&nbsp;&nbsp;
-    <a href="http://preview.ndexbio.org/#/user/301a91c6-a37b-11e4-bda0-000c29202374" target="_blank">
-        <strong>Pathway Interaction Database (NCI-PID)</strong>
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://preview.ndexbio.org/#/user/b47268a6-8112-11e6-b0a6-06603eb7f303" target="_blank">
-        <strong>Cancer Cell Maps Initiative (CCMI)</strong>
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://preview.ndexbio.org/#/user/08cd9aae-08af-11e6-b550-06603eb7f303" target="_blank">
-        <strong>The NDEx Butler</strong>
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://preview.ndexbio.org/#/user/ab10afd9-e488-11e4-951c-000c29cb28fb" target="_blank">
-        <strong>NetPath</strong>
-    </a>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="http://preview.ndexbio.org/#/group/a75465c5-72a3-11e5-b435-06603eb7f303" target="_blank">
-        <strong>Ideker Lab</strong>
-    </a>
-</div>
 
 
 
-<div class="row">
+<div class="row" style="border: 1px solid white;">
     <div class='col-md-2'></div>
     <div class='col-md-8 AlignCenter'>
         <h1 class="text-danger" ng-show="main.serverIsDown"><span id="bind-html-with-trust"
@@ -139,38 +142,43 @@
 <div class="row" ng-show="!main.showSignIn && !config.requireAuthentication" id="logos-citation-above-footer">
 
     <div style="max-width: 1000px; margin: auto;">
-        <div class='col-md-7'>
+        <div class='col-md-7' style="border: 1px solid white;">
 
-            <div class="home-support">
+            <div class="home-support" style="margin-left: 20px;">
                 <a href="http://itcr.nci.nih.gov/" target="_blank">
                     <img
+                        class="img-sizer"
                         src="img/ITCR-logo.png"
-                        style="padding: 20px 15px; width: 30%; height: auto;">
+                        >
                 </a>
                 <a href="http://www.roche.com/" target="_blank">
                     <img
+                            class="img-sizer"
                         src="img/Roche-Logox50.jpg"
-                        style="padding: 20px 0 20px 15px; width: 12%; height: auto;">
+                    >
                 </a>
                 <a href="http://www.pfizer.com/" target="_blank">
                     <img
+                            class="img-sizer"
                         src="img/pfizer_logox501.png"
-                        style="padding: 20px 15px 20px 0; width: 12%; height: auto;">
+                    >
                 </a>
                 <a href="http://www.janssenrnd.com/" target="_blank">
                     <img
+                            class="img-sizer"
                         src="img/janssen_logo.png"
-                        style="padding: 20px 5px 20px 15px; width: 24%; height: auto;">
+                    >
                 </a>
                 <a href="http://www.nrnb.org/" target="_blank">
                     <img
+                            class="img-sizer"
                         src="img/NRNB_black_5001.png"
-                        style="padding: 25px 0 15px 5px; width: 12%; height: auto;">
+                    >
                 </a>
             </div>
         </div>
 
-        <div class='col-md-5'>
+        <div class='col-md-5' style="border: 1px solid white;">
             <div class="ndex-citation-landing-page">Cite NDEx: Pratt <em>et al.</em>
                 <a href="http://dx.doi.org/10.1016/j.cels.2015.10.001" target="_blank">
                     NDEx, the Network Data Exchange.
