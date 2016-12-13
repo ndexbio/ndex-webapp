@@ -640,21 +640,16 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         factory.getPropertiesExcluding = function (subNetworkId,excludeList) {
             var result = [];
-            var excludeSet = [];
+            var excludeSet = new Set();
             for ( var i = 0 ; i < excludeList.length ; i++ ) {
-                excludeSet.push(excludeList[i].toLowerCase());
+                excludeSet.add(excludeList[i].toLowerCase());
             }
             var networkProperties = currentNetworkSummary.properties;
-            var subnetworkIds = currentNetworkSummary.subnetworkIds;
-
-            if (!subnetworkIds) {
-                return result;
-            }
-
             for( i = 0; i < networkProperties.length; i++ ) {
-                if ( (subnetworkIds.indexOf(subNetworkId)> -1) &&
-                    !(excludeSet.indexOf(networkProperties[i].predicateString.toLowerCase()) > -1)) {
-                        result.push(networkProperties[i]);
+                if ( subNetworkId == networkProperties[i].subNetworkId &&
+                    !excludeSet.has(networkProperties[i].predicateString.toLowerCase())) {
+                    result.push(networkProperties[i]);
+
                 }
             }
             return result;
