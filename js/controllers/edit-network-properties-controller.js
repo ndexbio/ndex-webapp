@@ -6,7 +6,7 @@ ndexApp.controller('editNetworkPropertiesController',
 	//              Process the URL to get application state
     //-----------------------------------------------------------------------------------
     var networkExternalId = $routeParams.identifier;
-    var subNetworkId = $routeParams.subNetworkId;
+    var subNetworkId = ($routeParams.subNetworkId.toLocaleLowerCase() == "null") ? null : $routeParams.subNetworkId;
 
     //              CONTROLLER INTIALIZATIONS
     //------------------------------------------------------------------------------------
