@@ -66,6 +66,8 @@ ndexApp.controller('networkViewController',
             ];
 
             networkController.queryWarnings = [];
+            
+            networkController.subNetworkId = null;
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
