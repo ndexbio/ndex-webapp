@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService',
-                function (ndexNavigation, ndexService) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'config',
+                function (ndexNavigation, ndexService, config) {
 
         var self = this;
 
@@ -198,5 +198,12 @@ angular.module('ndexServiceApp')
             }
             return format;
         };
+
+        self.getCurrentServerURL = function() {
+            var parser = document.createElement('a');
+            parser.href = config.ndexServerUriV2;
+
+            return parser.protocol + "//" + parser.hostname + "/#/";
+        }
     }
 ]);
