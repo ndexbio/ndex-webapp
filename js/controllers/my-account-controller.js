@@ -89,16 +89,17 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: 'Status', enableFiltering: true, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
-                    { field: 'Disease', enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/disease.html'},
+                    { field: 'Format', enableFiltering: true, maxWidth:63 },
+                    { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
+                    { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
                     { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
-                    { field: 'Nodes', enableFiltering: false, maxWidth:70 },
+                    //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
-                    { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
-                    { field: 'Owned By', enableFiltering: true, maxWidth:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
+                    { field: 'Privacy', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
+                    { field: 'Owner', enableFiltering: true, maxWidth:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120,
                         cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
                     },
@@ -109,7 +110,7 @@ ndexApp.controller('myAccountController',
                         cellClass: 'grid-align-cell' },
                     */
 
-                    { field: 'Showcase', enableFiltering: false, maxWidth: 75, cellTemplate: 'pages/gridTemplates/showCase.html' },
+                    { field: 'Show', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/showCase.html' },
 
                     { field: 'description', enableFiltering: false,  visible: false},
                     { field: 'externalId',  enableFiltering: false,  visible: false},
@@ -154,6 +155,8 @@ ndexApp.controller('myAccountController',
                 {
                     var network = myAccountController.networkSearchResults[i];
 
+                    var subNetworkId = uiMisc.getSubNetworkId(network);
+
                     var networkStatus = "success";
                     if (!network.isValid) {
                         if (network.errorMessage) {
@@ -178,15 +181,16 @@ ndexApp.controller('myAccountController',
 
                     var description = $scope.stripHTML(network['description']);
                     var externalId = network['externalId'];
-                    var nodes = network['nodeCount'];
+                    //var nodes = network['nodeCount'];
                     var edges = network['edgeCount'];
                     var owner = network['owner'];
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
                     var showcase = network['isShowcase'];
 
+                    var format = uiMisc.getNetworkFormat(subNetworkId, network);
                     var download  = "Download " + networkName;
-                    var reference = uiMisc.getNetworkReferenceObj(network);
+                    var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
                     var disease   = uiMisc.getDisease(network);
                     var tissue    = uiMisc.getTissue(network);
 
@@ -194,15 +198,16 @@ ndexApp.controller('myAccountController',
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
                         " "             :   download,
+                        "Format"        :   format,
                         "Reference"     :   reference,
                         "Disease"       :   disease,
                         "Tissue"        :   tissue,
-                        "Nodes"         :   nodes,
+                        //"Nodes"         :   nodes,
                         "Edges"         :   edges,
-                        "Visibility"    :   visibility,
-                        "Owned By"      :   owner ,
+                        "Privacy"       :   visibility,
+                        "Owner"         :   owner ,
                         "Last Modified" :   modified,
-                        "Showcase"      :   showcase,
+                        "Show"          :   showcase,
                         "description"   :   description,
                         "externalId"    :   externalId,
                         "ownerUUID"     :   network['ownerUUID'],
@@ -435,7 +440,7 @@ ndexApp.controller('myAccountController',
                 for( var i = 0; i < selectedNetworksRows.length; i ++ )
                 {
                     if (selectedNetworksRows[i].externalId == networkId) {
-                        selectedNetworksRows[i].Showcase = networkShowcase;
+                        selectedNetworksRows[i].Show = networkShowcase;
                         break;
                     }
                 }
@@ -889,13 +894,13 @@ ndexApp.controller('myAccountController',
             $scope.switchShowcase = function(row) {
                 if (row && row.entity) {
 
-                    if (row.entity.Showcase) {
-                        row.entity.Showcase = false;
+                    if (row.entity.Show) {
+                        row.entity.Show = false;
                     } else {
-                        row.entity.Showcase = true;
+                        row.entity.Show = true;
                     }
 
-                    ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Showcase,
+                    ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Show,
                         function (data, networkId, property, value) {
                             // success
                         },

@@ -1,7 +1,7 @@
 /**
  * Created by vrynkov 28 Oct.2016
  *
- * Miscellaneous useful utilities used by multiple modules.
+ * Miscellaneous useful utilities used by different modules.
  */
 'use strict';
 
@@ -80,7 +80,7 @@ angular.module('ndexServiceApp')
             );
         };
 
-        self.getNetworkReferenceObj = function(network) {
+        self.getNetworkReferenceObj = function(subNetworkId, network) {
             var reference = "";
 
             if (!network || !network.properties) {
@@ -89,7 +89,9 @@ angular.module('ndexServiceApp')
 
             for (var i = 0; i < network.properties.length; i++) {
                 var property = network.properties[i];
-                if (property.predicateString && property.predicateString.toLowerCase() == "reference") {
+                if (property.predicateString && (property.predicateString.toLowerCase() == "reference") &&
+                    property.subNetworkId == subNetworkId)
+                {
                     reference = (property.value) ? property.value : "";
                     break;
                 }
@@ -169,6 +171,32 @@ angular.module('ndexServiceApp')
 
             return diseaseDescription.split(/[ .,;:]+/).shift();
         };
+                    
+        self.getSubNetworkId = function(network) {
+            return (network.subnetworkIds && (network.subnetworkIds.length == 1)) ? network.subnetworkIds[0] : null;
+        }
 
+        self.getNetworkFormat = function(subNetworkId, network) {
+
+            var format = "";
+
+            if (!network || !network.properties) {
+                return format;
+            }
+
+            for(var j = 0; j < network['properties'].length; j++ )
+            {
+                if ((network['properties'][j]['predicateString'] == "ndex:sourceFormat") &&
+                    (subNetworkId == network['properties'][j]['subNetworkId']))
+                {
+                    format = network['properties'][j]['value'];
+                    if (format.toLowerCase() == "unknown") {
+                        format = "";
+                    }
+                    break;
+                }
+            }
+            return format;
+        };
     }
 ]);
