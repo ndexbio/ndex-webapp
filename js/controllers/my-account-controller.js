@@ -89,7 +89,7 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: '  ', enableFiltering: false, maxWidth: 30, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: '  ', enableFiltering: false, maxWidth: 40, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Format', enableFiltering: true, maxWidth:63 },
