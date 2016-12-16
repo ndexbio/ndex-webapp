@@ -6,6 +6,7 @@ ndexApp.controller('editNetworkPropertiesController',
 	//              Process the URL to get application state
     //-----------------------------------------------------------------------------------
     var networkExternalId = $routeParams.identifier;
+    var subNetworkId = ($routeParams.subNetworkId.toLocaleLowerCase() == "null") ? null : $routeParams.subNetworkId;
 
     //              CONTROLLER INTIALIZATIONS
     //------------------------------------------------------------------------------------
@@ -26,19 +27,18 @@ ndexApp.controller('editNetworkPropertiesController',
     editor.namespaces = [];
 
     editor.showNameSpaces = false;
+    editor.propertyValuePairs = [];
+    editor.hiddenValuePairs = [];
 
     editor.buildAttributeDictionary = function() {
         var dict = {};
-        var prefix, attribute;
+        var attribute;
 
         for (var i = 0; i < editor.propertyValuePairs.length; i++) {
 
-            prefix = editor.propertyValuePairs[i].predicatePrefix;
-            attribute = editor.propertyValuePairs[i].predicateString
+            attribute = editor.propertyValuePairs[i].predicateString;
 
             if (attribute) {
-
-                attribute = prefix + ":" + attribute;
 
                 if (attribute in dict) {
                     dict[attribute] = dict[attribute] + 1;
@@ -64,7 +64,8 @@ ndexApp.controller('editNetworkPropertiesController',
 		if((index == (editor.propertyValuePairs.length - 1)) && (value.trim().length > 0)) {
 
             if ((!action) || (action.toLowerCase() !== 'del')) {
-                editor.propertyValuePairs.push({predicatePrefix: 'none', valuePrefix: 'none', predicateString: "", value: "", isReadOnlyLabel: false});
+                editor.propertyValuePairs.push({predicateString: "", value: "", isReadOnlyLabel: false,
+                    dataType: "string", subNetworkId: subNetworkId});
             }
         }
 
@@ -100,7 +101,8 @@ ndexApp.controller('editNetworkPropertiesController',
 
             } else {
 
-                property.labelValue = property.predicatePrefix + ":" + property.predicateString;
+                //property.labelValue = property.predicatePrefix + ":" + property.predicateString;
+                property.labelValue = property.predicateString;
                 delete property.labelError;
 
             }
@@ -262,6 +264,16 @@ ndexApp.controller('editNetworkPropertiesController',
         "tissue"
     ];
 
+    $scope.reservedNames = [
+        "name",
+        "description",
+        "version",
+        "reference",
+        "ndex:sourceformat",
+        "sourceformat"
+    ];
+
+
     $scope.namesForSolrIndexingDictionary = {};
 
     $scope.namesForSolrIndexing.forEach(function(val, i) {
@@ -274,40 +286,19 @@ ndexApp.controller('editNetworkPropertiesController',
             return;
         $scope.isProcessing = true;
 
-        if ((editor.propertyValuePairs[editor.propertyValuePairs.length - 1].predicatePrefix.toLowerCase()==='none') &&
-            (editor.propertyValuePairs[editor.propertyValuePairs.length - 1].valuePrefix.toLowerCase()==='none')) {
-            editor.propertyValuePairs.splice(editor.propertyValuePairs.length - 1, 1);
-        }
-
 		var length = editor.propertyValuePairs.length;
         var i = 0;
 
-        // remove all "Reference" attributes
+        // remove all "reserved property" (listed in $scope.reservedNames) attributes from
+        // editor.propertyValuePairs, if there are any;
+        // also, remove all attributes with no values
         while (i < length){
 
-            if((typeof editor.propertyValuePairs[i].predicateString !== 'undefined') &&
-                (editor.propertyValuePairs[i].predicateString.trim().toLowerCase() === 'reference') ) {
+            if( (editor.propertyValuePairs[i].predicateString &&
+                ($scope.reservedNames.indexOf(editor.propertyValuePairs[i].predicateString.toLowerCase()) != -1)) ||
+                (!editor.propertyValuePairs[i].value) )
+            {
 
-                // here, we just found "Reference" element entered by user; remove it
-                editor.propertyValuePairs.splice(i,1);
-                length = length - 1;
-
-                // here, DO NOT increment the loop counter i since array has shrunk
-                // after splicing and we have a new element at editor.propertyValuePairs[i] after splicing
-                continue;
-            }
-            i = i + 1;
-        }
-
-        length = editor.propertyValuePairs.length;
-        i = 0;
-
-        // now, remove all attributes with no values -- we don't want to save them
-        while (i < length){
-
-            if (( typeof editor.propertyValuePairs[i].value === 'undefined') || (!editor.propertyValuePairs[i].value) ) {
-
-                // remove attribute with no value
                 editor.propertyValuePairs.splice(i,1);
                 length = length - 1;
 
@@ -326,32 +317,13 @@ ndexApp.controller('editNetworkPropertiesController',
             if(pair.predicateString === 'custom...')
                 pair.predicateString = pair.predicateStringCustom;
 
-			if((typeof pair.predicatePrefix !== 'undefined') && (pair.predicatePrefix != 'none') )
-				pair.predicateString = pair.predicatePrefix+':'+pair.predicateString
-
-            if((typeof pair.valuePrefix !== 'undefined') && (pair.valuePrefix != 'none') )
-				pair.value = pair.valuePrefix+':'+pair.value;
+            delete pair.isReadOnlyLabel;
+            delete pair.labelValue;
 		}
 
+        var networkProperties = editor.propertyValuePairs.concat(editor.hiddenValuePairs);
 
-        if (typeof editor.propertyValuePairs !== 'undefined') {
-            editor.propertyValuePairs[editor.propertyValuePairs.length] =
-            {   "predicateString" : "Reference",
-                "value"           : editor.reference,
-                "dataType"        : "string",
-                "subNetworkId"    : null
-            }
-        } else {
-            editor.propertyValuePairs =
-            {   "predicateString" : "Reference",
-                "value"           : editor.reference,
-                "dataType"        : "string",
-                "subNetworkId"    : null
-            };
-        }
-
-
-		ndexService.setNetworkPropertiesV2(networkExternalId, editor.propertyValuePairs,
+		ndexService.setNetworkPropertiesV2(networkExternalId, networkProperties,
 			function(data) {
 				//$route.reload();
                 var networkViewPage = sharedProperties.getNetworkViewPage();
@@ -370,6 +342,7 @@ ndexApp.controller('editNetworkPropertiesController',
 
                 $scope.isProcessing = false;
             });
+
 	};
 
 	editor.removeNamespace = function(index) {
@@ -488,20 +461,28 @@ ndexApp.controller('editNetworkPropertiesController',
     ndexService.getNetworkSummaryV2(networkExternalId)
         .success(
             function(network) {
-                //editor.propertyValuePairs = network.properties;
-                editor.propertyValuePairs = [];
-                for(var i=0; i< network.properties.length; i++){
-                  if(["description", "version", "description"].indexOf(network.properties[i].predicateString) === -1){
-                      editor.propertyValuePairs.push(network.properties[i])
-                  }
-                }
 
+                editor.propertyValuePairs = [];
+                editor.hiddenValuePairs = [];
+
+                // break network properties into two sets: one set is "hidden", it contains
+                // "reserved property names" that every network has (these names are listed in $scope.reservedNames).
+                // The hidden properties are not available for modification.  Another set (editor.propertyValuePairs)
+                // are properties presented to user for editing.
+                for(var i=0; i< network.properties.length; i++){
+                    if ( network.properties[i].predicateString
+                          && ($scope.reservedNames.indexOf(network.properties[i].predicateString.toLowerCase()) === -1)
+                          && (network.properties[i].subNetworkId == subNetworkId) )
+                    {
+                        editor.propertyValuePairs.push(network.properties[i]);
+                    } else {
+                        editor.hiddenValuePairs.push(network.properties[i]);
+                    }
+                }
+                
                 var arrayLength = editor.propertyValuePairs.length;
                 var i = 0;
 
-                // we need to remove all "sourceformat" objects.  There should always be only one
-                // "sourceformat" element sent by the  server; we want to make sure we remove them
-                // all in case server by mistake sends multiple "sourceformat" elements.
                 while ( i < arrayLength ) {
                     editor.propertyValuePairs[i].isReadOnlyLabel = true;
 
@@ -511,98 +492,17 @@ ndexApp.controller('editNetworkPropertiesController',
                         var dropdownIndex = $scope.namesForSolrIndexing.indexOf(editor.propertyValuePairs[i].predicateString);
                         $scope.namesForSolrIndexing.splice(dropdownIndex, 1);
                     }
-                    if ((editor.propertyValuePairs[i].predicateString.toLowerCase() === "sourceformat") ||
-                        (editor.propertyValuePairs[i].predicateString.toLowerCase() === "reference")) {
-
-                        if( editor.propertyValuePairs[i].predicateString.toLowerCase() === "reference") {
-                            editor.reference = editor.propertyValuePairs[i].value;
-                        }
-                        editor.propertyValuePairs.splice(i,1);
-                        arrayLength = arrayLength - 1;
-                        // here, DO NOT increment the loop counter i since array has shrunk
-                        // after splicing and we have a new element at editor.propertyValuePairs[i] after splicing
-                        continue;
-                    }
                     i = i + 1;
                 }
+
                 if($scope.namesForSolrIndexing.indexOf("custom...") > -1) {
                     $scope.namesForSolrIndexing.splice($scope.namesForSolrIndexing.indexOf("custom..."))
                 }
                 $scope.namesForSolrIndexing.push("custom...");
 
-                //ndexService.getNetworkNamespaces(networkExternalId,
-                var size = null;
-                ndexService.getNetworkAspectAsCXV2(networkExternalId, encodeURIComponent("@context"), size,
-                    function(namespaces) {
+                editor.propertyValuePairs.push({dataType: "string", predicateString: "", value: "", subNetworkId: subNetworkId});
 
-                        editor.namespaces = namespaces;
-                        editor.showNameSpaces = (editor.namespaces.length > 0) ? true : false;
-
-                        var namespaceSet = {};
-                        for( var i = 0; i < namespaces.length; i++ )
-                        {
-                            namespace = namespaces[i];
-                            namespaceSet[namespace.prefix] = true;
-                        }
-
-                        var length = editor.propertyValuePairs.length;
-                        for(var ii=0; ii<length; ii++) {
-                            var pair = editor.propertyValuePairs[ii];
-
-                            var colonIndex = pair.predicateString.indexOf(':');
-
-                            if (colonIndex != -1 && pair.predicateString.substring(0, colonIndex) in namespaceSet) {
-                                pair.predicatePrefix = pair.predicateString.substring(0, colonIndex);
-                                pair.predicateString = pair.predicateString.substring(colonIndex + 1);
-                            }
-                            else {
-                                pair.predicatePrefix = 'none';
-                            }
-
-
-                            if (pair.value == null)
-                            {
-                                pair.valuePrefix = 'none';
-                            }
-                            else
-                            {
-                                colonIndex = pair.value.indexOf(':');
-
-                                if (colonIndex != -1 && pair.value.substring(0, colonIndex) in namespaceSet)
-                                {
-                                    pair.valuePrefix = pair.value.substring(0, colonIndex);
-                                    pair.value = pair.value.substring(colonIndex + 1);
-                                }
-                                else
-                                {
-                                    pair.valuePrefix = 'none';
-                                }
-                                pair.labelValue = pair.predicatePrefix + ":" + pair.predicateString;
-                                //pair.valueValue = pair.valuePrefix     + ":" + pair.value;
-                            }
-                        }
-
-                        editor.disableSaveChangesButton = editor.checkIfFormIsValidOnLoad();
-
-                        editor.propertyValuePairs.push({predicatePrefix: 'none',  labelValue: "none: ''",
-                                                        valuePrefix: 'none', predicateString: "", value: ""});
-                        // todo add local to list
-                        editor.networkName = network.name;
-
-                    },
-                    function(error) {
-                        editor.disableSaveChangesButton = editor.checkIfFormIsValidOnLoad();
-                        
-                        editor.propertyValuePairs.push({predicatePrefix: 'none', labelValue: "none:''",
-                                                        valuePrefix: 'none', predicateString: "", value: ""});
-
-                        editor.networkName = network.name;
-
-                        //editor.errors.push(error)
-
-                        console.log("unable to get @context aspect for network ")
-                    });
-
+                editor.disableSaveChangesButton = editor.checkIfFormIsValidOnLoad();
             }
         )
         .error(

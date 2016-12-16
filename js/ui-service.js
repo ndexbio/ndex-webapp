@@ -1925,6 +1925,7 @@
                 $scope.change = {};
 
                 $scope.openMe = function() {
+                    $scope.change = {};
                     modalInstance = $modal.open({
                         templateUrl: 'change-password-modal.html',
                         scope: $scope
@@ -1961,7 +1962,6 @@
                             var externalId = userCredentials['externalId'];
 
                             ndexUtility.setUserCredentials(userName, externalId, $scope.change.newPassword);
-                            $route.reload();
                             modalInstance.close();
                             modalInstance = null;
                             $scope.isProcessing = false;

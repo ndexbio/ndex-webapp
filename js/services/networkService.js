@@ -405,10 +405,17 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return uuid;
         };
 
+
+        // TODO: delete factory.saveQueryResults -- it is obsolete.  No need to add Provenance Event to
+        // the network created by search since service already adds this event to provenance
         factory.saveQueryResults = function (currentNetworkSummary, currentSubNetwork, rawCX, onSuccess, onError) {
+
+            // let's get provenance from rawCX
+
             factory.createCXNetwork(rawCX, function(newNetworkURL) {
 
-                provenanceService.getNetworkProvenance(currentNetworkSummary.externalId, function (provenance) {
+                provenanceService.getNetworkProvenance(currentNetworkSummary.externalId,
+                    function (provenance) {
 
                     var eventProperties= [];
 
@@ -638,7 +645,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return undefined;
         }
 
-        factory.getPropertiesExcluding = function (subNetworkId,excludeList) {
+        factory.getPropertiesExcluding = function (subNetworkId, excludeList) {
             var result = [];
             var excludeSet = new Set();
             for ( var i = 0 ; i < excludeList.length ; i++ ) {
@@ -648,7 +655,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             for( i = 0; i < networkProperties.length; i++ ) {
                 if ( subNetworkId == networkProperties[i].subNetworkId &&
                     !excludeSet.has(networkProperties[i].predicateString.toLowerCase())) {
-                        result.push(networkProperties[i]);
+                    result.push(networkProperties[i]);
 
                 }
             }

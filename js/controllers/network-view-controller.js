@@ -2,11 +2,11 @@ ndexApp.controller('networkViewController',
     ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal',
-        '$route', '$location', 'uiGridConstants', /*'$filter', '$location','$q',*/
+        '$route', '$location', 'uiGridConstants', 'uiMisc', /*'$filter', '$location','$q',*/
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal,
-                  $route , $location, uiGridConstants /*, $filter /*, $location, $q */)
+                  $route , $location, uiGridConstants, uiMisc /*, $filter /*, $location, $q */)
         {
             var self = this;
 
@@ -66,6 +66,8 @@ ndexApp.controller('networkViewController',
             ];
 
             networkController.queryWarnings = [];
+
+            networkController.subNetworkId = null;
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -1788,8 +1790,11 @@ ndexApp.controller('networkViewController',
 
                             //               console.log ( JSON.stringify(rawCX));
 
-                            networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX,
-                                function (data) {
+
+                            //networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX,
+
+                            networkService.createCXNetwork(rawCX,
+                                function (newNetworkURL) {
                                     $modalInstance.close();
                                     $scope.isProcessing = false;
 
@@ -1958,10 +1963,7 @@ ndexApp.controller('networkViewController',
                             }
 
                             // subNetworkId is the current subNetwork we are displaying
-                            if ( network.subnetworkIds && network.subnetworkIds.length == 1) {
-                                networkController.subNetworkId = network.subnetworkIds[0];
-                            } else
-                                networkController.subNetworkId = null;
+                            networkController.subNetworkId = uiMisc.getSubNetworkId(network);
 
                             if ( networkController.subNetworkId != null) {
                                 networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");

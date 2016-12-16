@@ -1,6 +1,8 @@
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http', '$interval',
-    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, $interval, Idle) {
+ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties',
+    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc',
+    function (config, ndexService, ndexUtility, sharedProperties,
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, Idle) {
 
         $scope.$on('IdleStart', function() {
             $scope.main.signout();
@@ -429,6 +431,16 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             var win = window.open(redirectObj.href, '_blank');
             win.focus();
 
+        };
+
+        /*
+         * Similar to redirectToExternalLink(), but redirects to the current server
+         * after clicking on NDEx logo.
+         */
+        $scope.redirectToCurrentServer = function() {
+            var currentServerURL = uiMisc.getCurrentServerURL();
+            var win = window.open(currentServerURL, '_blank');
+            win.focus();
         };
 
         /*----------------------------------------------

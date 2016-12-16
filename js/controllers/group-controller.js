@@ -228,16 +228,17 @@ ndexApp.controller('groupController',
     var populateNetworkTable = function()
     {
         var columnDefs = [
-            { field: 'Status', enableFiltering: false, maxWidth: 55, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
+            { field: 'Status', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
             { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
             { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-            { field: 'Reference', enableFiltering: false, maxWidth: 76, cellTemplate: 'pages/gridTemplates/reference.html' },
-            { field: 'Disease', enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/disease.html'},
+            { field: 'Format', enableFiltering: true, maxWidth:63 },
+            { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
+            { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
             { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
             { field: 'Nodes', enableFiltering: false, maxWidth: 70 },
             { field: 'Edges', enableFiltering: false, maxWidth: 70 },
             { field: 'Visibility', enableFiltering: true, maxWidth: 70 },
-            { field: 'Owned By', enableFiltering: true, maxWidth:80,
+            { field: 'Owner', enableFiltering: true, maxWidth:80,
                 cellTemplate: 'pages/gridTemplates/ownedBy.html'},
             { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" }
         ];
@@ -273,6 +274,7 @@ ndexApp.controller('groupController',
         for(var i = 0; i < groupController.networkSearchResults.length; i++ )
         {
             var network = groupController.networkSearchResults[i];
+            var subNetworkId = uiMisc.getSubNetworkId(network);
 
             var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
 
@@ -297,8 +299,9 @@ ndexApp.controller('groupController',
             var visibility = network['visibility'];
             var modified = new Date( network['modificationTime'] );
 
+            var format = uiMisc.getNetworkFormat(subNetworkId, network);
             var download = "Download " + networkName;
-            var reference = uiMisc.getNetworkReferenceObj(network);
+            var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
             var disease   = uiMisc.getDisease(network);
             var tissue    = uiMisc.getTissue(network);
 
@@ -306,13 +309,14 @@ ndexApp.controller('groupController',
                 "Status"        :   networkStatus,
                 "Network Name"  :   networkName,
                 " "             :   download,
+                "Format"        :   format,
                 "Reference"     :   reference,
                 "Disease"       :   disease,
                 "Tissue"        :   tissue,
                 "Nodes"         :   nodes,
                 "Edges"         :   edges,
                 "Visibility"    :   visibility,
-                "Owned By"      :   owner,
+                "Owner"         :   owner,
                 "Last Modified" :   modified,
                 "description"   :   description,
                 "externalId"    :   externalId,

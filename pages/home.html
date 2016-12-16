@@ -11,20 +11,16 @@
 <div class="row v-center-calc" style="border: 1px solid white;">
 
         <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: center;">
-            <p><h3 class="hx3">Welcome to the NDEx 2.0 Preview</h3></p>
+            <p>
+                <h3 class="hx3">
+                    <span ng-bind-html="homeController.welcomeHeader"></span>
+                </h3>
+            </p>
         </div>
-
         <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: left">
             <p>
                 <h6 class="hx6">
-                    NDEx 2.0 provides a major improvement in performance, scalability and reliability.
-                    This NDEx 2.0 Preview Server mimics the official NDEx Public Server and will be available for a
-                    limited time for community testing. We encourage you to try it out and provide feedback.
-                    <strong>
-                        Please keep in mind that this is just a STAGING SERVER and all of its content will be
-                        lost once it is shut down.
-                    </strong>
-                    For your important work, please keep using our official Public Server.
+                   <span ng-bind-html="homeController.welcomeMessage"></span>
                 </h6>
             </p>
         </div>
@@ -34,37 +30,24 @@
 
 <div class="row v-center-calc" style="border: 1px solid white;">
     <div class='col-md-12'>
-        <div style="margin-top:1.5em; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <div style="max-width: 900px; margin-left: auto; margin-right: auto;">
             <ng-include src="'search_bar.html'"></ng-include>
         </div>
-        <div class="ndex-featured-collections v-center-calc-small" style="border: 1px solid white;">
+
+        <div ng-show="homeController.featuredCollections.length > 0"
+             class="ndex-featured-collections v-center-calc-small" style="border: 1px solid white;">
             <strong>Featured Collections:</strong>
             &nbsp;&nbsp;&nbsp;
-            <a href="http://preview.ndexbio.org/#/user/301a91c6-a37b-11e4-bda0-000c29202374" target="_blank">
-                <strong>Pathway Interaction Database (NCI-PID)</strong>
-            </a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="http://preview.ndexbio.org/#/user/b47268a6-8112-11e6-b0a6-06603eb7f303" target="_blank">
-                <strong>Cancer Cell Maps Initiative (CCMI)</strong>
-            </a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="http://preview.ndexbio.org/#/user/08cd9aae-08af-11e6-b550-06603eb7f303" target="_blank">
-                <strong>The NDEx Butler</strong>
-            </a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="http://preview.ndexbio.org/#/user/ab10afd9-e488-11e4-951c-000c29cb28fb" target="_blank">
-                <strong>NetPath</strong>
-            </a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="http://preview.ndexbio.org/#/group/a75465c5-72a3-11e5-b435-06603eb7f303" target="_blank">
-                <strong>Ideker Lab</strong>
-            </a>
+
+            <span ng-repeat="collection in homeController.featuredCollections">
+                <a ng-href='{{homeController.getURLOfFeaturedCollection(collection)}}'  target="_blank">
+                    <strong>{{collection.name}}</strong>
+                </a>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
         </div>
     </div>
 </div>
-
-
-
 
 <div class="row" style="border: 1px solid white;">
     <div class='col-md-2'></div>
