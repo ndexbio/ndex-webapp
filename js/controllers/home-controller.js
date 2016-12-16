@@ -5,6 +5,8 @@ ndexApp.controller('homeController', ['sharedProperties', 'config', '$scope', 'u
         var homeController = $scope.homeController;
         homeController.featuredCollections = [];
         homeController.URL = uiMisc.getCurrentServerURL();
+        homeController.welcomeHeader = config.welcome.header;
+        homeController.welcomeMessage = config.welcome.message;
 
         if (config.featuredCollections) {
             homeController.featuredCollections = config.featuredCollections;
