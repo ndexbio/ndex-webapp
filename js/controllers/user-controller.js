@@ -182,12 +182,10 @@ ndexApp.controller('userController',
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
 
                     var networkStatus = "success";
-                    if (!network.isValid) {
-                        if (network.errorMessage) {
-                            networkStatus = "failed";
-                        } else {
-                            networkStatus = "processing";
-                        }
+                    if (network.errorMessage) {
+                        networkStatus = "failed";
+                    } else if (!network.isValid) {
+                        networkStatus = "processing";
                     }
 
                     if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
