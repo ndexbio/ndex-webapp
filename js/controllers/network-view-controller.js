@@ -1790,8 +1790,11 @@ ndexApp.controller('networkViewController',
 
                             //               console.log ( JSON.stringify(rawCX));
 
-                            networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX,
-                                function (data) {
+
+                            //networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX,
+
+                            networkService.createCXNetwork(rawCX,
+                                function (newNetworkURL) {
                                     $modalInstance.close();
                                     $scope.isProcessing = false;
 
