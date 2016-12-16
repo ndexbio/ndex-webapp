@@ -2474,7 +2474,7 @@
             controller: function($scope, $modal, $location, ndexService) {
 
                 $scope.openMe = function() {
-                    //$scope.canProceed = true;
+                    $scope.canProceed = true;
                     var adminCheck = $scope.checkAdminRemoval();
                     // EVERYTHING IS OK
                     if(!adminCheck['adminIssue']){
@@ -2506,7 +2506,7 @@
                         });
                     } else {
                     // NO ADMIN!!! CAN'T PROCEED AS CURRENTLY SPECIFIED
-                        //$scope.canProceed = false;
+                        $scope.canProceed = false;
                         $scope.isProcessing = false;
                         modalInstance = $modal.open({
                             templateUrl: 'confirmation-modal.html',
