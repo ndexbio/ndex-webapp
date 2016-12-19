@@ -37,6 +37,9 @@ ndexApp.controller('editNetworkPropertiesController',
         for (var i = 0; i < editor.propertyValuePairs.length; i++) {
 
             attribute = editor.propertyValuePairs[i].predicateString;
+            if(attribute === "custom..."){
+                attribute = editor.propertyValuePairs[i].predicateStringCustom;
+            }
 
             if (attribute) {
 
@@ -59,7 +62,7 @@ ndexApp.controller('editNetworkPropertiesController',
 	editor.changed = function(index, value, property, action) {
 
         var attributeDictionary = editor.buildAttributeDictionary();
-
+        var nonEditableLabels = ["sourceformat", "name", "description", "version", "reference"]
 
 		if((index == (editor.propertyValuePairs.length - 1)) && (value.trim().length > 0)) {
 
@@ -94,9 +97,14 @@ ndexApp.controller('editNetworkPropertiesController',
                     "cannot be used as predicate.";
                 editor.disableSaveChangesButton = true;
 
-            } else if (value.toLowerCase() === 'custom...' && !property.predicateStringCustom) {
+//            } else if (value.toLowerCase() === 'custom...' && !property.predicateStringCustom) {
 
-                property.labelError = "Custom field is empty";
+//                property.labelError = "Custom field is empty";
+//                editor.disableSaveChangesButton = true;
+
+            } else if (nonEditableLabels.indexOf(value.toLowerCase()) > -1) {
+                var myval = nonEditableLabels.indexOf(value.toLowerCase());
+                property.labelError = value + " is a reserved keyword. Please enter a different value.";
                 editor.disableSaveChangesButton = true;
 
             } else {
@@ -122,12 +130,16 @@ ndexApp.controller('editNetworkPropertiesController',
     editor.checkIfFormIsValid = function(attributeDictionary) {
 
         var disableSaveChangesButton = false;
+        var nonEditableLabels = ["sourceformat", "name", "description", "version", "reference"]
 
         for(var i=0; i<editor.propertyValuePairs.length; i++) {
 
             var pair = editor.propertyValuePairs[i];
             var labelValue = pair.labelValue;
             var predicateStr = pair.predicateString;
+            if(predicateStr === "custom..."){
+                predicateStr = pair.predicateStringCustom;
+            }
 
             if (predicateStr.toLowerCase() === 'reference') {
 
@@ -140,6 +152,11 @@ ndexApp.controller('editNetworkPropertiesController',
 
                 pair.labelError = "sourceFormat is reserved for internal use by NDEx and " +
                     "cannot be used as predicate.";
+                disableSaveChangesButton = true;
+
+            } else if (nonEditableLabels.indexOf(predicateStr.toLowerCase()) > -1) {
+
+                pair.labelError = predicateStr + " is a reserved keyword. Please enter a different value.";
                 disableSaveChangesButton = true;
 
             } else if ((labelValue in attributeDictionary) && (attributeDictionary[labelValue] > 1)) {

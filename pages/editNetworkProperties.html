@@ -165,6 +165,7 @@
 					   placeholder="Enter Custom Type..."
 					   ng-model='property.predicateStringCustom'
 					   ng-model="selected"
+					   ng-change='editor.changed($index, property.predicateStringCustom, property)'
 					   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
 					<span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;" ng-show="property.predicateString == 'custom...'"> </span>
 
