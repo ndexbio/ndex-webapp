@@ -139,7 +139,11 @@ ndexApp.controller('userController',
                 for (var i = 0; i < selectedNetworksRows.length; i++) {
                     var networkUUID = selectedNetworksRows[i].externalId;
                     var ownerUUID = selectedNetworksRows[i].ownerUUID;
+                    var loggedInUserPermission = (networkUUID in userController.loggedInUsersNetworkPermissionsMap) ?
+                        userController.loggedInUsersNetworkPermissionsMap[networkUUID] : 'NONE';
 
+
+                    /*
                     if (ownerUUID == loggedInUserId) {
                         // if this network is owned by Logged In User, do not send permission request for this
                         // network ( .e., skip it)
@@ -157,12 +161,14 @@ ndexApp.controller('userController',
                             continue;
                         }
                     }
+                    */
 
                     UUIDs.push(
                         {
                             'networkUUID': networkUUID,
-                            'owner': selectedNetworksRows[i]['Owned By'],
-                            'name': selectedNetworksRows[i]['name']
+                            'owner': selectedNetworksRows[i]['Owner'],
+                            'name': selectedNetworksRows[i]['name'],
+                            'loggedInUserPermission' : loggedInUserPermission
                         });
                 }
 

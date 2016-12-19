@@ -864,7 +864,7 @@
             restrict: 'E',
             transclude: true,
             templateUrl: 'pages/directives/createRequestNetwork.html',
-            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.request = {};
@@ -872,15 +872,46 @@
                 $scope.accounts = [];
                 $scope.selected = {};
                 $scope.selected.account = undefined;
+                $scope.selectedNetworks = [];
+                $scope.loggedInUserPermissions = undefined;
 
                 $scope.openMe = function() {
+                    $scope.selectedNetworks = $scope.ndexData.getUUIDsOfNetworksForSendingPermissionRequests();
+                    $scope.getLoggedInUserPermissions();
                     intialize();
-                    modalInstance = $modal.open({
-                        templateUrl: 'create-request-network-modal.html',
-                        scope: $scope,
-                        backdrop: 'static'
-                    });
+
+                    if (($scope.privileges == 'Write') || ($scope.privileges == 'Admin')) {
+                        var title = "You Already Have Maximum Permission Level";
+                        var message =
+                            "You already have the highest permission level available.";
+                        ndexNavigation.genericInfoModal(title, message);
+
+                    } else {
+
+                        modalInstance = $modal.open({
+                            templateUrl: 'create-request-network-modal.html',
+                            scope: $scope,
+                            backdrop: 'static'
+                        });
+                    }
                 };
+
+                $scope.getLoggedInUserPermissions = function() {
+                    var permissionsStats = {
+                        'NONE' : 0,
+                        'READ' : 0,
+                        'WRITE' : 0,
+                        'ADMIN' : 0
+                    };
+
+                    $scope.selectedNetworks.forEach( function (selectedNetwork)
+                    {
+                        var permission = selectedNetwork['loggedInUserPermission'];
+                        permissionsStats[permission] = permissionsStats[permission] + 1;
+                    });
+                    $scope.loggedInUserPermissions = permissionsStats;
+
+                }
 
                 $scope.close = function() {
                     modalInstance.close();
@@ -896,10 +927,20 @@
 
                     var requestType =  $scope.selected.account.accountType;
 
-                    var UUIDsOfSelectedNetworks = $scope.ndexData.getUUIDsOfNetworksForSendingPermissionRequests();
+                    var selectedNetworks = $scope.selectedNetworks;
 
-                    for (var i = 0; i < UUIDsOfSelectedNetworks.length; i++) {
-                        var networkUUID = UUIDsOfSelectedNetworks[i]['networkUUID'];
+                    for (var i = 0; i < selectedNetworks.length; i++) {
+                        var networkUUID = selectedNetworks[i]['networkUUID'];
+                        var loggedInUserPermission = selectedNetworks[i]['loggedInUserPermission'];
+
+                        if ( (($scope.request.permission == 'READ')  && (['READ', 'WRITE'].indexOf(loggedInUserPermission) > -1)) ||
+                             (($scope.request.permission == 'WRITE') && (loggedInUserPermission == 'WRITE')) )
+                        {
+                            // no need to send permission request since logged in user already has the same or
+                            // higher permission
+                            continue;
+                        };
+
                         if (requestType == 'user') {
 
                             // Create a request to ask a network permission for the authenticated user.
@@ -912,7 +953,7 @@
                             var userUUID = $scope.selected.account.externalId;
 
                             $scope.request.progress = "Sending " + $scope.request.permission +
-                                " permission request for network " + UUIDsOfSelectedNetworks[i]['name'];
+                                " permission request for network " + selectedNetworks[i]['name'];
 
                             ndexService.createUserPermissionRequestV2(userUUID, userPermissionRequest,
                                 function(data) {
@@ -935,7 +976,7 @@
                             var groupUUID = $scope.selected.account.externalId;
 
                             $scope.request.progress = "Sending " + $scope.request.permission +
-                                " permission request for network " + UUIDsOfSelectedNetworks[i]['name'];
+                                " permission request for network " + selectedNetworks[i]['name'];
 
                             ndexService.createGroupPermissionRequestV2(groupUUID, groupPermissionRequest,
                                 function(data) {
@@ -974,6 +1015,16 @@
                     $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
 
                     $scope.request.accountType = undefined;
+                    
+                    if ($scope.loggedInUserPermissions['NONE'] > 0) {
+                        $scope.privileges = 'None';
+                    } else if ($scope.loggedInUserPermissions['READ'] > 0) {
+                        $scope.privileges = 'Read';
+                    } else if ($scope.loggedInUserPermissions['WRITE'] > 0) {
+                        $scope.privileges = 'Write';
+                    } else if ($scope.loggedInUserPermissions['ADMIN'] > 0) {
+                        $scope.privileges = 'Admin';
+                    }
 
                     $scope.modal.permissionLabel = ($scope.privileges == 'None') ? 'Can read' : 'Can edit';
 
