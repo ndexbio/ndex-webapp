@@ -682,7 +682,7 @@ ul.ndex-nav-pills > li > a:hover {
     line-height:1.5;
     /*margin:2em;*/
     text-align: right;
-    padding-top: 1em;
+    padding-bottom: 1em;
 }
 
 .ndex-featured-collections {
