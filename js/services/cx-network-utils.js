@@ -240,6 +240,7 @@ angular.module('ndexServiceApp')
                   break;
               case 'functionTerms':
                   aspect[element['po']] = element;
+                  break;
               default:
                   // opaque for now
 
