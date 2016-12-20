@@ -391,9 +391,16 @@
                                                 <span ng-switch-default>
                                                    &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
                                                    <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
-                                                   <br />
                                                 </span>
 
+                                                <span ng-show="checkHowManyAttributes(attributeName, edge[attributeName])">
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
+                                                        more...
+                                                    </a>
+                                                    <br>
+                                                </span>
+                                                <br />
                                             </span>
                                         </span>
                                     </span>
