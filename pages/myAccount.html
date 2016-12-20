@@ -53,7 +53,7 @@
 
                 </div>
 
-                <div class="btn-group btn-group-vertical buttonWithMarginBottom"  ng-show="myAccountController.atLeastOneSelected">
+                <div class="btn-group btn-group-vertical buttonWithMarginBottom"  ng-show="myAccountController.rowsSelected > 0">
                     <hr>
                     <h5><strong>Bulk Actions:</strong></h5>
 
@@ -143,8 +143,11 @@
                     </span>
 
                     <span>
-                        <a class="btn btn-primary customButtonWidth"
+                        <a class="btn btn-primary customButtonWidth" ng-show="enableManageAccesButton"
                            ng-click="myAccountController.manageBulkAccess('/access/bulk/network', main.getCurrentUserId())">
+                            Manage Access
+                        </a>
+                        <a class="btn btn-primary customButtonWidth disabled" ng-show="!enableManageAccesButton">
                             Manage Access
                         </a>
                     </span>

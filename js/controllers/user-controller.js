@@ -39,6 +39,8 @@ ndexApp.controller('userController',
             userController.userPageNetworksUUIDs = [];
             userController.loggedInUsersNetworkPermissionsMap = {};
 
+            $scope.enableUpgradePermissionButton = false;
+
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -64,10 +66,14 @@ ndexApp.controller('userController',
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
+
+                        enableOrDisableUpgradePermissionButton();
                     });
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
+
+                        enableOrDisableUpgradePermissionButton();
                     });
 
                 }
@@ -125,6 +131,21 @@ ndexApp.controller('userController',
                 return markDownFinal;
             };
 
+            var enableOrDisableUpgradePermissionButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                for (var i = 0; i < selectedNetworksRows.length; i++) {
+
+                    var ownerUUID = selectedNetworksRows[i].ownerUUID;
+                    if (ownerUUID == userController.loggedInIdentifier) {
+                        $scope.enableUpgradePermissionButton = false;
+                        return;
+                    };
+                };
+
+                $scope.enableUpgradePermissionButton = true;
+            };
+
             userController.getUUIDsOfNetworksForSendingPermissionRequests = function() {
                 var UUIDs = [];
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
@@ -141,28 +162,7 @@ ndexApp.controller('userController',
                     var ownerUUID = selectedNetworksRows[i].ownerUUID;
                     var loggedInUserPermission = (networkUUID in userController.loggedInUsersNetworkPermissionsMap) ?
                         userController.loggedInUsersNetworkPermissionsMap[networkUUID] : 'NONE';
-
-
-                    /*
-                    if (ownerUUID == loggedInUserId) {
-                        // if this network is owned by Logged In User, do not send permission request for this
-                        // network ( .e., skip it)
-                        continue;
-                    }
-
-                    if (networkUUID in userController.loggedInUsersNetworkPermissionsMap) {
-                        var permission = userController.loggedInUsersNetworkPermissionsMap[networkUUID];
-
-                        if (permission && (permission.toUpperCase()=="WRITE" || (permission.toUpperCase()=="ADMIN"))) {
-                            // if this is a network among selected networks on the User page where
-                            // Logged In User has WRITE or ADMIN privileges (there should be no networks with ADMIN
-                            // privilege for the logged in user on a User page though),
-                            // do not send permission request for this network ( .e., skip it)
-                            continue;
-                        }
-                    }
-                    */
-
+                    
                     UUIDs.push(
                         {
                             'networkUUID': networkUUID,

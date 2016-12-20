@@ -33,7 +33,7 @@ ndexApp.controller('myAccountController',
             myAccountController.networkSearchResults = [];
             myAccountController.skip = 0;
             myAccountController.skipSize = 10000;
-            myAccountController.atLeastOneSelected = false;
+            myAccountController.rowsSelected = 0;
 
             myAccountController.pendingRequests = [];
             myAccountController.sentRequests = [];
@@ -58,7 +58,9 @@ ndexApp.controller('myAccountController',
                 // hide the My Account menu item in Nav Bar
                 $scope.$parent.showMyAccountMenu = true;
             });
-            
+
+            $scope.enableManageAccessButton = false;
+
             //table
             $scope.networkGridOptions =
             {
@@ -75,12 +77,15 @@ ndexApp.controller('myAccountController',
                     $scope.networkGridApi = gridApi;
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.atLeastOneSelected = selectedRows.length > 0;
+                        myAccountController.rowsSelected = selectedRows.length;
 
+                        enableOrDisableManageAccessButton();
                     });
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.atLeastOneSelected = selectedRows.length > 0;
+                        myAccountController.rowsSelected = selectedRows.length;
+
+                        enableOrDisableManageAccessButton();
                     });
 
                 }
@@ -145,6 +150,21 @@ ndexApp.controller('myAccountController',
                 var markDownFinal  = $("<html>"+markDown+"</html>").text();
 
                 return markDownFinal;
+            };
+
+            var enableOrDisableManageAccessButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                for (var i = 0; i < selectedNetworksRows.length; i++) {
+
+                    var ownerUUID = selectedNetworksRows[i].ownerUUID;
+                    if (ownerUUID != myAccountController.loggedInIdentifier) {
+                        $scope.enableManageAccesButton = false;
+                        return;
+                    };
+                };
+
+                $scope.enableManageAccesButton = true;
             };
             
             var refreshNetworkTable = function()
@@ -562,7 +582,7 @@ ndexApp.controller('myAccountController',
                         myAccountController.networkSearchResults.splice(i,1);
                 }
                 refreshNetworkTable();
-                myAccountController.atLeastOneSelected = false;
+                myAccountController.rowsSelected = 0;
             };
 
             //              scope functions

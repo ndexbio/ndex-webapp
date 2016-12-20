@@ -35,11 +35,16 @@
                 </span>
 
                 <span>
-                    <a class="btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
+                    <a class="btn btn-primary customButtonWidth" title="Request Read or Edit Privilege"
+                       ng-show="enableUpgradePermissionButton">
                         <bulk-create-request-network ndex-data='userController' ng-model="selection"
                                                      privileges='None'>
                             Upgrade Permission
                         </bulk-create-request-network>
+                    </a>
+
+                    <a class="btn btn-primary customButtonWidth disabled" ng-show="!enableUpgradePermissionButton">
+                            Upgrade Permission
                     </a>
                 </span>
 
