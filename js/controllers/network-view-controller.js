@@ -1116,7 +1116,7 @@ ndexApp.controller('networkViewController',
                                     var markup = parseNdexMarkupValue(e);
                                     if ( markup.id) {
                                         var url = networkController.baseURL + markup.id;
-                                        menuList.push('<a href="' + url + '">' +
+                                        menuList.push('<a target="_blank" href="' + url + '">' +
                                             (markup.n? markup.n : markup.id)+ '</a>');
                                     }
                                 });
@@ -1128,7 +1128,7 @@ ndexApp.controller('networkViewController',
                                 _.forEach(extLinkList, function (e) {
                                     var markup = parseNdexMarkupValue(e);
                                     if ( markup.id) {
-                                        menuList.push('<a href="' + markup.id + '">' +
+                                        menuList.push('<a target="_blank" href="' + markup.id + '">' +
                                             (markup.n? markup.n : 'external link') + '</a>');
                                     }
                                 });
@@ -1168,7 +1168,7 @@ ndexApp.controller('networkViewController',
                                     var markup = parseNdexMarkupValue(e);
                                     if ( markup.id) {
                                         var url = networkController.baseURL + markup.id;
-                                        menuList.push('<a href="' + url + '">' +
+                                        menuList.push('<a target="_blank" href="' + url + '">' +
                                             (markup.n? markup.n : markup.id)+ '</a>');
                                     }
                                 });
@@ -1180,7 +1180,7 @@ ndexApp.controller('networkViewController',
                                 _.forEach(extLinkList, function (e) {
                                     var markup = parseNdexMarkupValue(e);
                                     if ( markup.id) {
-                                        menuList.push('<a href="' + markup.id + '">' +
+                                        menuList.push('<a target="_blank" href="' + markup.id + '">' +
                                             (markup.n? markup.n : 'external link') + '</a>');
                                     }
                                 });
