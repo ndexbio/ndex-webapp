@@ -66,7 +66,7 @@ angular.module('ndexServiceApp')
 
                     var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
 
-                    // saveAs is defined in FileServer.js
+                    // saveAs is defined in FileSaver.js
                     saveAs(blob, downloadFileName);
                 },
                 function (error) {
@@ -174,7 +174,7 @@ angular.module('ndexServiceApp')
                     
         self.getSubNetworkId = function(network) {
             return (network.subnetworkIds && (network.subnetworkIds.length == 1)) ? network.subnetworkIds[0] : null;
-        }
+        };
 
         self.getNetworkFormat = function(subNetworkId, network) {
 
