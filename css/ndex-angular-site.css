@@ -501,7 +501,6 @@ a { cursor: pointer; }
     text-overflow: ellipsis;
     margin-right: 10px;
     margin-top: 5px;
-    //max-height: 250px;
 }
 
 .user-tasks-panel

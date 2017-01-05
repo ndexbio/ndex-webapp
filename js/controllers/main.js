@@ -15,7 +15,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.url = $location; //expose the service to the scope for nav
 
         $scope.main.loggedIn = false;
-        //$scope.main.showSignIn = false;
+        $scope.main.showSignIn = true;
 
         $scope.$on('LOGGED_IN', function () {
             //listener for changes in log in.
@@ -108,34 +108,24 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $location.path("/signIn");
         };
 
-        $scope.main.isInternetExplorerUsed = function() {
-            var ua = window.navigator.userAgent;
+        
+        /*
+         * Only Google Chrome or Firefox browsers are supported.
+         * Check if the currently used browser is supported.
+         */
+        $scope.main.isSupportedBrowserUsed = function() {
 
-            var msie = ua.indexOf('MSIE ');
-            if (msie > 0) {
-                // IE 10 or older => return version number
-                // return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+            if (navigator.userAgent.indexOf("Chrome") != -1) {
                 return true;
             }
 
-            var trident = ua.indexOf('Trident/');
-            if (trident > 0) {
-                // IE 11 => return version number
-                //var rv = ua.indexOf('rv:');
-                //return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+            if (navigator.userAgent.indexOf("Firefox") != -1) {
                 return true;
             }
 
-            /*
-            var edge = ua.indexOf('Edge/');
-            if (edge > 0) {
-                // Edge (IE 12+) => return version number
-                // return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-                return true;
-            }
-            */
+            $scope.main.showSignIn = false;
 
-            // other browser
+            // other browsers are not supported
             return false;
         };
 

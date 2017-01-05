@@ -345,7 +345,7 @@
                     <a ng-click="collapseHamburgerMenu(); main.signout()">Sign Out</a>
                 </li>
 
-                <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown">
+                <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
                     <a ng-click="collapseHamburgerMenu(); main.startSignIn()">Sign In</a>
                 </li>
 
