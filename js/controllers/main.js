@@ -220,6 +220,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             Groups : "Search for groups"
         };
 
+        /*
         $scope.main.searchUsersExamples = [
             {
                 description: 'Any occurance of "NCI" the name of the user',
@@ -227,6 +228,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 searchType: 'Users'
             }
         ];
+        */
         
         $scope.main.getSearchPlaceholder = function(){
             //console.log("placeholder for " + $scope.main.searchType);
@@ -260,7 +262,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         if ($location.path() == '/search')
             $scope.main.searchType = $location.search().searchType;
 
-
+/*
         $scope.main.searchAllExamples = [
             {
                 description: 'Any mention of "melanoma"',
@@ -273,7 +275,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 searchString: 'RBL2',
                 searchType: 'All'
             }];
-
+*/
         $scope.main.searchNetworksExamples = [
 
             {
@@ -281,19 +283,13 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 searchString: 'TP53 MDM2 RB1 CDK4',
                 searchType: 'Networks'
             },
-            
+
             {
-                description: 'By wildcard terms: "mel*"',
-                searchString: 'mel*',
+                description: 'With "AND" for co-occurance : "TP53 AND BARD1"',
+                searchString: 'TP53 AND BARD1',
                 searchType: 'Networks'
             },
-/*
-            {
-                description: 'By network id: "uuid:"',
-                searchString: 'uuid:',
-                searchType: 'Networks'
-            },
-*/
+
             {
                 description: 'By wildcard and property: "name:mel*"',
                 searchString: 'name:mel*',
@@ -307,14 +303,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             },
 
             {
-                description: 'With "AND" for co-occurance : "TP53 AND BARD1"',
-                searchString: 'TP53 AND BARD1',
-                searchType: 'Networks'
-            },
-
-            {
-                description: 'With more complex "AND" : "NCI AND edgeCount:[100 TO 300]"',
-                searchString: 'NCI AND edgeCount:[100 TO 300]',
+                description: 'By UUID: "uuid:c53894ce-8e47-11e5-b435-06603eb7f303"',
+                searchString: 'uuid:c53894ce-8e47-11e5-b435-06603eb7f303',
                 searchType: 'Networks'
             },
 
@@ -323,13 +313,23 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 searchString: 'creationTime:[2016-01-01T00:00:01Z TO 2016-04-27T23:59:59Z]',
                 searchType: 'Networks'
             }
+            
+/*
+            {
+                description: 'By wildcard terms: "mel*"',
+                searchString: 'mel*',
+                searchType: 'Networks'
+            },
+            {
+                description: 'With more complex "AND" : "NCI AND edgeCount:[100 TO 300]"',
+                searchString: 'NCI AND edgeCount:[100 TO 300]',
+                searchType: 'Networks'
+            },
             /*
              name:metabolism AND edgeCount:[1 TO 5000]
              creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]
 
             */
-
-
         ];
 
         $scope.main.runSearchExample = function(example){

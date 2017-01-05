@@ -149,6 +149,7 @@
                         Search Examples <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
+                        <!--
                         <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Networks,
                             Users, and Groups:
                         </li>
@@ -157,7 +158,9 @@
                                 {{item.description}}
                             </a>
                         </li>
+                        -->
 
+                        <!--
                         <li class="divider"></li>
 
                         <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Users:
@@ -171,6 +174,8 @@
                         <li class="divider"></li>
 
                         <li class="AlignLeft" style="padding-left: 10px; padding-bottom: 2px;">Search Networks:</li>
+                        -->
+
                         <li class="AlignLeft" style="padding-left: 5px;"
                             ng-repeat="item in main.searchNetworksExamples">
                             <a ng-click="main.runSearchExample(item); closeModal()">
@@ -178,13 +183,16 @@
                             </a>
                         </li>
 
+                        <!--
                         <li class="divider"></li>
+                        -->
 
                         <li class="AlignLeft" ng-show="config.searchDocLink">
                             <a style="color:#428bca; background-color:white;" ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
                                 <u>{{config.searchDocLink.label}}</u>
                             </a>
                         </li>
+
                     </ul>
                 </div>
 
