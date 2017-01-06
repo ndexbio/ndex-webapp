@@ -449,6 +449,20 @@ ndexApp.controller('networkViewController',
             };
             */
 
+            $scope.getNetworkFromServerAndSaveToDisk = function() {
+
+                var networkName = (networkController.currentNetwork && networkController.currentNetwork.name) ?
+                    networkController.currentNetwork.name : networkController.currentNetworkId;
+                
+                var networkData = {
+                    'externalId': networkController.currentNetworkId,
+                    'name': networkName
+                };
+
+                uiMisc.getNetworkFromServerAndSaveToDisk(networkData);
+
+            };
+
 
             var parseNdexMarkupValue = function ( value ) {
                 return {n:  value.replace(/(\[(.*)\])?\(.*\)$/, '$2'),

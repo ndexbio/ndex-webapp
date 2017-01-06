@@ -841,3 +841,13 @@ ul.ndex-nav-pills > li > a:hover {
     border-radius: 24px;
     outline:none !important;
 }
+
+.download-btn {
+    background-color: #93b236 !important;
+    border-color:  #93b236;
+}
+
+.download-btn:hover, .download-btn:focus, .download-btn:active {
+    background-color: #71892a !important;
+    border-color: #71892a;
+}

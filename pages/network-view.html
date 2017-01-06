@@ -658,6 +658,17 @@
         </div>
 
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
+            <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
+                    || networkController.isAdmin
+                    || networkController.canEdit
+                    || networkController.canRead)'>
+
+                    <a id="downloadButton" class="actionsLabel btn btn-primary download-btn"
+                       ng-click="getNetworkFromServerAndSaveToDisk()">
+                        Download
+                    </a>
+            </span>
+
             <span>
                 <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="border: 5px double white;">{{buttonLabel}}</button>
             </span>
@@ -672,6 +683,7 @@
                 </a>
             </span>
 
+            <!--
             <span ng-show='networkController.isLoggedIn
                 && ((networkController.currentNetwork.visibility == "PUBLIC")
                     || networkController.isAdmin
@@ -685,6 +697,7 @@
                         </export-network>
                     </a>
             </span>
+            -->
 
 
             <span ng-show='networkController.isLoggedIn && networkController.canRead'>
