@@ -845,9 +845,11 @@ ul.ndex-nav-pills > li > a:hover {
 .download-btn {
     background-color: #93b236 !important;
     border-color:  #93b236;
+    border: 5px double white;
 }
 
 .download-btn:hover, .download-btn:focus, .download-btn:active {
     background-color: #71892a !important;
     border-color: #71892a;
+    border: 5px double white;
 }
