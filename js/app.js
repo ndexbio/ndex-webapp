@@ -89,12 +89,6 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'searchNetworksController'
         })
 
-        // route for searchUsers page
-        .when('/searchUsers', {
-            templateUrl: 'pages/searchUsers.html',
-            controller: 'searchUsersController'
-        })
-
         //route for searchGroups page
         .when('/searchGroups', {
             templateUrl: 'pages/searchGroups.html',
