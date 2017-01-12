@@ -1523,9 +1523,13 @@ ndexApp.controller('networkViewController',
                 {
                     var edgeKey = edgeKeys[i];
 
-                    var source = network.nodes[edges[edgeKey].s].n;
-                    var interaction = edges[edgeKey].i;
-                    var target = network.nodes[edges[edgeKey].t].n;
+                    var edgeObj = networkService.getEdgeInfo(edgeKey);
+
+                    var sourceNodeObj = networkService.getNodeInfo(edgeObj['s']);
+                    var source = $scope.getNodeName(sourceNodeObj);
+                    var interaction = edgeObj['i'];
+                    var targeteNodeObj = networkService.getNodeInfo(edgeObj['t']);
+                    var target = $scope.getNodeName(targeteNodeObj);
 
                     var row = {"Source": source, "Interaction": interaction, "Target": target};
                     
@@ -1670,20 +1674,19 @@ ndexApp.controller('networkViewController',
 
                 var nodeAttributes = network.nodeAttributes;
 
-                if (!nodeAttributes) {
-                    return;
-                }
-
                 for (var key in nodeKeys)
                 {
-                    var nodeAttributeIndex = nodeKeys[key];
-                    var nodeAttrs = nodeAttributes[nodeAttributeIndex];
+                    var nodeId = nodeKeys[key];
 
-                    var label = (nodes[nodeAttributeIndex].n) ? (nodes[nodeAttributeIndex].n) : "";
+                    var nodeObj = networkService.getNodeInfo(nodeId);
+                    var label = $scope.getNodeName(nodeObj);
 
                     var row = {"Label": label};
 
                     if (nodeAttributes) {
+
+                        var nodeAttrs = nodeAttributes[nodeId];
+
                         for (var key1 in nodeAttrs) {
                             var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
                             var attributeObjName = attributeObj['n'];
