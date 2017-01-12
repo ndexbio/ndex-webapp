@@ -20,6 +20,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.$on('LOGGED_IN', function () {
             //listener for changes in log in.
             $scope.main.loggedIn = true;
+            $scope.main.showSignIn = false;
             $scope.main.userName = sharedProperties.getCurrentUserAccountName();
             $scope.showMyAccountMenu = true;
         });
@@ -31,7 +32,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
             delete $http.defaults.headers.common['Authorization'];
-            $scope.main.showSignIn = false;
+            $scope.main.showSignIn = true;
         });
 
         if( $location.path() == '/' || $location.path() == '/signIn')
