@@ -1407,9 +1407,9 @@ ndexApp.controller('networkViewController',
                 {
                     var edgeKey = edgeKeys[i];
 
-                    var predicate = (edges[edgeKey].i) ? (edges[edgeKey].i) : "";
-                    var subject = network.nodes[edges[edgeKey].s].n;
-                    var object = network.nodes[edges[edgeKey].t].n;
+                    var predicate = edges[edgeKey].i ? (edges[edgeKey].i) : "";
+                    var subject = network.nodes[edges[edgeKey].s].n ? network.nodes[edges[edgeKey].s].n : "";
+                    var object = network.nodes[edges[edgeKey].t].n ? network.nodes[edges[edgeKey].t].n : "";
 
                     longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
                     longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
@@ -1426,22 +1426,22 @@ ndexApp.controller('networkViewController',
                 }
                 var columnDefs = [
                     {
-                        field: 'Subject',
-                        displayName: 'Subject',
+                        field: 'Source',
+                        displayName: 'Source',
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestSubject, false)
                     },
                     {
-                        field: 'Predicate',
-                        displayName: 'Predicate',
+                        field: 'Interaction',
+                        displayName: 'Interaction',
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestPredicate, false)
                     },
                     {
-                        field: 'Object',
-                        displayName: 'Object',
+                        field: 'Target',
+                        displayName: 'Target',
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestObject, false)
@@ -1523,11 +1523,11 @@ ndexApp.controller('networkViewController',
                 {
                     var edgeKey = edgeKeys[i];
 
-                    var predicate = edges[edgeKey].i;
-                    var subject = network.nodes[edges[edgeKey].s].n;
-                    var object = network.nodes[edges[edgeKey].t].n;
+                    var source = network.nodes[edges[edgeKey].s].n;
+                    var interaction = edges[edgeKey].i;
+                    var target = network.nodes[edges[edgeKey].t].n;
 
-                    var row = {"Subject": subject, "Predicate": predicate, "Object": object};
+                    var row = {"Source": source, "Interaction": interaction, "Target": target};
                     
                     if (edgeCitations) {
                         row["Citations"] = (edgeCitations[edgeKey]) ? edgeKey : "";
@@ -1669,6 +1669,10 @@ ndexApp.controller('networkViewController',
                 $scope.nodeGridOptions.data = [];
 
                 var nodeAttributes = network.nodeAttributes;
+
+                if (!nodeAttributes) {
+                    return;
+                }
 
                 for (var key in nodeKeys)
                 {
