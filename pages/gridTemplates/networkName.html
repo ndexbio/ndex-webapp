@@ -1,6 +1,24 @@
-<div class="ui-grid-cell-contents" title="{{ row.entity.name }} &#x0D;&#x0D; {{ row.entity.description }}">
-    <a ng-if="row.entity.Status == 'success'" href="#/newNetwork/{{ row.entity.externalId}}">{{COL_FIELD}} </a>
-    <a ng-if="row.entity.Status == 'warning'" href="#/newNetwork/{{ row.entity.externalId}}">{{COL_FIELD}} </a>
-    <span ng-if="row.entity.Status == 'failed'" style="cursor: not-allowed">{{COL_FIELD}}</span>
-    <span ng-if="row.entity.Status == 'processing'" style="cursor: not-allowed">{{COL_FIELD}}</span>
+<div ng-if="row.entity.Status == 'success'"
+     class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
+    <a href="#/newNetwork/{{row.entity.externalId}}">{{COL_FIELD}} </a>
+</div>
+
+<div ng-if="row.entity.Status == 'warning'"
+     class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
+    <a href="#/newNetwork/{{row.entity.externalId}}">{{COL_FIELD}} </a>
+</div>
+
+<div ng-if="row.entity.Status == 'failed'"
+     class="ui-grid-cell-contents" title="{{row.entity.errorMessage}}">
+    <span ng-if="grid.appScope.isOwnerOfNetwork(row.entity.ownerUUID)">
+        <a ng-click="grid.appScope.deleteFailedNetwork(row.entity)">{{COL_FIELD}}</a>
+    </span>
+    <span ng-if="!grid.appScope.isOwnerOfNetwork(row.entity.ownerUUID)">
+        <span style="cursor: not-allowed">{{COL_FIELD}}</span>
+    </span>
+</div>
+
+<div ng-if="row.entity.Status == 'processing'"
+     class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
+    <span style="cursor: not-allowed">{{COL_FIELD}}</span>
 </div>

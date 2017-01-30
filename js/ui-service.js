@@ -30,10 +30,11 @@
                     $location.path("/user/" + userId);
                 };
 
-                factory.openConfirmationModal = function(message, confirmHandler){
+                factory.openConfirmationModal = function(title, message, confirmHandler){
                     ////console.log("attempting to open confirmationModal");
                     var ConfirmCtrl = function($scope, $modalInstance) {
                         $scope.input = {};
+                        $scope.title = title;
                         $scope.message = message;
                         $scope.confirm = function(){
                             $modalInstance.dismiss();

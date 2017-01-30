@@ -1,8 +1,10 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope',
         '$location', '$routeParams', '$route', '$modal', 'uiMisc',
+        'ndexNavigation',
         function (ndexService, ndexUtility, sharedProperties, $scope,
-                  $location, $routeParams, $route, $modal, uiMisc)
+                  $location, $routeParams, $route, $modal, uiMisc,
+                  ndexNavigation)
         {
 
             //              Process the URL to get application state
@@ -59,7 +61,8 @@ ndexApp.controller('myAccountController',
                 $scope.$parent.showMyAccountMenu = true;
             });
 
-            $scope.enableManageAccessButton = false;
+            $scope.enableEditPropertiesBulkButton = false;
+            $scope.enableManageAccessBulkButton = false;
 
             //table
             $scope.networkGridOptions =
@@ -79,13 +82,15 @@ ndexApp.controller('myAccountController',
                         var selectedRows = gridApi.selection.getSelectedRows();
                         myAccountController.rowsSelected = selectedRows.length;
 
-                        enableOrDisableManageAccessButton();
+                        enableOrDisableEditPropertiesBulkButton();
+                        enableOrDisableManageAccessBulkButton();
                     });
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         myAccountController.rowsSelected = selectedRows.length;
 
-                        enableOrDisableManageAccessButton();
+                        enableOrDisableEditPropertiesBulkButton();
+                        enableOrDisableManageAccessBulkButton();
                     });
 
                 }
@@ -152,19 +157,59 @@ ndexApp.controller('myAccountController',
                 return markDownFinal;
             };
 
-            var enableOrDisableManageAccessButton = function() {
+            var enableOrDisableEditPropertiesBulkButton = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableEditPropertiesBulkButton = false;
 
                 for (var i = 0; i < selectedNetworksRows.length; i++) {
 
                     var ownerUUID = selectedNetworksRows[i].ownerUUID;
-                    if (ownerUUID != myAccountController.loggedInIdentifier) {
-                        $scope.enableManageAccesButton = false;
+                    var status = selectedNetworksRows[i].Status;
+
+                    var network_in_invalid_state =
+                        (status && ["failed", "processing"].indexOf(status.toLowerCase()) > -1);
+
+                    if (network_in_invalid_state) {
+                        //$scope.enableEditPropertiesBulkButton = false;
+                        return;
+                    }
+
+                    if (ownerUUID == myAccountController.loggedInIdentifier) {
+                        // we are owner of the network, it means we can change it; get next selected network
+                        continue;
+                    };
+
+
+                    // here, ownerUUID != myAccountController.loggedInIdentifier
+                    var networkUUUID = selectedNetworksRows[i].externalId;
+                    if ((myAccountController.networksWithAdminAccess.indexOf(networkUUUID) == -1) &&
+                        (myAccountController.networksWithWriteAccess.indexOf(networkUUUID) == -1) ) {
+                        return;
+                    }
+
+                };
+
+                $scope.enableEditPropertiesBulkButton = true;
+            };
+
+            var enableOrDisableManageAccessBulkButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableManageAccessBulkButton = false;
+
+                for (var i = 0; i < selectedNetworksRows.length; i++) {
+
+                    var ownerUUID = selectedNetworksRows[i].ownerUUID;
+                    var status = selectedNetworksRows[i].Status;
+
+                    var network_in_invalid_state =
+                        (status && ["failed", "processing"].indexOf(status.toLowerCase()) > -1);
+
+                    if (ownerUUID != myAccountController.loggedInIdentifier || network_in_invalid_state) {
                         return;
                     };
                 };
 
-                $scope.enableManageAccesButton = true;
+                $scope.enableManageAccessBulkButton = true;
             };
             
             var refreshNetworkTable = function()
@@ -190,11 +235,7 @@ ndexApp.controller('myAccountController',
 
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
                     if (networkStatus == "failed") {
-                        if (network.errorMessage.length > 60) {
-                            networkName = network.errorMessage.substr(0, 60) + " ...";
-                        }  else {
-                            networkName = network.errorMessage;
-                        }
+                        networkName = "Invalid Network. UUID: " + network.externalId;
                     }
 
                     var description = $scope.stripHTML(network['description']);
@@ -211,6 +252,8 @@ ndexApp.controller('myAccountController',
                     var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
                     var disease   = uiMisc.getDisease(network);
                     var tissue    = uiMisc.getTissue(network);
+
+                    var errorMessage = network.errorMessage;
 
                     var row =   {
                         "Status"        :   networkStatus,
@@ -229,7 +272,8 @@ ndexApp.controller('myAccountController',
                         "description"   :   description,
                         "externalId"    :   externalId,
                         "ownerUUID"     :   network['ownerUUID'],
-                        "name"          :   networkName
+                        "name"          :   networkName,
+                        "errorMessage"  :   errorMessage
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
@@ -575,7 +619,7 @@ ndexApp.controller('myAccountController',
                 // we manually set the selected count to 0 (see defect NDEX-582)
                 $scope.networkGridApi.grid.selection.selectedCount = 0;
 
-                for (i = myAccountController.networkSearchResults.length - 1; i >= 0; i-- )
+                for (var i = myAccountController.networkSearchResults.length - 1; i >= 0; i-- )
                 {
                     var externalId = myAccountController.networkSearchResults[i].externalId;
                     if( selectedIds.indexOf(externalId) != -1 )
@@ -937,6 +981,58 @@ ndexApp.controller('myAccountController',
 
                 return uiMisc.getFirstWordFromDisease(diseaseDescription);
             };
+
+            $scope.isOwnerOfNetwork = function(networkOwnerUUID)
+            {
+                if (!myAccountController.isLoggedInUser) {
+                    return false;
+                }
+                return (myAccountController.loggedInIdentifier == networkOwnerUUID);
+            }
+
+            $scope.deleteFailedNetwork = function(rowEntity) {
+                var networkName  = rowEntity.name;
+                var errorMessage = rowEntity.errorMessage;
+                var status       = rowEntity.Status;
+                var networkUUID  = rowEntity.externalId;
+
+
+                var title = "Delete This Network";
+                var body  =
+                    "The following network will be permanently deleted from NDEx: " +
+                    "<br><br>" +
+                    "<strong>Name: </strong>" + networkName + "<br>" +
+                    "<strong>Status: </strong>" + status + "<br>" +
+                    "<strong>Error Message: </strong>" + errorMessage + "<br><br>" +
+                    "Are you sure you want to proceed?"
+                
+                ndexNavigation.openConfirmationModal(title, body,
+                    function () {
+                        ndexService.deleteNetworkV2(networkUUID,
+                            function (data)
+                            {
+                                // remove deleted network from myAccountController.networkSearchResults
+                                for (var i = myAccountController.networkSearchResults.length - 1; i >= 0; i--)
+                                {
+                                    var externalId = myAccountController.networkSearchResults[i].externalId;
+                                    if (externalId == networkUUID) {
+                                        myAccountController.networkSearchResults.splice(i, 1);
+                                        refreshNetworkTable();
+                                        break;
+                                    }
+                                }
+                            },
+                            function (error)
+                            {
+                                console.log("unable to delete network");
+                            });
+
+                    });
+
+                return;
+            };
+            
+            
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

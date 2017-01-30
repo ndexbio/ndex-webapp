@@ -41,6 +41,8 @@ ndexApp.controller('userController',
 
             $scope.enableUpgradePermissionButton = false;
 
+            userController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
+
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -185,8 +187,6 @@ ndexApp.controller('userController',
                     var network = userController.networkSearchResults[i];
                     var subNetworkId = uiMisc.getSubNetworkId(network);
 
-                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
-
                     var networkStatus = "success";
                     if (network.errorMessage) {
                         networkStatus = "failed";
@@ -196,6 +196,11 @@ ndexApp.controller('userController',
 
                     if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
                         networkStatus = "warning";
+                    }
+
+                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+                    if (networkStatus == "failed") {
+                        networkName = "Invalid Network. UUID: " + network.externalId;
                     }
 
                     var description = $scope.stripHTML(network['description']);
@@ -211,6 +216,8 @@ ndexApp.controller('userController',
                     var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
                     var disease   = uiMisc.getDisease(network);
                     var tissue    = uiMisc.getTissue(network);
+
+                    var errorMessage = network.errorMessage;
 
                     var row = {
                         "Status"        :   networkStatus,
@@ -228,7 +235,8 @@ ndexApp.controller('userController',
                         "description"   :   description,
                         "externalId"    :   externalId,
                         "ownerUUID"     :   network['ownerUUID'],
-                        "name"          :   networkName
+                        "name"          :   networkName,
+                        "errorMessage"  :   errorMessage
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
@@ -460,6 +468,15 @@ ndexApp.controller('userController',
 
                 return uiMisc.getFirstWordFromDisease(diseaseDescription);
             };
+
+
+            $scope.isOwnerOfNetwork = function(networkOwnerUUID)
+            {
+                if (!userController.isLoggedIn) {
+                    return false;
+                }
+                return (sharedProperties.getCurrentUserId() == networkOwnerUUID);
+            }
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

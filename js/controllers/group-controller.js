@@ -30,6 +30,7 @@ ndexApp.controller('groupController',
     groupController.networkQuery = {};
     groupController.errors = [];
 
+    groupController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
     //              scope functions
     // called on Networks belonging to group displayed on page
@@ -276,8 +277,6 @@ ndexApp.controller('groupController',
             var network = groupController.networkSearchResults[i];
             var subNetworkId = uiMisc.getSubNetworkId(network);
 
-            var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
-
             var networkStatus = "success";
             if (network.errorMessage) {
                 networkStatus = "failed";
@@ -287,6 +286,11 @@ ndexApp.controller('groupController',
 
             if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
                 networkStatus = "warning";
+            }
+            
+            var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+            if (networkStatus == "failed") {
+                networkName = "Invalid Network. UUID: " + network.externalId;
             }
 
             var description = $scope.stripHTML(network['description']);
@@ -302,6 +306,8 @@ ndexApp.controller('groupController',
             var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
             var disease   = uiMisc.getDisease(network);
             var tissue    = uiMisc.getTissue(network);
+
+            var errorMessage = network.errorMessage;
 
             var row = {
                 "Status"        :   networkStatus,
@@ -319,7 +325,8 @@ ndexApp.controller('groupController',
                 "description"   :   description,
                 "externalId"    :   externalId,
                 "ownerUUID"     :   network['ownerUUID'],
-                "name"          :   networkName
+                "name"          :   networkName,
+                "errorMessage"  :   errorMessage
             };
             $scope.networkGridOptions.data.push(row);
         }
@@ -379,9 +386,17 @@ ndexApp.controller('groupController',
         return uiMisc.getFirstWordFromDisease(diseaseDescription);
     };
 
+    $scope.isOwnerOfNetwork = function(networkOwnerUUID)
+    {
+        if (!groupController.isLoggedIn) {
+            return false;
+        }
+        return (sharedProperties.getCurrentUserId() == networkOwnerUUID);
+    }
+
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //----------------------------------------------------------------------------
-    groupController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
+    // groupController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
     ndexService.getGroupV2(groupController.identifier,
         function (group) {

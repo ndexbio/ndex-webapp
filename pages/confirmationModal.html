@@ -1,11 +1,16 @@
+<div class="modal-content">
 
-<div class="modal-header">
-    <h4 class="modal-title">Confirm</h4>
-</div>
-<div class="modal-body">
-    <p><strong>{{message}}</strong></p>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
-    <button class="btn btn-primary" ng-click="confirm()">Confirm</button>
+    <div class="modal-header">
+        <h5 class="modal-title"><strong>{{title}}</strong></h5>
+    </div>
+
+    <div class="modal-body wrapLongLine" style="max-height:520px; overflow:auto">
+        <span ng-bind-html='message'></span>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-primary" ng-click="confirm()">Confirm</button>
+    </div>
+
 </div>

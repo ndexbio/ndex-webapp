@@ -58,7 +58,8 @@
                     <h5><strong>Bulk Actions:</strong></h5>
 
                     <span>
-                       <div class="btn-group dropdown">
+                        <div class="btn-group dropdown" ng-show="enableEditPropertiesBulkButton">
+
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
                                Edit Properties
@@ -126,7 +127,18 @@
                                    </a>
                                </li>
                            </ul>
-                       </div>
+
+                        </div>
+
+                        <!-- show disabled Edit Properties button here -->
+                        <div class="btn-group dropdown" ng-show="!enableEditPropertiesBulkButton">
+                            <button id="editNetworksPropertiesButtonDisabled" type="button" data-toggle="dropdown"
+                                    class="btn btn-primary dropdown-toggle customButtonWidth disabled">
+                               Edit Properties
+                               <span class="caret"></span>
+                            </button>
+                        </div>
+
                     </span>
 
                     <!--
@@ -145,11 +157,11 @@
                     -->
 
                     <span>
-                        <a class="btn btn-primary customButtonWidth" ng-show="enableManageAccesButton"
+                        <a class="btn btn-primary customButtonWidth" ng-show="enableManageAccessBulkButton"
                            ng-click="myAccountController.manageBulkAccess('/access/bulk/network', main.getCurrentUserId())">
                             Manage Access
                         </a>
-                        <a class="btn btn-primary customButtonWidth disabled" ng-show="!enableManageAccesButton">
+                        <a class="btn btn-primary customButtonWidth disabled" ng-show="!enableManageAccessBulkButton">
                             Manage Access
                         </a>
                     </span>

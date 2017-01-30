@@ -92,8 +92,6 @@ ndexApp.controller('searchNetworksController',
                 {
                     var network = searchController.networkSearchResults[i];
 
-                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
-
                     var networkStatus = "success";
                     if (network.errorMessage) {
                         networkStatus = "failed";
@@ -103,6 +101,11 @@ ndexApp.controller('searchNetworksController',
 
                     if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
                         networkStatus = "warning";
+                    }
+
+                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+                    if (networkStatus == "failed") {
+                        networkName = "Invalid Network. UUID: " + network.externalId;
                     }
 
                     var description = stripHTML(network['description']);
