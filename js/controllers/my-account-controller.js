@@ -997,16 +997,14 @@ ndexApp.controller('myAccountController',
                 var networkUUID  = rowEntity.externalId;
 
 
-                var title = "Delete This Network";
+                var title = "This Network is Invalid";
                 var body  =
-                    "The following network will be permanently deleted from NDEx: " +
-                    "<br><br>" +
                     "<strong>Name: </strong>" + networkName + "<br>" +
                     "<strong>Status: </strong>" + status + "<br>" +
                     "<strong>Error Message: </strong>" + errorMessage + "<br><br>" +
-                    "Are you sure you want to proceed?"
+                    "Would you like to permanently DELETE this network?"
                 
-                ndexNavigation.openConfirmationModal(title, body,
+                ndexNavigation.openConfirmationModal(title, body, "Cancel", "Delete",
                     function () {
                         ndexService.deleteNetworkV2(networkUUID,
                             function (data)
