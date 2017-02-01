@@ -237,12 +237,13 @@ ndexApp.controller('searchController',
                 searchController.networkSearchInProgress = true;
                 searchController.networkSearchNoResults = false;
 
-                searchController.networkQuery = {};
-                searchController.networkQuery.accountName = searchController.userName;
-                searchController.networkQuery.searchString = searchController.searchString;
+                networkQuery = {
+                    'accountName': searchController.userName,
+                    'searchString': searchController.searchString,
+                    'includeGroups': true
+                };
 
-
-                ndexService.searchNetworksV2(searchController.networkQuery, searchController.networkSkipPages, searchController.pageSize,
+                ndexService.searchNetworksV2(networkQuery, searchController.networkSkipPages, searchController.pageSize,
                     function (searchResult)
                     {
                         searchController.numberOfNetworksFound = searchResult.numFound;
