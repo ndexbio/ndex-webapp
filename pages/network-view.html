@@ -195,7 +195,7 @@
                             <span class="networkPropertyName">Format: </span>
                             {{networkController.currentNetwork.sourceFormat}}<br/>
 
-                            <span ng-show="networkController.isLoggedIn">
+                            <span ng-show="networkController.isLoggedInUser">
                                 <span class="networkPropertyName">Your Privileges: </span>
                                 {{networkController.privilegeLevel}}<br/>
                             </span>
@@ -648,7 +648,7 @@
         <div class="rowWithOneLineTopPad"></div>
 
         <div class="networkActionsSection pull-left"
-             ng-show="networkController.isLoggedIn && networkController.successfullyQueried &&
+             ng-show="networkController.isLoggedInUser && networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
             <button id="saveQueryButton" class="actionsLabel btn btn-primary customButtonWidth" ng-click="networkController.saveQueryResult()" >
@@ -663,8 +663,10 @@
                     || networkController.canEdit
                     || networkController.canRead)'>
 
-                    <a id="downloadButton" class="actionsLabel btn btn-primary download-btn"
-                       ng-click="getNetworkFromServerAndSaveToDisk()">
+                    <a id="downLoadLinkId1"
+                       ng-href={{getNetworkDownloadLink()}}
+                       class="actionsLabel btn btn-primary download-btn"
+                       ng-click="getCredentialsForNetworkDownload()">
                         Download
                     </a>
             </span>
@@ -673,7 +675,7 @@
                 <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="border: 5px double white;">{{buttonLabel}}</button>
             </span>
 
-            <span ng-show='networkController.isLoggedIn &&
+            <span ng-show='networkController.isLoggedInUser &&
                         ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
                 <a class="actionsLabel btn btn-primary">
                     <edit-network-summary-modal
@@ -684,7 +686,7 @@
             </span>
 
             <!--
-            <span ng-show='networkController.isLoggedIn
+            <span ng-show='networkController.isLoggedInUser
                 && ((networkController.currentNetwork.visibility == "PUBLIC")
                     || networkController.isAdmin
                     || networkController.canEdit
@@ -700,7 +702,7 @@
             -->
 
 
-            <span ng-show='networkController.isLoggedIn && networkController.canRead'>
+            <span ng-show='networkController.isLoggedInUser && networkController.canRead'>
                 <a class="actionsLabel btn btn-primary customButtonWidth">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
@@ -710,7 +712,7 @@
                 </a>
             </span>
 
-            <span ng-show='networkController.isLoggedIn && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
+            <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
                 <a class="actionsLabel btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
                     <create-request-network
                             ndex-data='networkController.currentNetwork'
@@ -720,7 +722,7 @@
                 </a>
             </span>
 
-            <span ng-show='networkController.isLoggedIn && networkController.isAdmin' title="Request Read, Edit or Admin privilege">
+            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin' title="Request Read, Edit or Admin privilege">
                 <a class="actionsLabel btn btn-primary"
                    ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                         Manage Access
@@ -769,7 +771,7 @@
             </span>
             -->
 
-            <span ng-show='networkController.isLoggedIn && networkController.isAdmin &&
+            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin &&
                           !networkController.readOnlyChecked'>
                 <a class=" actionsLabel btn btn-primary">
                     <delete-network ndex-data='networkController.currentNetwork.externalId'>
@@ -778,7 +780,7 @@
                 </a>
             </span>
 
-            <span ng-show='!networkController.isLoggedIn'>
+            <span ng-show='!networkController.isLoggedInUser'>
                 <a class="actionsLabel btn btn-primary" ng-click="main.startSignIn()">
                     Log in to operate on this network
                 </a>

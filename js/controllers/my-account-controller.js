@@ -1,12 +1,9 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope',
-        '$location', '$routeParams', '$route', '$modal', 'uiMisc',
-        'ndexNavigation',
+        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation',
         function (ndexService, ndexUtility, sharedProperties, $scope,
-                  $location, $routeParams, $route, $modal, uiMisc,
-                  ndexNavigation)
+                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation)
         {
-
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
             
@@ -108,7 +105,7 @@ ndexApp.controller('myAccountController',
                     { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
                     //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
-                    { field: 'Privacy', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
+                    { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
                     { field: 'Owner', enableFiltering: true, maxWidth:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120,
                         cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
@@ -265,7 +262,7 @@ ndexApp.controller('myAccountController',
                         "Tissue"        :   tissue,
                         //"Nodes"         :   nodes,
                         "Edges"         :   edges,
-                        "Privacy"       :   visibility,
+                        "Visibility"    :   visibility,
                         "Owner"         :   owner ,
                         "Last Modified" :   modified,
                         "Show"          :   showcase,
@@ -972,9 +969,20 @@ ndexApp.controller('myAccountController',
                 }
             };
 
-            $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+            $scope.getNetworkDownloadLink = function(rowEntity) {
+                return  ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+            };
 
-                uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
+            $scope.getCredentialsForNetworkDownload = function(rowEntity) {
+
+                // if user logged in (not anonymous user) add username and password
+                // for private networks
+                if (myAccountController.isLoggedInUser && rowEntity.Visibility &&
+                    rowEntity.Visibility.toLowerCase() == 'private')
+                {
+                    document.getElementById("downLoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
+                    document.getElementById("downLoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+                }
             };
 
             $scope.getFirstWordFromDisease = function(diseaseDescription) {
@@ -1034,7 +1042,6 @@ ndexApp.controller('myAccountController',
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
-            myAccountController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
             ndexService.getUserByUUIDV2(myAccountController.identifier)
                 .success(

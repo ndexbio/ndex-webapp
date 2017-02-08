@@ -1,12 +1,13 @@
 ndexApp.controller('searchController',
-    [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 'ndexNavigation', 'uiMisc',
-        function (ndexService, sharedProperties, $scope, $location, $modal, ndexNavigation, uiMisc) {
+    [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 'ndexNavigation', 'uiMisc', 'ndexUtility',
+        function (ndexService, sharedProperties, $scope, $location, $modal, ndexNavigation, uiMisc, ndexUtility) {
 
 
             //              Controller Declarations/Initializations
             //---------------------------------------------------------------------
             $scope.searcher = {};
             var searchController = $scope.searcher;
+            searchController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
             searchController.errors = [];
             searchController.pageSize = 1000;
@@ -524,9 +525,20 @@ ndexApp.controller('searchController',
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, searchController.networkSearchResults);
             }
 
-            $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+            $scope.getNetworkDownloadLink = function(rowEntity) {
+                return  ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+            };
+            
+            $scope.getCredentialsForNetworkDownload = function(rowEntity) {
 
-                uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
+                // if user logged in (not anonymous user) add username and password
+                // for private networks
+                if (searchController.isLoggedInUser && rowEntity.Visibility &&
+                    rowEntity.Visibility.toLowerCase() == 'private')
+                {
+                    document.getElementById("downLoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
+                    document.getElementById("downLoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+                }
             }
 
             $scope.getFirstWordFromDisease = function(diseaseDescription) {

@@ -22,6 +22,7 @@ ndexApp.controller('networkViewController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
+            networkController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
             networkController.privilegeLevel = "None";
             networkController.currentNetworkId = networkExternalId;
@@ -422,7 +423,7 @@ ndexApp.controller('networkViewController',
             /*
             var getNetworkAdmins = function()
             {
-                if (networkController.isLoggedIn) {
+                if (networkController.isLoggedInUser) {
                     ndexService.getNetworkUserMemberships(networkController.currentNetworkId, 'ADMIN',
                         function (networkAdmins) {
                             for (var i = 0; i < networkAdmins.length; i++) {
@@ -449,18 +450,21 @@ ndexApp.controller('networkViewController',
             };
             */
 
-            $scope.getNetworkFromServerAndSaveToDisk = function() {
-
-                var networkName = (networkController.currentNetwork && networkController.currentNetwork.name) ?
-                    networkController.currentNetwork.name : networkController.currentNetworkId;
-                
-                var networkData = {
-                    'externalId': networkController.currentNetworkId,
-                    'name': networkName
-                };
-
-                uiMisc.getNetworkFromServerAndSaveToDisk(networkData);
-
+            $scope.getNetworkDownloadLink = function() {
+                return ndexService.getNdexServerUriV2() + "/network/" + networkExternalId + "?download=true";
+            };
+            
+            $scope.getCredentialsForNetworkDownload = function() {
+                // if user logged in (not anonymous user) add username and password
+                // for private networks
+                if (networkController.isLoggedInUser &&
+                    networkController.currentNetwork &&
+                    networkController.currentNetwork.visibility &&
+                    networkController.currentNetwork.visibility.toLowerCase() == 'private')
+                {
+                    document.getElementById("downLoadLinkId1").username = ndexUtility.getUserCredentials()['userName'];
+                    document.getElementById("downLoadLinkId1").password = ndexUtility.getUserCredentials()['token'];
+                }
             };
 
 
@@ -2061,7 +2065,7 @@ ndexApp.controller('networkViewController',
             };
 
             var getMembership = function (callback) {
-                if (!networkController.isLoggedIn) {
+                if (!networkController.isLoggedInUser) {
                     // if user is anonymous, don't call getMyMembership() because it requires user to be authenticated
                     callback();
                 } else {
@@ -2278,9 +2282,7 @@ ndexApp.controller('networkViewController',
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
-
-            networkController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
-
+            
             $("#cytoscape-canvas").height($(window).height() - 200);
             $("#divNetworkTabs").height($(window).height() - 200);
             

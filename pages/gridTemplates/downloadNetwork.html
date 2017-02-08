@@ -1,7 +1,7 @@
 <div id="downloadNetworkTemplate" class="ui-grid-cell-contents">
     <span ng-if="row.entity.Status != 'processing'">
-        <a ng-href="{{$location.path()}}"
-                   ng-click="grid.appScope.getNetworkFromServerAndSaveToDisk(row.entity)"
+        <a id="downLoadLinkId" ng-href="{{grid.appScope.getNetworkDownloadLink(row.entity)}}"
+                   ng-click="grid.appScope.getCredentialsForNetworkDownload(row.entity)"
                    title="{{COL_FIELD}}">
             <img src="img/download.png" width="20px" height="20px" align="center">
         </a>

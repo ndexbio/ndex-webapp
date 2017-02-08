@@ -104,7 +104,7 @@
             </span>
         </div>
 
-        <div class="row" ng-show='networkController.isLoggedIn'>
+        <div class="row" ng-show='networkController.isLoggedInUser'>
 
             <div class="btn-group btn-group-vertical buttonWithMarginBottom">
                 <hr class="hrMarginRight">
@@ -117,7 +117,7 @@
                         </edit-network-summary-modal>
                     </a>
                 </span>
-                <span ng-show='networkController.isLoggedIn
+                <span ng-show='networkController.isLoggedInUser
                     && ((networkController.currentNetwork.visibility == "PUBLIC")
                         || networkController.isAdmin
                         || networkController.canEdit
@@ -209,7 +209,7 @@
             </div>
         </div>
 
-        <div class="row" ng-show='!networkController.isLoggedIn'>
+        <div class="row" ng-show='!networkController.isLoggedInuser'>
             <hr class="hrMarginRight">
             <h5><strong>Actions:</strong></h5>
             <a class="btn btn-primary" ng-click="main.startSignIn()">

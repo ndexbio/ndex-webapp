@@ -43,43 +43,7 @@ angular.module('ndexServiceApp')
 
              ndexNavigation.genericInfoModal(title, message);
         };
-
-        
-        self.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
-            if (!rowEntity && !rowEntity.externalId) {
-                return;
-            }
-
-            ndexService.getCompleteNetworkInCXV2(rowEntity.externalId,
-                function (network) {
-
-                    var networkInJSON = angular.toJson(network);
-
-                    var downloadFileName = rowEntity.name;
-                    downloadFileName = downloadFileName.replace(/ /g,"_");
-
-                    //var networkType = (rowEntity.Format.toLowerCase() == 'unknown') ? "cx" : rowEntity.Format;
-
-                    // network is in CX format, so we save it in file with extension ".cx"
-                    var networkType = "cx";
-                    downloadFileName = downloadFileName + "." + networkType;
-
-                    var blob = new Blob([networkInJSON], { type:"application/json;charset=utf-8;" });
-
-                    // saveAs is defined in FileSaver.js
-                    saveAs(blob, downloadFileName);
-                },
-                function (error) {
-                    var message = "Unable to get network in CX";
-                    if (error && error.message) {
-                        message = message + ": "  + error.message;
-                    }
-                    var title = "Unable to Download This Network";
-                    ndexNavigation.genericInfoModal(title, message);
-                }
-            );
-        };
-
+                    
         self.getNetworkReferenceObj = function(subNetworkId, network) {
             var reference = "";
 

@@ -694,13 +694,17 @@ ndexServiceApp.factory('ndexService',
                 return request;
             };
 
-            factory.getCompleteNetworkInCXV2 = function(networkId, successHandler, errorHandler) {
+            factory.getCompleteNetworkInCXV2 = function(networkId, download, successHandler, errorHandler) {
                 // Server API: Get Complete Network in CX
-                // GET /network/{networkId}
+                // GET /network/{networkId}?download=[true|false]
 
-                var url = "/network/" + networkId ;
+                var url = "/network/" + networkId;
+
+                if (download) {
+                    url = url + "?download=true"
+                }
                 var config = ndexConfigs.getGetConfigV2(url, null);
-
+                
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             }
             

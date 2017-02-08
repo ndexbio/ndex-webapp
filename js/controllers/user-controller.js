@@ -41,9 +41,6 @@ ndexApp.controller('userController',
 
             $scope.enableUpgradePermissionButton = false;
 
-            userController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
-
-
             var calcColumnWidth = function(header, isLastColumn)
             {
                 var result = header.length * 10;
@@ -459,9 +456,20 @@ ndexApp.controller('userController',
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, userController.networkSearchResults);
             };
 
-            $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+            $scope.getNetworkDownloadLink = function(rowEntity) {
+                return  ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+            };
 
-                uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
+            $scope.getCredentialsForNetworkDownload = function(rowEntity) {
+
+                // if user logged in (not anonymous user) add username and password
+                // for private networks
+                if (userController.isLoggedInUser && rowEntity.Visibility &&
+                    rowEntity.Visibility.toLowerCase() == 'private')
+                {
+                    document.getElementById("downLoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
+                    document.getElementById("downLoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+                }
             };
 
             $scope.getFirstWordFromDisease = function(diseaseDescription) {
@@ -472,7 +480,7 @@ ndexApp.controller('userController',
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)
             {
-                if (!userController.isLoggedIn) {
+                if (!userController.isLoggedInUser) {
                     return false;
                 }
                 return (sharedProperties.getCurrentUserId() == networkOwnerUUID);

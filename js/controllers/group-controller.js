@@ -12,6 +12,7 @@ ndexApp.controller('groupController',
 
     $scope.groupController = {};
     var groupController = $scope.groupController;
+
     groupController.isAdmin = false;  
     groupController.isMember = false;   
     groupController.identifier = identifier;
@@ -30,7 +31,7 @@ ndexApp.controller('groupController',
     groupController.networkQuery = {};
     groupController.errors = [];
 
-    groupController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
+    groupController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
     //              scope functions
     // called on Networks belonging to group displayed on page
@@ -340,7 +341,7 @@ ndexApp.controller('groupController',
             //              local functions
     var getMembership = function() {
 
-        if (!groupController.isLoggedIn) {
+        if (!groupController.isLoggedInUser) {
             return;
         }
         
@@ -376,9 +377,20 @@ ndexApp.controller('groupController',
         uiMisc.showNetworkWarningsOrErrors(rowEntity, groupController.networkSearchResults);
     }
 
-    $scope.getNetworkFromServerAndSaveToDisk = function(rowEntity) {
+    $scope.getNetworkDownloadLink = function(rowEntity) {
+        return  ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+    };
+            
+    $scope.getCredentialsForNetworkDownload = function(rowEntity) {
 
-        uiMisc.getNetworkFromServerAndSaveToDisk(rowEntity);
+        // if user logged in (not anonymous user) add username and password
+        // for private networks
+        if (groupController.isLoggedInUser && rowEntity.Visibility &&
+            rowEntity.Visibility.toLowerCase() == 'private')
+        {
+            document.getElementById("downLoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
+            document.getElementById("downLoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+        }
     }
             
     $scope.getFirstWordFromDisease = function(diseaseDescription) {
@@ -388,7 +400,7 @@ ndexApp.controller('groupController',
 
     $scope.isOwnerOfNetwork = function(networkOwnerUUID)
     {
-        if (!groupController.isLoggedIn) {
+        if (!groupController.isLoggedInUser) {
             return false;
         }
         return (sharedProperties.getCurrentUserId() == networkOwnerUUID);
