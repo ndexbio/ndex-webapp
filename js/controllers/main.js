@@ -111,7 +111,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         
         /*
-         * Only Google Chrome or Firefox browsers are supported.
+         * Only Google Chrome, Firefox or Safari browsers are supported.
          * Check if the currently used browser is supported.
          */
         $scope.main.isSupportedBrowserUsed = function() {
@@ -121,6 +121,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             }
 
             if (navigator.userAgent.indexOf("Firefox") != -1) {
+                return true;
+            }
+
+            if (navigator.userAgent.indexOf("Safari") != -1) {
                 return true;
             }
 
