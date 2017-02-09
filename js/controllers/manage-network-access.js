@@ -591,6 +591,9 @@ ndexApp.controller('manageNetworkAccessController',
 		return false;
 	};
 
+	networkManager.nothingSelected = function() {
+		return networkManager.selectedAccountsForUpdatingAccessPermissions.length == 0;
+	};
 
 	networkManager.getAccountName = function(account) {
 		if (typeof(account) === 'undefined') {

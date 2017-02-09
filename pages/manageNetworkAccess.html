@@ -82,7 +82,8 @@
 						ng-disabled="isProcessing || !networkManager.changesWereMade()" >
 					Discard Changes
 				</button>
-				<a class="btn btn-sm btn-success" style="width: 120px;" ng-disabled="isProcessing || !networkManager.changesWereMade()">
+				<a class="btn btn-sm btn-success" style="width: 120px;"
+				   ng-disabled="isProcessing || !networkManager.changesWereMade() || networkManager.nothingSelected()">
 					<confirm-admin-removal success-call="networkManager.save()" check-admin-removal="networkManager.isSelfAdminRemoval()">
 						Save Changes
 					</confirm-admin-removal>
