@@ -99,6 +99,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             success(function(data, status, headers, config) {
                 // this callback will be called asynchronously
                 // when the response is available
+                $scope.main.serverIsDown = false;
             }).
             error(function(data, status, headers, config) {
                 $scope.main.serverIsDown = true;

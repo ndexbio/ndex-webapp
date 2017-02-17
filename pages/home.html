@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<div class='col-md-12'>
+<div class='col-md-12' ng-show="!main.serverIsDown">
     <div class="row v-center-calc" style="border: 1px solid white;" ng-show="main.isSupportedBrowserUsed()">
 
         <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: center;">
@@ -28,7 +28,7 @@
     </div>
 </div>
 
-<div class="row v-center-calc" style="border: 1px solid white;">
+<div class="row v-center-calc" style="border: 1px solid white;" ng-show="!main.serverIsDown">
     <div class='col-md-12' ng-show="main.isSupportedBrowserUsed()">
         <div style="max-width: 900px; margin-left: auto; margin-right: auto;">
             <ng-include src="'search_bar.html'"></ng-include>
@@ -52,11 +52,11 @@
 <div class="row" style="border: 1px solid white;">
     <div class='col-md-2'></div>
     <div class='col-md-8 AlignCenter'>
-        <h1 class="text-danger" ng-show="main.serverIsDown">
+        <h1 class="text-danger rowWithOneLineTopPad" ng-show="main.serverIsDown">
             <span id="bind-html-with-trust" ng-bind-html="config.messages.serverDown"></span>
         </h1>
 
-        <div ng-show="!main.isSupportedBrowserUsed()"
+        <div ng-show="!main.isSupportedBrowserUsed() && !main.serverIsDown"
              class="rowWithTwoLinesTopPad rowWithFourLinesBottomPad">
             <span style="color:red; font-size:2.5em"><strong>Your browser is not supported</strong></span>
 
@@ -89,7 +89,8 @@
 </div>
 
 
-<div class="row" ng-show="main.showSignIn && !config.requireAuthentication" style="background-color: white;" id="logos-citation-above-footer">
+<div class="row" ng-show="main.showSignIn && !config.requireAuthentication && !main.serverIsDown"
+     style="background-color: white;" id="logos-citation-above-footer">
 
     <div style="max-width: 1000px; margin: auto;">
         <div class='col-md-7' style="border: 1px solid white;">
