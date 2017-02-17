@@ -1997,7 +1997,6 @@ ndexApp.controller('networkViewController',
 
                             getMembership(function ()
                             {
-                                networkController.showRetrieveMessage = false;
                                 networkController.readyToRenderNetworkInUI = true;
 
                                 if (network.visibility == 'PUBLIC'
@@ -2031,7 +2030,6 @@ ndexApp.controller('networkViewController',
                     )
                     .error(
                         function (error) {
-                            networkController.showRetrieveMessage = false;
                             displayErrorMessage(error);
                         }
                     );

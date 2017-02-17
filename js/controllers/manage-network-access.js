@@ -1,6 +1,8 @@
 ndexApp.controller('manageNetworkAccessController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$q',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $q) {
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
+		'$routeParams', '$q', 'ndexNavigation',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location,
+				  $routeParams, $q, ndexNavigation) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -26,6 +28,14 @@ ndexApp.controller('manageNetworkAccessController',
 
 	networkManager.mapOfUserPermissions = {};
 	networkManager.mapOfGroupPermissions = {};
+
+	networkManager.modifiedAccessObjects = [];
+	networkManager.deletedAccessObjects  = [];
+	networkManager.newAdminObj  		 = [];
+
+	$scope.progressMessage = null;
+	$scope.errorMessage = null;
+
 
 	networkManager.accessWasRemoved = function(accessObj) {
 
@@ -84,30 +94,239 @@ ndexApp.controller('manageNetworkAccessController',
 		return false;
 	}
 
-	var updateNetworkMembership = function(newMembership) {
 
+
+	$scope.$on('ADDING_PERMISSIONS_DONE', function () {
+		//console.log('DONE adding permissions, now update');
+		updateNetworkMembership(networkManager.modifiedAccessObjects, 5, 1, 'UPDATING_PERMISSIONS_DONE');
+	});
+
+	$scope.$on('UPDATING_PERMISSIONS_DONE', function () {
+		//console.log('DONE updating permissions, now delete');
+		deleteNetworkMembership(networkManager.deletedAccessObjects, 5, 1, 'DELETING_PERMISSIONS_DONE');
+	});
+
+	$scope.$on('DELETING_PERMISSIONS_DONE', function () {
+		//console.log('DONE deleting permissions, finally change admin');
+		updateNetworkMembership(networkManager.newAdminObj, 5, 1, 'ALL_PERMISSIONS_DONE');
+	});
+
+	$scope.$on('ALL_PERMISSIONS_DONE', function () {
+		//console.log('DONE changing admin, go back to Network View page.');
+		$scope.progressMessage = null;
+		$scope.isProcessing = false;
+		$location.path("newNetwork/"+ $scope.networkManager.externalId);
+	});
+
+
+	var updateNetworkMembership = function(memberships, updateNetworkMembershipTries, secsToWait, eventToEmit) {
+
+		if (!memberships || memberships.length == 0) {
+			$scope.$emit(eventToEmit);
+			return;
+		}
+
+		var newMembership = memberships[0];
+
+		var permissionAccount = (newMembership.accountType.toLowerCase() == 'user') ?
+			" user " + newMembership.firstName + " " + newMembership.lastName :
+			" group " + newMembership.groupName;
+
+		$scope.progressMessage = "Processing permission " + newMembership.permissions + " for " + permissionAccount;
+
+		
 		ndexService.updateNetworkPermissionV2(
 			newMembership.resourceUUID,
 			newMembership.accountType,
 			newMembership.memberUUID,
 			newMembership.permissions,
-				function(success){
-					;
+				function(data, status, headers, config, statusText) {
+					//console.log(" update network permissions successfully");
+					memberships.splice(0 ,1);
+
+					updateNetworkMembership(memberships, updateNetworkMembershipTries, secsToWait, eventToEmit);
 				},
-				function(error){
-					console.log("unable to update network permissions");
-				})
+				function(error, status, headers, config, statusText) {
+
+					if ((status == 500) &&
+						(error && error.errorCode && (error.errorCode == 'NDEx_Concurrent_Modification_Exception')))
+					{
+						updateNetworkMembershipTries = updateNetworkMembershipTries - 1;
+
+						if (updateNetworkMembershipTries == 0) {
+							
+							var title = "Unable to Update Network Access";
+							var message = "Unable to update access to network for ";
+
+							if (newMembership.accountType.toLowerCase() == 'group') {
+								message = message + ' group <strong>' + newMembership.groupName + '</strong>.<br>'
+							} else {
+								message = message + ' user <strong>' + newMembership.firstName + ' ' +
+									newMembership.lastName + '</strong>.<br>'
+							}
+
+							$scope.progressMessage = null;
+
+							message = message + error.message;
+							$scope.errorMessage = message;
+
+							ndexNavigation.genericInfoModal(title, message);
+							//$scope.$emit(eventToEmit);
+							return;
+						};
+
+						if (secsToWait === undefined) {
+							secsToWait = 1;
+						}
+
+						// wait and try to update/add this membership again (recursively call itself)
+						setTimeout(function()
+							{
+								updateNetworkMembership(memberships, updateNetworkMembershipTries, secsToWait, eventToEmit);
+							},
+							secsToWait * 1000);
+
+					} else {
+
+						// server reported error ... give error message and stop processing
+
+						var title = "Unable to Update or Add Network Access";
+						var message = "Unable to update or add network access for ";
+
+						if (newMembership.accountType.toLowerCase() == 'group') {
+							message = message + ' group <strong>' + newMembership.groupName + '</strong>.<br>'
+						} else {
+							message = message + ' user <strong>' + newMembership.firstName + ' ' +
+								newMembership.lastName + '</strong>.<br>'
+						}
+
+						$scope.progressMessage = null;
+
+						message = message + error.message;
+						$scope.errorMessage = message;
+
+						ndexNavigation.genericInfoModal(title, message);
+
+						return;
+					};
+
+					// give error message here -- and continue updating ...
+					//updateNetworkMembership(memberships, updateNetworkMembershipTries, secsToWait, eventToEmit);
+				});
 	}
 
-	var deleteNetworkMembership = function(membershipObj) {
+
+
+	var deleteNetworkMembership = function (memberships, deleteNetworkMembershipTries, secsToWait, eventToEmit) {
+
+		if (!memberships || memberships.length == 0) {
+			$scope.$emit(eventToEmit);
+			return;
+		}
+
+		var membershipObj = memberships[0];
+
+		var permissionAccount = (membershipObj.accountType.toLowerCase() == 'user') ?
+		" user " + membershipObj.firstName + " " + membershipObj.lastName :
+		" group " + membershipObj.groupName;
+
+		$scope.progressMessage = "Deleting permission " + membershipObj.permissions + " for " + permissionAccount;
 
 		ndexService.deleteNetworkPermissionV2(membershipObj.resourceUUID, membershipObj.accountType, membershipObj.memberUUID,
-			function(data) {
-				;
+			function(data, status, headers, config, statusText) {
+				// success, membership deleted
+				memberships.splice(0 ,1);
+
+				deleteNetworkMembership(memberships, deleteNetworkMembershipTries, secsToWait, eventToEmit);
 			},
-			function(error) {
-				console.log("unable to delete network group membership");
+			function(error, status, headers, config, statusText) {
+
+				// memberships.splice(0 ,1);
+
+				// unable to delete membership.  Check if network is currently locked on the
+				// server by another process, wait, and try to delete again
+				if ((status == 500) &&
+					(error && error.errorCode && (error.errorCode == 'NDEx_Concurrent_Modification_Exception')))
+				{
+					deleteNetworkMembershipTries = deleteNetworkMembershipTries - 1;
+
+					if (deleteNetworkMembershipTries == 0) {
+						//console.log("unable to delete network membership");
+
+						var title = "Unable to Delete Network Access";
+						var message = "Unable to remove access to network for ";
+
+						if (membershipObj.accountType.toLowerCase() == 'group') {
+							message = message + ' group <strong>' + membershipObj.groupName + '</strong>.<br>'
+						} else {
+							message = message + ' user <strong>' + membershipObj.firstName + ' ' +
+								membershipObj.lastName + '</strong>.<br>'
+						}
+
+						$scope.progressMessage = null;
+
+						message = message + error.message;
+						$scope.errorMessage = message;
+
+						ndexNavigation.genericInfoModal(title, message);
+						//$scope.$emit(eventToEmit);
+						return;
+					};
+
+					if (secsToWait === undefined) {
+						secsToWait = 1;
+					}
+
+					// wait and try to delete this membership again (recursively call itself)
+					setTimeout(function()
+						{
+							deleteNetworkMembership(membershipObj, deleteNetworkMembershipTries, secsToWait)
+						},
+						secsToWait * 1000);
+
+				} else {
+
+					// server reported error ... give error message and stop processing
+
+					var title = "Unable to Delete Network Access";
+					var message = "Unable to remove access to network for ";
+
+					if (membershipObj.accountType.toLowerCase() == 'group') {
+						message = message + ' group <strong>' + membershipObj.groupName + '</strong>.<br>'
+					} else {
+						message = message + ' user <strong>' + membershipObj.firstName + ' ' +
+							membershipObj.lastName + '</strong>.<br>'
+					}
+
+					$scope.progressMessage = null;
+
+					message = message + error.message;
+					$scope.errorMessage = message;
+
+					ndexNavigation.genericInfoModal(title, message);
+
+					return;
+				}
+
+				// give error message here -- and continue deleting ...
+				//deleteNetworkMembership(memberships, deleteNetworkMembershipTries, secsToWait, eventToEmit);
+
 			});
+	}
+
+	/*
+	 * Find and return UUID of ADMIN.
+	 */
+	var getAdminUUID = function(accounts) {
+		_.each(accounts, function(membershipObj)
+			{
+				if (membershipObj['permissions']) {
+					membershipObj['permissions'] = membershipObj['permissions'].toUpperCase();
+				};
+			});
+
+		var adminObj = _.find(accounts, {permissions: "ADMIN"});
+		return adminObj ? adminObj['memberUUID'] : null;
 	}
 
 	networkManager.isSelfAdminRemoval = function(){
@@ -125,37 +344,44 @@ ndexApp.controller('manageNetworkAccessController',
 
 		if(multiple_admin_count > 1){ //We do not support multiple admins
 			return_dict['adminIssue'] = true;
-			return_dict['issueSeverity'] = 'WARNING';
+			return_dict['issueSeverity'] = 'ABORT';
+			return_dict['title'] = 'Too Many Admins Specified';
+			return_dict['message'] = 'You specified ' + multiple_admin_count + ' admins. ' +
+				'Please specify only one admin before submitting.';
 			return return_dict;
 		} else if(multiple_admin_count === 0){ //User removed admin (self) but did not specify new admin
 			return_dict['adminIssue'] = true;
 			return_dict['issueSeverity'] = 'ABORT';
+			return_dict['title'] = 'Admin Required';
+			return_dict['message'] = 'No admin was specified. Please add one admin before submitting.';
 			return return_dict;
 		}
 
-		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
-			var accessObj = networkManager.originalAccessPermissions[i];
-			if(accessObj["memberUUID"] === userId){
-				if (networkManager.accessWasRemoved(accessObj)) {
-					return_dict['adminIssue'] = true;
-					return_dict['issueSeverity'] = 'WARNING';
-					return return_dict;
-				}
-			}
-		}
-		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
+		var originalAdminUUID = getAdminUUID(networkManager.originalAccessPermissions);
+		var newAdminUUID = getAdminUUID(networkManager.selectedAccountsForUpdatingAccessPermissions);
+		var isOriginalAdminRemoved =
+			_.find(networkManager.selectedAccountsForUpdatingAccessPermissions, {memberUUID: originalAdminUUID}) ?
+			false : true;
 
-			if (accessObj.memberUUID ===
-				networkManager.selectedAccountsForUpdatingAccessPermissions[i].memberUUID) {
-				if (networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions != 'ADMIN') {
-					return_dict['adminIssue'] = true;
-					return_dict['issueSeverity'] = 'WARNING';
-					return return_dict;
-				}
-			}
-		}
-
+		if (isOriginalAdminRemoved) {
+			return_dict['adminIssue'] = true;
+			return_dict['issueSeverity'] = 'WARNING';
+			return_dict['title'] = 'New Admin Specified';
+			return_dict['message'] = 'You specified new admin and revoked your access privileges for this network. ' +
+				'Would you like to proceed?';
 			return return_dict;
+		}
+
+		if (originalAdminUUID != newAdminUUID) {
+				return_dict['adminIssue'] = true;
+				return_dict['issueSeverity'] = 'WARNING';
+				return_dict['title'] = 'New Admin Specified';
+				return_dict['message'] = 'You specified new admin and downgraded your access privileges for this network. ' +
+					'Would you like to proceed?';
+				return return_dict;
+		}
+
+		return return_dict;
 	}
 
 	networkManager.save = function() {
@@ -171,77 +397,122 @@ ndexApp.controller('manageNetworkAccessController',
 
 		if( $scope.isProcessing )
 			return;
-		$scope.isProcessing = false;
+		$scope.isProcessing = true;
+
+		var originalAdminUUID = getAdminUUID(networkManager.originalAccessPermissions);
+		var newAdminUUID = getAdminUUID(networkManager.selectedAccountsForUpdatingAccessPermissions);
+		var downgradeOriginalAdmin = (originalAdminUUID != newAdminUUID);
+
+		if (downgradeOriginalAdmin) {
+			// we selected a new Admin; the current one will be downgraded
+			// so we need to make sure that the
+			// permission object with (memberUUID == originalAdminUUID) is processed very last
+
+			_.remove(networkManager.originalAccessPermissions, {memberUUID: originalAdminUUID});
+			_.remove(networkManager.originalAccessPermissions, {memberUUID: newAdminUUID});
+
+			_.remove(networkManager.selectedAccountsForUpdatingAccessPermissions, {memberUUID: originalAdminUUID});
+
+			networkManager.newAdminObj.push(_.clone(_.find(networkManager.selectedAccountsForUpdatingAccessPermissions,
+					{memberUUID: newAdminUUID})));
+
+			_.remove(networkManager.selectedAccountsForUpdatingAccessPermissions, {memberUUID: newAdminUUID});
+		}
+
 
 		var addedAccessObjects = [];
 
-		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
-			var accessObj = networkManager.selectedAccountsForUpdatingAccessPermissions[i];
+
+		_.each(networkManager.selectedAccountsForUpdatingAccessPermissions, function(accessObj) {
 
 			if (networkManager.accessWasAdded(accessObj)) {
-				// remember index of the added element
-				addedAccessObjects.push(i);
 
 				var newMembership = {
-					memberUUID: accessObj.memberUUID,
+					memberUUID:   accessObj.memberUUID,
 					resourceUUID: accessObj.resourceUUID,
-					permissions: networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions,
-					accountType: accessObj.accountType.toLowerCase()
+					permissions:  accessObj.permissions,
+					accountType:  accessObj.accountType.toLowerCase()
+				}
+				if (newMembership['accountType'] == 'user') {
+					newMembership['firstName'] = accessObj.firstName;
+					newMembership['lastName'] = accessObj.lastName;
+				} else {
+					newMembership['groupName'] = accessObj.groupName;
 				}
 
-				updateNetworkMembership(newMembership);
+				addedAccessObjects.push(newMembership);
 			}
-		}
+		});
+		_.each(addedAccessObjects, function(membershipObj) {
+			// remove added permission objects from networkManager.selectedAccountsForUpdatingAccessPermissions
+			_.remove(networkManager.selectedAccountsForUpdatingAccessPermissions, {memberUUID: membershipObj.memberUUID});
+		});
 
-		// remove added objects from networkManager.selectedAccountsForUpdatingAccessPermissions
-		for (var i = addedAccessObjects.length-1; i >= 0; i--) {
-			networkManager.selectedAccountsForUpdatingAccessPermissions.splice(addedAccessObjects[i], 1);
-		}
 
-		var deletedAccessObjects = [];
 
-		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
-			var accessObj = networkManager.originalAccessPermissions[i];
-
+		_.each(networkManager.originalAccessPermissions, function(accessObj) {
 			if (networkManager.accessWasRemoved(accessObj)) {
-				// remember index of the deleted element
-				deletedAccessObjects.push(i);
-
-				deleteNetworkMembership(accessObj);
+				networkManager.deletedAccessObjects.push(accessObj);
 			}
-		}
+		});
+		_.each(networkManager.deletedAccessObjects, function(membershipObj) {
+			// remove deleted permission objects from networkManager.originalAccessPermissions list
+			_.remove(networkManager.originalAccessPermissions, {memberUUID: membershipObj.memberUUID});
+		});
 
-		if (deletedAccessObjects.length > 0) {
-			// remove deleted access objects from networkManager.originalAccessPermissions
-			for (var i = deletedAccessObjects.length-1; i >= 0; i--) {
-				networkManager.originalAccessPermissions.splice(deletedAccessObjects[i], 1);
-			}
-		}
 
-		var modifiedAccessObjects = [];
 
-		for (var i = 0; i < networkManager.originalAccessPermissions.length; i++) {
-			var accessObj = networkManager.originalAccessPermissions[i];
+		_.each(networkManager.originalAccessPermissions, function(accessObj) {
 
 			if (networkManager.accessWasModified(accessObj)) {
-				// remember index of the modified element
-				modifiedAccessObjects.push(i);
+
+				var modifiedAccessObj =
+					_.find(networkManager.selectedAccountsForUpdatingAccessPermissions,
+						{memberUUID: accessObj.memberUUID});
 
 				var newMembership = {
-					memberUUID: accessObj.memberUUID,
+					memberUUID:   accessObj.memberUUID,
 					resourceUUID: accessObj.resourceUUID,
-					permissions: networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions,
-					accountType: accessObj.accountType.toLowerCase()
+					permissions:  modifiedAccessObj.permissions,
+					accountType:  accessObj.accountType.toLowerCase()
+				}
+				if (newMembership['accountType'] == 'user') {
+					newMembership['firstName'] = accessObj.firstName;
+					newMembership['lastName']  = accessObj.lastName;
+				} else {
+					newMembership['groupName'] = accessObj.groupName;
 				}
 
-				updateNetworkMembership(newMembership);
+				networkManager.modifiedAccessObjects.push(newMembership);
 			}
-		}
+		});
+		_.each(networkManager.modifiedAccessObjects, function(membershipObj)
+		{
+			_.remove(networkManager.selectedAccountsForUpdatingAccessPermissions, {memberUUID: membershipObj.memberUUID});
+		});
 
-		$location.path("newNetwork/"+ $scope.networkManager.externalId);
-		$scope.isProcessing = false;
 
+		// add new network memberships, once done, dispatch ADDING_PERMISSIONS_DONE event that will be caught
+		// by the function that listens on this event.
+		// updateNetworkMembership is recursive, it calls itself until it exhausts the addedAccessObjects list,
+		// at which point it dispatches ADDING_PERMISSIONS_DONE.
+		// The function that catches this event then calls updateNetworkMembership with
+		// networkManager.modifiedAccessObjects list for modifying permissions on the server, etc.
+		// We process permissions recursively since we want to make sure that changing admin (if it was selected)
+		// is the very last operation.
+		updateNetworkMembership(addedAccessObjects, 5, 1, 'ADDING_PERMISSIONS_DONE');
 	};
+
+	networkManager.memberIsAdmin = function(member) {
+		if  (!member || !member.memberUUID) {
+			return false;
+		};
+
+		var adminPermissionObj = _.find(networkManager.originalAccessPermissions, {permissions: 'ADMIN'});
+		var retValue =  (adminPermissionObj && (adminPermissionObj['memberUUID'] == member.memberUUID));
+		return retValue;
+	};
+
 
 	networkManager.loadUserPermissionsOnNetwork = function() {
 
@@ -320,6 +591,11 @@ ndexApp.controller('manageNetworkAccessController',
 			}
 
 			networkManager.originalAccessPermissions.push(newMembership);
+
+			// make a copy of newMembership anda push it to selectedAccountsForUpdatingAccessPermissions;
+			// we cannot do just networkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership)
+			// since in this case any manipulations on selectedAccountsForUpdatingAccessPermissions will
+			// also affect networkManager.originalAccessPermissions
 			networkManager.selectedAccountsForUpdatingAccessPermissions.push(JSON.parse(JSON.stringify(newMembership)));
 		}
 	}
@@ -345,6 +621,11 @@ ndexApp.controller('manageNetworkAccessController',
 			}
 			
 			networkManager.originalAccessPermissions.push(newMembership);
+
+			// make a copy of newMembership anda push it to selectedAccountsForUpdatingAccessPermissions;
+			// we cannot do just networkManager.selectedAccountsForUpdatingAccessPermissions.push(newMembership)
+			// since in this case any manipulations on selectedAccountsForUpdatingAccessPermissions will
+			// also affect networkManager.originalAccessPermissions
 			networkManager.selectedAccountsForUpdatingAccessPermissions.push(JSON.parse(JSON.stringify(newMembership)));
 		}
 	};
@@ -501,7 +782,6 @@ ndexApp.controller('manageNetworkAccessController',
 			}
 		}
 	};
-
 
 	networkManager.addMember = function(member) {
 		var newMembership = {

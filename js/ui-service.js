@@ -2533,16 +2533,15 @@
                     // EVERYTHING IS OK
                     if(!adminCheck['adminIssue']){
                         $scope.successCall();
-                        $modalInstance.dismiss();
                     }
                     // USER'S ADMIN ROLE WILL CHANGE
-                    if(adminCheck['issueSeverity'] != 'ABORT'){
+                    else if(adminCheck['issueSeverity'] != 'ABORT'){
                         modalInstance = $modal.open({
                             templateUrl: 'confirmation-modal.html',
                             scope: $scope,
                             controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
-                                $scope.title = 'Remove admin privileges'
-                                $scope.message = 'Your admin privileges will be downgraded. Proceed?';
+                                $scope.title = adminCheck['title'];
+                                $scope.message = adminCheck['message'];
 
                                 $scope.cancel = function() {
                                     $modalInstance.dismiss();
@@ -2566,8 +2565,8 @@
                             templateUrl: 'confirmation-modal.html',
                             scope: $scope,
                             controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
-                                $scope.title = 'Admin required'
-                                $scope.message = 'No admin was specified.  Please add at least one admin before submitting.';
+                                $scope.title = adminCheck['title'];
+                                $scope.message = adminCheck['message'];
 
                                 $scope.cancel = function() {
                                     $modalInstance.dismiss();

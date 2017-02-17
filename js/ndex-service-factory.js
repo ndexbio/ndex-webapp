@@ -33,11 +33,11 @@ ndexServiceApp.factory('ndexService',
 
             factory.sendHTTPRequest = function(config, successHandler, errorHandler) {
                 $http(config)
-                    .success(function(data) {
-                        successHandler(data);
+                    .success(function(data, status, headers, config, statusText) {
+                        successHandler(data, status, headers, config, statusText);
                     })
-                    .error(function(error, status) {
-                        errorHandler(error, status);
+                    .error(function(error, status, headers, config, statusText) {
+                        errorHandler(error, status, headers, config, statusText);
                     })
             }
 

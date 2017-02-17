@@ -34,46 +34,57 @@
 
 			<!--<div ng-repeat='member in networkManager.memberships'>-->
 			<div ng-repeat='member in networkManager.selectedAccountsForUpdatingAccessPermissions'>
-			<div class='row'>
-				<div class='col-sm-offset-1 col-sm-3 text-muted'>
-					{{networkManager.getAccountName(member)}}
-				</div>
-				<div class='col-sm-3'>
-					<span class="dropdown">
-				        <a href class="dropdown-toggle" data-toggle="dropdown">
-				        	{{member.permissions | permissionToLabel}}<span class="caret"></span>
-				        </a>
-				        <ul class="dropdown-menu">
-							<li>
-								<a class="dropdown-toggle"
-								   ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "READ"; networkManager.changesWereMade();'>
-									<small>Can Read</small>
-								</a>
-							</li>
-							<li>
-								<a class="dropdown-toggle"
-								   ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "WRITE"; networkManager.changesWereMade();'>
-									<small>Can Edit</small>
-								</a>
-							</li>
-				      		<li ng-show="networkManager.checkIfUserAccount(member)">
-				            	<a class="dropdown-toggle"
-				            		ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "ADMIN"; networkManager.changesWereMade();'>
-				            		<small>Is Admin</small>
-				            	</a>
-				        	</li>
-				      </ul>
-				    </span>
-				</div>
-				<div class='col-sm-1'>
-					<span class="glyphicon glyphicon-remove text-muted"
-						style='cursor:pointer'
-						ng-click='networkManager.removeMember($index, member);'>
-					</span>
-				</div>
+				<div class='row'>
+					<div class='col-sm-offset-1 col-sm-3 text-muted'>
+						{{networkManager.getAccountName(member)}}
+					</div>
+					<div class='col-sm-3'>
+						<span class="dropdown">
+							<a href class="dropdown-toggle" data-toggle="dropdown">
+								{{member.permissions | permissionToLabel}}<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a ng-show="!networkManager.memberIsAdmin(member)"
+										class="dropdown-toggle"
+									   ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "READ"; networkManager.changesWereMade();'>
+										<small>Can Read</small>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-toggle"
+									   ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "WRITE"; networkManager.changesWereMade();'>
+										<small>Can Edit</small>
+									</a>
+								</li>
+								<li ng-show="networkManager.checkIfUserAccount(member)">
+									<a class="dropdown-toggle"
+										ng-click='networkManager.selectedAccountsForUpdatingAccessPermissions[$index].permissions = "ADMIN"; networkManager.changesWereMade();'>
+										<small>Is Admin</small>
+									</a>
+								</li>
+						  </ul>
+						</span>
+					</div>
+					<div class='col-sm-1'>
+						<span ng-show="!networkManager.memberIsAdmin(member)"
+							class="glyphicon glyphicon-remove text-muted"
+							style='cursor:pointer'
+							ng-click='networkManager.removeMember($index, member);'>
+						</span>
+					</div>
 
-			</div>
+				</div>
 			<hr>
+			</div>
+
+			<div class='pull-left'>
+				<span ng-show="progressMessage">
+					<strong><span style="color: green; font-size: 1.3em" ng-bind-html="progressMessage"></span></strong>
+				</span>
+				<span ng-show="errorMessage">
+					<strong><span style="color: red; font-size: 1.3em" ng-bind-html="errorMessage"></span></strong>
+				</span>
 			</div>
 
 			<div class='pull-right'>
