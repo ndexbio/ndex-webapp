@@ -333,53 +333,57 @@ ndexApp.controller('manageNetworkAccessController',
 		//Determine if the user is going to remove themselves as admin
 
 		var return_dict = {'adminIssue': false, 'issueSeverity': 'none'};
-		var userId = sharedProperties.getCurrentUserId();
+		var adminUUIDs = [];
 
 		var multiple_admin_count = 0;
-		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
-			if(networkManager.selectedAccountsForUpdatingAccessPermissions[i].permissions == 'ADMIN'){
-				multiple_admin_count++;
-			}
-		}
 
-		if(multiple_admin_count > 1){ //We do not support multiple admins
-			return_dict['adminIssue'] = true;
-			return_dict['issueSeverity'] = 'ABORT';
-			return_dict['title'] = 'Too Many Admins Specified';
-			return_dict['message'] = 'You specified ' + multiple_admin_count + ' admins. ' +
-				'Please specify only one admin before submitting.';
-			return return_dict;
-		} else if(multiple_admin_count === 0){ //User removed admin (self) but did not specify new admin
+
+		_.each(networkManager.selectedAccountsForUpdatingAccessPermissions, function(membershipObj)
+		{
+			if (membershipObj['permissions'] == 'ADMIN') {
+				multiple_admin_count++;
+				adminUUIDs.push(membershipObj['memberUUID']);
+			};
+		});
+
+		if (multiple_admin_count == 0) { //User removed admin (self) but did not specify new admin
 			return_dict['adminIssue'] = true;
 			return_dict['issueSeverity'] = 'ABORT';
 			return_dict['title'] = 'Admin Required';
-			return_dict['message'] = 'No admin was specified. Please add one admin before submitting.';
+			return_dict['message'] = 'This action cannot be completed because one admin should always be designated.';
 			return return_dict;
 		}
 
 		var originalAdminUUID = getAdminUUID(networkManager.originalAccessPermissions);
-		var newAdminUUID = getAdminUUID(networkManager.selectedAccountsForUpdatingAccessPermissions);
-		var isOriginalAdminRemoved =
-			_.find(networkManager.selectedAccountsForUpdatingAccessPermissions, {memberUUID: originalAdminUUID}) ?
-			false : true;
 
-		if (isOriginalAdminRemoved) {
+		if ((multiple_admin_count > 2) ||
+			((multiple_admin_count == 2) && ((adminUUIDs.indexOf(originalAdminUUID) < 0)))) {
+			//We do not support multiple admins, or two admins if there are no original admin
 			return_dict['adminIssue'] = true;
-			return_dict['issueSeverity'] = 'WARNING';
-			return_dict['title'] = 'New Admin Specified';
-			return_dict['message'] = 'You specified new admin and revoked your access privileges for this network. ' +
-				'Would you like to proceed?';
+			return_dict['issueSeverity'] = 'ABORT';
+			return_dict['title'] = 'Too Many Admins Specified';
+			return_dict['message'] = 'You specified ' + multiple_admin_count + ' admins. ' +
+				'Please select only one admin.';
 			return return_dict;
 		}
 
-		if (originalAdminUUID != newAdminUUID) {
+
+		// at this point we know that there are 2 or 1 admin specified
+		// in case there are 2 admins, one is new and one is old
+		// in case there is one admin we need to check if it is not the same as old one --
+		// in both cases we downgraded the current admin and assign a newly selected admin
+
+		if ((multiple_admin_count == 2) ||
+			((multiple_admin_count == 1) && ((adminUUIDs.indexOf(originalAdminUUID) < 0)))) {
 				return_dict['adminIssue'] = true;
 				return_dict['issueSeverity'] = 'WARNING';
 				return_dict['title'] = 'New Admin Specified';
-				return_dict['message'] = 'You specified new admin and downgraded your access privileges for this network. ' +
-					'Would you like to proceed?';
+				return_dict['message'] = 'You specified a new admin. Your access privileges for this network ' +
+						'will be downgraded. Are you sure you want to proceed?';
 				return return_dict;
 		}
+
+		// same admin, no new admin selected
 
 		return return_dict;
 	}
