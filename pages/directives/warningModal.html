@@ -6,21 +6,23 @@
 	<div class="modal-content">
 		WARNING
 	    <div class="modal-header">
-	        <h4 class="modal-title">{{title}}</h4>
+	        <h4 class="modal-title">
+				<span ng-bind-html="title"></span>
+			</h4>
 	    </div>
 
 	    <div class="modal-body">
 			<div>
 				<br>
-				{{message}}
+				<span ng-bind-html="message"></span>
 			</div>
 
 		    <div class='text-danger'>
-			    <strong>{{errors}}</strong>
+				<strong><span ng-bind-html="errors"></span></strong>
             </div>
 
             <div class='text-success'>
-                <strong>{{progress}}</strong>
+				<strong><span ng-bind-html="progress"></span></strong>
             </div>
 		</div>
 

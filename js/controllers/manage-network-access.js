@@ -319,30 +319,45 @@ ndexApp.controller('manageNetworkAccessController',
 	 */
 	var getAdminUUID = function(accounts) {
 		_.each(accounts, function(membershipObj)
-			{
-				if (membershipObj['permissions']) {
-					membershipObj['permissions'] = membershipObj['permissions'].toUpperCase();
-				};
-			});
+		{
+			if (membershipObj['permissions']) {
+				membershipObj['permissions'] = membershipObj['permissions'].toUpperCase();
+			};
+		});
 
 		var adminObj = _.find(accounts, {permissions: "ADMIN"});
 		return adminObj ? adminObj['memberUUID'] : null;
-	}
+	};
+
+	var getAccountName = function(accounts, memberUUID) {
+		var memberObj = _.find(accounts, {memberUUID: memberUUID});
+
+		if (memberObj) {
+			var accountName = (memberObj['accountType'] && (memberObj['accountType'].toLowerCase() == 'user')) ?
+				memberObj['firstName'] + ' ' + memberObj['lastName'] : memberObj['groupName'];
+		}
+
+		return accountName ? accountName : "";
+	};
+
 
 	networkManager.isSelfAdminRemoval = function(){
 		//Determine if the user is going to remove themselves as admin
 
 		var return_dict = {'adminIssue': false, 'issueSeverity': 'none'};
-		var adminUUIDs = [];
+		var newAdminUUIDs = [];
 
 		var multiple_admin_count = 0;
 
+		var originalAdminUUID = getAdminUUID(networkManager.originalAccessPermissions);
 
 		_.each(networkManager.selectedAccountsForUpdatingAccessPermissions, function(membershipObj)
 		{
 			if (membershipObj['permissions'] == 'ADMIN') {
 				multiple_admin_count++;
-				adminUUIDs.push(membershipObj['memberUUID']);
+				if (originalAdminUUID != membershipObj['memberUUID']) {
+					newAdminUUIDs.push(membershipObj['memberUUID']);
+				}
 			};
 		});
 
@@ -354,10 +369,8 @@ ndexApp.controller('manageNetworkAccessController',
 			return return_dict;
 		}
 
-		var originalAdminUUID = getAdminUUID(networkManager.originalAccessPermissions);
-
 		if ((multiple_admin_count > 2) ||
-			((multiple_admin_count == 2) && ((adminUUIDs.indexOf(originalAdminUUID) < 0)))) {
+			((multiple_admin_count == 2) && (newAdminUUIDs.length > 1))) {
 			//We do not support multiple admins, or two admins if there are no original admin
 			return_dict['adminIssue'] = true;
 			return_dict['issueSeverity'] = 'ABORT';
@@ -368,18 +381,27 @@ ndexApp.controller('manageNetworkAccessController',
 		}
 
 
-		// at this point we know that there are 2 or 1 admin specified
-		// in case there are 2 admins, one is new and one is old
-		// in case there is one admin we need to check if it is not the same as old one --
+		// At this point we know that there are 2 or 1 admin specified.
+		// In case there are 2 admins, then one is new and one is old;
+		// In case there is one admin, we need to check if it is not the same as old one --
 		// in both cases we downgraded the current admin and assign a newly selected admin
 
 		if ((multiple_admin_count == 2) ||
-			((multiple_admin_count == 1) && ((adminUUIDs.indexOf(originalAdminUUID) < 0)))) {
+			((multiple_admin_count == 1) && ((newAdminUUIDs.length == 1)))) {
 				return_dict['adminIssue'] = true;
 				return_dict['issueSeverity'] = 'WARNING';
 				return_dict['title'] = 'New Admin Specified';
-				return_dict['message'] = 'You specified a new admin. Your access privileges for this network ' +
-						'will be downgraded. Are you sure you want to proceed?';
+
+				var newAdminName =
+					getAccountName(networkManager.selectedAccountsForUpdatingAccessPermissions, newAdminUUIDs[0]);
+				var oldAdminName = getAccountName(networkManager.originalAccessPermissions, originalAdminUUID);
+
+				return_dict['message'] = 'You specified <strong>' + newAdminName + ' </strong>as new admin. <br><br>' +
+
+					'<strong>' + oldAdminName + '</strong> permission will be downgraded to "Can Edit" and this ' +
+					' user will no longer be able to manage access permissions for this network. <br><br>' +
+						'Are you sure you want to proceed?';
+
 				return return_dict;
 		}
 
