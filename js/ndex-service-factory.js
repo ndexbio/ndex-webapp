@@ -41,13 +41,32 @@ ndexServiceApp.factory('ndexService',
                     })
             }
 
+
+            /*---------------------------------------------------------------------*
+             * Admin
+             *---------------------------------------------------------------------*/
+            
+            factory.getServerStatus = function (format, successHandler, errorHandler) {
+                // Server API : Get Server Status
+                // /admin/status?format={full|standard}
+
+                var url = "/admin/status";
+
+                if (format) {
+                    url = url + "?format=" + format;
+                } else {
+                    url = url + "?format=standard";
+                }
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
             /*---------------------------------------------------------------------*
              * User
              *---------------------------------------------------------------------*/
 
-            //
-            //getUserQuery
-            //
             factory.getUserByUUIDV2 = function (userId) {
                 // Server API : Get User By UUID
                 // GET /user/{userId}

@@ -325,8 +325,7 @@ ndexApp.controller('myAccountController',
                     return task.externalId;
                 }
 
-                return task.attributes.downloadFileName + " " + "(" +
-                    myAccountController.getTaskFileExt(task).toUpperCase() + ")";
+                return task.attributes.downloadFileName;
             };
 
             // recursive function that deletes all tasks from the server

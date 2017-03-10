@@ -93,15 +93,18 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.config = config;
 
         //Test whether the server is up or not.
-        var ndexServerUri = ndexService.getNdexServerUriV2();
         $scope.main.serverIsDown = false;
-        $http.get(ndexServerUri + '/admin/status').
-            success(function(data, status, headers, config) {
+        ndexService.getServerStatus('full',
+            function(data, status, headers, config) {
                 // this callback will be called asynchronously
                 // when the response is available
+                if (data && data.properties && data.properties.ImporterExporters
+                    && data.properties.ImporterExporters.length > 0) {
+                    $scope.$parent.ImporterExporters = JSON.parse(JSON.stringify(data.properties.ImporterExporters));
+                }
                 $scope.main.serverIsDown = false;
-            }).
-            error(function(data, status, headers, config) {
+            },
+            function(data, status, headers, config) {
                 $scope.main.serverIsDown = true;
             });
 

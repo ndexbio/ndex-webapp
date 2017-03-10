@@ -20,55 +20,29 @@
                 The NDEx team will be adding other export options in future updates.
             </div>
 
-            <!--
-            <div class="rowWithOneLineTopPad">
-                <!--Please choose Export Format below: --
-                Network can only be exported in CX format.
-            </div>
-            -->
+            <h5>
+                <strong>
+                    Export Format:
+                        <span class="dropdown">
+                              <a  class="dropdown-toggle" data-toggle="dropdown">
+                                  {{networkExporterName}} <span class="caret"></span>
+                              </a>
 
-            <h5><strong>
-                Export Format:
-            <span class="dropdown">
-		      <a href class="dropdown-toggle" data-toggle="dropdown">
-                  {{networkExportFormat}} <span class="caret"></span>
-              </a>
-		      <ul class="dropdown-menu">
-                  <li>
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "CX compressed (.gz)"'>
-                          <small>CX compressed (.gz)</small>
-                      </a>
-                  </li>
-              </ul>
-                <!--
-		      <ul class="dropdown-menu">
-                  <li ng-show="networkType=='XGMML'">
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "XGMML"'><small>XGMML</small></a>
-                  </li>
-                  <li ng-show="networkType=='XBEL'">
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "XBEL"'><small>XBEL</small></a>
-                  </li>
-                  <li ng-show="networkType=='BIOPAX'">
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "BIOPAX"'><small>BioPAX</small></a>
-                  </li>
-                  <li ng-show="networkType=='SIF'">
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "SIF"'><small>SIF</small></a>
-                  </li>
-                  <li>
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "CX"'><small>CX</small></a>
-                  </li>
-                  <li ng-show="networkType!='SIF'">
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "SIF"'><small>SIF</small></a>
-                  </li>
-              </ul>
-              -->
-		    </span>
-            </strong></h5>
+                              <ul class="dropdown-menu" ng-if="exporters.length > 0">
+                                    <li ng-repeat="exporter in exporters">
+                                        <a ng-click="exporterSelected(exporter)">{{exporter.name}}</a>
+                                    </li>
+                              </ul>
+                        </span>
+                </strong>
+            </h5>
+
         </div>
 
         <div class='modal-footer' ng-hide='false'>
             <button class='btn btn-default' ng-click='close()'>Cancel</button>
-            <button class='btn btn-primary' ng-click='exportNetwork()' ng-disabled='isProcessing'>Export Network</button>
+            <button class='btn btn-primary' ng-click='exportNetwork()'
+                    ng-disabled='isProcessing || exporters.length == 0'>Export Network</button>
         </div>
 
     </div>

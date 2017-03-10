@@ -1090,13 +1090,25 @@
                 $scope.modal = {};
 
                 $scope.openMe = function() {
-                    $scope.networkExportFormat = "CX compressed (.gz)";
+                    
+                    $scope.exporters = _.filter($scope.$root.ImporterExporters, 'exporter');
+                    $scope.networkExporterName =
+                        ($scope.exporters && $scope.exporters[0] && $scope.exporters[0].name) ?
+                        $scope.exporters[0].name : "No Exporters Available";
+                    $scope.selectedExporter =
+                        ($scope.exporters && $scope.exporters[0]) ?
+                            $scope.exporters[0] : "No Exporters Available";
 
                     modalInstance = $modal.open({
                         templateUrl: 'export-network-modal.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
+                };
+
+                $scope.exporterSelected = function (selectedExporter) {
+                    $scope.networkExporterName = selectedExporter.name;
+                    $scope.selectedExporter = selectedExporter;
                 };
 
                 $scope.close = function()
@@ -1110,14 +1122,11 @@
                         return;
                     $scope.isProcessing = true;
 
-                    var networkExportFormat = $scope.networkExportFormat;
-                    if ('CX compressed (.gz)' == networkExportFormat) {
-                        networkExportFormat = 'CX';
-                    }
+                    var networkExporterName = $scope.networkExporterName;
                     var networkUUIDsList = [];
                     networkUUIDsList.push($scope.externalId);
 
-                    ndexService.exportNetworksV2(networkExportFormat, networkUUIDsList,
+                    ndexService.exportNetworksV2(networkExporterName, networkUUIDsList,
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
