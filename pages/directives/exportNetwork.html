@@ -16,26 +16,30 @@
             </strong></h5>
 
             <div class="rowWithOneLineTopPad">
-                Network export is currently limited to the CX network format.
+                Choose the export format using the dropdown menu below.
                 The NDEx team will be adding other export options in future updates.
             </div>
 
             <h5>
                 <strong>
                     Export Format:
-                        <span class="dropdown">
-                              <a  class="dropdown-toggle" data-toggle="dropdown">
-                                  {{networkExporterName}} <span class="caret"></span>
-                              </a>
+                    <span class="dropdown">
+                          <a  class="dropdown-toggle" data-toggle="dropdown">
+                              {{networkExporterName}} <span class="caret"></span>
+                          </a>
 
-                              <ul class="dropdown-menu" ng-if="exporters.length > 0">
-                                    <li ng-repeat="exporter in exporters">
-                                        <a ng-click="exporterSelected(exporter)">{{exporter.name}}</a>
-                                    </li>
-                              </ul>
-                        </span>
+                          <ul class="dropdown-menu" ng-if="exporters.length > 0">
+                                <li ng-repeat="exporter in exporters">
+                                    <a ng-click="exporterSelected(exporter)">{{exporter.name}}</a>
+                                </li>
+                          </ul>
+                    </span>
                 </strong>
             </h5>
+
+            <div style="border:1px; border-style:solid; border-color:#428BCA; padding: 1em; background-color:#f9f9f9">
+                {{description}}
+            </div>
 
         </div>
 

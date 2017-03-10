@@ -1092,12 +1092,18 @@
                 $scope.openMe = function() {
                     
                     $scope.exporters = _.filter($scope.$root.ImporterExporters, 'exporter');
+
                     $scope.networkExporterName =
                         ($scope.exporters && $scope.exporters[0] && $scope.exporters[0].name) ?
                         $scope.exporters[0].name : "No Exporters Available";
+
                     $scope.selectedExporter =
                         ($scope.exporters && $scope.exporters[0]) ?
                             $scope.exporters[0] : "No Exporters Available";
+
+                    $scope.description = ($scope.exporters && $scope.exporters[0] && $scope.exporters[0].description) ?
+                        $scope.exporters[0].description : "No description available for this export format.";
+
 
                     modalInstance = $modal.open({
                         templateUrl: 'export-network-modal.html',
@@ -1108,6 +1114,8 @@
 
                 $scope.exporterSelected = function (selectedExporter) {
                     $scope.networkExporterName = selectedExporter.name;
+                    $scope.description = (selectedExporter.description) ?
+                        selectedExporter.description : "No description available for this export format.";
                     $scope.selectedExporter = selectedExporter;
                 };
 
@@ -1117,6 +1125,7 @@
                     modalInstance.close();
                 };
 
+/*
                 $scope.exportNetwork = function() {
                     if( $scope.isProcessing )
                         return;
@@ -1141,7 +1150,9 @@
                             //userController.refreshTasks();
                             modalInstance.close();
                         });
-                }
+
+                };
+*/
 
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = ($scope.ndexData && $scope.ndexData.externalId) ?
