@@ -128,6 +128,16 @@ ndexApp.controller('myAccountController',
                 refreshNetworkTable();
             };
 
+            $scope.getExportedNetworkDownloadLink = function(taskId) {
+                var url = ndexService.getNdexServerUriV2() + "/task/" + taskId + "?download=true";
+                return url;
+            };
+
+            $scope.getCredentialsForExportedNetworkDownload = function() {
+                document.getElementById("exportedNetworkDownoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
+                document.getElementById("exportedNetworkDownoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+            };
+
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
              * field could be displayed in the title element of networkName.html template in the pop-up window

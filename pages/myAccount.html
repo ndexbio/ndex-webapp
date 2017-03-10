@@ -303,9 +303,12 @@
                                                 <br />
 
 
-                                                <a ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'"
-                                                   ng-href="/task/{{task.externalId}}/file"
-                                                   download="{{myAccountController.getNetworkDownloadName(task)}}">Download {{myAccountController.getNetworkName(task)}}
+                                                <a id="exportedNetworkDownoadLinkId"
+                                                   ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'"
+                                                   ng-href="{{getExportedNetworkDownloadLink(task.externalId)}}"
+                                                   download="{{myAccountController.getNetworkDownloadName(task)}}"
+                                                   ng-click="getCredentialsForExportedNetworkDownload()">
+                                                        Download {{myAccountController.getNetworkName(task)}}
                                                 </a>
 
                                                 <a>
