@@ -6,53 +6,41 @@
             <h4 class="modal-title">{{title}}</h4>
         </div>
 
-        <div class='modal-body' ng-hide='false'>
+        <div class='modal-body'>
 
             <div class="rowWithOneLineTopPad">
-                Network export is currently limited to the CX network format.
+                Choose the export format using the dropdown menu below.
                 The NDEx team will be adding other export options in future updates.
             </div>
 
-            <!--
-            <div class="rowWithOneLineTopPad">
-                Please choose Export Format below:
-            </div>
-            -->
+            <h5>
+                <strong>
+                    Export Format:
+                    <span class="dropdown">
+                          <a  class="dropdown-toggle" data-toggle="dropdown">
+                              {{networkExporterName}} <span class="caret"></span>
+                          </a>
 
-            <h5><strong>
-                Export Format:
-            <span class="dropdown">
-		      <a href class="dropdown-toggle" data-toggle="dropdown">
-                  {{networkExportFormat}} <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                  <li>
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "CX compressed (.gz)"'>
-                          <small>CX compressed (.gz)</small>
-                      </a>
-                  </li>
-              </ul>
-            <!--
-		      <ul class="dropdown-menu">
-                  <li>
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "Native"'><small>Native</small></a>
-                  </li>
-                  <li>
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "CX"'><small>CX</small></a>
-                  </li>
-                  <li>
-                      <a class="dropdown-toggle" ng-click='networkExportFormat = "SIF"'><small>SIF</small></a>
-                  </li>
-              </ul>
-              -->
-		    </span>
-            </strong></h5>
+                          <ul class="dropdown-menu" ng-if="exporters.length > 0">
+                                <li ng-repeat="exporter in exporters">
+                                    <a ng-click="exporterSelected(exporter)">{{exporter.name}}</a>
+                                </li>
+                          </ul>
+                    </span>
+                </strong>
+            </h5>
+
+            <div ng-if="exporters.length > 0"
+                 style="border:1px; border-style:solid; border-color:#428BCA; padding: 1em; background-color:#f9f9f9">
+                {{description}}
+            </div>
 
         </div>
 
-        <div class='modal-footer' ng-hide='false'>
+        <div class='modal-footer'>
             <button class='btn btn-default' ng-click='close()'>Cancel</button>
-            <button class='btn btn-primary' ng-click='exportNetworks()' ng-disabled='isProcessing'>Export Networks</button>
+            <button class='btn btn-primary' ng-click='exportNetworks()'
+                    ng-disabled='isProcessing  || exporters.length == 0'>{{exportButtonLabel}}</button>
         </div>
     </div>
 </script>

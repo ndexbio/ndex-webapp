@@ -1088,6 +1088,8 @@
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
+                $scope.title = 'Export Network';
+                $scope.exportButtonLabel = "Export Network";
 
                 $scope.openMe = function() {
                     
@@ -1103,7 +1105,6 @@
 
                     $scope.description = ($scope.exporters && $scope.exporters[0] && $scope.exporters[0].description) ?
                         $scope.exporters[0].description : "No description available for this export format.";
-
 
                     modalInstance = $modal.open({
                         templateUrl: 'export-network-modal.html',
@@ -1125,7 +1126,6 @@
                     modalInstance.close();
                 };
 
-/*
                 $scope.exportNetwork = function() {
                     if( $scope.isProcessing )
                         return;
@@ -1152,7 +1152,6 @@
                         });
 
                 };
-*/
 
                 $scope.$watch('ndexData', function(value) {
                     $scope.externalId = ($scope.ndexData && $scope.ndexData.externalId) ?
@@ -1176,21 +1175,43 @@
             restrict: 'E',
             transclude: true,
             templateUrl: 'pages/directives/bulkExportNetwork.html',
+            //templateUrl: 'pages/directives/exportNetwork.html',
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
                 $scope.title = 'Export Selected Networks';
+                $scope.exportButtonLabel = "Export Networks";
 
                 $scope.openMe = function() {
-                    $scope.networkExportFormat = "CX compressed (.gz)";
+                    $scope.exporters = _.filter($scope.$root.ImporterExporters, 'exporter');
+
+                    $scope.networkExporterName =
+                        ($scope.exporters && $scope.exporters[0] && $scope.exporters[0].name) ?
+                            $scope.exporters[0].name : "No Exporters Available";
+
+                    $scope.selectedExporter =
+                        ($scope.exporters && $scope.exporters[0]) ?
+                            $scope.exporters[0] : "No Exporters Available";
+
+                    $scope.description = ($scope.exporters && $scope.exporters[0] && $scope.exporters[0].description) ?
+                        $scope.exporters[0].description : "No description available for this export format.";
 
                     modalInstance = $modal.open({
                         templateUrl: 'bulk-export-network-modal.html',
+                        //templateUrl: 'export-network-modal.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
+                    
+                };
+
+                $scope.exporterSelected = function (selectedExporter) {
+                    $scope.networkExporterName = selectedExporter.name;
+                    $scope.description = (selectedExporter.description) ?
+                        selectedExporter.description : "No description available for this export format.";
+                    $scope.selectedExporter = selectedExporter;
                 };
 
                 $scope.close = function()
@@ -1211,12 +1232,10 @@
                     // get IDs of networks to be exported
                     var networkUUIDsList = accountController.getIDsOfSelectedNetworks();
 
-                    var networkExportFormat = $scope.networkExportFormat;
-                    if ('CX compressed (.gz)' == networkExportFormat) {
-                        networkExportFormat = 'CX';
-                    }
+                    var networkExporterName = $scope.networkExporterName;
 
-                    ndexService.exportNetworksV2(networkExportFormat, networkUUIDsList,
+
+                    ndexService.exportNetworksV2(networkExporterName, networkUUIDsList,
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;

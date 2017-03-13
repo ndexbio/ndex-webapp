@@ -4,16 +4,18 @@
     <div class='modal-content'>
 
         <div class="modal-header">
-            <h4 class="modal-title">Export Network</h4>
+            <h4 class="modal-title">{{title}}</h4>
         </div>
 
-        <div class='modal-body' ng-hide='false'>
+        <div class='modal-body'>
 
-            <h5><strong>
-                <div class="wrapLongLine">
-                    Network: {{name}}
-                </div>
-            </strong></h5>
+            <h5 ng-if="name">
+                <strong>
+                    <div class="wrapLongLine">
+                        Network: {{name}}
+                    </div>
+                </strong>
+            </h5>
 
             <div class="rowWithOneLineTopPad">
                 Choose the export format using the dropdown menu below.
@@ -44,10 +46,10 @@
 
         </div>
 
-        <div class='modal-footer' ng-hide='false'>
+        <div class='modal-footer'>
             <button class='btn btn-default' ng-click='close()'>Cancel</button>
             <button class='btn btn-primary' ng-click='exportNetwork()'
-                    ng-disabled='isProcessing || exporters.length == 0'>Export Network</button>
+                    ng-disabled='isProcessing || exporters.length == 0'>{{exportButtonLabel}}</button>
         </div>
 
     </div>
