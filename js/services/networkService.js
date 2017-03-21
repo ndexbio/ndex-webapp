@@ -13,7 +13,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         var ndexServerURI = config.ndexServerUriV2;
         var ndexServerURIV2 = config.ndexServerUriV2;
 
-        var localNiceCXNetwork ;  // the copy of CX network that we use for display
+        //var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
         var localNiceCX;   // the copy of CX network that are currently displayed. It can be a subnetwork from query
 
@@ -102,9 +102,11 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
           return localNiceCXNetwork;
         };
 
+        /*
         factory.resetNetwork = function () {
             localNiceCX = localNiceCXNetwork;
         };
+        */
 
         factory.getLocalNetworkUUID = function() {
             return localNetworkUUID;
@@ -237,7 +239,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                 request.success(
                     function (network) {
                         localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        localNiceCXNetwork = localNiceCX;
+                        //localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
                     }
                 );
@@ -294,7 +296,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
                 request.success(
                     function (network) {
                         localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        localNiceCXNetwork = localNiceCX;
+                        //localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
                     }
                 );
@@ -356,11 +358,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        //localNiceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
-                        //handler(localNiceCX);
-
                         localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
-                        localNiceCXNetwork = localNiceCX;
+                        //localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
                     }
                 );
@@ -562,27 +561,28 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         };
 
-        factory.advancedQueryFromOldAPI = function (networkId, postData) {
 
-            var url = "/network/"+networkId+"/asNetwork/prototypeNetworkQuery";
+        factory.advancedNetworkQueryV2 = function (networkId, query, size) {
+            // Server API: Query Network
+            // POST /search/network/{networkId}/query?size={limit}
 
+            var url = "/search/network/" + networkId + "/query?size=" + size;
+            
+            //var urlConfig = ndexConfigs.getPostConfigAdvQueryV2(url, query);
+            var urlConfig = ndexConfigs.getPostConfigV2(url, query);
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
 
-            var urlConfig = ndexConfigs.getPostConfigV2(url, postData);
             urlConfig.timeout = deferredAbort.promise;
 
-            // We want to perform some operations on the response from the $http request. We can simply wrap the
-            // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
-            // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
             var request = $http(urlConfig);
             var promise = {};
 
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.convertNetworkInJSONToNiceCX(network);
+                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
                         handler(localNiceCX);
                     }
                 );

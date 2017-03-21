@@ -93,7 +93,7 @@
                     &nbsp;
                 </form>
 
-                <!--
+
                 <span class="pull-left" style="margin-top:0.5em" ng-show="!hideAdvancedSearchLink">
                     <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
                         <u>Advanced Query</u>
@@ -102,12 +102,12 @@
                 <span class="pull-left" style="margin-top:0.5em; color:#999999;" ng-show="hideAdvancedSearchLink">
                     <u>Advanced Query</u>
                 </span>
-                -->
+<!--
                 <a class="pull-left" style="margin-top:0.5em; color:#999999; cursor: not-allowed">
                     Advanced Query
                     <img src="img/coming_soon.png">
                 </a>
-
+-->
             </div>
         </div>
     </div>
@@ -510,7 +510,7 @@
 
                     <div>
 
-                        <form novalidate ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)"
+                        <form novalidate ng-submit="networkController.runAdvancedQuery()"
                           style="padding-left:15px">
 
                             <div class="row">
@@ -530,7 +530,7 @@
                                         <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
                                             <option value="">[Select Edge Property Name]</option>
                                             <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                            <option value="ndex:predicate">predicate</option>
+                                            <option value="ndex:interaction">interaction</option>
                                             <option disabled role="separator">━━━━━━━━━━━━━━━</option>
                                             <option ng-repeat="edgeProperty in networkController.edgePropertyNamesForAdvancedQuery"
                                                     value="{{edgeProperty}}">{{edgeProperty}}
@@ -573,8 +573,8 @@
                                 <ul class="dropdown-menu">
                                     <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='source'">source</a></li>
                                     <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='target'">target</a></li>
-                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='both source and target'">both source and target</a></li>
-                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='either source or target'">either source or target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='both'">both source and target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='either'">either source or target</a></li>
                                 </ul>
                             </span>
                              nodes<br>
@@ -585,9 +585,11 @@
                                         <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
                                             <option value="">[Select Node Property Name]</option>
                                             <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                            <option value="ndex:nodeName">nodeName</option>
+                                            <option value="ndex:name">name</option>
+                                            <!--
                                             <option value="ndex:nameOrTermName">nameOrTermName</option>
                                             <option value="ndex:functionTermType">functionTermType</option>
+                                            -->
                                             <option disabled role="separator">━━━━━━━━━━━━━━━</option>
                                             <option ng-repeat="nodeProperty in networkController.nodePropertyNamesForAdvancedQuery"
                                                     value="{{nodeProperty}}">{{nodeProperty}}

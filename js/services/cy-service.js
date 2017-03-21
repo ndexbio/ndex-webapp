@@ -220,7 +220,11 @@ angular.module('ndexServiceApp')
                 _.forEach(niceCX.cartesianLayout.elements, function (element) {
                     var nodeId = element.node;
                     var node = nodeMap[nodeId];
-                    node.position = {x: element.x, y: element.y};
+                    if (node) {
+                        node.position = {x: element.x, y: element.y};
+                    } else {
+                        console.log("no node for cartesian Node Id = " + nodeId);
+                    };
                 });
             }
 
@@ -707,7 +711,7 @@ angular.module('ndexServiceApp')
 
             _.forEach(visualProperties, function (vpAspectElement) {
                 _.forEach(vpAspectElement, function (vpElement) {
-                    console.log(vpElement);
+                    //console.log(vpElement);
                     var elementType = vpElement['properties_of'];
                     if (elementType === 'nodes:default') {
 

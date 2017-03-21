@@ -113,14 +113,14 @@ ndexApp.controller('networkViewController',
                     // return it wraped in <title>. It will be converted to a comma-separated string of values
                     return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
                 }
-                if( cellContents.startsWith("http") )
-                {
-                    return '&nbsp;<a target="_blank" href="'+cellContents+'">External Link</a>'
-                }
-                else
-                {
-                    return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
-                }
+                if (typeof(cellContents) == 'string') {
+                    if (cellContents.startsWith("http")) {
+                        return '&nbsp;<a target="_blank" href="' + cellContents + '">External Link</a>'
+                    }
+                    else {
+                        return '<span title=' + "'" + cellContents + "'>" + cellContents + '</span>';
+                    };
+                };
             };
 
             $scope.getNumEdgeCitations = function(edgeKey)
@@ -1228,7 +1228,7 @@ ndexApp.controller('networkViewController',
 
             var populateNodeAndEdgeAttributesForAdvancedQuery = function() {
                 
-                var cxNetwork = networkService.getOriginalCXNetwork();
+                var cxNetwork = networkService.getNiceCX();
                 
                 if (!cxNetwork) {
                     return;
@@ -1836,138 +1836,111 @@ ndexApp.controller('networkViewController',
             }
 
 
-            networkController.runAdvancedQuery = function(networkQueryLimit)
+            networkController.runAdvancedQuery = function()
             {
-                var mode = 'Source';
-                if( networkController.advancedQueryNodeCriteria == 'target' )
-                {
-                    mode = 'Target'
-                }
-                else if( networkController.advancedQueryNodeCriteria.indexOf('both') != -1 )
-                {
-                    mode = 'Both'
-                }
-                else if( networkController.advancedQueryNodeCriteria.indexOf('either') != -1 )
-                {
-                    mode = 'Either'
-                }
+                var mode = networkController.advancedQueryNodeCriteria;
+                var validEdgeProperties = [];
+                var validNodeProperties = [];
 
-                var validEdgeProperties = null;
-                var i;
-                for( i = 0; i < networkController.advancedQueryEdgeProperties.length; i++ )
-                {
-                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
-                    if( edgeProperty.name && edgeProperty.value )
-                    {
-                        if( !validEdgeProperties )
-                            validEdgeProperties = [];
-                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
-                    }
-                }
+                var networkQueryLimit = config.networkQueryLimit;
 
-                var validNodeProperties = null;
-                for( i = 0; i < networkController.advancedQueryNodeProperties.length; i++ )
-                {
-                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
-                    if( nodeProperty.name && nodeProperty.value )
-                    {
-                        if( !validNodeProperties )
-                            validNodeProperties = [];
-                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
-                    }
-                }
+                startSpinner();
 
                 var postData =
                 {
-                    nodePropertyFilter:
-                    {
-                        propertySpecifications: validNodeProperties,
-                        mode: mode
-                    },
                     edgeLimit: networkQueryLimit,
                     queryName: "Not used yet."
                 };
 
-                if( validEdgeProperties )
+                _.forEach(networkController.advancedQueryEdgeProperties, function (edgeProperty) {
+
+                    if (edgeProperty.name && edgeProperty.value) {
+                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
+                    }
+                });
+                _.forEach(networkController.advancedQueryNodeProperties, function (nodeProperty) {
+                    if( nodeProperty.name && nodeProperty.value ) {
+                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
+                    }
+                });
+
+                if (validEdgeProperties.length > 0)
                 {
                     postData.edgeFilter =
                     {
                         propertySpecifications: validEdgeProperties
                     };
-                }
+                };
 
-                if( validNodeProperties )
+                if (validNodeProperties.length > 0)
                 {
                     postData.nodeFilter =
                     {
                         propertySpecifications: validNodeProperties,
                         mode: mode
                     };
-                }
+                };
 
-                networkService.advancedQueryFromOldAPI(networkController.currentNetworkId, postData)
+                //console.log(JSON.stringify(postData,null,2));
+                
+                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, postData, networkQueryLimit)
                     .success(
-                        function (network) {
-                            networkController.successfullyQueried = true;
+                        function (networkInNiceCX) {
+
+                            var networkName = networkController.currentNetwork.name;
+                            var localNiceCX = networkInNiceCX;
+
+                            // success - remove old error messages, if any
+                            networkController.queryErrors = [];
+
                             var resultName = "Advanced query result on network - " + currentNetworkSummary.name;
+                            networkController.successfullyQueried = true;
                             networkController.currentNetwork =
                             {name: resultName,
-                                "nodeCount": Object.keys(network.nodes).length,
-                                "edgeCount": Object.keys(network.edges).length,
-
-                                "edgeFilter": postData.edgeFilter,
-                                "nodeFilter": postData.nodeFilter
+                                "nodeCount": (localNiceCX.nodes) ? Object.keys(localNiceCX.nodes).length : 0,
+                                "edgeCount": (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0,
+                                "queryString": networkController.searchString,
+                                "queryDepth" : networkController.searchDepth.value
                             };
 
-                            cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
-                          //  var networkAttrList = [];
-                          //  networkAttrList.push({'n': 'name', 'v': resultName });
+                            cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
 
-                        /*    if ( postData.edgeFilter && postData.edgeFilter.propertySpecifications.length > 0 ) {
-                                var prop = {'n': 'Edge Filter', 'd' : 'list_of_string'};
-                                var specList = [];
-                                _.forEach(postData.edgeFilter.propertySpecifications, function (filter) {
-                                    var v = filter.name + '=' + filter.value;
-                                    specList.push(v);
-                                });
-                                prop['v'] = specList;
-                                networkAttrList.push ( prop);
-                            }
-                            if ( postData.nodeFilter && postData.nodeFilter.propertySpecifications.length > 0 ) {
-                                var prop = {'n': 'Node Filter', 'd': 'list_of_string'};
-                                var specList = [];
-                                _.forEach(postData.nodeFilter.propertySpecifications, function ( filter){
-                                    var v = filter.name + '=' + filter.value;
-                                    specList.push(v);
-                                });
-                                prop['v'] = specList;
+                            drawCXNetworkOnCanvas(localNiceCX,false);
 
-                                networkAttrList.push (prop);
-                            }*/
-
-                        //    network["networkAttributes"] = networkAttrList;
-
-                            drawCXNetworkOnCanvas(network,true);
-                            if (!networkController.tabs[0].active )
+                            if (!networkController.tabs[0].active) {
                                 networkController.tabs[0].active = true;
+                            }
                             networkController.selectionContainer = {};
-                        }
-                    )
+
+                            if ($scope.currentView == "Table") {
+                                var enableFiltering = true;
+                                var setGridWidth = false;
+                                populateNodeTable(localNiceCX, enableFiltering, setGridWidth);
+                                populateEdgeTable(localNiceCX, enableFiltering, setGridWidth);
+                            };
+
+                            if (networkController.currentNetwork.nodeCount == 0) {
+                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                            };
+                        })
                     .error(
+
                         function (error) {
+                            stopSpinner();
                             if (error.status != 0) {
-                                if( error.data.message == "Error in advanced query: Result set is too large for this query.")
+                                if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {
-                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + networkQueryLimit);
+                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + config.networkQueryLimit);
                                 }
                                 else
                                 {
                                     networkController.queryErrors.push(error.data.message);
-                                }
-                            }
+                                };
+                            };
                         }
                     );
             };
+
 
 
             var initialize = function () {
@@ -2025,7 +1998,10 @@ ndexApp.controller('networkViewController',
                             networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId,'Reference');
                             networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId,'rightsHolder');
                             networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
-                            networkController.otherProperties = networkService.getPropertiesExcluding(networkController.subNetworkId,['rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']);
+                            networkController.otherProperties =
+                                _.sortBy(
+                                networkService.getPropertiesExcluding(networkController.subNetworkId,[
+                                    'rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
                         }
                     )
                     .error(
