@@ -1203,12 +1203,12 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         }
         return config;
     };
-/*
+
     factory.getPostConfigAdvQueryV2 = function (url, postData) {
         var config = {
             method: 'POST',
-            ///url: 'http://dev.ndexbio.org:8282' + url,
-            url: 'http://0.0.0.0:8072' + url,
+            url: 'http://dev.ndexbio.org:8282' + url,
+            //url: 'http://0.0.0.0:8072' + url,
             data: angular.toJson(postData),
             headers: {}
         };
@@ -1224,7 +1224,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
         return config;
     };
-*/
+
     /*---------------------------------------------------------------------*
      * PUT request configuration
      *---------------------------------------------------------------------*/

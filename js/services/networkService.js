@@ -568,8 +568,8 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             var url = "/search/network/" + networkId + "/query?size=" + size;
             
-            //var urlConfig = ndexConfigs.getPostConfigAdvQueryV2(url, query);
-            var urlConfig = ndexConfigs.getPostConfigV2(url, query);
+            var urlConfig = ndexConfigs.getPostConfigAdvQueryV2(url, query);
+            //var urlConfig = ndexConfigs.getPostConfigV2(url, query);
 
             // The $http timeout property takes a deferred value that can abort AJAX request
             var deferredAbort = $q.defer();
