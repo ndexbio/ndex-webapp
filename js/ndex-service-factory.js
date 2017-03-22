@@ -1205,9 +1205,12 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     };
 
     factory.getPostConfigAdvQueryV2 = function (url, postData) {
+
+        var advQURL = ndexServerURIV2;
+        var advancedQueryURLWithPortNo = advQURL.replace("\.org", "\.org:8282");
         var config = {
             method: 'POST',
-            url: 'http://dev.ndexbio.org:8282' + url,
+            url: advancedQueryURLWithPortNo + url,
             //url: 'http://0.0.0.0:8072' + url,
             data: angular.toJson(postData),
             headers: {}
