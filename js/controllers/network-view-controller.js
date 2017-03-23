@@ -218,7 +218,7 @@ ndexApp.controller('networkViewController',
 
 
             $scope.currentView = "Graphic";
-            $scope.buttonLabel = "Table View"
+            $scope.buttonLabel = "Table View";
 
             $scope.switchView = function() {
                 if ($scope.currentView == "Graphic") {
@@ -1823,7 +1823,7 @@ ndexApp.controller('networkViewController',
                                     $modalInstance.close();
                                     $scope.isProcessing = false;
 
-                                    $('#saveQueryButton').prop('disabled', true);
+                                    //$('#saveQueryButton').prop('disabled', true);
                                 },
                                 function (error) {
                                     delete $scope.progress;
@@ -1841,6 +1841,10 @@ ndexApp.controller('networkViewController',
                 var mode = networkController.advancedQueryNodeCriteria;
                 var validEdgeProperties = [];
                 var validNodeProperties = [];
+
+                // remove old query and error messages, if any
+                networkController.queryWarnings = [];
+                networkController.queryErrors = [];
 
                 var networkQueryLimit = config.networkQueryLimit;
 
@@ -1883,15 +1887,12 @@ ndexApp.controller('networkViewController',
 
                 //console.log(JSON.stringify(postData,null,2));
                 
-                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, postData, networkQueryLimit)
+                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, postData)
                     .success(
                         function (networkInNiceCX) {
 
                             var networkName = networkController.currentNetwork.name;
                             var localNiceCX = networkInNiceCX;
-
-                            // success - remove old error messages, if any
-                            networkController.queryErrors = [];
 
                             var resultName = "Advanced query result on network - " + currentNetworkSummary.name;
                             networkController.successfullyQueried = true;
@@ -2209,11 +2210,18 @@ ndexApp.controller('networkViewController',
             networkController.resetForm = function () {
                 networkController.advancedQueryEdgeProperties = [{}];
                 networkController.advancedQueryNodeProperties = [{}];
+
+                networkController.queryWarnings = [];
+                networkController.queryErrors = [];
+
                 networkController.validateAdvancedQuery();
             };
 
 
             var startSpinner = function () {
+
+                var spinnerId = ($scope.currentView == "Graphic") ? "spinnerGraphId" : "spinnerTableId";
+
                 // please see more info about this spinner at http://spin.js.org/
                 if (!spinner) {
                     var opts = {
@@ -2239,11 +2247,11 @@ ndexApp.controller('networkViewController',
                         , position: 'absolute' // Element positioning
                     }
 
-                    var target = document.getElementById('spinner')
+                    var target = document.getElementById(spinnerId)
                     spinner = new Spinner(opts).spin(target);
 
                 } else {
-                    var target = document.getElementById('spinner')
+                    var target = document.getElementById(spinnerId)
                     spinner.spin(target);
                 }
             }

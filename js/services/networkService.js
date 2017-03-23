@@ -333,7 +333,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         factory.neighborhoodQuery = function (networkId, searchString, searchDepth, edgeLimit) {
             // Server API : Querey Network As CX
-            // POST /search/network/{networkId}/query?size={limit}
+            // POST /search/network/{networkId}/query
 
             var url = "/search/network/" + networkId + "/query";
             var postData = {
@@ -564,9 +564,11 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         factory.advancedNetworkQueryV2 = function (networkId, query, size) {
             // Server API: Query Network
-            // POST /search/network/{networkId}/query?size={limit}
+            // POST /search/network/{networkId}/advancedquery
 
-            var url = "/search/network/" + networkId + "/query?size=" + size;
+            var url = "/search/network/" + networkId + "/advancedquery";
+           
+            // http://dev.ndexbio.org/v2/search/network/{networkid}/advancedquery
             
             var urlConfig = ndexConfigs.getPostConfigAdvQueryV2(url, query);
             //var urlConfig = ndexConfigs.getPostConfigV2(url, query);

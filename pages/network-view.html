@@ -15,12 +15,13 @@
         <div class="row">
 
             <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}" ng-show="currentView == 'Graphic'">
-                <div id="spinner"></div>
+                <div id="spinnerGraphId"></div>
                 <div id="messageOverlay"
                      style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
                    ng-show="networkController.isSample">(Sample: {{networkController.displayLimit}} edges)</div>
             </div>
             <tabset ng-show="currentView == 'Table'">
+                <div id="spinnerTableId"></div>
                 <tab heading="Edges" ng-click="edgeGridApi.core.handleWindowResize()">
                     <div id="edgeGrid" ui-grid="edgeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
                 </tab>
@@ -571,10 +572,10 @@
                                     {{networkController.advancedQueryNodeCriteria}} <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='source'">source</a></li>
-                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='target'">target</a></li>
-                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='both'">both source and target</a></li>
-                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='either'">either source or target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Source'">source</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Target'">target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Both'">both source and target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Either'">either source or target</a></li>
                                 </ul>
                             </span>
                              nodes<br>
