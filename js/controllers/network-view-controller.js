@@ -44,7 +44,7 @@ ndexApp.controller('networkViewController',
 
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
 
-            networkController.advancedQueryNodeCriteria = 'source';
+            networkController.advancedQueryNodeCriteria = 'Source';
             networkController.advancedQueryEdgeProperties = [{}];
             networkController.advancedQueryNodeProperties = [{}];
 
@@ -2215,6 +2215,7 @@ ndexApp.controller('networkViewController',
                 networkController.queryErrors = [];
 
                 networkController.validateAdvancedQuery();
+                networkController.advancedQueryNodeCriteria = 'Source';
             };
 
 
