@@ -1204,6 +1204,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         return config;
     };
 
+/*
     factory.getPostConfigAdvQueryV2 = function (url, postData) {
 
         var config = {
@@ -1225,6 +1226,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
         return config;
     };
+    */
 
     /*---------------------------------------------------------------------*
      * PUT request configuration
