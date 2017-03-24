@@ -567,8 +567,6 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             // POST /search/network/{networkId}/advancedquery
 
             var url = "/search/network/" + networkId + "/advancedquery";
-           
-            // http://dev.ndexbio.org/v2/search/network/{networkid}/advancedquery
             
             //var urlConfig = ndexConfigs.getPostConfigAdvQueryV2(url, query);
             var urlConfig = ndexConfigs.getPostConfigV2(url, query);

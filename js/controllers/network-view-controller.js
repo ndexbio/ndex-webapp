@@ -589,6 +589,17 @@ ndexApp.controller('networkViewController',
                     case 'http://identifiers.org/tair.locus/':
                         retValue = /^AT[1-5]G\d{5}$/.test(entityId);
                         break;
+
+                    case 'http://gdc-portal.nci.nih.gov/projects/':
+                        if (!entityId) {
+                            return false;
+                        };
+
+                        retValue = /^TCGA-[A-Z]+$/.test(entityId);
+                        if (!retValue) {
+                            retValue = /^TARGET-[A-Z]+$/.test(entityId);
+                        };
+                        break;
                 }
 
                 return retValue;
@@ -759,6 +770,21 @@ ndexApp.controller('networkViewController',
                             value + '">' + attribute + '</a>';
                     }
 
+                } else if (attr.startsWith('gdc:')) {
+
+                    // valid GDC projects are listed at https://portal.gdc.cancer.gov/projects/t
+                    var isGDCIdValid = /^TCGA-[A-Z]+$/.test(value);
+
+                    if (!isGDCIdValid) {
+                        isGDCIdValid = /^TARGET-[A-Z]+$/.test(value);
+                    };
+
+                    if (isGDCIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://gdc-portal.nci.nih.gov/projects/' +
+                            value + '">' + attribute + '</a>';
+                    };
                 }
 
                 return attributeValue;
@@ -1733,22 +1759,26 @@ ndexApp.controller('networkViewController',
                     //        networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
 
                          //   network["networkAttributes"] = networkAttrList;
-                            drawCXNetworkOnCanvas(network,false);
+
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;
                             networkController.selectionContainer = {};
 
+                            stopSpinner();
+
                             if ($scope.currentView == "Table") {
                                 var enableFiltering = true;
                                 var setGridWidth = false;
-                                localNetwork = networkService.getNiceCX();
-                                populateNodeTable(localNetwork, enableFiltering, setGridWidth);
-                                populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                                //localNetwork = networkService.getNiceCX();
+                                populateNodeTable(network, enableFiltering, setGridWidth);
+                                populateEdgeTable(network, enableFiltering, setGridWidth);
+                            } else {
+                                drawCXNetworkOnCanvas(network,false);
                             }
 
                             if (networkController.currentNetwork.nodeCount == 0) {
                                 networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
-                            }
+                            };
                         }
                     )
                     .error(
