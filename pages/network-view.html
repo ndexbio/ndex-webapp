@@ -70,7 +70,8 @@
 
                     <div class="form-group">
                         <input class="form-control" type="search" ng-model="networkController.searchString"
-                               placeholder="Network Terms" style="width:300px" required>
+                               placeholder="Network Terms" style="width:300px" required
+                               ng-disabled="networkController.hasMultipleSubNetworks()">
                     </div>
                     <div class="form-group">
                         <label>Depth:</label>
@@ -83,32 +84,44 @@
                                     ng-model="networkController.searchDepth.value"
                                     ng-selected="1"
                                     ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                                    ng-disabled="networkController.hasMultipleSubNetworks()"
                                     required>
                             </select>
                         </span>
                     </div>
 
                     <button type="submit" class="btn btn-default btn-primary"
+                            ng-disabled="networkController.hasMultipleSubNetworks()"
                             style="margin-bottom:0">Run Query
                     </button>
                     &nbsp;
                 </form>
 
 
-                <span class="pull-left" style="margin-top:0.5em" ng-show="!hideAdvancedSearchLink">
+                <span class="pull-left" style="margin-top:0.5em"
+                      ng-show="!hideAdvancedSearchLink"
+                      ng-if="!networkController.hasMultipleSubNetworks()">
                     <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
                         <u>Advanced Query</u>
                     </a>
                 </span>
-                <span class="pull-left" style="margin-top:0.5em; color:#999999;" ng-show="hideAdvancedSearchLink">
-                    <u>Advanced Query</u>
+
+                <span class="pull-left" style="margin-top:0.5em"
+                      ng-show="!hideAdvancedSearchLink"
+                      ng-if="networkController.hasMultipleSubNetworks()"
+                      title="This network was exported to NDEx from Cytoscape as collection of {{networkController.noOfSubNetworks}} subnetworks and cannot be edited">
+                    <span  style="color:#999999; cursor:not-allowed">
+                        <u>Advanced Query</u>
+                    </span>
                 </span>
+
 <!--
                 <a class="pull-left" style="margin-top:0.5em; color:#999999; cursor: not-allowed">
                     Advanced Query
                     <img src="img/coming_soon.png">
                 </a>
 -->
+
             </div>
         </div>
     </div>
@@ -279,11 +292,10 @@
                                     </span>
 
                                     <span ng-if="networkController.hasMultipleSubNetworks()">
-
-                                        <span  style="color:#999999; cursor:not-allowed">
+                                        <span  style="color:#999999; cursor:not-allowed"
+                                               title="This network was exported to NDEx from Cytoscape as collection of {{networkController.noOfSubNetworks}} subnetworks and cannot be edited">
                                             Add / Edit Properties
                                         </span>
-
                                     </span>
 
                                 </h5>
@@ -684,7 +696,12 @@
             </span>
 
             <span>
-                <button type="button" class="actionsLabel btn btn-primary" ng-click="switchView()" style="border: 5px double white;">{{buttonLabel}}</button>
+                <button type="button" class="actionsLabel btn btn-primary"
+                        ng-click="switchView()"
+                        ng-disabled="networkController.hasMultipleSubNetworks()"
+                        style="border: 5px double white;">
+                    {{buttonLabel}}
+                </button>
             </span>
 
             <span ng-show='networkController.isLoggedInUser &&
