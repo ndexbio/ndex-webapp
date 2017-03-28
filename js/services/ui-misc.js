@@ -140,6 +140,10 @@ angular.module('ndexServiceApp')
             return (network.subnetworkIds && (network.subnetworkIds.length == 1)) ? network.subnetworkIds[0] : null;
         };
 
+        self.getNoOfSubNetworks = function(network) {
+            return (network.subnetworkIds && (network.subnetworkIds.length)) ? network.subnetworkIds.length : 0;
+        };
+
         self.getNetworkFormat = function(subNetworkId, network) {
 
             var format = "";

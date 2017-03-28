@@ -81,51 +81,70 @@ ndexApp.controller('editNetworkPropertiesController',
             }
         }
 
-        // there are 2 reserved case-incensitive words, "reference" and "sourceFormat"
-        // check if user entered one of them and if yes, then give an error.
-        if (value) {
-            if (value.toLowerCase() === 'reference') {
+        if (!action || (action.toLowerCase() !== 'del')) {
 
-                property.labelError = "This interface handles 'Reference' specially. " +
-                    "If you need to edit Reference property " +
-                    "of the current network, please select Edit Network Profile button from the Network page.";
+            // there are 2 reserved case-incensitive words, "reference" and "sourceFormat"
+            // check if user entered one of them and if yes, then give an error.
+            if (value) {
+                if (value.toLowerCase() === 'reference') {
+
+                    property.labelError = "This interface handles 'Reference' specially. " +
+                        "If you need to edit Reference property " +
+                        "of the current network, please select Edit Network Profile button from the Network page.";
+                    editor.disableSaveChangesButton = true;
+
+                } else if (value.toLowerCase() === 'sourceformat') {
+
+                    property.labelError = "sourceFormat is reserved for internal use by NDEx and " +
+                        "cannot be used as predicate.";
+                    editor.disableSaveChangesButton = true;
+
+                    //            } else if (value.toLowerCase() === 'custom...' && !property.predicateStringCustom) {
+
+                    //                property.labelError = "Custom field is empty";
+                    //                editor.disableSaveChangesButton = true;
+
+                } else if (nonEditableLabels.indexOf(value.toLowerCase()) > -1) {
+                    var myval = nonEditableLabels.indexOf(value.toLowerCase());
+                    property.labelError = value + " is a reserved keyword. Please enter a different value.";
+                    editor.disableSaveChangesButton = true;
+
+                } else if (property.predicateStringCustom && (property.predicateString == "custom...")) {
+
+                    editor.propertyValuePairs[index].labelValue = (property.predicateStringCustom) ?
+                        (property.predicateStringCustom) : "";
+                    delete property.labelError;
+
+                } else {
+
+                    //property.labelValue = property.predicatePrefix + ":" + property.predicateString;
+                    editor.propertyValuePairs[index].labelValue = property.predicateString;
+                    delete property.labelError;
+
+                }
+
+
+            } else if (property) {
+
+                // no value entered (one possible scenario is user marked and deleted the whole word); remove error message
+                property.labelError = "Missing attribute.";
                 editor.disableSaveChangesButton = true;
-
-            } else if (value.toLowerCase() === 'sourceformat') {
-
-                property.labelError = "sourceFormat is reserved for internal use by NDEx and " +
-                    "cannot be used as predicate.";
-                editor.disableSaveChangesButton = true;
-
-//            } else if (value.toLowerCase() === 'custom...' && !property.predicateStringCustom) {
-
-//                property.labelError = "Custom field is empty";
-//                editor.disableSaveChangesButton = true;
-
-            } else if (nonEditableLabels.indexOf(value.toLowerCase()) > -1) {
-                var myval = nonEditableLabels.indexOf(value.toLowerCase());
-                property.labelError = value + " is a reserved keyword. Please enter a different value.";
-                editor.disableSaveChangesButton = true;
-
-            } else {
-
-                //property.labelValue = property.predicatePrefix + ":" + property.predicateString;
-                property.labelValue = property.predicateString;
-                delete property.labelError;
-
             }
-        } else if (property) {
-
-            // no value entered (one possible scenario is user marked and deleted the whole word); remove error message
-            property.labelError = "Missing attribute.";
-            editor.disableSaveChangesButton = true;
         }
 
         // enable or disable the Save button
         editor.disableSaveChangesButton = editor.checkIfFormIsValid(attributeDictionary);
 	};
 
+    editor.valueChanged = function(index, property) {
 
+        if (property.value && pair.predicateString) {
+            disableSaveChangesButton = true;
+            pair.valueError = "Please enter a Value.";
+        } else {
+            delete pair.valueError;
+        }
+    }
 
     editor.checkIfFormIsValid = function(attributeDictionary) {
 
@@ -137,9 +156,10 @@ ndexApp.controller('editNetworkPropertiesController',
             var pair = editor.propertyValuePairs[i];
             var labelValue = pair.labelValue;
             var predicateStr = pair.predicateString;
+
             if(predicateStr === "custom..."){
-                predicateStr = pair.predicateStringCustom;
-            }
+                predicateStr = (pair.predicateStringCustom) ? pair.predicateStringCustom : "";
+            };
 
             if (predicateStr.toLowerCase() === 'reference') {
 
@@ -157,39 +177,23 @@ ndexApp.controller('editNetworkPropertiesController',
             } else if (nonEditableLabels.indexOf(predicateStr.toLowerCase()) > -1) {
 
                 pair.labelError = predicateStr + " is a reserved keyword. Please enter a different value.";
+
+                // there are duplicate attributes, so disable the Save Changes button
                 disableSaveChangesButton = true;
 
             } else if ((labelValue in attributeDictionary) && (attributeDictionary[labelValue] > 1)) {
 
-                 // check labelValue (that is prefix:attribute) has been entered more than once
+                // we found attribute that is duplicate; mark it with error message
+                editor.propertyValuePairs[i].labelError =
+                    "This attribute entered " + attributeDictionary[labelValue] + " times."
 
-                // we found attribute that is duplicate.  Mark all these attributes with error message
-                // if they are not marked already
+                disableSaveChangesButton = true;
 
-                for (var j=i; j<editor.propertyValuePairs.length; j++) {
-                    var pairForError = editor.propertyValuePairs[j];
+            }  else {
 
-                    if ((pairForError.labelValue === labelValue) && (!pairForError.labelError)) {
-                        pairForError.labelError = "This attribute entered more than once."
-                    }
-                }
-
-            } else {
-
-                if (pair.predicateString !== "") {
+                if (pair.labelError) {
                     delete pair.labelError;
                 }
-            }
-        }
-
-
-        // run through all attribute objects and see if any object has an error message field.
-        // If there is at least one error message, the form is invalid
-        for(var i=0; i<editor.propertyValuePairs.length; i++) {
-
-            if (editor.propertyValuePairs[i].labelError) {
-                disableSaveChangesButton = true;
-                break;
             }
         }
 
@@ -202,6 +206,7 @@ ndexApp.controller('editNetworkPropertiesController',
 
         return disableSaveChangesButton;
     };
+
 
 
     editor.checkIfFormIsValidOnLoad = function() {
@@ -226,14 +231,13 @@ ndexApp.controller('editNetworkPropertiesController',
 
                 disableSaveChangesButton = true;
 
-                // we wound attribute that is duplicate.  Mark all these attributes with error message
-                // if they are not marked already
+                // we found attribute that is duplicate.  Mark all these attributes with error message
 
                 for (var j=i; j<editor.propertyValuePairs.length; j++) {
                     var pairForError = editor.propertyValuePairs[j];
 
-                    if ((pairForError.labelValue === labelValue) && (!pairForError.labelError)) {
-                        pairForError.labelError = "This attribute entered more than once."
+                    if (pairForError.labelValue === labelValue) {
+                        editor.propertyValuePairs[j].labelError = "This attribute entered " + attributeDictionary[labelValue] + " times."
                     }
                 }
             }
@@ -335,6 +339,7 @@ ndexApp.controller('editNetworkPropertiesController',
                 pair.predicateString = pair.predicateStringCustom;
 
             delete pair.isReadOnlyLabel;
+            delete pair.labelValue;
             delete pair.labelValue;
 		}
 
@@ -491,6 +496,7 @@ ndexApp.controller('editNetworkPropertiesController',
                           && ($scope.reservedNames.indexOf(network.properties[i].predicateString.toLowerCase()) === -1)
                           && (network.properties[i].subNetworkId == subNetworkId) )
                     {
+                        network.properties[i].labelValue = network.properties[i].predicateString;
                         editor.propertyValuePairs.push(network.properties[i]);
                     } else {
                         editor.hiddenValuePairs.push(network.properties[i]);
@@ -512,10 +518,12 @@ ndexApp.controller('editNetworkPropertiesController',
                     i = i + 1;
                 }
 
+
                 if($scope.namesForSolrIndexing.indexOf("custom...") > -1) {
                     $scope.namesForSolrIndexing.splice($scope.namesForSolrIndexing.indexOf("custom..."))
                 }
                 $scope.namesForSolrIndexing.push("custom...");
+
 
                 editor.propertyValuePairs.push({dataType: "string", predicateString: "", value: "", subNetworkId: subNetworkId});
 

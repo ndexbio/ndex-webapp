@@ -69,6 +69,7 @@ ndexApp.controller('networkViewController',
             networkController.queryWarnings = [];
 
             networkController.subNetworkId = null;
+            networkController.noOfSubNetworks = null;
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -79,6 +80,11 @@ ndexApp.controller('networkViewController',
             var localNetwork = undefined;
 
             var spinner = undefined;
+
+            networkController.hasMultipleSubNetworks = function() {
+                return (networkController.noOfSubNetworks && (networkController.noOfSubNetworks > 1))
+                    ? true : false;
+            };
 
             $scope.showEdgeCitations = function(edgeKey)
             {
@@ -1734,14 +1740,15 @@ ndexApp.controller('networkViewController',
             };
 
             networkController.queryNetworkAndDisplay = function () {
+                // remove old query and error messages, if any
+                networkController.queryWarnings = [];
+                networkController.queryErrors = [];
+
                 startSpinner();
                 var edgeLimit = config.networkQueryLimit;
                 networkService.neighborhoodQuery(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
                         function (network) {
-                            // success - remove old error messages, if any
-                            networkController.queryErrors = [];
-
                             var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
                             networkController.successfullyQueried = true;
                             networkController.currentNetwork =
@@ -1994,7 +2001,9 @@ ndexApp.controller('networkViewController',
                             // subNetworkId is the current subNetwork we are displaying
                             networkController.subNetworkId = uiMisc.getSubNetworkId(network);
 
-                            if ( networkController.subNetworkId != null) {
+                            networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
+
+                            if (networkController.subNetworkId != null) {
                                 networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
                                 networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId,"version");
                             }

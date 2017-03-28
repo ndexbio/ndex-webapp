@@ -201,6 +201,12 @@
                                 {{networkController.privilegeLevel}}<br/>
                             </span>
 
+                            <span ng-show="networkController.hasMultipleSubNetworks()">
+                                <span class="networkPropertyName" style="color:red">Warning: </span>
+                                Network was exported to NDEx from Cytoscape as collection of
+                                {{networkController.noOfSubNetworks}} subnetworks and cannot be edited<br/>
+                            </span>
+
                             <div class='wrapLongLine rowWithOneLineTopPad'
                                  ng-show="networkController.currentNetwork.description"
                                  style="margin-right: 1px;">
@@ -260,22 +266,25 @@
                                                <br/>
                                             </span>
                                         </span>
-
                                 </div>
 
                                 <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
-                                    <a class='btn-link'
-                                       ng-if="networkController.currentNetwork.subnetworkIds.length <= 1"
-                                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
-                                       ng-click="setReturnView('newNetwork/')">
-                                        Add / Edit Properties
-                                    </a>
-                                    <a class='btn-link'
-                                       style="margin-top:0.5em; color:#999999; cursor: not-allowed"
-                                       ng-if="networkController.currentNetwork.subnetworkIds.length > 1">
-                                        Add / Edit Properties
-                                        <img src="img/coming_soon.png">
-                                    </a>
+
+                                    <span ng-if="!networkController.hasMultipleSubNetworks()">
+                                        <a class='btn-link'
+                                           ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
+                                           ng-click="setReturnView('newNetwork/')">
+                                            Add / Edit Properties
+                                        </a>
+                                    </span>
+
+                                    <span ng-if="networkController.hasMultipleSubNetworks()">
+
+                                        <span  style="color:#999999; cursor:not-allowed">
+                                            Add / Edit Properties
+                                        </span>
+
+                                    </span>
 
                                 </h5>
 
@@ -680,12 +689,15 @@
 
             <span ng-show='networkController.isLoggedInUser &&
                         ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
-                <a class="actionsLabel btn btn-primary">
-                    <edit-network-summary-modal
-                            ndex-data='networkController.currentNetwork' sub-network-id="networkController.subNetworkId">
-                    Edit Profile
-                    </edit-network-summary-modal>
-                </a>
+                <span>
+                    <a class="actionsLabel btn btn-primary" ng-disabled="networkController.hasMultipleSubNetworks()">
+                        <edit-network-summary-modal
+                                ndex-data='networkController.currentNetwork'
+                                sub-network-id="networkController.subNetworkId">
+                            Edit Profile
+                        </edit-network-summary-modal>
+                    </a>
+                </span>
             </span>
 
             <span ng-show='networkController.isLoggedInUser
