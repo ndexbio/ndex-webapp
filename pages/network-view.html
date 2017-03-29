@@ -109,7 +109,7 @@
                 <span class="pull-left" style="margin-top:0.5em"
                       ng-show="!hideAdvancedSearchLink"
                       ng-if="networkController.hasMultipleSubNetworks()"
-                      title="This network was exported to NDEx from Cytoscape as collection of {{networkController.noOfSubNetworks}} subnetworks and cannot be edited">
+                      title="This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
                     <span  style="color:#999999; cursor:not-allowed">
                         <u>Advanced Query</u>
                     </span>
@@ -214,10 +214,10 @@
                                 {{networkController.privilegeLevel}}<br/>
                             </span>
 
-                            <span ng-show="networkController.hasMultipleSubNetworks()">
-                                <span class="networkPropertyName" style="color:red">Warning: </span>
-                                Network was exported to NDEx from Cytoscape as collection of
-                                {{networkController.noOfSubNetworks}} subnetworks and cannot be edited<br/>
+                            <span ng-show="networkController.hasMultipleSubNetworks()" style="color:red">
+                                <span class="networkPropertyName">Warning: </span>
+                                This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}}
+                                subnetworks and cannot be edited in NDEx.<br/>
                             </span>
 
                             <div class='wrapLongLine rowWithOneLineTopPad'
@@ -293,7 +293,7 @@
 
                                     <span ng-if="networkController.hasMultipleSubNetworks()">
                                         <span  style="color:#999999; cursor:not-allowed"
-                                               title="This network was exported to NDEx from Cytoscape as collection of {{networkController.noOfSubNetworks}} subnetworks and cannot be edited">
+                                               title="This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
                                             Add / Edit Properties
                                         </span>
                                     </span>
