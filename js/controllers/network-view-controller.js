@@ -69,7 +69,7 @@ ndexApp.controller('networkViewController',
             networkController.queryWarnings = [];
 
             networkController.subNetworkId = null;
-            networkController.noOfSubNetworks = null;
+            networkController.noOfSubNetworks = 0;
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -82,8 +82,7 @@ ndexApp.controller('networkViewController',
             var spinner = undefined;
 
             networkController.hasMultipleSubNetworks = function() {
-                return (networkController.noOfSubNetworks && (networkController.noOfSubNetworks > 1))
-                    ? true : false;
+                return (networkController.noOfSubNetworks > 1);
             };
 
             $scope.showEdgeCitations = function(edgeKey)
