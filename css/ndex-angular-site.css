@@ -853,3 +853,16 @@ ul.ndex-nav-pills > li > a:hover {
     border-color: #71892a;
     border: 5px double white;
 }
+
+
+.actionsLabelDisabled-btn {
+    margin-bottom: 4px;
+    background-color: #73A4D5;
+    border-color: #73A4D5;
+    cursor: not-allowed;
+}
+.actionsLabelDisabled-btn:hover, .actionsLabelDisabled-btn:focus, .actionsLabelDisabled-btn:active {
+    background-color: #73A4D5;
+    border-color: #73A4D5;
+    cursor: not-allowed;
+}

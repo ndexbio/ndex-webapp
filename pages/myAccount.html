@@ -62,12 +62,12 @@
 
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
-                               Edit Properties
+                               {{myAccountController.editProfilesLabel}}
                                <span class="caret"></span>
                            </button>
 
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
-                               <li class="disabled">
+                               <li>
                                    <a>
                                        <bulk-edit-network-property
                                                ndex-data='myAccountController'
@@ -76,10 +76,10 @@
                                                directive-description="Change Descriptions of the selected networks to the one below:">
                                             Change Description
                                         </bulk-edit-network-property>
-                                        <img src="img/coming_soon.png">
+                                        <!--<img src="img/coming_soon.png">-->
                                    </a>
                                </li>
-                               <li class="disabled">
+                               <li>
                                    <a>
                                        <bulk-edit-network-property
                                                ndex-data='myAccountController'
@@ -88,10 +88,10 @@
                                                directive-description="Change Reference of the selected networks to the one below:">
                                            Change Reference
                                        </bulk-edit-network-property>
-                                       <img src="img/coming_soon.png">
+                                       <!--<img src="img/coming_soon.png">-->
                                    </a>
                                </li>
-                               <li class="disabled">
+                               <li>
                                    <a>
                                        <bulk-edit-network-property
                                                ndex-data='myAccountController'
@@ -100,7 +100,7 @@
                                                directive-description="Change Versions of the selected networks to the one below:">
                                            Change Version
                                        </bulk-edit-network-property>
-                                       <img src="img/coming_soon.png">
+                                       <!--<img src="img/coming_soon.png">-->
                                    </a>
                                </li>
                                <li>
@@ -149,7 +149,7 @@
 
                         <a class="btn btn-primary customButtonWidth">
                             <bulk-export-network ndex-data='myAccountController' ng-model="selection">
-                                Export Networks
+                                {{myAccountController.exportNetworksLabel}}
                             </bulk-export-network>
                         </a>
                     </span>
@@ -166,7 +166,8 @@
 
                     <span>
                         <a class="btn btn-primary customButtonWidth"
-                           ng-click="myAccountController.checkAndDeleteSelectedNetworks()">Delete Networks
+                           ng-click="myAccountController.checkAndDeleteSelectedNetworks()">
+                            {{myAccountController.deleteNetworksLabel}}
                         </a>
                     </span>
 

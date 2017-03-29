@@ -70,8 +70,14 @@
 
                     <div class="form-group">
                         <input class="form-control" type="search" ng-model="networkController.searchString"
+                               placeholder="Network Terms" style="width:300px"
+                               title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx."
+                               ng-show="networkController.hasMultipleSubNetworks()"
+                               ng-disabled="true">
+
+                        <input class="form-control" type="search" ng-model="networkController.searchString"
                                placeholder="Network Terms" style="width:300px" required
-                               ng-disabled="networkController.hasMultipleSubNetworks()">
+                               ng-show="!networkController.hasMultipleSubNetworks()">
                     </div>
                     <div class="form-group">
                         <label>Depth:</label>
@@ -91,9 +97,16 @@
                     </div>
 
                     <button type="submit" class="btn btn-default btn-primary"
-                            ng-disabled="networkController.hasMultipleSubNetworks()"
+                            ng-show="!networkController.hasMultipleSubNetworks()"
                             style="margin-bottom:0">Run Query
                     </button>
+
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-show="networkController.hasMultipleSubNetworks()"
+                       title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                        Run Query
+                    </a>
+
                     &nbsp;
                 </form>
 
@@ -698,21 +711,32 @@
             <span>
                 <button type="button" class="actionsLabel btn btn-primary"
                         ng-click="switchView()"
-                        ng-disabled="networkController.hasMultipleSubNetworks()"
-                        style="border: 5px double white;">
+                        ng-hide="networkController.hasMultipleSubNetworks()">
                     {{buttonLabel}}
                 </button>
+
+                <a class="actionsLabelDisabled-btn btn btn-primary" style="border: 5px double white;"
+                   ng-show="networkController.hasMultipleSubNetworks()"
+                   title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                        {{buttonLabel}}
+                </a>
+
             </span>
 
             <span ng-show='networkController.isLoggedInUser &&
                         ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
                 <span>
-                    <a class="actionsLabel btn btn-primary" ng-disabled="networkController.hasMultipleSubNetworks()">
+                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()">
                         <edit-network-summary-modal
                                 ndex-data='networkController.currentNetwork'
                                 sub-network-id="networkController.subNetworkId">
                             Edit Profile
                         </edit-network-summary-modal>
+                    </a>
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-show="networkController.hasMultipleSubNetworks()"
+                       title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                            Edit Profile
                     </a>
                 </span>
             </span>

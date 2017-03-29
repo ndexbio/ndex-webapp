@@ -65,6 +65,11 @@ ndexApp.controller('myAccountController',
             $scope.enableEditPropertiesBulkButton = false;
             $scope.enableManageAccessBulkButton = false;
 
+            myAccountController.editProfilesLabel   = "Edit Profile";
+            myAccountController.exportNetworksLabel = "Export Network";
+            myAccountController.deleteNetworksLabel = "Delete Network";
+            
+
             //table
             $scope.networkGridOptions =
             {
@@ -82,6 +87,7 @@ ndexApp.controller('myAccountController',
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         myAccountController.rowsSelected = selectedRows.length;
+                        changeBulkActionsButtonsLabels();
 
                         enableOrDisableEditPropertiesBulkButton();
                         enableOrDisableManageAccessBulkButton();
@@ -90,11 +96,23 @@ ndexApp.controller('myAccountController',
                         var selectedRows = gridApi.selection.getSelectedRows();
                         myAccountController.rowsSelected = selectedRows.length;
 
+                        changeBulkActionsButtonsLabels();
                         enableOrDisableEditPropertiesBulkButton();
                         enableOrDisableManageAccessBulkButton();
                     });
-
                 }
+            };
+
+            var changeBulkActionsButtonsLabels = function() {
+                if (myAccountController.rowsSelected > 1) {
+                    myAccountController.editProfilesLabel   = "Edit Profiles";
+                    myAccountController.exportNetworksLabel = "Export Networks";
+                    myAccountController.deleteNetworksLabel = "Delete Networks";
+                } else {
+                    myAccountController.editProfilesLabel   = "Edit Profile";
+                    myAccountController.exportNetworksLabel = "Export Network";
+                    myAccountController.deleteNetworksLabel = "Delete Network";
+                };
             };
 
             var populateNetworkTable = function()
