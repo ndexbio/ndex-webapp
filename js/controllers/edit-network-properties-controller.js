@@ -502,7 +502,11 @@ ndexApp.controller('editNetworkPropertiesController',
                         editor.hiddenValuePairs.push(network.properties[i]);
                     }
                 }
-                
+
+                if (editor.propertyValuePairs.length > 1) {
+                    editor.propertyValuePairs = _.sortBy(editor.propertyValuePairs, 'predicateString');
+                }
+
                 var arrayLength = editor.propertyValuePairs.length;
                 var i = 0;
 

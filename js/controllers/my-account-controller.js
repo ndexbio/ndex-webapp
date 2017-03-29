@@ -48,6 +48,10 @@ ndexApp.controller('myAccountController',
             // These networks are owned by both the current user and other users.
             myAccountController.networksWithWriteAccess = [];
 
+            // this map of Cytoscape collection networks; networkUUID is a key and <numberOfSubNetworks> is a value;
+            // we only put networks with number of subnetwroks greater than 1
+            myAccountController.networksWithMultipleSubNetworks = {};
+
             // when My Account (this current) page loads, we need to hide the My Account menu link
             $scope.$parent.showMyAccountMenu = false;
             
@@ -176,22 +180,24 @@ ndexApp.controller('myAccountController',
                         (status && ["failed", "processing"].indexOf(status.toLowerCase()) > -1);
 
                     if (network_in_invalid_state) {
-                        //$scope.enableEditPropertiesBulkButton = false;
                         return;
                     }
+
+                    var networkUUUID = selectedNetworksRows[i].externalId;
+                    if (networkUUUID in myAccountController.networksWithMultipleSubNetworks) {
+                        return;
+                    };
 
                     if (ownerUUID == myAccountController.loggedInIdentifier) {
                         // we are owner of the network, it means we can change it; get next selected network
                         continue;
                     };
 
-
                     // here, ownerUUID != myAccountController.loggedInIdentifier
-                    var networkUUUID = selectedNetworksRows[i].externalId;
                     if ((myAccountController.networksWithAdminAccess.indexOf(networkUUUID) == -1) &&
                         (myAccountController.networksWithWriteAccess.indexOf(networkUUUID) == -1) ) {
                         return;
-                    }
+                    };
 
                 };
 
@@ -917,8 +923,9 @@ ndexApp.controller('myAccountController',
 
                                 // loop through the network summaries and fill in lists of UUIDs
                                 // for networks with ADMIN and WRITE permissions
-                                for (var i=0; i<myAccountController.networkSearchResults.length; i++) {
-                                    var networkUUID = myAccountController.networkSearchResults[i].externalId;
+                                _.forEach(myAccountController.networkSearchResults, function (networkSummaryObj) {
+
+                                    var networkUUID = networkSummaryObj.externalId;
 
                                     if (networkUUID in networkPermissionsMap) {
                                         var networkPermission = networkPermissionsMap[networkUUID];
@@ -930,10 +937,17 @@ ndexApp.controller('myAccountController',
                                                 myAccountController.networksWithAdminAccess.push(networkUUID);
                                             } else if (networkPermission == "WRITE") {
                                                 myAccountController.networksWithWriteAccess.push(networkUUID);
-                                            }
-                                        }
-                                    }
-                                }
+                                            };
+                                        };
+                                    };
+
+                                    if (networkSummaryObj && networkSummaryObj.subnetworkIds
+                                        &&  networkSummaryObj.subnetworkIds.length > 1)
+                                    {
+                                        myAccountController.networksWithMultipleSubNetworks[networkUUID] =
+                                            networkSummaryObj.subnetworkIds.length;
+                                    };
+                                });
 
                                 populateNetworkTable();
 
