@@ -73,6 +73,7 @@
                                                ndex-data='myAccountController'
                                                directive-title="Change Description of Selected Networks"
                                                directive-action="description"
+                                               title="{{myAccountController.getTitle()}}"
                                                directive-description="Change Descriptions of the selected networks to the one below:">
                                             Change Description
                                         </bulk-edit-network-property>
@@ -85,6 +86,7 @@
                                                ndex-data='myAccountController'
                                                directive-title="Change Reference of Selected Networks"
                                                directive-action="reference"
+                                               title="{{myAccountController.getTitle()}}"
                                                directive-description="Change Reference of the selected networks to the one below:">
                                            Change Reference
                                        </bulk-edit-network-property>
@@ -97,15 +99,10 @@
                                                ndex-data='myAccountController'
                                                directive-title="Change Version of Selected Networks"
                                                directive-action="version"
-                                               title="{{enableEditPropertiesBulkButton}} ? 'enabled' : 'disabled'"
+                                               title="{{myAccountController.getTitle()}}"
                                                directive-description="Change Versions of the selected networks to the one below:">
                                            Change Version
 
-                                           <span ng-show="!enableEditPropertiesBulkButton" style="color:red">
-                                               <br>
-                                               1 or more selected networks are Cytoscape collections
-                                               with multiple subnetworks and cannot be edited in NDEx.
-                                           </span>
                                        </bulk-edit-network-property>
                                        <!--<img src="img/coming_soon.png">-->
                                    </a>

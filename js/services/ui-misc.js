@@ -139,7 +139,7 @@ angular.module('ndexServiceApp')
                 });
             };
 
-            return subNetworkIdsList.length;
+            return ((subNetworkIdsList.length == 1) && (!subNetworkIdsList[0]) ? 0 : subNetworkIdsList.length);
         };
 
         self.getNetworkFormat = function(subNetworkId, network) {

@@ -315,7 +315,11 @@ ndexApp.controller('myAccountController',
                 }
             };
 
-
+            myAccountController.getTitle = function() {
+                return (!$scope.enableEditPropertiesBulkButton) ?
+                    "1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx." :
+                    "";
+            }
 
             myAccountController.tasksNotificationsTabDisabled = function() {
 
