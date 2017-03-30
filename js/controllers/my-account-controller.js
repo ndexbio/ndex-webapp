@@ -250,23 +250,27 @@ ndexApp.controller('myAccountController',
                 {
                     var network = myAccountController.networkSearchResults[i];
 
-                    var subNetworkId = uiMisc.getSubNetworkId(network);
+                    var subNetworkInfo  = uiMisc.getSubNetworkInfo(network);
+                    var noOfSubNetworks = subNetworkInfo['numberOfSubNetworks'];
+                    var subNetworkId    = subNetworkInfo['id'];
 
                     var networkStatus = "success";
                     if (network.errorMessage) {
                         networkStatus = "failed";
                     } else if (!network.isValid) {
                         networkStatus = "processing";
-                    }
+                    };
                     
                     if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
                         networkStatus = "warning";
-                    }
+                    };
 
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
                     if (networkStatus == "failed") {
                         networkName = "Invalid Network. UUID: " + network.externalId;
-                    }
+                    } else if (noOfSubNetworks > 1) {
+                        networkStatus = "collection";
+                    };
 
                     var description = $scope.stripHTML(network['description']);
                     var externalId = network['externalId'];
@@ -277,7 +281,8 @@ ndexApp.controller('myAccountController',
                     var modified = new Date( network['modificationTime'] );
                     var showcase = network['isShowcase'];
 
-                    var format = uiMisc.getNetworkFormat(subNetworkId, network);
+                    var format    = (subNetworkId) ? uiMisc.getNetworkFormat(subNetworkId, network) :
+                        uiMisc.getNetworkFormatForMultipleSubNetworks(network);
                     var download  = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
                     var disease   = uiMisc.getDisease(network);
@@ -303,7 +308,8 @@ ndexApp.controller('myAccountController',
                         "externalId"    :   externalId,
                         "ownerUUID"     :   network['ownerUUID'],
                         "name"          :   networkName,
-                        "errorMessage"  :   errorMessage
+                        "errorMessage"  :   errorMessage,
+                        "subnetworks"   :   noOfSubNetworks
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
@@ -959,11 +965,10 @@ ndexApp.controller('myAccountController',
                                         };
                                     };
 
-                                    if (networkSummaryObj && networkSummaryObj.subnetworkIds
-                                        &&  networkSummaryObj.subnetworkIds.length > 1)
-                                    {
-                                        myAccountController.networksWithMultipleSubNetworks[networkUUID] =
-                                            networkSummaryObj.subnetworkIds.length;
+                                    var noOfSubNetworks = uiMisc.getNoOfSubNetworks(networkSummaryObj);
+
+                                    if (noOfSubNetworks > 1) {
+                                        myAccountController.networksWithMultipleSubNetworks[networkUUID] = noOfSubNetworks;
                                     };
                                 });
 
@@ -986,8 +991,15 @@ ndexApp.controller('myAccountController',
                 if (!rowEntity && !rowEntity.externalId) {
                     return;
                 }
-                
-                uiMisc.showNetworkWarningsOrErrors(rowEntity, myAccountController.networkSearchResults);
+
+                if (rowEntity.subnetworks > 1) {
+                    var title = "Warnings";
+                    var message = "This network is part of a Cytoscape collection with " +
+                        rowEntity.subnetworks + " subnetworks and cannot be edited in NDEx."
+                    ndexNavigation.genericInfoModal(title, message);
+                } else {
+                    uiMisc.showNetworkWarningsOrErrors(rowEntity, myAccountController.networkSearchResults);
+                };
             };
 
             $scope.switchShowcase = function(row) {

@@ -58,7 +58,7 @@
                     <h5><strong>Bulk Actions:</strong></h5>
 
                     <span>
-                        <div class="btn-group dropdown" ng-show="enableEditPropertiesBulkButton">
+                        <div class="btn-group dropdown">
 
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
@@ -67,7 +67,7 @@
                            </button>
 
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
-                               <li>
+                               <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
                                    <a>
                                        <bulk-edit-network-property
                                                ndex-data='myAccountController'
@@ -79,7 +79,7 @@
                                         <!--<img src="img/coming_soon.png">-->
                                    </a>
                                </li>
-                               <li>
+                               <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
                                    <a>
                                        <bulk-edit-network-property
                                                ndex-data='myAccountController'
@@ -91,14 +91,21 @@
                                        <!--<img src="img/coming_soon.png">-->
                                    </a>
                                </li>
-                               <li>
+                               <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
                                    <a>
                                        <bulk-edit-network-property
                                                ndex-data='myAccountController'
                                                directive-title="Change Version of Selected Networks"
                                                directive-action="version"
+                                               title="{{enableEditPropertiesBulkButton}} ? 'enabled' : 'disabled'"
                                                directive-description="Change Versions of the selected networks to the one below:">
                                            Change Version
+
+                                           <span ng-show="!enableEditPropertiesBulkButton" style="color:red">
+                                               <br>
+                                               1 or more selected networks are Cytoscape collections
+                                               with multiple subnetworks and cannot be edited in NDEx.
+                                           </span>
                                        </bulk-edit-network-property>
                                        <!--<img src="img/coming_soon.png">-->
                                    </a>
@@ -130,14 +137,6 @@
 
                         </div>
 
-                        <!-- show disabled Edit Profile button here -->
-                        <div class="btn-group dropdown" ng-show="!enableEditPropertiesBulkButton">
-                            <button id="editNetworksPropertiesButtonDisabled" type="button" data-toggle="dropdown"
-                                    class="btn btn-primary dropdown-toggle customButtonWidth disabled">
-                               {{myAccountController.editProfilesLabel}}
-                               <span class="caret"></span>
-                            </button>
-                        </div>
 
                     </span>
 

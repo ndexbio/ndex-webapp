@@ -22,3 +22,8 @@
      class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
     <span style="cursor: not-allowed">{{COL_FIELD}}</span>
 </div>
+
+<div ng-if="row.entity.Status == 'collection'"
+     class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
+    <a href="#/newNetwork/{{row.entity.externalId}}">{{COL_FIELD}} </a>
+</div>

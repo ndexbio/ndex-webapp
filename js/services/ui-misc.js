@@ -91,42 +91,6 @@ angular.module('ndexServiceApp')
 
         };
 
-        self.getDisease = function(network) {
-            var disease = "";
-
-            if (!network || !network.properties) {
-                return disease;
-            }
-
-            for (var i = 0; i < network.properties.length; i++) {
-                var property = network.properties[i];
-                if (property.predicateString && property.predicateString.toLowerCase() == "disease") {
-                    disease = (property.value) ? property.value : "";
-                    break;
-                }
-            }
-
-            return disease;
-        };
-
-        self.getTissue = function(network) {
-            var tissue = "";
-
-            if (!network || !network.properties) {
-                return tissue;
-            }
-
-            for (var i = 0; i < network.properties.length; i++) {
-                var property = network.properties[i];
-                if (property.predicateString && property.predicateString.toLowerCase() == "tissue") {
-                    tissue = (property.value) ? property.value : "";
-                    break;
-                }
-            }
-
-            return tissue;
-        };
-
         self.getFirstWordFromDisease = function(diseaseDescription) {
 
             if (!diseaseDescription) {
@@ -135,7 +99,15 @@ angular.module('ndexServiceApp')
 
             return diseaseDescription.split(/[ .,;:]+/).shift();
         };
-                    
+
+
+        self.getSubNetworkInfo = function(network) {
+            var noOfSubNetworks = this.getNoOfSubNetworks(network);
+            var subnetworkId = ((noOfSubNetworks == 1) && (network.subnetworkIds[0])) ? network.subnetworkIds[0] : null;
+            return {id: subnetworkId, numberOfSubNetworks: noOfSubNetworks};
+        };
+
+
         self.getSubNetworkId = function(network) {
             var noOfSubnetworks = this.getNoOfSubNetworks(network);
             return ((noOfSubnetworks == 1) && (network.subnetworkIds[0])) ? network.subnetworkIds[0] : null;
@@ -191,6 +163,66 @@ angular.module('ndexServiceApp')
                 }
             }
             return format;
+        };
+
+
+        /*
+         * In case there are multiple subnetworks on a network, we return network format in case
+         * all ndex:sourceFormat are same.
+         */
+        self.getNetworkFormatForMultipleSubNetworks = function(network) {
+
+            if (!network || !network.properties) {
+                return "";
+            }
+
+            var formatArr = [];
+
+            _.forEach(network.properties, function(property) {
+                if (property.predicateString && (property.predicateString == "ndex:sourceFormat")) {
+                    if (formatArr.indexOf(property.value) == -1) {
+                        formatArr.push(property.value);
+                    };
+                };
+            });
+
+            return (formatArr.length == 1) ? formatArr[0] : "";
+        };
+
+        self.getDisease = function(network) {
+            var disease = "";
+
+            if (!network || !network.properties) {
+                return disease;
+            }
+
+            for (var i = 0; i < network.properties.length; i++) {
+                var property = network.properties[i];
+                if (property.predicateString && property.predicateString.toLowerCase() == "disease") {
+                    disease = (property.value) ? property.value : "";
+                    break;
+                }
+            }
+
+            return disease;
+        };
+
+        self.getTissue = function(network) {
+            var tissue = "";
+
+            if (!network || !network.properties) {
+                return tissue;
+            }
+
+            for (var i = 0; i < network.properties.length; i++) {
+                var property = network.properties[i];
+                if (property.predicateString && property.predicateString.toLowerCase() == "tissue") {
+                    tissue = (property.value) ? property.value : "";
+                    break;
+                }
+            }
+
+            return tissue;
         };
 
         self.getCurrentServerURL = function() {
