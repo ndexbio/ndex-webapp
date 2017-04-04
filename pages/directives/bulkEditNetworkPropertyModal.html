@@ -86,31 +86,23 @@
                 <button class="btn btn-primary"
                         type='submit'
                         ng-disabled='isProcessing'
-                        ng-show="action=='description'"
-                        ng-click="network.operation='description'">Change Description</button>
-
-                <button class="btn btn-primary"
-                        type='submit'
-                        ng-disabled='isProcessing'
-                        ng-show="action=='reference'"
-                        ng-click="network.operation='reference'">Change Reference</button>
-
-                <button class="btn btn-primary"
-                        type='submit'
-                        ng-disabled='isProcessing'
-                        ng-show="action=='version'"
-                        ng-click="network.operation='version'">Change Version</button>
+                        ng-show="action=='version' || action=='reference' || action=='description'">
+                    {{network.submitButtonLabel}}
+                </button>
 
                 <button class="btn btn-primary"
                         type='submit'
                         ng-disabled="isProcessing || network.visibility=='[Select Network Visibility]'"
-                        ng-show="action=='visibility'"
-                        ng-click="network.operation='visibility'">Change Visibility</button>
+                        ng-show="action=='visibility'">
+                    {{network.submitButtonLabel}}
+                </button>
 
                 <button class="btn btn-primary"
                         type='submit'
                         ng-disabled="network.readOnly=='[Select Network Read-Only Flag]'"
-                        ng-show="action=='readOnly'">{{network.label}}</button>
+                        ng-show="action=='readOnly'">
+                    {{network.submitButtonLabel}}
+                </button>
 
             </div>
 

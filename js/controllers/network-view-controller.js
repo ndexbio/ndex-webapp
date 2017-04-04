@@ -2005,7 +2005,7 @@ ndexApp.controller('networkViewController',
                             if (networkController.subNetworkId != null) {
                                 networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
                                 networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId,"version");
-                            }
+                            };
 
                             getMembership(function ()
                             {
