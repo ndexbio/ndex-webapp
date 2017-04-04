@@ -1489,7 +1489,7 @@ ndexApp.controller('networkViewController',
                         field: 'Citations',
                         displayName: 'Citations',
                         cellToolTip: false,
-                        //minWidth: calcColumnWidth('Citations'),
+                        minWidth: calcColumnWidth('Citations'),
                         enableFiltering: false,
                         enableSorting: false,
                         cellTemplate: "<div class='text-center'><h6>" +
