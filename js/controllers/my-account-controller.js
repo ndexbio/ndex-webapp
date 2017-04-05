@@ -70,6 +70,29 @@ ndexApp.controller('myAccountController',
             myAccountController.deleteNetworksLabel = "Delete Network";
             
 
+            $scope.selectedRowsUids = {};
+            
+            $scope.updateSelectedRowsUidsList = function(row) {
+                var hashKey = row['entity']["$$hashKey"];
+
+                if (row['isSelected']) {
+                    $scope.selectedRowsUids[hashKey] = true;
+                } else {
+                    delete $scope.selectedRowsUids[hashKey];
+                };
+            };
+
+            $scope.selectPreviouslySelectedNetworks = function() {
+                var selectedCount = 0;
+                for (var hashKey in $scope.selectedRowsUids) {
+                    $scope.networkGridApi.grid.rowHashMap['object:'+hashKey]['isSelected'] = true;
+                    selectedCount = selectedCount + 1;
+                };
+
+                // This shows (Selected Items: <>) at the bottom of network table
+                $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
+            };
+
             //table
             $scope.networkGridOptions =
             {
@@ -87,6 +110,9 @@ ndexApp.controller('myAccountController',
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         myAccountController.rowsSelected = selectedRows.length;
+
+                        $scope.updateSelectedRowsUidsList(row);
+
                         changeBulkActionsButtonsLabels();
 
                         enableOrDisableEditPropertiesBulkButton();
@@ -95,6 +121,10 @@ ndexApp.controller('myAccountController',
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         myAccountController.rowsSelected = selectedRows.length;
+
+                        _.forEach(rows, function(row) {
+                            $scope.updateSelectedRowsUidsList(row);
+                        });
 
                         changeBulkActionsButtonsLabels();
                         enableOrDisableEditPropertiesBulkButton();

@@ -151,10 +151,10 @@
                     <span>
                         <a class="btn btn-primary customButtonWidth" ng-show="enableManageAccessBulkButton"
                            ng-click="myAccountController.manageBulkAccess('/access/bulk/network', main.getCurrentUserId())">
-                            Manage Access
+                            Share
                         </a>
                         <a class="btn btn-primary customButtonWidth disabled" ng-show="!enableManageAccessBulkButton">
-                            Manage Access
+                            Share
                         </a>
                     </span>
 
@@ -176,7 +176,11 @@
     <div class="col-md-10" ng-show="myAccountController.displayedUser">
 
         <tabset justified="false">
-            <tab heading="My Networks">
+
+            <tab heading="My Networks" select="tabShown = !tabShown" deselect="tabShown = !tabShown"
+                 ng-click="selectPreviouslySelectedNetworks()">
+
+            <!--<tab heading="My Networks"> -->
                 <!-- adding ui-grid-auto-resize fixes the issue of distorted Networks Tab (NDEX-578).
                  Resolution is described here: http://ui-grid.info/docs/#/tutorial/108_hidden_grids
                  The use ng-if="tabShown" ... described on the page above introduces another issue:
@@ -187,12 +191,16 @@
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize
-                         class="networkGrid"></div>
+                         ng-if="tabShown"
+                         class="networkGrid">
+                    </div>
                 </div>
+
                 <div class='row' ng-hide='myAccountController.networkSearchResults.length > 0'>
                     <br>
                     <p class='text-center text-muted'>No networks to display</p>
                 </div>
+
             </tab>
 
             <tab heading="My Groups">
