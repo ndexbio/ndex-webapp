@@ -63,7 +63,9 @@ ndexApp.controller('myAccountController',
             });
 
             $scope.enableEditPropertiesBulkButton = false;
-            $scope.enableManageAccessBulkButton = false;
+            $scope.enableShareBulkButton = false;
+            $scope.enableEditAndExportBulkButtons = false;
+            
 
             myAccountController.editProfilesLabel   = "Edit Profile";
             myAccountController.exportNetworksLabel = "Export Network";
@@ -115,6 +117,7 @@ ndexApp.controller('myAccountController',
 
                         changeBulkActionsButtonsLabels();
 
+                        enableOrDisableEditAndExportBulkButtons();
                         enableOrDisableEditPropertiesBulkButton();
                         enableOrDisableManageAccessBulkButton();
                     });
@@ -127,6 +130,9 @@ ndexApp.controller('myAccountController',
                         });
 
                         changeBulkActionsButtonsLabels();
+
+
+                        enableOrDisableEditAndExportBulkButtons();
                         enableOrDisableEditPropertiesBulkButton();
                         enableOrDisableManageAccessBulkButton();
                     });
@@ -214,6 +220,25 @@ ndexApp.controller('myAccountController',
 
                 return markDownFinal;
             };
+            
+            var enableOrDisableEditAndExportBulkButtons = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableEditAndExportBulkButtons = true;
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    var status = row.Status;
+
+                    var network_in_invalid_state =
+                        (status && ["failed", "processing"].indexOf(status.toLowerCase()) > -1);
+
+                    if (network_in_invalid_state) {
+                        $scope.enableEditAndExportBulkButtons = false;
+                        return;
+                    };
+                });
+            };
+
 
             var enableOrDisableEditPropertiesBulkButton = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
@@ -255,7 +280,7 @@ ndexApp.controller('myAccountController',
 
             var enableOrDisableManageAccessBulkButton = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                $scope.enableManageAccessBulkButton = false;
+                $scope.enableShareBulkButton = false;
 
                 for (var i = 0; i < selectedNetworksRows.length; i++) {
 
@@ -270,7 +295,7 @@ ndexApp.controller('myAccountController',
                     };
                 };
 
-                $scope.enableManageAccessBulkButton = true;
+                $scope.enableShareBulkButton = true;
             };
             
             var refreshNetworkTable = function()

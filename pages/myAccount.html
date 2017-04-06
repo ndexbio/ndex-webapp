@@ -61,7 +61,9 @@
                         <div class="btn-group dropdown">
 
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
-                                   class="btn btn-primary dropdown-toggle customButtonWidth">
+                                   class="btn btn-primary dropdown-toggle customButtonWidth"
+                                   ng-class="enableEditAndExportBulkButtons ? 'btn btn-primary customButtonWidth' :
+                                        'btn btn-primary customButtonWidth disabled'">
                                {{myAccountController.editProfilesLabel}}
                                <span class="caret"></span>
                            </button>
@@ -147,12 +149,8 @@
                     </span>
 
                     <span>
-                        <!---&& ((networkController.currentNetwork.visibility == "PUBLIC")
-                                || networkController.isAdmin
-                                || networkController.canEdit
-                                || networkController.canRead)'>-->
-
-                        <a class="btn btn-primary customButtonWidth">
+                        <a ng-class="enableEditAndExportBulkButtons ? 'btn btn-primary customButtonWidth' :
+                                'btn btn-primary customButtonWidth disabled'">
                             <bulk-export-network ndex-data='myAccountController' ng-model="selection">
                                 {{myAccountController.exportNetworksLabel}}
                             </bulk-export-network>
@@ -160,11 +158,9 @@
                     </span>
 
                     <span>
-                        <a class="btn btn-primary customButtonWidth" ng-show="enableManageAccessBulkButton"
+                        <a ng-class="enableShareBulkButton ? 'btn btn-primary customButtonWidth' :
+                                'btn btn-primary customButtonWidth disabled'"
                            ng-click="myAccountController.manageBulkAccess('/access/bulk/network', main.getCurrentUserId())">
-                            Share
-                        </a>
-                        <a class="btn btn-primary customButtonWidth disabled" ng-show="!enableManageAccessBulkButton">
                             Share
                         </a>
                     </span>
