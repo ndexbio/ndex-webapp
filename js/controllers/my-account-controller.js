@@ -1027,13 +1027,13 @@ ndexApp.controller('myAccountController',
                 }
 
                 if (rowEntity.subnetworks > 1) {
-                    var title = "Warnings";
+                    var title = "Warning";
                     var message = "This network is part of a Cytoscape collection with " +
                         rowEntity.subnetworks + " subnetworks and cannot be edited in NDEx."
                     ndexNavigation.genericInfoModal(title, message);
                 } else {
                     uiMisc.showNetworkWarningsOrErrors(rowEntity, myAccountController.networkSearchResults);
-                };
+                };  
             };
 
             $scope.switchShowcase = function(row) {

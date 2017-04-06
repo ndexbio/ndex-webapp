@@ -1,0 +1,18 @@
+<div id="downloadNetworkTemplate" class="ui-grid-cell-contents">
+    <span ng-if="row.entity.Status != 'processing'">
+
+        <a ng-if="row.entity.Status != 'collection'"
+           ng-href="{{grid.appScope.getNetworkDownloadLink(row.entity)}}"
+           title="{{COL_FIELD}}">
+            <img src="img/download.png" width="20px" height="20px" align="center">
+        </a>
+
+        <a ng-if="row.entity.Status == 'collection'"
+           ng-href="{{$location.path()}}"
+           ng-click="grid.appScope.showWarningsOrErrors(row.entity)"
+           title="This network is part of a Cytoscape collection with {{row.entity.subnetworks}} subnetworks and cannot be edited in NDEx.">
+            <img src="img/cytoscape.png" width="20px" height="20px" align="center">
+        </a>
+
+    </span>
+</div>

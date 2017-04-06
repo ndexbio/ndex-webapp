@@ -138,7 +138,7 @@ ndexApp.controller('searchController',
             const NETWORK_COLUMN_FIELDS = [
                 { field: 'Status', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
                 { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
-                { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
+                { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetworkOnSearchPage.html' },
                 { field: 'Format', enableFiltering: true, maxWidth:63 },
                 { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
                 { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
@@ -529,7 +529,16 @@ ndexApp.controller('searchController',
                     return;
                 }
 
-                uiMisc.showNetworkWarningsOrErrors(rowEntity, searchController.networkSearchResults);
+                if (rowEntity.subnetworks && (rowEntity.subnetworks > 1)) {
+                    var title = "Warning";
+                    var message = "This network is part of a Cytoscape collection with " +
+                        rowEntity.subnetworks + " subnetworks and cannot be edited in NDEx."
+                    ndexNavigation.genericInfoModal(title, message);
+                } else {
+                    uiMisc.showNetworkWarningsOrErrors(rowEntity, searchController.networkSearchResults);
+                };
+                
+                
             }
 
             $scope.getNetworkDownloadLink = function(rowEntity) {

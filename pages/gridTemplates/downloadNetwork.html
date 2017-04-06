@@ -1,12 +1,7 @@
 <div id="downloadNetworkTemplate" class="ui-grid-cell-contents">
     <span ng-if="row.entity.Status != 'processing'">
         <a ng-href="{{grid.appScope.getNetworkDownloadLink(row.entity)}}" title="{{COL_FIELD}}">
-<!--
-            <img ng-if="row.entity.subnetworks<1" src="img/download.png" width="20px" height="20px" align="center">
-            <img ng-if="row.entity.subnetworks>0" src="img/cytoscape.png" width="20px" height="20px" align="center">
--->
             <img src="img/download.png" width="20px" height="20px" align="center">
-
         </a>
     </span>
 </div>
