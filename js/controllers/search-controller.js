@@ -169,23 +169,28 @@ ndexApp.controller('searchController',
                 for(var i = 0; i < searchController.networkSearchResults.length; i++ )
                 {
                     var network = searchController.networkSearchResults[i];
-                    var subNetworkId = uiMisc.getSubNetworkId(network);
+
+                    var subNetworkInfo  = uiMisc.getSubNetworkInfo(network);
+                    var noOfSubNetworks = subNetworkInfo['numberOfSubNetworks'];
+                    var subNetworkId    = subNetworkInfo['id'];
 
                     var networkStatus = "success";
                     if (network.errorMessage) {
                         networkStatus = "failed";
                     } else if (!network.isValid) {
                         networkStatus = "processing";
-                    }
+                    };
 
                     if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
                         networkStatus = "warning";
-                    }
-                    
+                    };
+
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
                     if (networkStatus == "failed") {
                         networkName = "Invalid Network. UUID: " + network.externalId;
-                    }
+                    } else if (noOfSubNetworks > 1) {
+                        networkStatus = "collection";
+                    };
 
                     var description = stripHTML(network['description']);
                     var externalId = network['externalId'];
@@ -220,7 +225,8 @@ ndexApp.controller('searchController',
                         "externalId"    :   externalId,
                         "ownerUUID"     :   network['ownerUUID'],
                         "name"          :   networkName,
-                        "errorMessage"  :   errorMessage
+                        "errorMessage"  :   errorMessage,
+                        "subnetworks"   :   noOfSubNetworks
                     };
 
                     $scope.networkSearchGridOptions.data.push(row);
@@ -527,20 +533,8 @@ ndexApp.controller('searchController',
             }
 
             $scope.getNetworkDownloadLink = function(rowEntity) {
-                return  ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+                return uiMisc.getNetworkDownloadLink(searchController, rowEntity);
             };
-            
-            $scope.getCredentialsForNetworkDownload = function(rowEntity) {
-
-                // if user logged in (not anonymous user) add username and password
-                // for private networks
-                if (searchController.isLoggedInUser && rowEntity.Visibility &&
-                    rowEntity.Visibility.toLowerCase() == 'private')
-                {
-                    document.getElementById("downLoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
-                    document.getElementById("downLoadLinkId").password = ndexUtility.getUserCredentials()['token'];
-                }
-            }
 
             $scope.getFirstWordFromDisease = function(diseaseDescription) {
 

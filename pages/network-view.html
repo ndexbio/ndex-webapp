@@ -700,10 +700,8 @@
                     || networkController.canEdit
                     || networkController.canRead)'>
 
-                    <a id="downLoadLinkId1"
-                       ng-href={{getNetworkDownloadLink()}}
-                       class="actionsLabel btn btn-primary download-btn"
-                       ng-click="getCredentialsForNetworkDownload()">
+                    <a ng-href={{getNetworkDownloadLink(networkController.currentNetwork)}}
+                       class="actionsLabel btn btn-primary download-btn">
                         Download
                     </a>
             </span>

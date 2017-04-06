@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService', 'config',
-                function (ndexNavigation, ndexService, config) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'config', 'ndexUtility',
+                function (ndexNavigation, ndexService, config, ndexUtility) {
 
         var self = this;
 
@@ -230,6 +230,28 @@ angular.module('ndexServiceApp')
             parser.href = config.ndexServerUriV2;
 
             return parser.protocol + "//" + parser.hostname + "/#/";
-        }
+        };
+
+
+        self.getNetworkDownloadLink = function(accountController, rowEntity) {
+
+            var link = ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+
+            if (accountController.isLoggedInUser && rowEntity.Visibility &&
+                rowEntity.Visibility.toLowerCase() == 'private')
+            {
+                var userCredentials = ndexUtility.getUserCredentials();
+
+                if (!userCredentials) {
+                    return link;
+                }
+                var userName = userCredentials['userName'];
+                var password = userCredentials['token'];
+
+                link = link.replace("http://", "http://" + userName + ":" + password + "@");
+            };
+
+            return link;
+        };
     }
 ]);

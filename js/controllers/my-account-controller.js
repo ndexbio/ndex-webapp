@@ -1056,19 +1056,7 @@ ndexApp.controller('myAccountController',
             };
 
             $scope.getNetworkDownloadLink = function(rowEntity) {
-                return  ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
-            };
-
-            $scope.getCredentialsForNetworkDownload = function(rowEntity) {
-
-                // if user logged in (not anonymous user) add username and password
-                // for private networks
-                if (myAccountController.isLoggedInUser && rowEntity.Visibility &&
-                    rowEntity.Visibility.toLowerCase() == 'private')
-                {
-                    document.getElementById("downLoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
-                    document.getElementById("downLoadLinkId").password = ndexUtility.getUserCredentials()['token'];
-                }
+                return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
             };
 
             $scope.getFirstWordFromDisease = function(diseaseDescription) {

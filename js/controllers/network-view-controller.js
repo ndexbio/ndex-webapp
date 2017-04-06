@@ -455,23 +455,18 @@ ndexApp.controller('networkViewController',
             };
             */
 
-            $scope.getNetworkDownloadLink = function() {
-                return ndexService.getNdexServerUriV2() + "/network/" + networkExternalId + "?download=true";
-            };
-            
-            $scope.getCredentialsForNetworkDownload = function() {
-                // if user logged in (not anonymous user) add username and password
-                // for private networks
-                if (networkController.isLoggedInUser &&
-                    networkController.currentNetwork &&
-                    networkController.currentNetwork.visibility &&
-                    networkController.currentNetwork.visibility.toLowerCase() == 'private')
-                {
-                    document.getElementById("downLoadLinkId1").username = ndexUtility.getUserCredentials()['userName'];
-                    document.getElementById("downLoadLinkId1").password = ndexUtility.getUserCredentials()['token'];
-                }
-            };
+            $scope.getNetworkDownloadLink = function(currentNetwork) {
+                //var visibility = networkController.currentNetwork.visibility;
+                if (currentNetwork) {
+                    var rowEntity = {
+                        'Visibility': currentNetwork.visibility,
+                        'externalId': currentNetwork.externalId
+                    };
+                    return uiMisc.getNetworkDownloadLink(networkController, rowEntity);
+                };
 
+                return;
+            };
 
             var parseNdexMarkupValue = function ( value ) {
                 return {n:  value.replace(/(\[(.*)\])?\(.*\)$/, '$2'),

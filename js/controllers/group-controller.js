@@ -276,23 +276,27 @@ ndexApp.controller('groupController',
         for(var i = 0; i < groupController.networkSearchResults.length; i++ )
         {
             var network = groupController.networkSearchResults[i];
-            var subNetworkId = uiMisc.getSubNetworkId(network);
+            var subNetworkInfo  = uiMisc.getSubNetworkInfo(network);
+            var noOfSubNetworks = subNetworkInfo['numberOfSubNetworks'];
+            var subNetworkId    = subNetworkInfo['id'];
 
             var networkStatus = "success";
             if (network.errorMessage) {
                 networkStatus = "failed";
             } else if (!network.isValid) {
                 networkStatus = "processing";
-            }
+            };
 
             if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
                 networkStatus = "warning";
-            }
-            
+            };
+
             var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
             if (networkStatus == "failed") {
                 networkName = "Invalid Network. UUID: " + network.externalId;
-            }
+            } else if (noOfSubNetworks > 1) {
+                networkStatus = "collection";
+            };
 
             var description = $scope.stripHTML(network['description']);
             var externalId = network['externalId'];
@@ -327,7 +331,8 @@ ndexApp.controller('groupController',
                 "externalId"    :   externalId,
                 "ownerUUID"     :   network['ownerUUID'],
                 "name"          :   networkName,
-                "errorMessage"  :   errorMessage
+                "errorMessage"  :   errorMessage,
+                "subnetworks"   :   noOfSubNetworks
             };
             $scope.networkGridOptions.data.push(row);
         }
@@ -378,20 +383,8 @@ ndexApp.controller('groupController',
     }
 
     $scope.getNetworkDownloadLink = function(rowEntity) {
-        return  ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+        return uiMisc.getNetworkDownloadLink(groupController, rowEntity);
     };
-            
-    $scope.getCredentialsForNetworkDownload = function(rowEntity) {
-
-        // if user logged in (not anonymous user) add username and password
-        // for private networks
-        if (groupController.isLoggedInUser && rowEntity.Visibility &&
-            rowEntity.Visibility.toLowerCase() == 'private')
-        {
-            document.getElementById("downLoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
-            document.getElementById("downLoadLinkId").password = ndexUtility.getUserCredentials()['token'];
-        }
-    }
             
     $scope.getFirstWordFromDisease = function(diseaseDescription) {
 
