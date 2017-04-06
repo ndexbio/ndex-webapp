@@ -242,11 +242,12 @@ ndexApp.controller('myAccountController',
                     };
 
                     // here, ownerUUID != myAccountController.loggedInIdentifier
+                    /*
                     if ((myAccountController.networksWithAdminAccess.indexOf(networkUUUID) == -1) &&
                         (myAccountController.networksWithWriteAccess.indexOf(networkUUUID) == -1) ) {
                         return;
                     };
-
+                    */
                 };
 
                 $scope.enableEditPropertiesBulkButton = true;
@@ -344,12 +345,6 @@ ndexApp.controller('myAccountController',
                     $scope.networkGridOptions.data.push(row);
                 }
             };
-
-            myAccountController.getTitle = function() {
-                return (!$scope.enableEditPropertiesBulkButton) ?
-                    "1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx." :
-                    "";
-            }
 
             myAccountController.tasksNotificationsTabDisabled = function() {
 

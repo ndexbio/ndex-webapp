@@ -74,6 +74,9 @@
                                                directive-title="Change Description of Selected Networks"
                                                directive-action="description"
                                                directive-description="Change Descriptions of the selected networks to the one below:"
+                                               title="{{enableEditPropertiesBulkButton ?
+                                                    'Change Description of the selected networks' :
+                                                    '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
                                                directive-label="Change Description">
                                             Change Description
                                         </bulk-change-network-property>
@@ -86,6 +89,9 @@
                                                directive-title="Change Reference of Selected Networks"
                                                directive-action="reference"
                                                directive-description="Change Reference of the selected networks to the one below:"
+                                               title="{{enableEditPropertiesBulkButton ?
+                                                    'Change Reference of the selected networks' :
+                                                    '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
                                                directive-label="Change Reference">
                                            Change Reference
                                        </bulk-change-network-property>
@@ -98,6 +104,9 @@
                                                directive-title="Change Version of Selected Networks"
                                                directive-action="version"
                                                directive-description="Change Versions of the selected networks to the one below:"
+                                               title="{{enableEditPropertiesBulkButton ?
+                                                    'Change Version of the selected networks' :
+                                                    '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
                                                directive-label="Change Version">
                                            Change Version
                                        </bulk-change-network-property>
@@ -110,6 +119,7 @@
                                                directive-title="Change Visibility of Selected Networks"
                                                directive-action="visibility"
                                                directive-description="Change Visibility of the selected networks to the one below:"
+                                               title="Change Visibility of the selected networks"
                                                directive-label="Change Visibility">
                                            Change Visibility
                                        </bulk-change-network-system-property>
@@ -123,6 +133,7 @@
                                                directive-title="Change Read-Only Flag of Selected Networks"
                                                directive-action="readOnly"
                                                directive-description="Change Read-Only flag of the selected networks to the one below:"
+                                               title="Set/Unset Read-Only Flag of the selected networks"
                                                directive-label="Change Read-Only Flag">
                                            Set/Unset Read-Only Flag
                                        </bulk-change-network-system-property>
