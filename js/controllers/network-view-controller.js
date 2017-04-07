@@ -1267,10 +1267,22 @@ ndexApp.controller('networkViewController',
 
                     _.forEach(allEdgesAttributeObjectsIDs, function(edgeAttributeId) {
 
-                        var edgeAttributeObjects = _.keys(cxNetwork.edgeAttributes[edgeAttributeId]);
+                        var edgeAttributeObject = cxNetwork.edgeAttributes[edgeAttributeId];
+                        var edgeAttributeObjectKeys = _.keys(edgeAttributeObject);
 
-                        _.forEach(edgeAttributeObjects, function(edgeAttribute) {
-                            edgeAttributesMap[edgeAttribute] = edgeAttribute;
+                        _.forEach(edgeAttributeObjectKeys, function(key) {
+
+                            var edgeAttribute = edgeAttributeObject[key];
+
+                            if (edgeAttribute['d']) {
+                                if ((edgeAttribute['d'] == 'string') || (edgeAttribute['d'] == 'boolean')) {
+                                    edgeAttributesMap[key] = key;
+                                };
+                            } else if (edgeAttribute['v']) {
+                                if ((typeof(edgeAttribute['v']) == 'string') || (typeof(edgeAttribute['v']) == 'boolean')) {
+                                    edgeAttributesMap[key] = key;
+                                };
+                            };
                         });
                     });
                 }
@@ -1281,10 +1293,22 @@ ndexApp.controller('networkViewController',
 
                     _.forEach(allNodesAttributeObjectsIDs, function(nodeAttributeId) {
 
-                        var nodeAttributeObjects = _.keys(cxNetwork.nodeAttributes[nodeAttributeId]);
+                        var nodeAttributeObject = cxNetwork.nodeAttributes[nodeAttributeId];
+                        var nodeAttributeObjectKeys = _.keys(nodeAttributeObject);
 
-                        _.forEach(nodeAttributeObjects, function(nodeAttribute) {
-                            nodeAttributesMap[nodeAttribute] = nodeAttribute;
+                        _.forEach(nodeAttributeObjectKeys, function(key) {
+
+                            var nodeAttribute = nodeAttributeObject[key];
+
+                            if (nodeAttribute['d']) {
+                                if ((nodeAttribute['d'] == 'string') || (nodeAttribute['d'] == 'boolean')) {
+                                    nodeAttributesMap[key] = key;
+                                };
+                            } else if (nodeAttribute['v']) {
+                                if ((typeof(nodeAttribute['v']) == 'string') || (typeof(nodeAttribute['v']) == 'boolean')) {
+                                    nodeAttributesMap[key] = key;
+                                };
+                            };
                         });
                     });
                 }
@@ -1294,7 +1318,7 @@ ndexApp.controller('networkViewController',
                     networkController.edgePropertyNamesForAdvancedQuery.push(attributeName);
                  });
 
-                var attributeNames = _.keys(nodeAttributesMap);
+                attributeNames = _.keys(nodeAttributesMap);
                 _.forEach(attributeNames, function(attributeName) {
                     networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
                 });
