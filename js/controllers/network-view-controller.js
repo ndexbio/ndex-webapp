@@ -265,8 +265,7 @@ ndexApp.controller('networkViewController',
                 networkController.tabs[3].hidden = true;
 
                 networkController.backToOriginalNetwork();
-                
-            }
+            };
 
             var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
@@ -274,8 +273,6 @@ ndexApp.controller('networkViewController',
                     nodes[i].disabled = false;
                 }
                 $('#saveQueryButton').prop('disabled', false);
-
-
             };
 
 
@@ -310,8 +307,8 @@ ndexApp.controller('networkViewController',
                         retLink = identifier;
                     } else {
                         retLink = 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
-                    }
-                }
+                    };
+                };
                 return retLink;
             };
 

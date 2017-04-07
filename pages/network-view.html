@@ -194,15 +194,18 @@
                             <span class="networkVisibilityValue">{{networkController.currentNetwork.visibility}} </span>
                             &nbsp;&nbsp;
 
-                            <span class="networkPropertyName" ng-show="networkController.isAdmin">
+                            <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
                                 <input type="checkbox"
                                     ng-model="networkController.readOnlyChecked"
                                     ng-change="readOnlyChanged()"> Read Only
                             </span>
-                            <span class="networkPropertyName" ng-show="!networkController.isAdmin">
+                            <span class="networkPropertyName" ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()">
                                 <input type="checkbox"  disabled readonly
                                        ng-model="networkController.readOnlyChecked"
-                                       title="Only network owners can set/unset Read Only flag"> Read Only
+                                       title=
+                                       "{{networkController.hasMultipleSubNetworks() ?
+                                       'This network is part of a Cytoscape collection with ' +  networkController.noOfSubNetworks + ' subnetworks and cannot be edited in NDEx.' :
+                                       'Only network owners can set/unset Read Only flag'}}"> Read Only
                             </span>
                             <br />
                             <br />
@@ -745,11 +748,16 @@
                     || networkController.canEdit
                     || networkController.canRead)'>
 
-                    <a class="actionsLabel btn btn-primary">
+                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()">
                         <export-network
                                 ndex-data='networkController.currentNetwork'>
                             Export
                         </export-network>
+                    </a>
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-show="networkController.hasMultipleSubNetworks()"
+                       title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                            Export
                     </a>
             </span>
 

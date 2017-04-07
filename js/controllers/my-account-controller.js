@@ -225,14 +225,16 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableEditAndExportBulkButtons = true;
 
+                var statesForWhichToDisable = ["failed", "processing", "collection"];
+
                 _.forEach (selectedNetworksRows, function(row) {
 
                     var status = row.Status;
 
-                    var network_in_invalid_state =
-                        (status && ["failed", "processing"].indexOf(status.toLowerCase()) > -1);
+                    var disableEditAndExportBulkButtons =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
 
-                    if (network_in_invalid_state) {
+                    if (disableEditAndExportBulkButtons) {
                         $scope.enableEditAndExportBulkButtons = false;
                         return;
                     };

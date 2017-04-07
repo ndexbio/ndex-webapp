@@ -1525,6 +1525,8 @@
                 $scope.errors = null;
                 $scope.network = {};
 
+                var updatedNetworksCounter = 0;
+
                 $scope.openMe = function() {
 
                     $scope.network = {};
@@ -1613,6 +1615,17 @@
                     return _.find($scope.ndexData.networkSearchResults, {externalId: networkUUID});
                 };
 
+                var incrementUpdatedNetworksCounter = function(IdsOfSelectedNetworks) {
+
+                    updatedNetworksCounter = updatedNetworksCounter + 1;
+
+                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
+                        $scope.isProcessing = false;
+                        modalInstance.close();
+                    };
+                };
+
+
                 $scope.submit = function() {
                     if( $scope.isProcessing )
                         return;
@@ -1634,8 +1647,6 @@
                         data = $scope.network.version;
                     };
 
-                    var updatedNetworksCounter = 0;
-
                     
                     _.forEach (IdsOfSelectedNetworks, function(networkId) {
 
@@ -1643,33 +1654,7 @@
 
                         var subNetworkId = uiMisc.getSubNetworkId(networkSummary);
 
-                        if (operation == "reference" || subNetworkId != null) {
-
-                            var properties = (networkSummary && networkSummary['properties']) ?
-                                networkSummary['properties'] : [];
-
-                            upsertProperty(operation, data, properties, subNetworkId);
-
-                            ndexService.setNetworkPropertiesV2(networkId, properties,
-                                function (data) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
-
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
-                                    };
-                                },
-                                function (error) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
-
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
-                                    };
-                                    console.log("unable to update Network properites");
-                                })
-
-                        } else {
+                        if ("description" == operation || "version" == operation) {
 
                             var summary = {};
                             summary["name"] = networkSummary["name"];
@@ -1678,21 +1663,46 @@
 
                             ndexService.updateNetworkProfileV2(networkId, summary,
                                 function (successData) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
 
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
+                                    if (subNetworkId != null) {
+
+                                        var properties = (networkSummary && networkSummary['properties']) ?
+                                            networkSummary['properties'] : [];
+
+                                        upsertProperty(operation, data, properties, subNetworkId);
+
+                                        ndexService.setNetworkPropertiesV2(networkId, properties,
+                                            function (data) {
+                                                incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                            },
+                                            function (error) {
+                                                incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                                console.log("unable to update Network properites");
+                                            });
+                                    } else {
+                                        incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
                                     };
+
                                 },
                                 function (error) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
-
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
-                                    };
+                                    incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
                                     console.log("unable to update Network Summary");
+                                });
+
+                        } else if ("reference" == operation) {
+
+                            var properties = (networkSummary && networkSummary['properties']) ?
+                                networkSummary['properties'] : [];
+
+                            upsertProperty(operation, data, properties, subNetworkId);
+
+                            ndexService.setNetworkPropertiesV2(networkId, properties,
+                                function (data) {
+                                    incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                },
+                                function (error) {
+                                    incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                    console.log("unable to update Network properites");
                                 });
                         };
 
