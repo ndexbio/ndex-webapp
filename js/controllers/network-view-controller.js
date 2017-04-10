@@ -1320,9 +1320,11 @@ ndexApp.controller('networkViewController',
 
                 attributeNames = _.keys(nodeAttributesMap);
                 _.forEach(attributeNames, function(attributeName) {
-                    networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
+                    if (attributeName && (attributeName.toLowerCase() != ("ndex:internallink"))) {
+                        networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
+                    };
                 });
-            }
+            };
             
 
 
