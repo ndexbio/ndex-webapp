@@ -50,10 +50,19 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Visibility</label>
             <div class="col-sm-4">
-              <select class="form-control" ng-model='network.visibility';>
-                <option value='PUBLIC' ng-selected='network.visibility ==  "PUBLIC"'>Public</option>
-                <option value='PRIVATE' ng-selected='network.visibility ==  "PRIVATE"'>Private</option>
-              </select>
+                <span ng-if="network.isOwner">
+                    <select class="form-control" ng-model='network.visibility'>
+                        <option value='PUBLIC' ng-selected='network.visibility ==  "PUBLIC"'>Public</option>
+                        <option value='PRIVATE' ng-selected='network.visibility ==  "PRIVATE"'>Private</option>
+                    </select>
+                </span>
+                <span ng-if="!network.isOwner">
+                    <select class="form-control" ng-model='network.visibility'
+                            title="Only network owners can change network Visibility" disabled>
+                        <option value='PUBLIC' ng-selected='network.visibility ==  "PUBLIC"'>Public</option>
+                        <option value='PRIVATE' ng-selected='network.visibility ==  "PRIVATE"'>Private</option>
+                    </select>
+                </span>
             </div>
           </div>
 

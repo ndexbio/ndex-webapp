@@ -667,19 +667,22 @@ ndexApp.controller('myAccountController',
              * This function returns true if the current user has ADMIN access to all selected networks,
              * and false otherwise.
              */
-            myAccountController.checkAdminPrivilegeOnSelectedNetworks = function(checkWriteAccess) {
+            myAccountController.checkAdminPrivilegeOnSelectedNetworks = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                var retValue = true;
 
                 // iterate through the list of selected networks and check if user has ADMIN access to all of them
-                for (var i = 0; i < selectedNetworksRows.length; i++) {
-                    var networkUUID = selectedNetworksRows[i].externalId;
+                _.forEach(selectedNetworksRows, function(row) {
+                    var networkUUID = row.externalId;
 
                     // check if you have admin privilege for this network
                     if (myAccountController.networksWithAdminAccess.indexOf(networkUUID) == -1) {
-                        return false;
-                    }
-                }
-                return true;
+                        retValue = false;
+                        return;
+                    };
+                });
+
+                return retValue;
             };
 
             myAccountController.deleteSelectedNetworks = function ()
