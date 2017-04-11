@@ -1,18 +1,169 @@
 ndexApp.controller('networkController',
-    ['config', 'ndexService', 'ndexConfigs', 'cytoscapeService', 'provenanceVisualizerService', 'ndexUtility', 'ndexHelper', 'ndexNavigation', 'sharedProperties', '$scope', '$routeParams', '$modal', '$route', '$filter', '$location', '$http','$q', '$sce',
-        function (config, ndexService, ndexConfigs, cytoscapeService, provenanceVisualizerService, ndexUtility, ndexHelper, ndexNavigation, sharedProperties, $scope, $routeParams, $modal, $route, $filter, $location, $http, $q, $sce) {
+    ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
+         'ndexUtility', 'ndexHelper', 'ndexNavigation',
+        'sharedProperties', '$scope', '$routeParams', '$modal',
+        '$route', '$location', 'uiGridConstants', 'uiMisc', /*'$filter', '$location','$q',*/
+        function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
+                   ndexUtility, ndexHelper, ndexNavigation,
+                  sharedProperties, $scope, $routeParams, $modal,
+                  $route , $location, uiGridConstants, uiMisc /*, $filter /*, $location, $q */)
+        {
+            var self = this;
 
-            //              Process the URL to get application state
-            //-----------------------------------------------------------------------------------
+            var cy;
+
+            var currentNetworkSummary;
+
             var networkExternalId = $routeParams.identifier;
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
-            var INCOMPLETE_QUERY_CODE = -1;
-            var EMPTY_QUERY_CODE = 0;
-            var VALID_QUERY_CODE = 1;
+            $scope.showFooter = false;
 
-            //              CONTROLLER INTIALIZATIONS
-            //------------------------------------------------------------------------------------
+            $scope.networkController = {};
+
+            var networkController  = $scope.networkController;
+            networkController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+
+            networkController.privilegeLevel = "None";
+            networkController.currentNetworkId = networkExternalId;
+
+            networkController.errors = []; // general page errors
+            networkController.queryErrors = [];
+            networkController.displayProvenance = {};
+            networkController.selectionContainer = {};
+            networkController.baseURL = $location.absUrl();
+            networkController.isSample=false;
+            networkController.displayLimit = config.networkDisplayLimit;
+            networkController.successfullyQueried = false;
+
+            // turn on (show) Search menu item on the Nav Bar
+            $scope.$parent.showSearchMenu = true;
+
+            // turn on (show) Graphic View and Table View menu items on the Nav Bar
+            $scope.$parent.showViewMenus = true;
+
+            networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
+
+            networkController.advancedQueryNodeCriteria = 'Source';
+            networkController.advancedQueryEdgeProperties = [{}];
+            networkController.advancedQueryNodeProperties = [{}];
+
+            //networkController.networkAdmins = null;
+
+            networkController.edgePropertyNamesForAdvancedQuery = undefined;
+            networkController.nodePropertyNamesForAdvancedQuery = undefined;
+
+            networkController.numberOfBelNetworkNamespacesAsInt = 0;
+
+            networkController.context = {};
+
+            networkController.isAdmin = false;
+
+            networkController.tabs = [
+                {"heading": "Network Info", 'active':true},
+                {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
+                {'heading': 'Provenance', 'active': false},
+                {'heading': 'Advanced Query', 'hidden': true, 'active': false}
+            ];
+
+            networkController.queryWarnings = [];
+
+            networkController.subNetworkId = null;
+            networkController.noOfSubNetworks = 0;
+
+            //networkController.prettyStyle = "no style yet";
+            //networkController.prettyVisualProperties = "nothing yet";
+            var resetBackgroudColor = function () {
+                networkController.bgColor = '#8fbdd7';
+            }
+
+            var localNetwork = undefined;
+
+            var spinner = undefined;
+
+            networkController.hasMultipleSubNetworks = function() {
+                return (networkController.noOfSubNetworks > 1);
+            };
+
+            $scope.showEdgeCitations = function(edgeKey)
+            {
+                if (localNetwork && localNetwork.edgeCitations && localNetwork.edgeCitations[edgeKey])
+                {
+                    // get list/array of citation IDs
+                    var citationsIDs = localNetwork.edgeCitations[edgeKey];
+                    var edgeCitations = getCitations(citationsIDs);
+                    showCitations(edgeCitations);
+                }
+            };
+
+            $scope.showNodeCitations = function(nodeKey)
+            {
+                if (localNetwork && localNetwork.nodeCitations && localNetwork.nodeCitations[nodeKey])
+                {
+                    // get list/array of citation IDs
+                    var citationsIDs = localNetwork.nodeCitations[nodeKey];
+                    var nodeCitations = getCitations(citationsIDs);
+                    showCitations(nodeCitations);
+                }
+            };
+
+            $scope.linkify = function(cellContents)
+            {
+                if (typeof(cellContents) === "undefined" || cellContents === "" || cellContents == null) {
+                    return "";
+                }
+
+                if (typeof(cellContents) === 'object') {
+                    // this is the case where cellContents is as list/array ... so just
+                    // return it wraped in <title>. It will be converted to a comma-separated string of values
+                    return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
+                }
+                if (typeof(cellContents) == 'string') {
+                    if (cellContents.startsWith("http")) {
+                        return '&nbsp;<a target="_blank" href="' + cellContents + '">External Link</a>'
+                    }
+                    else {
+                        return '<span title=' + "'" + cellContents + "'>" + cellContents + '</span>';
+                    };
+                };
+            };
+
+            $scope.getNumEdgeCitations = function(edgeKey)
+            {
+                var numOfCitations = 0;
+                
+                if (localNetwork && localNetwork.edgeCitations && localNetwork.edgeCitations[edgeKey]) {
+                    numOfCitations = localNetwork.edgeCitations[edgeKey].length;
+                }
+                return numOfCitations;
+            };
+
+            $scope.getNumNodeCitations = function(nodeKey)
+            {
+                var numOfCitations = 0;
+
+                if (localNetwork && localNetwork.nodeCitations && localNetwork.nodeCitations[nodeKey]) {
+                    numOfCitations = localNetwork.nodeCitations[nodeKey].length;
+                }
+                return numOfCitations;
+            };
+
+            $scope.getNumNodeAttributes = function(nodeAttributesObj)
+            {
+                var numOfNodeAttributes = 0;
+                if (nodeAttributesObj && nodeAttributesObj['v']) {
+                    numOfNodeAttributes = nodeAttributesObj['v'].length;
+                }
+                return numOfNodeAttributes;
+            };
+
+            $scope.showNodeAttributes = function(attributesObj)
+            {
+                if (attributesObj && attributesObj['n'] && attributesObj['v'] && attributesObj['v'].length > 0) {
+                    var attributeName = attributesObj['n'];
+                    networkController.showMoreAttributes(attributeName, attributesObj);
+                }
+            };
 
             $scope.edgeGridOptions =
             {
@@ -37,363 +188,10 @@ ndexApp.controller('networkController',
             };
 
 
-            $scope.networkController = {};
-            var networkController = $scope.networkController;
+            var INCOMPLETE_QUERY_CODE = -1;
+            var EMPTY_QUERY_CODE = 0;
+            var VALID_QUERY_CODE = 1;
 
-            networkController.privilegeLevel = "None";
-
-            networkController.currentNetworkId = networkExternalId; // externalId
-            networkController.currentNetwork = {}; // network summary
-            networkController.currentSubnetwork = {}; // subnetwork
-            networkController.errors = []; // general page errors
-            networkController.queryErrors = [];
-
-            networkController.isAdmin = false;
-            networkController.canEdit = false;
-            networkController.canRead = false;
-            networkController.directIsAdmin = false;
-            networkController.directCanEdit = false;
-            networkController.directCanRead = false;
-
-            networkController.successfullyQueried = false;
-
-            networkController.networkAdmins = null;
-
-            networkController.edgePropertyNamesForAdvancedQuery = [];
-            networkController.nodePropertyNamesForAdvancedQuery = [];
-
-            networkController.numberOfBelNetworkNamespacesAsInt = 0;
-
-            networkController.currentNetwork.rightsHolder = [];
-            networkController.currentNetwork.rights = [];
-
-            $scope.provenance = [];
-            $scope.displayProvenance = [];
-
-            networkController.readyToRenderNetworkInUI = false;
-            networkController.showRetrieveMessage = true;
-
-
-            // when this page loads, we need to show Graphic View and Table View menus in the nav bar
-            $scope.$parent.showViewMenus = true;
-
-            $scope.tree = [{name: "Node", nodes: []}];
-
-            $scope.delete = function(data) {
-                data.nodes = [];
-            };
-            $scope.add = function(data) {
-                var post = data.nodes.length + 1;
-                var newName = data.name + '-' + post;
-                data.nodes.push({name: newName,nodes: []});
-            };
-
-            // when user navigates away from this page, we need to hidde Graphic View and Table View menus
-            // fron the nav bar
-            $scope.$on("$destroy", function(){
-                $scope.$parent.showViewMenus = false;
-            });
-
-            $scope.setReturnView = function(view) {
-                sharedProperties.setNetworkViewPage(view);
-            }
-
-            $scope.getProvenanceTitle = function(provenance)
-            {
-                if( typeof provenance == 'undefined' )
-                    return "";
-                if( provenance.properties == null )
-                    return provenance.uri;
-                for( var i = 0; i < provenance.properties.length; i++ )
-                {
-                    var p = provenance.properties[i];
-                    if(p.name.toLowerCase() == "dc:title")
-                        return p.value;
-                }
-                return provenance.uri;
-            };
-
-            var extractUuidFromUri = function( uri )
-            {
-                var idStart = uri.lastIndexOf('/');
-                return uri.substring(idStart + 1);
-            };
-
-            var extractHostFromUri = function( uri )
-            {
-                var parser = document.createElement('a');
-                parser.href = uri;
-                return parser.protocol + "//" + parser.host;
-            };
-
-
-            var generateWebAppUrlFromUuid = function(uuid)
-            {
-                var baseUrl = $location.absUrl();
-                baseUrl = baseUrl.substring( 0, baseUrl.indexOf( $location.url() ) );
-
-                return baseUrl + "/network/" + uuid;
-            };
-
-            $scope.buildGraph = function(prov, level, parent_node, edge_label, merge, nodes, edges, provMap)
-            {
-                var node_id = nodes.length;
-
-                var node = {
-                    id: node_id,
-                    label: $scope.getProvenanceTitle(prov),
-                    level: level
-                };
-
-                nodes.push(node);
-                provMap[node_id] = prov;
-                var uuid = extractUuidFromUri(prov.uri);
-                provMap[node_id].uuid = uuid;
-                provMap[node_id].host = extractHostFromUri(prov.uri);
-                if( uuid != cn.externalId )
-                {
-                    //Check and see if the UUID is on this server, if so, set the webapp url. Otherwise, it should
-                    //not be set.
-                    (ndexService.getNetworkSummaryV2(uuid) )
-                        .success( function (network)
-                        {
-                            provMap[node_id].webapp_url = generateWebAppUrlFromUuid(uuid);
-                        }
-                    )
-                        .error( function (error)
-                        {
-
-                        }
-                    );
-                }
-
-                if( parent_node != -1 )
-                {
-                    if( !merge )
-                    {
-                        var edge = {
-                            to: parent_node,
-                            from: node_id,
-                            label: edge_label
-                        };
-                        edges.push(edge);
-                    }
-                    else
-                    {
-                        var edge = {
-                            to: parent_node,
-                            from: node_id
-                        };
-                        edges.push(edge);
-                    }
-                }
-
-                var inputs = prov.creationEvent.inputs;
-                if( inputs != null )
-                {
-                    if( inputs.length > 1 )
-                    {
-                        var join_id = node_id + 1;
-                        level++;
-                        var join_node = {
-                            id: join_id,
-                            label: "",
-                            level: level
-                        };
-                        nodes.push(join_node);
-                        var join_edge = {
-                            to: node_id,
-                            from: join_id,
-                            label: prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
-                        };
-                        edges.push(join_edge);
-                        node_id = join_id;
-                        merge = true;
-                    }
-                    else
-                    {
-                        merge = false;
-                    }
-
-                    for(var i = 0; i < inputs.length; i++ )
-                    {
-                        var edgeLabel = prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
-                        $scope.buildGraph(inputs[i], level+1, node_id, edgeLabel, merge, nodes, edges, provMap);
-                    }
-                }
-                else
-                {
-
-                    var start_node = {
-                        id: node_id+1,
-                        label: 'Start',
-                        level: level+1
-                    };
-                    nodes.push(start_node);
-
-                    var edge = {
-                        to: node_id,
-                        from: node_id+1,
-                        label: prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
-                    };
-
-                    edges.push(edge)
-                }
-
-            };
-
-            $scope.build_provenance_view = function()
-            {
-                var nodes = [];
-                var edges = [];
-                var provMap = [];
-
-                $scope.buildGraph($scope.provenance, 1, -1, '', false, nodes, edges, provMap);
-
-                // create a network
-                var container = document.getElementById('provenanceNetwork');
-                var data = {
-                    nodes: nodes,
-                    edges: edges
-                };
-                var options = {
-                    width: '100%',
-                    height: '600px',
-                    stabilize: false,
-                    smoothCurves: false,
-                    hierarchicalLayout: {
-                        direction: 'UD'
-                    },
-                    hover: true,
-                    selectable: false,
-                    edges: {
-                        fontFace: 'helvetica',
-                        width: 2,
-                        style: 'arrow',
-                        color: 'silver',
-                        fontColor: 'black',
-                        widthSelectionMultiplier: 1
-                    },
-                    nodes: {
-                        // default for all nodes
-                        fontFace: 'helvetica',
-                        shape: 'box',
-                        color: {
-                            border: 'lightgreen',
-                            background: 'lightgreen',
-                            hover: {
-                                border: 'orange',
-                                background: 'orange'
-                            }
-                        }
-
-                    }
-                };
-
-                $scope.displayProvenance = provMap[0];
-
-                var network = new vis.Network(container, data, options);
-                network.lastHover = 0;
-
-                network.moveTo(
-                    {
-                        position: {
-                            x: '0',
-                            y: '400'
-                        },
-                        scale: '1'
-                    }
-                );
-
-                network.on('hoverNode', function (properties) {
-
-                    var node_id = properties.node;
-                    var node = this.nodes[node_id];
-                    //This is the start node. Don't highlight it.
-                    if( node.label == "Start" )
-                    {
-                        node.hover=false;
-                        return;
-                    }
-                    var hover_id = this.lastHover;
-                    var lastHoverNode = this.nodes[hover_id];
-                    lastHoverNode.hover=false;
-                    node.hover=true;
-                    this.lastHover = node_id;
-                    if (typeof provMap[node_id] == 'undefined')
-                        return;
-                    $scope.$apply(function(){
-                        $scope.displayProvenance = provMap[node_id];
-                    });
-
-                });
-
-                network.on('blurNode', function (properties) {
-                    var node_id = properties.node;
-                    var node = this.nodes[node_id];
-                    node.hover=true;
-                });
-
-                network.nodes[0].hover = true;
-            };
-
-            /*
-            $scope.networkToBeDisplayedInCanvas = function() {
-
-                if (typeof(networkController) === 'undefined' ||
-                    typeof(networkController.currentSubnetwork) === 'undefined' ||
-                    typeof(networkController.currentSubnetwork.edgeCount) === 'undefined' ||
-                    typeof(config) === 'undefined' ||
-                    typeof(config.networkDisplayLimit) === 'undefined') {
-                    return false;
-                }
-
-                return ((networkController.currentSubnetwork.edgeCount <= config.networkDisplayLimit) &&
-                        (networkController.currentSubnetwork.edgeCount > 0));
-            }
-            */
-
-            $scope.currentSubnetworkEdgeCountNotZero = function() {
-                if (typeof(networkController) === 'undefined' ||
-                    typeof(networkController.currentSubnetwork) === 'undefined' ||
-                    typeof(networkController.currentSubnetwork.edgeCount) === 'undefined') {
-                    return false;
-                }
-                return (networkController.currentSubnetwork.edgeCount > 0);
-            }
-
-            networkController.getEdgeKeys = function()
-            {
-                var keys = [];
-                for( var key in networkController.currentSubnetwork.edges )
-                {
-                    if( networkController.currentSubnetwork.edges.hasOwnProperty(key) )
-                        keys.push(key);
-                }
-                return keys;
-            };
-
-            networkController.getNodeKeys = function()
-            {
-                var keys = [];
-                for( var key in networkController.currentSubnetwork.nodes )
-                {
-                    if( networkController.currentSubnetwork.nodes.hasOwnProperty(key) )
-                        keys.push(key);
-                }
-                return keys;
-            };
-
-            //Used for pagination
-            $scope.currentEdgePage = 0;
-            $scope.currentNodePage = 0;
-            $scope.itemsPerPage = 30;
-            $scope.paginationMaxSize = 5;
-
-            $scope.numberOfPages=function(){
-                length = networkController.currentSubnetwork.edges.length;
-                return Math.ceil(length/$scope.pageSize);
-            };
 
             networkController.searchDepths = [
                 {
@@ -416,121 +214,1859 @@ ndexApp.controller('networkController',
                 }
             ];
 
-            //                  scope functions
-
-            // queries within a network
-            networkController.submitNetworkQuery = function () {
-
-                // var to keep the reference to http call to call abort method;
-                var request = null;
-
-                var networkQueryLimit = config.networkQueryLimit;
-
-
-                // replace with in page loader
-                var modalInstance = $modal.open({
-                    templateUrl: 'queryContent.html',
-                    scope: $scope,
-                    backdrop: 'static'
-                });
-
-                // cancel
-                // Close the modal and abort the AJAX request.
-                networkController.cancel = function () {
-                    modalInstance.close();
-                    request.abort();
-                };
-
-                // Note we save the 'promise' from the ndexService wrapped http request. We do not want to lose the original
-                // reference and lose access to the .abort method.
-                // David says: The last parameter is the edgeLimit. We are using this in the Web App temporarily.
-                (request = ndexService.queryNetwork(networkController.currentNetworkId,
-                                                    networkController.searchString,
-                                                    networkController.searchDepth.value,
-                                                    networkQueryLimit) )
-                    .success(
-                    function (network, json) {
-                        //console.log("got query results for : " + networkController.searchString);
-                        csn = network;
-                        csn.json = json;
-                        networkController.queryErrors = [];
-                        networkController.currentSubnetwork = network;
-                        /*
-                        if ($scope.networkToBeDisplayedInCanvas()) {
-                            cytoscapeService.setNetwork(network);
-                        }
-                        */
-
-                        // enableFiltering set to true means that filtering will be on regardless of the size
-                        // of the network
-                        var enableFiltering = true;
-                        populateEdgeTable(enableFiltering);
-                        populateNodeTable(enableFiltering);
-
-                        // close the modal
-                        networkController.successfullyQueried = true;
-                        modalInstance.close();
-                    }
-                )
-                    .error(
-                    function (error) {
-                        if (error.status != 0) {
-                            if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
-                            {
-                                networkController.queryErrors.push("Error Querying: The maximum query size is " + networkQueryLimit);
-                            }
-                            else
-                            {
-                                networkController.queryErrors.push(error.data.message);
-                            }
-
-                            // close the modal.
-                            modalInstance.close();
-                        }
-                    }
-                );
-            };
-
-            networkController.backToOriginalNetwork = function () {
-                initialize();
-                $('#tableViewSaveSubnetworkButton').prop('disabled', false);
-
-                networkController.successfullyQueried = false;
-            };
-
-            networkController.isPredicateReservedWord = function(wordToCheck) {
-                var reservedWords = ['rights', 'rightsHolder'];
-
-                if (!wordToCheck) {
-                    return true;
-                }
-
-                return reservedWords.indexOf(wordToCheck) > -1;
+            networkController.searchDepth = {
+                "name": "1-step",
+                "description": "1-step",
+                "value": 1,
+                "id": "1"
             }
 
 
+            $scope.currentView = "Graphic";
+            $scope.buttonLabel = "Table View";
 
-            //                  local functions
+            $scope.switchView = function() {
+                if ($scope.currentView == "Graphic") {
+                    // switch to table view
+                    $scope.currentView = "Table";
+                    $scope.buttonLabel = "Graph View"
 
+                    var enableFiltering = true;
+                    var setGridWidth = true;
+                    localNetwork = networkService.getNiceCX();
+                    populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                    populateNodeTable(localNetwork, enableFiltering, setGridWidth);
+
+                    //$scope.edgeGridApi.core.queueRefresh();
+                    //$scope.edgeGridApi.core.queueGridRefresh();
+
+                    //$scope.edgeGridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
+
+                    //gridApi.core.notifyDataChange( uiGridConstants.dataChange.ALL)
+
+                } else if  ($scope.currentView == "Table") {
+                    // switch to graphic view
+                    $scope.currentView = "Graphic";
+                    $scope.buttonLabel = "Table View"
+                }
+            }
+
+            $scope.setReturnView = function(view) {
+                sharedProperties.setNetworkViewPage(view);
+            }
+
+            $scope.backToSimpleQuery = function(event) {
+
+                // this is needed to Close the Advacned Query tab in case the Close tab sign (x) was clicked
+                event.stopPropagation();
+
+
+                networkController.tabs[3].active = false;
+                networkController.tabs[3].hidden = true;
+
+                networkController.backToOriginalNetwork();
+            };
+
+            var enableSimpleQueryElements = function () {
+                var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
+                for(var i = 0; i < nodes.length; i++){
+                    nodes[i].disabled = false;
+                }
+                $('#saveQueryButton').prop('disabled', false);
+            };
+
+
+            // this function gets called when user navigates away from the current Graphic View page.
+            // (can also use "$locationChangeStart" instead of "$destroy"
+            $scope.$on("$destroy", function(){
+
+                // hide the Search menu item in Nav Bar
+                $scope.$parent.showSearchMenu = false;
+
+                showSearchMenuItem();
+
+                // also, hide the Graphic View nad Table View menu items from that nav bar
+                $scope.$parent.showViewMenus = false;
+            });
+
+            /*
+            $scope.$watch(function(){
+                return $location.path();
+            }, function(newPath, oldPath){
+                console.log('oldPath = ' + oldPath + '  newPath = ' + newPath );
+            })
+            */
+
+            var getCitationLink = function (identifier) {
+                //if( !networkController.hasCitation(citationId) )
+                //    return "javaScript:void(0)";
+                var retLink = "";
+
+                if (identifier) {
+                    if (identifier.startsWith('http')) {
+                        retLink = identifier;
+                    } else {
+                        retLink = 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
+                    };
+                };
+                return retLink;
+            };
+
+            var getCitations = function(citationsIDs)
+            {
+                var citations = (localNetwork && localNetwork.citations) ? localNetwork.citations : "";
+
+                var result = [];
+                for (var i=0; i<citationsIDs.length; i++)
+                {
+                    var citationObj = citations[citationsIDs[i]];
+                    var citation = {};
+
+                    if (citationObj['@id']) {
+                        citation['id'] = citationObj['@id'];
+                    }
+                    if (citationObj['dc:contributor']) {
+                        citation['contributor'] = citationObj['dc:contributor'];
+                    }
+                    if (citationObj['dc:description']) {
+                        citation['description'] = citationObj['dc:description'];
+                    }
+                    if (citationObj['dc:identifier']) {
+                        citation['identifier'] = citationObj['dc:identifier'];
+                    }
+                    if (citationObj['dc:title']) {
+                        citation['title'] = citationObj['dc:title'];
+                    }
+                    if (citationObj['dc:type']) {
+                        citation['type'] = citationObj['dc:type'];
+                    }
+                    if (citationObj['attributes'].length>0) {
+                        citation['attributes'] = JSON.stringify(citationObj['attributes']);
+                    }
+                    citation['link'] = getCitationLink(citation['identifier']);
+
+                    result.push( citation );
+                }
+                return result;
+            };
+
+            var showCitations = function(citations)
+            {
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: 'citations.html',
+                    controller: 'CitationModalCtrl',
+                    resolve: {
+                        citations: function () {
+                            return citations;
+                        }
+                    }
+                });
+            };
+
+
+            $scope.activateAdvancedQueryTab = function() {
+
+                //populate the node and edge properties
+
+                if ( networkController.edgePropertyNamesForAdvancedQuery == undefined) {
+
+                    networkController.edgePropertyNamesForAdvancedQuery = [];
+                    networkController.nodePropertyNamesForAdvancedQuery = [];
+                    populateNodeAndEdgeAttributesForAdvancedQuery();
+                }    
+
+                networkController.queryMode = 'advanced';
+
+                for (var i = 0; i < 3; i++) {
+                    networkController.tabs[i].active = false;
+                }
+
+                networkController.tabs[3].active = true;
+                networkController.tabs[3].disabled = false;
+                networkController.tabs[3].hidden = false;
+
+                // disable all elements in the Simple Query
+                var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
+                for(var i = 0; i < nodes.length; i++){
+                    nodes[i].disabled = true;
+                }
+            }
+            
+            
+            $scope.build_provenance_view = function() {
+                provenanceService.showProvenance(networkController);
+            };
+
+            $scope.getProvenanceTitle = function()
+            {
+               return provenanceService.getProvenanceTitle();
+            };
+
+
+            networkController.refreshProvMap = function (obj) {
+                $scope.$apply(function () {
+                    networkController.displayProvenance = obj;
+                });
+            };
+
+
+            var hideSearchMenuItem = function() {
+                var searhMenuItemElement = document.getElementById("searchBarId");
+                searhMenuItemElement.style.display = 'none';
+            }
+
+            var showSearchMenuItem = function() {
+                var searhMenuItemElement = document.getElementById("searchBarId");
+                searhMenuItemElement.style.display = 'block';
+            }
+
+
+            /*
             var getNetworkAdmins = function()
             {
-                ndexService.getNetworkUserMemberships(networkController.currentNetworkId, 'ADMIN',
-                    function(networkAdmins)
-                    {
-                        for( var i = 0; i < networkAdmins.length; i++ )
-                        {
-                            var networkAdmin = networkAdmins[i];
-                            if( networkAdmin.memberUUID == sharedProperties.getCurrentUserId() )
-                            {
-                                networkAdmins.splice(i, 1);
+                if (networkController.isLoggedInUser) {
+                    ndexService.getNetworkUserMemberships(networkController.currentNetworkId, 'ADMIN',
+                        function (networkAdmins) {
+                            for (var i = 0; i < networkAdmins.length; i++) {
+                                var networkAdmin = networkAdmins[i];
+                                if (networkAdmin.memberUUID == sharedProperties.getCurrentUserId()) {
+                                    networkAdmins.splice(i, 1);
+                                }
+                            }
+                            networkController.networkAdmins = networkAdmins;
+                        },
+                        function (error) {
+                            var errorMessageText;
+                            if (error) {
+                                if (error.status) {
+                                    errorMessageText = "HTTP response code: " + error.status + ". ";
+                                }
+                                if (error.data && error.data.message) {
+                                    errorMessageText = errorMessageText + error.data.message;
+                                }
+                            }
+                            console.log(errorMessageText);
+                        });
+                }
+            };
+            */
+
+            $scope.getNetworkDownloadLink = function(currentNetwork) {
+                //var visibility = networkController.currentNetwork.visibility;
+                if (currentNetwork) {
+                    var rowEntity = {
+                        'Visibility': currentNetwork.visibility,
+                        'externalId': currentNetwork.externalId
+                    };
+                    return uiMisc.getNetworkDownloadLink(networkController, rowEntity);
+                };
+
+                return;
+            };
+
+            var parseNdexMarkupValue = function ( value ) {
+                return {n:  value.replace(/(\[(.*)\])?\(.*\)$/, '$2'),
+                        id: value.replace(/(\[.*\])?\((.*)\)$/, "$2")};
+            };
+
+
+            var validateEntityID = function(URI, entityId) {
+                var retValue = false;
+
+                if (!URI || !entityId) {
+                    return retValue;
+                }
+                
+                switch (URI.toLowerCase()) {
+
+                    case 'http://identifiers.org/bindingDB/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/cas/':
+                        retValue = /^\d{1,7}\-\d{2}\-\d$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/chebi/':
+                        retValue = /^CHEBI:\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/chembl.compound/':
+                        retValue = /^CHEMBL\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/drugbank/':
+                        retValue = /^DB\d{5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/go/':
+                        retValue = /^GO:\d{7}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/hgnc/':
+                        retValue = /^((HGNC|hgnc):)?\d{1,5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/hgnc.symbol/':
+                        retValue = /^[A-Za-z-0-9_]+(\@)?$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/biogrid/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/intact/':
+                        retValue = /^EBI\-[0-9]+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/kegg.compound/':
+                        retValue = /^C\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/kegg.pathway/':
+                        retValue = /^\w{2,4}\d{5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/ncbigene/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/pubmed/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/reactome/':
+                        retValue = /(^(REACTOME:)?R-[A-Z]{3}-[0-9]+(-[0-9]+)?$)|(^REACT_\d+$)/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/refseq/':
+                        retValue =
+                           /^((AC|AP|NC|NG|NM|NP|NR|NT|NW|XM|XP|XR|YP|ZP)_\d+|(NZ\_[A-Z]{4}\d+))(\.\d+)?$'/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/omim/':
+                        retValue = /^[*#+%^]?\d{6}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/pdb/':
+                        retValue = /^[0-9][A-Za-z0-9]{3}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/rgd/':
+                        retValue = /^\d{4,7}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/uniprot/':
+                        retValue =
+                            /^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/mgd/':
+                        retValue = /^MGI:\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/sgd/':
+                        retValue = /^((S\d+$)|(Y[A-Z]{2}\d{3}[a-zA-Z](\-[A-Z])?))$/.test(entityId);
+                        break;
+
+
+                    case 'http://identifiers.org/ricegap/':
+                        retValue = /^LOC\_Os\d{1,2}g\d{5}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/mesh/':
+                        retValue = /^(C|D)\d{6}$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/pubchem.compound/':
+                        retValue = /^\d+$/.test(entityId);
+                        break;
+
+                    case 'http://identifiers.org/tair.locus/':
+                        retValue = /^AT[1-5]G\d{5}$/.test(entityId);
+                        break;
+
+                    case 'http://gdc-portal.nci.nih.gov/projects/':
+                        if (!entityId) {
+                            return false;
+                        };
+
+                        retValue = /^TCGA-[A-Z]+$/.test(entityId);
+                        if (!retValue) {
+                            retValue = /^TARGET-[A-Z]+$/.test(entityId);
+                        };
+                        break;
+                }
+
+                return retValue;
+            }
+
+
+            var getStringAttributeValue = function(attribute) {
+
+                if (!attribute) {
+                    return null;
+                }
+
+                var attributeValue = attribute;
+                var attr = attribute.toLowerCase();
+
+                if (attr.startsWith('http://')
+                    && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
+                    && !attr.startsWith('http://purl') && !attr.startsWith('http://www.purl')) {
+
+                    attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
+                    return attributeValue;
+                }
+
+                var splitString = attribute.split(":");
+                if ((splitString.length != 2) && (splitString.length != 3)) {
+                    return attributeValue;
+                }
+
+                var prefix = splitString[0].toLowerCase();
+                var value  = (splitString.length == 3) ? (splitString[1] + ":" + splitString[2]) : splitString[1];
+                var URI;
+
+                if (prefix in networkController.context) {
+                    URI = networkController.context[prefix];
+                    if (!URI.endsWith("/")) {
+                        URI = URI + "/";
+                    }
+
+                    if (value.startsWith('CHEMBL')) {
+                        // remove ":" from  CHEMBL since the pattern for CHEMBL Id is '^CHEMBL\d+$'
+                        value = value.replace(':', '');
+                    }
+
+                    if (validateEntityID(URI, value)) {
+                        attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
+                    }
+
+                    return attributeValue;
+                }
+
+
+                if (attr.startsWith('ncbi')) {
+
+                    // valid  NCBI gene Entity identifier consists of all numbers and is described by this
+                    // regular expression: '^\d+$';
+
+                    var isValidNCBIId = /^\d+$/.test(value);
+
+                    if (isValidNCBIId) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/ncbigene/' + value + '">' + attribute + '</a>';
+                    }
+
+                } else if (attr.startsWith('uniprot')) {
+
+                    var isUniprotidValid = /^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$/.test(value);
+
+                    if (isUniprotidValid) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/uniprot/' + value + '">'
+                            + attribute + '</a>';
+                    }
+
+                } else if (attr.startsWith('tair')) {
+
+                    var isValidTair = /^AT[1-5]G\d{5}$/.test(value);
+
+                    if (isValidTair) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/tair.locus/' + value + '">'
+                            + attribute + '</a>';
+                    }
+
+                } else if (attr.startsWith('hgnc:')) {
+
+                    // namespace: hgnc;  URI: http://identifiers.org/hgnc/;  Pattern: '^((HGNC|hgnc):)?\d{1,5}$'
+                    var isHgncIdValid = /^\d{1,5}$/.test(value);
+
+                    if (isHgncIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/hgnc/' + value + '">'
+                            + attribute + '</a>';
+
+                    }
+
+                } else if (attr.startsWith('hgnc.symbol:')) {
+
+                    // namespace: hgnc.symbol;  URI: http://identifiers.org/hgnc.symbol/;  Pattern: '^[A-Za-z-0-9_]+(\@)?$'
+                    var isHgncSymbolIdValid = /^[A-Za-z-0-9_]+(\@)?$/.test(value);
+
+                    if (isHgncSymbolIdValid) {
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/hgnc.symbol/' + value + '">'
+                            + attribute + '</a>';
+
+                    }
+
+                } else if (attr.startsWith('chebi')) {
+
+                    // valid CHEBI Entity identifier is described by this
+                    // regular expression: '^CHEBI:\d+$'
+                    var isCHEBIIdValid = /^CHEBI:\d+$/.test(value);
+
+                    if (isCHEBIIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/chebi/' + value + '">' + attribute + '</a>';
+
+                    } else if (!isNaN(value)) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + value + '">'
+                            + attribute + '</a>';
+                    }
+
+                } else if (attr.startsWith('chembl')) {
+
+                    if (!isNaN(value)) {
+
+                        // valid CHEMBL Compound Entity identifier is described by this
+                        // regular expression: '^CHEMBL\d+$'
+                        // but here we know that value is a number, so no need to use regex for validating
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/chembl.compound/CHEMBL' + value + '">'
+                            + attribute + '</a>';
+                    }
+
+                } else if (attr.startsWith('kegg.compound:')) {
+
+                    // valid KEGG Compound Entity identifier is described by this
+                    // regular expression: '^C\d+$'; let's validate it (we allow the Id to start with
+                    // lower- or upper- case "C"  ("C" or "c")
+
+                    var isKeggCompoundIdValid = /^[cC]\d+$/.test(value);
+
+                    if (isKeggCompoundIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/kegg.compound/' +
+                                value.toUpperCase() + '">' + attribute + '</a>';
+                    }
+
+                } else if (attr.startsWith('pubchem.compound:')) {
+
+                    var entityId = splitString[1];
+
+                    // valid Pubchem Compound Entity identifier is described by this
+                    // regular expression: '^\d+$';
+                    var isBubchemCompoundIdValid = /^\d+$/.test(value);
+
+                    if (isBubchemCompoundIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://identifiers.org/pubchem.compound/' +
+                            value + '">' + attribute + '</a>';
+                    }
+
+                } else if (attr.startsWith('gdc:')) {
+
+                    // valid GDC projects are listed at https://portal.gdc.cancer.gov/projects/t
+                    var isGDCIdValid = /^TCGA-[A-Z]+$/.test(value);
+
+                    if (!isGDCIdValid) {
+                        isGDCIdValid = /^TARGET-[A-Z]+$/.test(value);
+                    };
+
+                    if (isGDCIdValid) {
+
+                        attributeValue =
+                            '<a target="_blank" href="http://gdc-portal.nci.nih.gov/projects/' +
+                            value + '">' + attribute + '</a>';
+                    };
+                }
+
+                return attributeValue;
+            }
+
+
+            $scope.getNodeName = function(node)
+            {
+            
+                return node['_cydefaultLabel'];
+            };
+
+            $scope.getNodeAttributesNames = function(node) {
+                var attributeNames = Object.keys(node);
+
+                var resultList = ['id'];
+
+                //First section has these attributes in order if they exists
+                var topList = ['n', 'r','alias','relatedTo','citations'];
+                _(topList).forEach(function (value) {
+                    if ( node[value]) {
+                        resultList.push(value);
+                    }
+                });
+
+                var elementsToRemove = topList.concat([ '_cydefaultLabel','id', '$$hashKey', '$$expanded']);
+
+                for (i = 0; i < elementsToRemove.length; i++) {
+
+                    var index = attributeNames.indexOf(elementsToRemove[i]);
+                    if (index > -1) {
+                        attributeNames.splice(index, 1);
+                    }
+                }
+
+                return resultList.concat(attributeNames);
+            };
+
+            $scope.getEdgeAttributesNames = function(node) {
+                var attributeNames = _.keys(node);
+
+                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded'];
+
+                for (i = 0; i < elementsToRemove.length; i++) {
+
+                    var index = attributeNames.indexOf(elementsToRemove[i]);
+                    if (index > -1) {
+                        attributeNames.splice(index, 1);
+                    }
+                }
+
+                return attributeNames;
+            };
+
+            $scope.getAttributeValue = function(attributeName, attribute) {
+
+                if (!attribute) {
+                    return null;
+                }
+                if (!attributeName) {
+                    return null;
+                }
+                if ('citations' === attributeName.toLowerCase()) {
+                    return attribute;
+                }
+
+                var attributeValue = "";
+
+                if (attribute instanceof Object) {
+                    if (attribute['v'] && Array.isArray(attribute['v']) && attribute['v'].length > 0) {
+
+                        if(attribute['v'].length > 5) {
+
+                            for (var i = 0; i < 5; i++) {
+                                if (i == 0) {
+                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br>";
+                                } else {
+                                    attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br>";
+                                }
+                            }
+
+                        } else {
+
+                            for (var i = 0; i < attribute['v'].length; i++) {
+                                if (i == 0) {
+                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br>";
+                                } else {
+                                    attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                        getStringAttributeValue(attribute['v'][i]) + "<br> ";
+                                }
                             }
                         }
-                        networkController.networkAdmins = networkAdmins;
-                    },
-                    function(error)
-                    {
+                        
+                    } else {
+                        attributeValue = (attribute['v']) ? attribute['v'] : '';
 
+                        var typeOfAttributeValue = typeof(attributeValue);
+
+                        if (attributeValue && (typeOfAttributeValue === 'string')) {
+                            attributeValue = getStringAttributeValue(attributeValue);
+                        }
+                    }
+
+                } else {
+
+                    if (typeof attribute === 'string') {
+
+                        attributeValue = getStringAttributeValue(attribute);
+
+                    } else {
+
+                        attributeValue = attribute;
+                    }
+                }
+
+                return attributeValue;
+            }
+
+            $scope.checkHowManyAttributes = function(attributeName, attribute) {
+
+                if (!attribute) {
+                    return false;
+                }
+
+                if ((attribute instanceof Object)
+                    && (attribute['v'])
+                    && (Array.isArray(attribute['v']))
+                    && (attribute['v'].length > 5)) {
+
+                    return true;
+                }
+
+                return false;
+            }
+
+
+            networkController.showMoreAttributes = function(attributeName, attribute) {
+
+                var title = attributeName + ':';
+
+                var attributeValue = "";
+
+                if (attribute instanceof Object) {
+                    if (attribute['v'] && Array.isArray(attribute['v'])) {
+
+                        for (var i = 0; i < attribute['v'].length; i++) {
+                            attributeValue = attributeValue + getStringAttributeValue(attribute['v'][i]) + '<br>';
+                        }
+                    }
+                }
+                
+                networkController.genericInfoModal(title, attributeValue);
+
+                return;
+            }
+
+            networkController.genericInfoModal = function(title, message)
+            {
+                var   modalInstance = $modal.open({
+                templateUrl: 'pages/generic-info-modal.html',
+                scope: $scope,
+
+                controller: function($scope, $modalInstance) {
+
+                    $scope.title = title;
+                    $scope.message = message;
+
+                    $scope.close = function() {
+                        $modalInstance.dismiss();
+                    };
+                }
+                });
+            }
+
+
+            $scope.getEdgeLabel = function(edge) {
+
+                if (!edge) {
+                    return "unknown";
+                }
+
+                var source="source unknown", target="target unknown", predicate="->";
+
+                if (edge['s']) {
+                    var nodeObj = networkService.getNodeInfo(edge['s']);
+                    source = $scope.getNodeName(nodeObj);
+                }
+                if (edge['t']) {
+                    var nodeObj = networkService.getNodeInfo(edge['t']);
+                    target = $scope.getNodeName(nodeObj);
+                }
+                if (edge['i']) {
+                    predicate = edge['i'];
+                }
+
+                return source + ' ' + predicate + ' ' + target;
+            }
+
+
+            $scope.getCitation = function (citation) {
+
+                var retString = 'PMID : unable to get citation info';
+
+                if (citation && citation['dc:identifier']) {
+
+                    var splitString = citation['dc:identifier'].split(':');
+                    
+                    if (splitString.length == 2) {
+
+                        var prefix = splitString[0].toString().toLowerCase();
+
+                        if (prefix === 'pubmed' || prefix === 'pmid') {
+
+                            if (!isNaN(splitString[1])) {
+                                // it is a number
+
+                                retString = '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/' +
+                                    splitString[1] + '"><strong>PMID: </strong>' +
+                                    splitString[1] + '</a>';
+
+                            } else if (typeof splitString[1] === 'string') {
+                                // it is a string -- see if it is a URL. If it is, create a link.
+
+                                if (splitString[1].startsWith('http://') || splitString[1].startsWith('https://')) {
+                                    retString = '<a target="_blank" href="' + splitString[1] + '">' + splitString[1] + '</a>';
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                return retString;
+            };
+
+            $scope.getContextAspectFromNiceCX = function() {
+
+                var contextAspect = networkService.getNiceCX()['@context'];
+
+                networkController.context = {};
+
+                if (contextAspect) {
+                    if (contextAspect['elements']) {
+                        networkController.context =  contextAspect['elements'][0];
+                    } else {
+                        networkController.context = contextAspect[0];
+                    }
+                }
+
+                //networkController.context =
+                //    (contextAspect && contextAspect['elements']) ? contextAspect['elements'][0] : {};
+
+                var keys = Object.keys(networkController.context);
+
+                // now, let's lower-case all keys in networkController.context
+                for (var i = 0; i < keys.length; i++) {
+
+                    var lowerCaseKey = keys[i].toLowerCase();
+                    var value = networkController.context[keys[i]];
+
+                    // delete original entry
+                    delete networkController.context[keys[i]];
+
+                    // add value with lower-case key
+                    networkController.context[lowerCaseKey] = value;
+                }   
+            }
+
+
+            /*-----------------------------------------------------------------------*
+             * initialize the cytoscape instance from niceCX
+             *-----------------------------------------------------------------------*/
+            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
+
+                //console.log(cyElements);
+
+                $(function () { // on dom ready
+
+                    var cv = document.getElementById(canvasName);
+
+                    cy = cytoscape({
+                        container: cv,
+
+                        style: cyStyle,
+
+                        layout: cyLayout,
+
+                        elements: cyElements,
+
+                        ready: function () {
+                            window.cy = this;
+                            stopSpinner();
+                        }
                     });
+
+                    // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
+                    // edges, the event is triggered for each node/edge.
+                    cy.on ( 'select unselect',function (event) {
+                        clearTimeout(cy.nodesSelectionTimeout);
+                        cy.nodesSelectionTimeout = setTimeout(function () {
+                            var cxNodes = [];
+                            var cxEdges = [];
+                            _.forEach(cy.$("node:selected"), function (node) {
+                                var id = Number(node.id());
+                                cxNodes.push( networkService.getNodeInfo(id));
+
+                            });
+                            _.forEach(cy.$("edge:selected"), function (edge) {
+                                var idstr = edge.id();
+                                var id= Number(idstr.substring(1));
+                                cxEdges.push( networkService.getEdgeInfo(id));
+                            });
+
+
+                            $scope.$apply(function () {
+                                networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
+
+                                if ( cxNodes.length ===0 && cxEdges.length ===0 ) {
+                                    networkController.tabs[0].active = true;
+                                    networkController.tabs[1].disabled = true;
+                                    networkController.tabs[1].active = false;
+                                    networkController.tabs[2].active = false;
+                                } else if (!networkController.tabs[1].active ) {
+                                    networkController.tabs[1].active = true;
+                                    networkController.tabs[1].disabled = false;
+                                    networkController.tabs[2].active = false;
+                                }
+
+                                if (cxNodes.length == 1) {
+                                    cxNodes[0].$$expanded = true;
+                                }
+                                if (cxEdges.length == 1) {
+                                    cxEdges[0].$$expanded = true;
+                                }
+                            });
+                        }, 300) ;
+                    }); 
+
+
+                    // handles the linked networks.
+
+                    var ndexLink = attributeNameMap['ndex:internalLink'];
+                    var ndexDesc = attributeNameMap['ndex:description'];
+                    var ndexExtLink = attributeNameMap['ndex:externalLink'];
+
+                    if ( ndexLink || ndexDesc || ndexExtLink) {
+                        var tmpArry = [];
+                        [ndexLink,ndexDesc, ndexExtLink].forEach(function(entry){
+                            if (entry)
+                                tmpArry.push ( '[' + entry + ']');
+                        });
+
+                        var selectorStr = tmpArry.join(',');
+
+                        // render properties on nodes
+                        cy.nodes(selectorStr).forEach(function (n) {
+                            var menuList = [];
+                            // check description
+                            if ( ndexDesc) {
+                                var desc = n.data(ndexDesc);
+                                if (desc) {
+                                    menuList.push(desc);
+                                }
+                            }
+                            if ( ndexLink) {
+                                var ndexLinkList = n.data(ndexLink);
+                                if ( typeof ndexLinkList === 'string')
+                                    ndexLinkList = [ndexLinkList];
+                                _.forEach(ndexLinkList, function (e) {
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        var url = networkController.baseURL + markup.id;
+                                        menuList.push('<a target="_blank" href="' + url + '">' +
+                                            (markup.n? markup.n : markup.id)+ '</a>');
+                                    }
+                                });
+                            }
+                            if ( ndexExtLink) {
+                                var extLinkList = n.data(ndexExtLink);
+                                if ( typeof extLinkList === 'string')
+                                    extLinkList = [ extLinkList];
+                                _.forEach(extLinkList, function (e) {
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        menuList.push('<a target="_blank" href="' + markup.id + '">' +
+                                            (markup.n? markup.n : 'external link') + '</a>');
+                                    }
+                                });
+                            }
+                            n.qtip({
+                                content:
+                                  menuList.join('<br />\n'),
+                                position: {
+                                    my: 'top center',
+                                    at: 'bottom center'
+                                },
+                                style: {
+                                    classes: 'qtip-bootstrap',
+                                    tip: {
+                                        width: 16,
+                                        height: 8
+                                    }
+                                }
+                            });
+                        });
+
+                        // handles edges
+                        cy.edges(selectorStr).forEach(function (n) {
+                            var menuList = [];
+                            // check description
+                            if ( ndexDesc) {
+                                var desc = n.data(ndexDesc);
+                                if (desc) {
+                                    menuList.push(desc);
+                                }
+                            }
+                            if ( ndexLink) {
+                                var ndexLinkList = n.data(ndexLink);
+                                if ( typeof ndexLinkList === 'string')
+                                    ndexLinkList = [ ndexLinkList];
+                                _.forEach(ndexLinkList, function (e) {
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        var url = networkController.baseURL + markup.id;
+                                        menuList.push('<a target="_blank" href="' + url + '">' +
+                                            (markup.n? markup.n : markup.id)+ '</a>');
+                                    }
+                                });
+                            }
+                            if ( ndexExtLink) {
+                                var extLinkList = n.data(ndexExtLink);
+                                if ( typeof extLinkList == 'string')
+                                    extLinkList = [ extLinkList];
+                                _.forEach(extLinkList, function (e) {
+                                    var markup = parseNdexMarkupValue(e);
+                                    if ( markup.id) {
+                                        menuList.push('<a target="_blank" href="' + markup.id + '">' +
+                                            (markup.n? markup.n : 'external link') + '</a>');
+                                    }
+                                });
+                            }
+                            n.qtip({
+                                content:
+                                    menuList.join('<br />\n'),
+                                position: {
+                                    my: 'top center',
+                                    at: 'bottom center'
+                                },
+                                style: {
+                                    classes: 'qtip-bootstrap',
+                                    tip: {
+                                        width: 16,
+                                        height: 8
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                }); // on dom ready
+
+            };
+
+
+            var populateNodeAndEdgeAttributesForAdvancedQuery = function() {
+                
+                var cxNetwork = networkService.getNiceCX();
+                
+                if (!cxNetwork) {
+                    return;
+                }
+
+                var edgeAttributesMap = {};
+                var nodeAttributesMap = {};
+
+
+                if (cxNetwork.edgeAttributes) {
+
+                    var allEdgesAttributeObjectsIDs = _.keys(cxNetwork.edgeAttributes);
+
+                    _.forEach(allEdgesAttributeObjectsIDs, function(edgeAttributeId) {
+
+                        var edgeAttributeObject = cxNetwork.edgeAttributes[edgeAttributeId];
+                        var edgeAttributeObjectKeys = _.keys(edgeAttributeObject);
+
+                        _.forEach(edgeAttributeObjectKeys, function(key) {
+
+                            var edgeAttribute = edgeAttributeObject[key];
+
+                            if (edgeAttribute['d']) {
+                                if ((edgeAttribute['d'] == 'string') || (edgeAttribute['d'] == 'boolean')) {
+                                    edgeAttributesMap[key] = key;
+                                };
+                            } else if (edgeAttribute['v']) {
+                                if ((typeof(edgeAttribute['v']) == 'string') || (typeof(edgeAttribute['v']) == 'boolean')) {
+                                    edgeAttributesMap[key] = key;
+                                };
+                            };
+                        });
+                    });
+                }
+
+                if (cxNetwork.nodeAttributes) {
+
+                    var allNodesAttributeObjectsIDs = _.keys(cxNetwork.nodeAttributes);
+
+                    _.forEach(allNodesAttributeObjectsIDs, function(nodeAttributeId) {
+
+                        var nodeAttributeObject = cxNetwork.nodeAttributes[nodeAttributeId];
+                        var nodeAttributeObjectKeys = _.keys(nodeAttributeObject);
+
+                        _.forEach(nodeAttributeObjectKeys, function(key) {
+
+                            var nodeAttribute = nodeAttributeObject[key];
+
+                            if (nodeAttribute['d']) {
+                                if ((nodeAttribute['d'] == 'string') || (nodeAttribute['d'] == 'boolean')) {
+                                    nodeAttributesMap[key] = key;
+                                };
+                            } else if (nodeAttribute['v']) {
+                                if ((typeof(nodeAttribute['v']) == 'string') || (typeof(nodeAttribute['v']) == 'boolean')) {
+                                    nodeAttributesMap[key] = key;
+                                };
+                            };
+                        });
+                    });
+                }
+
+                var attributeNames = _.keys(edgeAttributesMap);
+                _.forEach(attributeNames, function(attributeName) {
+                    networkController.edgePropertyNamesForAdvancedQuery.push(attributeName);
+                 });
+
+                attributeNames = _.keys(nodeAttributesMap);
+                _.forEach(attributeNames, function(attributeName) {
+                    if (attributeName && (attributeName.toLowerCase() != ("ndex:internallink"))) {
+                        networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
+                    };
+                });
+            };
+            
+
+
+            var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
+                
+                $scope.getContextAspectFromNiceCX();
+
+                var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
+
+                var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
+                
+                var cyStyle ;
+                if ( noStyle ) {
+                    cyStyle =  cyService.getDefaultStyle()
+                    resetBackgroudColor();
+                } else {
+                    cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
+                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
+                    if ( cxBGColor)
+                        networkController.bgColor = cxBGColor;
+                }
+
+
+                // networkController.prettyStyle added for debugging -- remove/comment out when done
+                //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
+
+                // networkController.prettyVisualProperties added for debugging -- remove/comment out when done
+                //networkController.prettyVisualProperties = JSON.stringify(cxNetwork.visualProperties, null, 2);
+                
+                var layoutName = 'cose';
+
+                if ( ! noStyle && cyService.allNodesHaveUniquePositions(cyElements)) {
+                    layoutName = 'preset';
+                }
+
+                var cyLayout = {name: layoutName};
+
+                initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
+
+            };
+
+            var displayErrorMessage = function(error) {
+                if (error.status != 0) {
+                    var message;
+                    if (error.data && error.data.message) {
+                        message = error.data.message;
+                    }
+                    if (error.status) {
+                        message = message + "  Error Code: " + error.status + ".";
+                    }
+                    if (error.statusText) {
+                        message = message + "  Error Message: " + error.statusText;
+                    }
+                    networkController.errors.push("Unable to get network: " + message);
+                } else {
+                    networkController.errors.push("Unable to get network; Server returned no error information.");
+                }
+            }
+
+            var getNetworkAndDisplay = function (networkId, callback) {
+      //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
+                // hard-coded parameters for ndexService call, later on we may want to implement pagination
+
+                var hasLayout = networkService.getNetworkProperty(networkController.subNetworkId,'hasLayout');
+
+                if ( hasLayout == undefined ) {
+                    if ( networkController.subNetworkId != null)
+                        hasLayout = true;
+                    else
+                        hasLayout = false;
+
+                }
+
+                if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
+                    (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
+                    // get sample CX network
+                    networkController.isSample = true;
+                    (request2 = networkService.getNetworkSampleV2(networkId) )
+                        .success(
+                            function (network) {
+                                callback(network, false);
+                            }
+                        )
+                        .error(
+                            function (error) {
+                                displayErrorMessage(error);
+                            }
+                        );
+                } else {
+                    // get complete CX stream and build the CX network object.
+                    networkController.isSample = false;
+                    (request2 = networkService.getCompleteNetworkInCXV2(networkId) )
+                        .success(
+                            function (network) {
+                                callback(network, false);
+                            }
+                        )
+                        .error(
+                            function (error) {
+                                displayErrorMessage(error);
+                            }
+                        );
+                }
+            };
+
+            var calcColumnWidth = function(header, isLastColumn)
+            {
+                var result = header.length * 10;
+                result = result < 100 ? 100 : result;
+                if( isLastColumn )
+                    result += 40;
+                return result > 250 ? 250 : result;
+            };
+
+            var populateEdgeTable = function(network, enableFiltering, setGridWidth)
+            {
+                var edges = network.edges;
+                var edgeCitations = network.edgeCitations;
+
+
+                var longestSubject = "";    // source
+                var longestPredicate = "";
+                var longestObject = "";     // target
+
+                if (!edges) {
+                    return;
+                }
+
+                var edgeKeys = Object.keys(edges);
+
+                // determine the longest subject, predicate and object
+                for( var i = 0; i < edgeKeys.length; i++ )
+                {
+                    var edgeKey = edgeKeys[i];
+
+                    var predicate = edges[edgeKey].i ? (edges[edgeKey].i) : "";
+                    var subject = network.nodes[edges[edgeKey].s].n ? network.nodes[edges[edgeKey].s].n : "";
+                    var object = network.nodes[edges[edgeKey].t].n ? network.nodes[edges[edgeKey].t].n : "";
+
+                    longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
+                    longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
+                    longestObject = longestObject.length < object.length ? object : longestObject;
+                }
+
+                // enable filtering if number of edges in the network is no greater than 500
+                var filteringEnabled = (edgeKeys.length <= 500) ? true : false;
+
+                if (enableFiltering) {
+                    // enable filtering even if the number of edges in the network is greater than 500;
+                    // this is the case when we want filtering on after running simple or advance query
+                    filteringEnabled = true;
+                }
+                var columnDefs = [
+                    {
+                        field: 'Source',
+                        displayName: 'Source',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestSubject, false)
+                    },
+                    {
+                        field: 'Interaction',
+                        displayName: 'Interaction',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestPredicate, false)
+                    },
+                    {
+                        field: 'Target',
+                        displayName: 'Target',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestObject, false)
+                    }
+                ];
+
+                if (edgeCitations) {
+                    var citationsHeader =
+                    {
+                        field: 'Citations',
+                        displayName: 'Citations',
+                        cellToolTip: false,
+                        minWidth: calcColumnWidth('Citations'),
+                        enableFiltering: false,
+                        enableSorting: false,
+                        cellTemplate: "<div class='text-center'><h6>" +
+                            "<a ng-click='grid.appScope.showEdgeCitations(COL_FIELD)' ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0'>" +
+                            "{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}" +
+                            "</h6></div>"
+                     }
+                    columnDefs.push(citationsHeader);
+                }
+
+
+                var edgeAttributes = network.edgeAttributes;
+                var edgeAttributesHeaders = {};
+
+                if (edgeAttributes) {
+
+                    var edgeAttributesKeys = Object.keys(edgeAttributes);
+
+                    for (var i=0; i<edgeAttributesKeys.length; i++)
+                    {
+                        var edgeAttributeKey = edgeAttributesKeys[i];
+
+                        var edgeAttributePropertiesKeys = Object.keys(edgeAttributes[edgeAttributeKey]);
+
+                        for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
+                            var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
+
+                            var columnDef = {
+                                field: edgeAttributteProperty,
+                                displayName: edgeAttributteProperty,
+                                cellTooltip: true,
+                                minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                enableFiltering: filteringEnabled,
+                                cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                            };
+                            edgeAttributesHeaders[edgeAttributteProperty] = columnDef;
+                        }
+                    }
+                }
+
+                for (var key in edgeAttributesHeaders) {
+                    var col = edgeAttributesHeaders[key];
+                    columnDefs.push(col);
+                }
+                
+                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
+                if (setGridWidth) {
+                    $scope.edgeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                }
+                //$scope.edgeGridApi.grid.gridHeight = $('#cytoscape-canvas').height();
+
+               refreshEdgeTable(network);
+            };
+
+            var refreshEdgeTable = function (network) {
+
+                var edges = network.edges;
+                var edgeCitations = network.edgeCitations;
+                var edgeKeys = Object.keys(edges);
+
+                $scope.edgeGridOptions.data = [];
+
+                var edgeAttributes = network.edgeAttributes;
+
+                for( i = 0; i < edgeKeys.length; i++ )
+                {
+                    var edgeKey = edgeKeys[i];
+
+                    var edgeObj = networkService.getEdgeInfo(edgeKey);
+
+                    var sourceNodeObj = networkService.getNodeInfo(edgeObj['s']);
+                    var source = $scope.getNodeName(sourceNodeObj);
+                    var interaction = edgeObj['i'];
+                    var targeteNodeObj = networkService.getNodeInfo(edgeObj['t']);
+                    var target = $scope.getNodeName(targeteNodeObj);
+
+                    var row = {"Source": source, "Interaction": interaction, "Target": target};
+                    
+                    if (edgeCitations) {
+                        row["Citations"] = (edgeCitations[edgeKey]) ? edgeKey : "";
+                    }
+
+                    if (edgeAttributes) {
+                        for (var key in edgeAttributes[edgeKey]) {
+                            var attributeValue = edgeAttributes[edgeKey][key]['v'];
+                            row[key] = (attributeValue) ? attributeValue : "";
+                        }
+                    }
+                    $scope.edgeGridOptions.data.push( row );
+                }
+            };
+
+
+            var populateNodeTable = function(network, enableFiltering, setGridWidth)
+            {
+                var nodes = network.nodes;
+                var nodeCitations = network.nodeCitations;
+                var numOfNodeKeys = 0;
+
+                if (!nodes) {
+                    return;
+                }
+
+                var longestName = "Label";
+                for (var key in nodes) {
+
+                    if (nodes[key].n) {
+                        longestName = (nodes[key].n.length > longestName.length) ? nodes[key].n : longestName;
+                    }
+                    numOfNodeKeys = numOfNodeKeys + 1;
+                }
+
+                // enable filtering if number of edges in the network is no greater than 500;
+                // we still check number of edges even though we populate node headers in this routine
+                var filteringEnabled = (numOfNodeKeys <= 500) ? true : false;
+
+                if (enableFiltering) {
+                    // enable filtering even if the number of edges in the network is greater than 500;
+                    // this is the case when we want filtering on after running simple or advance query.
+                    // we still check number of edges even though we populate node header in this routine
+                    filteringEnabled = true;
+                }
+                var columnDefs = [
+                    {
+                        field: 'Label',
+                        displayName: 'Label',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestName)
+                    }
+                ];
+
+                if (nodeCitations) {
+                    var citationsHeader =
+                    {
+                        field: 'Citations',
+                        displayName: 'Citations',
+                        cellToolTip: false,
+                        enableFiltering: false,
+                        enableSorting: false,
+                        cellTemplate: "<div class='text-center'><h6>" +
+                        "<a ng-click='grid.appScope.showNodeCitations(COL_FIELD)' ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0'>" +
+                        "{{grid.appScope.getNumNodeCitations(COL_FIELD)}}" +
+                        "</h6></div>"
+                    }
+                    columnDefs.push(citationsHeader);
+                }
+                
+
+                var nodeAttributes = network.nodeAttributes;
+                var nodeAttributesHeaders = {};
+
+                if (nodeAttributes) {
+
+                    var nodeAttributesKeys = Object.keys(nodeAttributes);
+
+                    for (var i=0; i<nodeAttributesKeys.length; i++)
+                    {
+                        var nodeAttributeKey = nodeAttributesKeys[i];
+
+                        var nodeAttributePropertiesKeys = Object.keys(nodeAttributes[nodeAttributeKey]);
+
+                        for (var j=0; j<nodeAttributePropertiesKeys.length; j++) {
+                            var nodeAttributteProperty = nodeAttributePropertiesKeys[j];
+
+                            var columnDef;
+                            if ((nodeAttributteProperty == "alias") || (nodeAttributteProperty == "relatedTo")) {
+                                columnDef = {
+                                    field: nodeAttributteProperty,
+                                    displayName: nodeAttributteProperty,
+                                    cellTooltip: true,
+                                    minWidth: calcColumnWidth(nodeAttributteProperty, false),
+                                    enableFiltering: filteringEnabled,
+                                    //cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+
+                                    cellTemplate: "<div class='text-center'><h6>" +
+                                    "<a ng-click='grid.appScope.showNodeAttributes(COL_FIELD)' ng-show='grid.appScope.getNumNodeAttributes(COL_FIELD) > 0'>" +
+                                    "{{grid.appScope.getNumNodeAttributes(COL_FIELD)}}" +
+                                    "</h6></div>"
+                                };
+                            } else {
+                                columnDef = {
+                                    field: nodeAttributteProperty,
+                                    displayName: nodeAttributteProperty,
+                                    cellTooltip: true,
+                                    minWidth: calcColumnWidth(nodeAttributteProperty, false),
+                                    enableFiltering: filteringEnabled,
+                                    cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                                }
+                            }
+                            nodeAttributesHeaders[nodeAttributteProperty] = columnDef;
+                        }
+                    }
+                }
+
+                for (var key in nodeAttributesHeaders) {
+                    var col = nodeAttributesHeaders[key];
+                    columnDefs.push(col);
+                }
+
+                $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
+                if (setGridWidth) {
+                    $scope.nodeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                }
+
+                //$scope.nodeGridApi.grid.gridHeight = $('#cytoscape-canvas').height();
+
+                refreshNodeTable(network);
+            };
+
+            var refreshNodeTable = function(network)
+            {
+                var nodes = network.nodes;
+                var nodeKeys = Object.keys(nodes);
+
+                $scope.nodeGridOptions.data = [];
+
+                var nodeAttributes = network.nodeAttributes;
+
+                for (var key in nodeKeys)
+                {
+                    var nodeId = nodeKeys[key];
+
+                    var nodeObj = networkService.getNodeInfo(nodeId);
+                    var label = $scope.getNodeName(nodeObj);
+
+                    var row = {"Label": label};
+
+                    if (nodeAttributes) {
+
+                        var nodeAttrs = nodeAttributes[nodeId];
+
+                        for (var key1 in nodeAttrs) {
+                            var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+                            var attributeObjName = attributeObj['n'];
+
+                            if (attributeObjName && ((attributeObjName == 'alias') || (attributeObjName == 'relatedTo')) ) {
+                                row[key1] = attributeObj;
+                            } else {
+                                row[key1] = (attributeObj['v']) ? attributeObj['v'] : "";
+                            }
+                        }
+                    }
+
+                    $scope.nodeGridOptions.data.push( row );
+                }
+            };
+
+            networkController.queryNetworkAndDisplay = function () {
+                // remove old query and error messages, if any
+                networkController.queryWarnings = [];
+                networkController.queryErrors = [];
+
+                startSpinner();
+                var edgeLimit = config.networkQueryLimit;
+                networkService.neighborhoodQuery(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, edgeLimit)
+                    .success(
+                        function (network) {
+                            var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
+                            networkController.successfullyQueried = true;
+                            networkController.currentNetwork =
+                              {name: resultName,
+                                  "nodeCount": (network.nodes) ? Object.keys(network.nodes).length : 0,
+                                  "edgeCount": (network.edges) ? Object.keys(network.edges).length : 0,
+                                  "queryString": networkController.searchString,
+                                  "queryDepth" : networkController.searchDepth.value
+                              };
+
+                            cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
+                       //     var networkAttrList = [];
+                        //    networkAttrList.push({'n': 'name', 'v': resultName });
+                    //        networkAttrList.push ( {'n': 'queryString' , 'v': networkController.searchString });
+                    //        networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
+
+                         //   network["networkAttributes"] = networkAttrList;
+
+                            if (!networkController.tabs[0].active )
+                                networkController.tabs[0].active = true;
+                            networkController.selectionContainer = {};
+
+                            stopSpinner();
+
+                            if ($scope.currentView == "Table") {
+                                var enableFiltering = true;
+                                var setGridWidth = false;
+                                //localNetwork = networkService.getNiceCX();
+                                populateNodeTable(network, enableFiltering, setGridWidth);
+                                populateEdgeTable(network, enableFiltering, setGridWidth);
+                            } else {
+                                drawCXNetworkOnCanvas(network,false);
+                            }
+
+                            if (networkController.currentNetwork.nodeCount == 0) {
+                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                            };
+                        }
+                    )
+                    .error(
+                        function (error) {
+                            stopSpinner();
+                            if (error.status != 0) {
+                                if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
+                                {
+                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + config.networkQueryLimit);
+                                }
+                                else
+                                {
+                                    networkController.queryErrors.push(error.data.message);
+                                }
+                            }
+                        }
+                    );  
+            };
+
+            /*
+            networkController.backToOriginalNetwork = function () {
+
+                networkService.resetNetwork();
+                networkController.currentNetwork = currentNetworkSummary;
+                drawCXNetworkOnCanvas(networkService.getNiceCX(),false);
+                networkController.successfullyQueried = false;
+                if (!networkController.tabs[0].active )
+                    networkController.tabs[0].active = true;
+                networkController.selectionContainer = {};
+
+                networkController.tabs[3].active = false;
+                networkController.tabs[3].hidden = true;
+
+                enableSimpleQueryElements();
+                $scope.hideAdvancedSearchLink = false;
+            };
+            */
+
+            networkController.backToOriginalNetwork = function () {
+                $route.reload();
+            };
+            
+            networkController.saveQueryResult = function() {
+
+                var  modalInstanceSave = $modal.open({
+                    templateUrl: 'confirmation-modal.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+                        $scope.title = 'Save query result?';
+                        $scope.message = 'The query result for "'+currentNetworkSummary.name+'" will be saved to your account?';
+
+                        $scope.cancel = function() {
+                            $scope.errors = null;
+                            $modalInstance.dismiss();
+                        };
+
+                        $scope.confirm = function() {
+                            if( $scope.isProcessing )
+                                return;
+                            $scope.isProcessing = true;
+                            $scope.progress = 'Save in progress.... ';
+
+                            var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
+
+                            //               console.log ( JSON.stringify(rawCX));
+
+
+                            //networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX,
+
+                            networkService.createCXNetwork(rawCX,
+                                function (newNetworkURL) {
+                                    $modalInstance.close();
+                                    $scope.isProcessing = false;
+
+                                    //$('#saveQueryButton').prop('disabled', true);
+                                },
+                                function (error) {
+                                    delete $scope.progress;
+                                    $scope.errors = (error && error.message) ? error.message : "Unable to save Query results"
+                                });
+                        };
+                    }
+                });
+
+            }
+
+
+            networkController.runAdvancedQuery = function()
+            {
+                var mode = networkController.advancedQueryNodeCriteria;
+                var validEdgeProperties = [];
+                var validNodeProperties = [];
+
+                // remove old query and error messages, if any
+                networkController.queryWarnings = [];
+                networkController.queryErrors = [];
+
+                var networkQueryLimit = config.networkQueryLimit;
+
+                startSpinner();
+
+                var postData =
+                {
+                    edgeLimit: networkQueryLimit,
+                    queryName: "Not used yet."
+                };
+
+                _.forEach(networkController.advancedQueryEdgeProperties, function (edgeProperty) {
+
+                    if (edgeProperty.name && edgeProperty.value) {
+                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
+                    }
+                });
+                _.forEach(networkController.advancedQueryNodeProperties, function (nodeProperty) {
+                    if( nodeProperty.name && nodeProperty.value ) {
+                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
+                    }
+                });
+
+                if (validEdgeProperties.length > 0)
+                {
+                    postData.edgeFilter =
+                    {
+                        propertySpecifications: validEdgeProperties
+                    };
+                };
+
+                if (validNodeProperties.length > 0)
+                {
+                    postData.nodeFilter =
+                    {
+                        propertySpecifications: validNodeProperties,
+                        mode: mode
+                    };
+                };
+
+                //console.log(JSON.stringify(postData,null,2));
+                
+                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, postData)
+                    .success(
+                        function (networkInNiceCX) {
+
+                            var networkName = networkController.currentNetwork.name;
+                            var localNiceCX = networkInNiceCX;
+
+                            var resultName = "Advanced query result on network - " + currentNetworkSummary.name;
+                            networkController.successfullyQueried = true;
+                            networkController.currentNetwork =
+                            {name: resultName,
+                                "nodeCount": (localNiceCX.nodes) ? Object.keys(localNiceCX.nodes).length : 0,
+                                "edgeCount": (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0,
+                                "queryString": networkController.searchString,
+                                "queryDepth" : networkController.searchDepth.value
+                            };
+
+                            cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
+
+                            drawCXNetworkOnCanvas(localNiceCX,false);
+
+                            if (!networkController.tabs[0].active) {
+                                networkController.tabs[0].active = true;
+                            }
+                            networkController.selectionContainer = {};
+
+                            if ($scope.currentView == "Table") {
+                                var enableFiltering = true;
+                                var setGridWidth = false;
+                                populateNodeTable(localNiceCX, enableFiltering, setGridWidth);
+                                populateEdgeTable(localNiceCX, enableFiltering, setGridWidth);
+                            };
+
+                            if (networkController.currentNetwork.nodeCount == 0) {
+                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                            };
+                        })
+                    .error(
+
+                        function (error) {
+                            stopSpinner();
+                            if (error.status != 0) {
+                                if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
+                                {
+                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + config.networkQueryLimit);
+                                }
+                                else
+                                {
+                                    networkController.queryErrors.push(error.data.message);
+                                };
+                            };
+                        }
+                    );
+            };
+
+
+
+            var initialize = function () {
+                // vars to keep references to http calls to allow aborts
+
+                provenanceService.resetProvenance();
+
+                // get network summary
+                // keep a reference to the promise
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId) 
+                    .success(
+                        function (network) {
+                            networkController.currentNetwork = network;
+                            currentNetworkSummary = network;
+
+                            if (!network.name) {
+                                networkController.currentNetwork.name = "Untitled";
+                            }
+
+                            // subNetworkId is the current subNetwork we are displaying
+                            networkController.subNetworkId = uiMisc.getSubNetworkId(network);
+
+                            networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
+
+                            if (networkController.subNetworkId != null) {
+                                networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
+                                networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId,"version");
+                            };
+
+                            getMembership(function ()
+                            {
+                                networkController.readyToRenderNetworkInUI = true;
+
+                                if (network.visibility == 'PUBLIC'
+                                    || networkController.isAdmin
+                                    || networkController.canEdit
+                                    || networkController.canRead) {
+                                            resetBackgroudColor();
+                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+
+                                }
+                            });
+                            
+                            networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
+                            //getNetworkAdmins();
+
+                            var sourceFormat =
+                                networkService.getNetworkProperty(networkController.subNetworkId,'ndex:sourceFormat');
+                            networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
+                                'Unknown' : sourceFormat;
+
+                            if ("BEL" === networkController.currentNetwork.sourceFormat) {
+                                // for BEL networks, check if Namespaces have been archived
+                                getNumberOfBelNetworkNamespaces();
+                            }
+
+                            networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId,'Reference');
+                            networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId,'rightsHolder');
+                            networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
+                            networkController.otherProperties =
+                                _.sortBy(
+                                networkService.getPropertiesExcluding(networkController.subNetworkId,[
+                                    'rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
+                        }
+                    )
+                    .error(
+                        function (error) {
+                            displayErrorMessage(error);
+                        }
+                    );
+
             };
 
             var getNumberOfBelNetworkNamespaces = function()
@@ -559,779 +2095,54 @@ ndexApp.controller('networkController',
                     });
             };
 
-            var getNetworkSourceFormat = function(networkProperties)
-            {
-                networkController.currentNetworkSourceFormat = 'undefined';
-
-                if ('undefined'===typeof(networkProperties)) {
-                    return;
-                }
-
-                for( var i = 0; i < networkProperties.length; i++ ) {
-
-                    if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
-                                (networkProperties[i].predicateString.toLowerCase() === 'sourceformat')) {
-
-                        if (typeof(networkProperties[i].value) !== 'undefined') {
-                            networkController.currentNetworkSourceFormat =
-                                networkProperties[i].value.toUpperCase();
-                            return;
-                        }
-                    }
-                }
-            }
-
-            var getNetworkReference = function(networkProperties)
-            {
-                networkController.currentNetwork.reference = "";
-
-                if ('undefined'===typeof(networkProperties)) {
-                    return;
-                }
-
-                var length = networkProperties.length;
-                var i = 0;
-
-                // remove all Reference attributes (there should only be one, but we'll
-                // handle the erroneous case when there are more than one)
-                while (i < length) {
-
-                    if ((typeof(networkProperties[i].predicateString) !== 'undefined') &&
-                        (networkProperties[i].predicateString.toLowerCase() === 'reference')) {
-
-                        if (typeof(networkProperties[i].value) !== 'undefined') {
-                            networkController.currentNetwork.reference = networkProperties[i].value;
-                            networkProperties.splice(i, 1);
-                            length = length - 1;
-                            continue;
-                        }
-                    }
-                    i = i + 1;
-                }
-            }
-
-            var getLicensingInfo = function(networkProperties)
-            {
-                networkController.currentNetwork.rightsHolder = [];
-                networkController.currentNetwork.rights = [];
-
-                if ('undefined'===typeof(networkProperties)) {
-                    return;
-                }
-
-                for( var i = 0; i < networkProperties.length; i++ ) {
-
-                    if (typeof(networkProperties[i].predicateString) !== 'undefined') {
-
-                        if (networkProperties[i].predicateString === 'rightsHolder') {
-
-                            networkController.currentNetwork.rightsHolder.push(networkProperties[i].value);
-
-                        } else if (networkProperties[i].predicateString === 'rights') {
-
-                            networkController.currentNetwork.rights.push(networkProperties[i].value);
-
-                        }
-                    }
-                }
-
-                return;
-            }
-
-            var initialize = function () {
-                // vars to keep references to http calls to allow aborts
-                var request1 = null;
-                var request2 = null;
-
-                // get network summary
-                // keep a reference to the promise
-                (request1 = ndexService.getNetworkSummaryV2(networkController.currentNetworkId) )
-                    .success(
-                    function (network) {
-                        cn = network;
-                        networkController.currentNetwork = network;
-
-                        if (!network.name) {
-                            networkController.currentNetwork.name = "No name";
-                        }
-
-                        getMembership(function ()
-                        {
-                            networkController.showRetrieveMessage = false;
-                            networkController.readyToRenderNetworkInUI = true;
-
-                            if (network.visibility == 'PUBLIC'
-                                || networkController.isAdmin
-                                || networkController.canEdit
-                                || networkController.canRead)
-                                getEdges(function (subnetwork) {
-                                    /*
-                                    if ($scope.networkToBeDisplayedInCanvas()) {
-                                        cytoscapeService.setNetwork(subnetwork);
-                                    }
-                                    */
-
-                                    // enableFiltering set to false means that filtering will be on if the size
-                                    // of the network is no greater than 500 edges
-                                    var enableFiltering = false;
-                                    populateEdgeTable(enableFiltering);
-                                    populateNodeTable(enableFiltering);
-                                });
-                        });
-                        networkController.readOnlyChecked = cn.isReadOnly;
-                        getNetworkAdmins();
-
-                        getNetworkSourceFormat(networkController.currentNetwork.properties);
-                        getNetworkReference(networkController.currentNetwork.properties);
-                        getLicensingInfo(networkController.currentNetwork.properties);
-
-                        if ("BEL" === networkController.currentNetworkSourceFormat) {
-                            // for BEL networks, check if Namespaces have been archived
-                            getNumberOfBelNetworkNamespaces();
-                        }
-                        getProvenance();
-                    }
-                )
-                    .error(
-                    function (error) {
-                        networkController.showRetrieveMessage = false;
-                        if ((error != null) && (typeof(error.message) !== 'undefined')) {
-                            networkController.errors.push({label: "Unable to retrieve network. ", error: error.message});
-                        } else {
-                            networkController.errors.push({label: "Unable to retrieve network. ", error: "Unknown error."});
-                        }
-                    }
-                );
-
-            };
-
             var getMembership = function (callback) {
-                
-                var userId = sharedProperties.getCurrentUserId();
-                var networkId = networkController.currentNetworkId;
-                var directonly = false;
-                
-                ndexService.getUserPermissionForNetworkV2(userId, networkId, directonly,
-                    function (membership)
-                    {
-                        if (membership == 'ADMIN')
-                        {
-                            networkController.isAdmin = true;
-                            networkController.privilegeLevel = "Admin";
-                        }
-                        if (membership == 'WRITE')
-                        {
-                            networkController.canEdit = true;
-                            networkController.privilegeLevel = "Edit";
-                        }
-                        if (membership == 'READ')
-                        {
-                            networkController.canRead = true;
-                            networkController.privilegeLevel = "Read";
+                if (!networkController.isLoggedInUser) {
+                    // if user is anonymous, don't call getMyMembership() because it requires user to be authenticated
+                    callback();
+                } else {
 
-                        }
-                        callback();
+                    var userId = sharedProperties.getCurrentUserId();
+                    var networkId = networkController.currentNetworkId;
+                    var directonly = false;
+
+                    ndexService.getUserPermissionForNetworkV2(userId, networkId, directonly,
+                        function (membership) {
+                            if (membership) {
+                                var myMembership = membership[networkId];
+
+                                if (myMembership == 'ADMIN') {
+                                    networkController.isAdmin = true;
+                                    networkController.privilegeLevel = "Admin";
+                                }
+                                if (myMembership == 'WRITE') {
+                                    networkController.canEdit = true;
+                                    networkController.privilegeLevel = "Edit";
+                                }
+                                if (myMembership == 'READ') {
+                                    networkController.canRead = true;
+                                    networkController.privilegeLevel = "Read";
+                                }
+                            }
+                            callback();
+                        },
+                        function (error) {
+                            displayErrorMessage(error);
+                        });
+                }
+            };
+
+            $scope.readOnlyChanged = function()
+            {
+                ndexService.setNetworkSystemPropertiesV2(networkController.currentNetworkId,
+                    "readOnly", networkController.readOnlyChecked,
+                    function(data, networkId, property, value) {
+                        // success, do nothing
                     },
-                    function (error) {
-                        console.log(error);
-                    });
-
-            };
-
-            var getDirectMembership = function (callback) {
-                ndexService.getMyDirectMembership(networkController.currentNetworkId,
-                    function (membership) {
-                        if (membership  == 'ADMIN')
-                            networkController.directIsAdmin = true;
-                        if (membership == 'WRITE')
-                            networkController.directCanEdit = true;
-                        if (membership == 'READ')
-                            networkController.directCanRead = true;
-                        callback();
-                    },
-                    function (error) {
-                        console.log(error);
-                    });
-
-            };
-
-            var getEdges = function (callback) {
-                var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
-                // hard-coded parameters for ndexService call, later on we may want to implement pagination
-                var blockSize = config.networkTableLimit;
-                var skipBlocks = 0;
-
-                // get first convenienceuple of edges
-                (request2 = ndexService.getNetworkByEdges(networkController.currentNetworkId, skipBlocks, blockSize) )
-                    .success(
-                    function (network) {
-                        //csn = network; // csn is a debugging convenience variable
-                        networkController.currentSubnetwork = network;
-                        networkController.selectedEdges = network.edges;
-                        callback(network);
-                    }
-                )
-                    .error(
-                    function (error) {
-                        if (error.status != 0) {
-                            networkController.errors.push({label: "Get Network Edges Request: ", error: error});
-                        } else {
-                            networkController.errors.push({
-                                label: "Get Network Edges Request: ",
-                                error: "Process killed"
-                            });
-                        }
-                    }
-                );
-            };
-
-            var getProvenance = function () {
-                ndexService.getNetworkProvenanceV2(networkController.currentNetworkId,
-                    function (data) {
-                        // fake data
-                        // provenanceVisualizerService.setProvenance(provenanceVisualizerService.createFakeProvenance());
-                        // real data
-                        provenanceVisualizerService.setProvenance(data);
-                        $scope.provenance = data;
-                        var x = 10;
-
-                    }, function (error) {
-                        networkController.showRetrieveMessage = false;
-                        if ((error != null) && (typeof error.message !== 'undefined')) {
-                            networkController.errors.push({label: "Unable to retrieve network provenance: ", error: error.message});
-                        } else {
-                            networkController.errors.push({label: "Unable to retrieve network provenance: ", error: "Unknown error"});
-                        }
+                    function(error, networkId, property, value) {
+                        console.log("unable to make network Read-Only");
                     });
             };
-
-            var calcColumnWidth = function(header, isLastColumn)
-            {
-                var result = header.length * 10;
-                result = result < 100 ? 100 : result;
-                if( isLastColumn )
-                    result += 40;
-                return result > 250 ? 250 : result;
-            };
-
-            var getEdgeCitationIds = function(edgeKey)
-            {
-                if( !edgeKey )
-                    return [];
-                var edge = networkController.currentSubnetwork.edges[edgeKey];
-                if( !edge )
-                    return [];
-                return edge.citationIds;
-            };
-
-            var getNodeCitationIds = function(nodeKey)
-            {
-                if( !nodeKey )
-                    return [];
-                var node = networkController.currentSubnetwork.nodes[nodeKey];
-                if( !node )
-                    return [];
-                return node.citationIds;
-            };
-
-            $scope.getNumEdgeCitations = function(edgeKey)
-            {
-                var citationIds = getEdgeCitationIds(edgeKey);
-                return citationIds.length;
-            };
-
-            $scope.getNumNodeCitations = function(nodeKey)
-            {
-                var citationIds = getNodeCitationIds(nodeKey);
-                return citationIds.length;
-            };
-
-            $scope.linkify = function(cellContents)
-            {
-                if (typeof(cellContents) === "undefined" || cellContents === "") {
-                    return "";
-                }
-                if( cellContents.startsWith("http") )
-                {
-                    return '&nbsp;<a target="_blank" href="'+cellContents+'">External Link</a>'
-                }
-                else
-                {
-                    return '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
-                }
-            };
-
-            var getCitationContributorsString = function(citationId)
-            {
-                var citation = networkController.currentSubnetwork.citations[citationId];
-                if( citation.contributors.length < 1 )
-                    return "";
-                var result = "";
-                for( var i = 0; i < citation.contributors.length - 1; i++ )
-                {
-                    result += citation.contributors[i] + ", ";
-                }
-                result += citation.contributors[citation.contributors.length - 1];
-                return result;
-            };
-
-            var getCitations = function(citationIds)
-            {
-                var result = [];
-                for( var i = 0; i < citationIds.length; i++ )
-                {
-                    var citationId = citationIds[i];
-                    var citation = networkController.currentSubnetwork.citations[citationId];
-                    if( networkController.hasCitation(citationId) )
-                        citation.link = networkController.getCitation(citationId);
-                    citation.contributorsString = getCitationContributorsString(citationId);
-                    result.push( citation );
-                }
-                return result;
-            };
-
-            var showCitations = function(citations)
-            {
-                var modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: 'citations.html',
-                    controller: 'CitationModalCtrl',
-                    resolve: {
-                        citations: function () {
-                            return citations;
-                        }
-                    }
-                });
-            };
-
-            $scope.showEdgeCitations = function(edgeKey)
-            {
-                var edgeCitationIds = getEdgeCitationIds(edgeKey);
-                var edgeCitations = getCitations( edgeCitationIds );
-                showCitations(edgeCitations);
-            };
-
-            $scope.showNodeCitations = function(edgeKey)
-            {
-                var nodeCitationIds = getNodeCitationIds(edgeKey);
-                var nodeCitations = getCitations( nodeCitationIds );
-                showCitations(nodeCitations);
-            };
-
-            networkController.hasCitation = function(citationId)
-            {
-                if( !networkController.currentSubnetwork.citations[citationId].identifier )
-                    return false;
-                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
-                if( identifier.startsWith('http') )
-                    return true;
-                if( identifier.toLowerCase().startsWith('pubmed') )
-                    return identifier.toLowerCase().split(':')[0] == 'pubmed';
-                return identifier.toLowerCase().split(':')[0] == 'pmid';
-            };
-
-
-            networkController.getCitation = function (citationId) {
-                if( !networkController.hasCitation(citationId) )
-                    return "javaScript:void(0)";
-                var identifier = networkController.currentSubnetwork.citations[citationId].identifier;
-                if( identifier.startsWith('http') )
-                    return identifier;
-                return 'http://www.ncbi.nlm.nih.gov/pubmed/' + identifier.split(':')[1];
-            };
-
-            var populateEdgeTable = function(enableFiltering)
-            {
-                var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
-                var edges = networkController.currentSubnetwork.edges;
-                var terms = networkController.currentSubnetwork.terms;
-                var edgeKeys = $scope.networkController.getEdgeKeys();
-
-                var edgePropertyKeys = {};
-
-                var longestSubject = "";
-                var longestPredicate = "";
-                var longestObject = "";
-
-                var isCitationColumnVisible = false;
-
-                //The primary task performed by this loop is to determine all properties.
-                for( var i = 0; i < edgeKeys.length; i++ )
-                {
-                    //Primary task determine keys in this row.
-                    var edgeKey = edgeKeys[i];
-                    var properties = edges[edgeKey].properties;
-                    for( var j = 0; j < properties.length; j++ )
-                    {
-                        var key = properties[j].predicateString;
-                        edgePropertyKeys[key] = true;
-                    }
-
-                    //Determine the length of
-                    var subject = nodeLabelMap[edges[edgeKey].subjectId];
-
-                    //var predicate = terms[edges[edgeKey].predicateId].name;
-                    var predicate = "";
-
-                    if ((typeof(edges[edgeKey]) !== 'undefined') &&
-                        (typeof(edges[edgeKey].predicateId) !== 'undefined') &&
-                        (typeof(terms[edges[edgeKey].predicateId]) !== 'undefined') &&
-                        (typeof(terms[edges[edgeKey].predicateId].name) !== 'undefined') ) {
-
-                        predicate = terms[edges[edgeKey].predicateId].name;
-                    }
-
-
-                    var object = nodeLabelMap[edges[edgeKey].objectId];
-
-                    longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
-                    longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
-                    longestObject = longestObject.length < object.length ? object : longestObject;
-
-                    if (edges[edgeKey].citationIds.length > 0) {
-                        isCitationColumnVisible = true;
-                    }
-                }
-
-
-                // enable filtering if number of edges in the network is no greater than 500
-                var filteringEnabled = (networkController.currentNetwork.edgeCount <= 500) ? true : false;
-
-
-                if (enableFiltering) {
-                    // enable filtering even if the number of edges in the network is greater than 500;
-                    // this is the case when we want filtering on after running simple or advance query
-                    filteringEnabled = true;
-                }
-                var columnDefs = [
-                    {
-                        field: 'Subject',
-                        displayName: 'Subject',
-                        cellTooltip: true,
-                        enableFiltering: filteringEnabled,
-                        minWidth: calcColumnWidth(longestSubject)
-                    },
-                    {
-                        field: 'Predicate',
-                        displayName: 'Predicate',
-                        cellTooltip: true,
-                        enableFiltering: filteringEnabled,
-                        minWidth: calcColumnWidth(longestPredicate)
-                    },
-                    {
-                        field: 'Object',
-                        displayName: 'Object',
-                        cellTooltip: true,
-                        enableFiltering: filteringEnabled,
-                        minWidth: calcColumnWidth(longestObject)
-                    },
-                    {
-                        field: 'Citations',
-                        displayName: 'Citations',
-                        cellToolTip: false,
-                        minWidth: calcColumnWidth('Citations'),
-                        enableFiltering: false,
-                        enableSorting: false,
-                        visible: isCitationColumnVisible,
-                        cellTemplate: "<div class='text-center'><h6><a ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0' ng-click='grid.appScope.showEdgeCitations(COL_FIELD)'>{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}</a></h6></div>"
-                    }
-                ];
-                var headers = Object.keys(edgePropertyKeys);
-
-                if (headers.length > 0) {
-                    networkController.edgePropertyNamesForAdvancedQuery = [];
-
-                    var field = "";
-                    for (i = 0; i < headers.length - 1; i++)
-                    {
-                        field = headers[i];
-                        field = field.replace("(", "*");
-                        field = field.replace(")", "*");
-                        var columnDef = {
-                            field: field,
-                            displayName: headers[i],
-                            cellTooltip: true,
-                            minWidth: calcColumnWidth(headers[i]),
-                            enableFiltering: filteringEnabled,
-                            cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
-                        };
-                        columnDefs.push(columnDef);
-                        networkController.edgePropertyNamesForAdvancedQuery.push(field);
-                    }
-                    //Special width for the last column
-                    field = headers[i];
-                    field = field.replace("(", "*");
-                    field = field.replace(")", "*");
-                    var columnDef = {
-                        field: field,
-                        displayName: headers[i],
-                        cellTooltip: true,
-                        minWidth: calcColumnWidth(headers[i], true),
-                        enableFiltering: filteringEnabled,
-                        cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
-                    };
-                    columnDefs.push(columnDef);
-                    networkController.edgePropertyNamesForAdvancedQuery.push(field);
-
-                }
-
-                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
-                $scope.edgeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
-
-                refreshEdgeTable(headers);
-            };
-
-            var refreshEdgeTable = function (headers) {
-                var nodeLabelMap = $scope.networkController.currentSubnetwork.nodeLabelMap;
-                var edges = networkController.currentSubnetwork.edges;
-                var terms = networkController.currentSubnetwork.terms;
-                var edgeKeys = $scope.networkController.getEdgeKeys();
-
-                $scope.edgeGridOptions.data = [];
-                for( i = 0; i < edgeKeys.length; i++ )
-                {
-                    var edgeKey = edgeKeys[i];
-                    var subject = nodeLabelMap[edges[edgeKey].subjectId];
-
-                    //var predicate = terms[edges[edgeKey].predicateId].name;
-                    var predicate = "";
-
-                    if ((typeof(edges[edgeKey]) !== 'undefined') &&
-                        (typeof(edges[edgeKey].predicateId) !== 'undefined') &&
-                        (typeof(terms[edges[edgeKey].predicateId]) !== 'undefined') &&
-                        (typeof(terms[edges[edgeKey].predicateId].name) !== 'undefined') ) {
-
-                        predicate = terms[edges[edgeKey].predicateId].name;
-                    }
-
-                    var object = nodeLabelMap[edges[edgeKey].objectId];
-
-                    var row = {"Subject": subject, "Predicate": predicate, "Object": object, "Citations": edgeKey};
-
-                    var properties = edges[edgeKey].properties;
-
-                    // create row of properties for the table
-                    for( j = 0; j < properties.length; j++ )
-                    {
-                        var key = properties[j].predicateString;
-                        key = key.replace("(", "*");
-                        key = key.replace(")", "*");
-                        row[key] = properties[j].value;
-                    }
-
-                    // The Edges table defines properties header columns, but
-                    // not all properties declared in the table header can be present for every row.
-                    // For cases where some property is missing from the table row, we need to implicitly assign it an
-                    // empty value to provide correct scrolling behavior of the table (defect NDEX-656).
-                    for( k = 0; k < headers.length; k++ )
-                    {
-                        var key = headers[k];
-                        key = key.replace("(", "*");
-                        key = key.replace(")", "*");
-                        if (!row.hasOwnProperty(key)) {
-                            row[key] = "";
-                        }
-                    }
-
-                    $scope.edgeGridOptions.data.push( row );
-                }
-                /*
-                if (changeEnableFiltering) {
-                    for (j = 0; j < $scope.edgeGridApi.grid.options.columnDefs.length; j++) {
-                        if ($scope.edgeGridApi.grid.options.columnDefs[j].displayName.toLowerCase() !== 'citations') {
-                            $scope.edgeGridApi.grid.options.columnDefs[j].enableFiltering = true;
-                            $scope.edgeGridOptions.columnDefs[j].enableFiltering = true;
-                        }
-                    }
-                    $scope.edgeGridApi.core.refresh();
-                }
-                */
-            };
-
-            var populateNodeTable = function(enableFiltering)
-            {
-                var nodes = networkController.currentSubnetwork.nodes;
-                var nodeKeys = $scope.networkController.getNodeKeys();
-
-                var nodePropertyKeys = {};
-
-                var longestName = "Label";
-
-                var isCitationColumnVisible = false;
-
-                //The primary task performed by this loop is to determine all properties.
-                for( var i = 0; i < nodeKeys.length; i++ )
-                {
-                    //Primary task determine keys in this row.
-                    var nodeKey = nodeKeys[i];
-                    var properties = nodes[nodeKey].properties;
-                    for( var j = 0; j < properties.length; j++ )
-                    {
-                        var key = properties[j].predicateString;
-                        nodePropertyKeys[key] = true;
-                    }
-
-                    //Determine the length of
-                    var name = networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id];
-
-                    longestName = name.length > longestName.length ? name : longestName;
-
-                    if (nodes[nodeKey].citationIds.length > 0) {
-                        isCitationColumnVisible = true;
-                    }
-                }
-
-                // enable filtering if number of edges in the network is no greater than 500;
-                // we still check number of edges even though we populate node headers in this routine
-                var filteringEnabled = (networkController.currentNetwork.edgeCount <= 500) ? true : false;
-
-                if (enableFiltering) {
-                    // enable filtering even if the number of edges in the network is greater than 500;
-                    // this is the case when we want filtering on after running simple or advance query.
-                    // we still check number of edges even though we populate node header in this routine
-                    filteringEnabled = true;
-                }
-                var columnDefs = [
-                    {
-                        field: 'Label',
-                        displayName: 'Label',
-                        cellTooltip: true,
-                        enableFiltering: filteringEnabled,
-                        minWidth: calcColumnWidth(longestName)
-                    },
-                    {
-                        field: 'Citations',
-                        displayName: 'Citations',
-                        cellToolTip: false,
-                        minWidth: calcColumnWidth('Citations'),
-                        enableFiltering: false,
-                        visible: isCitationColumnVisible,
-                        cellTemplate: "<div class='text-center'><h6><a ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0' ng-click='grid.appScope.showNodeCitations(COL_FIELD)'>{{grid.appScope.getNumNodeCitations(COL_FIELD)}}</a></h6></div>"
-                    }
-                ];
-                var headers = Object.keys(nodePropertyKeys);
-                if (headers.length > 0) {
-                    networkController.nodePropertyNamesForAdvancedQuery = [];
-                    var field = "";
-                    for (i = 0; i < headers.length - 1; i++)
-                    {
-                        field = headers[i];
-                        field = field.replace("(", "*");
-                        field = field.replace(")", "*");
-                        var columnDef = {
-                            field: field,
-                            displayName: headers[i],
-                            cellTooltip: true,
-                            minWidth: calcColumnWidth(headers[i]),
-                            enableFiltering: filteringEnabled,
-                            cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
-                        };
-                        columnDefs.push(columnDef);
-                        networkController.nodePropertyNamesForAdvancedQuery.push(field);
-                    }
-                    //Special width for the last column
-                    field = headers[i];
-                    field = field.replace("(", "*");
-                    field = field.replace(")", "*");
-                    var columnDef = {
-                        field: headers[i],
-                        displayName: headers[i],
-                        cellTooltip: true,
-                        minWidth: calcColumnWidth(headers[i], true),
-                        enableFiltering: filteringEnabled,
-                        cellTemplate: "<div class='ui-grid-cell-contents  hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
-                    };
-                    columnDefs.push(columnDef);
-                    networkController.nodePropertyNamesForAdvancedQuery.push(field);
-                }
-
-                $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
-                $scope.nodeGridApi.grid.gridWidth = $('#divNetworkTabs').width();
-
-                refreshNodeTable(headers);
-            };
-
-            var refreshNodeTable = function(headers)
-            {
-                var nodes = networkController.currentSubnetwork.nodes;
-                var nodeKeys = $scope.networkController.getNodeKeys();
-
-                $scope.nodeGridOptions.data = [];
-
-                for( i = 0; i < nodeKeys.length; i++ )
-                {
-                    var nodeKey = nodeKeys[i];
-                    var label = networkController.currentSubnetwork.nodeLabelMap[networkController.currentSubnetwork.nodes[nodeKey].id];
-
-                    var row = {"Label": label, "Citations": nodeKey};
-
-                    var properties = nodes[nodeKey].properties;
-
-                    // create row of properties for the table
-                    for( j = 0; j < properties.length; j++ )
-                    {
-                        var key = properties[j].predicateString;
-                        key = key.replace("(", "*");
-                        key = key.replace(")", "*");
-                        row[key] = properties[j].value;
-                    }
-
-                    // The Nodes table defines properties header columns, but
-                    // not all properties declared in the table header can be present for every row.
-                    // For cases where some property is missing from the table row, we need to implicitly assign it an
-                    // empty value to provide correct scrolling behavior of the table (defect NDEX-656).
-                    for( k = 0; k < headers.length; k++ )
-                    {
-                        var key = headers[k];
-                        key = key.replace("(", "*");
-                        key = key.replace(")", "*");
-                        if (!row.hasOwnProperty(key)) {
-                            row[key] = "";
-                        }
-                    }
-
-                    $scope.nodeGridOptions.data.push( row );
-                }
-            };
-
-            $scope.readOnlyChanged = function(readOnlyChecked)
-            {
-                ndexService.setReadOnly(networkController.currentNetworkId, readOnlyChecked);
-            };
-
-
-
-
-            //                  PAGE INITIALIZATIONS/INITIAL API CALLS
-            //----------------------------------------------------------------------------
-
-            // prepare the cytoscape viewer
-            cytoscapeService.initCyGraph();
-            provenanceVisualizerService.initCyGraph();
-
-            // set the initial depth for queries
-            networkController.searchDepth = {
-                "name": "1-step",
-                "description": "1-step",
-                "value": 1,
-                "id": "1"
-            };
-
-
-            networkController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
-            // Initialize the current network and current subnetwork
-
-            //$("#divNetworkTabs").height(500);
-
-            initialize();
-
-            //Advanced Query
-            networkController.advancedQueryNodeCriteria = 'source';
-            networkController.advancedQueryEdgeProperties = [{}];
-            networkController.advancedQueryNodeProperties = [{}];
-            networkController.queryMode = 'simple';
-            networkController.advancedQueryIsValid = false;
-
+            
             networkController.addQueryEdgeProperty = function () {
                 networkController.advancedQueryEdgeProperties.push({});
                 networkController.validateAdvancedQuery();
@@ -1352,128 +2163,6 @@ ndexApp.controller('networkController',
                 networkController.validateAdvancedQuery();
             };
 
-            networkController.runAdvancedQuery = function(networkQueryLimit)
-            {
-                var url = "/network/"+networkController.currentNetworkId+"/asNetwork/prototypeNetworkQuery";
-                var mode = 'Source';
-                if( networkController.advancedQueryNodeCriteria == 'target' )
-                {
-                    mode = 'Target'
-                }
-                else if( networkController.advancedQueryNodeCriteria.indexOf('both') != -1 )
-                {
-                    mode = 'Both'
-                }
-                else if( networkController.advancedQueryNodeCriteria.indexOf('either') != -1 )
-                {
-                    mode = 'Either'
-                }
-
-                var validEdgeProperties = null;
-                var i;
-                for( i = 0; i < networkController.advancedQueryEdgeProperties.length; i++ )
-                {
-                    var edgeProperty = networkController.advancedQueryEdgeProperties[i];
-                    if( edgeProperty.name && edgeProperty.value )
-                    {
-                        if( !validEdgeProperties )
-                            validEdgeProperties = [];
-                        validEdgeProperties.push( {name: edgeProperty.name, value: edgeProperty.value} );
-                    }
-                }
-
-                var validNodeProperties = null;
-                for( i = 0; i < networkController.advancedQueryNodeProperties.length; i++ )
-                {
-                    var nodeProperty = networkController.advancedQueryNodeProperties[i];
-                    if( nodeProperty.name && nodeProperty.value )
-                    {
-                        if( !validNodeProperties )
-                            validNodeProperties = [];
-                        validNodeProperties.push( {name: nodeProperty.name, value: nodeProperty.value} );
-                    }
-                }
-
-                var postData =
-                {
-                    nodePropertyFilter:
-                    {
-                        propertySpecifications: validNodeProperties,
-                        mode: mode
-                    },
-                    edgeLimit: networkQueryLimit,
-                    queryName: "Not used yet."
-                };
-
-                if( validEdgeProperties )
-                {
-                    postData.edgeFilter =
-                    {
-                        propertySpecifications: validEdgeProperties
-                    };
-                }
-
-                if( validNodeProperties )
-                {
-                    postData.nodeFilter =
-                    {
-                        propertySpecifications: validNodeProperties,
-                        mode: mode
-                    };
-                }
-
-                var config = ndexConfigs.getPostConfigV2(url, postData);
-                var canceler = $q.defer();
-                config.timeout = canceler.promise;
-
-                var modalInstance = $modal.open({
-                    templateUrl: 'queryContent.html',
-                    scope: $scope,
-                    backdrop: 'static'
-                });
-
-                // cancel
-                // Close the modal and abort the AJAX request.
-                networkController.cancel = function () {
-                    modalInstance.close();
-                    canceler.resolve();
-                };
-
-                $http(config).
-                    success(function(network, status, headers, config)
-                    {
-                        //var json = angular.toJson(network);
-                        ndexUtility.setNetwork(network);
-                        ndexHelper.updateNodeLabels(network);
-                        //ndexHelper.updateTermLabels(network);
-                        //csn = network;
-                        //csn.json = json;
-                        networkController.queryErrors = [];
-                        networkController.currentSubnetwork = network;
-
-                        /*
-                        if ($scope.networkToBeDisplayedInCanvas()) {
-                            cytoscapeService.setNetwork(network);
-                        }
-                        */
-
-                        // enableFiltering set to true means that filtering will be on regardless of the size
-                        // of the network
-                        var enableFiltering = true;
-                        populateEdgeTable(enableFiltering);
-                        populateNodeTable(enableFiltering);
-
-                        // close the modal
-                        networkController.successfullyQueried = true;
-                        modalInstance.close();
-                    }).
-                    error(function(error, status, headers, config)
-                    {
-                        networkController.queryErrors.push(error.message);
-                        modalInstance.close();
-                    });
-            };
-
             /*
              * var INCOMPLETE_QUERY_CODE = -1;
              * var EMPTY_QUERY_CODE = 0;
@@ -1481,11 +2170,12 @@ ndexApp.controller('networkController',
              */
 
             networkController.advancedEdgeQueryIsValid = function () {
-                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery()) ? true : false;
-            }
+                return (VALID_QUERY_CODE == networkController.validateAdvancedEdgeQuery());
+            };
+
             networkController.advancedNodeQueryIsValid = function () {
-                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery()) ? true : false;
-            }
+                return (VALID_QUERY_CODE == networkController.validateAdvancedNodeQuery());
+            };
 
             networkController.isStringEmpty = function(s) {
                 if (typeof(s) === 'undefined' || s == null) {
@@ -1510,11 +2200,11 @@ ndexApp.controller('networkController',
                 }
 
                 if (((VALID_QUERY_CODE == advancedEdgeQueryState) &&
-                     (EMPTY_QUERY_CODE == advancedNodeQueryState) &&
-                     (networkController.advancedQueryNodeProperties.length == 1)) ||
+                    (EMPTY_QUERY_CODE == advancedNodeQueryState) &&
+                    (networkController.advancedQueryNodeProperties.length == 1)) ||
                     ((EMPTY_QUERY_CODE == advancedEdgeQueryState) &&
-                     (VALID_QUERY_CODE == advancedNodeQueryState) &&
-                     (networkController.advancedQueryEdgeProperties.length == 1))) {
+                    (VALID_QUERY_CODE == advancedNodeQueryState) &&
+                    (networkController.advancedQueryEdgeProperties.length == 1))) {
                     networkController.advancedQueryIsValid = true;
                     return;
                 }
@@ -1541,9 +2231,9 @@ ndexApp.controller('networkController',
                     }
 
                     if ( (networkController.isStringEmpty(edgeProperty.name) &&
-                         !networkController.isStringEmpty(edgeProperty.value) ) ||
+                        !networkController.isStringEmpty(edgeProperty.value) ) ||
                         (!networkController.isStringEmpty(edgeProperty.name) &&
-                          networkController.isStringEmpty(edgeProperty.value)) ) {
+                        networkController.isStringEmpty(edgeProperty.value)) ) {
                         return INCOMPLETE_QUERY_CODE;
                     }
                 }
@@ -1563,9 +2253,9 @@ ndexApp.controller('networkController',
                     }
 
                     if ( (networkController.isStringEmpty(nodeProperty.name) &&
-                         !networkController.isStringEmpty(nodeProperty.value) ) ||
+                        !networkController.isStringEmpty(nodeProperty.value) ) ||
                         (!networkController.isStringEmpty(nodeProperty.name) &&
-                          networkController.isStringEmpty(nodeProperty.value)) ) {
+                        networkController.isStringEmpty(nodeProperty.value)) ) {
                         return INCOMPLETE_QUERY_CODE;
                     }
                 }
@@ -1576,10 +2266,74 @@ ndexApp.controller('networkController',
             networkController.resetForm = function () {
                 networkController.advancedQueryEdgeProperties = [{}];
                 networkController.advancedQueryNodeProperties = [{}];
+
+                networkController.queryWarnings = [];
+                networkController.queryErrors = [];
+
                 networkController.validateAdvancedQuery();
+                networkController.advancedQueryNodeCriteria = 'Source';
             };
 
-        }]);
+
+            var startSpinner = function () {
+
+                var spinnerId = ($scope.currentView == "Graphic") ? "spinnerGraphId" : "spinnerTableId";
+
+                // please see more info about this spinner at http://spin.js.org/
+                if (!spinner) {
+                    var opts = {
+                        lines: 11 // The number of lines to draw
+                        , length: 19 // The length of each line
+                        , width: 13 // The line thickness
+                        , radius: 26 // The radius of the inner circle
+                        , scale: 0.5 // Scales overall size of the spinner
+                        , corners: 1 // Corner roundness (0..1)
+                        , color: '#ff0000' // #rgb or #rrggbb or array of colors
+                        , opacity: 0.25 // Opacity of the lines
+                        , rotate: 11 // The rotation offset
+                        , direction: 1 // 1: clockwise, -1: counterclockwise
+                        , speed: 0.6 // Rounds per second
+                        , trail: 100 // Afterglow percentage
+                        , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+                        , zIndex: 2e9 // The z-index (defaults to 2000000000)
+                        , className: 'spinner' // The CSS class to assign to the spinner
+                        , top: '50%' // Top position relative to parent
+                        , left: '51%' // Left position relative to parent
+                        , shadow: true // Whether to render a shadow
+                        , hwaccel: false // Whether to use hardware acceleration
+                        , position: 'absolute' // Element positioning
+                    }
+
+                    var target = document.getElementById(spinnerId)
+                    spinner = new Spinner(opts).spin(target);
+
+                } else {
+                    var target = document.getElementById(spinnerId)
+                    spinner.spin(target);
+                }
+            }
+
+            var stopSpinner = function() {
+                spinner.stop();
+            }
+
+
+
+            //                  PAGE INITIALIZATIONS/INITIAL API CALLS
+            //----------------------------------------------------------------------------
+            
+            $("#cytoscape-canvas").height($(window).height() - 200);
+            $("#divNetworkTabs").height($(window).height() - 200);
+            
+            startSpinner();
+
+            hideSearchMenuItem();
+
+            initialize();
+        }
+        
+     ]
+);
 
 
 ndexApp.controller('CitationModalCtrl', function ($scope, $modalInstance, citations)

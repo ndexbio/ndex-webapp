@@ -113,16 +113,10 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'groupController'
         })
 
-        // route for the network page
+        // route for the network view page
         .when('/network/:identifier', {
             templateUrl: 'pages/network.html',
             controller: 'networkController'
-        })
-
-        // route for the new network view page
-        .when('/newNetwork/:identifier', {
-            templateUrl: 'pages/network-view.html',
-            controller: 'networkViewController'
         })
             
         // route for the upload page

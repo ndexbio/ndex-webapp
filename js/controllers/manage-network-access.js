@@ -115,7 +115,7 @@ ndexApp.controller('manageNetworkAccessController',
 		//console.log('DONE changing admin, go back to Network View page.');
 		$scope.progressMessage = null;
 		$scope.isProcessing = false;
-		$location.path("newNetwork/"+ $scope.networkManager.externalId);
+		$location.path("network/"+ $scope.networkManager.externalId);
 	});
 
 
@@ -417,7 +417,7 @@ ndexApp.controller('manageNetworkAccessController',
 			// the "Save Changes" button is unavailable on the Manage Access page and
 			// this function cannot be called since it is invoked by clicking the "Save Changes" button
 			$scope.isProcessing = false;
-			$location.path("newNetwork/"+ $scope.networkManager.externalId);
+			$location.path("network/"+ $scope.networkManager.externalId);
 			return;
 		}
 
