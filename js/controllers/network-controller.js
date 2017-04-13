@@ -790,7 +790,6 @@ ndexApp.controller('networkController',
 
             $scope.getNodeName = function(node)
             {
-            
                 return node['_cydefaultLabel'];
             };
 
@@ -807,7 +806,7 @@ ndexApp.controller('networkController',
                     }
                 });
 
-                var elementsToRemove = topList.concat([ '_cydefaultLabel','id', '$$hashKey', '$$expanded']);
+                var elementsToRemove = topList.concat([ '_cydefaultLabel', 'id', '$$hashKey', '$$expanded']);
 
                 for (i = 0; i < elementsToRemove.length; i++) {
 
@@ -838,7 +837,7 @@ ndexApp.controller('networkController',
 
             $scope.getAttributeValue = function(attributeName, attribute) {
 
-                if (!attribute) {
+                if (!attribute && (attribute != 0)) {
                     return null;
                 }
                 if (!attributeName) {
@@ -896,7 +895,7 @@ ndexApp.controller('networkController',
 
                     } else {
 
-                        attributeValue = attribute;
+                        attributeValue = (attribute == 0) ? "0" : attribute;
                     }
                 }
 
@@ -968,11 +967,11 @@ ndexApp.controller('networkController',
 
                 var source="source unknown", target="target unknown", predicate="->";
 
-                if (edge['s']) {
+                if (edge['s'] || edge['s'] == 0) {
                     var nodeObj = networkService.getNodeInfo(edge['s']);
                     source = $scope.getNodeName(nodeObj);
                 }
-                if (edge['t']) {
+                if (edge['t'] || edge['t'] == 0) {
                     var nodeObj = networkService.getNodeInfo(edge['t']);
                     target = $scope.getNodeName(nodeObj);
                 }
