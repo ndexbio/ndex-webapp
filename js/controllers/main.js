@@ -2,7 +2,7 @@
 ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc',
     function (config, ndexService, ndexUtility, sharedProperties,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, Idle) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc) {
 
         $scope.$on('IdleStart', function() {
             $scope.main.signout();

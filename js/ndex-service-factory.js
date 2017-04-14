@@ -1022,7 +1022,8 @@ ndexServiceApp.factory('ndexUtility', function () {
      * user credentials and ID
      *-----------------------------------------------------------------------*/
     factory.clearUserCredentials = function () {
-        localStorage.setItem('loggedInUser', null);
+        localStorage.removeItem('loggedInUser');
+        localStorage.clear();
     };
 
     factory.checkLocalStorage = function () {
@@ -1096,12 +1097,17 @@ ndexServiceApp.factory('ndexUtility', function () {
         return loggedInUser.token;
     };
 
+
     factory.getEncodedUser = function () {
-        if (ndexUtility.getLoggedInUserAccountName)
-            return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
-        else
+        var userCredentials = ndexUtility.getUserCredentials();
+
+        if (!userCredentials || !userCredentials['userName'] || !userCredentials['token']) {
             return null;
+        };
+
+        return btoa(userCredentials['userName'] + ":" + userCredentials['token']);
     };
+    
 
     /*-----------------------------------------------------------------------*
      * networks
@@ -1281,14 +1287,16 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
      * encoded.
      *---------------------------------------------------------------------*/
     factory.getEncodedUser = function () {
-        if (ndexUtility.getLoggedInUserAccountName() != undefined && ndexUtility.getLoggedInUserAccountName() != null)
-            return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
-        else
+        var userCredentials = ndexUtility.getUserCredentials();
+
+        if (!userCredentials || !userCredentials['userName'] || !userCredentials['token']) {
             return null;
+        };
+
+        return btoa(userCredentials['userName'] + ":" + userCredentials['token']);
     };
 
     return factory;
-
 });
 
 /****************************************************************************
