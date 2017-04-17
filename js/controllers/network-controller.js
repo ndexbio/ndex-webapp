@@ -2017,15 +2017,12 @@ ndexApp.controller('networkController',
 
                             getMembership(function ()
                             {
-                                networkController.readyToRenderNetworkInUI = true;
-
                                 if (network.visibility == 'PUBLIC'
                                     || networkController.isAdmin
                                     || networkController.canEdit
                                     || networkController.canRead) {
                                             resetBackgroudColor();
                                             getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
-
                                 }
                             });
 
@@ -2267,6 +2264,8 @@ ndexApp.controller('networkController',
             networkController.resetAdvancedQuery = function () {
                 provenanceService.resetProvenance();
                 networkController.successfullyQueried = false;
+                $scope.currentView = "Graphic";
+                $scope.buttonLabel = "Table View";
 
                 // get network summary
                 // keep a reference to the promise
@@ -2292,14 +2291,11 @@ ndexApp.controller('networkController',
 
                             getMembership(function ()
                             {
-                                networkController.readyToRenderNetworkInUI = true;
-
                                 if (network.visibility == 'PUBLIC'
                                     || networkController.isAdmin
                                     || networkController.canEdit
                                     || networkController.canRead) {
                                     getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
-
                                 }
                             });
 
