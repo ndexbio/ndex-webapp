@@ -54,7 +54,7 @@
 
             <button type="button"
                     class="btn btn-primary"
-                    ng-click="networkController.backToOriginalNetwork()"
+                    ng-click="networkController.reloadOriginalNetwork()"
                     ng-show="networkController.successfullyQueried">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
                 Back To Original Network
@@ -546,11 +546,30 @@
                         </a>
                     </tab-heading>
 
+                    <div class="rowWithOneLineTopPad"></div>
+                    <div class="rowWithOneLineTopPad"></div>
+
+                    <div class="networkPropertyValueInTabsetMargins">
+
+                        <div class="networkViewHeader rowWithOneLineBottomPad">
+                            {{networkController.currentNetwork.name}}  <br/>
+                        </div>
+
+                        <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
+                        &nbsp;&nbsp;
+                        <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
+                        &nbsp;&nbsp;
+                    </div>
+
+                    <div class="rowWithOneLineTopPad"></div>
+                    <div class="rowWithOneLineTopPad"></div>
+
                     <div>
 
                         <form novalidate ng-submit="networkController.runAdvancedQuery()"
                           style="padding-left:15px">
 
+                            <!--
                             <div class="row">
                                 <div class="col-sm-8">
                                     <span class="row"><a ng-click="backToSimpleQuery($event); networkController.resetForm();">
@@ -558,6 +577,7 @@
                                     </span>
                                 </div>
                             </div>
+                            -->
 
                             Find a subnetwork with edges that,<br>
                             (1) have one or more of these properties:<br>
@@ -671,8 +691,9 @@
 
                                 <button type="button"
                                         class="actionsLabel btn btn-primary btn-default"
-                                        ng-click="networkController.resetForm()">Reset Query
+                                        ng-click="networkController.resetForm(); networkController.resetAdvancedQuery()">Reset Query
                                 </button>
+
                             </div>
 
                         </form>

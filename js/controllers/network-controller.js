@@ -264,7 +264,7 @@ ndexApp.controller('networkController',
                 networkController.tabs[3].active = false;
                 networkController.tabs[3].hidden = true;
 
-                networkController.backToOriginalNetwork();
+                networkController.reloadOriginalNetwork();
             };
 
             var enableSimpleQueryElements = function () {
@@ -1776,12 +1776,6 @@ ndexApp.controller('networkController',
                               };
 
                             cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
-                       //     var networkAttrList = [];
-                        //    networkAttrList.push({'n': 'name', 'v': resultName });
-                    //        networkAttrList.push ( {'n': 'queryString' , 'v': networkController.searchString });
-                    //        networkAttrList.push ( {'n': 'queryDepth' , 'v': networkController.searchDepth.value });
-
-                         //   network["networkAttributes"] = networkAttrList;
 
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;
@@ -1840,7 +1834,7 @@ ndexApp.controller('networkController',
             };
             */
 
-            networkController.backToOriginalNetwork = function () {
+            networkController.reloadOriginalNetwork = function () {
                 $route.reload();
             };
             
@@ -1961,9 +1955,6 @@ ndexApp.controller('networkController',
 
                             drawCXNetworkOnCanvas(localNiceCX,false);
 
-                            if (!networkController.tabs[0].active) {
-                                networkController.tabs[0].active = true;
-                            }
                             networkController.selectionContainer = {};
 
                             if ($scope.currentView == "Table") {
@@ -2004,7 +1995,7 @@ ndexApp.controller('networkController',
 
                 // get network summary
                 // keep a reference to the promise
-                networkService.getNetworkSummaryFromNdexV2(networkExternalId) 
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId)
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
@@ -2037,7 +2028,7 @@ ndexApp.controller('networkController',
 
                                 }
                             });
-                            
+
                             networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
                             //getNetworkAdmins();
 
@@ -2273,6 +2264,73 @@ ndexApp.controller('networkController',
                 networkController.advancedQueryNodeCriteria = 'Source';
             };
 
+            networkController.resetAdvancedQuery = function () {
+                provenanceService.resetProvenance();
+                networkController.successfullyQueried = false;
+
+                // get network summary
+                // keep a reference to the promise
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId)
+                    .success(
+                        function (network) {
+                            networkController.currentNetwork = network;
+                            currentNetworkSummary = network;
+
+                            if (!network.name) {
+                                networkController.currentNetwork.name = "Untitled";
+                            }
+
+                            // subNetworkId is the current subNetwork we are displaying
+                            networkController.subNetworkId = uiMisc.getSubNetworkId(network);
+
+                            networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
+
+                            if (networkController.subNetworkId != null) {
+                                networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
+                                networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId,"version");
+                            };
+
+                            getMembership(function ()
+                            {
+                                networkController.readyToRenderNetworkInUI = true;
+
+                                if (network.visibility == 'PUBLIC'
+                                    || networkController.isAdmin
+                                    || networkController.canEdit
+                                    || networkController.canRead) {
+                                    getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+
+                                }
+                            });
+
+                            networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
+                            //getNetworkAdmins();
+
+                            var sourceFormat =
+                                networkService.getNetworkProperty(networkController.subNetworkId,'ndex:sourceFormat');
+                            networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
+                                'Unknown' : sourceFormat;
+
+                            if ("BEL" === networkController.currentNetwork.sourceFormat) {
+                                // for BEL networks, check if Namespaces have been archived
+                                getNumberOfBelNetworkNamespaces();
+                            }
+
+                            networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId,'Reference');
+                            networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId,'rightsHolder');
+                            networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
+                            networkController.otherProperties =
+                                _.sortBy(
+                                    networkService.getPropertiesExcluding(networkController.subNetworkId,[
+                                        'rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
+                        }
+                    )
+                    .error(
+                        function (error) {
+                            displayErrorMessage(error);
+                        }
+                    );
+            };
 
             var startSpinner = function () {
 
