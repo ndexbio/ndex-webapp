@@ -1063,21 +1063,44 @@ ndexApp.controller('networkController',
                 $(function () { // on dom ready
 
                     var cv = document.getElementById(canvasName);
+                    
+                    try{
+                        cy = cytoscape({
+                            container: cv,
 
-                    cy = cytoscape({
-                        container: cv,
+                            style: cyStyle,
 
-                        style: cyStyle,
+                            layout: cyLayout,
 
-                        layout: cyLayout,
+                            elements: cyElements,
 
-                        elements: cyElements,
+                            ready: function () {
+                                window.cy = this;
+                                stopSpinner();
+                            }
+                        });
+                    }
+                    catch(e){
+                        var defaultStyle = [{"selector":"node","style":{"background-color":"#f6eecb","background-opacity":0.8,"width":"40px","height":"40px","label":"data(name)","font-family":"Roboto, sans-serif"}},{"selector":"edge","style":{"line-color":"#75736c","width":"2px","font-family":"Roboto, sans-serif","text-opacity":0.8}},{"selector":"node:selected","style":{"color":"#fb1605","background-color":"yellow"}},{"selector":"edge:selected","style":{"label":"data(interaction)","color":"#fb1605","line-color":"yellow","width":6}}];
+                        cy = cytoscape({
+                            container: cv,
 
-                        ready: function () {
-                            window.cy = this;
-                            stopSpinner();
-                        }
-                    });
+                            style: defaultStyle,
+
+                            layout: cyLayout,
+
+                            elements: cyElements,
+
+                            ready: function () {
+                                window.cy = this;
+                                stopSpinner();
+                            }
+                        });
+                        console.log(e);
+                    }
+
+
+
 
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
                     // edges, the event is triggered for each node/edge.
