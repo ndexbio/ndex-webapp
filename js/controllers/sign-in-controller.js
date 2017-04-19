@@ -1,5 +1,5 @@
 ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$modal', '$route', '$http', '$interval',
-    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, $interval, Idle) {
+    function (config, ndexService, ndexUtility, sharedProperties, $scope, $location, $modal, $route, $http, $interval) {
 
 
         $scope.config = config;

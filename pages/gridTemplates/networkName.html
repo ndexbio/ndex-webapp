@@ -1,11 +1,11 @@
 <div ng-if="row.entity.Status == 'success'"
      class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
-    <a href="#/newNetwork/{{row.entity.externalId}}">{{COL_FIELD}} </a>
+    <a href="#/network/{{row.entity.externalId}}">{{COL_FIELD}} </a>
 </div>
 
 <div ng-if="row.entity.Status == 'warning'"
      class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
-    <a href="#/newNetwork/{{row.entity.externalId}}">{{COL_FIELD}} </a>
+    <a href="#/network/{{row.entity.externalId}}">{{COL_FIELD}} </a>
 </div>
 
 <div ng-if="row.entity.Status == 'failed'"
@@ -25,5 +25,5 @@
 
 <div ng-if="row.entity.Status == 'collection'"
      class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
-    <a href="#/newNetwork/{{row.entity.externalId}}">{{COL_FIELD}} </a>
+    <a href="#/network/{{row.entity.externalId}}">{{COL_FIELD}} </a>
 </div>

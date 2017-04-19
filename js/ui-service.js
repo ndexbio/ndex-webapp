@@ -1270,7 +1270,7 @@
             restrict: 'E',
             templateUrl: 'pages/directives/editNetworkSummaryModal.html',
             transclude: true,
-            controller: function($scope, $modal, ndexService, $route, ndexNavigation) {
+            controller: function($scope, $modal, ndexService, $route, ndexNavigation, sharedProperties) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.network = {};
@@ -1282,6 +1282,10 @@
                     $scope.network.reference = $scope.ndexData.reference;
                     $scope.network.version = $scope.ndexData.version;
                     $scope.network.visibility = $scope.ndexData.visibility;
+
+                    var networkOwnerUUID = $scope.ndexData.ownerUUID;
+                    var loggedInUserUUID = sharedProperties.getCurrentUserId();
+                    $scope.network.isOwner = (networkOwnerUUID == loggedInUserUUID);
 
                     modalInstance = $modal.open({
                         templateUrl: 'edit-network-summary-modal.html',
@@ -1323,7 +1327,8 @@
                     var updateReference = ($scope.network.reference !== $scope.ndexData.reference);
 
                     // check if visibility was modified
-                    var updateVisibility = ($scope.network.visibility !== $scope.ndexData.visibility);
+                    var updateVisibility =
+                        $scope.network.isOwner && ($scope.network.visibility !== $scope.ndexData.visibility);
 
                     // check if any ob network summary fields was modified
                     var updateNetworkSummary =
@@ -1525,6 +1530,8 @@
                 $scope.errors = null;
                 $scope.network = {};
 
+                var updatedNetworksCounter = 0;
+
                 $scope.openMe = function() {
 
                     $scope.network = {};
@@ -1613,6 +1620,17 @@
                     return _.find($scope.ndexData.networkSearchResults, {externalId: networkUUID});
                 };
 
+                var incrementUpdatedNetworksCounter = function(IdsOfSelectedNetworks) {
+
+                    updatedNetworksCounter = updatedNetworksCounter + 1;
+
+                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
+                        $scope.isProcessing = false;
+                        modalInstance.close();
+                    };
+                };
+
+
                 $scope.submit = function() {
                     if( $scope.isProcessing )
                         return;
@@ -1634,8 +1652,6 @@
                         data = $scope.network.version;
                     };
 
-                    var updatedNetworksCounter = 0;
-
                     
                     _.forEach (IdsOfSelectedNetworks, function(networkId) {
 
@@ -1643,33 +1659,7 @@
 
                         var subNetworkId = uiMisc.getSubNetworkId(networkSummary);
 
-                        if (operation == "reference" || subNetworkId != null) {
-
-                            var properties = (networkSummary && networkSummary['properties']) ?
-                                networkSummary['properties'] : [];
-
-                            upsertProperty(operation, data, properties, subNetworkId);
-
-                            ndexService.setNetworkPropertiesV2(networkId, properties,
-                                function (data) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
-
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
-                                    };
-                                },
-                                function (error) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
-
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
-                                    };
-                                    console.log("unable to update Network properites");
-                                })
-
-                        } else {
+                        if ("description" == operation || "version" == operation) {
 
                             var summary = {};
                             summary["name"] = networkSummary["name"];
@@ -1678,21 +1668,46 @@
 
                             ndexService.updateNetworkProfileV2(networkId, summary,
                                 function (successData) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
 
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
+                                    if (subNetworkId != null) {
+
+                                        var properties = (networkSummary && networkSummary['properties']) ?
+                                            networkSummary['properties'] : [];
+
+                                        upsertProperty(operation, data, properties, subNetworkId);
+
+                                        ndexService.setNetworkPropertiesV2(networkId, properties,
+                                            function (data) {
+                                                incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                            },
+                                            function (error) {
+                                                incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                                console.log("unable to update Network properites");
+                                            });
+                                    } else {
+                                        incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
                                     };
+
                                 },
                                 function (error) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
-
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        $scope.isProcessing = false;
-                                        modalInstance.close();
-                                    };
+                                    incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
                                     console.log("unable to update Network Summary");
+                                });
+
+                        } else if ("reference" == operation) {
+
+                            var properties = (networkSummary && networkSummary['properties']) ?
+                                networkSummary['properties'] : [];
+
+                            upsertProperty(operation, data, properties, subNetworkId);
+
+                            ndexService.setNetworkPropertiesV2(networkId, properties,
+                                function (data) {
+                                    incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                },
+                                function (error) {
+                                    incrementUpdatedNetworksCounter(IdsOfSelectedNetworks);
+                                    console.log("unable to update Network properites");
                                 });
                         };
 
@@ -1724,39 +1739,47 @@
 
                 $scope.openMe = function() {
 
+                    // only Admins can modify Network System Properties; check if we have this privilege
+                    // for selected network(s)
+                    var haveAdminPrivilege = $scope.ndexData.checkAdminPrivilegeOnSelectedNetworks();
                     var action = $scope.action;
 
-                    if (action == "visibility") {
-                        var checkWritePrivilege = true;
-                        var networksUpdateable =
-                            $scope.ndexData.checkIfSelectedNetworksCanBeDeletedOrChanged(checkWritePrivilege);
+                    if (!haveAdminPrivilege) {
 
-                        if (!networksUpdateable) {
-                            var title = "Cannot Modify Selected Networks";
-                            var message =
-                                "Some selected networks could not be modified because they are either marked READ-ONLY" +
-                                " or you do not have ADMIN or WRITE privileges. Please uncheck the READ-ONLY box in each network " +
-                                " page, make sure you have either ADMIN or WRITE access to all selected networks, and try again.";
+                        var title = null;
+                        var message = null;
 
-                            $scope.ndexData.genericInfoModal(title, message);
+                        if (action == "visibility") {
+                            title = "Cannot Modify Visibility";
+                            message =
+                                "For some of the selected networks you do not have ADMIN privilege. " +
+                                "You need to have the ADMIN privilege in order to modify Visibility of networks. " +
+                                " Please make sure you have ADMIN access to all selected networks, and try again.";
 
-                            return;
-                        };
-
-                    } else if (action == "readOnly") {
-
-                        var haveAdminPrivilege = $scope.ndexData.checkAdminPrivilegeOnSelectedNetworks();
-                        
-                        $scope.submitButtonLabel = $scope.ndexData.submitButtonLabel;
-
-                        // before setting/unsetting the READ-ONLY flag, we want to make sure that user has
-                        // ADMIN access to all of them
-                        if (!haveAdminPrivilege) {
-                            var title = "Cannot Modify Read-Only Property";
-                            var message =
+                        } else if (action == "readOnly") {
+                            title = "Cannot Modify Read-Only Property";
+                            message =
                                 "For some of the selected networks you do not have ADMIN privilege. " +
                                 "You need to have the ADMIN privilege in order to set or unset the READ-ONLY flag. " +
                                 " Please make sure you have ADMIN access to all selected networks, and try again.";
+                        };
+
+                        $scope.ndexData.genericInfoModal(title, message);
+                        return;
+
+                    } else if (action == "visibility") {
+                        
+                        // changing visibility; we have ADMIN privilege for the selected network(s),
+                        // now check that the network(s) are not Read-Only
+                        var networksUpdateable =
+                            $scope.ndexData.checkIfSelectedNetworksCanBeDeletedOrChanged(false);
+
+                        if (!networksUpdateable) {
+                            title = "Cannot Modify Visibility";
+                            message =
+                                "Some of the selected networks are Read Only. " +
+                                "You cannot change Visibility of Read Only networks. " +
+                                " Please make sure that none of selected networks are Read Only, and try again.";
 
                             $scope.ndexData.genericInfoModal(title, message);
 

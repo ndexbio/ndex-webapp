@@ -63,7 +63,9 @@ ndexApp.controller('myAccountController',
             });
 
             $scope.enableEditPropertiesBulkButton = false;
-            $scope.enableManageAccessBulkButton = false;
+            $scope.enableShareBulkButton = false;
+            $scope.enableEditAndExportBulkButtons = false;
+            
 
             myAccountController.editProfilesLabel   = "Edit Profile";
             myAccountController.exportNetworksLabel = "Export Network";
@@ -115,6 +117,7 @@ ndexApp.controller('myAccountController',
 
                         changeBulkActionsButtonsLabels();
 
+                        enableOrDisableEditAndExportBulkButtons();
                         enableOrDisableEditPropertiesBulkButton();
                         enableOrDisableManageAccessBulkButton();
                     });
@@ -127,6 +130,9 @@ ndexApp.controller('myAccountController',
                         });
 
                         changeBulkActionsButtonsLabels();
+
+
+                        enableOrDisableEditAndExportBulkButtons();
                         enableOrDisableEditPropertiesBulkButton();
                         enableOrDisableManageAccessBulkButton();
                     });
@@ -214,6 +220,27 @@ ndexApp.controller('myAccountController',
 
                 return markDownFinal;
             };
+            
+            var enableOrDisableEditAndExportBulkButtons = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableEditAndExportBulkButtons = true;
+
+                var statesForWhichToDisable = ["failed", "processing", "collection"];
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    var status = row.Status;
+
+                    var disableEditAndExportBulkButtons =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
+
+                    if (disableEditAndExportBulkButtons) {
+                        $scope.enableEditAndExportBulkButtons = false;
+                        return;
+                    };
+                });
+            };
+
 
             var enableOrDisableEditPropertiesBulkButton = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
@@ -242,11 +269,12 @@ ndexApp.controller('myAccountController',
                     };
 
                     // here, ownerUUID != myAccountController.loggedInIdentifier
+                    /*
                     if ((myAccountController.networksWithAdminAccess.indexOf(networkUUUID) == -1) &&
                         (myAccountController.networksWithWriteAccess.indexOf(networkUUUID) == -1) ) {
                         return;
                     };
-
+                    */
                 };
 
                 $scope.enableEditPropertiesBulkButton = true;
@@ -254,7 +282,7 @@ ndexApp.controller('myAccountController',
 
             var enableOrDisableManageAccessBulkButton = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                $scope.enableManageAccessBulkButton = false;
+                $scope.enableShareBulkButton = false;
 
                 for (var i = 0; i < selectedNetworksRows.length; i++) {
 
@@ -269,7 +297,7 @@ ndexApp.controller('myAccountController',
                     };
                 };
 
-                $scope.enableManageAccessBulkButton = true;
+                $scope.enableShareBulkButton = true;
             };
             
             var refreshNetworkTable = function()
@@ -344,12 +372,6 @@ ndexApp.controller('myAccountController',
                     $scope.networkGridOptions.data.push(row);
                 }
             };
-
-            myAccountController.getTitle = function() {
-                return (!$scope.enableEditPropertiesBulkButton) ?
-                    "1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx." :
-                    "";
-            }
 
             myAccountController.tasksNotificationsTabDisabled = function() {
 
@@ -645,19 +667,22 @@ ndexApp.controller('myAccountController',
              * This function returns true if the current user has ADMIN access to all selected networks,
              * and false otherwise.
              */
-            myAccountController.checkAdminPrivilegeOnSelectedNetworks = function(checkWriteAccess) {
+            myAccountController.checkAdminPrivilegeOnSelectedNetworks = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                var retValue = true;
 
                 // iterate through the list of selected networks and check if user has ADMIN access to all of them
-                for (var i = 0; i < selectedNetworksRows.length; i++) {
-                    var networkUUID = selectedNetworksRows[i].externalId;
+                _.forEach(selectedNetworksRows, function(row) {
+                    var networkUUID = row.externalId;
 
                     // check if you have admin privilege for this network
                     if (myAccountController.networksWithAdminAccess.indexOf(networkUUID) == -1) {
-                        return false;
-                    }
-                }
-                return true;
+                        retValue = false;
+                        return;
+                    };
+                });
+
+                return retValue;
             };
 
             myAccountController.deleteSelectedNetworks = function ()
@@ -703,7 +728,7 @@ ndexApp.controller('myAccountController',
             // change to use directive. setting of current network should occur controller initialization
             myAccountController.setAndDisplayCurrentNetwork = function (identifier)
             {
-                $location.path("/newNetwork/" + identifier);
+                $location.path("/network/" + identifier);
             };
 
             var checkGroupSearchResultObject = function(groupObj) {

@@ -1,580 +1,875 @@
+<div class="row">
 
-<div id="divNetwork" ng-show="networkController.errors.length == 0" class='row'>
-
-    <div class='col-md-3' ng-if="networkController.readyToRenderNetworkInUI">
-
-        <div id="divNetworkHeadline" class="row">
-            <div class="wrapLongLine">
-                <h4><strong>{{networkController.currentNetwork.name}}</strong></h4>
-            </div>
-        </div>
-
-        <div class="row rowWithOneLineBottomPad">
-                 <strong>Nodes:</strong>
-                 <span>{{networkController.currentNetwork.nodeCount}}</span>
-
-                 <strong>Edges:</strong>
-                 <span>{{networkController.currentNetwork.edgeCount}}</span>
-        </div>
-
-        <div class='row wrapLongLine rowWithOneLineBottomPad'
-             ng-show="networkController.currentNetwork.rightsHolder.length > 0 ||
-                      networkController.currentNetwork.rights.length > 0" >
-
-            <div ng-repeat="rightsHolder in networkController.currentNetwork.rightsHolder"
-                 ng-show="networkController.currentNetwork.rightsHolder.length > 0" >
-                <strong>Rights Holder:</strong>
-                <span ng-bind-html="rightsHolder"></span>
-            </div>
-
-            <div ng-repeat="rights in networkController.currentNetwork.rights"
-                 ng-show="networkController.currentNetwork.rights.length > 0">
-                <strong>Rights:</strong>
-                <span ng-bind-html="rights"></span>
-            </div>
-        </div>
-
-        <div class='row wrapLongLine rowWithOneLineBottomPad'
-             ng-show="networkController.currentNetwork.description"
-             style="margin-right: 1px;">
-             <strong>Description:</strong>
-             <span ng-bind-html="networkController.currentNetwork.description"></span>
-        </div>
-
-        <div class='row wrapLongLine rowWithOneLineBottomPad'
-             ng-show="networkController.currentNetwork.reference"
-             style="margin-right: 1px;">
-            <strong>Reference:</strong>
-            <span ng-bind-html="networkController.currentNetwork.reference"></span>
-        </div>
-
-        <div class='row' ng-show='networkController.currentNetwork.version'>
-            <strong>Version:</strong> {{networkController.currentNetwork.version}}
-        </div>
-        <div class='row text-success'>
-            {{networkController.currentNetwork.visibility}}
-        </div>
-        <div class="row" ng-show="networkController.isAdmin">
-            <input type="checkbox"
-                   ng-model="networkController.readOnlyChecked"
-                   ng-change="readOnlyChanged(networkController.readOnlyChecked)"> Read Only
-        </div>
-
-        <br>
-
-        <div class="row">
-            <strong>Created:</strong>
-            {{networkController.currentNetwork.creationTime | date}}
-        </div>
-
-        <div class="row" ng-show="(networkController.currentNetwork.creationTime | date) != (networkController.currentNetwork.modificationTime | date)">
-            <strong>Last Modified:</strong>
-            {{networkController.currentNetwork.modificationTime | date}}
-        </div>
-
-        <div class="row rowWithOneLineBottomPad">
-            <strong>UUID:</strong>
-            {{networkController.currentNetworkId}}
-        </div>
-
-        <div class="row">
-            <strong>Your Access Privileges:</strong> {{networkController.privilegeLevel}}
-        </div>
-
-        <div class="row" ng-show="networkController.networkAdmins">
-            <span ng-show="networkController.isAdmin">
-                <strong>Other Admins:</strong>
-            </span>
-            <span ng-show="!networkController.isAdmin">
-                <strong>Admins:</strong>
-            </span>
-            <span ng-show="networkController.networkAdmins.length == 0">None</span>
-            <ul style="list-style-type: circle; padding-left: 25px">
-                <li ng-repeat="networkAdmin in networkController.networkAdmins">
-                    <a ng-href="#/user/{{networkAdmin.memberUUID}}">{{networkAdmin.memberAccountName}}</a>
-                </li>
-            </ul>
-        </div>
-
-
-        <div class="row">
-            <span ng-show='networkController.currentNetworkSourceFormat=="BEL"'>
-                <strong>BEL Namespaces:</strong>
-                {{networkController.numberOfBelNetworkNamespaces}}
+    <div style="margin-bottom: 1em" ng-show="networkController.errors.length > 0">
+        <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold" ng-repeat='error in networkController.errors'>
+            {{error}}
+            <span class="glyphicon glyphicon-remove pull-right"
+                  style='cursor:pointer'
+                  ng-click='networkController.errors.splice($index,1)'>
             </span>
         </div>
-
-        <div class="row" ng-show='networkController.isLoggedInUser'>
-
-            <div class="btn-group btn-group-vertical buttonWithMarginBottom">
-                <hr class="hrMarginRight">
-                <h5><strong>Actions:</strong></h5>
-                <span ng-show='(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked'>
-                    <a class="btn btn-primary customButtonWidth">
-                        <edit-network-summary-modal
-                                ndex-data='networkController.currentNetwork'>
-                            Edit Network Profile
-                        </edit-network-summary-modal>
-                    </a>
-                </span>
-                <span ng-show='networkController.isLoggedInUser
-                    && ((networkController.currentNetwork.visibility == "PUBLIC")
-                        || networkController.isAdmin
-                        || networkController.canEdit
-                        || networkController.canRead)'>
-                        <a class="btn btn-primary customButtonWidth">
-                            <export-network
-                                    ndex-data='networkController.currentNetwork'>
-                                Export Network
-                            </export-network>
-                        </a>
-                </span>
-
-                <span ng-hide='networkController.isAdmin || !networkController.canEdit && !networkController.canRead' >
-                    <a class="btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
-                        <create-request-network
-                                ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
-                            Upgrade Permission
-                        </create-request-network>
-                    </a>
-                </span>
-
-                <span ng-hide='networkController.isAdmin || networkController.canEdit || networkController.canRead'>
-                    <a class="btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
-                        <create-request-network
-                                ndex-data='networkController.currentNetwork' privileges="networkController.privilegeLevel">
-                            Upgrade Permission
-                        </create-request-network>
-                    </a>
-                </span>
-
-                <span ng-show='networkController.isAdmin'>
-                    <a class="btn btn-primary customButtonWidth"
-                        ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
-                        Share
-                    </a>
-                </span>
-
-                <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL" &&
-                    networkController.numberOfBelNetworkNamespacesAsInt == 0' >
-                    <a class="btn btn-primary customButtonWidth">
-                        <archive-bel-namespaces  ndex-data='networkController.currentNetwork.externalId'>
-                            Archive BEL Namespaces
-                        </archive-bel-namespaces>
-                    </a>
-                </span>
-
-                <span ng-show='networkController.isAdmin && networkController.currentNetworkSourceFormat=="BEL" &&
-                    networkController.numberOfBelNetworkNamespacesAsInt > 0' >
-                    <a class="btn btn-primary customButtonWidth">
-                        <download-bel-namespace  ndex-network-uuid='networkController.currentNetwork.externalId'
-                                                 ndex-network-name='networkController.currentNetwork.name'>
-                            Download Namespace
-                        </download-bel-namespace>
-                    </a>
-                </span>
-
-                <span ng-show='(networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin ||
-                    networkController.canEdit || networkController.canRead) && networkController.successfullyQueried'>
-                    <button id="tableViewSaveSubnetworkButton" class="btn btn-primary customButtonWidth" >
-                        <save-subnetwork>
-                            Save Query Result
-                        </save-subnetwork>
-                    </button>
-                </span>
-
-                <span class="divider" ng-show='networkController.isAdmin && !networkController.readOnlyChecked || networkController.directIsAdmin
-                            || networkController.directCanEdit
-                            || networkController.directCanRead'>
-                </span>
-                <span ng-show='networkController.directIsAdmin
-                            || networkController.directCanEdit
-                            || networkController.directCanRead'>
-                    <a class="btn btn-primary customButtonWidth">
-                        <leave-network
-                                ndex-data='networkController.currentNetwork.externalId'>
-                            Disaffiliate this Network
-                        </leave-network>
-                    </a>
-                </span>
-
-
-                <span ng-show='networkController.isAdmin && !networkController.readOnlyChecked'>
-                    <a class="btn btn-primary customButtonWidth">
-                        <delete-network ndex-data='networkController.currentNetwork.externalId'>
-                            Delete Network
-                        </delete-network>
-                    </a>
-                </span>
-            </div>
-        </div>
-
-        <div class="row" ng-show='!networkController.isLoggedInuser'>
-            <hr class="hrMarginRight">
-            <h5><strong>Actions:</strong></h5>
-            <a class="btn btn-primary" ng-click="main.startSignIn()">
-                Log in to operate on this network
-            </a>
-        </div>
-
-
-        <div class="row">
-            <hr class="hrMarginRight">
-        </div>
-
-
-
-        <!--
-        <span ng-show='(networkController.currentNetwork.properties.length == 0)
-                && (networkController.isAdmin || networkController.canEdit)'>
-
-            <div class='row'>
-                <h5>More Info</h5>
-
-                <p><a ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}">Add custom info!</a>
-                </p>
-            </div>
-        </span>
-        -->
-
-        <div class='row network-property-preview'>
-
-            <h5 style="margin-top: 0; margin-bottom: 0"><strong>Network Properties:</strong></h5>
-
-            <br>
-
-            <div class="networkPropertiesNameMargins">
-
-                <span class='' ng-repeat='property in networkController.currentNetwork.properties'>
-                    <span>
-                       <span class="networkPropertiesNameFontTableView">{{property.predicateString}}:
-                       </span>
-                       <span class="networkPropertiesValueFontTableView"
-                             ng-hide='property.value.toString().length > 40'
-                             ng-bind-html="property.value.toString()">
-                       </span>
-                       <span class="networkPropertiesValueFontTableView"
-                             ng-show='property.value.toString().length > 40'
-                             ng-bind-html="property.value.slice(0, 45 - property.predicateString.length)
-                            +'&shy'+
-                           property.value.slice(45 - property.predicateString.length, property.value.length)">
-                       </span>
-                       <br/>
-                    </span>
-                </span>
-
-            </div>
-
-            <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
-                <a class='btn-link'
-                   ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId}}"
-                   ng-click="setReturnView('network/')">
-                    Add / Edit Properties
-                </a>
-            </h5>
-
-        </div>
-
     </div>
 
-    <div class='col-md-9'
-         ng-show='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'>
+    <div class="col-md-7">
 
-        <div ng-show="networkController.successfullyQueried" class='row text-center'>
-            <h4>Query Result</h4>
-            <span>
-                 <label>nodes:</label>
-                <span>{{networkController.currentSubnetwork.nodeCount}}</span>
-            </span>
-            <span>
-                 <label>edges:</label>
-                 <span>{{networkController.currentSubnetwork.edgeCount}}</span>
-            </span>
-        </div>
+        <div class="row">
 
-        <!-- begins tabbable section -->
-        <div id="divNetworkTabs" class="row">
-            <tabset ng-hide="networkController.currentSubnetwork.edgeCount == 0">
+            <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}" ng-show="currentView == 'Graphic'">
+                <div id="spinnerGraphId"></div>
+                <div id="messageOverlay"
+                     style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
+                   ng-show="networkController.isSample">(Sample: {{networkController.displayLimit}} edges)</div>
+            </div>
+            <tabset ng-show="currentView == 'Table'">
+                <div id="spinnerTableId"></div>
                 <tab heading="Edges" ng-click="edgeGridApi.core.handleWindowResize()">
                     <div id="edgeGrid" ui-grid="edgeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
                 </tab>
                 <tab heading="Nodes" ng-click="nodeGridApi.core.handleWindowResize()">
                     <div id="nodeGrid" ui-grid="nodeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
                 </tab>
-                <tab heading="Provenance" ng-click="build_provenance_view()">
-
-                    <div class="col-sm-6 bordered">
-                        <div id="provenanceNetwork"></div>
-                    </div>
-                    <div class="col-sm-6">
-                        <span ng-show="displayProvenance.webapp_url">
-                           <a target="_blank" href="{{displayProvenance.webapp_url}}">
-                               <span ng-bind="getProvenanceTitle(displayProvenance)"></span>
-                           </a><br>
-                        </span>
-                        <span ng-show="!displayProvenance.webapp_url">
-                            {{getProvenanceTitle(displayProvenance)}}<br>
-                        </span>
-                        <span ng-show="(displayProvenance.properties == null ? 0 : displayProvenance.properties.length) > 0">
-                            <table style="width:100%">
-                                <!--<caption>Entity Properties</caption>-->
-                                <tr><th>Name</th><th>Value</th></tr>
-                                <tr><td>uuid</td><td>{{displayProvenance.uuid}}</td></tr>
-                                <tr><td>host</td><td>{{displayProvenance.host}}</td></tr>
-
-                                <tr ng-repeat="property in displayProvenance.properties">
-                                    <td>
-                                        {{property.name}}
-                                    </td>
-                                    <td>
-                                        <span ng-bind-html="property.value"></span>
-                                    </td>
-                                </tr>
-
-                            </table>
-                        </span>
-                        <br>
-
-                        Generated By:
-                        <b>{{displayProvenance.creationEvent.eventType}}</b>
-                        <table style="width:100%">
-                            <!--<caption>Event Properties</caption>-->
-                            <tr><th>Name</th><th>Value</th></tr>
-                            <tr ng-show="displayProvenance.creationEvent.startedAtTime == displayProvenance.creationEvent.endedAtTime"><td>event time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
-                            <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>start time</td><td>{{displayProvenance.creationEvent.startedAtTime | date:'medium' }}</td></tr>
-                            <tr ng-show="displayProvenance.creationEvent.startedAtTime != displayProvenance.creationEvent.endedAtTime"><td>end time</td><td>{{displayProvenance.creationEvent.endedAtTime | date:'medium' }}</td></tr>
-                            <tr ng-repeat="property in displayProvenance.creationEvent.properties">
-                                <td>
-                                    {{property.name}}
-                                </td>
-                                <td>
-                                    <span ng-bind-html="property.value"></span>
-                                </td>
-                            </tr>
-                        </table>
-
-                    </div>
-                </tab>
             </tabset>
 
-            <div style="padding-top: 1em; margin-bottom: 0" ng-show="networkController.queryErrors.length > 0">
-                <div class="alert alert-danger" style="margin-bottom: 0" ng-repeat='error in networkController.queryErrors'>
+            <div class="rowWithOneLineTopPad"></div>
+
+            <div ng-show="networkController.queryErrors.length > 0">
+                <p class="alert alert-danger" ng-repeat='error in networkController.queryErrors'>
                     {{error}}
                     <span class="glyphicon glyphicon-remove pull-right"
                           style='cursor:pointer'
                           ng-click='networkController.queryErrors.splice($index,1)'>
                     </span>
-                </div>
+                </p>
             </div>
 
-            <br>
+            <div ng-show="networkController.queryWarnings.length > 0">
+                <p class="alert alert-success" ng-repeat='warning in networkController.queryWarnings'>
+                    {{warning}}
+                    <span class="glyphicon glyphicon-remove pull-right"
+                          style='cursor:pointer'
+                          ng-click='networkController.queryWarnings.splice($index,1)'>
+                    </span>
+                </p>
+            </div>
 
-            <div ng-show="networkController.queryMode == 'simple' && !networkController.successfullyQueried" class="com-sm-12">
-                <form id="frmSearchNetwork" ng-submit="networkController.submitNetworkQuery()"
+            <button type="button"
+                    class="btn btn-primary"
+                    ng-click="networkController.reloadOriginalNetwork()"
+                    ng-show="networkController.successfullyQueried">
+                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                Back To Original Network
+            </button>
+
+            <div class="networkActionsSection"
+                 ng-show="!networkController.successfullyQueried"
+                 id="simpleQueryNetworkViewId">
+
+                <form id="frmSearchNetwork"
+                      ng-submit="networkController.queryNetworkAndDisplay()"
                       class="form-inline pull-left">
 
                     <div class="form-group">
                         <input class="form-control" type="search" ng-model="networkController.searchString"
-                               placeholder="Network Terms" required>
+                               placeholder="Network Terms" style="width:300px"
+                               title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx."
+                               ng-show="networkController.hasMultipleSubNetworks()"
+                               ng-disabled="true">
+
+                        <input class="form-control" type="search" ng-model="networkController.searchString"
+                               placeholder="Network Terms" style="width:300px" required
+                               ng-show="!networkController.hasMultipleSubNetworks()">
                     </div>
                     <div class="form-group">
                         <label>Depth:</label>
                     </div>
                     <div class="form-group">
-                        <div>
-                            <select class="form-control" id="" ng-model="networkController.searchDepth.value" ng-selected="1"
+                        <span>
+                            <select
+                                    class="form-control"
+                                    id="selectSearchDepth"
+                                    ng-model="networkController.searchDepth.value"
+                                    ng-selected="1"
                                     ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
-                                    required></select>
+                                    ng-disabled="networkController.hasMultipleSubNetworks()"
+                                    required>
+                            </select>
+                        </span>
+                    </div>
+
+                    <button type="submit" class="btn btn-default btn-primary"
+                            ng-show="!networkController.hasMultipleSubNetworks()"
+                            style="margin-bottom:0">Run Query
+                    </button>
+
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-show="networkController.hasMultipleSubNetworks()"
+                       title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                        Run Query
+                    </a>
+
+                    &nbsp;
+                </form>
+
+
+                <span class="pull-left" style="margin-top:0.5em"
+                      ng-show="!hideAdvancedSearchLink"
+                      ng-if="!networkController.hasMultipleSubNetworks()">
+                    <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
+                        <u>Advanced Query</u>
+                    </a>
+                </span>
+
+                <span class="pull-left" style="margin-top:0.5em"
+                      ng-show="!hideAdvancedSearchLink"
+                      ng-if="networkController.hasMultipleSubNetworks()"
+                      title="This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                    <span  style="color:#999999; cursor:not-allowed">
+                        <u>Advanced Query</u>
+                    </span>
+                </span>
+
+<!--
+                <a class="pull-left" style="margin-top:0.5em; color:#999999; cursor: not-allowed">
+                    Advanced Query
+                    <img src="img/coming_soon.png">
+                </a>
+-->
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-5">
+
+        <div id="divNetworkTabs" class="networkPropertiesTabset">
+            <tabset>
+
+                <tab active="networkController.tabs[0].active">
+                    <tab-heading>{{ networkController.tabs[0].heading }}</tab-heading>
+
+                    <div class="rowWithOneLineTopPad"></div>
+                    <div class="rowWithOneLineTopPad"></div>
+
+                    <div class="networkPropertyValueInTabsetMargins">
+
+                        <div class="networkViewHeader rowWithOneLineBottomPad" id="networkViewHeaderId">
+                            {{networkController.currentNetwork.name}}  <br/>
+                        </div>
+
+                        <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
+                        &nbsp;&nbsp;
+                        <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
+                        &nbsp;&nbsp;
+
+                        <div ng-show = "networkController.successfullyQueried">
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
+                            <br>
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryDepth">Search depth: </span>{{networkController.currentNetwork.queryDepth}}
+
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter:
+                                <br>
+                                <span ng-repeat='edgeFilter in networkController.currentNetwork.edgeFilter.propertySpecifications'>
+                                    &nbsp;&nbsp;&nbsp;{{edgeFilter.name}} : <span style="font-weight: normal">{{edgeFilter.value}}</span>
+                                     <br>
+                                </span>
+                            </span>
+
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.nodeFilter">
+                                <br>
+                                Mode : <span style="font-weight: normal">{{networkController.currentNetwork.nodeFilter.mode}}</span>
+                                <br><br>
+                                Node filter:
+                                <br>
+
+                                <span ng-repeat='nodeFilter in networkController.currentNetwork.nodeFilter.propertySpecifications'>
+                                    &nbsp;&nbsp;&nbsp;{{nodeFilter.name}} : <span style="font-weight: normal">{{nodeFilter.value}}</span>
+                                     <br>
+                                </span>
+                            </span>
+
+                        </div>
+
+                        <div ng-show = "!networkController.successfullyQueried">
+                            <span class="networkVisibilityValue">{{networkController.currentNetwork.visibility}} </span>
+                            &nbsp;&nbsp;
+
+                            <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
+                                <input type="checkbox"
+                                    ng-model="networkController.readOnlyChecked"
+                                    ng-change="readOnlyChanged()"> Read Only
+                            </span>
+                            <span class="networkPropertyName" ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()">
+                                <input type="checkbox"  disabled readonly
+                                       ng-model="networkController.readOnlyChecked"
+                                       title=
+                                       "{{networkController.hasMultipleSubNetworks() ?
+                                       'This network is part of a Cytoscape collection with ' +  networkController.noOfSubNetworks + ' subnetworks and cannot be edited in NDEx.' :
+                                       'Only network owners can set/unset Read Only flag'}}"> Read Only
+                            </span>
+                            <br />
+                            <br />
+
+                            <span class="networkPropertyName">Created: </span>
+                            {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
+
+                            <span ng-show="(networkController.currentNetwork.creationTime | date) !=
+                                           (networkController.currentNetwork.modificationTime | date)">
+                                <span class="networkPropertyName">Last Modified: </span>
+                                {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
+                            </span>
+
+                            <span class="networkPropertyName">UUID: </span>
+                            {{networkController.currentNetwork.externalId}}<br/>
+
+                            <span class="networkPropertyName">Format: </span>
+                            {{networkController.currentNetwork.sourceFormat}}<br/>
+
+                            <span ng-show="networkController.isLoggedInUser">
+                                <span class="networkPropertyName">Your Privileges: </span>
+                                {{networkController.privilegeLevel}}<br/>
+                            </span>
+
+                            <span ng-show="networkController.hasMultipleSubNetworks()" style="color:red">
+                                <span class="networkPropertyName">Warning: </span>
+                                This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}}
+                                subnetworks and cannot be edited in NDEx.<br/>
+                            </span>
+
+                            <div class='wrapLongLine rowWithOneLineTopPad'
+                                 ng-show="networkController.currentNetwork.description"
+                                 style="margin-right: 1px;">
+                                <span class="networkPropertyName">Description: </span>
+                                <span ng-bind-html="networkController.currentNetwork.description"></span>
+                            </div>
+
+                            <span ng-show="networkController.currentNetwork.rightsHolder">
+                                <br/>
+                                <span class="networkPropertyName">Rights Holder: </span>
+                                <span ng-bind-html="networkController.currentNetwork.rightsHolder"></span>
+                            </span>
+
+                            <span ng-show="networkController.currentNetwork.rights">
+                                <br/>
+                                <span class="networkPropertyName">Rights: </span>
+                                <span ng-bind-html="networkController.currentNetwork.rights"></span>
+                            </span>
+
+
+                            <div class='wrapLongLine rowWithOneLineTopPad'
+                                 ng-show="networkController.currentNetwork.reference"
+                                 style="margin-right: 1px;">
+                                <span class="networkPropertyName">Reference: </span>
+                                <span ng-bind-html="networkController.currentNetwork.reference"></span>
+                            </div>
+
+                            <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
+                                <span class="networkPropertyName">Version: </span>
+                                {{networkController.currentNetwork.version}}
+                            </div>
+
+                            <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.sourceFormat=="BEL"'>
+                                <span class="networkPropertyName">BEL Namespaces:</span>
+                                {{networkController.numberOfBelNetworkNamespaces}}
+                            </div>
+
+                            <div class='rowWithOneLineTopPad'>
+                                <span class="networkPropertyName">Properties:</span>
+
+                                <div class="networkPropertiesNameMargins">
+
+                                        <span class='' ng-repeat='property in networkController.otherProperties'>
+                                            <span>
+                                               <span class="networkPropertiesNameFont">{{property.predicateString}}:
+                                               </span>
+                                               <span class="networkPropertiesValueFont"
+                                                     ng-hide='property.value.toString().length > 40'
+                                                     ng-bind-html="property.value.toString()">
+                                               </span>
+                                               <span class="networkPropertiesValueFont"
+                                                     ng-show='property.value.toString().length > 40'
+                                                     ng-bind-html="property.value.slice(0, 45 - property.predicateString.length)
+                                                    +'&shy'+
+                                                   property.value.slice(45 - property.predicateString.length, property.value.length)">
+                                               </span>
+                                               <br/>
+                                            </span>
+                                        </span>
+                                </div>
+
+                                <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
+
+                                    <span ng-if="!networkController.hasMultipleSubNetworks()">
+                                        <a class='btn-link'
+                                           ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
+                                           ng-click="setReturnView('network/')">
+                                            Add / Edit Properties
+                                        </a>
+                                    </span>
+
+                                    <span ng-if="networkController.hasMultipleSubNetworks()">
+                                        <span  style="color:#999999; cursor:not-allowed"
+                                               title="This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                                            Add / Edit Properties
+                                        </span>
+                                    </span>
+
+                                </h5>
+
+                            </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-default btn-primary">Run Query</button>
-                    &nbsp;
+                </tab>
 
-                </form>
+                <!-- node/edge tab -->
+                <tab disabled="networkController.tabs[1].disabled" active="networkController.tabs[1].active">
+                    <tab-heading>{{ networkController.tabs[1].heading }}</tab-heading>
 
-                <div class="pull-left" style="margin-top:0.5em">
-                    <a ng-click="networkController.queryMode = 'advanced'"><u><strong>Advanced Query</strong></u></a>
-                </div>
+                    <div>
 
-            </div>
+                        <table style="width:100%">
+                            <tr ng-if="networkController.selectionContainer.nodes.length > 0">
+                                <td>Selected Nodes: {{networkController.selectionContainer.nodes.length}}</td>
+                            </tr>
 
-            <div ng-show="networkController.queryMode == 'advanced' && !networkController.successfullyQueried">
-                <form novalidate ng-submit="networkController.runAdvancedQuery(config.networkQueryLimit)">
+                            <tr ng-repeat-start="node in networkController.selectionContainer.nodes">
+                                <td class="wrappedCell">
+                                    <button ng-if="node.$$expanded" ng-click="node.$$expanded = false"
+                                        ng-disabled="getNodeAttributesNames(node).length == 0">-</button>
+                                    <button ng-if="!node.$$expanded" ng-click="node.$$expanded = true"
+                                        ng-disabled="getNodeAttributesNames(node).length == 0">+</button>
 
-                    <div class="row">
-                        <div class="col-sm-4">
+                                    &nbsp;{{getNodeName(node)}}
+                                </td>
+                            </tr>
+                            <tr ng-if="node.$$expanded && getNodeAttributesNames(node).length > 0" ng-repeat-end="">
+                                <td class="wrappedCell">
+                                    <span ng-repeat="attributeName in getNodeAttributesNames(node)">
+                                        <span ng-show="getAttributeValue(attributeName, node[attributeName])">
+
+                                            <span ng-switch="attributeName">
+
+                                                <span ng-switch-when="r">
+                                                      &nbsp;&nbsp;&nbsp;<strong>ID:</strong>
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                    <br/>
+                                                </span>
+
+                                                <span ng-switch-when="n">
+                                                      &nbsp;&nbsp;&nbsp;<strong>Name:</strong>
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                    <br/>
+                                                </span>
+
+                                                <span ng-switch-when="id">
+                                                      &nbsp;&nbsp;&nbsp;<strong>Node Id:</strong>
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                    <br/>
+                                                </span>
+
+                                                <span ng-switch-when="citations">
+                                                    <span ng-repeat="citation in node.citations">
+                                                        &nbsp;&nbsp;
+                                                        <span ng-bind-html='getCitation(citation)'></span>
+                                                        <br />
+                                                    </span>
+                                                </span>
+
+                                                <span ng-switch-default>
+                                                   &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
+                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+
+
+                                                    <span ng-show="checkHowManyAttributes(attributeName, node[attributeName])">
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
+                                                            more...
+                                                        </a>
+                                                        <br>
+                                                    </span>
+                                                    <br />
+                                                </span>
+                                            </span>
+
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr ng-if="networkController.selectionContainer.edges.length > 0">
+                                <td>Selected Edges: {{ networkController.selectionContainer.edges.length}}</td>
+                            </tr>
+                            <tr ng-repeat-start="edge in networkController.selectionContainer.edges">
+                                <td class="wrappedCell">
+                                    <button ng-if="edge.$$expanded" ng-click="edge.$$expanded = false"
+                                        ng-disabled="getEdgeAttributesNames(edge).length == 0">-</button>
+                                    <button ng-if="!edge.$$expanded" ng-click="edge.$$expanded = true"
+                                        ng-disabled="getEdgeAttributesNames(edge).length == 0">+</button>
+
+                                    &nbsp;{{getEdgeLabel(edge)}}
+                                </td>
+                            </tr>
+                            <tr ng-if="edge.$$expanded && getEdgeAttributesNames(edge).length > 0" ng-repeat-end="">
+                                <td class="wrappedCell">
+
+                                    <span ng-repeat="attributeName in getEdgeAttributesNames(edge)">
+                                        <span ng-show="getAttributeValue(attributeName, edge[attributeName])">
+
+                                            <span ng-switch="attributeName">
+
+                                                <span ng-switch-when="citations">
+                                                    <span ng-repeat="citation in edge.citations">
+                                                        &nbsp;&nbsp;
+                                                        <span ng-bind-html='getCitation(citation)'></span>
+                                                        <br />
+                                                    </span>
+                                                </span>
+
+                                                <span ng-switch-default>
+                                                   &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
+                                                   <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
+                                                </span>
+
+                                                <span ng-show="checkHowManyAttributes(attributeName, edge[attributeName])">
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
+                                                        more...
+                                                    </a>
+                                                    <br>
+                                                </span>
+                                                <br />
+                                            </span>
+                                        </span>
+                                    </span>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </tab>
+
+
+                <tab active="networkController.tabs[2].active" ng-click="build_provenance_view()" ng-show="!networkController.successfullyQueried">
+
+                    <tab-heading>
+                        {{ networkController.tabs[2].heading }}
+                    </tab-heading>
+
+                    <div class="row" style="font-size: 1.1em; margin-left: 0px; margin-right: 0px;">
+                        <div class="col-xs-6">
+                            <div id="provenanceNetwork"/>
+                        </div>
+                        <div class="col-xs-6">
+                            <span ng-show="networkController.displayProvenance.webapp_url">
+                                <a target="_blank" href="{{networkController.displayProvenance.webapp_url}}">
+                                    <span ng-bind="getProvenanceTitle(networkController.displayProvenance)"></span>
+                                </a><br>
+                            </span>
+                            <span ng-show="!networkController.displayProvenance.webapp_url">
+                                {{getProvenanceTitle()}}<br/><br/>
+                            </span>
+                            <span ng-show="(networkController.displayProvenance.properties == null ? 0 : networkController.displayProvenance.properties.length) > 0">
+                                <table style="width:100%">
+                                    <!--<caption>Entity Properties</caption>-->
+                                    <tr><th>Name</th><th>Value</th></tr>
+                                    <tr><td>uuid</td><td>{{networkController.displayProvenance.uuid}}</td></tr>
+                                    <tr><td>host</td><td>{{networkController.displayProvenance.host}}</td></tr>
+
+                                    <tr ng-repeat="property in networkController.displayProvenance.properties">
+                                        <td>
+                                            {{property.name}}
+                                        </td>
+                                        <td class="wrappedCell">
+                                            <span ng-bind-html="property.value"></span>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                                <br>
+                            </span>
+
+                            Generated By:
+
+                            <b>{{networkController.displayProvenance.creationEvent.eventType}}</b>
+
+                            <table style="width:100%">
+                                <!--<caption>Event Properties</caption>-->
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                </tr>
+                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime == networkController.displayProvenance.creationEvent.endedAtTime">
+                                    <td>event time</td>
+                                    <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
+                                        date:'medium' }}
+                                    </td>
+                                </tr>
+                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
+                                    <td>start time</td>
+                                    <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
+                                        date:'medium' }}
+                                    </td>
+                                </tr>
+                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
+                                    <td>end time</td>
+                                    <td>{{networkController.displayProvenance.creationEvent.endedAtTime |
+                                        date:'medium' }}
+                                    </td>
+                                </tr>
+                                <tr ng-repeat="property in networkController.displayProvenance.creationEvent.properties">
+                                    <td>
+                                        {{property.name}}
+                                    </td>
+                                    <td class="wrappedCell">
+                                        <span ng-bind-html="property.value"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!--</span> -->
+
+
+                        </div>
+                    </div>
+
+                </tab>
+
+
+                <tab active="networkController.tabs[3].active" ng-show="!networkController.tabs[3].hidden">
+
+                    <tab-heading>
+                        {{ networkController.tabs[3].heading }}
+
+                        <a ng-click="backToSimpleQuery($event); networkController.resetForm();">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </tab-heading>
+
+                    <div class="rowWithOneLineTopPad"></div>
+                    <div class="rowWithOneLineTopPad"></div>
+
+                    <div class="networkPropertyValueInTabsetMargins">
+
+                        <div class="networkViewHeader rowWithOneLineBottomPad">
+                            {{networkController.currentNetwork.name}}  <br/>
+                        </div>
+
+                        <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
+                        &nbsp;&nbsp;
+                        <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
+                        &nbsp;&nbsp;
+                    </div>
+
+                    <div class="rowWithOneLineTopPad"></div>
+                    <div class="rowWithOneLineTopPad"></div>
+
+                    <div>
+
+                        <form novalidate ng-submit="networkController.runAdvancedQuery()"
+                          style="padding-left:15px">
+
+                            <!--
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <span class="row"><a ng-click="backToSimpleQuery($event); networkController.resetForm();">
+                                        <u><strong>Back to Simple Query</strong></u></a>
+                                    </span>
+                                </div>
+                            </div>
+                            -->
+
                             Find a subnetwork with edges that,<br>
                             (1) have one or more of these properties:<br>
-                        </div>
-                        <div class="col-sm-4">
-                            <span class="pull-right" style="margin-top:0.5em"><a ng-click="networkController.queryMode = 'simple'">
-                                <u><strong>Back to Simple Query</strong></u></a>
+
+                            <div class="row">
+                                <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
+                                    <div class="col-sm-5" style="padding-right: 5px">
+                                        <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
+                                            <option value="">[Select Edge Property Name]</option>
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option value="ndex:interaction">interaction</option>
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option ng-repeat="edgeProperty in networkController.edgePropertyNamesForAdvancedQuery"
+                                                    value="{{edgeProperty}}">{{edgeProperty}}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-sm-5" style="padding-left: 5px; padding-right: 5px">
+                                        <input class="form-control input-sm"
+                                               ng-model="property.value"
+                                               ng-change="networkController.validateAdvancedQuery()"
+                                               placeholder="Value">
+                                    </div>
+
+                                    <div class="col-sm-1" style="padding-left: 5px">
+                                        <button type="button" ng-click="networkController.removeQueryEdgeProperty($index)"
+                                                ng-hide="networkController.advancedQueryEdgeProperties.length == 1"
+                                                class="btn btn-default btn-sm vcenter"
+                                                tabindex="-1">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button"
+                                    ng-click="networkController.addQueryEdgeProperty()"
+                                    class="btn btn-default btn-sm"
+                                    ng-show="networkController.advancedEdgeQueryIsValid()"
+                                    tabindex="-1">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                            <br />
+
+                            (2) and which have
+                            <span class="dropdown">
+                                <a href class="dropdown-toggle" data-toggle="dropdown">
+                                    {{networkController.advancedQueryNodeCriteria}} <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Source'">Source</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Target'">Target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Both'">Both source and target</a></li>
+                                    <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='Either'">Either source or target</a></li>
+                                </ul>
                             </span>
-                        </div>
-                    </div>
+                             nodes<br>
+                            (3) with one or more of these properties.
+                            <div ng-repeat="property in networkController.advancedQueryNodeProperties">
+                                <div class="row">
+                                    <div class="col-sm-5" style="padding-right: 5px">
+                                        <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
+                                            <option value="">[Select Node Property Name]</option>
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option value="ndex:name">name</option>
+                                            <!--
+                                            <option value="ndex:nameOrTermName">nameOrTermName</option>
+                                            <option value="ndex:functionTermType">functionTermType</option>
+                                            -->
+                                            <option disabled role="separator">━━━━━━━━━━━━━━━</option>
+                                            <option ng-repeat="nodeProperty in networkController.nodePropertyNamesForAdvancedQuery"
+                                                    value="{{nodeProperty}}">{{nodeProperty}}
+                                            </option>
+                                        </select>
+                                    </div>
 
-                    <div ng-repeat="property in networkController.advancedQueryEdgeProperties">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
-                                    <option value="">[Select Edge Property Name]</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option value="ndex:predicate">predicate</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option ng-repeat="edgeProperty in networkController.edgePropertyNamesForAdvancedQuery"
-                                            value="{{edgeProperty}}">{{edgeProperty}}
-                                    </option>
-                                </select>
+                                    <div class="col-sm-5" style="padding-left: 5px; padding-right: 5px">
+                                        <input class="form-control input-sm"
+                                               ng-model="property.value"
+                                               ng-change="networkController.validateAdvancedQuery()"
+                                               placeholder="Value">
+                                    </div>
+
+                                    <div class="col-sm-1" style="padding-left: 5px">
+                                        <button type="button"
+                                                ng-click="networkController.removeQueryNodeProperty($index)"
+                                                ng-hide="networkController.advancedQueryNodeProperties.length == 1"
+                                                class="btn btn-default btn-sm"
+                                                tabindex="-1">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="col-sm-4">
-                                <input class="form-control input-sm"
-                                       ng-model="property.value"
-                                       ng-change="networkController.validateAdvancedQuery()"
-                                       placeholder="Value">
-                            </div>
-                            <div class="col-sm-1">
-                                <button type="button" ng-click="networkController.removeQueryEdgeProperty($index)"
-                                        ng-hide="networkController.advancedQueryEdgeProperties.length == 1"
-                                        class="btn btn-default btn-sm vcenter"
-                                        tabindex="-1">
-                                    <span class="glyphicon glyphicon-minus"></span>
+                            <button type="button"
+                                    ng-click="networkController.addQueryNodeProperty()"
+                                    class="btn btn-default btn-sm"
+                                    ng-show="networkController.advancedNodeQueryIsValid()"
+                                    tabindex="-1">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+
+                            <div class="container; rowWithTwoLinesTopPad">
+
+                                <button ng-disabled="!networkController.advancedQueryIsValid"
+                                        type="submit"
+                                        class="actionsLabel btn btn-primary btn-default">Run Query
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button"
-                            ng-click="networkController.addQueryEdgeProperty()"
-                            class="btn btn-default btn-sm"
-                            ng-show="networkController.advancedEdgeQueryIsValid()"
-                            tabindex="-1">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                    <br />
 
-                    (2) and which have
-                    <span class="dropdown">
-                        <a href class="dropdown-toggle" data-toggle="dropdown">
-                            {{networkController.advancedQueryNodeCriteria}} <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='source'">source</a></li>
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='target'">target</a></li>
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='both source and target'">both source and target</a></li>
-                            <li><a href class="dropdown-toggle" ng-click="networkController.advancedQueryNodeCriteria='either source or target'">either source or target</a></li>
-                        </ul>
-                    </span>
-                     nodes<br>
-                    (3) with one or more of these properties.
-                    <div ng-repeat="property in networkController.advancedQueryNodeProperties">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <select class="form-control input-sm" ng-model="property.name" ng-change="networkController.validateAdvancedQuery()">
-                                    <option value="">[Select Node Property Name]</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option value="ndex:nodeName">nodeName</option>
-                                    <option value="ndex:nameOrTermName">nameOrTermName</option>
-                                    <option value="ndex:functionTermType">functionTermType</option>
-                                    <option disabled role="separator">━━━━━━━━━━━━━━━</option>
-                                    <option ng-repeat="nodeProperty in networkController.nodePropertyNamesForAdvancedQuery"
-                                            value="{{nodeProperty}}">{{nodeProperty}}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="col-sm-4">
-                                <input class="form-control input-sm"
-                                       ng-model="property.value"
-                                       ng-change="networkController.validateAdvancedQuery()"
-                                       placeholder="Value">
-                            </div>
-                            <div class="col-sm-1">
                                 <button type="button"
-                                        ng-click="networkController.removeQueryNodeProperty($index)"
-                                        ng-hide="networkController.advancedQueryNodeProperties.length == 1"
-                                        class="btn btn-default btn-sm"
-                                        tabindex="-1">
-                                    <span class="glyphicon glyphicon-minus"></span>
+                                        class="actionsLabel btn btn-primary btn-default"
+                                        ng-click="networkController.resetForm(); networkController.resetAdvancedQuery()">Reset Query
                                 </button>
+
                             </div>
-                        </div>
+
+                        </form>
                     </div>
 
-                    <button type="button"
-                            ng-click="networkController.addQueryNodeProperty()"
-                            class="btn btn-default btn-sm"
-                            ng-show="networkController.advancedNodeQueryIsValid()"
-                            tabindex="-1">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
 
-                    <div class="container; rowWithTwoLinesTopPad">
+                </tab>
 
-                        <button ng-disabled="!networkController.advancedQueryIsValid"
-                                type="submit"
-                                class="btn btn-primary btn-default">Run Query
-                        </button>
+            </tabset>
 
-                        <button type="button"
-                                class="btn btn-primary btn-default"
-                                ng-click="networkController.resetForm()">Reset Query
-                        </button>
-                    </div>
+        </div>
 
-                </form>
-            </div>
+        <div class="rowWithOneLineTopPad"></div>
 
-            <button type="button"
-                    class="btn btn-primary"
-                    ng-click="networkController.backToOriginalNetwork()"
-                    ng-show="networkController.successfullyQueried">
-                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-                Back To Original Network {{networkController.networkSearch}}
+        <div class="networkActionsSection pull-left"
+             ng-show="networkController.isLoggedInUser && networkController.successfullyQueried &&
+                     ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
+
+            <button id="saveQueryButton" class="actionsLabel btn btn-primary customButtonWidth" ng-click="networkController.saveQueryResult()" >
+                Save Query Result
             </button>
 
         </div>
 
-        <div ng-show="networkController.currentSubnetwork.edgeCount == 0">
-            <strong>No results found that match your criteria.</strong>
+        <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
+            <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
+                    || networkController.isAdmin
+                    || networkController.canEdit
+                    || networkController.canRead)'>
+
+                    <a ng-href={{getNetworkDownloadLink(networkController.currentNetwork)}}
+                       class="actionsLabel btn btn-primary download-btn">
+                        Download
+                    </a>
+            </span>
+
+            <span>
+                <button type="button" class="actionsLabel btn btn-primary"
+                        ng-click="switchView()"
+                        ng-hide="networkController.hasMultipleSubNetworks()">
+                    {{buttonLabel}}
+                </button>
+
+                <a class="actionsLabelDisabled-btn btn btn-primary" style="border: 5px double white;"
+                   ng-show="networkController.hasMultipleSubNetworks()"
+                   title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                        {{buttonLabel}}
+                </a>
+
+            </span>
+
+            <span ng-show='networkController.isLoggedInUser &&
+                        ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
+                <span>
+                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()">
+                        <edit-network-summary-modal
+                                ndex-data='networkController.currentNetwork'
+                                sub-network-id="networkController.subNetworkId">
+                            Edit Profile
+                        </edit-network-summary-modal>
+                    </a>
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-show="networkController.hasMultipleSubNetworks()"
+                       title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                            Edit Profile
+                    </a>
+                </span>
+            </span>
+
+            <span ng-show='networkController.isLoggedInUser
+                && ((networkController.currentNetwork.visibility == "PUBLIC")
+                    || networkController.isAdmin
+                    || networkController.canEdit
+                    || networkController.canRead)'>
+
+                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()">
+                        <export-network
+                                ndex-data='networkController.currentNetwork'>
+                            Export
+                        </export-network>
+                    </a>
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-show="networkController.hasMultipleSubNetworks()"
+                       title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
+                            Export
+                    </a>
+            </span>
+
+
+            <span ng-show='networkController.isLoggedInUser && networkController.canRead'>
+                <a class="actionsLabel btn btn-primary customButtonWidth">
+                    <create-request-network
+                            ndex-data='networkController.currentNetwork'
+                            privileges='networkController.privilegeLevel'>
+                        Upgrade Permission
+                    </create-request-network>
+                </a>
+            </span>
+
+            <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
+                <a class="actionsLabel btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
+                    <create-request-network
+                            ndex-data='networkController.currentNetwork'
+                            privileges='networkController.privilegeLevel'>
+                        Upgrade Permission
+                    </create-request-network>
+                </a>
+            </span>
+
+            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin' title="Request Read, Edit or Admin privilege">
+                <a class="actionsLabel btn btn-primary"
+                   ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
+                        Share
+                </a>
+            </span>
+
+            <!--
+            <span ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
+                           networkController.numberOfBelNetworkNamespacesAsInt == 0'>
+                <a class="btn btn-primary customButtonWidth">
+                    <archive-bel-namespaces ndex-data='networkController.currentNetwork.externalId'>
+                        Archive BEL Namespaces
+                    </archive-bel-namespaces>
+                </a>
+            </span>
+            -->
+
+            <span ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
+                networkController.numberOfBelNetworkNamespacesAsInt > 0'>
+                <a class="actionsLabel btn btn-primary customButtonWidth">
+                    <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
+                                            ndex-network-name='networkController.currentNetwork.name'>
+                        Download Namespace
+                    </download-bel-namespace>
+                </a>
+            </span>
+
+            <span class="divider" ng-show='networkController.isAdmin &&
+                      !networkController.readOnlyChecked
+                    || networkController.directIsAdmin
+                    || networkController.directCanEdit
+                    || networkController.directCanRead'>
+            </span>
+
+            <!--
+            <span ng-show='networkController.directIsAdmin
+                    || networkController.directCanEdit
+                    || networkController.directCanRead'>
+
+                <a class="btn btn-primary customButtonWidth">
+                    <leave-network
+                            ndex-data='networkController.currentNetwork.externalId'>
+                        Disaffiliate this Network
+                    </leave-network>
+                </a>
+            </span>
+            -->
+
+            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin &&
+                          !networkController.readOnlyChecked'>
+                <a class=" actionsLabel btn btn-primary">
+                    <delete-network ndex-data='networkController.currentNetwork.externalId'>
+                        Delete
+                    </delete-network>
+                </a>
+            </span>
+
+            <span ng-show='!networkController.isLoggedInUser'>
+                <a class="actionsLabel btn btn-primary" ng-click="main.startSignIn()">
+                    Log in to operate on this network
+                </a>
+            </span>
         </div>
-
-    </div>
-
-    <div class='col-md-9'
-         ng-hide='networkController.currentNetwork.visibility == "PUBLIC" || networkController.isAdmin || networkController.canEdit || networkController.canRead'
-         ng-if="networkController.readyToRenderNetworkInUI">
-        <br>
-        <br>
-
-        <p class='text-center'>You do not have access to this network</p>
-    </div>
-
-    <!-- end tab content -->
-</div>
-
-<div class="rowWithTwoLinesTopPadAnd15EmFont" ng-if="networkController.showRetrieveMessage">
-    <p class='text-center'>Retrieving network from server ... </p>
-</div>
-
-
-<div class="container-fluid" ng-hide="networkController.errors.length == 0">
-    <div class="row">
-        <div class="rowWithTwoLinesTopPadAnd15EmFont" ng-repeat="message in networkController.errors">
-            <p class='text-center'><span style="color: red">{{message.label}} {{message.error}}</span></p>
-        </div>
     </div>
 </div>
 
-
-<script type="text/ng-template" id="queryContent.html">
-    <div class="modal-body text-center">
-        <img src="img/horizontal-loader.gif">
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-sm btn-default" ng-click="networkController.cancel()">Cancel</button>
-    </div>
-</script>
 
 <script type="text/ng-template" id="citations.html">
     <form>
@@ -585,22 +880,52 @@
             <span class="modal-body">
                 <span ng-repeat="citation in citations">
                     <dl class="dl-horizontal">
+                        <!--
                         <dt>Citation ID</dt>
                         <dd>{{citation.id}}</dd>
-                        <dt>Type</dt>
-                        <dd>{{citation.idType}}</dd>
-                        <dt ng-show="citation.title && citation.title.length > 0">
+                        -->
+                        <dt ng-show="citation.title">
                             Title
                         </dt>
-                        <dd ng-show="citation.title && citation.title.length > 0">
+                        <dd ng-show="citation.title">
                             {{citation.title}}
                         </dd>
-                        <dt ng-show="citation.contributors && citation.contributors.length > 0">
-                            Contributors
+
+                        <dt ng-show="citation.description">
+                            Description
                         </dt>
-                        <dd ng-show="citation.contributors && citation.contributors.length > 0  ">
-                            {{citation.contributorsString}}
+                        <dd ng-show="citation.description">
+                            {{citation.description}}
                         </dd>
+
+                        <dt ng-show="citation.type">
+                            Type
+                        </dt>
+                        <dd ng-show="citation.type">
+                            {{citation.type}}
+                        </dd>
+
+                        <dt ng-show="citation.identifier">
+                            Identifier
+                        </dt>
+                        <dd ng-show="citation.identifier">
+                            {{citation.identifier}}
+                        </dd>
+
+                        <dt ng-show="citation.contributor">
+                            Contributor
+                        </dt>
+                        <dd ng-show="citation.contributor">
+                            {{citation.contributors}}
+                        </dd>
+
+                        <dt ng-show="citation.attributes">
+                            Attributes
+                        </dt>
+                        <dd ng-show="citation.attributes">
+                            {{citation.attributes}}
+                        </dd>
+
                         <dt ng-show="citation.link">
                             Link
                         </dt>

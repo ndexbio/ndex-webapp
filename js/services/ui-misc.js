@@ -238,11 +238,11 @@ angular.module('ndexServiceApp')
             var link = ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
 
             if (accountController.isLoggedInUser && rowEntity.Visibility &&
-                rowEntity.Visibility.toLowerCase() == 'private')
+                (rowEntity.Visibility.toLowerCase() == 'private'))
             {
                 var userCredentials = ndexUtility.getUserCredentials();
 
-                if (!userCredentials) {
+                if (!userCredentials || !userCredentials['userName'] || !userCredentials['token']) {
                     return link;
                 }
                 var userName = userCredentials['userName'];
