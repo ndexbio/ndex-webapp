@@ -1051,9 +1051,9 @@ ndexServiceApp.factory('ndexUtility', function () {
                     token: loggedInUser.token
                 };
                 return userData;
-
-            }
-        }
+            };
+        };
+        return null;
     };
 
     factory.setUserAuthToken = function (token) {
@@ -1075,14 +1075,18 @@ ndexServiceApp.factory('ndexUtility', function () {
 
     factory.getLoggedInUserExternalId = function () {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-        if (!loggedInUser) loggedInUser = {};
-        return loggedInUser.externalId;
+        if (!loggedInUser) {
+            return null;
+        };
+        return (loggedInUser.externalId) ? loggedInUser.externalId : null;
     };
 
     factory.getLoggedInUserAccountName = function () {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-        if (!loggedInUser) loggedInUser = {};
-        return loggedInUser.userName;
+        if (!loggedInUser) {
+            return null;
+        };
+        return (loggedInUser.userName) ? loggedInUser.userName : null;
     };
 
     factory.getLoggedInUserFirstAndLastNames = function () {
@@ -1093,8 +1097,10 @@ ndexServiceApp.factory('ndexUtility', function () {
 
     factory.getLoggedInUserAuthToken = function () {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-        if (!loggedInUser) loggedInUser = {};
-        return loggedInUser.token;
+        if (!loggedInUser) {
+            return null;
+        };
+        return (loggedInUser.token) ? loggedInUser.token : null;
     };
 
 
