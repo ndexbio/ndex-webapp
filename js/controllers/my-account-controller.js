@@ -1111,7 +1111,7 @@ ndexApp.controller('myAccountController',
                     "<strong>Error Message: </strong>" + errorMessage + "<br><br>" +
                     "Would you like to permanently DELETE this network?"
                 
-                ndexNavigation.openConfirmationModal(title, body, "Cancel", "Delete",
+                ndexNavigation.openConfirmationModal(title, body, "Delete", "Cancel",
                     function () {
                         ndexService.deleteNetworkV2(networkUUID,
                             function (data)
@@ -1132,7 +1132,11 @@ ndexApp.controller('myAccountController',
                                 console.log("unable to delete network");
                             });
 
-                    });
+                    },
+                    function () {
+                        // User selected Cancel; do not do anything here
+                    }
+                );
 
                 return;
             };
