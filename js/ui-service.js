@@ -145,6 +145,72 @@
         }
     });
 
+    uiServiceApp.directive('triggerCreateCollectionModal', function() {
+        return {
+            scope: {},
+            restrict: 'A',
+            templateUrl: 'pages/directives/createCollectionModal.html',
+            controller: function($scope, $attrs, $modal, $location, ndexService) {
+                var modalInstance;
+
+                $scope.collection = {};
+                $scope.text = $attrs.triggerCreateCollectionModal;
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'modal.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.cancel = function() {
+                    modalInstance.dismiss();
+                    delete $scope.errors;
+                    $scope.collection = {};
+                };
+
+                $scope.$watch("collection.collectionName", function() {
+                    delete $scope.errors;
+                });
+
+                $scope.isProcessing = false;
+
+                $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
+
+                    // when creating a new account, user enters Group name;
+                    // but we also need to supply account name to the Server API --
+                    // so we create account name by removing all blanks from  Group name.
+                    var accountName = $scope.collection.collectionName.replace(/\s+/g,"");
+                    $scope.collection.userName = accountName;
+
+                    ndexService.createCollectionV2($scope.collection,
+                        function(url){
+                            if (url) {
+                                var collectionId = url.split('/').pop();
+                                modalInstance.close();
+                                ////console.log(groupData);
+
+                                $location.path('/collection/' + collectionId);
+                                $scope.isProcessing = false;
+                            }
+                        },
+                        function(error){
+                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
+                                $scope.errors = "Collection with name " + $scope.collection.collectionName + " already exists.";
+                            } else {
+                                $scope.errors = error.data.message;
+                            }
+                            $scope.isProcessing = false;
+                        });
+
+                };
+            }
+        }
+    });
+
     //----------------------------------------------------
     //              Elements
 
