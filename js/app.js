@@ -25,12 +25,13 @@ ndexApp.service('authInterceptor', function($q, $rootScope, $location) {
         response: function (response) {
             return response || $q.when(response);
         },
-        //responseError: function (response) {
-            //if (response.status == 401){
-            //    $location.path('/signIn').search('returnTo', $location.path());
-            //}
+        responseError: function (response) {
+            if (response.status == 401){
+                //$location.path('/signIn').search('returnTo', $location.path());
+                return $q.reject(response);
+            }
             //return $q.reject(response);
-        //}
+        }
     };
 
 
