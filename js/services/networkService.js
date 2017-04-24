@@ -40,7 +40,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
             // Server API: Get Network Summary
             // GET /network/{networkid}/summary
-            var url = "/network/" + networkId + "/summary";
+            var url = "/network/" + networkId + "/summary?setAuthHeader=false";
             var config = ndexConfigs.getGetConfigV2(url, null);
 
             config.timeout = deferredAbort.promise;
