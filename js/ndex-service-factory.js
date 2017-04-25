@@ -163,9 +163,9 @@ ndexServiceApp.factory('ndexService',
 
             factory.authenticateUserV2 = function (userName, password, successHandler, errorHandler) {
                 // Server API: Authenticate User
-                // GET /user?valid=true
+                // GET /user?valid=true&setAuthHeader=false
 
-                var url = "/user?valid=true";
+                var url = "/user?valid=true&setAuthHeader=false";
                 var headers = {
                     'Authorization': "Basic " + btoa(userName + ":" + password)
                 };
@@ -716,7 +716,7 @@ ndexServiceApp.factory('ndexService',
                 var deferredAbort = $q.defer();
 
 
-                var url = "/network/" + networkId + "/summary";
+                var url = "/network/" + networkId + "/summary?setAuthHeader=false";
                 var config = ndexConfigs.getGetConfigV2(url, null);
                 config.timeout = deferredAbort.promise;
 

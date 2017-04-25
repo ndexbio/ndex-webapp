@@ -1135,8 +1135,7 @@ ndexApp.controller('myAccountController',
                     },
                     function () {
                         // User selected Cancel; do not do anything here
-                    }
-                );
+                    });
 
                 return;
             };

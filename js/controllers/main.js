@@ -1,8 +1,8 @@
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties',
-    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc',
-    function (config, ndexService, ndexUtility, sharedProperties,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc) {
+ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$route',
+    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
+    function (config, ndexService, ndexUtility, sharedProperties, $route,
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
 
         $scope.$on('IdleStart', function() {
             $scope.main.signout();
@@ -17,12 +17,17 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.loggedIn = false;
         $scope.main.showSignIn = true;
 
-        $scope.$on('LOGGED_IN', function () {
+        $rootScope.$on('LOGGED_IN', function () {
             //listener for changes in log in.
             $scope.main.loggedIn = true;
             $scope.main.showSignIn = false;
             $scope.main.userName = sharedProperties.getCurrentUserAccountName();
             $scope.showMyAccountMenu = true;
+
+            if ($rootScope.reloadRoute) {
+                delete $rootScope.reloadRoute;
+                $route.reload();
+            };
         });
 
         $scope.$on('LOGGED_OUT', function () {
