@@ -317,6 +317,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.createNetworkSetV2 = function (networkSet, successHandler, errorHandler) {
+                // Server API: Create Group
+                // POST /group
+
+                var url = "/networkset";
+
+                var config = ndexConfigs.getPostConfigV2(url, networkSet);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.updateGroupV2 = function (group, successHandler, errorHandler) {
                 // Server API: Update Group
                 // PUT /group/{groupid}
@@ -399,6 +409,22 @@ ndexServiceApp.factory('ndexService',
 
                     this.sendHTTPRequest(config, successHandler, errorHandler);
                 }
+
+            /*---------------------------------------------------------------------*
+             * Network Sets
+             *---------------------------------------------------------------------*/
+
+            factory.getNetworkSet = function(networkSetId, successHandler, errorHandler) {
+                // API: Get a Network Set
+                // GET /networkset/{networkSetId}
+
+
+                var url = "/networkset/" + networkSetId;
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            }
 
 
             /*---------------------------------------------------------------------*

@@ -87,7 +87,6 @@
             templateUrl: 'pages/directives/createGroupModal.html',
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
-
                 $scope.group = {};
                 $scope.text = $attrs.triggerCreateGroupModal;
 
@@ -146,20 +145,20 @@
         }
     });
 
-    uiServiceApp.directive('triggerCreateCollectionModal', function() {
+    uiServiceApp.directive('triggerCreateNetworkSetModal', function() {
         return {
             scope: {},
             restrict: 'A',
-            templateUrl: 'pages/directives/createCollectionModal.html',
+            templateUrl: 'pages/directives/createNetworkSetModal.html',
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
 
-                $scope.collection = {};
-                $scope.text = $attrs.triggerCreateCollectionModal;
+                $scope.networkSet = {};
+                $scope.text = $attrs.triggerCreateNetworkSetModal;
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'modal.html',
+                        templateUrl: 'modalx.html',
                         scope: $scope
                     });
                 };
@@ -167,10 +166,10 @@
                 $scope.cancel = function() {
                     modalInstance.dismiss();
                     delete $scope.errors;
-                    $scope.collection = {};
+                    $scope.networkSet = {};
                 };
 
-                $scope.$watch("collection.collectionName", function() {
+                $scope.$watch("networkSet.networkSetName", function() {
                     delete $scope.errors;
                 });
 
@@ -184,23 +183,23 @@
                     // when creating a new account, user enters Group name;
                     // but we also need to supply account name to the Server API --
                     // so we create account name by removing all blanks from  Group name.
-                    var accountName = $scope.collection.collectionName.replace(/\s+/g,"");
-                    $scope.collection.userName = accountName;
+                    var accountName = $scope.networkSet.networkSetName.replace(/\s+/g,"");
+                    $scope.networkSet.name = accountName;
 
-                    ndexService.createCollectionV2($scope.collection,
+                    ndexService.createNetworkSetV2($scope.networkSet,
                         function(url){
                             if (url) {
-                                var collectionId = url.split('/').pop();
+                                var networkSetId = url.split('/').pop();
                                 modalInstance.close();
                                 ////console.log(groupData);
 
-                                $location.path('/collection/' + collectionId);
+                                $location.path('/networkSet/' + networkSetId);
                                 $scope.isProcessing = false;
                             }
                         },
                         function(error){
                             if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
-                                $scope.errors = "Collection with name " + $scope.collection.collectionName + " already exists.";
+                                $scope.errors = "Network Set with name " + $scope.networkSet.networkSetName + " already exists.";
                             } else {
                                 $scope.errors = error.data.message;
                             }
@@ -374,6 +373,110 @@
                         $scope.group[key] = value[key];
                     }
                 });
+            }
+        }
+    });
+
+    // edit group profiel modal
+    //      - ndexData takes a group object as a param
+    //      - redirects to group page
+    uiServiceApp.directive('editNetworkSetModal', function() {
+        return {
+            scope: {
+                ndexData: '=',
+                userId: "="
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/editNetworkSetModal.html',
+            transclude: true,
+            controller: function($scope, $attrs, $modal, $location, ndexService, $route) {
+                var modalInstance;
+                $scope.errors = null;
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'edit-network-set-modal.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.loadTheseSets = [
+                    {"id": 1, "name": "BEL Framework Small Corpus Document", "selected": false},
+                    {"id": 2, "name": "Neighborhood query result on network - BEL Framework Small Corpus Document", "selected": false},
+                    {"id": 3, "name": "three", "selected": false},
+                    {"id": 4, "name": "three4", "selected": false},
+                    {"id": 5, "name": "three5", "selected": false},
+                    {"id": 6, "name": "three6", "selected": false},
+                    {"id": 7, "name": "three7", "selected": false},
+                    {"id": 8, "name": "three8", "selected": false}
+                ];
+
+              $scope.getUserNetworks = function(){
+
+                    ndexService.getUserNetworkPermissionsV2($scope.userId, 'READ', 0, 1000000, false,
+                        function (networkPermissionsMap) {
+
+                            ndexService.getUserAccountPageNetworksV2(myAccountController.identifier,
+                                function(networkSummaries) {
+                                    networkSetController.userNetworkSearchResults = networkSummaries;
+
+                                    //populateNetworkTable();
+
+                                },
+                                function(error) {
+                                    console.log("unable to get user account page networks");
+                                });
+
+                        },
+                        function (error, data) {
+                            console.log("unable to get user network memberships");
+                        });
+                };
+
+
+
+
+
+                $scope.cancel = function() {
+                    for(var key in $scope.ndexData) {
+                        $scope.group[key] = $scope.ndexData[key];
+                    }
+                    modalInstance.close();
+                    delete $scope.errors;
+                    modalInstance = null;
+                };
+
+                $scope.submit = function() {
+                    if( $scope.isProcessing )
+                        return;
+                    $scope.isProcessing = true;
+                    ndexService.updateGroupV2($scope.group,
+                        function(group){
+                            var groupId = $scope.group.externalId;
+                            $scope.group = {};
+                            modalInstance.close();
+                            $location.path('/group/' + groupId);
+                            $route.reload();
+                            $scope.isProcessing = false;
+                        },
+                        function(error){
+                            $scope.errors = error.message;
+                            $scope.isProcessing = false;
+                        });
+                };
+                // ndexData is undefined at first pass. This seems to be a common problem
+                // most likey we aren't doing something the angular way, quick fix below
+                $scope.$watch('ndexData', function(value) {
+                    $scope.group = {};
+                    // Only want copy of object.
+                    // Can acheive one way binding using '@' in the scope
+                    // but then we have to do JSON.parse(JSON.stringify(value)) on it.
+                    // and use {{value}} in invoking html.
+                    for(var key in value) {
+                        $scope.group[key] = value[key];
+                    }
+                });
+
+                $scope.getUserNetworks();
             }
         }
     });

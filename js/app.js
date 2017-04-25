@@ -110,7 +110,13 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         // route for the group page
         .when('/group/:identifier', {
             templateUrl: 'pages/group.html',
-            controller: 'groupController'
+            controller: 'networkSetController'
+        })
+
+        // route for the group page
+        .when('/networkSet/:identifier', {
+            templateUrl: 'pages/networkSet.html',
+            controller: 'networkSetController'
         })
 
         // route for the network view page

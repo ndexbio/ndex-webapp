@@ -1,0 +1,52 @@
+<span ng-click="openMe()">{{text}}</span>
+
+<script type="text/ng-template" id="modalx.html">
+    <div class='modal-content'>
+        <form class="form-horizontal" name="createNetworkSetForm" role="form" ng-submit='submit()'>
+            <div class="modal-header">
+                <h4 class="modal-title">Create Network Set</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group rowWithOneLineTopPad">
+                    <label class="col-sm-3 control-label">Network Set Name</label>
+                    <div class="col-sm-8">
+                        <input type="text"
+                               id="networkSetName"
+                               name="networkSetName"
+                               type="networkSetName"
+                               class="form-control"
+                               placeholder="Network Set Name"
+                               required="required"
+                               ng-model='networkSet.networkSetName'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Description</label>
+                    <div class="col-sm-8">
+                        <text-angular
+                                ta-toolbar-class="btn-toolbar"
+                                ta-toolbar-group-class="btn-group btn-group-xs"
+                                ta-toolbar-button-class="btn btn-default"
+                                ta-toolbar-button-active-class="active"
+                                ta-default-wrap="div"
+                                ng-model='networkSet.description'>
+                        </text-angular>
+                    </div>
+                </div>
+
+                <div class='text-danger'>
+                    <strong>
+                        {{errors}}
+                    </strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a type='cancel' class="btn btn-default" ng-click="cancel()">Cancel</a>
+                <button type='submit' class="btn btn-primary" ng-click="submit()"
+                        ng-disabled="!createNetworkSetForm.networkSetName.$valid || isProcessing">
+                    Create</button>
+            </div>
+        </form>
+    </div>
+</script>

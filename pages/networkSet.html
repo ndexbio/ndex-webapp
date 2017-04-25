@@ -1,0 +1,126 @@
+  <div id="divGroup" class="row" >
+
+    <div style="margin-bottom: 1em" ng-show="groupController.errors.length > 0">
+        <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold" ng-repeat='error in groupController.errors'>
+            {{error}}
+            <span class="glyphicon glyphicon-remove pull-right"
+                  style='cursor:pointer'
+                  ng-click='groupController.errors.splice($index,1)'>
+            </span>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="row">
+            <div class='row'>
+            <ndex-account-image 
+                    ndex-class="'col-md-10'"
+                    ndex-src="groupController.displayedGroup.image">
+            </ndex-account-image>
+            </div>
+            <!--
+            <h4>
+                {{networkSetController.displayedGroup.userName}}
+            </h4>
+            -->
+            <div class="wrapLongLine">
+                <h4>
+                    {{groupController.displayedGroup.groupName}}
+                </h4>
+            </div>
+            <div class="wrapLongLine">
+                <small>{{groupController.displayedGroup.emailAddress}}</small>
+            </div>
+            <div class="wrapLongLine">
+                <a ng-href="{{groupController.displayedGroup.website}}" target="_blank">{{groupController.displayedGroup.website}}</a>
+            </div>
+
+            <div class="wrapLongLine" ng-bind-html="groupController.displayedGroup.description"></div>
+
+            <span class="btn-group btn-group-vertical buttonWithMarginBottom"
+                 ng-show='groupController.isAdmin || groupController.isMember'>
+                <hr>
+                <h5><strong>Actions:</strong></h5>
+
+                 <span ng-show='groupController.isAdmin'>
+                    <a class="btn btn-primary customButtonWidth">
+                        <edit-group-modal
+                                ndex-data='groupController.displayedGroup'>
+                            Edit Group Profile
+                        </edit-group-modal>
+                    </a>
+
+                    <a class="btn btn-primary customButtonWidth"
+                        ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
+                        Manage Members
+                    </a>
+                 </span>
+
+                 <span>
+                    <a class="btn btn-primary customButtonWidth">
+                       <leave-group ndex-data='groupController'>
+                          Leave Group
+                       </leave-group>
+                    </a>
+                 </span>
+
+                 <span ng-show='groupController.isAdmin'>
+                    <a class="btn btn-primary customButtonWidth">
+                        <delete-group
+                            ndex-data='groupController.displayedGroup.externalId'>
+                            Delete Group
+                        </delete-group>
+                    </a>
+                 </span>
+
+            </span>
+
+            <span class="btn-group btn-group-vertical buttonWithMarginBottom">
+                <!--ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedInUser'-->
+                <hr>
+                <h5><strong>Actions:</strong></h5>
+                <!--<span>
+                    <a class="btn btn-primary customButtonWidth">
+                        <create-request-group ndex-data='networkSetController.displayedGroup'>
+                            Ask to Join!
+                        </create-request-group>
+                    </a>
+                </span>-->
+
+                 <!--<span ng-show='groupController.isAdmin'>-->
+            <span>
+                    <a class="btn btn-primary customButtonWidth">
+                        <edit-network-set-modal
+                                ndex-data='groupController.displayedGroup' user-id="networkSetController.identifier">
+                            Add Networks
+                        </edit-network-set-modal>
+                    </a>
+                </span>
+                 <!--</span>-->
+
+            </span>
+        </div>
+    </div>
+
+    <!-- tabs -->
+    <div id="divgroupTabs" class="col-md-9" ng-show="groupController.displayedGroup">
+
+        <tabset justified="true">
+            <tab heading="Networks in this set">
+                <div id="divNetworks" ng-show='networkSetController.networkSearchResults.length > 0'>
+                    <div ui-grid-selection
+                         ui-grid="networkGridOptions"
+                         ui-grid-resize-columns
+                         ui-grid-auto-resize
+                         class="networkGrid"></div>
+                </div>
+                <div class='row' ng-hide='networkSetController.networkSearchResults.length > 0'>
+                    <br>
+                    <p class='text-center text-muted'>No networks to display</p>
+                </div>
+            </tab>
+        </tabset>
+
+    </div>
+
+</div>
