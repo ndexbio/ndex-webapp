@@ -526,6 +526,8 @@
 
                         $scope.loadTheseSets.push(networkSet);
                     });
+                    
+                    $scope.updateNoOSelectedSets();
                 };
 
                 
