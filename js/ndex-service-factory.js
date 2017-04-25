@@ -270,6 +270,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.getAllNetworkSetsOwnedByUserV2 = function (userId, successHandler, errorHandler) {
+                // Server API: Get All Network Sets Owned by a User
+                // GET /user/{userid}/networksets
+
+                var url = "/user/" + userId + "/networksets";
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             /*---------------------------------------------------------------------*
              * Groups
              *---------------------------------------------------------------------*/
@@ -314,16 +324,6 @@ ndexServiceApp.factory('ndexService',
                 var url = "/group";
 
                 var config = ndexConfigs.getPostConfigV2(url, group);
-                this.sendHTTPRequest(config, successHandler, errorHandler);
-            };
-
-            factory.createNetworkSetV2 = function (networkSet, successHandler, errorHandler) {
-                // Server API: Create Group
-                // POST /group
-
-                var url = "/networkset";
-
-                var config = ndexConfigs.getPostConfigV2(url, networkSet);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
@@ -409,22 +409,6 @@ ndexServiceApp.factory('ndexService',
 
                     this.sendHTTPRequest(config, successHandler, errorHandler);
                 }
-
-            /*---------------------------------------------------------------------*
-             * Network Sets
-             *---------------------------------------------------------------------*/
-
-            factory.getNetworkSet = function(networkSetId, successHandler, errorHandler) {
-                // API: Get a Network Set
-                // GET /networkset/{networkSetId}
-
-
-                var url = "/networkset/" + networkSetId;
-
-                var config = ndexConfigs.getGetConfigV2(url, null);
-
-                this.sendHTTPRequest(config, successHandler, errorHandler);
-            }
 
 
             /*---------------------------------------------------------------------*
@@ -885,7 +869,44 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             }
-            
+
+            /*---------------------------------------------------------------------*
+             * Network Sets
+             *---------------------------------------------------------------------*/
+            factory.createNetworkSetV2 = function (networkSet, successHandler, errorHandler) {
+                // Server API: Create A Network Set
+                // POST /networkset
+
+                var url = "/networkset";
+
+                var config = ndexConfigs.getPostConfigV2(url, networkSet);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
+            factory.getNetworkSetV2 = function(networkSetId, successHandler, errorHandler) {
+                // API: Get a Network Set
+                // GET /networkset/{networkSetId}
+
+                var url = "/networkset/" + networkSetId;
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.addNetworksToNetworkSetV2 = function(networkSetId, networkIds, successHandler, errorHandler) {
+                // API: Add Networks to Network Set
+                // POST /networkset/{networkSetId}/members
+
+                var url = "/networkset/" + networkSetId + "/members";
+
+                var config = ndexConfigs.getPostConfigV2(url, networkIds);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
             /*---------------------------------------------------------------------*
              * Batch Operations
              *---------------------------------------------------------------------*/

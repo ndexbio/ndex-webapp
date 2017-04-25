@@ -1,0 +1,51 @@
+<span ng-click="openMe()" ng-transclude></span>
+
+<script type="text/ng-template" id="show-network-sets-modal.html">
+<div class='modal-content'>
+
+  <form class="form-horizontal" role="form" ng-submit='submit()'>
+
+    <div class="modal-header">
+        <h4 class="modal-title">Select Network Collections</h4>
+    </div>
+
+    <div class="modal-body">
+
+        <table class="table table-striped table-hover" style="empty-cells: show;">
+            <tr ng-repeat="thisSet in loadTheseSets" ng-class="selectedRow==$index ? 'info':''"
+                ng-click="thisSet.selected = !thisSet.selected; updateNoOSelectedSets()">
+                <td style="width: 35px;">
+                    <i ng-show="thisSet.selected" style="color: green;" class="fa fa-check-square fa-lg" aria-hidden="true"></i>
+                    <i ng-show="!thisSet.selected" class="fa fa-square-o fa-lg" aria-hidden="true"></i>
+                </td>
+                <td>
+                    <span ng-bind-html="thisSet.name"></span>
+                    <!--<span ng-bind-html="thisSet.description"></span> -->
+                </td>
+            </tr>
+        </table>
+
+
+        <span ng-show="progress">
+            <strong><span style="color: green; font-size: 1.3em" ng-bind-html="progress"></span></strong>
+        </span>
+
+      <div class='text-danger'>
+        <strong>
+          {{errors}}
+        </strong>
+      </div>
+
+    </div>
+        
+    <div class="modal-footer">
+        <a class="btn btn-default" type='button' ng-click='closeModal()'>Cancel</a>
+        <button class="btn btn-primary" type='submit'
+                ng-disabled="noSetsSelected() || isProcessing">Add to Selected Collections
+        </button>
+    </div>
+  </form>
+
+</div>
+
+</script>

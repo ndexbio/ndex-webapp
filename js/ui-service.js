@@ -481,6 +481,117 @@
         }
     });
 
+
+    
+    // present user with the list of Network Collection 
+    //      
+    //      
+    uiServiceApp.directive('showNetworkSetsModal', function() {
+        return {
+            scope: {
+                myAccountController: '=',
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/showNetworkSetsModal.html',
+            transclude: true,
+            controller: function($scope, $attrs, $modal, $location, ndexService, $route) {
+                var modalInstance;
+                $scope.errors = null;
+
+                $scope.loadTheseSets = [];
+
+                $scope.noOfSelectedSets = _.sumBy($scope.loadTheseSets, function(o) { return o.selected; });
+
+                $scope.openMe = function() {
+
+                   initializeListOfCollections();
+
+                    modalInstance = $modal.open({
+                        templateUrl: 'show-network-sets-modal.html',
+                        scope: $scope
+                    });
+                };
+
+                var initializeListOfCollections = function() {
+                    var networkSets = $scope.myAccountController.networkSets;
+                    $scope.loadTheseSets = [];
+
+                    _.forEach(networkSets, function(networkSetObj) {
+                        var networkSet = {
+                            "id"   : networkSetObj.externalId,
+                            "name" :  networkSetObj.name,
+                            "description" : networkSetObj.description,
+                            "selected": false
+                        };
+
+                        $scope.loadTheseSets.push(networkSet);
+                    });
+                };
+
+                
+                $scope.closeModal = function() {
+                    delete $scope.errors;
+                    delete $scope.progress;
+                    modalInstance.close();
+                    modalInstance = null;
+                    $scope.isProcessing = false;
+                };
+
+                $scope.noSetsSelected = function() {
+                    return $scope.noOfSelectedSets == 0;
+                };
+
+                $scope.updateNoOSelectedSets = function() {
+                    $scope.noOfSelectedSets = _.sumBy($scope.loadTheseSets, function(o) { return o.selected; });
+                };
+
+                $scope.submit = function() {
+                    if ($scope.isProcessing)
+                        return;
+                    $scope.isProcessing = true;
+
+                    var idsOfSelectedNetworks = $scope.myAccountController.getIDsOfSelectedNetworks();
+                    $scope.noOfSelectedSets = _.sumBy($scope.loadTheseSets, function(o) { return o.selected; });
+                    var noOfUpdatedSets  = 0;
+
+                    if ($scope.noOfSelectedSets == 0) {
+                        $scope.closeModal();
+                    };
+                    
+                    _.forEach($scope.loadTheseSets, function(networkSetObj) {
+
+                        if (networkSetObj.selected) {
+
+                            $scope.progress = "Adding networks to collection " + networkSetObj.name;
+
+                            ndexService.addNetworksToNetworkSetV2(networkSetObj.id, idsOfSelectedNetworks,
+                                function(data){
+
+                                    noOfUpdatedSets = noOfUpdatedSets + 1;
+                                    
+                                    if ($scope.noOfSelectedSets == noOfUpdatedSets) {
+                                        $scope.closeModal();
+                                    };
+                                },
+                                function(error){
+                                    noOfUpdatedSets = noOfUpdatedSets + 1;
+
+                                    if ($scope.noOfSelectedSets == noOfUpdatedSets) {
+                                        $scope.closeModal();
+                                    };
+                                    
+                                    $scope.errors = error.message;
+                                });
+                        };
+                    });
+
+                };
+            }
+        };
+    });
+    
+    
+    
     // invite members modal
     //      -ndexData takes a group external id as a param
     uiServiceApp.directive('inviteMembersModal', function() {

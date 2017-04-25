@@ -67,9 +67,12 @@ ndexApp.controller('myAccountController',
             $scope.enableEditAndExportBulkButtons = false;
             
 
-            myAccountController.editProfilesLabel   = "Edit Profile";
-            myAccountController.exportNetworksLabel = "Export Network";
-            myAccountController.deleteNetworksLabel = "Delete Network";
+            myAccountController.editProfilesLabel    = "Edit Profile";
+            myAccountController.exportNetworksLabel  = "Export Network";
+            myAccountController.addToNetworkSetLabel = "Add To Collection";
+            myAccountController.deleteNetworksLabel  = "Delete Network";
+
+            myAccountController.networkSets = [];
             
 
             $scope.selectedRowsUids = {};
@@ -800,11 +803,23 @@ ndexApp.controller('myAccountController',
                                     }
                                 )
                         },
-                        function (error, data) {
+                        function (error, status, headers, config, statusText) {
                             console.log("unable to get user group memberships");
                         });
             };
-            
+
+            myAccountController.getAllNetworkSetsOwnedByUser = function ()
+            {
+                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+
+                    function (networkSets) {
+                        myAccountController.networkSets = _.sortBy(networkSets, 'name');
+                    },
+                    function (error, status, headers, config, statusText) {
+                        console.log("unable to get network sets");
+                    });
+            };
+
             myAccountController.adminCheckBoxClicked = function()
             {
                 var member = (myAccountController.groupSearchAdmin) ? "GROUPADMIN" : null;
@@ -1166,6 +1181,8 @@ ndexApp.controller('myAccountController',
                     // get groups
                     var member = null;
                     myAccountController.getUserGroupMemberships(member);
+
+                    myAccountController.getAllNetworkSetsOwnedByUser();
                 })
         }]);
 

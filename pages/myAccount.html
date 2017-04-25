@@ -171,6 +171,16 @@
 
                     <span>
                         <a class="btn btn-primary customButtonWidth"
+                           ng-if="myAccountController.networkSets.length > 0">
+
+                            <show-network-sets-modal my-account-controller='myAccountController'>
+                                 {{myAccountController.addToNetworkSetLabel}}
+                            </show-network-sets-modal>
+                        </a>
+                    </span>
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
                            ng-click="myAccountController.checkAndDeleteSelectedNetworks()">
                             {{myAccountController.deleteNetworksLabel}}
                         </a>

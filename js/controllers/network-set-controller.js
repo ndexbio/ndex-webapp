@@ -165,19 +165,7 @@ ndexApp.controller('networkSetController',
             
     networkSetController.getNetworksOfNetworkSet = function() {
 
-        /*
-         * To get list of Network Summaries objects we need to:
-         *
-         * 1) Use getNetworkPermissionsOfGroup function at
-         *  /group/{groupid}/permission?permission={permission}&start={startPage}&size={pageSize}
-         * to get the list of network IDs that this group has permission to.
-         *
-         * 2) Use getNetworkSummaries function at /network/summaries to get a list of network
-         * summaries using the network IDs you got in step 1  (send all network IDs in one call).
-         *
-         */
-
-        ndexService.getNetworkSet(networkSetController.identifier,
+        ndexService.getNetworkSetV2(networkSetController.identifier,
             
                 function (networkSetInformation) {
                     var networkUUIDs = networkSetInformation["networks"];
