@@ -884,6 +884,16 @@ ndexServiceApp.factory('ndexService',
             };
 
 
+            factory.deleteNetworkSetV2 = function (networkSetId, successHandler, errorHandler) {
+                // Server API: Delete A Network Set
+                // DELETE /networkset/{networksetId}
+
+                var url = "/networkset/" + networkSetId;
+
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.getNetworkSetV2 = function(networkSetId, successHandler, errorHandler) {
                 // API: Get a Network Set
                 // GET /networkset/{networkSetId}
