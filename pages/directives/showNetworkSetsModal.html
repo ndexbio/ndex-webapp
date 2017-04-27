@@ -1,5 +1,15 @@
 <span ng-click="openMe()" ng-transclude></span>
+<style>
+    tbody > tr:nth-child(odd)
+    {
+        background: #FFFFFF;
+    }
 
+    tbody > tr:nth-child(even)
+    {
+        background: #F0F0F0;
+    }
+</style>
 <script type="text/ng-template" id="show-network-sets-modal.html">
 <div class='modal-content'>
 
@@ -10,8 +20,7 @@
     </div>
 
     <div class="modal-body">
-
-        <table class="table table-striped table-hover" style="empty-cells: show;">
+        <table class="table table-striped table-bordered" style="empty-cells: show; margin-bottom: 0px;">
             <tr ng-repeat="thisSet in loadTheseSets" ng-class="selectedRow==$index ? 'info':''"
                 ng-click="thisSet.selected = !thisSet.selected; updateNoOSelectedSets()">
                 <td style="width: 35px;">
@@ -24,7 +33,6 @@
                 </td>
             </tr>
         </table>
-
 
         <span ng-show="progress">
             <strong><span style="color: green; font-size: 1.3em" ng-bind-html="progress"></span></strong>
