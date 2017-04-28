@@ -167,6 +167,7 @@
                     modalInstance.dismiss();
                     delete $scope.errors;
                     $scope.networkSet = {};
+                    $scope.isProcessing = false;
                 };
 
                 $scope.$watch("networkSet.networkSetName", function() {
@@ -176,26 +177,21 @@
                 $scope.isProcessing = false;
 
                 $scope.submit = function() {
-                    if( $scope.isProcessing )
+                    if ($scope.isProcessing)
                         return;
                     $scope.isProcessing = true;
 
-                    // when creating a new account, user enters Group name;
-                    // but we also need to supply account name to the Server API --
-                    // so we create account name by removing all blanks from  Group name.
-                    var accountName = $scope.networkSet.networkSetName.replace(/\s+/g,"");
-                    $scope.networkSet.name = accountName;
+                    $scope.networkSet.name = $scope.networkSet.networkSetName;
 
                     ndexService.createNetworkSetV2($scope.networkSet,
                         function(url){
                             if (url) {
                                 var networkSetId = url.split('/').pop();
                                 modalInstance.close();
-                                ////console.log(groupData);
 
                                 $location.path('/networkSet/' + networkSetId);
                                 $scope.isProcessing = false;
-                            }
+                            };
                         },
                         function(error){
                             if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
@@ -553,7 +549,7 @@
                     $scope.isProcessing = true;
 
                     var idsOfSelectedNetworks = $scope.myAccountController.getIDsOfSelectedNetworks();
-                    $scope.noOfSelectedSets = _.sumBy($scope.loadTheseSets, function(o) { return o.selected; });
+                    $scope.updateNoOSelectedSets();
                     var noOfUpdatedSets  = 0;
 
                     if ($scope.noOfSelectedSets == 0) {
@@ -564,7 +560,7 @@
 
                         if (networkSetObj.selected) {
 
-                            $scope.progress = "Adding networks to collection " + networkSetObj.name;
+                            $scope.progress = "<br>Adding networks to collection " + networkSetObj.name;
 
                             ndexService.addNetworksToNetworkSetV2(networkSetObj.id, idsOfSelectedNetworks,
                                 function(data){
@@ -572,6 +568,7 @@
                                     noOfUpdatedSets = noOfUpdatedSets + 1;
                                     
                                     if ($scope.noOfSelectedSets == noOfUpdatedSets) {
+                                        $scope.myAccountController.getAllNetworkSetsOwnedByUser();
                                         $scope.closeModal();
                                     };
                                 },
@@ -579,6 +576,7 @@
                                     noOfUpdatedSets = noOfUpdatedSets + 1;
 
                                     if ($scope.noOfSelectedSets == noOfUpdatedSets) {
+                                        $scope.myAccountController.getAllNetworkSetsOwnedByUser();
                                         $scope.closeModal();
                                     };
                                     
