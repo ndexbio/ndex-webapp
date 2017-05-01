@@ -70,7 +70,7 @@ ndexApp.controller('myAccountController',
 
             myAccountController.editProfilesLabel    = "Edit Profile";
             myAccountController.exportNetworksLabel  = "Export Network";
-            myAccountController.addToNetworkSetLabel = "Add To Collection";
+            myAccountController.addToNetworkSetLabel = "Add To Network Set";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
             myAccountController.deleteCollectionsLabel = "Delete Set";
@@ -272,20 +272,25 @@ ndexApp.controller('myAccountController',
             var populateCollectionsTable = function()
             {
                 var columnDefs = [
-                    {
-                        field: 'Collection Name', enableFiltering: true,
-                        cellTemplate: '<div class="ui-grid-cell-contents"> <a ng-href>{{COL_FIELD}} </a> </div>'
+                    { field: 'Set Name', enableFiltering: true,
+                      cellTemplate: 'pages/gridTemplates/setName.html'
                     },
 
-                    { field: 'Collection Description', enableFiltering: true,  
-                        cellTemplate: '<div class="ui-grid-cell-contents" ng-bind-html="COL_FIELD"></div>'  },
+                    { field: 'Set Description', enableFiltering: true,
+                      cellTemplate: '<div class="ui-grid-cell-contents" ng-bind-html="COL_FIELD"></div>'
+                    },
 
                     { field: 'No of Networks', enableFiltering: false, maxWidth:110,
-                        cellTemplate: '<div style="text-align: center">{{ COL_FIELD }}</div>'},
+                      cellTemplate: '<div style="text-align: center">{{ COL_FIELD }}</div>'
+                    },
 
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120,
-                        cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
-                    }
+                      cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
+                    },
+
+                    { field: 'externalId',  enableFiltering: false,  visible: false },
+                    { field: 'name',        enableFiltering: false,  visible: false },
+                    { field: 'description', enableFiltering: false,  visible: false },
 
                 ];
 
@@ -299,18 +304,20 @@ ndexApp.controller('myAccountController',
 
                 _.forEach(myAccountController.networkSets, function(collection) {
 
-                    var uuid = collection.externalId;
                     var name = collection.name;
-                    var description = collection.description;
+                    var description = $scope.stripHTML(collection.description);
                     var noOfNetworks = (collection.networks) ? collection.networks.length : 0;
                     var modificationTime = collection.modificationTime;
+                    var externalId = collection.externalId;
 
                     var row =   {
-                        "Collection Name"         :   name,
-                        "Collection Description"  :   description,
-                        "No of Networks"          :   noOfNetworks,
-                        "Last Modified"           :   modificationTime,
-                        "UUID"                    :   uuid
+                        "Set Name"        :   name,
+                        "Set Description" :   description,
+                        "No of Networks"  :   noOfNetworks,
+                        "Last Modified"   :   modificationTime,
+                        "externalId"      :   externalId,
+                        "name"            :   name,
+                        "description"     :   description,
                     };
 
                     $scope.collectionGridOptions.data.push(row);
@@ -896,7 +903,7 @@ ndexApp.controller('myAccountController',
 
                 _.forEach(selectedCollectionsRows, function(row) {
 
-                    var collectionUUID = row.UUID;
+                    var collectionUUID = row.externalId;
 
                     selectedIds.push(collectionUUID);
 

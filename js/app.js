@@ -153,6 +153,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'manageBulkNetworkAccessController'
         })
 
+        .when('/networkset/:identifier', {
+            templateUrl: 'pages/networkSet.html',
+            controller: 'networkSetController'
+        })
+
         .when('/access/group/:identifier', {
             templateUrl: 'pages/manageGroupAccess.html',
             controller: 'manageGroupAccessController'
