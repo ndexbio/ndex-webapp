@@ -13,23 +13,13 @@ ndexApp.controller('networkSetController',
     $scope.networkSetController = {};
     var networkSetController = $scope.networkSetController;
 
-    networkSetController.isAdmin = false;
-    networkSetController.isMember = false;
     networkSetController.identifier = identifier;
-
-    // members
-    // convert to query object?
-    networkSetController.userSearchAdmin = false;
-    networkSetController.userSearchMember = false;
-    networkSetController.userSearchResults = [];
-    networkSetController.originalUserSearchResults = [];
-
-    networkSetController.adminsCount = 0;
 
     // networks
     networkSetController.networkSearchResults = [];
-    networkSetController.networkQuery = {};
     networkSetController.errors = [];
+
+    networkSetController.networkTableRowsSelected = 0;
 
     networkSetController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
@@ -39,130 +29,6 @@ ndexApp.controller('networkSetController',
         $location.path("/network/" + identifier);
     };
 
-    var getUsersUUIDs = function(users) {
-        var usersUUIDs = [];
-
-        for (var i=0; i<users.length; i++) {
-            var userUUID = users[i].memberUUID;
-            usersUUIDs.push(userUUID);
-        }
-        return usersUUIDs;
-    }
-
-    var countAdmins = function(users) {
-        networkSetController.adminsUUIDs = [];
-
-        if (!users) {
-            return;
-        }
-
-        for (var i in users) {
-            var user = users[i];
-
-            if (user.permissions.toUpperCase() == 'GROUPADMIN') {
-                networkSetController.adminsCount = networkSetController.adminsCount + 1;
-            }
-        }
-    }
-
-
-    //TODO this should be deleted.  Network Sets do not have members, only an owner
-    networkSetController.getMembersOfGroup = function(member) {
-        /*
-         * To get list of User objects we need to:
-         *
-         * 1) Use Get Members of a Group API:
-         *    GET /group/{groupid}/membership?type={membershiptype}&start={start}&size={size}
-         *    to get the GROUP memberships
-         *
-         * 2) Get a list of User UUIDs from step 1
-         *
-         * 3) Use this list of User UUIDs to get Users through
-         *    /batch/user API.
-         *
-         */
-        ndexService.getMembersOfGroupV2(networkSetController.identifier, member, 0, 1000000,
-            function (users) {
-
-                countAdmins(users);
-
-                var usersUUIDs = getUsersUUIDs(users);
-
-                ndexService.getUsersByUUIDsV2(usersUUIDs)
-                    .success(
-                        function (users) {
-                            networkSetController.userSearchResults = users;
-                            networkSetController.originalUserSearchResults = users;
-                        }
-                    )
-                    .error(
-                        function (error) {
-                            console.log("unable to get users by UUIDs");
-                        }
-                    );
-            },
-            function (error, data) {
-                console.log("unable to get group user memberships");
-            });
-    }
-
-    var checkUserSearchResultObject = function(userObj) {
-        var found = false;
-
-        for (var i = 0; i < networkSetController.originalUserSearchResults.length; i++ ) {
-            if (userObj.externalId == networkSetController.originalUserSearchResults[i].externalId) {
-                found = true;
-                break;
-            }
-        }
-
-        return found;
-    }
-
-    networkSetController.searchMembersFromUserInput = function() {
-        var searchString = networkSetController.memberSearchString;
-
-        ndexService.searchUsersV2(searchString, 0, 1000000,
-            function(userObjectsFound) {
-
-                networkSetController.userSearchResults = [];
-
-                if (userObjectsFound && userObjectsFound.resultList && userObjectsFound.resultList.length > 0) {
-
-                    for (var i = 0; i < userObjectsFound.resultList.length; i++) {
-                        var userObj = userObjectsFound.resultList[i];
-
-                        if (checkUserSearchResultObject(userObj)) {
-                            networkSetController.userSearchResults.push(userObj);
-                        }
-                    }
-                }
-            },
-            function(error) {
-                console.log("unable to search users");
-            });
-
-    }
-
-
-    networkSetController.adminCheckBoxClicked = function()
-    {
-        var member = (networkSetController.userSearchAdmin) ? "GROUPADMIN" : null;
-
-        networkSetController.userSearchMember = false;
-
-        networkSetController.getMembersOfGroup(member);
-    };
-
-    networkSetController.memberCheckBoxClicked = function()
-    {
-        var member = (networkSetController.userSearchMember) ? "MEMBER" : null;
-
-        networkSetController.userSearchAdmin = false;
-
-        networkSetController.getMembersOfGroup(member);
-    };
-            
     networkSetController.getNetworksOfNetworkSet = function() {
 
         ndexService.getNetworkSetV2(networkSetController.identifier,
@@ -173,13 +39,12 @@ ndexApp.controller('networkSetController',
                     ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
                         function (networkSummaries) {
                             networkSetController.networkSearchResults = networkSummaries;
-                            $scope.netSummaries = networkSummaries;
                             populateNetworkTable();
                         },
                         function (error) {
                             if (error) {
                                 displayErrorMessage(error);
-                            }
+                            };
                         });
 
                 },
@@ -196,10 +61,8 @@ ndexApp.controller('networkSetController',
         enableSorting: true,
         enableFiltering: true,
         showGridFooter: true,
-        enableSelectAll: false,
-        enableRowSelection: false,
-        multiSelect: false,
-        enableRowHeaderSelection: false,
+        // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
+        // otherwise it will not show all columns if we display more than 10 columns in our table
         columnVirtualizationThreshold: 20,
         enableColumnMenus: false,
 
@@ -208,14 +71,12 @@ ndexApp.controller('networkSetController',
             $scope.networkGridApi = gridApi;
             gridApi.selection.on.rowSelectionChanged($scope,function(row){
                 var selectedRows = gridApi.selection.getSelectedRows();
-                networkSetController.atLeastOneSelected = selectedRows.length > 0;
-
+                networkSetController.networkTableRowsSelected = selectedRows.length;
             });
             gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                 var selectedRows = gridApi.selection.getSelectedRows();
-                networkSetController.atLeastOneSelected = selectedRows.length > 0;
+                networkSetController.networkTableRowsSelected = selectedRows.length;
             });
-
         }
     };
 
@@ -333,37 +194,81 @@ ndexApp.controller('networkSetController',
     var displayErrorMessage = function(error) {
         var message = (error && error.message) ? error.message: "Unknown error; Server returned no error information.";
         networkSetController.errors.push(message);
-    }
-            
-            //              local functions
-    var getMembership = function() {
-
-        if (!networkSetController.isLoggedInUser) {
-            return;
-        }
-        
-        var userId = sharedProperties.getCurrentUserId();
-        var groupId = networkSetController.displayedGroup.externalId
-
-        ndexService.getUserMembershipInGroupV2(userId, groupId,
-
-            function(membership) {
-                if (membership) {
-                    var myMembership = membership[groupId];
-
-                    if (myMembership == 'GROUPADMIN') {
-                        networkSetController.isAdmin = true;
-                    }
-                    if (myMembership == 'MEMBER') {
-                        networkSetController.isMember = true;
-                    }
-                }
-            },
-            function(error){
-                //console.log(error);
-                displayErrorMessage(error);
-            });
     };
+
+
+    var removeSelectedNetworksFromSet = function ()
+    {
+        var selectedNetworksIds = [];
+
+        var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+        _.forEach(selectedNetworksRows, function(row) {
+            selectedNetworksIds.push(row.externalId);
+        });
+
+        if (selectedNetworksIds.length == 0) {
+            return;
+        };
+
+        ndexService.deleteNetworksFromNetworkSetV2(networkSetController.identifier, selectedNetworksIds,
+
+            function (data) {
+
+                // after we removed the selected networks, the footer of the table may
+                // still show that some networks are selected (must be a bug), so
+                // we manually set the selected count to 0 (see defect NDEX-582)
+                $scope.networkGridApi.grid.selection.selectedCount = 0;
+
+                for (var i = networkSetController.networkSearchResults.length - 1; i >= 0; i-- )
+                {
+                    var externalId = networkSetController.networkSearchResults[i].externalId;
+                    if  (selectedNetworksIds.indexOf(externalId) != -1) {
+                        networkSetController.networkSearchResults.splice(i, 1);
+                    };
+                }
+                refreshNetworkTable();
+                networkSetController.networkTableRowsSelected = 0;
+
+            },
+            function (error) {
+                if (error) {
+                    displayErrorMessage(error);
+                };
+            });
+
+    };
+
+
+    networkSetController.confirmRemoveSelectedNetworksFromSet = function()
+    {
+        var modalInstance = $modal.open({
+            templateUrl: 'confirmation-modal.html',
+            scope: $scope,
+
+            controller: function($scope, $modalInstance) {
+
+                $scope.title = 'Remove Selected Networks';
+                $scope.message =
+                    'The selected sets networks will be removed from this Set. Are you sure you want to proceed?';
+
+                $scope.cancel = function() {
+                    $modalInstance.dismiss();
+                    $scope.isProcessing = false;
+                };
+
+                $scope.confirm = function() {
+                    $scope.isProcessing = true;
+                    removeSelectedNetworksFromSet();
+                    $modalInstance.dismiss();
+                    $scope.isProcessing = false;
+                };
+            }
+        });
+    };
+
+
+    // local functions
 
     $scope.showWarningsOrErrors = function(rowEntity) {
 
@@ -389,29 +294,13 @@ ndexApp.controller('networkSetController',
             return false;
         }
         return (sharedProperties.getCurrentUserId() == networkOwnerUUID);
-    }
+    };
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //----------------------------------------------------------------------------
-    // networkSetController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
+    networkSetController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
 
-    /*
-    ndexService.getGroupV2(networkSetController.identifier,
-        function (group) {
- 
-            networkSetController.displayedGroup = group;
 
-            getMembership();
-
-            networkSetController.getNetworksOfNetworkSet();
-
-            // passing null as type to the Use Get Members of a Group API will
-            // find both MEMBER and GROUPADMIN members of the group
-            var member = null;
-            networkSetController.getMembersOfGroup(member);
-        });
-    */
     networkSetController.getNetworksOfNetworkSet();
-
     //------------------------------------------------------------------------------------//
 }]);

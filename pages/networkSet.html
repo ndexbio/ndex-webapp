@@ -1,5 +1,6 @@
   <div id="divGroup" class="row" >
 
+<!--
     <div style="margin-bottom: 1em" ng-show="groupController.errors.length > 0">
         <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold" ng-repeat='error in groupController.errors'>
             {{error}}
@@ -9,6 +10,7 @@
             </span>
         </div>
     </div>
+-->
 
     <div class="col-md-2">
         <div class="row">
@@ -37,66 +39,18 @@
 
             <div class="wrapLongLine" ng-bind-html="groupController.displayedGroup.description"></div>
 
-            <span class="btn-group btn-group-vertical buttonWithMarginBottom"
-                 ng-show='groupController.isAdmin || groupController.isMember'>
-                <hr>
-                <h5><strong>Actions:</strong></h5>
 
-                 <span ng-show='groupController.isAdmin'>
-                    <a class="btn btn-primary customButtonWidth">
-                        <edit-group-modal
-                                ndex-data='groupController.displayedGroup'>
-                            Edit Group Profile
-                        </edit-group-modal>
-                    </a>
-
-                    <a class="btn btn-primary customButtonWidth"
-                        ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
-                        Manage Members
-                    </a>
-                 </span>
-
-                 <span>
-                    <a class="btn btn-primary customButtonWidth">
-                       <leave-group ndex-data='groupController'>
-                          Leave Group
-                       </leave-group>
-                    </a>
-                 </span>
-
-                 <span ng-show='groupController.isAdmin'>
-                    <a class="btn btn-primary customButtonWidth">
-                        <delete-group
-                            ndex-data='groupController.displayedGroup.externalId'>
-                            Delete Group
-                        </delete-group>
-                    </a>
-                 </span>
-
-            </span>
 
             <span class="btn-group btn-group-vertical buttonWithMarginBottom">
-                <!--ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedInUser'-->
                 <hr>
-                <h5><strong>Actions:</strong></h5>
-                <!--<span>
-                    <a class="btn btn-primary customButtonWidth">
-                        <create-request-group ndex-data='networkSetController.displayedGroup'>
-                            Ask to Join!
-                        </create-request-group>
-                    </a>
-                </span>-->
+                <h5><strong>Bulk Actions:</strong></h5>
 
-                 <!--<span ng-show='groupController.isAdmin'>-->
-            <span>
-                    <a class="btn btn-primary customButtonWidth">
-                        <edit-network-set-modal
-                                ndex-data='groupController.displayedGroup' user-id="networkSetController.identifier">
-                            Add Networks
-                        </edit-network-set-modal>
+                <span>
+                    <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0"
+                       ng-click="networkSetController.confirmRemoveSelectedNetworksFromSet()">
+                        Remove From Set
                     </a>
                 </span>
-                 <!--</span>-->
 
             </span>
         </div>

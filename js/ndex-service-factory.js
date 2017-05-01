@@ -916,6 +916,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.deleteNetworksFromNetworkSetV2 = function(networkSetId, networkIds, successHandler, errorHandler) {
+                // API: Delete Networks from Network Set
+                // DELETE /networkset/{networkSetId}/members
+
+                var url = "/networkset/" + networkSetId + "/members";
+
+                var config = ndexConfigs.getDeleteConfigV2(url, networkIds);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
 
             /*---------------------------------------------------------------------*
              * Batch Operations
@@ -1328,7 +1338,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     /*---------------------------------------------------------------------*
      * DELETE request configuration
      *---------------------------------------------------------------------*/
-    factory.getDeleteConfigV2 = function (url) {
+    factory.getDeleteConfigV2 = function (url, deleteData) {
         var config = {
             method: 'DELETE',
             url: ndexServerURIV2 + url,
@@ -1342,6 +1352,16 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
         {
             config['headers']['Authorization'] = undefined;
         }
+        if (deleteData) {
+            if (typeof deleteData == "string") {
+                config.data = deleteData;
+            } else {
+                config.data = JSON.stringify(deleteData);
+                // we must specify comntent type as application/json when setting body of HTTP DELETE request;
+                // if we do not do that, then the contents type will be set to text/plain and the call will fail
+                config['headers']['Content-Type'] = 'application/json';
+            };
+        };
         return config;
     };
     

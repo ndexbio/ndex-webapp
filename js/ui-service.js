@@ -430,10 +430,6 @@
                         });
                 };
 
-
-
-
-
                 $scope.cancel = function() {
                     for(var key in $scope.ndexData) {
                         $scope.group[key] = $scope.ndexData[key];
@@ -502,7 +498,7 @@
 
                 $scope.openMe = function() {
 
-                   initializeListOfCollections();
+                    initializeListOfCollections();
 
                     modalInstance = $modal.open({
                         templateUrl: 'show-network-sets-modal.html',
