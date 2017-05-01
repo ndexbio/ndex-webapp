@@ -48,7 +48,10 @@
                     </span>
 
                     <span>
-                        <a class="btn btn-primary customButtonWidth" trigger-create-network-set-modal="Create Network Set">Create Network Set</a>
+                        <a class="btn btn-primary customButtonWidth"
+                           my-account-controller='myAccountController'
+                           trigger-create-network-set-modal="Create Network Set">Create Network Set
+                        </a>
                     </span>
 
                     <span>
@@ -192,7 +195,7 @@
                     <span ng-show="myAccountController.collectionTableRowsSelected > 0">
                         <span>
                             <a class="btn btn-primary customButtonWidth"
-                               ng-click="myAccountController.confirmDeleteSelectedCollections()">
+                               ng-click="myAccountController.confirmDeleteSelectedSets()">
                                 {{myAccountController.deleteCollectionsLabel}}
                             </a>
                         </span>
@@ -210,7 +213,7 @@
 
         <tabset justified="false">
 
-            <tab heading="My Networks" select="tabShown = !tabShown" deselect="tabShown = !tabShown"
+            <tab ng-attr-active="tabs[0].active" heading="My Networks" select="tabShown = !tabShown" deselect="tabShown = !tabShown"
                  ng-click="selectPreviouslySelectedNetworks()">
 
             <!--<tab heading="My Networks"> -->
@@ -219,7 +222,7 @@
                  The use ng-if="tabShown" ... described on the page above introduces another issue:
                  the selected rows on the Networks page get unselected if you select a different tab (i.e., Groups)
                  and come back to Networks tab. -->
-                <div id="divNetworks" ng-show='myAccountController.networkSearchResults.length > 0'>
+                <div ng-show='myAccountController.networkSearchResults.length > 0'>
                     <div ui-grid-selection
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
@@ -236,7 +239,7 @@
 
             </tab>
 
-            <tab heading="My Groups">
+            <tab ng-attr-active="tabs[1].active" heading="My Groups">
                 <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
@@ -302,7 +305,7 @@
 
             </tab>
 
-            <tab heading="My Collections" ng-when="anyCollections()"
+            <tab ng-attr-active="tabs[2].active" heading="My Sets" disabled="!anyCollections()"
                  select="collectionsTabShown = !collectionsTabShown" deselect="collectionsTabShown = !collectionsTabShown"
                  ng-click="selectPreviouslySelectedCollections()">
 
@@ -321,7 +324,7 @@
                  1) user is logged in (it is not an anonymous search), and
                  2) selected user is the same as the one who logged in.  In other words, this tab will be hidden if
                  a user logged in as say "aaa" and gets networks for user "bbb" --->
-            <tab heading="My Tasks & Notifications"
+            <tab ng-attr-active="tabs[3].active" heading="My Tasks & Notifications"
                  ng-show="(myAccountController.isLoggedInUser) && (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)"
                  disabled="myAccountController.tasksNotificationsTabDisabled()">
 

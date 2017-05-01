@@ -66,14 +66,14 @@ ndexApp.controller('myAccountController',
             $scope.enableEditPropertiesBulkButton = false;
             $scope.enableShareBulkButton = false;
             $scope.enableEditAndExportBulkButtons = false;
-            
+
 
             myAccountController.editProfilesLabel    = "Edit Profile";
             myAccountController.exportNetworksLabel  = "Export Network";
             myAccountController.addToNetworkSetLabel = "Add To Collection";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
-            myAccountController.deleteCollectionsLabel  = "Delete Collection";
+            myAccountController.deleteCollectionsLabel = "Delete Set";
 
             myAccountController.networkSets = [];
             
@@ -82,7 +82,9 @@ ndexApp.controller('myAccountController',
             $scope.selectedCollectionRowsUids = {};
 
 
-            $scope.anyCollections = function(row) {
+            $scope.tabs = [{active: true}, {active: false}, {active: false}, {active: false}];
+
+            $scope.anyCollections = function() {
                 return myAccountController.networkSets.length > 0;
             };
 
@@ -145,8 +147,6 @@ ndexApp.controller('myAccountController',
 
                 onRegisterApi: function( gridApi )
                 {
-                    console.log("in onRegisterApi, $scope.networkGridOptions");
-
                     $scope.networkGridApi = gridApi;
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
@@ -191,7 +191,6 @@ ndexApp.controller('myAccountController',
 
                 onRegisterApi: function (collectionGridApi)
                 {
-                    console.log("in onRegisterApi, $scope.collectionGridOptions");
                     $scope.collectionGridApi = collectionGridApi;
 
                     populateCollectionsTable();
@@ -229,9 +228,9 @@ ndexApp.controller('myAccountController',
 
             var changeCollectionBulkActionsButtonsLabels = function() {
                 if (myAccountController.collectionTableRowsSelected > 1) {
-                    myAccountController.deleteCollectionsLabel  = "Delete Collections";
+                    myAccountController.deleteCollectionsLabel = "Delete Sets";
                 } else {
-                    myAccountController.deleteCollectionsLabel  = "Delete Collection";
+                    myAccountController.deleteCollectionsLabel = "Delete Set";
                 };
             };
 
@@ -610,12 +609,6 @@ ndexApp.controller('myAccountController',
                 return;
             };
 
-            /*
-            myAccountController.deleteSelectedCollections = function() {
-                myAccountController.confirmDeleteSelectedCollections();
-            };
-            */
-
             myAccountController.genericInfoModal = function(title, message)
             {
                 var   modalInstance = $modal.open({
@@ -661,7 +654,7 @@ ndexApp.controller('myAccountController',
                 });
             };
             
-            myAccountController.confirmDeleteSelectedCollections = function()
+            myAccountController.confirmDeleteSelectedSets = function()
             {
                 var   modalInstance = $modal.open({
                     templateUrl: 'confirmation-modal.html',
@@ -669,9 +662,9 @@ ndexApp.controller('myAccountController',
 
                     controller: function($scope, $modalInstance) {
 
-                        $scope.title = 'Delete Selected Collections';
+                        $scope.title = 'Delete Selected Sets';
                         $scope.message =
-                            'The selected collections will be deleted from NDEx. Are you sure you want to proceed?';
+                            'The selected sets will be deleted from NDEx. Are you sure you want to proceed?';
 
                         $scope.cancel = function() {
                             $modalInstance.dismiss();
@@ -680,9 +673,16 @@ ndexApp.controller('myAccountController',
 
                         $scope.confirm = function() {
                             $scope.isProcessing = true;
-                            myAccountController.deleteSelectedCollections();
+                            myAccountController.deleteSelectedSets();
                             $modalInstance.dismiss();
                             $scope.isProcessing = false;
+
+                            // if there are no more collections, then switch to My Networks tab and
+                            // hide the current My Sets tab
+                            //if (!$scope.anyCollections()) {
+                            //    $scope.tabs[0].active = true;
+                                //$scope.selectPreviouslySelectedNetworks();
+                            //};
                         };
                     }
                 });
@@ -889,7 +889,7 @@ ndexApp.controller('myAccountController',
                 myAccountController.networkTableRowsSelected = 0;
             };
 
-            myAccountController.deleteSelectedCollections = function ()
+            myAccountController.deleteSelectedSets = function ()
             {
                 var selectedCollectionsRows = $scope.collectionGridApi.selection.getSelectedRows();
                 var selectedIds = [];
@@ -904,11 +904,11 @@ ndexApp.controller('myAccountController',
 
                         function (data)
                         {
-                            console.log("success");
+                            //console.log("success");
                         },
                         function (error)
                         {
-                            console.log("unable to delete collection");
+                            console.log("unable to delete network set");
                         });
                 });
 
@@ -922,7 +922,7 @@ ndexApp.controller('myAccountController',
                     if (selectedIds.indexOf(collectionUUID) != -1) {
                         myAccountController.networkSets.splice(i, 1);
                     };
-                }
+                };
                 refreshCollectionsTable();
                 myAccountController.collectionTableRowsSelected = 0;
             };
@@ -964,9 +964,9 @@ ndexApp.controller('myAccountController',
 
                                 if (checkGroupSearchResultObject(groupObj)) {
                                     myAccountController.groupSearchResults.push(groupObj);
-                                }
-                            }
-                        }
+                                };
+                            };
+                        };
                     },
                     function(error) {
                         console.log("unable to search groups");
@@ -1016,8 +1016,9 @@ ndexApp.controller('myAccountController',
 
                     function (networkSets) {
                         myAccountController.networkSets = _.sortBy(networkSets, 'name');
-
-                        //populateCollectionsTable();
+                        if ($scope.collectionGridApi) {
+                            populateCollectionsTable();
+                        };
                     },
                     function (error, status, headers, config, statusText) {
                         console.log("unable to get network sets");

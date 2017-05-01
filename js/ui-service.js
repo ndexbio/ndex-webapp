@@ -147,16 +147,19 @@
 
     uiServiceApp.directive('triggerCreateNetworkSetModal', function() {
         return {
-            scope: {},
+            scope: {
+                myAccountController: '=',
+            },
             restrict: 'A',
             templateUrl: 'pages/directives/createNetworkSetModal.html',
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
 
-                $scope.networkSet = {};
+                //$scope.networkSet = {};
                 $scope.text = $attrs.triggerCreateNetworkSetModal;
 
                 $scope.openMe = function() {
+                    $scope.networkSet = {};
                     modalInstance = $modal.open({
                         templateUrl: 'modalx.html',
                         scope: $scope
@@ -188,8 +191,7 @@
                             if (url) {
                                 var networkSetId = url.split('/').pop();
                                 modalInstance.close();
-
-                                $location.path('/networkSet/' + networkSetId);
+                                $scope.myAccountController.getAllNetworkSetsOwnedByUser();
                                 $scope.isProcessing = false;
                             };
                         },
