@@ -11,7 +11,7 @@
 <div ng-if="row.entity.Status == 'failed'"
      class="ui-grid-cell-contents" title="{{row.entity.errorMessage}}">
     <span ng-if="grid.appScope.isOwnerOfNetwork(row.entity.ownerUUID)">
-        <a ng-click="grid.appScope.deleteFailedNetwork(row.entity)">{{COL_FIELD}}</a>
+        <a ng-click="grid.appScope.failedNetworkWarning(row.entity)">{{COL_FIELD}}</a>
     </span>
     <span ng-if="!grid.appScope.isOwnerOfNetwork(row.entity.ownerUUID)">
         <span style="cursor: not-allowed">{{COL_FIELD}}</span>

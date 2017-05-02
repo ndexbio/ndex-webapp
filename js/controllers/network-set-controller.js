@@ -23,11 +23,10 @@ ndexApp.controller('networkSetController',
 
     networkSetController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
+    networkSetController.displayedSet = {};
+
     //              scope functions
     // called on Networks belonging to group displayed on page
-    networkSetController.setAndDisplayCurrentNetwork = function (identifier) {
-        $location.path("/network/" + identifier);
-    };
 
     networkSetController.getNetworksOfNetworkSet = function() {
 
@@ -36,6 +35,12 @@ ndexApp.controller('networkSetController',
                 function (networkSetInformation) {
                     var networkUUIDs = networkSetInformation["networks"];
 
+                    networkSetController.displayedSet['name'] = networkSetInformation['name'];
+                    networkSetController.displayedSet['description'] = networkSetInformation['description'];
+                    networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
+                    networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
+                    networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
+                    
                     ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
                         function (networkSummaries) {
                             networkSetController.networkSearchResults = networkSummaries;
@@ -228,6 +233,7 @@ ndexApp.controller('networkSetController',
                     };
                 }
                 refreshNetworkTable();
+                networkSetController.displayedSet['networks'] = networkSetController.networkSearchResults.length;
                 networkSetController.networkTableRowsSelected = 0;
 
             },
@@ -239,32 +245,30 @@ ndexApp.controller('networkSetController',
 
     };
 
+    networkSetController.confirmRemoveSelectedNetworksFromSet = function() {
 
-    networkSetController.confirmRemoveSelectedNetworksFromSet = function()
-    {
-        var modalInstance = $modal.open({
-            templateUrl: 'confirmation-modal.html',
-            scope: $scope,
+        var networksSelected = networkSetController.networkTableRowsSelected;
 
-            controller: function($scope, $modalInstance) {
+        if (networksSelected > 1) {
+            var title = 'Remove Selected Networks';
+            var body = 'The selected ' +  networksSelected +
+                ' networks will be removed from this Set. Are you sure you want to proceed?';
+        } else {
+            var title = 'Remove Selected Network';
+            var body = 'The selected  network will be removed from this Set. Are you sure you want to proceed?';
+        };
 
-                $scope.title = 'Remove Selected Networks';
-                $scope.message =
-                    'The selected sets networks will be removed from this Set. Are you sure you want to proceed?';
+        ndexNavigation.openConfirmationModal(title, body, "Remove", "Cancel",
+            function () {
+                $scope.isProcessing = true;
+                removeSelectedNetworksFromSet();
+                $scope.isProcessing = false;
+            },
+            function () {
+                $scope.isProcessing = false;
+            });
 
-                $scope.cancel = function() {
-                    $modalInstance.dismiss();
-                    $scope.isProcessing = false;
-                };
-
-                $scope.confirm = function() {
-                    $scope.isProcessing = true;
-                    removeSelectedNetworksFromSet();
-                    $modalInstance.dismiss();
-                    $scope.isProcessing = false;
-                };
-            }
-        });
+        return;
     };
 
 
@@ -294,6 +298,24 @@ ndexApp.controller('networkSetController',
             return false;
         }
         return (sharedProperties.getCurrentUserId() == networkOwnerUUID);
+    };
+
+
+    $scope.failedNetworkWarning = function(rowEntity) {
+        var networkName  = rowEntity.name;
+        var errorMessage = rowEntity.errorMessage;
+        var status       = rowEntity.Status;
+        var networkUUID  = rowEntity.externalId;
+
+        var title = "This Network is Invalid";
+        var body  =
+            "<strong>Name: </strong>" + networkName + "<br>" +
+            "<strong>Status: </strong>" + status + "<br>" +
+            "<strong>Error Message: </strong>" + errorMessage;
+
+        ndexNavigation.genericInfoModal(title, body);
+
+        return;
     };
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS

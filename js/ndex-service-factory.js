@@ -883,6 +883,15 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.updateNetworkSetV2 = function (networkSetId, networkSet, successHandler, errorHandler) {
+                // Server API: Update A Network Set
+                // PUT /networkset/{networksetId}
+
+                var url = "/networkset/" + networkSetId;
+
+                var config = ndexConfigs.getPutConfigV2(url, networkSet);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
 
             factory.deleteNetworkSetV2 = function (networkSetId, successHandler, errorHandler) {
                 // Server API: Delete A Network Set
@@ -1326,11 +1335,11 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
             config['headers']['Authorization'] = undefined;
         }
         if (putData) {
-            if ( typeof putData == "string") {
+            if (typeof putData == "string") {
                 config.data = putData;
             } else {
                 config.data = JSON.stringify(putData);
-            }
+            };
         }
         return config;
     };

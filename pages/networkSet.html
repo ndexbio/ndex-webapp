@@ -14,34 +14,44 @@
 
     <div class="col-md-2">
         <div class="row">
-            <div class='row'>
-            <ndex-account-image 
-                    ndex-class="'col-md-10'"
-                    ndex-src="groupController.displayedGroup.image">
-            </ndex-account-image>
-            </div>
-            <!--
-            <h4>
-                {{networkSetController.displayedGroup.userName}}
-            </h4>
-            -->
+
             <div class="wrapLongLine">
                 <h4>
-                    {{groupController.displayedGroup.groupName}}
+                    <strong>{{networkSetController.displayedSet.name}}</strong>
                 </h4>
             </div>
+
             <div class="wrapLongLine">
-                <small>{{groupController.displayedGroup.emailAddress}}</small>
+                <strong>Description: </strong>
+                <span ng-bind-html="networkSetController.displayedSet.description"></span>
+            </div>
+
+
+            <div class="wrapLongLine">
+                <br>
+                <strong>Created: </strong>
+                <span ng-bind-html="networkSetController.displayedSet.creationTime | date: 'medium'"></span>
             </div>
             <div class="wrapLongLine">
-                <a ng-href="{{groupController.displayedGroup.website}}" target="_blank">{{groupController.displayedGroup.website}}</a>
+                <strong>Modified: </strong>
+                <span ng-bind-html="networkSetController.displayedSet.modificationTime | date: 'medium'"></span>
+            </div>
+            <div class="wrapLongLine" ng-show="networkSetController.displayedSet.networks > 0">
+                <strong>Networks: </strong><span ng-bind-html="networkSetController.displayedSet.networks"></span>
             </div>
 
-            <div class="wrapLongLine" ng-bind-html="groupController.displayedGroup.description"></div>
 
+            <div class="btn-group btn-group-vertical buttonWithMarginBottom">
+                <hr>
+                <h5><strong>Actions:</strong></h5>
 
+                <span>
+                    <a class="btn btn-primary customButtonWidth"
+                       network-set-controller='networkSetController'
+                       trigger-edit-network-set-modal="Edit Network Set">
+                    </a>
+                </span>
 
-            <span class="btn-group btn-group-vertical buttonWithMarginBottom">
                 <hr>
                 <h5><strong>Bulk Actions:</strong></h5>
 
@@ -52,15 +62,15 @@
                     </a>
                 </span>
 
-            </span>
+            </div>
         </div>
     </div>
 
     <!-- tabs -->
-    <div id="divgroupTabs" class="col-md-9" ng-show="groupController.displayedGroup">
+    <div id="divgroupTabs" class="col-md-9">
 
         <tabset justified="true">
-            <tab heading="Networks in this set">
+            <tab heading="Networks in set {{networkSetController.displayedSet.name}}">
                 <div id="divNetworks" ng-show='networkSetController.networkSearchResults.length > 0'>
                     <div ui-grid-selection
                          ui-grid="networkGridOptions"

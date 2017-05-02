@@ -160,6 +160,7 @@
 
                 $scope.openMe = function() {
                     $scope.networkSet = {};
+                    $scope.title = 'Create Network Set';
                     modalInstance = $modal.open({
                         templateUrl: 'modalx.html',
                         scope: $scope
@@ -204,6 +205,69 @@
                             $scope.isProcessing = false;
                         });
 
+                };
+            }
+        }
+    });
+
+    uiServiceApp.directive('triggerEditNetworkSetModal', function() {
+        return {
+            scope: {
+                networkSetController: '=',
+            },
+            restrict: 'A',
+            templateUrl: 'pages/directives/editNetworkSetModal.html',
+            controller: function($scope, $attrs, $modal, $location, ndexService) {
+                var modalInstance;
+
+                //$scope.networkSet = {};
+                $scope.text  = $attrs.triggerEditNetworkSetModal;
+                $scope.title = $attrs.triggerEditNetworkSetModal;
+
+                var networkSetId = $scope.networkSetController.identifier;
+
+                $scope.openMe = function() {
+                    $scope.networkSet = {};
+
+                    $scope.networkSet['name']        = $scope.networkSetController.displayedSet.name;
+                    $scope.networkSet['description'] = $scope.networkSetController.displayedSet.description;
+
+                    modalInstance = $modal.open({
+                        templateUrl: 'edit-network-set.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.cancel = function() {
+                    modalInstance.dismiss();
+                    delete $scope.errors;
+                    $scope.networkSet = {};
+                    $scope.isProcessing = false;
+                };
+
+                $scope.isProcessing = false;
+
+                $scope.submit = function() {
+                    if ($scope.isProcessing)
+                        return;
+                    $scope.isProcessing = true;
+
+                    ndexService.updateNetworkSetV2(networkSetId, $scope.networkSet,
+                        function(data){
+                            // success; update name and description in controller
+                            $scope.networkSetController.displayedSet.name = $scope.networkSet['name'];
+                            $scope.networkSetController.displayedSet.description = $scope.networkSet['description'];
+
+                            $scope.cancel();
+                        },
+                        function(error){
+                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
+                                $scope.errors = "Network Set with name " + $scope.networkSet.networkSetName + " already exists.";
+                            } else {
+                                $scope.errors = error.data.message;
+                            }
+                            $scope.isProcessing = false;
+                        });
                 };
             }
         }
@@ -375,108 +439,6 @@
         }
     });
 
-    // edit group profiel modal
-    //      - ndexData takes a group object as a param
-    //      - redirects to group page
-    uiServiceApp.directive('editNetworkSetModal', function() {
-        return {
-            scope: {
-                ndexData: '=',
-                userId: "="
-            },
-            restrict: 'E',
-            templateUrl: 'pages/directives/editNetworkSetModal.html',
-            transclude: true,
-            controller: function($scope, $attrs, $modal, $location, ndexService, $route) {
-                var modalInstance;
-                $scope.errors = null;
-                $scope.openMe = function() {
-                    modalInstance = $modal.open({
-                        templateUrl: 'edit-network-set-modal.html',
-                        scope: $scope
-                    });
-                };
-
-                $scope.loadTheseSets = [
-                    {"id": 1, "name": "BEL Framework Small Corpus Document", "selected": false},
-                    {"id": 2, "name": "Neighborhood query result on network - BEL Framework Small Corpus Document", "selected": false},
-                    {"id": 3, "name": "three", "selected": false},
-                    {"id": 4, "name": "three4", "selected": false},
-                    {"id": 5, "name": "three5", "selected": false},
-                    {"id": 6, "name": "three6", "selected": false},
-                    {"id": 7, "name": "three7", "selected": false},
-                    {"id": 8, "name": "three8", "selected": false}
-                ];
-
-              $scope.getUserNetworks = function(){
-
-                    ndexService.getUserNetworkPermissionsV2($scope.userId, 'READ', 0, 1000000, false,
-                        function (networkPermissionsMap) {
-
-                            ndexService.getUserAccountPageNetworksV2(myAccountController.identifier,
-                                function(networkSummaries) {
-                                    networkSetController.userNetworkSearchResults = networkSummaries;
-
-                                    //populateNetworkTable();
-
-                                },
-                                function(error) {
-                                    console.log("unable to get user account page networks");
-                                });
-
-                        },
-                        function (error, data) {
-                            console.log("unable to get user network memberships");
-                        });
-                };
-
-                $scope.cancel = function() {
-                    for(var key in $scope.ndexData) {
-                        $scope.group[key] = $scope.ndexData[key];
-                    }
-                    modalInstance.close();
-                    delete $scope.errors;
-                    modalInstance = null;
-                };
-
-                $scope.submit = function() {
-                    if( $scope.isProcessing )
-                        return;
-                    $scope.isProcessing = true;
-                    ndexService.updateGroupV2($scope.group,
-                        function(group){
-                            var groupId = $scope.group.externalId;
-                            $scope.group = {};
-                            modalInstance.close();
-                            $location.path('/group/' + groupId);
-                            $route.reload();
-                            $scope.isProcessing = false;
-                        },
-                        function(error){
-                            $scope.errors = error.message;
-                            $scope.isProcessing = false;
-                        });
-                };
-                // ndexData is undefined at first pass. This seems to be a common problem
-                // most likey we aren't doing something the angular way, quick fix below
-                $scope.$watch('ndexData', function(value) {
-                    $scope.group = {};
-                    // Only want copy of object.
-                    // Can acheive one way binding using '@' in the scope
-                    // but then we have to do JSON.parse(JSON.stringify(value)) on it.
-                    // and use {{value}} in invoking html.
-                    for(var key in value) {
-                        $scope.group[key] = value[key];
-                    }
-                });
-
-                $scope.getUserNetworks();
-            }
-        }
-    });
-
-
-    
     // present user with the list of Network Collection 
     //      
     //      
@@ -2941,7 +2903,7 @@
                     // USER'S ADMIN ROLE WILL CHANGE
                     else if(adminCheck['issueSeverity'] != 'ABORT'){
                         modalInstance = $modal.open({
-                            templateUrl: 'confirmation-modal.html',
+                            templateUrl: 'warning-modal.html',
                             scope: $scope,
                             controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
                                 $scope.title = adminCheck['title'];

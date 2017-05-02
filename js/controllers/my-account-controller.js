@@ -1324,7 +1324,7 @@ ndexApp.controller('myAccountController',
                 return (myAccountController.loggedInIdentifier == networkOwnerUUID);
             }
 
-            $scope.deleteFailedNetwork = function(rowEntity) {
+            $scope.failedNetworkWarning = function(rowEntity) {
                 var networkName  = rowEntity.name;
                 var errorMessage = rowEntity.errorMessage;
                 var status       = rowEntity.Status;
