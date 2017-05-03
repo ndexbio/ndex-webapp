@@ -84,12 +84,6 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'apiController'
         })
 
-        // route for the searchNetworks page
-        .when('/searchNetworks', {
-            templateUrl: 'pages/searchNetworks.html',
-            controller: 'searchNetworksController'
-        })
-
         //route for search page
         .when('/search', {
             templateUrl: 'pages/search.html',

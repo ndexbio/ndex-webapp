@@ -1,6 +1,6 @@
 ndexApp.controller('networkSetController',
-    ['ndexService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$location', '$routeParams', '$modal', '$route', 'uiMisc',
-        function (ndexService, ndexUtility, ndexNavigation, sharedProperties, $scope, $location, $routeParams, $modal, $route, uiMisc) {
+    ['ndexService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$location', '$routeParams', 'uiMisc',
+        function (ndexService, ndexUtility, ndexNavigation, sharedProperties, $scope, $location, $routeParams, uiMisc) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -308,10 +308,10 @@ ndexApp.controller('networkSetController',
 
         if (!rowEntity && !rowEntity.externalId) {
             return;
-        }
+        };
 
         uiMisc.showNetworkWarningsOrErrors(rowEntity, networkSetController.networkSearchResults);
-    }
+    };
 
     $scope.getNetworkDownloadLink = function(rowEntity) {
         return uiMisc.getNetworkDownloadLink(networkSetController, rowEntity);
@@ -326,7 +326,7 @@ ndexApp.controller('networkSetController',
     {
         if (!networkSetController.isLoggedInUser) {
             return false;
-        }
+        };
         return (sharedProperties.getCurrentUserId() == networkOwnerUUID);
     };
 
