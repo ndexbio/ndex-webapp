@@ -48,6 +48,12 @@ ndexApp.controller('searchController',
             $scope.main.searchString = searchController.searchString;
             $scope.main.searchType = searchController.searchType;
 
+            searchController.networkTableRowsSelected = 0;
+            searchController.networkSets = [];
+
+            searchController.loggedInUserId = (searchController.isLoggedInUser) ?
+                ndexUtility.getLoggedInUserExternalId() : null;
+
             
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
@@ -97,6 +103,13 @@ ndexApp.controller('searchController',
              Network Table
 
              -----------------------------*/
+            
+            $scope.showAddToNetworkSetButton = function() {
+                
+                return searchController.isLoggedInUser &&
+                    (searchController.networkSearchResults.length > 0) &&
+                    (searchController.networkSets.length > 0);
+            };
 
             $scope.networkTabHeading = function(){
                 if (searchController.networkSearchInProgress){
@@ -110,6 +123,7 @@ ndexApp.controller('searchController',
 
             $scope.networkSearchGridOptions =
             {
+                /*
                 enableSorting: true,
                 enableFiltering: true,
                 showGridFooter: true,
@@ -120,16 +134,28 @@ ndexApp.controller('searchController',
                 columnVirtualizationThreshold: 20,
                 enableColumnMenus: false,
 
+                */
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
+                // otherwise it will not show all columns if we display more than 10 columns in our table
+
+                enableRowHeaderSelection: searchController.isLoggedInUser, // true if user logged; false for anonymous users
+
+                columnVirtualizationThreshold: 20,
+                enableColumnMenus: false,
 
                 onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
-
+                        searchController.networkTableRowsSelected = selectedRows.length;
                     });
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
+                        searchController.networkTableRowsSelected = selectedRows.length;
                     });
 
                 }
@@ -259,21 +285,52 @@ ndexApp.controller('searchController',
                         if(networks.length > 0){
                             searchController.networkSearchResults = networks;
                             populateNetworkTable();
+
+                            if (searchController.isLoggedInUser) {
+                                // user logged in; get all network sets owned by this user
+                                searchController.getAllNetworkSetsOwnedByUser();
+                            };
+
                         } else {
                             searchController.networkSearchNoResults = true;
-                        }
+                        };
                         searchController.networkSearchInProgress = false;
                     },
                     function (error)
                     {
                         if (error) {
-                            searchController.networkSearchResults = null;
+                            searchController.networkSearchResults = [];
                             searchController.errors.push(error.message);
                             searchController.networkSearchInProgress = false;
                             searchController.networkSearchNoResults = true;
                         }
                     });
             };
+
+            searchController.getIDsOfSelectedNetworks = function () {
+                var selectedIds = [];
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                
+                _.forEach(selectedNetworksRows, function(row) {
+                    selectedIds.push(row['externalId']);
+                });
+                
+                return selectedIds;
+            };
+
+            searchController.getAllNetworkSetsOwnedByUser = function () {
+                var userId = ndexUtility.getLoggedInUserExternalId();
+                
+                ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+                    function (networkSets) {
+                        searchController.networkSets = _.sortBy(networkSets, 'name');
+                    },
+                    function (error, status, headers, config, statusText) {
+                        console.log("unable to get network sets");
+                        searchController.networkSets = [];
+                    });
+            };
+
 
             /*---------------------------
 

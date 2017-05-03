@@ -11,9 +11,39 @@
         </div>
     </div>
 </div>
+
+
 <div class="row">
+
     <div class="col-md-12">
-        <tabset >
+
+        <span ng-if="showAddToNetworkSetButton()">
+            <!--
+            <show-network-sets-modal my-account-controller='myAccountController'>
+                 {{myAccountController.addToNetworkSetLabel}}
+            </show-network-sets-modal>
+            -->
+
+            <show-network-sets-modal
+                    my-account-controller='searcher'
+                    ng-class="searcher.networkTableRowsSelected > 0 ? 'btn btn-primary' : 'btn btn-primary disabled'"
+                    style="float:left; margin-right:1%">
+                 Add To Network Set
+            </show-network-sets-modal>
+
+            <!--
+            <a ng-class="searcher.networkTableRowsSelected > 0 ? 'btn btn-primary' :
+                'btn btn-primary disabled'"
+               ng-click="searcher.addNetworksToNetworkSet()"
+               style="float:left; margin-right:1%">
+                Add To Network Set
+            </a>
+            -->
+
+        </span>
+
+        <tabset>
+
             <tab
                     heading='{{networkTabHeading()}}'
                     ng-click="activateTab('Networks'); networkGridApi.core.handleWindowResize()"
@@ -68,4 +98,8 @@
             </tab>
         </tabset>
     </div>
+
+
+
+
 </div>

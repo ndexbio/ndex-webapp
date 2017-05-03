@@ -725,12 +725,11 @@ ndexApp.controller('myAccountController',
             myAccountController.getIDsOfSelectedNetworks = function ()
             {
                 var selectedIds = [];
-
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                for( var i = 0; i < selectedNetworksRows.length; i ++ )
-                {
-                    selectedIds.push(selectedNetworksRows[i].externalId);
-                }
+
+                _.forEach(selectedNetworksRows, function(row) {
+                    selectedIds.push(row['externalId']);
+                });
 
                 return selectedIds;
             };

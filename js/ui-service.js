@@ -273,6 +273,69 @@
         }
     });
 
+    uiServiceApp.directive('triggerDeleteNetworkSetModal', function() {
+        return {
+            scope: {
+                networkSetController: '=',
+            },
+            restrict: 'A',
+            templateUrl: 'pages/directives/editNetworkSetModal.html',
+            controller: function($scope, $attrs, $modal, $location, ndexService) {
+                var modalInstance;
+
+                //$scope.networkSet = {};
+                $scope.text  = $attrs.triggerEditNetworkSetModal;
+                $scope.title = $attrs.triggerEditNetworkSetModal;
+
+                var networkSetId = $scope.networkSetController.identifier;
+
+                $scope.openMe = function() {
+                    $scope.networkSet = {};
+
+                    $scope.networkSet['name']        = $scope.networkSetController.displayedSet.name;
+                    $scope.networkSet['description'] = $scope.networkSetController.displayedSet.description;
+
+                    modalInstance = $modal.open({
+                        templateUrl: 'edit-network-set.html',
+                        scope: $scope
+                    });
+                };
+
+                $scope.cancel = function() {
+                    modalInstance.dismiss();
+                    delete $scope.errors;
+                    $scope.networkSet = {};
+                    $scope.isProcessing = false;
+                };
+
+                $scope.isProcessing = false;
+
+                $scope.submit = function() {
+                    if ($scope.isProcessing)
+                        return;
+                    $scope.isProcessing = true;
+
+                    ndexService.updateNetworkSetV2(networkSetId, $scope.networkSet,
+                        function(data){
+                            // success; update name and description in controller
+                            $scope.networkSetController.displayedSet.name = $scope.networkSet['name'];
+                            $scope.networkSetController.displayedSet.description = $scope.networkSet['description'];
+
+                            $scope.cancel();
+                        },
+                        function(error){
+                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
+                                $scope.errors = "Network Set with name " + $scope.networkSet.networkSetName + " already exists.";
+                            } else {
+                                $scope.errors = error.data.message;
+                            }
+                            $scope.isProcessing = false;
+                        });
+                };
+            }
+        }
+    });
+
     //----------------------------------------------------
     //              Elements
 
@@ -456,8 +519,6 @@
 
                 $scope.loadTheseSets = [];
 
-                $scope.noOfSelectedSets = _.sumBy($scope.loadTheseSets, function(o) { return o.selected; });
-
                 $scope.openMe = function() {
 
                     initializeListOfCollections();
@@ -482,8 +543,6 @@
 
                         $scope.loadTheseSets.push(networkSet);
                     });
-                    
-                    $scope.updateNoOSelectedSets();
                 };
 
                 
@@ -496,11 +555,18 @@
                 };
 
                 $scope.noSetsSelected = function() {
-                    return $scope.noOfSelectedSets == 0;
+                    return 0 == getNoOfSelectedSets();
                 };
 
-                $scope.updateNoOSelectedSets = function() {
-                    $scope.noOfSelectedSets = _.sumBy($scope.loadTheseSets, function(o) { return o.selected; });
+                var getNoOfSelectedSets = function() {
+                    var noOfSelectedSets = 0;
+
+                    _.forEach($scope.loadTheseSets, function(setObj) {
+                        if (setObj.selected) {
+                            noOfSelectedSets = noOfSelectedSets + 1;
+                        };
+                    });
+                    return noOfSelectedSets;
                 };
 
                 $scope.submit = function() {
@@ -509,8 +575,8 @@
                     $scope.isProcessing = true;
 
                     var idsOfSelectedNetworks = $scope.myAccountController.getIDsOfSelectedNetworks();
-                    $scope.updateNoOSelectedSets();
-                    var noOfUpdatedSets  = 0;
+                    var noOfSelectedSets = getNoOfSelectedSets();
+                    var noOfUpdatedSets = 0;
 
                     if ($scope.noOfSelectedSets == 0) {
                         $scope.closeModal();
@@ -527,7 +593,7 @@
 
                                     noOfUpdatedSets = noOfUpdatedSets + 1;
                                     
-                                    if ($scope.noOfSelectedSets == noOfUpdatedSets) {
+                                    if (noOfSelectedSets == noOfUpdatedSets) {
                                         $scope.myAccountController.getAllNetworkSetsOwnedByUser();
                                         $scope.closeModal();
                                     };
@@ -535,7 +601,7 @@
                                 function(error){
                                     noOfUpdatedSets = noOfUpdatedSets + 1;
 
-                                    if ($scope.noOfSelectedSets == noOfUpdatedSets) {
+                                    if (noOfSelectedSets == noOfUpdatedSets) {
                                         $scope.myAccountController.getAllNetworkSetsOwnedByUser();
                                         $scope.closeModal();
                                     };
