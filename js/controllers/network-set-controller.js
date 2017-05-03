@@ -271,6 +271,36 @@ ndexApp.controller('networkSetController',
         return;
     };
 
+    networkSetController.deleteNetworkSet = function(networkSetId) {
+
+        var title = 'Delete This Network Set';
+        var body  = 'This network set will be deleted from NDEx. Are you sure you want to proceed?';
+
+        ndexNavigation.openConfirmationModal(title, body, "Confirm", "Cancel",
+            function () {
+                $scope.isProcessing = true;
+
+                ndexService.deleteNetworkSetV2(networkSetId,
+
+                    function (data)
+                    {
+                        $scope.isProcessing = false;
+                        $location.path('/myAccount');
+                    },
+                    function (error)
+                    {
+                        console.log("unable to delete network set");
+                        $scope.isProcessing = false;
+                        $location.path('/myAccount');
+                    });
+            },
+            function () {
+                $scope.isProcessing = false;
+            });
+
+        return;
+    };
+
 
     // local functions
 

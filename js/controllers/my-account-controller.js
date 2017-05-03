@@ -669,9 +669,16 @@ ndexApp.controller('myAccountController',
 
                     controller: function($scope, $modalInstance) {
 
-                        $scope.title = 'Delete Selected Sets';
-                        $scope.message =
-                            'The selected sets will be deleted from NDEx. Are you sure you want to proceed?';
+                        if (myAccountController.collectionTableRowsSelected > 1) {
+                            $scope.title = 'Delete Selected Sets';
+                            $scope.message =
+                                'The selected ' + myAccountController.collectionTableRowsSelected +
+                                ' sets will be deleted from NDEx. Are you sure you want to proceed?';
+                        } else {
+                            $scope.title = 'Delete Selected Set';
+                            $scope.message =
+                                'The selected set will be deleted from NDEx. Are you sure you want to proceed?';
+                        };
 
                         $scope.cancel = function() {
                             $modalInstance.dismiss();
