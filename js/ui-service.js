@@ -586,7 +586,7 @@
 
                         if (networkSetObj.selected) {
 
-                            $scope.progress = "<br>Adding networks to collection " + networkSetObj.name;
+                            $scope.progress = "<br>Adding networks to network set " + networkSetObj.name;
 
                             ndexService.addNetworksToNetworkSetV2(networkSetObj.id, idsOfSelectedNetworks,
                                 function(data){

@@ -3,7 +3,7 @@
 var ndexApp = angular.module('ndexApp',
     ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp',//'ngDialog',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
-     'ui.grid.selection', 'ngIdle', 'ngclipboard', 'textAngular']);
+     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ngIdle', 'ngclipboard', 'textAngular']);
 //'ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.resizeColumns'
 //var net1, net2;
 var cn, csn;

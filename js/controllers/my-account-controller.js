@@ -76,13 +76,12 @@ ndexApp.controller('myAccountController',
             myAccountController.deleteCollectionsLabel = "Delete Set";
 
             myAccountController.networkSets = [];
-            
 
             $scope.selectedNetworkRowsUids = {};
             $scope.selectedCollectionRowsUids = {};
 
-
             $scope.tabs = [{active: true}, {active: false}, {active: false}, {active: false}];
+            
 
             $scope.anyCollections = function() {
                 return myAccountController.networkSets.length > 0;
@@ -188,6 +187,9 @@ ndexApp.controller('myAccountController',
                 // otherwise it will not show all columns if we display more than 10 columns in our table
                 columnVirtualizationThreshold: 20,
                 enableColumnMenus: false,
+                expandableRowTemplate: '<div ui-grid="row.entity.subGridOptions" style="height:150px;"></div>',
+                expandableRowHeight: 150,
+                //expandableRowScope: expandableScope,
 
                 onRegisterApi: function (collectionGridApi)
                 {
@@ -210,6 +212,58 @@ ndexApp.controller('myAccountController',
                         });
 
                         changeCollectionBulkActionsButtonsLabels();
+                    });
+
+                    collectionGridApi.expandable.on.rowExpandedStateChanged($scope, function(row){
+
+                        row.entity.subGridOptions = {
+                            columnDefs: [
+                                {name: "Network Name",
+                                    field: "network",
+                                    cellTemplate:  '<div class="ui-grid-cell-contents" title="{{row.entity.network}}  &#x0D;&#x0D; {{row.entity.description}}">' +
+                                    '<a ng-href="#/network/{{row.entity.UUID}}">{{COL_FIELD}} </a></div>'
+                                },
+                                {name: "UUID", field: "UUID", visible: false},
+                                {name: "description", field: "description", visible: false}
+                            ]};
+
+                        if (row.isExpanded && row.entity && row.entity.networks && (row.entity.networks.length > 0)) {
+
+                            var networkIDsInThisSet = row.entity.networks;
+                            var subGridOptionsData = [];
+
+                            ndexService.getNetworkSummariesByUUIDsV2(networkIDsInThisSet,
+                                function (networkSummaries) {
+
+                                    _.forEach(networkSummaries, function(networkSummary) {
+                                         var networkName = networkSummary.name;
+                                         var description =  $scope.stripHTML(networkSummary.description);
+
+                                        //var networkName =
+                                        //    '<a href="#/network/' + networkSummary.externalId + '">' +
+                                        //    networkSummary.name + '</a>';
+
+                                        var UUID = networkSummary.externalId;
+
+                                         var setData = {
+                                             network: networkName,
+                                             UUID: UUID,
+                                             description: description
+                                         };
+                                         subGridOptionsData.push(setData);
+                                    });
+
+                                    if (subGridOptionsData.length > 0) {
+                                        row.entity.subGridOptions.data = subGridOptionsData;
+                                    };
+                                },
+                                function (error) {
+                                    if (error) {
+                                        console.log("Unable to get network summaries.");
+                                    };
+                                });
+
+                        };
                     });
                 }
             };
@@ -269,6 +323,18 @@ ndexApp.controller('myAccountController',
                 refreshNetworkTable();
             };
 
+            $scope.signClicked = function(networkSetExpanded, row) {
+                //alert('sign clicked; row.$$height=' + row.$$height);
+                //row.$$height = (networkSetExpanded) ? 30 : row.$$height + row.$$height * row.entity.networks.length;
+
+
+                //$scope.collectionGridApi.grid.options.rowHeight = 'autopx'; //(networkSetExpanded) ? 30 : row.$$height * row.entity.networks.length;
+                //$scope.collectionGridApi.grid.rows[1].$$height = (networkSetExpanded) ? 30 : row.$$height * row.entity.networks.length;
+                //$scope.collectionGridApi.grid.rowHashMap.grid.rows[1].$$height = (networkSetExpanded) ? 30 : row.$$height * row.entity.networks.length;
+
+                return;
+            };
+            
             var populateCollectionsTable = function()
             {
                 var columnDefs = [
@@ -291,7 +357,7 @@ ndexApp.controller('myAccountController',
                     { field: 'externalId',  enableFiltering: false,  visible: false },
                     { field: 'name',        enableFiltering: false,  visible: false },
                     { field: 'description', enableFiltering: false,  visible: false },
-
+                    { field: 'networks',    enableFiltering: false,  visible: false }
                 ];
 
                 $scope.collectionGridApi.grid.options.columnDefs = columnDefs;
@@ -309,6 +375,7 @@ ndexApp.controller('myAccountController',
                     var noOfNetworks = (collection.networks) ? collection.networks.length : 0;
                     var modificationTime = collection.modificationTime;
                     var externalId = collection.externalId;
+                    var networks   = collection.networks;
 
                     var row =   {
                         "Set Name"        :   name,
@@ -318,6 +385,7 @@ ndexApp.controller('myAccountController',
                         "externalId"      :   externalId,
                         "name"            :   name,
                         "description"     :   description,
+                        "networks"        :   networks
                     };
 
                     $scope.collectionGridOptions.data.push(row);

@@ -25,6 +25,7 @@ ndexApp.controller('networkSetController',
 
     networkSetController.displayedSet = {};
 
+
     //              scope functions
     // called on Networks belonging to group displayed on page
 
@@ -157,15 +158,15 @@ ndexApp.controller('networkSetController',
             };
 
             var description = $scope.stripHTML(network['description']);
-            var externalId = network['externalId'];
-            var nodes = network['nodeCount'];
-            var edges = network['edgeCount'];
-            var owner = network['owner'];
-            var visibility = network['visibility'];
-            var modified = new Date( network['modificationTime'] );
+            var externalId  = network['externalId'];
+            var nodes       = network['nodeCount'];
+            var edges       = network['edgeCount'];
+            var owner       = network['owner'];
+            var visibility  = network['visibility'];
+            var modified    = new Date( network['modificationTime'] );
 
-            var format = uiMisc.getNetworkFormat(subNetworkId, network);
-            var download = "Download " + networkName;
+            var format    = uiMisc.getNetworkFormat(subNetworkId, network);
+            var download  = "Download " + networkName;
             var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
             var disease   = uiMisc.getDisease(network);
             var tissue    = uiMisc.getTissue(network);
@@ -347,6 +348,7 @@ ndexApp.controller('networkSetController',
 
         return;
     };
+            
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //----------------------------------------------------------------------------
