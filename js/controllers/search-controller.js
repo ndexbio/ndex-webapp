@@ -1,6 +1,6 @@
 ndexApp.controller('searchController',
-    [ 'ndexService', 'sharedProperties', '$scope', '$location', '$modal', 'ndexNavigation', 'uiMisc', 'ndexUtility',
-        function (ndexService, sharedProperties, $scope, $location, $modal, ndexNavigation, uiMisc, ndexUtility) {
+    [ 'ndexService', 'sharedProperties', '$scope', '$rootScope', '$location', '$modal', 'ndexNavigation', 'uiMisc', 'ndexUtility',
+        function (ndexService, sharedProperties, $scope, $rootScope, $location, $modal, ndexNavigation, uiMisc, ndexUtility) {
 
 
             //              Controller Declarations/Initializations
@@ -54,7 +54,13 @@ ndexApp.controller('searchController',
             searchController.loggedInUserId = (searchController.isLoggedInUser) ?
                 ndexUtility.getLoggedInUserExternalId() : null;
 
-            
+
+            $(document).ready(function() {
+                if (!searchController.loggedInUserId) {
+                    document.getElementById('searchResultTableId').className = 'col-md-12';
+                };
+            });
+
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
              * field could be displayed in the title element of networkName.html template in the pop-up window
@@ -103,13 +109,6 @@ ndexApp.controller('searchController',
              Network Table
 
              -----------------------------*/
-            
-            $scope.showAddToNetworkSetButton = function() {
-                
-                return searchController.isLoggedInUser &&
-                    (searchController.networkSearchResults.length > 0) &&
-                    (searchController.networkSets.length > 0);
-            };
 
             $scope.networkTabHeading = function(){
                 if (searchController.networkSearchInProgress){
@@ -287,8 +286,9 @@ ndexApp.controller('searchController',
                             populateNetworkTable();
 
                             if (searchController.isLoggedInUser) {
+                                var signalNewSetCreation = false;
                                 // user logged in; get all network sets owned by this user
-                                searchController.getAllNetworkSetsOwnedByUser();
+                                searchController.getAllNetworkSetsOwnedByUser(signalNewSetCreation);
                             };
 
                         } else {
@@ -318,20 +318,23 @@ ndexApp.controller('searchController',
                 return selectedIds;
             };
 
-            searchController.getAllNetworkSetsOwnedByUser = function () {
+            searchController.getAllNetworkSetsOwnedByUser = function (signalNewSetCreation) {
                 var userId = ndexUtility.getLoggedInUserExternalId();
                 
                 ndexService.getAllNetworkSetsOwnedByUserV2(userId,
                     function (networkSets) {
-                        searchController.networkSets = _.sortBy(networkSets, 'name');
+                        searchController.networkSets = _.orderBy(networkSets, ['modificationTime','name'], ['desc', 'asc']);
+                        
+                        if (signalNewSetCreation) {
+                            $rootScope.$emit('NEW_NETWORK_SET_CREATED');
+                        };
                     },
                     function (error, status, headers, config, statusText) {
                         console.log("unable to get network sets");
                         searchController.networkSets = [];
                     });
             };
-
-
+            
             /*---------------------------
 
 

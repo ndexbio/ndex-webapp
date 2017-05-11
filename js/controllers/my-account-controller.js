@@ -1,7 +1,7 @@
 ndexApp.controller('myAccountController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope',
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
         '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation',
-        function (ndexService, ndexUtility, sharedProperties, $scope,
+        function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
                   $location, $routeParams, $route, $modal, uiMisc, ndexNavigation)
         {
             //              Process the URL to get application state
@@ -130,7 +130,10 @@ ndexApp.controller('myAccountController',
                 };
 
                 // This shows (Selected Items: <>) at the bottom of network table
-                $scope.collectionGridApi.grid.selection.selectedCount = selectedCount;
+                if ($scope.collectionGridApi && $scope.collectionGridApi.grid
+                    && $scope.collectionGridApi.grid.selection) {
+                    $scope.collectionGridApi.grid.selection.selectedCount = selectedCount;
+                };
             };
 
             //table
@@ -1091,14 +1094,18 @@ ndexApp.controller('myAccountController',
                         });
             };
 
-            myAccountController.getAllNetworkSetsOwnedByUser = function ()
+            myAccountController.getAllNetworkSetsOwnedByUser = function (signalNewSetCreation)
             {
                 ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
-
+                    
                     function (networkSets) {
-                        myAccountController.networkSets = _.sortBy(networkSets, 'name');
+                        myAccountController.networkSets = _.orderBy(networkSets,
+                            ['modificationTime','name'], ['desc', 'asc']);
                         if ($scope.collectionGridApi) {
                             populateCollectionsTable();
+                        };
+                        if (signalNewSetCreation) {
+                            $rootScope.$emit('NEW_NETWORK_SET_CREATED');
                         };
                     },
                     function (error, status, headers, config, statusText) {
@@ -1467,8 +1474,9 @@ ndexApp.controller('myAccountController',
                     // get groups
                     var member = null;
                     myAccountController.getUserGroupMemberships(member);
-
-                    myAccountController.getAllNetworkSetsOwnedByUser();
+                    
+                    var signalNewSetCreation = false;
+                    myAccountController.getAllNetworkSetsOwnedByUser(signalNewSetCreation);
                 })
         }]);
 

@@ -15,32 +15,19 @@
 
 <div class="row">
 
-    <div class="col-md-12">
+    <div class="col-md-2" ng-if="searcher.isLoggedInUser">
+        <hr>
+        <h5><strong>Bulk Actions:</strong></h5>
 
-        <span ng-if="showAddToNetworkSetButton()">
-            <!--
-            <show-network-sets-modal my-account-controller='myAccountController'>
-                 {{myAccountController.addToNetworkSetLabel}}
-            </show-network-sets-modal>
-            -->
+        <show-network-sets-modal
+                my-account-controller='searcher'
+                ng-class="searcher.networkTableRowsSelected > 0 ? 'btn btn-primary' : 'btn btn-primary disabled'"
+                style="float:left; margin-right:1%">
+            Add To Network Set
+        </show-network-sets-modal>
+    </div>
 
-            <show-network-sets-modal
-                    my-account-controller='searcher'
-                    ng-class="searcher.networkTableRowsSelected > 0 ? 'btn btn-primary' : 'btn btn-primary disabled'"
-                    style="float:left; margin-right:1%">
-                 Add To Network Set
-            </show-network-sets-modal>
-
-            <!--
-            <a ng-class="searcher.networkTableRowsSelected > 0 ? 'btn btn-primary' :
-                'btn btn-primary disabled'"
-               ng-click="searcher.addNetworksToNetworkSet()"
-               style="float:left; margin-right:1%">
-                Add To Network Set
-            </a>
-            -->
-
-        </span>
+    <div id="searchResultTableId" class="col-md-10">
 
         <tabset>
 
@@ -50,30 +37,6 @@
                     active="activeTab.Networks">
                 <div ng-show='searcher.networkSearchInProgress'><i>Finding Networks...</i></div>
                 <div ng-show='searcher.networkSearchNoResults'><i>No Networks Found.</i></div>
-                <!--
-                <div ng-show='searcher.userSearchResults' class='row text-center'>
-                    <ul class="pager">
-
-
-
-                        <li>
-                            <button class='btn btn-primary btn-sm' ng-disabled='networkSearch.skip == 0'
-                                    ng-click='networkSearch.skip = networkSearch.skip - 1; networkSearch.submitNetworkSearch()'>
-                                Prev
-                            </button>
-                        </li>
-                        &nbsp;
-
-                        <li>
-                            <button class='btn btn-primary btn-sm'
-                                    ng-disabled='networkSearch.networkSearchResults.length < networkSearch.skipSize'
-                                    ng-click='networkSearch.skip = networkSearch.skip + 1 ; networkSearch.submitNetworkSearch()'>
-                                Next
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-                -->
                 <div ng-show='searcher.networkSearchResults' ui-grid-selection ui-grid="networkSearchGridOptions"
                      ui-grid-resize-columns style="height:540px;"></div>
 
@@ -98,8 +61,6 @@
             </tab>
         </tabset>
     </div>
-
-
 
 
 </div>
