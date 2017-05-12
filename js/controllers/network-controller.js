@@ -631,18 +631,22 @@ ndexApp.controller('networkController',
 
                 if (prefix in networkController.context) {
                     URI = networkController.context[prefix];
-                    if (!URI.endsWith("/")) {
-                        URI = URI + "/";
-                    }
+                    //if (!URI.endsWith("/")) {
+                    //    URI = URI + "/";
+                    //}
 
                     if (value.startsWith('CHEMBL')) {
                         // remove ":" from  CHEMBL since the pattern for CHEMBL Id is '^CHEMBL\d+$'
                         value = value.replace(':', '');
                     }
 
+                    /*
                     if (validateEntityID(URI, value)) {
                         attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
-                    }
+                    };
+                    */
+
+                    attributeValue = '<a target="_blank" href="' + URI + value + '">' + attribute + '</a>';
 
                     return attributeValue;
                 }
