@@ -29,5 +29,12 @@
             <img src="img/cytoscape.png" width="20px" height="20px" align="center">
         </a>
     </span>
+
+    <span ng-if="row.entity.Status == 'Set'">
+        <a ng-href="#/networkset/{{row.entity.externalId}}"
+           title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}} &#x0A;&#x0A; {{row.entity.networks}} networks in this set">
+            <img src="img/folder.jpg" width="30px" height="20px" align="center">
+        </a>
+    </span>
 </div>
 

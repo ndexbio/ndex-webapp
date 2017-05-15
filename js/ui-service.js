@@ -149,6 +149,7 @@
         return {
             scope: {
                 myAccountController: '=',
+                signalNewSetCreation: '='
             },
             restrict: 'A',
             templateUrl: 'pages/directives/createNetworkSetModal.html',
@@ -160,6 +161,8 @@
 
                 $scope.openMe = function() {
                     $scope.networkSet = {};
+                    $scope.networkSet['properties'] = {};
+                    $scope.networkSet['properties']['reference'] = "";
                     $scope.title = 'Create Network Set';
                     modalInstance = $modal.open({
                         templateUrl: 'modalx.html',
@@ -190,11 +193,22 @@
                     ndexService.createNetworkSetV2($scope.networkSet,
                         function(url){
                             if (url) {
-                                var networkSetId = url.split('/').pop();
+                                //var networkSetId = url.split('/').pop();
                                 modalInstance.close();
-                                var signalNewSetCreation = true;
-                                $scope.myAccountController.getAllNetworkSetsOwnedByUser(signalNewSetCreation);
-                                $scope.isProcessing = false;
+
+                                $scope.myAccountController.getAllNetworkSetsOwnedByUser(
+                                    // success handler
+                                    function(data) {
+
+                                        if ($scope.signalNewSetCreation) {
+                                            $rootScope.$emit('NEW_NETWORK_SET_CREATED');
+                                        };
+                                        $scope.isProcessing = false;
+                                    },
+                                    function(data, status) {
+                                        //$scope.main.serverIsDown = true;
+                                        $scope.isProcessing = false;
+                                    });
                             };
                         },
                         function(error){
@@ -232,6 +246,14 @@
 
                     $scope.networkSet['name']        = $scope.networkSetController.displayedSet.name;
                     $scope.networkSet['description'] = $scope.networkSetController.displayedSet.description;
+                    $scope.networkSet['properties']  = {reference: ""};
+
+                    if ($scope.networkSetController.displayedSet['properties'] &&
+                        $scope.networkSetController.displayedSet['properties']['reference']) {
+                        
+                        $scope.networkSet['properties']['reference'] =
+                            $scope.networkSetController.displayedSet['properties']['reference'];
+                    };
 
                     modalInstance = $modal.open({
                         templateUrl: 'edit-network-set.html',
@@ -254,11 +276,22 @@
                     $scope.isProcessing = true;
 
                     ndexService.updateNetworkSetV2(networkSetId, $scope.networkSet,
-                        function(data){
+                        function(data, status, headers, config, statusText){
                             // success; update name and description in controller
                             $scope.networkSetController.displayedSet.name = $scope.networkSet['name'];
                             $scope.networkSetController.displayedSet.description = $scope.networkSet['description'];
+                            $scope.networkSetController.displayedSet['properties'] =
+                                    {reference: $scope.networkSet['properties']['reference']};
 
+                            ndexService.getNetworkSetV2(networkSetId,
+                                function (networkSetInformation) {
+                                    var networkUUIDs = networkSetInformation["networks"];
+                                    $scope.networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
+
+                                },
+                                function (error) {
+                                    ;
+                                });
                             $scope.cancel();
                         },
                         function(error){
@@ -274,6 +307,8 @@
         }
     });
 
+
+    /*
     uiServiceApp.directive('triggerDeleteNetworkSetModal', function() {
         return {
             scope: {
@@ -336,6 +371,7 @@
             }
         }
     });
+    */
 
     //----------------------------------------------------
     //              Elements
@@ -578,7 +614,6 @@
                     var idsOfSelectedNetworks = $scope.myAccountController.getIDsOfSelectedNetworks();
                     var noOfSelectedSets = getNoOfSelectedSets();
                     var noOfUpdatedSets = 0;
-                    var signalNewSetCreation = false;
 
                     if ($scope.noOfSelectedSets == 0) {
                         $scope.closeModal();
@@ -596,7 +631,15 @@
                                     noOfUpdatedSets = noOfUpdatedSets + 1;
                                     
                                     if (noOfSelectedSets == noOfUpdatedSets) {
-                                        $scope.myAccountController.getAllNetworkSetsOwnedByUser(signalNewSetCreation);
+                                        $scope.myAccountController.getAllNetworkSetsOwnedByUser(
+                                            // success handler
+                                            function(data) {
+                                                $scope.isProcessing = false;
+                                            },
+                                            function(data, status) {
+                                                $scope.isProcessing = false;
+                                            });
+
                                         initializeListOfCollections();
                                         $scope.closeModal();
                                     };
@@ -605,7 +648,15 @@
                                     noOfUpdatedSets = noOfUpdatedSets + 1;
 
                                     if (noOfSelectedSets == noOfUpdatedSets) {
-                                        $scope.myAccountController.getAllNetworkSetsOwnedByUser(signalNewSetCreation);
+                                        $scope.myAccountController.getAllNetworkSetsOwnedByUser(
+                                            // success handler
+                                            function(data) {
+                                                $scope.isProcessing = false;
+                                            },
+                                            function(data, status) {
+                                                //$scope.main.serverIsDown = true;
+                                                $scope.isProcessing = false;
+                                            });
                                         $scope.closeModal();
                                     };
                                     

@@ -21,20 +21,25 @@
                 </h4>
             </div>
 
-            <div class="wrapLongLine">
+            <div class="wrapLongLine" ng-if="networkSetController.displayedSet.description">
                 <strong>Description: </strong>
                 <span ng-bind-html="networkSetController.displayedSet.description"></span>
             </div>
 
+            <div class="wrapLongLine" ng-if="networkSetController.displayedSet.properties.reference">
+                <br>
+                <strong>Reference: </strong>
+                <span ng-bind-html="networkSetController.displayedSet.properties.reference"></span>
+            </div>
 
             <div class="wrapLongLine">
                 <br>
-                <strong>Created: </strong>
-                <span ng-bind-html="networkSetController.displayedSet.creationTime | date: 'medium'"></span>
-            </div>
-            <div class="wrapLongLine">
                 <strong>Modified: </strong>
                 <span ng-bind-html="networkSetController.displayedSet.modificationTime | date: 'medium'"></span>
+            </div>
+            <div class="wrapLongLine">
+                <strong>Created: </strong>
+                <span ng-bind-html="networkSetController.displayedSet.creationTime | date: 'medium'"></span>
             </div>
             <div class="wrapLongLine" ng-show="networkSetController.displayedSet.networks > 0">
                 <strong>Networks: </strong><span ng-bind-html="networkSetController.displayedSet.networks"></span>

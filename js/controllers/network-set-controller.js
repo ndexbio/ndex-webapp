@@ -41,6 +41,12 @@ ndexApp.controller('networkSetController',
                     networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
                     networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
                     networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
+
+                    if (networkSetInformation['properties'] &&
+                        networkSetInformation['properties']['reference']) {
+                        networkSetController.displayedSet['properties'] =
+                            {reference: networkSetInformation['properties']['reference']};
+                    };
                     
                     ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
                         function (networkSummaries) {

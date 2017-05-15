@@ -286,9 +286,14 @@ ndexApp.controller('searchController',
                             populateNetworkTable();
 
                             if (searchController.isLoggedInUser) {
-                                var signalNewSetCreation = false;
-                                // user logged in; get all network sets owned by this user
-                                searchController.getAllNetworkSetsOwnedByUser(signalNewSetCreation);
+                                searchController.getAllNetworkSetsOwnedByUser(
+                                    // success handler
+                                    function(data) {
+                                        ;
+                                    },
+                                    function(data, status) {
+                                        ;
+                                    });
                             };
 
                         } else {
@@ -318,20 +323,19 @@ ndexApp.controller('searchController',
                 return selectedIds;
             };
 
-            searchController.getAllNetworkSetsOwnedByUser = function (signalNewSetCreation) {
+            searchController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
                 var userId = ndexUtility.getLoggedInUserExternalId();
                 
                 ndexService.getAllNetworkSetsOwnedByUserV2(userId,
                     function (networkSets) {
-                        searchController.networkSets = _.orderBy(networkSets, ['modificationTime','name'], ['desc', 'asc']);
-                        
-                        if (signalNewSetCreation) {
-                            $rootScope.$emit('NEW_NETWORK_SET_CREATED');
-                        };
+                        searchController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+
+                        successHandler(searchController.networkSets[0]);
                     },
-                    function (error, status, headers, config, statusText) {
-                        console.log("unable to get network sets");
+                    function (error, status) {
                         searchController.networkSets = [];
+                        console.log("unable to get network sets");
+                        errorHandler(error, status);
                     });
             };
             

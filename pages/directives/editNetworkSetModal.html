@@ -34,7 +34,19 @@
                         </text-angular>
                     </div>
                 </div>
-
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Reference</label>
+                    <div class="col-sm-8">
+                        <text-angular
+                                ta-toolbar-class="btn-toolbar"
+                                ta-toolbar-group-class="btn-group btn-group-xs"
+                                ta-toolbar-button-class="btn btn-default"
+                                ta-toolbar-button-active-class="active"
+                                ta-default-wrap="div"
+                                ng-model='networkSet.properties.reference'>
+                        </text-angular>
+                    </div>
+                </div>
                 <div class='text-danger'>
                     <strong>
                         {{errors}}

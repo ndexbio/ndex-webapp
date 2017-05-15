@@ -88,8 +88,45 @@ angular.module('ndexServiceApp')
                 url: url ? url : "",
                 urlCount: countURLs
             };
-
         };
+
+        self.getSetReferenceObj = function(networkSet) {
+            var reference = "";
+
+            if (!networkSet || !networkSet.properties || !networkSet.properties.reference) {
+                return reference;
+            }
+
+            reference = networkSet.properties.reference;
+            var referenceInPlainText;
+
+            // reference can be plain text (has no HTML tags), in which case the text() method of jQuery
+            // will throw exception.  In this case, don't convert reference to text
+            try {
+                referenceInPlainText = jQuery(reference).text();
+            } catch(err) {
+                referenceInPlainText = reference;
+            }
+
+            var url;
+
+            // in case jQuery can't find URL and throws exception, initialize URL to an empty string
+            try {
+                url = jQuery(reference).find('a').attr('href');
+            } catch(err) {
+                url = "";
+            }
+
+            var countURLs = (reference.toLowerCase().match(/a href=/g) || []).length;
+
+            return {
+                referenceText: referenceInPlainText ? referenceInPlainText : "",
+                referenceHTML: reference ? reference : "",
+                url: url ? url : "",
+                urlCount: countURLs
+            };
+        };
+
 
         self.getFirstWordFromDisease = function(diseaseDescription) {
 

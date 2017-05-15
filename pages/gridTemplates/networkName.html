@@ -27,3 +27,10 @@
      class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
     <a href="#/network/{{row.entity.externalId}}">{{COL_FIELD}} </a>
 </div>
+
+<div ng-if="row.entity.Status == 'Set'"
+     class="ui-grid-cell-contents"
+     title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}} &#x0A;&#x0A; {{row.entity.networks}} networks in this set">
+    <a ng-href="#/networkset/{{row.entity.externalId}}"><strong style="font-size: 1.1em">{{COL_FIELD}}</strong></a>
+    <!--<a href="#/networkset/{{row.entity.externalId}}"><strong style="color: #1DAC35; font-size: 1.2em">{{COL_FIELD}}</strong></a>-->
+</div>
