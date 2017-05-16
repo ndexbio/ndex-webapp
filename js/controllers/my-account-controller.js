@@ -54,7 +54,7 @@ ndexApp.controller('myAccountController',
             myAccountController.networksWithMultipleSubNetworks = {};
 
             // when My Account (this current) page loads, we need to hide the My Account menu link
-            $scope.$parent.showMyAccountMenu = false;
+            //$scope.$parent.showMyAccountMenu = false;
             
             // this function gets called when user navigates away from the current My Account page.
             // (can also use "$locationChangeStart" instead of "$destroy"
@@ -332,7 +332,7 @@ ndexApp.controller('myAccountController',
                     },
 
                     { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
-                    { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
+                    { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
                     { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
                     //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
@@ -588,12 +588,12 @@ ndexApp.controller('myAccountController',
                         //"Nodes"         :   nodes,
                         "Edges"         :   setEdges,
                         "Visibility"    :   setVisibility,
-                        "Owner"         :   setOwner ,
+                        "Owner"         :   setOwner,
                         "Last Modified" :   setModified,
                         "Show"          :   "",
                         "description"   :   setDescription,
                         "externalId"    :   setId,
-                        "ownerUUID"     :   networkSet['ownerUUID'],
+                        "ownerUUID"     :   networkSet['ownerId'],
                         "name"          :   setName,
                         "errorMessage"  :   errorMessage,
                         "subnetworks"   :   noOfSubNetworks,
@@ -1497,11 +1497,6 @@ ndexApp.controller('myAccountController',
 
             $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
-            };
-
-            $scope.getFirstWordFromDisease = function(diseaseDescription) {
-
-                return uiMisc.getFirstWordFromDisease(diseaseDescription);
             };
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)

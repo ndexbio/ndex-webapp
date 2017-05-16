@@ -383,10 +383,12 @@
                 ndexClass: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/accountImage.html',
+            templateUrl: 'pages/directives/accountImage.html'
+            /*
             link: function($attrs) {
                 if (!$attrs.ndexSrc) $attrs.ndexSrc = 'img/no-pic.jpg';
             }
+            */
         }
     });
 

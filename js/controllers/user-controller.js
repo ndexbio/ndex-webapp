@@ -1,6 +1,8 @@
 ndexApp.controller('userController',
-    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location', '$routeParams', '$route', '$modal', 'uiMisc',
-        function (ndexService, ndexUtility, sharedProperties, $scope, $location, $routeParams, $route, $modal, uiMisc)
+    ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
+    '$routeParams', '$route', '$modal', 'uiMisc', 'uiGridConstants',
+        function (ndexService, ndexUtility, sharedProperties, $scope, $location,
+                  $routeParams, $route, $modal, uiMisc, uiGridConstants)
         {
 
             //              Process the URL to get application state
@@ -40,6 +42,8 @@ ndexApp.controller('userController',
             userController.loggedInUsersNetworkPermissionsMap = {};
 
             $scope.enableUpgradePermissionButton = false;
+
+            userController.networkSets = [];
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -84,16 +88,34 @@ ndexApp.controller('userController',
                     { field: 'Status', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    { field: 'Format', enableFiltering: true, maxWidth:63 },
+                    { field: 'Format', enableFiltering: true, maxWidth:63,
+                        sort: {
+                            direction: uiGridConstants.DESC,
+                            priority: 0,
+                        },
+
+                        sortingAlgorithm: function(a, b, rowA, rowB, direction) {
+                            if (a === b) {
+                                return 0;
+                            };
+                            if (a === 'Set') {
+                                return 1;
+                            };
+                            if (b === 'Set') {
+                                return -1;
+                            };
+                            return 0;
+                        }
+                    },
                     { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
-                    { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
+                    { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
                     { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
                     { field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
                     { field: 'Visibility', enableFiltering: true, maxWidth:70 },
                     { field: 'Owner', enableFiltering: true, maxWidth:80,
                         cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-                    { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}},
+                    { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 5}},
 
                     { field: 'description', enableFiltering: false,  visible: false},
                     { field: 'externalId',  enableFiltering: false,  visible: false},
@@ -178,6 +200,55 @@ ndexApp.controller('userController',
             var refreshNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
+
+                var count = 0;
+
+                _.forEach(userController.networkSets, function(networkSet) {
+
+                    var status = "Set";
+                    var setName = networkSet.name;
+                    var setDescription = $scope.stripHTML(networkSet.description);
+
+                    var networks = networkSet.networks.length;
+                    var setId = networkSet['externalId'];
+
+                    var setReference = uiMisc.getSetReferenceObj(networkSet);
+
+                    var setDisease   = "";
+                    var setTissue    = "";
+                    var setEdges     = "";
+                    var setVisibility = 'PUBLIC';
+                    var setOwner      = userController.displayedUser.userName;
+
+                    var setModified = new Date(networkSet['modificationTime'] );
+
+                    var row =   {
+                        "Status"        :   status,
+                        "Network Name"  :   setName,
+                        " "             :   "",
+                        "Format"        :   status,
+                        "Reference"     :   setReference,
+                        "Disease"       :   setDisease,
+                        "Tissue"        :   setTissue,
+                        //"Nodes"         :   nodes,
+                        "Edges"         :   setEdges,
+                        "Visibility"    :   setVisibility,
+                        "Owner"         :   setOwner,
+                        "Last Modified" :   setModified,
+                        "Show"          :   "",
+                        "description"   :   setDescription,
+                        "externalId"    :   setId,
+                        "ownerUUID"     :   networkSet['ownerId'],
+                        "name"          :   setName,
+                        "errorMessage"  :   errorMessage,
+                        "subnetworks"   :   noOfSubNetworks,
+                        "networks"      :   networks
+                    };
+                    $scope.networkGridOptions.data.push(row);
+
+                    count = count + 1;
+                });
+
 
                 for(var i = 0; i < userController.networkSearchResults.length; i++ )
                 {
@@ -315,7 +386,19 @@ ndexApp.controller('userController',
                         function (error, data) {
                             console.log("unable to get user group memberships");
                         });
-            }
+            };
+
+            userController.getAllNetworkSetsOwnedByUser = function()
+            {
+                ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
+
+                    function (networkSets) {
+                        userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                    },
+                    function (error, status) {
+                        console.log("unable to get network sets");
+                    });
+            };
 
             userController.getIDsOfSelectedNetworks = function ()
             {
@@ -392,21 +475,31 @@ ndexApp.controller('userController',
                                 function (error, data) {
                                     console.log("unable to get user network memberships");
                                 });
-                        }
+                        };
 
-                        populateNetworkTable();
+                        ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
+
+                            function (networkSets) {
+                                userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                                populateNetworkTable();
+                            },
+                            function (error, status) {
+                                console.log("unable to get network sets");
+                                //errorHandler(error, status);
+                                populateNetworkTable(); // still populate network table
+                            });
+
                     },
                     function (error)
                     {
                         console.log("unable to get user show case networks");
                     });
-            }
+            };
 
             userController.refreshRequests = function ()
             {
                 getRequests();
             };
-
 
 
             //  local functions
@@ -465,11 +558,6 @@ ndexApp.controller('userController',
                 return uiMisc.getNetworkDownloadLink(userController, rowEntity);
             };
 
-            $scope.getFirstWordFromDisease = function(diseaseDescription) {
-
-                return uiMisc.getFirstWordFromDisease(diseaseDescription);
-            };
-
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)
             {
@@ -477,8 +565,9 @@ ndexApp.controller('userController',
                     return false;
                 }
                 return (sharedProperties.getCurrentUserId() == networkOwnerUUID);
-            }
+            };
 
+            
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
@@ -508,8 +597,10 @@ ndexApp.controller('userController',
                         //userController.submitNetworkSearch();
 
                         userController.getUserShowcaseNetworks();
+
+                        //userController.getAllNetworkSetsOwnedByUser();
                     })
-                }
+                };
 
             }]);
 

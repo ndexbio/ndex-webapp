@@ -128,15 +128,6 @@ angular.module('ndexServiceApp')
         };
 
 
-        self.getFirstWordFromDisease = function(diseaseDescription) {
-
-            if (!diseaseDescription) {
-                return "";
-            }
-
-            return diseaseDescription.split(/[ .,;:]+/).shift();
-        };
-
 
         self.getSubNetworkInfo = function(network) {
             var noOfSubNetworks = this.getNoOfSubNetworks(network);

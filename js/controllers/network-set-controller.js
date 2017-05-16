@@ -100,7 +100,7 @@ ndexApp.controller('networkSetController',
             { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
             { field: 'Format', enableFiltering: true, maxWidth:63 },
             { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
-            { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
+            { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
             { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
             { field: 'Nodes', enableFiltering: false, maxWidth: 70 },
             { field: 'Edges', enableFiltering: false, maxWidth: 70 },
@@ -279,9 +279,17 @@ ndexApp.controller('networkSetController',
     };
 
     networkSetController.deleteNetworkSet = function(networkSetId) {
-
+        var noOfNetworksInThisSet = networkSetController.networkSearchResults.length;
         var title = 'Delete This Network Set';
-        var body  = 'This network set will be deleted from NDEx. Are you sure you want to proceed?';
+        var body  = 'This network set will be deleted from NDEx. ';
+
+        if (noOfNetworksInThisSet == 1) {
+            body = body + 'The network in this set will not be deleted. ';
+        } else if (noOfNetworksInThisSet > 1) {
+            body = body + 'The ' + noOfNetworksInThisSet + ' networks in this set will not be deleted. ';
+        };
+
+        body = body + 'Are you sure you want to proceed?';
 
         ndexNavigation.openConfirmationModal(title, body, "Confirm", "Cancel",
             function () {
@@ -322,11 +330,6 @@ ndexApp.controller('networkSetController',
 
     $scope.getNetworkDownloadLink = function(rowEntity) {
         return uiMisc.getNetworkDownloadLink(networkSetController, rowEntity);
-    };
-            
-    $scope.getFirstWordFromDisease = function(diseaseDescription) {
-
-        return uiMisc.getFirstWordFromDisease(diseaseDescription);
     };
 
     $scope.isOwnerOfNetwork = function(networkOwnerUUID)

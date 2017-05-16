@@ -297,8 +297,11 @@
 
                 <li ng-show="main.loggedIn && showMyAccountMenu">
                     <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser();"
-                        ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
-                        MyAccount
+                        ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}"
+                        style="text-decoration: underline; color: #128FDC; font-size: 1.2em">
+
+                        {{main.userFirstName}}:
+
                     </a>
                 </li>
 

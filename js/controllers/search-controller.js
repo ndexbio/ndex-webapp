@@ -166,7 +166,7 @@ ndexApp.controller('searchController',
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetworkOnSearchPage.html' },
                 { field: 'Format', enableFiltering: true, maxWidth:63 },
                 { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
-                { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
+                { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
                 { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
                 { field: 'Nodes', enableFiltering: false, maxWidth:70 },
                 { field: 'Edges', enableFiltering: false, maxWidth:70 },
@@ -609,14 +609,7 @@ ndexApp.controller('searchController',
                 return uiMisc.getNetworkDownloadLink(searchController, rowEntity);
             };
 
-            $scope.getFirstWordFromDisease = function(diseaseDescription) {
-
-                return uiMisc.getFirstWordFromDisease(diseaseDescription);
-            };
-
-
             /*---------------------------
-
 
              Perform the Search
 

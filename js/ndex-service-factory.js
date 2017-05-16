@@ -1171,6 +1171,14 @@ ndexServiceApp.factory('ndexUtility', function () {
         return loggedInUser.firstName + " " + loggedInUser.lastName;
     };
 
+    factory.getLoggedInUserFirstNames = function () {
+        var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        if (!loggedInUser) {
+            return null;
+        };
+        return loggedInUser.firstName ? loggedInUser.firstName : null;
+    };
+    
     factory.getLoggedInUserAuthToken = function () {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (!loggedInUser) {
