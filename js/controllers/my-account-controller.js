@@ -73,19 +73,21 @@ ndexApp.controller('myAccountController',
             myAccountController.addToNetworkSetLabel = "Add To Network Set";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
-            myAccountController.deleteCollectionsLabel = "Delete Set";
+            //myAccountController.deleteCollectionsLabel = "Delete Set";
 
             myAccountController.networkSets = [];
 
             $scope.selectedNetworkRowsUids = {};
             $scope.selectedCollectionRowsUids = {};
 
-            $scope.tabs = [{active: true}, {active: false}, {active: false}, {active: false}];
+            $scope.tabs = [{active: true}, {active: false}, {active: false}];
             
 
+            /*
             $scope.anyCollections = function() {
                 return myAccountController.networkSets.length > 0;
             };
+            */
 
             $scope.updateSelectedNetworksRowsUidsList = function(row) {
                 var hashKey = row['entity']["$$hashKey"];
@@ -114,26 +116,6 @@ ndexApp.controller('myAccountController',
 
                 // This shows (Selected Items: <>) at the bottom of network table
                 $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
-            };
-
-            $scope.selectPreviouslySelectedCollections = function() {
-                var selectedCount = 0;
-
-                for (var collectionUUID in $scope.selectedCollectionRowsUids) {
-                    _.forOwn($scope.collectionGridApi.grid.rowHashMap, function(value, key) {
-
-                        if (value.entity &&  value.entity.UUID && value.entity.UUID == collectionUUID) {
-                            value.isSelected = true;
-                            selectedCount = selectedCount + 1;
-                        };
-                    });
-                };
-
-                // This shows (Selected Items: <>) at the bottom of network table
-                if ($scope.collectionGridApi && $scope.collectionGridApi.grid
-                    && $scope.collectionGridApi.grid.selection) {
-                    $scope.collectionGridApi.grid.selection.selectedCount = selectedCount;
-                };
             };
 
             //table
@@ -192,98 +174,6 @@ ndexApp.controller('myAccountController',
                 }
             };
 
-
-            //table
-            $scope.collectionGridOptions =
-            {
-                enableSorting: true,
-                enableFiltering: true,
-                showGridFooter: true,
-                // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
-                // otherwise it will not show all columns if we display more than 10 columns in our table
-                columnVirtualizationThreshold: 20,
-                enableColumnMenus: false,
-                expandableRowTemplate: '<div ui-grid="row.entity.subGridOptions" style="height:150px;"></div>',
-                expandableRowHeight: 150,
-                //expandableRowScope: expandableScope,
-
-                onRegisterApi: function (collectionGridApi)
-                {
-                    $scope.collectionGridApi = collectionGridApi;
-
-                    populateCollectionsTable();
-
-                    collectionGridApi.selection.on.rowSelectionChanged($scope,function(row){
-                        var selectedRows = collectionGridApi.selection.getSelectedRows();
-                        myAccountController.collectionTableRowsSelected = selectedRows.length;
-                        $scope.updateSelectedCollectionsRowsUidsList(row);
-                        changeCollectionBulkActionsButtonsLabels();
-                    });
-                    collectionGridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-                        var selectedRows = collectionGridApi.selection.getSelectedRows();
-                        myAccountController.collectionTableRowsSelected = selectedRows.length;
-
-                        _.forEach(rows, function(row) {
-                            $scope.updateSelectedCollectionsRowsUidsList(row);
-                        });
-
-                        changeCollectionBulkActionsButtonsLabels();
-                    });
-
-                    collectionGridApi.expandable.on.rowExpandedStateChanged($scope, function(row){
-
-                        row.entity.subGridOptions = {
-                            columnDefs: [
-                                {name: "Network Name",
-                                    field: "network",
-                                    cellTemplate:  '<div class="ui-grid-cell-contents" title="{{row.entity.network}}  &#x0D;&#x0D; {{row.entity.description}}">' +
-                                    '<a ng-href="#/network/{{row.entity.UUID}}">{{COL_FIELD}} </a></div>'
-                                },
-                                {name: "UUID", field: "UUID", visible: false},
-                                {name: "description", field: "description", visible: false}
-                            ]};
-
-                        if (row.isExpanded && row.entity && row.entity.networks && (row.entity.networks.length > 0)) {
-
-                            var networkIDsInThisSet = row.entity.networks;
-                            var subGridOptionsData = [];
-
-                            ndexService.getNetworkSummariesByUUIDsV2(networkIDsInThisSet,
-                                function (networkSummaries) {
-
-                                    _.forEach(networkSummaries, function(networkSummary) {
-                                         var networkName = (!networkSummary['name']) ? "No name; UUID : " +
-                                         networkSummary.externalId : networkSummary['name'];
-                                         var description =  $scope.stripHTML(networkSummary.description);
-
-                                        //var networkName =
-                                        //    '<a href="#/network/' + networkSummary.externalId + '">' +
-                                        //    networkSummary.name + '</a>';
-
-                                        var UUID = networkSummary.externalId;
-
-                                         var setData = {
-                                             network: networkName,
-                                             UUID: UUID,
-                                             description: description
-                                         };
-                                         subGridOptionsData.push(setData);
-                                    });
-
-                                    if (subGridOptionsData.length > 0) {
-                                        row.entity.subGridOptions.data = subGridOptionsData;
-                                    };
-                                },
-                                function (error) {
-                                    if (error) {
-                                        console.log("Unable to get network summaries.");
-                                    };
-                                });
-                        };
-                    });
-                }
-            };
-
             var changeNetworkBulkActionsButtonsLabels = function() {
                 if (myAccountController.networkTableRowsSelected > 1) {
                     myAccountController.editProfilesLabel   = "Edit Profiles";
@@ -293,14 +183,6 @@ ndexApp.controller('myAccountController',
                     myAccountController.editProfilesLabel   = "Edit Profile";
                     myAccountController.exportNetworksLabel = "Export Network";
                     myAccountController.deleteNetworksLabel = "Delete Network";
-                };
-            };
-
-            var changeCollectionBulkActionsButtonsLabels = function() {
-                if (myAccountController.collectionTableRowsSelected > 1) {
-                    myAccountController.deleteCollectionsLabel = "Delete Sets";
-                } else {
-                    myAccountController.deleteCollectionsLabel = "Delete Set";
                 };
             };
 
@@ -372,63 +254,6 @@ ndexApp.controller('myAccountController',
                 return;
             };
             */
-            
-            var populateCollectionsTable = function()
-            {
-                var columnDefs = [
-                    { field: 'Set Name', enableFiltering: true,
-                      cellTemplate: 'pages/gridTemplates/setName.html'
-                    },
-
-                    { field: 'Set Description', enableFiltering: true,
-                      cellTemplate: '<div class="ui-grid-cell-contents" ng-bind-html="COL_FIELD"></div>'
-                    },
-
-                    { field: 'No of Networks', enableFiltering: false, maxWidth:110,
-                      cellTemplate: '<div style="text-align: center">{{ COL_FIELD }}</div>'
-                    },
-
-                    { field: 'Last Modified', enableFiltering: false, maxWidth:120,
-                      cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
-                    },
-
-                    { field: 'externalId',  enableFiltering: false,  visible: false },
-                    { field: 'name',        enableFiltering: false,  visible: false },
-                    { field: 'description', enableFiltering: false,  visible: false },
-                    { field: 'networks',    enableFiltering: false,  visible: false }
-                ];
-
-                $scope.collectionGridApi.grid.options.columnDefs = columnDefs;
-                refreshCollectionsTable();
-            };
-
-            var refreshCollectionsTable = function()
-            {
-                $scope.collectionGridOptions.data = [];
-
-                _.forEach(myAccountController.networkSets, function(collection) {
-
-                    var name = collection.name;
-                    var description = $scope.stripHTML(collection.description);
-                    var noOfNetworks = (collection.networks) ? collection.networks.length : 0;
-                    var modificationTime = collection.modificationTime;
-                    var externalId = collection.externalId;
-                    var networks   = collection.networks;
-
-                    var row =   {
-                        "Set Name"        :   name,
-                        "Set Description" :   description,
-                        "No of Networks"  :   noOfNetworks,
-                        "Last Modified"   :   modificationTime,
-                        "externalId"      :   externalId,
-                        "name"            :   name,
-                        "description"     :   description,
-                        "networks"        :   networks
-                    };
-
-                    $scope.collectionGridOptions.data.push(row);
-                });
-            };
 
             $scope.getExportedNetworkDownloadLink = function(taskId) {
                 return ndexService.getNdexServerUriV2() + "/task/" + taskId + "/file?download=true";
@@ -900,24 +725,6 @@ ndexApp.controller('myAccountController',
                 return selectedIds;
             };
 
-            /*
-            myAccountController.getSelectedNetworks = function ()
-            {
-                var selectedNetworks = {};
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                for (var i = 0; i < selectedNetworksRows.length; i ++)
-                {
-                    selectedNetworks[selectedNetworksRows[i].externalId] = {
-                        Showcase : selectedNetworksRows[i].Showcase,
-                        Visibility: selectedNetworksRows[i].Visibility
-                    }
-
-                }
-
-                return selectedNetworks;
-            };\*/
-
             myAccountController.updateVisibilityOfNetwork = function (networkId, networkVisibility)
             {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
@@ -1195,10 +1002,6 @@ ndexApp.controller('myAccountController',
                     
                     function (networkSets) {
                         myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
-                        if ($scope.collectionGridApi) {
-                            populateCollectionsTable();
-                        };
-
                         successHandler(myAccountController.networkSets[0]);
                     },
                     function (error, status) {
@@ -1437,9 +1240,11 @@ ndexApp.controller('myAccountController',
 
                                     function (networkSets) {
                                         myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                                        /*
                                         if ($scope.collectionGridApi) {
                                             populateCollectionsTable();
                                         };
+                                        */
                                         populateNetworkTable();
                                     },
                                     function (error, status, headers, config, statusText) {
@@ -1581,5 +1386,4 @@ ndexApp.controller('myAccountController',
                 })
         }]);
 
-
-//------------------------------------------------------------------------------------//
+            //------------------------------------------------------------------------------------//

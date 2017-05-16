@@ -191,6 +191,7 @@
                         </span>
                     </span>
 
+                    <!--
                     <span ng-show="myAccountController.collectionTableRowsSelected > 0">
                         <span>
                             <a class="btn btn-primary customButtonWidth"
@@ -199,6 +200,7 @@
                             </a>
                         </span>
                     </span>
+                    -->
 
                 </div>
 
@@ -304,27 +306,11 @@
 
             </tab>
 
-            <tab ng-attr-active="tabs[2].active" heading="My Sets" disabled="!anyCollections()"
-                 select="collectionsTabShown = !collectionsTabShown" deselect="collectionsTabShown = !collectionsTabShown"
-                 ng-click="selectPreviouslySelectedCollections()">
-
-                <div ui-grid-selection
-                     ui-grid="collectionGridOptions"
-                     ui-grid-resize-columns
-                     ui-grid-auto-resize
-                     ui-grid-pinning ui-grid-expandable
-                     ng-if="collectionsTabShown"
-                     class="networkGrid">
-                </div>
-                <!--</div>-->
-
-            </tab>
-
             <!-- only show Tasks & Notifications tab if
                  1) user is logged in (it is not an anonymous search), and
                  2) selected user is the same as the one who logged in.  In other words, this tab will be hidden if
                  a user logged in as say "aaa" and gets networks for user "bbb" --->
-            <tab ng-attr-active="tabs[3].active" heading="My Tasks & Notifications"
+            <tab ng-attr-active="tabs[2].active" heading="My Tasks & Notifications"
                  ng-show="(myAccountController.isLoggedInUser) && (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)"
                  disabled="myAccountController.tasksNotificationsTabDisabled()">
 
