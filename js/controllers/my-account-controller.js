@@ -1,8 +1,8 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
-        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation',
+        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants',
         function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
-                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation)
+                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants)
         {
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -307,10 +307,30 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatus.html' },
+                    { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatus.html'},
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    { field: 'Format', enableFiltering: true, maxWidth:63 },
+
+                    { field: 'Format', enableFiltering: true, maxWidth:63,
+                        sort: {
+                            direction: uiGridConstants.DESC,
+                            priority: 0,
+                        },
+
+                        sortingAlgorithm: function(a, b, rowA, rowB, direction) {
+                            if (a === b) {
+                                return 0;
+                            };
+                            if (a === 'Set') {
+                                return 1;
+                            };
+                            if (b === 'Set') {
+                                return -1;
+                            };
+                            return 0;
+                        }
+                    },
+
                     { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
                     { field: 'Disease', enableFiltering: true, maxWidth: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
                     { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
@@ -319,7 +339,7 @@ ndexApp.controller('myAccountController',
                     { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
                     { field: 'Owner', enableFiltering: true, maxWidth:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120,
-                        cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 0}
+                        cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 5}
                     },
 
                     /*
