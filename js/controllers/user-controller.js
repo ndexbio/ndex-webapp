@@ -223,7 +223,7 @@ ndexApp.controller('userController',
                     var setDisease   = "";
                     var setTissue    = "";
                     var setEdges     = "";
-                    var setVisibility = 'PUBLIC';
+                    var setVisibility = "";
                     var setOwner      = userController.displayedUser.userName;
 
                     var setModified = new Date(networkSet['modificationTime'] );
