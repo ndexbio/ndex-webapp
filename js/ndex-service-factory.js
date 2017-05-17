@@ -757,7 +757,7 @@ ndexServiceApp.factory('ndexService',
                     {
                         errorHandler(data, networkId, property, value);
                     });
-            }
+            };
 
             factory.getAllPermissionsOnNetworkV2 = function(networkId, type, permission, startPage, size, successHandler, errorHandler) {
                 // calls NetworkServiceV2.getNetworkUserMemberships server API at
@@ -934,6 +934,28 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getDeleteConfigV2(url, networkIds);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.updateNetworkSetSystemPropertiesV2 = function(networkSetId, property, value, successHandler, errorHandler) {
+                // Server API: Update Network Set System Properties
+                // PUT /networkset/{networkSetId}/systemproperty
+
+                var url = "/networkset/" + networkSetId + "/systemproperty";
+                var putData = {};
+                putData[property] = value;
+                var config = ndexConfigs.getPutConfigV2(url, putData);
+
+                $http(config)
+                    .success(function(data)
+                    {
+                        // note that we need to pass the Id of network back in order to correctly update
+                        // visibility of network in the Table while performing Bulk Change Visibility
+                        successHandler(data, networkId, property, value);
+                    })
+                    .error(function(data)
+                    {
+                        errorHandler(data, networkId, property, value);
+                    });
             };
 
             /*---------------------------------------------------------------------*

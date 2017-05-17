@@ -105,7 +105,7 @@ ndexApp.controller('networkSetController',
             { field: 'Nodes', enableFiltering: false, maxWidth: 70 },
             { field: 'Edges', enableFiltering: false, maxWidth: 70 },
             { field: 'Visibility', enableFiltering: true, maxWidth: 70 },
-            { field: 'Owner', enableFiltering: true, maxWidth:80,
+            { field: 'Owner', enableFiltering: true, width:80,
                 cellTemplate: 'pages/gridTemplates/ownedBy.html'},
             { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" }
         ];

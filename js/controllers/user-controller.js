@@ -113,7 +113,7 @@ ndexApp.controller('userController',
                     { field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
                     { field: 'Visibility', enableFiltering: true, maxWidth:70 },
-                    { field: 'Owner', enableFiltering: true, maxWidth:80,
+                    { field: 'Owner', enableFiltering: true, width:80,
                         cellTemplate: 'pages/gridTemplates/ownedBy.html'},
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 5}},
 
@@ -201,9 +201,15 @@ ndexApp.controller('userController',
             {
                 $scope.networkGridOptions.data = [];
 
-                var count = 0;
+                //var count = 0;
 
                 _.forEach(userController.networkSets, function(networkSet) {
+
+                    var setShowcased = networkSet['showcased'];
+                    if (!setShowcased) {
+                        // "return" means "continue" in lodash's _.forEach
+                        return;
+                    };
 
                     var status = "Set";
                     var setName = networkSet.name;
@@ -246,7 +252,7 @@ ndexApp.controller('userController',
                     };
                     $scope.networkGridOptions.data.push(row);
 
-                    count = count + 1;
+                    //count = count + 1;
                 });
 
 

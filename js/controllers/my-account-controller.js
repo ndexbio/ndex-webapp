@@ -219,7 +219,7 @@ ndexApp.controller('myAccountController',
                     //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
                     { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
-                    { field: 'Owner', enableFiltering: true, maxWidth:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
+                    { field: 'Owner', enableFiltering: true, width:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120,
                         cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 5}
                     },
@@ -374,7 +374,7 @@ ndexApp.controller('myAccountController',
             {
                 $scope.networkGridOptions.data = [];
 
-                var count = 0;
+                //var count = 0;
 
                 _.forEach(myAccountController.networkSets, function(networkSet) {
 
@@ -383,12 +383,6 @@ ndexApp.controller('myAccountController',
                     var setDescription = $scope.stripHTML(networkSet.description);
 
                     var networks = networkSet.networks.length;
-                    /*
-                    if (networkSet.networks && networkSet.networks.length > 0) {
-                        setDescription = setDescription + '<br>' +
-                            networkSet.networks.length + " networks in this set";
-                    };
-                    */
 
                     var setId = networkSet['externalId'];
 
@@ -400,7 +394,9 @@ ndexApp.controller('myAccountController',
                     var setVisibility = 'PUBLIC';
                     var setOwner = sharedProperties.getCurrentUserAccountName();
 
-                    var setModified = new Date(networkSet['modificationTime'] );
+                    var setModified = new Date(networkSet['modificationTime']);
+
+                    var setShowcased = networkSet['showcased'];
                     
                     var row =   {
                         "Status"        :   status,
@@ -415,7 +411,7 @@ ndexApp.controller('myAccountController',
                         "Visibility"    :   setVisibility,
                         "Owner"         :   setOwner,
                         "Last Modified" :   setModified,
-                        "Show"          :   "",
+                        "Show"          :   setShowcased,
                         "description"   :   setDescription,
                         "externalId"    :   setId,
                         "ownerUUID"     :   networkSet['ownerId'],
@@ -426,7 +422,7 @@ ndexApp.controller('myAccountController',
                     };
                     $scope.networkGridOptions.data.push(row);
 
-                    count = count + 1;
+                    //count = count + 1;
                 });
 
                 //console.log('network sets =' + count);
@@ -1288,15 +1284,30 @@ ndexApp.controller('myAccountController',
                         row.entity.Show = false;
                     } else {
                         row.entity.Show = true;
-                    }
+                    };
 
-                    ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Show,
-                        function (data, networkId, property, value) {
-                            // success
-                        },
-                        function (error, networkId, property, value) {
-                            console.log("unable to update showcase for Network with Id " + networkId);
-                        });
+                    if (row.entity.Status == 'Set') {
+
+                        var mySet = myAccountController.networkSets;
+
+                        ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Show,
+                            function (data, networkId, property, value) {
+                                ; // success
+                            },
+                            function (error, setId, property, value) {
+                                console.log("unable to update showcase for Network Set with Id " + setId);
+                            });
+
+                    } else {
+
+                        ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Show,
+                            function (data, networkId, property, value) {
+                                ; // success
+                            },
+                            function (error, networkId, property, value) {
+                                console.log("unable to update showcase for Network with Id " + networkId);
+                            });
+                    };
                 }
             };
 
