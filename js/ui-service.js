@@ -198,10 +198,13 @@
 
                                 $scope.myAccountController.getAllNetworkSetsOwnedByUser(
                                     // success handler
-                                    function(data) {
+                                    function(newNetworkSet) {
 
                                         if ($scope.signalNewSetCreation) {
                                             $rootScope.$emit('NEW_NETWORK_SET_CREATED');
+                                        };
+                                        if ($scope.myAccountController.addNetworkSetToTable) {
+                                            $scope.myAccountController.addNetworkSetToTable(newNetworkSet);
                                         };
                                         $scope.isProcessing = false;
                                     },
@@ -560,6 +563,11 @@
 
                 $scope.openMe = function() {
 
+/*
+                    if (checkIfAnyPrivateNetwoprkSelected()) {
+                        return;
+                    };
+*/
                     initializeListOfCollections();
 
                     modalInstance = $modal.open({
@@ -567,7 +575,11 @@
                         scope: $scope
                     });
                 };
-
+/*
+                var checkIfAnyPrivateNetwoprkSelected = function() {
+                    var retValue = true;
+                };
+*/
                 var initializeListOfCollections = function() {
                     var networkSets = $scope.myAccountController.networkSets;
                     $scope.loadTheseSets = [];

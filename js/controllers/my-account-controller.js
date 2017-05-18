@@ -374,58 +374,9 @@ ndexApp.controller('myAccountController',
             {
                 $scope.networkGridOptions.data = [];
 
-                //var count = 0;
-
                 _.forEach(myAccountController.networkSets, function(networkSet) {
-
-                    var status = "Set";
-                    var setName = networkSet.name;
-                    var setDescription = $scope.stripHTML(networkSet.description);
-
-                    var networks = networkSet.networks.length;
-
-                    var setId = networkSet['externalId'];
-
-                    var setReference = uiMisc.getSetReferenceObj(networkSet);
-
-                    var setDisease   = "";
-                    var setTissue    = "";
-                    var setEdges     = "";
-                    var setVisibility = "";
-                    var setOwner = sharedProperties.getCurrentUserAccountName();
-
-                    var setModified = new Date(networkSet['modificationTime']);
-
-                    var setShowcased = networkSet['showcased'];
-                    
-                    var row =   {
-                        "Status"        :   status,
-                        "Network Name"  :   setName,
-                        " "             :   "",
-                        "Format"        :   status,
-                        "Reference"     :   setReference,
-                        "Disease"       :   setDisease,
-                        "Tissue"        :   setTissue,
-                        //"Nodes"         :   nodes,
-                        "Edges"         :   setEdges,
-                        "Visibility"    :   setVisibility,
-                        "Owner"         :   setOwner,
-                        "Last Modified" :   setModified,
-                        "Show"          :   setShowcased,
-                        "description"   :   setDescription,
-                        "externalId"    :   setId,
-                        "ownerUUID"     :   networkSet['ownerId'],
-                        "name"          :   setName,
-                        "errorMessage"  :   errorMessage,
-                        "subnetworks"   :   noOfSubNetworks,
-                        "networks"      :   networks
-                    };
-                    $scope.networkGridOptions.data.push(row);
-
-                    //count = count + 1;
+                    myAccountController.addNetworkSetToTable(networkSet);
                 });
-
-                //console.log('network sets =' + count);
 
                 for(var i = 0; i < myAccountController.networkSearchResults.length; i++ )
                 {
@@ -1004,6 +955,52 @@ ndexApp.controller('myAccountController',
                         console.log("unable to get network sets");
                         errorHandler(error, status);
                     });
+            };
+
+            myAccountController.addNetworkSetToTable = function(networkSet) {
+                var status = "Set";
+                var setName = networkSet.name;
+                var setDescription = $scope.stripHTML(networkSet.description);
+
+                var networks = networkSet.networks.length;
+
+                var setId = networkSet['externalId'];
+
+                var setReference = uiMisc.getSetReferenceObj(networkSet);
+
+                var setDisease   = "";
+                var setTissue    = "";
+                var setEdges     = "";
+                var setVisibility = "";
+                var setOwner = sharedProperties.getCurrentUserAccountName();
+
+                var setModified = new Date(networkSet['modificationTime']);
+
+                var setShowcased = networkSet['showcased'];
+
+                var row =   {
+                    "Status"        :   status,
+                    "Network Name"  :   setName,
+                    " "             :   "",
+                    "Format"        :   status,
+                    "Reference"     :   setReference,
+                    "Disease"       :   setDisease,
+                    "Tissue"        :   setTissue,
+                    //"Nodes"         :   nodes,
+                    "Edges"         :   setEdges,
+                    "Visibility"    :   setVisibility,
+                    "Owner"         :   setOwner,
+                    "Last Modified" :   setModified,
+                    "Show"          :   setShowcased,
+                    "description"   :   setDescription,
+                    "externalId"    :   setId,
+                    "ownerUUID"     :   networkSet['ownerId'],
+                    "name"          :   setName,
+                    "errorMessage"  :   "",
+                    "subnetworks"   :   0,
+                    "networks"      :   networks
+                };
+                $scope.networkGridOptions.data.push(row);
             };
 
             myAccountController.adminCheckBoxClicked = function()
