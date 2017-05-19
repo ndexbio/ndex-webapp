@@ -317,7 +317,9 @@ ndexApp.controller('searchController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 
                 _.forEach(selectedNetworksRows, function(row) {
-                    selectedIds.push(row['externalId']);
+                    if (row.Status.toLowerCase() != "set") {
+                        selectedIds.push(row['externalId']);
+                    };
                 });
                 
                 return selectedIds;

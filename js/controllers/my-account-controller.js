@@ -92,7 +92,8 @@ ndexApp.controller('myAccountController',
             $scope.updateSelectedNetworksRowsUidsList = function(row) {
                 var hashKey = row['entity']["$$hashKey"];
 
-                if (row['isSelected']) {
+                if (row['isSelected']  && row['entity'] && row['entity']['Status']
+                    && (row['entity']['Status'].toLowerCase() != 'set')) {
                     $scope.selectedNetworkRowsUids[hashKey] = true;
                 } else {
                     delete $scope.selectedNetworkRowsUids[hashKey];
@@ -158,12 +159,22 @@ ndexApp.controller('myAccountController',
                         enableOrDisableManageAccessBulkButton();
                     });
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.networkTableRowsSelected = selectedRows.length;
 
                         _.forEach(rows, function(row) {
-                            $scope.updateSelectedNetworksRowsUidsList(row);
+                            if ((row.entity.Status == 'Set') && (row.isSelected)) {
+                                row.isSelected = false;
+
+                                var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
+                                if (selectedCount > 0) {
+                                    $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
+                                };
+                            } else {
+                                $scope.updateSelectedNetworksRowsUidsList(row);
+                            };
                         });
+
+                        var selectedRows = gridApi.selection.getSelectedRows();
+                        myAccountController.networkTableRowsSelected = selectedRows.length;
 
                         changeNetworkBulkActionsButtonsLabels();
 
@@ -666,7 +677,9 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
                 _.forEach(selectedNetworksRows, function(row) {
-                    selectedIds.push(row['externalId']);
+                    if (row.Format.toLowerCase() != "set") {
+                        selectedIds.push(row['externalId']);
+                    };
                 });
 
                 return selectedIds;

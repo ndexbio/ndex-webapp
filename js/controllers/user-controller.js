@@ -67,12 +67,38 @@ ndexApp.controller('userController',
                 {
                     $scope.networkGridApi = gridApi;
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
+
+                        if ((row.entity.Status == 'Set') && (row.isSelected)) {
+                            row.isSelected = false;
+
+                            var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
+                            if (selectedCount > 0) {
+                                $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
+                                alert("Cannot select a Set in this release. This feature will be added in future.");
+                            };
+
+                            return;
+                        };
+
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
 
                         enableOrDisableUpgradePermissionButton();
                     });
-                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+
+                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows) {
+
+                        _.forEach(rows, function(row) {
+                            if ((row.entity.Status == 'Set') && (row.isSelected)) {
+                                row.isSelected = false;
+
+                                var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
+                                if (selectedCount > 0) {
+                                    $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
+                                };
+                            };
+                        });
+
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.atLeastOneSelected = selectedRows.length > 0;
 
@@ -178,23 +204,30 @@ ndexApp.controller('userController',
 
                 var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
 
-                for (var i = 0; i < selectedNetworksRows.length; i++) {
-                    var networkUUID = selectedNetworksRows[i].externalId;
-                    var ownerUUID = selectedNetworksRows[i].ownerUUID;
+                _.forEach(selectedNetworksRows, function(selectedNetworkRow) {
+
+                    if (selectedNetworkRow.Status.toLowerCase() == "set") {
+                        // this row is a Set and we only want networks, so return - get the next
+                        // item from selectedNetworksRows (go for another iteration in the  _.forEach loop)
+                      return;
+                    };
+
+                    var networkUUID = selectedNetworkRow.externalId;
+                    var ownerUUID = selectedNetworkRow.ownerUUID;
                     var loggedInUserPermission = (networkUUID in userController.loggedInUsersNetworkPermissionsMap) ?
                         userController.loggedInUsersNetworkPermissionsMap[networkUUID] : 'NONE';
-                    
+
                     UUIDs.push(
                         {
                             'networkUUID': networkUUID,
-                            'owner': selectedNetworksRows[i]['Owner'],
-                            'name': selectedNetworksRows[i]['name'],
-                            'loggedInUserPermission' : loggedInUserPermission
+                            'owner': selectedNetworkRow['Owner'],
+                            'name': selectedNetworkRow['name'],
+                            'loggedInUserPermission': loggedInUserPermission
                         });
-                }
+                });
 
                 return UUIDs;
-            }
+            };
 
 
             var refreshNetworkTable = function()
