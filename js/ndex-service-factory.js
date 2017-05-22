@@ -950,11 +950,11 @@ ndexServiceApp.factory('ndexService',
                     {
                         // note that we need to pass the Id of network back in order to correctly update
                         // visibility of network in the Table while performing Bulk Change Visibility
-                        successHandler(data, networkId, property, value);
+                        successHandler(data, networkSetId, property, value);
                     })
                     .error(function(data)
                     {
-                        errorHandler(data, networkId, property, value);
+                        errorHandler(data, networkSetId, property, value);
                     });
             };
 

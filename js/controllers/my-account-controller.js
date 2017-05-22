@@ -1342,31 +1342,88 @@ ndexApp.controller('myAccountController',
             $scope.switchShowcase = function(row) {
                 if (row && row.entity) {
 
-                    row.entity.Show = !row.entity.Show;
+                    var show = !row.entity.Show;
+
+                    //row.entity.Show = !row.entity.Show;
 
                     if (row.entity.Status == 'Set') {
 
-                        var mySet = myAccountController.networkSets;
+                        if (show) {
+                            var setToShowcase = _.find(myAccountController.networkSets, {'externalId': row.entity.externalId});
+                            var networksIds = (setToShowcase.networks) ? setToShowcase.networks : [];
+                            var privateNetworksCount = 0;
 
-                        ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Show,
-                            function (data, networkId, property, value) {
-                                ; // success
-                            },
-                            function (error, setId, property, value) {
-                                console.log("unable to update showcase for Network Set with Id " + setId);
+                            _.forEach(myAccountController.networkSearchResults, function (network) {
+                                if (_.includes(networksIds, network.externalId)) {
+                                    if (network.visibility.toUpperCase() == "PRIVATE") {
+                                        privateNetworksCount = privateNetworksCount + 1;
+                                    };
+                                };
                             });
+
+                            if (privateNetworksCount > 0) {
+
+                                if (privateNetworksCount == 1) {
+                                    var message = privateNetworksCount + "  network in this collection is private " +
+                                        " and will not be visible to other users. <br><br>";
+                                } else {
+                                    var message = privateNetworksCount + " networks in this collection are private " +
+                                        " and will not be visible to other users. <br><br>";
+                                };
+
+                                var title = "Activate Showcase function";
+                                message = message + "Do you want to proceed anyways and activate the Showcase function?";
+
+                                ndexNavigation.openConfirmationModal(title, message, "Proceed", "Cancel",
+                                    function () {
+                                        ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
+                                            function (data, networkId, property, value) {
+                                                row.entity.Show = !row.entity.Show; // success
+                                            },
+                                            function (error, setId, property, value) {
+                                                console.log("unable to update showcase for Network Set with Id " + setId);
+                                            });
+                                    },
+                                    function () {
+                                        // User selected Cancel; return
+                                        return;
+                                    });
+
+                            } else {
+
+                                // turning on showcase for a Set with no private networks
+                                ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
+                                    function (data, networkId, property, value) {
+                                        row.entity.Show = !row.entity.Show; // success
+                                    },
+                                    function (error, setId, property, value) {
+                                        console.log("unable to update showcase for Network Set with Id " + setId);
+                                    });
+                            }
+                        } else {
+
+                            // turning off showcase for a Set
+                            ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
+                                function (data, networkId, property, value) {
+                                    row.entity.Show = !row.entity.Show; // success
+                                },
+                                function (error, setId, property, value) {
+                                    console.log("unable to update showcase for Network Set with Id " + setId);
+                                });
+                        };
 
                     } else {
 
-                        ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", row.entity.Show,
+                        // turning on/off showcase for a network
+                        ndexService.setNetworkSystemPropertiesV2(row.entity.externalId, "showcase", show,
                             function (data, networkId, property, value) {
-                                ; // success
+                                row.entity.Show = !row.entity.Show; // success
                             },
                             function (error, networkId, property, value) {
                                 console.log("unable to update showcase for Network with Id " + networkId);
                             });
                     };
-                }
+                };
             };
 
             $scope.getNetworkDownloadLink = function(rowEntity) {

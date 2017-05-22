@@ -556,7 +556,7 @@
     uiServiceApp.directive('showNetworkSetsModal', function() {
         return {
             scope: {
-                myAccountController: '=',
+                myAccountController: '='
             },
             restrict: 'E',
             templateUrl: 'pages/directives/showNetworkSetsModal.html',
@@ -569,11 +569,6 @@
 
                 $scope.openMe = function() {
 
-/*
-                    if (checkIfAnyPrivateNetwoprkSelected()) {
-                        return;
-                    };
-*/
                     initializeListOfCollections();
 
                     modalInstance = $modal.open({
@@ -581,11 +576,7 @@
                         scope: $scope
                     });
                 };
-/*
-                var checkIfAnyPrivateNetwoprkSelected = function() {
-                    var retValue = true;
-                };
-*/
+
                 var initializeListOfCollections = function() {
                     var networkSets = $scope.myAccountController.networkSets;
                     $scope.loadTheseSets = [];
