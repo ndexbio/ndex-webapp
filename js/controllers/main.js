@@ -25,7 +25,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.showMyAccountMenu = true;
 
             var userFirstName = ndexUtility.getLoggedInUserFirstNames();
-            $scope.main.userFirstName = userFirstName ? "Welcome " + userFirstName : "MyAccount";
+            $scope.main.userFirstName = userFirstName ? "Welcome, " + userFirstName : "MyAccount";
 
             if ($rootScope.reloadRoute) {
                 delete $rootScope.reloadRoute;

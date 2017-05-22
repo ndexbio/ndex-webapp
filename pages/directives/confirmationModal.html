@@ -15,13 +15,20 @@
 				{{message}}
 			</div>
 
-		    <div class='text-danger'>
-			    <strong>{{errors}}</strong>
-            </div>
+			<div ng-if="progress">
+				<br>
+				<strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress"></span></strong>
+			</div>
 
-            <div class='text-success'>
-                <strong>{{progress}}</strong>
-            </div>
+			<div ng-if="progress2">
+				<strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
+			</div>
+
+			<div ng-if="errors" class='text-danger'>
+				<br>
+				<strong>{{errors}}</strong>
+			</div>
+
 		</div>
 
 		<div class="modal-footer">

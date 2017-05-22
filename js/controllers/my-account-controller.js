@@ -185,6 +185,11 @@ ndexApp.controller('myAccountController',
                 }
             };
 
+            $scope.showNetworkTable = function() {
+                return (myAccountController.networkSearchResults.length > 0) ||
+                       (myAccountController.networkSets.length > 0);
+            };
+
             var changeNetworkBulkActionsButtonsLabels = function() {
                 if (myAccountController.networkTableRowsSelected > 1) {
                     myAccountController.editProfilesLabel   = "Edit Profiles";
@@ -602,9 +607,9 @@ ndexApp.controller('myAccountController',
 
                         $scope.confirm = function() {
                             $scope.isProcessing = true;
-                            myAccountController.deleteSelectedNetworks();
-                            $modalInstance.dismiss();
-                            $scope.isProcessing = false;
+                            myAccountController.deleteSelectedNetworks($scope, $modalInstance);
+                            //$modalInstance.dismiss();
+                            //$scope.isProcessing = false;
                         };
                     }
                 });
@@ -797,42 +802,89 @@ ndexApp.controller('myAccountController',
                 return retValue;
             };
 
-            myAccountController.deleteSelectedNetworks = function ()
+
+            var removeDeletedNetworksFromSearchAndNetworksTable = function($scope, networkIds) {
+                var externalId = null;
+
+                for (var i = $scope.networkGridOptions.data.length - 1; i >= 0; i--)
+                {
+                    externalId = $scope.networkGridOptions.data[i].externalId;
+                    if (externalId in networkIds) {
+                        $scope.networkGridOptions.data.splice(i, 1);
+                    };
+                };
+
+                $scope.networkGridApi.selection.clearSelectedRows();
+                myAccountController.networkTableRowsSelected = 0;
+
+                // remove the networks from the search result
+                for (var i = myAccountController.networkSearchResults.length - 1; i >= 0; i--)
+                {
+                    externalId = myAccountController.networkSearchResults[i].externalId;
+                    if (externalId in networkIds) {
+                        myAccountController.networkSearchResults.splice(i, 1);
+                    };
+                };
+            };
+
+            myAccountController.deleteSelectedNetworks = function ($scope, $modalInstance)
             {
                 var selectedIds = [];
+                var successfullyDeletedNetworkIDs = {};
 
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                for( var i = 0; i < selectedNetworksRows.length; i ++ )
-                {
-                    selectedIds.push(selectedNetworksRows[i].externalId);
-                }
-                for (i = 0; i < selectedIds.length; i++ )
-                {
-                    var selectedId = selectedIds[i];
-                    ndexService.deleteNetworkV2(selectedId,
+                var deletedNetworksCounter = 0;
+                var selectedNetworkCount = $scope.networkGridApi.selection.getSelectedRows().length;
+
+                _.forEach($scope.networkGridApi.selection.getSelectedRows(), function(row) {
+
+                    if (row.Status && row.Status.toLowerCase() == 'set') {
+                        // this should never happen since we do not allow selecting sets,
+                        // but just in case ...
+                        return;
+                    };
+
+                    var networkId   = row.externalId;
+                    var networkName = row.name;
+
+                    ndexService.deleteNetworkV2(networkId,
                         function (data)
                         {
-                            //;
+                            deletedNetworksCounter = deletedNetworksCounter + 1;
+                            successfullyDeletedNetworkIDs[networkId] = "";
+
+                            $scope.progress  = "Deleted: " + deletedNetworksCounter + " of " + selectedNetworkCount + " selected";
+                            $scope.progress2 = "Deleted: " + networkName;
+
+                            if (deletedNetworksCounter == selectedNetworkCount) {
+                                delete $scope.progress;
+                                delete $scope.progress2;
+
+                                $modalInstance.dismiss();
+                                $scope.isProcessing = false;
+
+                                removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
+
+                            };
                         },
                         function (error)
                         {
+                            deletedNetworksCounter = deletedNetworksCounter + 1;
+                            //$scope.networkGridApi.grid.selection.selectedCount =
+                            //    $scope.networkGridApi.grid.selection.selectedCount - 1;
                             console.log("unable to delete network");
+                            $scope.error = "Unable to delete network " + networkName;
+
+                            if (deletedNetworksCounter == selectedNetworkCount) {
+                                delete $scope.progress;
+                                delete $scope.progress2;
+
+                                $modalInstance.dismiss();
+                                $scope.isProcessing = false;
+
+                                removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
+                            };
                         });
-                }
-
-                // after we deleted all selected networks, the footer of the table may
-                // still show that some networks are selected (must be a bug), so
-                // we manually set the selected count to 0 (see defect NDEX-582)
-                $scope.networkGridApi.grid.selection.selectedCount = 0;
-
-                for (var i = myAccountController.networkSearchResults.length - 1; i >= 0; i-- )
-                {
-                    var externalId = myAccountController.networkSearchResults[i].externalId;
-                    if( selectedIds.indexOf(externalId) != -1 )
-                        myAccountController.networkSearchResults.splice(i,1);
-                }
-                refreshNetworkTable();
-                myAccountController.networkTableRowsSelected = 0;
+                });
             };
 
             myAccountController.deleteSelectedSets = function ()
@@ -1290,11 +1342,7 @@ ndexApp.controller('myAccountController',
             $scope.switchShowcase = function(row) {
                 if (row && row.entity) {
 
-                    if (row.entity.Show) {
-                        row.entity.Show = false;
-                    } else {
-                        row.entity.Show = true;
-                    };
+                    row.entity.Show = !row.entity.Show;
 
                     if (row.entity.Status == 'Set') {
 

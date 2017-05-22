@@ -153,7 +153,7 @@
             },
             restrict: 'A',
             templateUrl: 'pages/directives/createNetworkSetModal.html',
-            controller: function($scope, $attrs, $modal, $location, ndexService, $rootScope) {
+            controller: function($scope, $attrs, $modal, $location, ndexService, $rootScope, $route) {
                 var modalInstance;
 
                 //$scope.networkSet = {};
@@ -205,6 +205,12 @@
                                         };
                                         if ($scope.myAccountController.addNetworkSetToTable) {
                                             $scope.myAccountController.addNetworkSetToTable(newNetworkSet);
+                                        };
+                                        if (($scope.myAccountController.networkSets.length == 1) &&
+                                            ($scope.myAccountController.networkSearchResults.length == 0)) {
+                                            // we are on My Account page and there is only one set there that we
+                                            // just created; referesh the whole page to prevent Network Table deformation
+                                            $route.reload();
                                         };
                                         $scope.isProcessing = false;
                                     },
