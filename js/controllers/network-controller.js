@@ -71,6 +71,8 @@ ndexApp.controller('networkController',
             networkController.subNetworkId = null;
             networkController.noOfSubNetworks = 0;
 
+            networkController.networkSets = [];
+
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroudColor = function () {
@@ -1864,7 +1866,16 @@ ndexApp.controller('networkController',
             networkController.reloadOriginalNetwork = function () {
                 $route.reload();
             };
-            
+
+            // this is used by showNetworkSetsModal directive in ui-services.js for adding
+            // selected networks to selected sets.  In network-controller there is only one "selected" network
+            // (the current one), so we add it to the list and return to the caller,
+            networkController.getIDsOfSelectedNetworks = function () {
+                var selectedIds = [];
+                selectedIds.push(networkController.currentNetworkId);
+                return selectedIds;
+            };
+
             networkController.saveQueryResult = function() {
 
                 var  modalInstanceSave = $modal.open({
@@ -2073,6 +2084,14 @@ ndexApp.controller('networkController',
                                 _.sortBy(
                                 networkService.getPropertiesExcluding(networkController.subNetworkId,[
                                     'rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
+
+                            networkController.getAllNetworkSetsOwnedByUser(
+                                function(newNetworkSet) {
+                                    ;
+                                },
+                                function(data, status) {
+                                    ;
+                                });
                         }
                     )
                     .error(
@@ -2395,7 +2414,28 @@ ndexApp.controller('networkController',
 
             var stopSpinner = function() {
                 spinner.stop();
-            }
+            };
+
+
+            networkController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
+                if (!networkController.isLoggedInUser) {
+                    networkController.networkSets = [];
+                    return;
+                };
+
+                var userId = ndexUtility.getLoggedInUserExternalId();
+
+                ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+                    function (networkSets) {
+                        networkController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                        successHandler(networkController.networkSets[0]);
+                    },
+                    function (error, status) {
+                        networkController.networkSets = [];
+                        console.log("unable to get network sets");
+                        errorHandler(error, status);
+                    });
+            };
 
 
 

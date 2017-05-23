@@ -207,6 +207,7 @@
                                             $scope.myAccountController.addNetworkSetToTable(newNetworkSet);
                                         };
                                         if (($scope.myAccountController.networkSets.length == 1) &&
+                                            ($scope.myAccountController.networkSearchResults) &&
                                             ($scope.myAccountController.networkSearchResults.length == 0)) {
                                             // we are on My Account page and there is only one set there that we
                                             // just created; referesh the whole page to prevent Network Table deformation
@@ -593,7 +594,6 @@
                     });
                 };
 
-                
                 $scope.closeModal = function() {
                     delete $scope.errors;
                     delete $scope.progress;

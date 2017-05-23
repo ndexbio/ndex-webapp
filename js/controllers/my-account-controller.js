@@ -1364,15 +1364,15 @@ ndexApp.controller('myAccountController',
                             if (privateNetworksCount > 0) {
 
                                 if (privateNetworksCount == 1) {
-                                    var message = privateNetworksCount + "  network in this collection is private " +
+                                    var message = privateNetworksCount + "  network in this Set is private " +
                                         " and will not be visible to other users. <br><br>";
                                 } else {
-                                    var message = privateNetworksCount + " networks in this collection are private " +
+                                    var message = privateNetworksCount + " networks in this Set are private " +
                                         " and will not be visible to other users. <br><br>";
                                 };
 
                                 var title = "Activate Showcase function";
-                                message = message + "Do you want to proceed anyways and activate the Showcase function?";
+                                message = message + "Do you want to proceed and activate the Showcase function?";
 
                                 ndexNavigation.openConfirmationModal(title, message, "Proceed", "Cancel",
                                     function () {
