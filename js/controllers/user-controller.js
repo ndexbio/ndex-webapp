@@ -1,8 +1,8 @@
 ndexApp.controller('userController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
-    '$routeParams', '$route', '$modal', 'uiMisc', 'uiGridConstants',
+    '$routeParams', '$route', '$modal', 'uiMisc', 'uiGridConstants', 'ndexNavigation',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location,
-                  $routeParams, $route, $modal, uiMisc, uiGridConstants)
+                  $routeParams, $route, $modal, uiMisc, uiGridConstants, ndexNavigation)
         {
 
             //              Process the URL to get application state
@@ -74,7 +74,12 @@ ndexApp.controller('userController',
                             var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
                             if (selectedCount > 0) {
                                 $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
-                                alert("Cannot select a Set in this release. This feature will be added in future.");
+
+                                var title = "Cannot Select a Set";
+                                var message =
+                                    "Cannot select a Set in this release. This feature will be added in future.";
+
+                                ndexNavigation.genericInfoModal(title, message);
                             };
 
                             return;
