@@ -283,5 +283,44 @@ angular.module('ndexServiceApp')
 
             return link;
         };
+
+        self.showSetInfo = function(networkSets, setId) {
+             var networkSet = _.find(networkSets, {externalId:setId});
+
+             var options = {
+                year: 'numeric', month: 'long',
+                day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
+             };
+
+             var setName             = networkSet['name'];
+             var setDescription      = networkSet['description'];
+
+             var setCreationTimeObj  = new Date(networkSet['creationTime']);
+             var setCreationTime     = setCreationTimeObj.toLocaleDateString("en-US", options);
+
+             var setModificationTimeObj  = new Date(networkSet['modificationTime']);
+             var setModificationTime     = setModificationTimeObj.toLocaleDateString("en-US", options);
+
+             var setNetworks         = networkSet['networks'].length;
+             var setReference        =
+                (networkSet['properties'] && networkSet['properties']['reference'])
+                ? networkSet['properties']['reference'] : null;
+
+             var body  = "<strong>Set Name: </strong>" + setName;
+
+             if (setDescription) {
+                body = body + "<br><strong>Description: </strong>" + setDescription;
+             };
+             if (setReference) {
+                body = body + "<br><strong>Reference: </strong>" + setReference;
+             };
+
+             body = body + "<br>" +
+                "<strong>Modified: </strong>" + setModificationTime + "<br>" +
+                "<strong>Created: </strong>"  + setCreationTime + "<br>" +
+                "<strong>Networks: </strong>" + setNetworks + "<br>";
+
+             ndexNavigation.genericInfoModal(setName, body);
+        };
     }
 ]);

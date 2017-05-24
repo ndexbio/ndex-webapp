@@ -141,6 +141,7 @@ ndexApp.controller('searchController',
                 // otherwise it will not show all columns if we display more than 10 columns in our table
 
                 enableRowHeaderSelection: searchController.isLoggedInUser, // true if user logged; false for anonymous users
+                enableRowSelection: false,
                 columnVirtualizationThreshold: 20,
 
                 enableColumnMenus: false,
@@ -161,7 +162,7 @@ ndexApp.controller('searchController',
             };
             
             const NETWORK_COLUMN_FIELDS = [
-                { field: 'Status', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
+                { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: true },
                 { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetworkOnSearchPage.html' },
                 //{ field: 'Format', enableFiltering: true, maxWidth:63 },

@@ -62,6 +62,8 @@ ndexApp.controller('userController',
                 showGridFooter: true,
                 columnVirtualizationThreshold: 20,
                 enableColumnMenus: false,
+                enableRowHeaderSelection: userController.isLoggedInUser,  // enable row selection for logged in users
+                enableRowSelection: false,
 
                 onRegisterApi: function( gridApi )
                 {
@@ -116,7 +118,7 @@ ndexApp.controller('userController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: 'Status', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
+                    { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: true },
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                     { field: 'Format', enableFiltering: true, maxWidth:63, visible: false,
@@ -163,6 +165,10 @@ ndexApp.controller('userController',
                     (userController.networkSets.length > 0);
             };
 
+
+            $scope.showSetInfo = function(setId) {
+                uiMisc.showSetInfo(userController.networkSets, setId);
+            };
 
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
