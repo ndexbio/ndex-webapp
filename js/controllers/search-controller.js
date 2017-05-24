@@ -141,8 +141,8 @@ ndexApp.controller('searchController',
                 // otherwise it will not show all columns if we display more than 10 columns in our table
 
                 enableRowHeaderSelection: searchController.isLoggedInUser, // true if user logged; false for anonymous users
-
                 columnVirtualizationThreshold: 20,
+
                 enableColumnMenus: false,
 
                 onRegisterApi: function( gridApi )
@@ -164,7 +164,7 @@ ndexApp.controller('searchController',
                 { field: 'Status', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
                 { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetworkOnSearchPage.html' },
-                { field: 'Format', enableFiltering: true, maxWidth:63 },
+                //{ field: 'Format', enableFiltering: true, maxWidth:63 },
                 { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
                 { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'pages/gridTemplates/disease.html'},
                 { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
@@ -225,7 +225,7 @@ ndexApp.controller('searchController',
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
 
-                    var format = uiMisc.getNetworkFormat(subNetworkId, network);
+                    //var format = uiMisc.getNetworkFormat(subNetworkId, network);
                     var download = "Download " + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
                     var disease   = uiMisc.getDisease(network);
@@ -237,7 +237,7 @@ ndexApp.controller('searchController',
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
                         " "             :   download,
-                        "Format"        :   format,
+                        //"Format"        :   format,
                         "Reference"     :   reference,
                         "Disease"       :   disease,
                         "Tissue"        :   tissue,

@@ -73,21 +73,11 @@ ndexApp.controller('myAccountController',
             myAccountController.addToNetworkSetLabel = "Add To Network Set";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
-            //myAccountController.deleteCollectionsLabel = "Delete Set";
-
             myAccountController.networkSets = [];
 
             $scope.selectedNetworkRowsUids = {};
             $scope.selectedCollectionRowsUids = {};
 
-            $scope.tabs = [{active: true}, {active: false}, {active: false}];
-            
-
-            /*
-            $scope.anyCollections = function() {
-                return myAccountController.networkSets.length > 0;
-            };
-            */
 
             $scope.updateSelectedNetworksRowsUidsList = function(row) {
                 var hashKey = row['entity']["$$hashKey"];
@@ -129,6 +119,7 @@ ndexApp.controller('myAccountController',
                 // otherwise it will not show all columns if we display more than 10 columns in our table
                 columnVirtualizationThreshold: 20,
                 enableColumnMenus: false,
+                enableRowHeaderSelection: true,
 
                 onRegisterApi: function( gridApi )
                 {
@@ -184,7 +175,35 @@ ndexApp.controller('myAccountController',
                     });
                 }
             };
+            $scope.updateSelectedNetworksRowsUidsList = function(row) {
+                var hashKey = row['entity']["$$hashKey"];
 
+                if (row['isSelected']  && row['entity'] && row['entity']['Status']
+                    && (row['entity']['Status'].toLowerCase() != 'set')) {
+                    $scope.selectedNetworkRowsUids[hashKey] = true;
+                } else {
+                    delete $scope.selectedNetworkRowsUids[hashKey];
+                };
+            };
+
+            $scope.updateSelectedCollectionsRowsUidsList = function(row) {
+                if (row['isSelected']) {
+                    $scope.selectedCollectionRowsUids[row.entity.UUID] = true;
+                } else {
+                    delete $scope.selectedCollectionRowsUids[row.entity.UUID];
+                };
+            };
+
+            $scope.selectPreviouslySelectedNetworks = function() {
+                var selectedCount = 0;
+                for (var hashKey in $scope.selectedNetworkRowsUids) {
+                    $scope.networkGridApi.grid.rowHashMap['object:'+hashKey]['isSelected'] = true;
+                    selectedCount = selectedCount + 1;
+                };
+
+                // This shows (Selected Items: <>) at the bottom of network table
+                $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
+            };
             $scope.showNetworkTable = function() {
                 return (myAccountController.networkSearchResults.length > 0) ||
                        (myAccountController.networkSets.length > 0);
@@ -644,13 +663,6 @@ ndexApp.controller('myAccountController',
                             myAccountController.deleteSelectedSets();
                             $modalInstance.dismiss();
                             $scope.isProcessing = false;
-
-                            // if there are no more collections, then switch to My Networks tab and
-                            // hide the current My Sets tab
-                            //if (!$scope.anyCollections()) {
-                            //    $scope.tabs[0].active = true;
-                                //$scope.selectPreviouslySelectedNetworks();
-                            //};
                         };
                     }
                 });

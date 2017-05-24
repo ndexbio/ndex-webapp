@@ -114,7 +114,7 @@ ndexApp.controller('userController',
                     { field: 'Status', enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: false },
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
-                    { field: 'Format', enableFiltering: true, maxWidth:63,
+                    { field: 'Format', enableFiltering: true, maxWidth:63, visible: false,
                         sort: {
                             direction: uiGridConstants.DESC,
                             priority: 0,
