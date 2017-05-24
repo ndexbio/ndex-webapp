@@ -209,6 +209,7 @@ ndexApp.controller('myAccountController',
                 // This shows (Selected Items: <>) at the bottom of network table
                 $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
             };
+
             $scope.showNetworkTable = function() {
                 return (myAccountController.networkSearchResults.length > 0) ||
                        (myAccountController.networkSets.length > 0);

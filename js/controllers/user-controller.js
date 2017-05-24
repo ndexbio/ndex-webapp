@@ -157,6 +157,13 @@ ndexApp.controller('userController',
                 refreshNetworkTable();
             };
 
+
+            $scope.showNetworkTable = function() {
+                return (userController.networkSearchResults.length > 0) ||
+                    (userController.networkSets.length > 0);
+            };
+
+
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
              * field could be displayed in the title element of networkName.html template in the pop-up window

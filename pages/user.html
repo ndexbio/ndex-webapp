@@ -65,7 +65,7 @@
                  The use ng-if="tabShown" ... described on the page above introduces another issue:
                  the selected rows on the Networks page get unselected if you select a different tab (i.e., Groups)
                  and come back to Networks tab. -->
-                <div id="divNetworks" ng-show='userController.networkSearchResults.length > 0'>
+                <div id="divNetworks" ng-show='showNetworkTable()'>
                     <div ui-grid-selection
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
