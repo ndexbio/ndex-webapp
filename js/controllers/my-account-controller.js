@@ -706,13 +706,21 @@ ndexApp.controller('myAccountController',
             {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
-                for( var i = 0; i < selectedNetworksRows.length; i ++ )
+                for (var i = 0; i < selectedNetworksRows.length; i ++)
                 {
                     if (selectedNetworksRows[i].externalId == networkId) {
                         selectedNetworksRows[i].Visibility = networkVisibility;
                         break;
-                    }
-                }
+                    };
+                };
+
+                for (var i = 0; i < myAccountController.networkSearchResults.length; i ++)
+                {
+                    if (myAccountController.networkSearchResults[i].externalId == networkId) {
+                        myAccountController.networkSearchResults[i].visibility = networkVisibility;
+                        break;
+                    };
+                };
             };
             
             myAccountController.updateShowcaseOfNetwork = function (networkId, networkShowcase)
@@ -727,7 +735,7 @@ ndexApp.controller('myAccountController',
                     }
                 }
             };
-            
+
             /*
              * This function is used by Bulk Network Delete and Bulk Network Edit Properties operations.
              * It goes through the list of selected networks and checks if the networks
