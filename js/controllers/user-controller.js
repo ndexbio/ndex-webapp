@@ -30,7 +30,7 @@ ndexApp.controller('userController',
             userController.networkSearchResults = [];
             userController.skip = 0;
             userController.skipSize = 10000;
-            userController.atLeastOneSelected = false;
+            userController.networkTableRowsSelected = 0;
 
             userController.pendingRequests = [];
             userController.sentRequests = [];
@@ -45,6 +45,9 @@ ndexApp.controller('userController',
 
             userController.networkSets = [];
 
+            $scope.selectedNetworkRowsUids = {};
+
+
             var calcColumnWidth = function(header, isLastColumn)
             {
                 var result = header.length * 10;
@@ -54,15 +57,42 @@ ndexApp.controller('userController',
                 return result > 250 ? 250 : result;
             };
 
+
+            $scope.updateSelectedNetworksRowsUidsList = function(row) {
+                if (row['isSelected']) {
+                    $scope.selectedNetworkRowsUids[row.entity.externalId] = true;
+                } else {
+                    delete $scope.selectedNetworkRowsUids[row.entity.externalId];
+                };
+            };
+
+            $scope.selectPreviouslySelectedNetworks = function() {
+                var selectedCount = 0;
+
+                _.forEach($scope.networkGridApi.grid.rowHashMap, function(hashMapObj) {
+
+                    if (hashMapObj.entity &&  hashMapObj.entity.externalId &&
+                        (hashMapObj.entity.externalId in $scope.selectedNetworkRowsUids)) {
+                        hashMapObj.isSelected = true;
+                        selectedCount = selectedCount + 1;
+                    };
+                });
+
+                // This shows (Selected Items: <>) at the bottom of network table
+                $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
+            };
+
             //table
             $scope.networkGridOptions =
             {
                 enableSorting: true,
                 enableFiltering: true,
                 showGridFooter: true,
+                // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
+                // otherwise it will not show all columns if we display more than 10 columns in our table
                 columnVirtualizationThreshold: 20,
                 enableColumnMenus: false,
-                enableRowHeaderSelection: userController.isLoggedInUser,  // enable row selection for logged in users
+                enableRowHeaderSelection: userController.isLoggedInUser,
                 enableRowSelection: false,
 
                 onRegisterApi: function( gridApi )
@@ -88,7 +118,9 @@ ndexApp.controller('userController',
                         };
 
                         var selectedRows = gridApi.selection.getSelectedRows();
-                        userController.atLeastOneSelected = selectedRows.length > 0;
+                        userController.networkTableRowsSelected = selectedRows.length;
+
+                        $scope.updateSelectedNetworksRowsUidsList(row);
 
                         enableOrDisableUpgradePermissionButton();
                     });
@@ -103,11 +135,13 @@ ndexApp.controller('userController',
                                 if (selectedCount > 0) {
                                     $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
                                 };
+                            } else {
+                                $scope.updateSelectedNetworksRowsUidsList(row);
                             };
                         });
 
                         var selectedRows = gridApi.selection.getSelectedRows();
-                        userController.atLeastOneSelected = selectedRows.length > 0;
+                        userController.networkTableRowsSelected = selectedRows.length;
 
                         enableOrDisableUpgradePermissionButton();
                     });
@@ -407,7 +441,7 @@ ndexApp.controller('userController',
                         userController.networkSearchResults.splice(i,1);
                 }
                 refreshNetworkTable();
-                userController.atLeastOneSelected = false;
+                userController.networkTableRowsSelected = 0;
             };
 
             userController.getUserGroupMemberships = function (member)
@@ -510,12 +544,13 @@ ndexApp.controller('userController',
                     });
             }
 
-            userController.getUserShowcaseNetworks = function ()
+            userController.getUserShowcaseNetworks = function(successHandler, errorHandler)
             {
                 ndexService.getUserShowCaseNetworksV2(userController.identifier,
                     function (networks)
                     {
                         userController.networkSearchResults = networks;
+                        populateNetworkTable();
 
                         var directOnly = false;
                         var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
@@ -528,28 +563,20 @@ ndexApp.controller('userController',
                             ndexService.getUserNetworkPermissionsV2(loggedInUserId, 'READ', 0, 1000000, directOnly,
                                 function (networkPermissionsMap) {
                                     userController.loggedInUsersNetworkPermissionsMap = networkPermissionsMap;
+                                    successHandler();
                                 },
                                 function (error, data) {
                                     console.log("unable to get user network memberships");
+                                    successHandler();
                                 });
+                        } else {
+                            successHandler();
                         };
-
-                        ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
-
-                            function (networkSets) {
-                                userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
-                                populateNetworkTable();
-                            },
-                            function (error, status) {
-                                console.log("unable to get network sets");
-                                //errorHandler(error, status);
-                                populateNetworkTable(); // still populate network table
-                            });
-
                     },
                     function (error)
                     {
                         console.log("unable to get user show case networks");
+                        errorHandler();
                     });
             };
 
@@ -558,6 +585,51 @@ ndexApp.controller('userController',
                 getRequests();
             };
 
+            userController.addNetworkSetToTable = function(networkSet) {
+                var status = "Set";
+                var setName = networkSet.name;
+                var setDescription = $scope.stripHTML(networkSet.description);
+
+                var networks = networkSet.networks.length;
+
+                var setId = networkSet['externalId'];
+
+                var setReference = uiMisc.getSetReferenceObj(networkSet);
+
+                var setDisease   = "";
+                var setTissue    = "";
+                var setEdges     = "";
+                var setVisibility = "";
+                var setOwner = sharedProperties.getCurrentUserAccountName();
+
+                var setModified = new Date(networkSet['modificationTime']);
+
+                var setShowcased = networkSet['showcased'];
+
+                var row =   {
+                    "Status"        :   status,
+                    "Network Name"  :   setName,
+                    " "             :   "",
+                    "Format"        :   status,
+                    "Reference"     :   setReference,
+                    "Disease"       :   setDisease,
+                    "Tissue"        :   setTissue,
+                    //"Nodes"         :   nodes,
+                    "Edges"         :   setEdges,
+                    "Visibility"    :   setVisibility,
+                    "Owner"         :   setOwner,
+                    "Last Modified" :   setModified,
+                    "Show"          :   setShowcased,
+                    "description"   :   setDescription,
+                    "externalId"    :   setId,
+                    "ownerUUID"     :   networkSet['ownerId'],
+                    "name"          :   setName,
+                    "errorMessage"  :   "",
+                    "subnetworks"   :   0,
+                    "networks"      :   networks
+                };
+                $scope.networkGridOptions.data.push(row);
+            };
 
             //  local functions
 
@@ -653,7 +725,29 @@ ndexApp.controller('userController',
                         // get networks
                         //userController.submitNetworkSearch();
 
-                        userController.getUserShowcaseNetworks();
+                        // get networks
+                        userController.getUserShowcaseNetworks(
+                            function() {
+                                ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
+
+                                    function (networkSets) {
+                                        userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+
+                                        _.forEach(userController.networkSets, function(networkSet) {
+
+                                            if (networkSet['showcased']) {
+                                                userController.addNetworkSetToTable(networkSet);
+                                            };
+                                        });
+                                    },
+                                    function (error, status, headers, config, statusText) {
+                                        console.log("unable to get network sets");
+                                    });
+                            },
+                            function() {
+                                console.log("unable to get showcased networks for user");
+                            }
+                        );
 
                         //userController.getAllNetworkSetsOwnedByUser();
                     })

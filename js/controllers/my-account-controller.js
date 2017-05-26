@@ -33,7 +33,7 @@ ndexApp.controller('myAccountController',
             myAccountController.skip = 0;
             myAccountController.skipSize = 10000;
             myAccountController.networkTableRowsSelected = 0;
-            myAccountController.collectionTableRowsSelected = 0;
+            //myAccountController.collectionTableRowsSelected = 0;
 
             myAccountController.pendingRequests = [];
             myAccountController.sentRequests = [];
@@ -80,30 +80,24 @@ ndexApp.controller('myAccountController',
 
 
             $scope.updateSelectedNetworksRowsUidsList = function(row) {
-                var hashKey = row['entity']["$$hashKey"];
-
-                if (row['isSelected']  && row['entity'] && row['entity']['Status']
-                    && (row['entity']['Status'].toLowerCase() != 'set')) {
-                    $scope.selectedNetworkRowsUids[hashKey] = true;
-                } else {
-                    delete $scope.selectedNetworkRowsUids[hashKey];
-                };
-            };
-
-            $scope.updateSelectedCollectionsRowsUidsList = function(row) {
                 if (row['isSelected']) {
-                    $scope.selectedCollectionRowsUids[row.entity.UUID] = true;
+                    $scope.selectedNetworkRowsUids[row.entity.externalId] = true;
                 } else {
-                    delete $scope.selectedCollectionRowsUids[row.entity.UUID];
+                    delete $scope.selectedNetworkRowsUids[row.entity.externalId];
                 };
             };
 
             $scope.selectPreviouslySelectedNetworks = function() {
                 var selectedCount = 0;
-                for (var hashKey in $scope.selectedNetworkRowsUids) {
-                    $scope.networkGridApi.grid.rowHashMap['object:'+hashKey]['isSelected'] = true;
-                    selectedCount = selectedCount + 1;
-                };
+
+                _.forEach($scope.networkGridApi.grid.rowHashMap, function(hashMapObj) {
+
+                    if (hashMapObj.entity &&  hashMapObj.entity.externalId &&
+                        (hashMapObj.entity.externalId in $scope.selectedNetworkRowsUids)) {
+                        hashMapObj.isSelected = true;
+                        selectedCount = selectedCount + 1;
+                    };
+                });
 
                 // This shows (Selected Items: <>) at the bottom of network table
                 $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
@@ -154,6 +148,7 @@ ndexApp.controller('myAccountController',
                         enableOrDisableEditPropertiesBulkButton();
                         enableOrDisableManageAccessBulkButton();
                     });
+
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
 
                         _.forEach(rows, function(row) {
@@ -179,35 +174,6 @@ ndexApp.controller('myAccountController',
                         enableOrDisableManageAccessBulkButton();
                     });
                 }
-            };
-            $scope.updateSelectedNetworksRowsUidsList = function(row) {
-                var hashKey = row['entity']["$$hashKey"];
-
-                if (row['isSelected']  && row['entity'] && row['entity']['Status']
-                    && (row['entity']['Status'].toLowerCase() != 'set')) {
-                    $scope.selectedNetworkRowsUids[hashKey] = true;
-                } else {
-                    delete $scope.selectedNetworkRowsUids[hashKey];
-                };
-            };
-
-            $scope.updateSelectedCollectionsRowsUidsList = function(row) {
-                if (row['isSelected']) {
-                    $scope.selectedCollectionRowsUids[row.entity.UUID] = true;
-                } else {
-                    delete $scope.selectedCollectionRowsUids[row.entity.UUID];
-                };
-            };
-
-            $scope.selectPreviouslySelectedNetworks = function() {
-                var selectedCount = 0;
-                for (var hashKey in $scope.selectedNetworkRowsUids) {
-                    $scope.networkGridApi.grid.rowHashMap['object:'+hashKey]['isSelected'] = true;
-                    selectedCount = selectedCount + 1;
-                };
-
-                // This shows (Selected Items: <>) at the bottom of network table
-                $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
             };
 
             $scope.showNetworkTable = function() {
@@ -643,7 +609,8 @@ ndexApp.controller('myAccountController',
                     }
                 });
             };
-            
+
+            /*
             myAccountController.confirmDeleteSelectedSets = function()
             {
                 var   modalInstance = $modal.open({
@@ -677,6 +644,7 @@ ndexApp.controller('myAccountController',
                     }
                 });
             };
+            */
 
             myAccountController.manageBulkAccess = function(path, currentUserId)
             {
@@ -917,6 +885,7 @@ ndexApp.controller('myAccountController',
                 });
             };
 
+            /*
             myAccountController.deleteSelectedSets = function ()
             {
                 var selectedCollectionsRows = $scope.collectionGridApi.selection.getSelectedRows();
@@ -954,6 +923,7 @@ ndexApp.controller('myAccountController',
                 refreshCollectionsTable();
                 myAccountController.collectionTableRowsSelected = 0;
             };
+            */
 
 
             //              scope functions
@@ -1274,18 +1244,8 @@ ndexApp.controller('myAccountController',
 
             };
 
-            myAccountController.getUserAccountPageNetworks = function ()
+            myAccountController.getUserAccountPageNetworks = function (successHandler, errorHandler)
             {
-                /*
-                 * To get list of Network Summaries objects we need to:
-                 *
-                 * 1) Use Get User Network Permissions API at
-                 *   /user/{userid}/permission?permission={permission}&start={startPage}&size={pageSize}&directonly={true|false}
-                 *   to get the list of network IDs that this user has permissions to.
-                 *
-                 * 2) Use getNetworkSummaries function at /network/summaries to get a list of network
-                 *    summaries using the network IDs we got in step 1  (send all network IDs in one call).
-                 */
                 var directOnly = false;
                 ndexService.getUserNetworkPermissionsV2(myAccountController.identifier, 'READ', 0, 1000000, directOnly,
                     function (networkPermissionsMap) {
@@ -1323,27 +1283,11 @@ ndexApp.controller('myAccountController',
                                         myAccountController.networksWithMultipleSubNetworks[networkUUID] = noOfSubNetworks;
                                     };
                                 });
-
-                                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
-
-                                    function (networkSets) {
-                                        myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
-                                        /*
-                                        if ($scope.collectionGridApi) {
-                                            populateCollectionsTable();
-                                        };
-                                        */
-                                        populateNetworkTable();
-                                    },
-                                    function (error, status, headers, config, statusText) {
-                                        console.log("unable to get network sets");
-                                        populateNetworkTable();
-                                    });
-
-
+                                successHandler();
                             },
                             function(error) {
                                console.log("unable to get user account page networks");
+                               errorHandler();
                             });
 
                     },
@@ -1351,7 +1295,6 @@ ndexApp.controller('myAccountController',
                         console.log("unable to get user network memberships");
                     });
             };
-
 
             $scope.showWarningsOrErrors = function(rowEntity) {
 
@@ -1531,14 +1474,31 @@ ndexApp.controller('myAccountController',
                     myAccountController.refreshTasks();
 
                     // get networks
-                    myAccountController.getUserAccountPageNetworks();
+                    myAccountController.getUserAccountPageNetworks(
+                        function() {
+                            populateNetworkTable();
+
+                            ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+
+                                function (networkSets) {
+                                    myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+
+                                    _.forEach(myAccountController.networkSets, function(networkSet) {
+                                        myAccountController.addNetworkSetToTable(networkSet);
+                                    });
+                                },
+                                function (error, status, headers, config, statusText) {
+                                    console.log("unable to get network sets");
+                                });
+                        },
+                        function() {
+
+                        }
+                    );
 
                     // get groups
                     var member = null;
                     myAccountController.getUserGroupMemberships(member);
-                    
-                    //var signalNewSetCreation = false;
-                    //myAccountController.getAllNetworkSetsOwnedByUser(signalNewSetCreation);
                 })
         }]);
 

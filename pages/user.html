@@ -22,19 +22,9 @@
             <div ng-bind-html="userController.displayedUser.description"></div>
 
             <span class="btn-group btn-group-vertical buttonWithMarginBottom"
-                  ng-show="userController.isLoggedInUser && userController.atLeastOneSelected">
+                  ng-show="userController.isLoggedInUser && userController.networkTableRowsSelected > 0">
                 <hr>
                 <h5><strong>Bulk Actions:</strong></h5>
-
-                <!--
-                <span>
-                    <a class="btn btn-primary customButtonWidth">
-                        <bulk-export-network ndex-data='userController' ng-model="selection">
-                            Export Networks
-                        </bulk-export-network>
-                    </a>
-                </span>
-                -->
 
                 <span>
                     <a class="btn btn-primary customButtonWidth" title="Request Read or Edit Privilege"
@@ -59,7 +49,8 @@
     <div id="divUserTabs" class="col-md-10" ng-show="userController.displayedUser">
 
         <tabset justified="false">
-            <tab heading="Networks">
+            <tab heading="Networks" select="tabShown = !tabShown" deselect="tabShown = !tabShown"
+                 ng-click="selectPreviouslySelectedNetworks()">
                 <!-- adding ui-grid-auto-resize fixes the issue of distorted Networks Tab (NDEX-578).
                  Resolution is described here: http://ui-grid.info/docs/#/tutorial/108_hidden_grids
                  The use ng-if="tabShown" ... described on the page above introduces another issue:
@@ -70,7 +61,9 @@
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize
-                         class="networkGrid"></div>
+                         ng-if="tabShown"
+                         class="networkGrid">
+                    </div>
                 </div>
                 <div class='row' ng-hide='userController.networkSearchResults.length > 0'>
                     <br>
