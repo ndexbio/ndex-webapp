@@ -866,3 +866,10 @@ ul.ndex-nav-pills > li > a:hover {
     border-color: #73A4D5;
     cursor: not-allowed;
 }
+
+/* we need this to prevent Chrome issue where, when you scroll down through a long list of networks,
+ * it continues to insanely scrolll automatically all the way to the end of the list without user being able to stop
+ * the scrolling. */
+.ui-grid-viewport {
+    overflow-anchor: none;
+}
