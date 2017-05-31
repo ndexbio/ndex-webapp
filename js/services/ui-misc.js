@@ -284,43 +284,72 @@ angular.module('ndexServiceApp')
             return link;
         };
 
-        self.showSetInfo = function(networkSets, setId) {
-             var networkSet = _.find(networkSets, {externalId:setId});
+        self.showSetInfo = function(set) {
 
-             var options = {
-                year: 'numeric', month: 'long',
-                day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'
-             };
+            var desc = (set['description']) ? set['description'].trim() : "";
+            if (!desc) {
+                // sometime description contains string starting with new line followed by blank spaces ("\n   ").
+                // This breaks the description fioled in the modal shown by the call ndexNavigation.networkInfoModal(network);
+                // To prevent it, we set description to null thus eliminatin it from showing.
+                set['description'] = null;
+            };
 
-             var setName             = networkSet['name'];
-             var setDescription      = networkSet['description'];
+            var setReference =
+                (set['properties'] && set['properties']['reference'])
+                    ? set['properties']['reference'] : null;
 
-             var setCreationTimeObj  = new Date(networkSet['creationTime']);
-             var setCreationTime     = setCreationTimeObj.toLocaleDateString("en-US", options);
+            if (setReference) {
+                set['reference'] = setReference;
+            };
 
-             var setModificationTimeObj  = new Date(networkSet['modificationTime']);
-             var setModificationTime     = setModificationTimeObj.toLocaleDateString("en-US", options);
+            set['networkCount'] = set['networks'] ? set['networks'].length : 0;
 
-             var setNetworks         = networkSet['networks'].length;
-             var setReference        =
-                (networkSet['properties'] && networkSet['properties']['reference'])
-                ? networkSet['properties']['reference'] : null;
+            // if user is a set owner, ahow if networksa is showcased
+            var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
 
-             var body  = "<strong>Set Name: </strong>" + setName;
+            if (loggedInUserId && loggedInUserId == set.ownerId) {
+                var showCased = set['showcased'];
+                delete set['showcased'];
+                set['showcased'] = showCased ? "Yes" : "No";
 
-             if (setDescription) {
-                body = body + "<br><strong>Description: </strong>" + setDescription;
-             };
-             if (setReference) {
-                body = body + "<br><strong>Reference: </strong>" + setReference;
-             };
+                /*
+                set['showcased'] = showCased ?
+                    '<img src="img/openedeye.png" width="25px" height="25px">' :
+                    '<img src="img/closedeye.png" width="25px" height="25px">';
+                */
 
-             body = body + "<br>" +
-                "<strong>Modified: </strong>" + setModificationTime + "<br>" +
-                "<strong>Created: </strong>"  + setCreationTime + "<br>" +
-                "<strong>Networks: </strong>" + setNetworks + "<br>";
+            } else {
+                delete set['showcased'];
+            };
 
-             ndexNavigation.genericInfoModal(setName, body);
+            ndexNavigation.networkSetInfoModal(set);
         };
+
+        self.showNetworkInfo = function(network) {
+            // add reference field to network
+            var subNetworkId = self.getSubNetworkId(network);
+            var referenceObj = self.getNetworkReferenceObj(subNetworkId, network);
+
+            if (referenceObj && (referenceObj.referenceText.length > 0)) {
+                if ((referenceObj.url && referenceObj.url.length > 0) && (referenceObj.urlCount == 1)) {
+                    network['reference'] =
+                        '<a href="' +  referenceObj.url + '" target="_blank">' + referenceObj.url + '</a>';
+                }
+                else if (referenceObj.urlCount != 1) {
+                    network['reference'] =  referenceObj.referenceHTML;
+                };
+            };
+
+            var desc = (network['description']) ? network['description'].trim() : "";
+            if (!desc) {
+                // sometime description contains string starting with new line followed by blank spaces ("\n   ").
+                // This breaks the description fioled in the modal shown by the call ndexNavigation.networkInfoModal(network);
+                // To prevent it, we set description to null thus eliminatin it from showing.
+                network['description'] = null;
+            };
+
+            ndexNavigation.networkInfoModal(network);
+        };
+
     }
 ]);

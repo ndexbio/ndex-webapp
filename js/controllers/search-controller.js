@@ -61,6 +61,16 @@ ndexApp.controller('searchController',
                 };
             });
 
+
+            $scope.showNetworkInfo = function(networkUUID) {
+                var networkSummary = _.find(searchController.networkSearchResults, {externalId:networkUUID});
+
+                // make a copy of network summary object since we are going to modify it
+                var network = JSON.parse(JSON.stringify(networkSummary));
+
+                uiMisc.showNetworkInfo(network);
+            };
+
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
              * field could be displayed in the title element of networkName.html template in the pop-up window

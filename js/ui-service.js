@@ -70,7 +70,39 @@
                             };
                         }
                     });
-                }
+                };
+
+                factory.networkInfoModal = function(network)
+                {
+                    var modalInstance = $modal.open({
+                        templateUrl: 'pages/networkInfoModal.html',
+
+                        controller: function($scope, $modalInstance) {
+
+                            $scope.network = network;
+
+                            $scope.close = function() {
+                                $modalInstance.dismiss();
+                            };
+                        }
+                    });
+                };
+
+                factory.networkSetInfoModal = function(set)
+                {
+                    var modalInstance = $modal.open({
+                        templateUrl: 'pages/networkSetInfoModal.html',
+
+                        controller: function($scope, $modalInstance) {
+
+                            $scope.set = set;
+
+                            $scope.close = function() {
+                                $modalInstance.dismiss();
+                            };
+                        }
+                    });
+                };
 
                 // return factory object
                 return factory;

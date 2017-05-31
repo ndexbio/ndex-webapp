@@ -1,10 +1,13 @@
 <div id="networkStatusTemplate" class="ui-grid-cell-contents">
 
-    <span ng-if="(row.entity.Status == 'success') || (row.entity.Status == 'warning')" >
+    <span ng-if="row.entity.Status == 'success'" >
+        <img src="img/success.png" width="20px" height="20px" align="center">
+    </span>
+
+    <span ng-if="row.entity.Status == 'warning'">
         <a ng-href="{{$location.path()}}"
-           ng-click="grid.appScope.showNetworkInfo(row.entity.externalId)"
-           title="Click to view information about this network">
-            <img src="img/ndex-icon.png" width="28px" height="16px" align="center">
+           ng-click="grid.appScope.showWarningsOrErrors(row.entity)" title="Click to see warnings">
+            <img src="img/warning.png" width="20px" height="20px" align="center">
         </a>
     </span>
 
@@ -22,7 +25,7 @@
     <span ng-if="row.entity.Status == 'collection'">
         <a ng-href="{{$location.path()}}"
            ng-click="grid.appScope.showWarningsOrErrors(row.entity)"
-           title="This network is part of a Cytoscape collection with {{row.entity.subnetworks}} subnetworks. Click to view information about it.">
+           title="This network is part of a Cytoscape collection with {{row.entity.subnetworks}} subnetworks and cannot be edited in NDEx.">
             <img src="img/cytoscape.png" width="20px" height="20px" align="center">
         </a>
     </span>

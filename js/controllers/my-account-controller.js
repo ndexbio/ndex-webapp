@@ -196,7 +196,7 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 var columnDefs = [
-                    { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatus.html'},
+                    { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatusOnMyAccountPage.html'},
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
 
@@ -273,7 +273,12 @@ ndexApp.controller('myAccountController',
 
 
             $scope.showSetInfo = function(setId) {
-                uiMisc.showSetInfo(myAccountController.networkSets, setId);
+                var networkSet = _.find(myAccountController.networkSets, {externalId:setId});
+
+                // make a copy of network summary object since we are going to modify it
+                var set = JSON.parse(JSON.stringify(networkSet));
+
+                uiMisc.showSetInfo(set);
             };
 
             /*
@@ -1321,8 +1326,9 @@ ndexApp.controller('myAccountController',
 
                     if (row.entity.Status == 'Set') {
 
+                        var setToShowcase = _.find(myAccountController.networkSets, {'externalId': row.entity.externalId});
+
                         if (show) {
-                            var setToShowcase = _.find(myAccountController.networkSets, {'externalId': row.entity.externalId});
                             var networksIds = (setToShowcase.networks) ? setToShowcase.networks : [];
                             var privateNetworksCount = 0;
 
@@ -1352,6 +1358,7 @@ ndexApp.controller('myAccountController',
                                         ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
                                             function (data, networkId, property, value) {
                                                 row.entity.Show = !row.entity.Show; // success
+                                                setToShowcase['showcased'] = row.entity.Show;
                                             },
                                             function (error, setId, property, value) {
                                                 console.log("unable to update showcase for Network Set with Id " + setId);
@@ -1368,6 +1375,7 @@ ndexApp.controller('myAccountController',
                                 ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
                                     function (data, networkId, property, value) {
                                         row.entity.Show = !row.entity.Show; // success
+                                        setToShowcase['showcased'] = row.entity.Show;
                                     },
                                     function (error, setId, property, value) {
                                         console.log("unable to update showcase for Network Set with Id " + setId);
@@ -1379,6 +1387,7 @@ ndexApp.controller('myAccountController',
                             ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
                                 function (data, networkId, property, value) {
                                     row.entity.Show = !row.entity.Show; // success
+                                    setToShowcase['showcased'] = row.entity.Show;
                                 },
                                 function (error, setId, property, value) {
                                     console.log("unable to update showcase for Network Set with Id " + setId);

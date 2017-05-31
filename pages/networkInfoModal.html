@@ -1,0 +1,81 @@
+
+
+<div class='modal-content'>
+
+    <form class="form-horizontal" role="form">
+
+        <div class="modal-header">
+            <h4 class="modal-title" ng-bind-html="network.name"></h4>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="form-group">
+                <label for="networkNameId" class="col-sm-3 control-label">Network Name:</label>
+                <span class="col-sm-8">
+                    <p class="form-control-static" id="networkNameId" ng-bind-html="network.name"></p>
+                </span>
+
+                <label for="networkNodesId" class="col-sm-3 control-label">Nodes:</label>
+                <span class="col-sm-8">
+                    <p class="form-control-static" id="networkNodesId" ng-bind-html="network.nodeCount"></p>
+                </span>
+
+                <label for="networkEdgesId" class="col-sm-3 control-label">Edges:</label>
+                <span class="col-sm-8">
+                    <p class="form-control-static" id="networkEdgesId" ng-bind-html="network.edgeCount"></p>
+                </span>
+
+
+                <label for="networkDescrId" class="col-sm-3 control-label" ng-if="network.description">Description:</label>
+                <span class="col-sm-8" ng-if="network.description">
+                    <p class="form-control-static" id="networkDescrId" ng-bind-html="network.description"></p>
+                </span>
+
+
+                <label class="col-sm-3 control-label" ng-if="network.reference">Reference:</label>
+                <span class="col-sm-8" ng-if="network.reference">
+                    <p class="form-control-static" ng-bind-html="network.reference"></p>
+                </span>
+
+                <label class="col-sm-3 control-label" ng-if="network.version">Version:</label>
+                <span class="col-sm-8" ng-if="network.version">
+                    <p class="form-control-static" ng-bind-html="network.version"></p>
+                </span>
+
+                <label class="col-sm-3 control-label" ng-if="network.visibility">Visibility:</label>
+                <span class="col-sm-8" ng-if="network.visibility">
+                    <p class="form-control-static" ng-bind-html="network.visibility"></p>
+                </span>
+
+                <label class="col-sm-3 control-label" ng-if="network.visibility">Modified:</label>
+                <span class="col-sm-8" ng-if="network.visibility">
+                    <p class="form-control-static" ng-bind-html="network.modificationTime | date: 'medium'"></p>
+                </span>
+
+                <label class="col-sm-3 control-label" ng-if="network.visibility">Created:</label>
+                <span class="col-sm-8" ng-if="network.visibility">
+                    <p class="form-control-static" ng-bind-html="network.creationTime | date: 'medium'"></p>
+                </span>
+
+            </div>
+
+
+
+            <div class='text-danger'>
+                <strong>
+                    {{errors}}
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default" type='button' ng-click='close()'>Close</button>
+        </div>
+
+    </form>
+
+</div>
+
+</script>

@@ -248,6 +248,16 @@ ndexApp.controller('groupController',
         refreshNetworkTable();
     };
 
+
+    $scope.showNetworkInfo = function(networkUUID) {
+        var networkSummary = _.find(groupController.networkSearchResults, {externalId:networkUUID});
+
+        // make a copy of network summary object since we are going to modify it
+        var network = JSON.parse(JSON.stringify(networkSummary));
+
+        uiMisc.showNetworkInfo(network);
+    };
+
     $scope.stripHTML = function(html) {
 
         if (!html) {

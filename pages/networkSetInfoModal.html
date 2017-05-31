@@ -1,0 +1,68 @@
+<div class='modal-content'>
+
+    <form class="form-horizontal" role="form">
+
+        <div class="modal-header">
+            <h4 class="modal-title" ng-bind-html="set.name"></h4>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="form-group">
+                <label for="networkSetNameId" class="col-sm-3 control-label">Network Set Name:</label>
+                <span class="col-sm-8">
+                    <p class="form-control-static" id="networkSetNameId" ng-bind-html="set.name"></p>
+                </span>
+
+
+                <label for="networkSetShowCasedId" class="col-sm-3 control-label" ng-if="set.showcased">Showcased:</label>
+                <span class="col-sm-8" ng-if="set.showcased">
+                    <p class="form-control-static" id="networkSetShowCasedId" ng-bind-html="set.showcased"></p>
+                </span>
+
+
+                <label for="networkSetDescrId" class="col-sm-3 control-label" ng-if="set.description">Description:</label>
+                <span class="col-sm-8" ng-if="set.description">
+                    <p class="form-control-static" id="networkSetDescrId" ng-bind-html="set.description"></p>
+                </span>
+
+
+                <label for="networkSetReferenceId" class="col-sm-3 control-label" ng-if="set.reference">Reference:</label>
+                <span class="col-sm-8" ng-if="set.reference">
+                    <p class="form-control-static" id="networkSetReferenceId" ng-bind-html="set.reference"></p>
+                </span>
+
+
+                <label for="networkSetModifiedId" class="col-sm-3 control-label" ng-if="set.modificationTime">Modified:</label>
+                <span class="col-sm-8" ng-if="set.modificationTime">
+                    <p class="form-control-static" id="networkSetModifiedId" ng-bind-html="set.modificationTime | date: 'medium'"></p>
+                </span>
+
+                <label for="networkSetCreatedId" class="col-sm-3 control-label" ng-if="set.creationTime">Created:</label>
+                <span class="col-sm-8" ng-if="set.creationTime">
+                    <p class="form-control-static" id="networkSetCreatedId" ng-bind-html="set.creationTime | date: 'medium'"></p>
+                </span>
+
+                <label for="networkSetNetworksId" class="col-sm-3 control-label">Networks:</label>
+                <span class="col-sm-8">
+                    <p class="form-control-static" id="networkSetNetworksId" ng-bind-html="set.networkCount"></p>
+                </span>
+            </div>
+
+            <div class='text-danger'>
+                <strong>
+                    {{errors}}
+                </strong>
+            </div>
+        </div>
+
+
+        <div class="modal-footer">
+            <button class="btn btn-default" type='button' ng-click='close()'>Close</button>
+        </div>
+
+    </form>
+
+</div>
+
+</script>

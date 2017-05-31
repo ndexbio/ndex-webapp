@@ -1,8 +1,8 @@
 ndexApp.controller('userController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
-    '$routeParams', '$route', '$modal', 'uiMisc', 'uiGridConstants', 'ndexNavigation',
+    '$routeParams', '$route', '$modal', 'uiMisc', 'uiGridConstants', 'ndexNavigation', 'networkService',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location,
-                  $routeParams, $route, $modal, uiMisc, uiGridConstants, ndexNavigation)
+                  $routeParams, $route, $modal, uiMisc, uiGridConstants, ndexNavigation, networkService)
         {
 
             //              Process the URL to get application state
@@ -201,8 +201,24 @@ ndexApp.controller('userController',
 
 
             $scope.showSetInfo = function(setId) {
-                uiMisc.showSetInfo(userController.networkSets, setId);
+                var networkSet = _.find(userController.networkSets, {externalId:setId});
+
+                // make a copy of network summary object since we are going to modify it
+                var set = JSON.parse(JSON.stringify(networkSet));
+
+                uiMisc.showSetInfo(set);
             };
+
+
+            $scope.showNetworkInfo = function(networkUUID) {
+                var networkSummary = _.find(userController.networkSearchResults, {externalId:networkUUID});
+
+                // make a copy of network summary object since we are going to modify it
+                var network = JSON.parse(JSON.stringify(networkSummary));
+
+                uiMisc.showNetworkInfo(network);
+            };
+
 
             /*
              * This function removes most HTML tags and replaces them with markdown symbols so that this
