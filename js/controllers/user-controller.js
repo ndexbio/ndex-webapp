@@ -313,60 +313,9 @@ ndexApp.controller('userController',
             {
                 $scope.networkGridOptions.data = [];
 
-                //var count = 0;
-
                 _.forEach(userController.networkSets, function(networkSet) {
-
-                    var setShowcased = networkSet['showcased'];
-                    if (!setShowcased) {
-                        // "return" means "continue" in lodash's _.forEach
-                        return;
-                    };
-
-                    var status = "Set";
-                    var setName = networkSet.name;
-                    var setDescription = $scope.stripHTML(networkSet.description);
-
-                    var networks = networkSet.networks.length;
-                    var setId = networkSet['externalId'];
-
-                    var setReference = uiMisc.getSetReferenceObj(networkSet);
-
-                    var setDisease   = "";
-                    var setTissue    = "";
-                    var setEdges     = "";
-                    var setVisibility = "";
-                    var setOwner      = userController.displayedUser.userName;
-
-                    var setModified = new Date(networkSet['modificationTime'] );
-
-                    var row =   {
-                        "Status"        :   status,
-                        "Network Name"  :   setName,
-                        " "             :   "",
-                        "Format"        :   status,
-                        "Reference"     :   setReference,
-                        "Disease"       :   setDisease,
-                        "Tissue"        :   setTissue,
-                        //"Nodes"         :   nodes,
-                        "Edges"         :   setEdges,
-                        "Visibility"    :   setVisibility,
-                        "Owner"         :   setOwner,
-                        "Last Modified" :   setModified,
-                        "Show"          :   "",
-                        "description"   :   setDescription,
-                        "externalId"    :   setId,
-                        "ownerUUID"     :   networkSet['ownerId'],
-                        "name"          :   setName,
-                        "errorMessage"  :   errorMessage,
-                        "subnetworks"   :   noOfSubNetworks,
-                        "networks"      :   networks
-                    };
-                    $scope.networkGridOptions.data.push(row);
-
-                    //count = count + 1;
+                    userController.addNetworkSetToTable(networkSet);
                 });
-
 
                 for(var i = 0; i < userController.networkSearchResults.length; i++ )
                 {
@@ -613,6 +562,12 @@ ndexApp.controller('userController',
             };
 
             userController.addNetworkSetToTable = function(networkSet) {
+
+                var setShowcased = networkSet['showcased'];
+                if (!setShowcased) {
+                    return;
+                };
+
                 var status = "Set";
                 var setName = networkSet.name;
                 var setDescription = $scope.stripHTML(networkSet.description);
@@ -627,11 +582,9 @@ ndexApp.controller('userController',
                 var setTissue    = "";
                 var setEdges     = "";
                 var setVisibility = "";
-                var setOwner = sharedProperties.getCurrentUserAccountName();
+                var setOwner = userController.displayedUser.userName;
 
                 var setModified = new Date(networkSet['modificationTime']);
-
-                var setShowcased = networkSet['showcased'];
 
                 var row =   {
                     "Status"        :   status,
