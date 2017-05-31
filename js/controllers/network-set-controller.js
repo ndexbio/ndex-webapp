@@ -37,7 +37,16 @@ ndexApp.controller('networkSetController',
                     var networkUUIDs = networkSetInformation["networks"];
 
                     networkSetController.displayedSet['name'] = networkSetInformation['name'];
-                    networkSetController.displayedSet['description'] = networkSetInformation['description'];
+
+                    var desc = (networkSetInformation['description']) ? networkSetInformation['description'].trim() : "";
+                    if (!desc) {
+                        // sometime description contains string starting with new line followed by blank spaces ("\n   ").
+                        // To prevent it, we set description to null thus eliminatin it from showing.
+                        networkSetController.displayedSet['description'] = null;
+                    } else {
+                        networkSetController.displayedSet['description'] = networkSetInformation['description'];
+                    };
+
                     networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
                     networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
                     networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
