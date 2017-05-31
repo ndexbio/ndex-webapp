@@ -62,11 +62,22 @@ ndexApp.controller('searchController',
             });
 
 
-            $scope.showNetworkInfo = function(networkUUID) {
+            $scope.showNetworkInfo = function(rowEntity) {
+
+                if (!rowEntity && !rowEntity.externalId) {
+                    return;
+                };
+
+                var networkUUID = rowEntity.externalId;
                 var networkSummary = _.find(searchController.networkSearchResults, {externalId:networkUUID});
 
                 // make a copy of network summary object since we are going to modify it
                 var network = JSON.parse(JSON.stringify(networkSummary));
+
+                if (rowEntity['Status'] && (rowEntity['Status'].toLowerCase() == "collection")) {
+                    network['collection'] = true;
+                    network['subnetworks'] = rowEntity['subnetworks'];
+                };
 
                 uiMisc.showNetworkInfo(network);
             };
@@ -174,7 +185,7 @@ ndexApp.controller('searchController',
             const NETWORK_COLUMN_FIELDS = [
                 { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatus.html', visible: true },
                 { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html'},
-                { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetworkOnSearchPage.html' },
+                { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
                 //{ field: 'Format', enableFiltering: true, maxWidth:63 },
                 { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'pages/gridTemplates/reference.html' },
                 { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'pages/gridTemplates/disease.html'},

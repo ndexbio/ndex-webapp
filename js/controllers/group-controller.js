@@ -248,12 +248,22 @@ ndexApp.controller('groupController',
         refreshNetworkTable();
     };
 
+    $scope.showNetworkInfo = function(rowEntity) {
 
-    $scope.showNetworkInfo = function(networkUUID) {
+        if (!rowEntity && !rowEntity.externalId) {
+            return;
+        };
+
+        var networkUUID = rowEntity.externalId;
         var networkSummary = _.find(groupController.networkSearchResults, {externalId:networkUUID});
 
         // make a copy of network summary object since we are going to modify it
         var network = JSON.parse(JSON.stringify(networkSummary));
+
+        if (rowEntity['Status'] && (rowEntity['Status'].toLowerCase() == "collection")) {
+            network['collection'] = true;
+            network['subnetworks'] = rowEntity['subnetworks'];
+        };
 
         uiMisc.showNetworkInfo(network);
     };

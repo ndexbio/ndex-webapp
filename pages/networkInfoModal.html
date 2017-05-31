@@ -58,8 +58,15 @@
                     <p class="form-control-static" ng-bind-html="network.creationTime | date: 'medium'"></p>
                 </span>
 
-            </div>
+                <label class="col-sm-3 control-label" ng-if="network.collection" style="color:red">Warning:</label>
+                <span class="col-sm-8" ng-if="network.collection">
+                    <p class="form-control-static" style="color:red">
+                        This network is part of a Cytoscape collection with {{network.subnetworks}} subnetworks
+                        and cannot be edited in NDEx.
+                    </p>
+                </span>
 
+            </div>
 
 
             <div class='text-danger'>

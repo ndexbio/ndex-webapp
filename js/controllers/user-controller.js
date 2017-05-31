@@ -210,11 +210,22 @@ ndexApp.controller('userController',
             };
 
 
-            $scope.showNetworkInfo = function(networkUUID) {
+            $scope.showNetworkInfo = function(rowEntity) {
+
+                if (!rowEntity && !rowEntity.externalId) {
+                    return;
+                };
+
+                var networkUUID = rowEntity.externalId;
                 var networkSummary = _.find(userController.networkSearchResults, {externalId:networkUUID});
 
                 // make a copy of network summary object since we are going to modify it
                 var network = JSON.parse(JSON.stringify(networkSummary));
+
+                if (rowEntity['Status'] && (rowEntity['Status'].toLowerCase() == "collection")) {
+                    network['collection'] = true;
+                    network['subnetworks'] = rowEntity['subnetworks'];
+                };
 
                 uiMisc.showNetworkInfo(network);
             };
@@ -690,6 +701,7 @@ ndexApp.controller('userController',
                     })
             };
 
+            /*
             $scope.showWarningsOrErrors = function(rowEntity) {
 
                 if (!rowEntity && !rowEntity.externalId) {
@@ -698,6 +710,7 @@ ndexApp.controller('userController',
 
                 uiMisc.showNetworkWarningsOrErrors(rowEntity, userController.networkSearchResults);
             };
+            */
 
             $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(userController, rowEntity);

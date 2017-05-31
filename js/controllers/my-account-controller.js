@@ -440,6 +440,12 @@ ndexApp.controller('myAccountController',
 
                     var networks = 0;
 
+                    /*
+                    if (networkStatus == "collection") {
+                        format = "Collection";
+                    };
+                    */
+
                     var row =   {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
