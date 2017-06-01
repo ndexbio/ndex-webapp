@@ -384,7 +384,8 @@ angular.module('ndexServiceApp')
             'DOT': 'dotted',
             'DASH_DOT': 'dotted',
             'LONG_DASH': 'dashed',
-            'EQUAL_DASH': 'dashed'
+            'EQUAL_DASH': 'dashed',
+            'MARQUEE_DASH': 'dashed'
         };
 
         const TEXT_ALIGN_MAP = {
@@ -741,7 +742,7 @@ angular.module('ndexServiceApp')
                             }
                         });
 
-                        if (  node_size) {
+                        if ( node_size && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'true') {
                             defaultNodeProperties['height'] = node_size;
                             defaultNodeProperties['width'] = node_size;
                         }
