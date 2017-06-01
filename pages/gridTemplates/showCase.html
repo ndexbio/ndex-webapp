@@ -1,10 +1,10 @@
-<div id="showCaseTemplate" class="ui-grid-cell-contents">
+<div id="showCaseTemplate" class="ui-grid-cell-contents" >
 
     <span ng-if="row.entity.Show && ((row.entity.Status == 'success') ||
         (row.entity.Status == 'warning') || (row.entity.Status == 'collection') || (row.entity.Status == 'Set'))">
         <a ng-href="{{$location.path()}}"
            ng-click="grid.appScope.switchShowcase(row)" title="Click to turn off">
-            <img src="img/openedeye.png" width="25px" height="25px" align="center">
+            <img src="img/openedeye.png" width="25px" height="25px" style="margin-top:-0.26em;">
         </a>
     </span>
 
@@ -12,7 +12,7 @@
         (row.entity.Status == 'collection') || (row.entity.Status == 'Set'))">
         <a ng-href="{{$location.path()}}"
            ng-click="grid.appScope.switchShowcase(row)" title="Click to turn on">
-            <img src="img/closedeye.png" width="25px" height="25px" align="center">
+            <img src="img/closedeye.png" width="25px" height="25px" style="margin-top:-0.26em">
         </a>
     </span>
 
