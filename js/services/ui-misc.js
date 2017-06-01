@@ -289,8 +289,8 @@ angular.module('ndexServiceApp')
             var desc = (set['description']) ? set['description'].trim() : "";
             if (!desc) {
                 // sometime description contains string starting with new line followed by blank spaces ("\n   ").
-                // This breaks the description fioled in the modal shown by the call ndexNavigation.networkInfoModal(network);
-                // To prevent it, we set description to null thus eliminatin it from showing.
+                // This breaks the description field in the modal shown by the call ndexNavigation.networkInfoModal(network);
+                // To prevent it, we set description to null thus eliminating it from showing.
                 set['description'] = null;
             };
 
@@ -343,8 +343,8 @@ angular.module('ndexServiceApp')
             var desc = (network['description']) ? network['description'].trim() : "";
             if (!desc) {
                 // sometime description contains string starting with new line followed by blank spaces ("\n   ").
-                // This breaks the description fioled in the modal shown by the call ndexNavigation.networkInfoModal(network);
-                // To prevent it, we set description to null thus eliminatin it from showing.
+                // This breaks the description field in the modal shown by the call ndexNavigation.networkInfoModal(network);
+                // To prevent it, we set description to null thus eliminating it from showing.
                 network['description'] = null;
             };
 

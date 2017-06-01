@@ -41,7 +41,7 @@ ndexApp.controller('networkSetController',
                     var desc = (networkSetInformation['description']) ? networkSetInformation['description'].trim() : "";
                     if (!desc) {
                         // sometime description contains string starting with new line followed by blank spaces ("\n   ").
-                        // To prevent it, we set description to null thus eliminatin it from showing.
+                        // To prevent it, we set description to null thus eliminating it from showing.
                         networkSetController.displayedSet['description'] = null;
                     } else {
                         networkSetController.displayedSet['description'] = networkSetInformation['description'];
