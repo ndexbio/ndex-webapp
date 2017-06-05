@@ -3,7 +3,7 @@
 var ndexApp = angular.module('ndexApp',
     ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp',//'ngDialog',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
-     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ngIdle', 'ngclipboard', 'textAngular', "IdleProvider"]);
+     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ngIdle', 'ngclipboard', 'textAngular']);
 //'ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.resizeColumns'
 //var net1, net2;
 var cn, csn;
@@ -135,6 +135,12 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         .when('/properties/network/:identifier/:subNetworkId', {
             templateUrl: 'pages/editNetworkProperties.html',
             controller: 'editNetworkPropertiesController'
+        })
+
+        // route to edit network custom properties
+        .when('/properties/network/fixed/:identifier/:subNetworkId', {
+            templateUrl: 'pages/editNetworkPropertiesFixedForm.html',
+            controller: 'editNetworkPropertiesFixedFormController'
         })
 
         .when('/access/network/:identifier', {

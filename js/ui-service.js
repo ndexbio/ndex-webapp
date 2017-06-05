@@ -3284,6 +3284,40 @@
         }
     });
 
+    // modal to delete user
+    uiServiceApp.directive('networkProperty', function(){
+        return {
+            scope: {
+                propertyModel: "=",
+                valuePairSplice: "&",
+                editorChanged: "&",
+                netIndex: "=",
+                isEdit: "=",
+                isAdmin: "="
+            },
+            restrict: 'E',
+            templateUrl: 'pages/directives/networkProperty.html',
+            transclude: true,
+            controller: function($scope, $modal, $location, ndexService) {
+
+                $scope.vpsplice = function(){
+                    $scope.valuePairSplice({passIndex: $scope.netIndex, passOne: 1});
+                };
+
+                $scope.editorChangedCall = function(predString){
+                    $scope.editorChanged({passIndex: $scope.netIndex, predicateString: predString, property: $scope.propertyModel, del: "del"});
+                };
+
+                //scope.onDropCompleteInner = function(parmData, parmEvent, planElementType){
+                //    scope.onDropComplete({index: parmData, evt: parmEvent, planType: scope.planType, planElementType: planElementType});
+                    //console.log("In drop");
+                //};
+
+
+            }
+        }
+    });
+
     //----------------------------------------------------
     //                  Filters
     uiServiceApp.filter('permissionToLabel', function() {

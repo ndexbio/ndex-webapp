@@ -1,0 +1,71 @@
+<div>
+    <!--<div class="col-sm-offset-1 col-sm-5">
+        <div class='input-group'>
+            <input class="form-control input-sm" type="text"
+                   placeholder="Label" disabled ng-model='propertyModel.predicateString'>
+            <span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;" ng-show="propertyModel.predicateString != 'custom...'"> </span>
+        </div>
+
+        <span class='text-danger'>
+							<strong>{{propertyModel.labelError}}</strong>
+						</span>
+
+    </div>-->
+
+
+
+
+
+
+
+
+
+    <div class="col-sm-offset-1 col-sm-5">
+        <div class='input-group'>
+
+            <input class="form-control input-sm"
+                   ng-if="propertyModel.isReadOnlyLabel"
+                   type="text"
+                   placeholder="Label"
+                   disabled
+                   ng-model='propertyModel.predicateString'>
+
+
+            <select ng-if="!propertyModel.isReadOnlyLabel" class="form-control input-sm"
+                    ng-options="item as item for item in namesForSolrIndexing"
+                    ng-model="propertyModel.predicateString"
+                    ng-change='editorChangedCall(propertyModel.predicateString, propertyModel)'
+                    ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+                <option style="display:none" value="">select a type</option>
+            </select>
+
+            <span class="input-group-addon" style="color: white; background-color: white; border: 1px solid white;" ng-show="propertyModel.predicateString != 'custom...'"> </span>
+
+
+        </div>
+
+        <span class='text-danger'>
+					<strong>{{propertyModel.labelError}}</strong>
+				</span>
+
+    </div>
+
+
+
+
+
+
+
+
+    <div class="col-sm-5">
+        {{isAdmin}} {{isEdit}} {{propertyModel.predicateString}}
+        <input class="form-control input-sm" placeholder="Value"
+               ng-model='propertyModel.value'
+               ng-readonly='!(isAdmin || isEdit) || !(propertyModel.predicateString)'>
+    </div>
+    <div class='' ng-hide='$last || !(isAdmin || isEdit)'>
+        <button type='button' class='btn btn-link' ng-click='vpsplice(); editorChangedCall(propertyModel.predicateString, propertyModel);'>
+            <span class="glyphicon glyphicon-remove text-muted"></span>
+        </button>
+    </div>
+</div>
