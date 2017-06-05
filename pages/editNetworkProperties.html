@@ -89,7 +89,6 @@
 				-->
 
 		    </div>
-
 		    <div class='' ng-hide='$last || !(editor.isAdmin || editor.canEdit)'>
 		    	<button type='button' class='btn btn-link'
 						ng-click='editor.propertyValuePairs.splice($index,1); editor.changed($index, property.predicateString, property, "del")'>

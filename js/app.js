@@ -137,6 +137,12 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'editNetworkPropertiesController'
         })
 
+        // route to edit network custom properties
+        .when('/properties/network/fixed/:identifier/:subNetworkId', {
+            templateUrl: 'pages/editNetworkPropertiesFixedForm.html',
+            controller: 'editNetworkPropertiesFixedFormController'
+        })
+
         .when('/access/network/:identifier', {
             templateUrl: 'pages/manageNetworkAccess.html',
             controller: 'manageNetworkAccessController'
