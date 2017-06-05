@@ -296,15 +296,24 @@
                     </a>
                 </li>
 
+
                 <li ng-show="main.loggedIn && showMyAccountMenu">
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser();"
-                        ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}"
-                        style="text-decoration: underline; color: #128FDC">
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()"
+                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
 
-                        {{main.userFirstName}}!
-
+                        <img src="img/home.png" style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;">
+                        &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
                     </a>
                 </li>
+
+<!--
+                <li ng-show="main.loggedIn && showMyAccountMenu">
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser();"
+                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
+                        <span class="glyphicon glyphicon-home"></span> {{main.userFirstAndLastNames}}!
+                    </a>
+                </li>
+-->
 
                 <li ng-show="main.loggedIn">
                     <a ng-click="collapseHamburgerMenu(); main.signout()">Sign Out</a>

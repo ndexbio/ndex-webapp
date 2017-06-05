@@ -1102,6 +1102,19 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.searchNetworksByGeneProteinV2 = function (query, start, size, successHandler, errorHandler) {
+                // Server API: Search Networks by Gene/Protein
+                // POST /search/network/genes?start={number}&size={number}
+
+                if (query.searchString == null)
+                    query.searchString = '';
+
+                var url = "/search/network/genes?start=" + start + "&size=" + size;
+                var config = ndexConfigs.getPostConfigV2(url, query);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             // return factory object
             return factory;
         }]);
