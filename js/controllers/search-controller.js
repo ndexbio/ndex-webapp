@@ -10,7 +10,7 @@ ndexApp.controller('searchController',
             searchController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
             searchController.errors = [];
-            searchController.pageSize = 1000;
+            searchController.pageSize = 1000000;
             
             searchController.networkSearchResults = [];
             searchController.networkSearchInProgress = false;
