@@ -176,9 +176,9 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li><a class="dropdown-toggle"
-                               ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
+                               ng-click="main.searchType = 'Keywords'; main.searchString = ''">Keywords</a></li>
                         <li><a class="dropdown-toggle"
-                               ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
+                               ng-click="main.searchType = 'Genes'; main.searchString = ''">Genes and Proteins</a></li>
                         <li><a class="dropdown-toggle"
                                ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
                         <li><a class="dropdown-toggle"
@@ -188,8 +188,9 @@
                 <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
                        ng-model="main.searchString">
                 <div class="input-group-btn">
-                    <button type="submit" ng-click="closeModal();" class="btn btn-default"><span
-                            class="glyphicon glyphicon-search"></span></button>
+                    <button type="submit" ng-click="closeModal();" class="btn btn-default">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
                 </div>
             </div>
 

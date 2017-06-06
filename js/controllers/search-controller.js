@@ -38,6 +38,9 @@ ndexApp.controller('searchController',
             searchController.searchString = decodeURIComponent($location.search().searchString);
             searchController.searchType = decodeURIComponent($location.search().searchType);
 
+            searchController.browseFlag = (decodeURIComponent($location.search().browseFlag) == 'true');
+
+
             // Ensure that we have "search for all" as the default if no parameters are provided
             searchController.searchString = (searchController.searchString.toLowerCase() === 'undefined') ? "" : searchController.searchString;
             searchController.searchType = (searchController.searchType.toLowerCase() === 'undefined') ? "All" : searchController.searchType;
@@ -303,6 +306,7 @@ ndexApp.controller('searchController',
                         searchController.numberOfNetworksFound = searchResult.numFound;
                         searchController.networkSearchResultStart = searchResult.start;
                         var networks = searchResult.networks;
+                        searchController.networkSearchInProgress = false;
                         if(networks.length > 0){
                             searchController.networkSearchResults = networks;
                             populateNetworkTable();
@@ -321,7 +325,52 @@ ndexApp.controller('searchController',
                         } else {
                             searchController.networkSearchNoResults = true;
                         };
+                    },
+                    function (error)
+                    {
+                        if (error) {
+                            searchController.networkSearchResults = [];
+                            searchController.errors.push(error.message);
+                            searchController.networkSearchNoResults = true;
+                        };
+                    });
+            };
+
+            searchController.submitGeneProteinSearch = function () {
+
+                searchController.numberOfNetworksFound = 0;
+                searchController.networkSearchInProgress = true;
+                searchController.networkSearchNoResults = false;
+
+                networkQuery = {
+                    'searchString': searchController.searchString
+                };
+
+                ndexService.searchNetworksByGeneProteinV2(networkQuery, searchController.networkSkipPages, searchController.pageSize,
+                    function (searchResult)
+                    {
+                        searchController.numberOfNetworksFound = searchResult.numFound;
+                        searchController.networkSearchResultStart = searchResult.start;
                         searchController.networkSearchInProgress = false;
+                        var networks = searchResult.networks;
+                        if(networks.length > 0){
+                            searchController.networkSearchResults = networks;
+                            populateNetworkTable();
+
+                            if (searchController.isLoggedInUser) {
+                                searchController.getAllNetworkSetsOwnedByUser(
+                                    // success handler
+                                    function(data) {
+                                        ; // console.log("getAllNetworkSetsOwnedByUser - success");
+                                    },
+                                    function(data, status) {
+                                        ; // console.log("getAllNetworkSetsOwnedByUser - failed");;
+                                    });
+                            };
+
+                        } else {
+                            searchController.networkSearchNoResults = true;
+                        };
                     },
                     function (error)
                     {
@@ -644,24 +693,24 @@ ndexApp.controller('searchController',
             searchController.userSearchNoResults = true;
             searchController.networkSearchNoResults = true;
 
-            if (searchController.searchType === 'All'){
+            if (searchController.browseFlag) {
                 searchController.submitNetworkSearch();
                 searchController.submitGroupSearch();
                 searchController.submitUserSearch();
                 $scope.activateTab('Networks');
-                /*
-                console.log(!searchController.networkSearchNoResults + " " + !searchController.userSearchNoResults + "  " + !searchController.groupSearchNoResults);
-                if (!searchController.networkSearchNoResults){
-                    $scope.activateTab('Networks');
-                } else if (!searchController.userSearchNoResults){
-                    $scope.activateTab('Users');
-                } else if (!searchController.groupSearchNoResults){
-                    $scope.activateTab('Groups');
-                } else {
-                    
-                }
-                */
 
+            } else if (searchController.searchType === 'Keywords'){
+                if (searchController.searchString) {
+                    searchController.submitGeneProteinSearch();
+                } else {
+                    // in case user performing Keywords search with empty
+                    // search string, we submit network search instead of gene/protein search;
+                    // this is same as hitting the Browse button
+                    searchController.submitNetworkSearch();
+                };
+                searchController.submitGroupSearch();
+                searchController.submitUserSearch();
+                $scope.activateTab('Networks');
             } else if (searchController.searchType === 'Networks'){
                 searchController.submitNetworkSearch();
                 // Networks is active tab.
@@ -677,7 +726,10 @@ ndexApp.controller('searchController',
                 // Groups is active tab.
                 // others are No Results
                 $scope.activateTab('Groups');
-            }
+            } else if (searchController.searchType === 'Genes'){
+                searchController.submitGeneProteinSearch();
+                $scope.activateTab('Networks');
+            };
 
         }]);
 

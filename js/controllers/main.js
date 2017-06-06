@@ -10,7 +10,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         $scope.showFooter = true;
         
-        $scope.main = {};
+        $scope.main = {'browseFlag': false};
 
         $scope.main.url = $location; //expose the service to the scope for nav
 
@@ -229,9 +229,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
          Search
          ----------------------------------------------*/
 
-        $scope.main.searchType = 'All';
+        $scope.main.searchType = 'Keywords';
         const SEARCH_PLACEHOLDER_TEXT_MAP = {
-            All : "Search for networks, users, and groups",
+            Keywords : "Search for genes and proteins, users, and groups",
+            Genes: "Search for genes and proteins",
             Networks : "Search for networks",
             Users : "Search for users",
             Groups : "Search for groups"
@@ -265,14 +266,17 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             var urlBeforePathChange = $location.absUrl();
             // add "?networks=<searchStringEncoded>" to the URL;
             // we do it to be able to get back to this search with the browser Back button
-            $location.search({'searchType': $scope.main.searchType, 'searchString': searchStringEncoded});
+            var searchType = $scope.main.searchType;
+            var browseFlag = $scope.main.browseFlag;
+
+            $location.search({'searchType': searchType, 'searchString': searchStringEncoded, 'browseFlag': browseFlag});
             var urlAfterPathChange = $location.absUrl();
             if (urlBeforePathChange === urlAfterPathChange) {
                 // if before and after urls are the same, it means that
                 // the user is re-issuing the last search, and we need to reload
                 // the route to enforce search
                 $route.reload();
-            }
+            };
         };
 
         // make search type sticky
@@ -352,14 +356,17 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.runSearchExample = function(example){
             $scope.main.searchString = example.searchString;
             $scope.main.searchType = example.searchType;
+            $scope.main.browseFlag = false;
             $scope.main.search();
 
         };
 
         $scope.main.browse = function(){
+            $scope.main.browseFlag = true;
             $scope.main.searchString = '';
-            $scope.main.searchType = 'All';
+            $scope.main.searchType = 'Keywords';
             $scope.main.search();
+            $scope.main.browseFlag = false;
         };
 
         //end Search code
