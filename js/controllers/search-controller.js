@@ -727,8 +727,10 @@ ndexApp.controller('searchController',
                 // others are No Results
                 $scope.activateTab('Groups');
             } else if (searchController.searchType === 'Genes'){
-                searchController.submitGeneProteinSearch();
-                $scope.activateTab('Networks');
+                if (searchController.searchString) {
+                    searchController.submitGeneProteinSearch();
+                    $scope.activateTab('Networks');
+                };
             };
 
         }]);
