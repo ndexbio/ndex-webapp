@@ -699,39 +699,26 @@ ndexApp.controller('searchController',
                 searchController.submitUserSearch();
                 $scope.activateTab('Networks');
 
-            } else if (searchController.searchType === 'Keywords'){
-                if (searchController.searchString) {
-                    searchController.submitGeneProteinSearch();
-                } else {
-                    // in case user performing Keywords search with empty
-                    // search string, we submit network search instead of gene/protein search;
-                    // this is same as hitting the Browse button
-                    searchController.submitNetworkSearch();
-                };
-                searchController.submitGroupSearch();
-                searchController.submitUserSearch();
-                $scope.activateTab('Networks');
-            } else if (searchController.searchType === 'Networks'){
-                searchController.submitNetworkSearch();
-                // Networks is active tab.
-                // others are No Results
-                $scope.activateTab('Networks');
-            } else if (searchController.searchType === 'Users'){
-                searchController.submitUserSearch();
-                // Users is active tab.
-                // others are No Results
-                $scope.activateTab('Users');
-            } else if (searchController.searchType === 'Groups'){
-                searchController.submitGroupSearch();
-                // Groups is active tab.
-                // others are No Results
-                $scope.activateTab('Groups');
             } else if (searchController.searchType === 'Genes'){
                 if (searchController.searchString) {
                     searchController.submitGeneProteinSearch();
                     $scope.activateTab('Networks');
                 };
-            };
 
+            } else if (searchController.searchType === 'Keywords'){
+                searchController.submitNetworkSearch();
+                searchController.submitGroupSearch();
+                searchController.submitUserSearch();
+                $scope.activateTab('Networks');
+
+            } else if (searchController.searchType === 'Users'){
+                searchController.submitUserSearch();
+                $scope.activateTab('Users');
+
+            } else if (searchController.searchType === 'Groups'){
+                searchController.submitGroupSearch();
+                $scope.activateTab('Groups');
+
+            };
         }]);
 

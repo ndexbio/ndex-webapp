@@ -229,10 +229,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
          Search
          ----------------------------------------------*/
 
-        $scope.main.searchType = 'Keywords';
+        $scope.main.searchType = 'Genes';
         const SEARCH_PLACEHOLDER_TEXT_MAP = {
             Keywords : "Search for genes and proteins, users, and groups",
-            Genes: "Search for genes and proteins",
+            Genes: "Perform term expansion on genes and proteins aliases",
             Networks : "Search for networks",
             Users : "Search for users",
             Groups : "Search for groups"
@@ -364,7 +364,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.browse = function(){
             $scope.main.browseFlag = true;
             $scope.main.searchString = '';
-            $scope.main.searchType = 'Keywords';
+            $scope.main.searchType = 'Genes';
             $scope.main.search();
             $scope.main.browseFlag = false;
         };
