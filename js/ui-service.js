@@ -700,9 +700,8 @@
                                                 //$scope.main.serverIsDown = true;
                                                 $scope.isProcessing = false;
                                             });
-                                        $scope.closeModal();
                                     };
-                                    
+                                    delete $scope.progress;
                                     $scope.errors = error.message;
                                 });
                         };

@@ -47,27 +47,39 @@
 
 
             <div class="btn-group btn-group-vertical buttonWithMarginBottom" ng-if="networkSetController.isLoggedInUser">
-                <hr>
-                <h5><strong>Actions:</strong></h5>
+                <div ng-if="networkSetController.showButtonsForSetOwner">
+                    <hr>
+                    <h5><strong>Actions:</strong></h5>
 
-                <span>
-                    <a class="btn btn-primary customButtonWidth"
-                       network-set-controller='networkSetController'
-                       trigger-edit-network-set-modal="Edit Network Set">
-                    </a>
-                </span>
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
+                           network-set-controller='networkSetController'
+                           trigger-edit-network-set-modal="Edit Network Set">
+                        </a>
+                    </span>
 
-                <span>
-                    <a class="btn btn-primary customButtonWidth"
-                       ng-click="networkSetController.deleteNetworkSet(networkSetController.identifier)">
-                       Delete Network Set
-                    </a>
-                </span>
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
+                           ng-click="networkSetController.deleteNetworkSet(networkSetController.identifier)">
+                           Delete Network Set
+                        </a>
+                    </span>
+                </div>
 
                 <hr>
                 <h5><strong>Bulk Actions:</strong></h5>
 
-                <span>
+
+                <span ng-if="!networkSetController.showButtonsForSetOwner">
+                    <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0">
+                        <show-network-sets-modal my-account-controller='networkSetController'>
+                             Add To Network Set
+                        </show-network-sets-modal>
+                    </a>
+                </span>
+
+
+                <span ng-if="networkSetController.showButtonsForSetOwner">
                     <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0"
                        ng-click="networkSetController.confirmRemoveSelectedNetworksFromSet()">
                         Remove From Set

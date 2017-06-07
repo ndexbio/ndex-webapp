@@ -23,7 +23,12 @@ ndexApp.controller('networkSetController',
 
     networkSetController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
+    networkSetController.showButtonsForSetOwner = false;
+
+
     networkSetController.displayedSet = {};
+
+    networkSetController.networkSets = [];
 
 
     //              scope functions
@@ -31,49 +36,65 @@ ndexApp.controller('networkSetController',
 
     networkSetController.getNetworksOfNetworkSet = function() {
 
+        if (networkSetController.isLoggedInUser) {
+            networkSetController.getAllNetworkSetsOwnedByUser(
+                // success handler
+                function(data) {
+                    ; //networkSetController.getNetworksOfNetworkSet();
+                },
+                function(data, status) {
+                    ; //networkSetController.getNetworksOfNetworkSet();
+                });
+        }
+
         ndexService.getNetworkSetV2(networkSetController.identifier,
             
-                function (networkSetInformation) {
-                    var networkUUIDs = networkSetInformation["networks"];
+            function (networkSetInformation) {
+                var networkUUIDs = networkSetInformation["networks"];
 
-                    networkSetController.displayedSet['name'] = networkSetInformation['name'];
+                networkSetController.displayedSet['name'] = networkSetInformation['name'];
 
-                    var desc = (networkSetInformation['description']) ? networkSetInformation['description'].trim() : "";
-                    if (!desc) {
-                        // sometime description contains string starting with new line followed by blank spaces ("\n   ").
-                        // To prevent it, we set description to null thus eliminating it from showing.
-                        networkSetController.displayedSet['description'] = null;
-                    } else {
-                        networkSetController.displayedSet['description'] = networkSetInformation['description'];
-                    };
+                var desc = (networkSetInformation['description']) ? networkSetInformation['description'].trim() : "";
+                if (!desc) {
+                    // sometime description contains string starting with new line followed by blank spaces ("\n   ").
+                    // To prevent it, we set description to null thus eliminating it from showing.
+                    networkSetController.displayedSet['description'] = null;
+                } else {
+                    networkSetController.displayedSet['description'] = networkSetInformation['description'];
+                };
 
-                    networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
-                    networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
-                    networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
+                networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
+                networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
+                networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
 
-                    if (networkSetInformation['properties'] &&
-                        networkSetInformation['properties']['reference']) {
-                        networkSetController.displayedSet['properties'] =
-                            {reference: networkSetInformation['properties']['reference']};
-                    };
-                    
-                    ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
-                        function (networkSummaries) {
-                            networkSetController.networkSearchResults = networkSummaries;
-                            populateNetworkTable();
-                        },
-                        function (error) {
-                            if (error) {
-                                displayErrorMessage(error);
-                            };
-                        });
+                if (networkSetInformation['properties'] &&
+                    networkSetInformation['properties']['reference']) {
+                    networkSetController.displayedSet['properties'] =
+                        {reference: networkSetInformation['properties']['reference']};
+                };
 
-                },
-                function (error) {
-                    if (error) {
-                        displayErrorMessage(error);
-                    }
-                });
+                if (networkSetController.isLoggedInUser &&
+                    (networkSetInformation['ownerId'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                    networkSetController.showButtonsForSetOwner = true;
+                };
+
+                ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
+                    function (networkSummaries) {
+                        networkSetController.networkSearchResults = networkSummaries;
+                        populateNetworkTable();
+                    },
+                    function (error) {
+                        if (error) {
+                            displayErrorMessage(error);
+                        };
+                    });
+
+            },
+            function (error) {
+                if (error) {
+                    displayErrorMessage(error);
+                }
+            });
     };
 
     //table
@@ -287,6 +308,35 @@ ndexApp.controller('networkSetController',
         return;
     };
 
+
+    networkSetController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
+        var userId = ndexUtility.getLoggedInUserExternalId();
+
+        ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+            function (networkSets) {
+                networkSetController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                successHandler(networkSetController.networkSets[0]);
+            },
+            function (error, status) {
+                networkSetController.networkSets = [];
+                console.log("unable to get network sets");
+                errorHandler(error, status);
+            });
+    };
+
+    networkSetController.getIDsOfSelectedNetworks = function () {
+        var selectedIds = [];
+        var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+        _.forEach(selectedNetworksRows, function(row) {
+            if (row.Status.toLowerCase() != "set") {
+                selectedIds.push(row['externalId']);
+            };
+        });
+
+        return selectedIds;
+    };
+
     networkSetController.deleteNetworkSet = function(networkSetId) {
         var noOfNetworksInThisSet = networkSetController.networkSearchResults.length;
         var title = 'Delete This Network Set';
@@ -369,10 +419,9 @@ ndexApp.controller('networkSetController',
             
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
-    //----------------------------------------------------------------------------
-    networkSetController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
-
+    //------------------------------------------------------------------------------------
 
     networkSetController.getNetworksOfNetworkSet();
+
     //------------------------------------------------------------------------------------//
 }]);

@@ -185,14 +185,20 @@
                                ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
                     </ul>
                 </div>
+
                 <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
-                       ng-model="main.searchString">
+                       ng-model="main.searchString" maxlength="{{maxSearchInputLength}}" ng-change="checkLengthOfSearchString()">
+
                 <div class="input-group-btn">
                     <button type="submit" ng-click="closeModal();" class="btn btn-default">
                         <span class="glyphicon glyphicon-search"></span>
                     </button>
                 </div>
             </div>
+
+            <div ng-show="stringTooLongWarning"
+                 style="color:red; padding-top:1em; font-size:1.1em; font-weight:bold; margin-left:340px"
+                 ng-bind-html="stringTooLongWarning"></div>
 
         </form>
     </div>

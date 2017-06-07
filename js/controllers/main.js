@@ -33,6 +33,22 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             };
         });
 
+
+        $scope.main.searchString = '';
+        $scope.strLength = 0;
+        $scope.maxSearchInputLength = 250;
+
+        $scope.checkLengthOfSearchString = function() {
+            var strLength = $scope.main.searchString.length;
+            //console.log("strLength = " + strLength);
+            if (strLength >= $scope.maxSearchInputLength) {
+                $scope.stringTooLongWarning = "The maximum length for this field is " +
+                    $scope.maxSearchInputLength + " characters.";
+            } else {
+                delete $scope.stringTooLongWarning;
+            };
+        };
+
         $scope.$on('LOGGED_OUT', function () {
             $scope.main.loggedIn = false;
             delete $scope.main.userName;
@@ -255,6 +271,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         
         $scope.main.searchString = '';
         $scope.main.search = function () {
+            delete $scope.stringTooLongWarning;
+
             // searchStringEncoded will be either 1) a string encoded as a valid component of URI (spaces and
             // special characters replaced with their Hex representations), or 2) "" in case user entered nothing
             // in the search field and thus runs the search with an empty
