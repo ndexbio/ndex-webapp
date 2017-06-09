@@ -14,7 +14,7 @@ ndexServiceApp.factory('ndexService',
             var factory = {};
 
             var ndexServerURI = config.ndexServerUriV2;
-            var ndexServerURIV2 = config.ndexServerUriV2;            
+            var ndexServerURIV2 = config.ndexServerUriV2;
 
             factory.getNdexServerUri = function()
             {
@@ -868,7 +868,24 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getGetConfigV2(url, null);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
-            }
+            };
+
+            factory.getAccessKeyOfNetworkV2 = function(networkId, successHandler, errorHandler) {
+                // Server API: Get Access Key of Network
+                // GET /network/{networkid}/accesskey
+                var url = "/network/" + networkId + "/accesskey";
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
+            factory.disableOrEnableAccessKeyOnNetworkV2 = function(networkId, action, successHandler, errorHandler) {
+                // Server API: Diable/enable Access Key on Network
+                // PUT /{networkid}/accesskey?action=disable|enable
+                var url = "/network/" + networkId + "/accesskey?action=" + action;
+                var config = ndexConfigs.getPutConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
 
             /*---------------------------------------------------------------------*
              * Network Sets

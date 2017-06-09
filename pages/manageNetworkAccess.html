@@ -14,9 +14,29 @@
 <div class='row'>
 
 	<div class='col-sm-offset-2 col-sm-8'>
+		<div class='row rowWithFourLinesBottomPad rowWithTwoLinesTopPad'>
+			<h4><strong>Share With Others</strong></h4>
+			<h5>Anyone with the link can view this network</h5>
 
-		<div class='row'>
-			<h5>Manage who has access for <strong>{{networkManager.network.name}}</strong></h5>
+			<div ng-if="networkManager.networkShareableURL">
+				<strong>{{networkManager.networkShareableURL}}</strong>
+			</div>
+
+			<h5>Link Status: {{networkManager.networkShareableURL ? 'Active' : 'Deactivated'}}</h5>
+
+			<button type="button" class="btn btn-default" ng-click='networkManager.switchShareableURL()'>
+				{{networkManager.networkShareableURLLabel}}
+			</button>
+
+			<a id="copyButtonId" ng-hide="!networkManager.networkShareableURL" type="button" class="btn btn-default"
+			   ng-click="showURLInClipboardMessage()"
+			   ngclipboard data-clipboard-text="{{networkManager.networkShareableURL}}">
+				Copy URL
+			</a>
+		</div>
+
+		<div class='row	rowWithThreeLinesTopPad'>
+			<h4>Manage who has access for <strong>{{networkManager.network.name}}</strong></h4>
 			<br>
 			<p class='text-info'>Users and groups with admin access modify and delete the network as well as manage who
 				has access. Users and groups who can edit the network can only modify the network.

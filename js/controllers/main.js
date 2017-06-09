@@ -487,7 +487,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
          * Use an alert to let the user know that the citation has been copied to the clipboard
          ----------------------------------------------*/
 
-        $scope.showNDExCitationInClipboardMessage = function(redirectObj) {
+        $scope.showNDExCitationInClipboardMessage = function() {
 
             var message =
                 "The NDEx citation information was copied to the clipboard. \n" +

@@ -33,6 +33,9 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.deletedAccessObjects  = [];
 	networkManager.newAdminObj  		 = [];
 
+	networkManager.networkShareableURL = null;
+	networkManager.networkShareableURLLabel = null;
+
 	$scope.progressMessage = null;
 	$scope.errorMessage = null;
 
@@ -732,8 +735,8 @@ ndexApp.controller('manageNetworkAccessController',
 					for(var ii=0; ii<length; ii++) {
 						if(networkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == users.resultList[jj].externalId)
 							users.resultList[jj].member = true;
-					}
-				}
+					};
+				};
 			},
 			function(error) {
 				networkManager.errors.push(error.data)
@@ -753,8 +756,8 @@ ndexApp.controller('manageNetworkAccessController',
 					for(var ii=0; ii<length; ii++) {
 						if(networkManager.selectedAccountsForUpdatingAccessPermissions[ii].memberUUID == groups.resultList[jj].externalId)
 							groups.resultList[jj].member = true;
-					}
-				}
+					};
+				};
 			},
 			function(error) {
 				networkManager.errors.push(error.data)
@@ -768,7 +771,7 @@ ndexApp.controller('manageNetworkAccessController',
 			// no changes to the list of accounts with permissions were made;
 			// no action is required
 			return;
-		}
+		};
 
 		// to discard all the changes, we need to empty the list of selectedAccountsForUpdatingAccessPermissions and
 		// repopulate it with the values from originalAccessPermissions
@@ -781,17 +784,17 @@ ndexApp.controller('manageNetworkAccessController',
 			    for (var j = 0; j < networkManager.newUsers.length; j++) {
 				    if (networkManager.newUsers[j].externalId === accountToRemove.memberUUID) {
 					    networkManager.newUsers[j].member = false;
-				    }
-				}
+				    };
+				};
 			} else if ((accountToRemove.accountType.toLowerCase() === 'group') &&
 				       (typeof(networkManager.newGroups) !== 'undefined')) {
 				for (var j = 0; j < networkManager.newGroups.length; j++) {
 					if (networkManager.newGroups[j].externalId === accountToRemove.memberUUID) {
 						networkManager.newGroups[j].member = false;
-					}
-				}
-			}
-		}
+					};
+				};
+			};
+		};
 
 		networkManager.selectedAccountsForUpdatingAccessPermissions = [];
 
@@ -803,17 +806,17 @@ ndexApp.controller('manageNetworkAccessController',
 				for (var j = 0; j < networkManager.newUsers.length; j++) {
 					if (networkManager.newUsers[j].externalId === originalAccessPerm.memberUUID) {
 						networkManager.newUsers[j].member = true;
-					}
-				}
-			}
+					};
+				};
+			};
 			if (typeof(networkManager.newGroups) !== 'undefined') {
 				for (var j = 0; j < networkManager.newGroups.length; j++) {
 					if (networkManager.newGroups[j].externalId === originalAccessPerm.memberUUID) {
 						networkManager.newGroups[j].member = true;
-					}
-				}
-			}
-		}
+					};
+				};
+			};
+		};
 	};
 
 	networkManager.removeMember = function(index, memberToRemove) {
@@ -823,16 +826,16 @@ ndexApp.controller('manageNetworkAccessController',
 			for (var i = 0; i < networkManager.newUsers.length; i++) {
 				if (networkManager.newUsers[i].externalId === memberToRemove.memberUUID) {
 					networkManager.newUsers[i].member = false;
-				}
-			}
-		}
+				};
+			};
+		};
 		if (typeof(networkManager.newGroups) !== 'undefined') {
 		    for (var i = 0; i < networkManager.newGroups.length; i++) {
 				if (networkManager.newGroups[i].externalId === memberToRemove.memberUUID) {
 					networkManager.newGroups[i].member = false;
-				}
-			}
-		}
+				};
+			};
+		};
 	};
 
 	networkManager.addMember = function(member) {
@@ -847,7 +850,7 @@ ndexApp.controller('manageNetworkAccessController',
 			groupName: ((typeof(member.groupName) === 'undefined') ? "" : member.groupName),
 			accountType: member.accountType,
 			member: true
-		}
+		};
 
 		member.member = true;
 
@@ -866,7 +869,7 @@ ndexApp.controller('manageNetworkAccessController',
 			lastName: ((typeof(user.lastName) === 'undefined') ? "" : user.lastName),
 			accountType: 'user',
 			member: true
-		}
+		};
 
 		user.member = true;
 
@@ -883,7 +886,7 @@ ndexApp.controller('manageNetworkAccessController',
 			groupName: ((typeof(group.groupName) === 'undefined') ? "" : group.groupName),
 			accountType: 'group',
 			member: true
-		}
+		};
 
 		group.member = true;
 
@@ -895,7 +898,7 @@ ndexApp.controller('manageNetworkAccessController',
 		if (networkManager.selectedAccountsForUpdatingAccessPermissions.length !=
 			networkManager.originalAccessPermissions.length) {
 			return true;
-		}
+		};
 
 		for (var i = 0; i < networkManager.selectedAccountsForUpdatingAccessPermissions.length; i++) {
 
@@ -912,13 +915,13 @@ ndexApp.controller('manageNetworkAccessController',
 					}
 					else {
 						return true;
-					}
-				}
-			}
+					};
+				};
+			};
 			if (!found) {
 				return true;
-			}
-		}
+			};
+		};
 
 		return false;
 	};
@@ -930,23 +933,23 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.getAccountName = function(account) {
 		if (typeof(account) === 'undefined') {
 			return 'undefined';
-		}
+		};
 
 		if ((typeof(account.userName) !== 'undefined') && (account.userName === 'ndexadministrator')) {
 			return account.userName;
-		}
+		};
 
 		if ((typeof(account.memberAccountName) !== 'undefined') && (account.memberAccountName === 'ndexadministrator')) {
 			return account.memberAccountName;
-		}
+		};
 
 		if (account.accountType.toLowerCase() == 'user') {
 			return account.firstName + " " + account.lastName;
-		}
+		};
 
 		if (account.accountType.toLowerCase() == 'group') {
 			return account.groupName;
-		}
+		};
 
 		return "unknown account type";
 	};
@@ -955,25 +958,25 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.getUserAccountName = function(user) {
 		if (typeof(user) === 'undefined') {
 			return 'undefined';
-		}
+		};
 
 		if ((typeof(user.userName) !== 'undefined') && (user.userName === 'ndexadministrator')) {
 			return user.userName;
-		}
+		};
 
 		if ((typeof(user.memberAccountName) !== 'undefined') && (user.memberAccountName === 'ndexadministrator')) {
 			return user.memberAccountName;
-		}
+		};
 
 		if (user.isIndividual) {
 			if (user.firstName && user.lastName) {
 				return user.firstName + " " + user.lastName;
-			}
+			};
 		} else {
 			if (user.displayName) {
 				return user.displayName;
-			}
-		}
+			};
+		};
 
 		return "unknown user";
 	};
@@ -981,11 +984,11 @@ ndexApp.controller('manageNetworkAccessController',
 	networkManager.getGroupAccountName = function(group) {
 		if (typeof(group) === 'undefined') {
 			return 'undefined';
-		}
+		};
 
 		if (group.groupName) {
 			return group.groupName;
-		}
+		};
 		
 		return "unknown group";
 	};
@@ -995,9 +998,75 @@ ndexApp.controller('manageNetworkAccessController',
 
 		if (member && member.accountType) {
 			return (member.accountType.toLowerCase() === 'user') ? true : false;
-		} 
+		};
 
 		return false;
+	};
+
+
+	networkManager.switchShareableURL = function() {
+
+        var action = (networkManager.networkShareableURL) ? "disable" : "enable";
+
+        ndexService.disableOrEnableAccessKeyOnNetworkV2(networkManager.externalId, action,
+            function(data, status, headers, config, statusText) {
+
+                if (action == 'enable') {
+                    networkManager.networkShareableURLLabel = "Deactivate Shareable URL";
+                    var clickLink = true;
+                    networkManager.getStatusOfShareableURL(clickLink);
+
+				} else {networkManager.networkShareableURLLabel = "Activate Shareable URL";
+                    networkManager.networkShareableURL = null;
+				};
+            },
+            function(error) {
+                console.log("unable to get access key for network " + networkManager.externalId);
+            });
+	};
+
+	$scope.showURLInClipboardMessage = function() {
+
+		var message =
+			"The URL for this network was copied to the clipboard. \n" +
+			"To paste it using keyboard, press Ctrl-V. \n" +
+			"To paste it using mouse, Right-Click and select Paste.";
+
+		alert(message);
+	};
+
+
+	networkManager.getStatusOfShareableURL = function(clickLink) {
+		var currentServer = ndexService.getNdexServerUriV2().split("/");
+        currentServer[currentServer.length - 1] = '#';
+		var server = currentServer.join("/");
+
+		var URI = server + "/network/" + networkManager.externalId + "?accesskey=";
+
+        ndexService.getAccessKeyOfNetworkV2(networkManager.externalId,
+            function(data) {
+
+				if (!data) {
+					// empty string - access is deactivated
+                    networkManager.networkShareableURL = null;
+                    networkManager.networkShareableURLLabel = "Activate Shareable URL";
+
+				} else if (data['accessKey']) {
+					// received  data['accessKey'] - access is active
+					URI = URI + data['accessKey'];
+					networkManager.networkShareableURL = URI;
+                    networkManager.networkShareableURLLabel = "Deactivate Shareable URL";
+
+
+				} else {
+					// this should not happen; something went wrong; access deactivated
+                    networkManager.networkShareableURL = null;
+                    networkManager.networkShareableURLLabel = "Activate Shareable URL";
+				};
+            },
+			function(error) {
+        		console.log("unable to get access key for network " + networkManager.externalId);
+			});
 	};
 
 
@@ -1036,6 +1105,7 @@ ndexApp.controller('manageNetworkAccessController',
     		networkManager.errors.push(error.data)
     	})
 
+	networkManager.getStatusOfShareableURL();
 	networkManager.loadUserPermissionsOnNetwork();
 	networkManager.loadGroupPermissionsOnNetwork();
 

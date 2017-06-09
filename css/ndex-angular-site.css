@@ -598,6 +598,14 @@ hr {
     padding-top: 2em;
 }
 
+.rowWithThreeLinesTopPad {
+    padding-top: 3em;
+}
+
+.rowWithFourLinesTopPad {
+    padding-top: 4em;
+}
+
 .rowWithOneLineTopPad {
     padding-top: 1em;
 }
