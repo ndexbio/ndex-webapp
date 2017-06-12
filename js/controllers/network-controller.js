@@ -15,6 +15,8 @@ ndexApp.controller('networkController',
             var currentNetworkSummary;
 
             var networkExternalId = $routeParams.identifier;
+            var accesskey = $routeParams.accesskey;
+
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
             $scope.showFooter = false;
@@ -77,7 +79,7 @@ ndexApp.controller('networkController',
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroudColor = function () {
                 networkController.bgColor = '#8fbdd7';
-            }
+            };
 
             var localNetwork = undefined;
 
@@ -95,7 +97,7 @@ ndexApp.controller('networkController',
                     var citationsIDs = localNetwork.edgeCitations[edgeKey];
                     var edgeCitations = getCitations(citationsIDs);
                     showCitations(edgeCitations);
-                }
+                };
             };
 
             $scope.showNodeCitations = function(nodeKey)
@@ -1412,7 +1414,7 @@ ndexApp.controller('networkController',
                 }
             }
 
-            var getNetworkAndDisplay = function (networkId, callback) {
+            var getNetworkAndDisplay = function (networkId, callback, accesskey) {
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
@@ -1430,7 +1432,7 @@ ndexApp.controller('networkController',
                     (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
                     // get sample CX network
                     networkController.isSample = true;
-                    (request2 = networkService.getNetworkSampleV2(networkId) )
+                    (request2 = networkService.getNetworkSampleV2(networkId, accesskey) )
                         .success(
                             function (network) {
                                 callback(network, false);
@@ -1444,7 +1446,7 @@ ndexApp.controller('networkController',
                 } else {
                     // get complete CX stream and build the CX network object.
                     networkController.isSample = false;
-                    (request2 = networkService.getCompleteNetworkInCXV2(networkId) )
+                    (request2 = networkService.getCompleteNetworkInCXV2(networkId, accesskey) )
                         .success(
                             function (network) {
                                 callback(network, false);
@@ -2033,7 +2035,7 @@ ndexApp.controller('networkController',
 
                 // get network summary
                 // keep a reference to the promise
-                networkService.getNetworkSummaryFromNdexV2(networkExternalId)
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId, accesskey)
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
@@ -2058,9 +2060,10 @@ ndexApp.controller('networkController',
                                 if (network.visibility == 'PUBLIC'
                                     || networkController.isAdmin
                                     || networkController.canEdit
-                                    || networkController.canRead) {
+                                    || networkController.canRead
+                                    || accesskey) {
                                             resetBackgroudColor();
-                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas,accesskey);
                                 }
                             });
 

@@ -692,15 +692,21 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getNetworkSummaryV2 = function (networkId) {
+            factory.getNetworkSummaryV2 = function (networkId, accesskey) {
                 // Server API: Get Network Summary
-                // GET /network/{networkid}/summary
+                // GET /network/{networkid}/summary?accesskey={accessKey}
 
                 // The $http timeout property takes a deferred value that can abort AJAX request
                 var deferredAbort = $q.defer();
 
 
-                var url = "/network/" + networkId + "/summary?setAuthHeader=false";
+                //var url = "/network/" + networkId; // + "/summary?setAuthHeader=false";
+
+                var url = "/network/" + networkId + "/summary";
+                if (accesskey) {
+                    url = url + "?accesskey=" + accesskey;
+                };
+
                 var config = ndexConfigs.getGetConfigV2(url, null);
                 config.timeout = deferredAbort.promise;
 
