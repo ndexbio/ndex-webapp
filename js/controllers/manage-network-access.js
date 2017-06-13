@@ -1013,10 +1013,9 @@ ndexApp.controller('manageNetworkAccessController',
 
                 if (action == 'enable') {
                     networkManager.networkShareableURLLabel = "Deactivate Shareable URL";
-                    var clickLink = true;
-                    networkManager.getStatusOfShareableURL(clickLink);
+                    networkManager.networkShareableURL = buildShareableNetworkURL(data['accessKey']);
 
-				} else {networkManager.networkShareableURLLabel = "Activate Shareable URL";
+                } else {networkManager.networkShareableURLLabel = "Activate Shareable URL";
                     networkManager.networkShareableURL = null;
 				};
             },
@@ -1035,14 +1034,17 @@ ndexApp.controller('manageNetworkAccessController',
 		alert(message);
 	};
 
+	var buildShareableNetworkURL = function(accessKey) {
 
-	networkManager.getStatusOfShareableURL = function(clickLink) {
-		var currentServer = ndexService.getNdexServerUriV2().split("/");
+        var currentServer = ndexService.getNdexServerUriV2().split("/");
         currentServer[currentServer.length - 1] = '#';
-		var server = currentServer.join("/");
+        var server = currentServer.join("/");
 
-		var URI = server + "/network/" + networkManager.externalId + "?accesskey=";
+        return server + "/network/" + networkManager.externalId + "?accesskey=" + accessKey;
+	};
 
+
+	networkManager.getStatusOfShareableURL = function() {
         ndexService.getAccessKeyOfNetworkV2(networkManager.externalId,
             function(data) {
 
@@ -1052,11 +1054,9 @@ ndexApp.controller('manageNetworkAccessController',
                     networkManager.networkShareableURLLabel = "Activate Shareable URL";
 
 				} else if (data['accessKey']) {
-					// received  data['accessKey'] - access is active
-					URI = URI + data['accessKey'];
-					networkManager.networkShareableURL = URI;
+					// received  data['accessKey'] - access is enabled
+					networkManager.networkShareableURL = buildShareableNetworkURL(data['accessKey']);
                     networkManager.networkShareableURLLabel = "Deactivate Shareable URL";
-
 
 				} else {
 					// this should not happen; something went wrong; access deactivated
