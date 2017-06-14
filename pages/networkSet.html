@@ -60,10 +60,18 @@
 
                     <span>
                         <a class="btn btn-primary customButtonWidth"
+                           network-set-controller='networkSetController'
+                           trigger-share-network-set-modal="Share">
+                        </a>
+                    </span>
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
                            ng-click="networkSetController.deleteNetworkSet(networkSetController.identifier)">
                            Delete Network Set
                         </a>
                     </span>
+
                 </div>
 
                 <hr>

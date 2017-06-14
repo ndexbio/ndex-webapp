@@ -31,6 +31,10 @@ ndexApp.controller('networkSetController',
     networkSetController.networkSets = [];
 
 
+    networkSetController.networkSetShareableURL = null;
+    networkSetController.networkSetShareableURLLabel = null;
+
+
     //              scope functions
     // called on Networks belonging to group displayed on page
 
@@ -416,11 +420,80 @@ ndexApp.controller('networkSetController',
 
         return;
     };
+
+
+    networkSetController.switchShareableURL = function(successHandler, errorHandler) {
+
+        var action = (networkSetController.networkSetShareableURL) ? "disable" : "enable";
+
+        ndexService.disableOrEnableAccessKeyOnNetworkSetV2(networkSetController.identifier, action,
+            function(data, status, headers, config, statusText) {
+
+                if (action == 'enable') {
+                    networkSetController.networkSetShareableURLLabel = "Deactivate Shareable URL";
+                    networkSetController.networkSetShareableURL = buildShareableNetworkSetURL(data['accessKey']);
+
+                } else {
+                    networkSetController.networkSetShareableURLLabel = "Activate Shareable URL";
+                    networkSetController.networkSetShareableURL = null;
+                };
+                successHandler();
+            },
+            function(error) {
+                console.log("unable to get access key for network set " + networkSetController.identifier);
+                errorHandler();
+            });
+    };
+
+    networkSetController.showURLInClipboardMessage = function() {
+
+        var message =
+            "The URL for this network set was copied to the clipboard. \n" +
+            "To paste it using keyboard, press Ctrl-V. \n" +
+            "To paste it using mouse, Right-Click and select Paste.";
+
+        alert(message);
+    };
+
+    var buildShareableNetworkSetURL = function(accessKey) {
+
+        var currentServer = ndexService.getNdexServerUriV2().split("/");
+        currentServer[currentServer.length - 1] = '#';
+        var server = currentServer.join("/");
+
+        return server + "/networkset/" + networkSetController.identifier + "?accesskey=" + accessKey;
+    };
+
+    networkSetController.getStatusOfShareableURL = function() {
+        ndexService.getAccessKeyOfNetworkSetV2(networkSetController.identifier,
+            function(data) {
+
+                if (!data) {
+                    // empty string - access is deactivated
+                    networkSetController.networkSetShareableURL = null;
+                    networkSetController.networkSetShareableURLLabel = "Activate Shareable URL";
+
+                } else if (data['accessKey']) {
+                    // received  data['accessKey'] - access is enabled
+                    networkSetController.networkSetShareableURL = buildShareableNetworkSetURL(data['accessKey']);
+                    networkSetController.networkSetShareableURLLabel = "Deactivate Shareable URL";
+
+                } else {
+                    // this should not happen; something went wrong; access deactivated
+                    networkSetController.networkSetShareableURL = null;
+                    networkSetController.networkSetShareableURLLabel = "Activate Shareable URL";
+                };
+            },
+            function(error) {
+                console.log("unable to get access key for network set " + networkSetController.identifier);
+            });
+    };
             
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //------------------------------------------------------------------------------------
 
+    networkSetController.getStatusOfShareableURL();
     networkSetController.getNetworksOfNetworkSet();
 
     //------------------------------------------------------------------------------------//

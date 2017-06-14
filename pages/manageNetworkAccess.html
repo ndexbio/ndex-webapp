@@ -15,24 +15,33 @@
 
 	<div class='col-sm-offset-2 col-sm-8'>
 		<div class='row rowWithFourLinesBottomPad rowWithTwoLinesTopPad'>
-			<h4><strong>Share With Others</strong></h4>
-			<h5>Anyone with the link can view this network</h5>
+			<div class="col-sm-12">
+				<h4><strong>Share With Others</strong></h4>
 
-			<div>
-				<strong>{{networkManager.networkShareableURL}}</strong>
+				<h5 ng-hide="!networkManager.networkShareableURL">Anyone with the link can view this network</h5>
+
+
+				<div ng-hide="!networkManager.networkShareableURL">
+					<input type="text" class="form-control" readonly value="{{networkManager.networkShareableURL}}">
+				</div>
+
+				<h5 ng-if="networkManager.networkShareableURL">
+					<strong>Link Status:</strong><span style='color:green;'>&nbsp;Active</span>
+				</h5>
+				<h5 ng-if="!networkManager.networkShareableURL">
+					<strong>Link Status:</strong>&nbsp;Deactivated
+				</h5>
+
+				<button type="button" class="btn btn-default" ng-click='networkManager.switchShareableURL()'>
+					{{networkManager.networkShareableURLLabel}}
+				</button>
+
+				<button id="copyButtonId" ng-hide="!networkManager.networkShareableURL" type="button" class="btn btn-default"
+				   ng-click="showURLInClipboardMessage()"
+				   ngclipboard data-clipboard-text="{{networkManager.networkShareableURL}}">
+					Copy URL
+				</button>
 			</div>
-
-			<h5>Link Status: {{networkManager.networkShareableURL ? 'Active' : 'Deactivated'}}</h5>
-
-			<button type="button" class="btn btn-default" ng-click='networkManager.switchShareableURL()'>
-				{{networkManager.networkShareableURLLabel}}
-			</button>
-
-			<button id="copyButtonId" ng-hide="!networkManager.networkShareableURL" type="button" class="btn btn-default"
-			   ng-click="showURLInClipboardMessage()"
-			   ngclipboard data-clipboard-text="{{networkManager.networkShareableURL}}">
-				Copy URL
-			</button>
 		</div>
 
 		<div class='row	rowWithThreeLinesTopPad'>

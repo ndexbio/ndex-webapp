@@ -886,7 +886,7 @@ ndexServiceApp.factory('ndexService',
 
 
             factory.disableOrEnableAccessKeyOnNetworkV2 = function(networkId, action, successHandler, errorHandler) {
-                // Server API: Diable/enable Access Key on Network
+                // Server API: Disable/enable Access Key on Network
                 // PUT /{networkid}/accesskey?action=disable|enable
                 var url = "/network/" + networkId + "/accesskey?action=" + action;
                 var config = ndexConfigs.getPutConfigV2(url, null);
@@ -956,6 +956,25 @@ ndexServiceApp.factory('ndexService',
 
                 var config = ndexConfigs.getDeleteConfigV2(url, networkIds);
 
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.getAccessKeyOfNetworkSetV2 = function(networkSetId, successHandler, errorHandler) {
+                // API: Get Access Key of a  Network Set
+                // GET /networkset/{networkSetId}/accesskey
+
+                var url = "/networkset/" + networkSetId + "/accesskey";
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.disableOrEnableAccessKeyOnNetworkSetV2 = function(networkSetId, action, successHandler, errorHandler) {
+                // Server API: Disable/enable Access Key on Network Set
+                // PUT /{networksetid}/accesskey?action=disable|enable
+                var url = "/networkset/" + networkSetId + "/accesskey?action=" + action;
+                var config = ndexConfigs.getPutConfigV2(url, null);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
