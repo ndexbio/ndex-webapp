@@ -60,6 +60,25 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
             $scope.signIn.newUser = {};
         };
 
+        $scope.$watch("signIn.userName", function () {
+            delete $scope.signIn.message;
+        });
+        $scope.$watch("signIn.password", function () {
+            delete $scope.signIn.message;
+        });
+
+        $scope.$watch("signIn.newUser.firstName", function () {
+            delete $scope.signIn.signUpErrors;
+        });
+        $scope.$watch("signIn.newUser.lastName", function () {
+            delete $scope.signIn.signUpErrors;
+        });
+        $scope.$watch("signIn.newUser.emailAddress", function () {
+            delete $scope.signIn.signUpErrors;
+        });
+        $scope.$watch("signIn.newUser.userName", function () {
+            delete $scope.signIn.signUpErrors;
+        });
         $scope.$watch("signIn.newUser.password", function () {
             delete $scope.signIn.signUpErrors;
         });

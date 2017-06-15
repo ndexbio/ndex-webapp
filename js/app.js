@@ -26,11 +26,16 @@ ndexApp.service('authInterceptor', function($q, $rootScope, $location) {
             return response || $q.when(response);
         },
         responseError: function (response) {
+            /*
             if (response.status == 401){
                 //$location.path('/signIn').search('returnTo', $location.path());
                 return $q.reject(response);
             }
-            //return $q.reject(response);
+            else if (response.status == 409) {
+                return $q.reject(response)
+            }
+            */
+            return $q.reject(response);
         }
     };
 
