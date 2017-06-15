@@ -926,11 +926,15 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getNetworkSetV2 = function(networkSetId, successHandler, errorHandler) {
+            factory.getNetworkSetV2 = function(networkSetId, accesskey, successHandler, errorHandler) {
                 // API: Get a Network Set
-                // GET /networkset/{networkSetId}
+                // GET /networkset/{networkSetId}?accesskey={accesskey}
 
                 var url = "/networkset/" + networkSetId;
+
+                if (accesskey) {
+                    url = url + "?accesskey=" + accesskey;
+                };
 
                 var config = ndexConfigs.getGetConfigV2(url, null);
 
@@ -1064,13 +1068,16 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.getNetworkSummariesByUUIDsV2 = function(networksUUIDsList, successHandler, errorHandler) {
+            factory.getNetworkSummariesByUUIDsV2 = function(networksUUIDsList, accesskey, successHandler, errorHandler) {
                 // Server API: Get Network Summaries by UUIDs
-                // POST /network/summaries
+                // POST /network/summaries?accesskey={accesskey}
 
                 var url = "/batch/network/summary";
-                var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
+                if (accesskey) {
+                    url = url + "?accesskey=" + accesskey;
+                };
 
+                var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             }
 

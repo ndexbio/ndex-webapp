@@ -14,6 +14,7 @@ ndexApp.controller('networkSetController',
     var networkSetController = $scope.networkSetController;
 
     networkSetController.identifier = identifier;
+    networkSetController.accesskey = $routeParams.accesskey;
 
     // networks
     networkSetController.networkSearchResults = [];
@@ -33,13 +34,14 @@ ndexApp.controller('networkSetController',
 
     networkSetController.networkSetShareableURL = null;
     networkSetController.networkSetShareableURLLabel = null;
+    networkSetController.networkSetOwnerId = null;
 
 
-    //              scope functions
-    // called on Networks belonging to group displayed on page
 
     networkSetController.getNetworksOfNetworkSet = function() {
 
+        // need network sets owned by logged in user in order to show them in case user
+        // will want to add networks to his/her sets; thus calling networkSetController.getAllNetworkSetsOwnedByUser ...
         if (networkSetController.isLoggedInUser) {
             networkSetController.getAllNetworkSetsOwnedByUser(
                 // success handler
@@ -51,11 +53,12 @@ ndexApp.controller('networkSetController',
                 });
         }
 
-        ndexService.getNetworkSetV2(networkSetController.identifier,
+        ndexService.getNetworkSetV2(networkSetController.identifier, networkSetController.accesskey,
             
             function (networkSetInformation) {
                 var networkUUIDs = networkSetInformation["networks"];
 
+                networkSetController.networkSetOwnerId = networkSetInformation["ownerId"];
                 networkSetController.displayedSet['name'] = networkSetInformation['name'];
 
                 var desc = (networkSetInformation['description']) ? networkSetInformation['description'].trim() : "";
@@ -80,9 +83,13 @@ ndexApp.controller('networkSetController',
                 if (networkSetController.isLoggedInUser &&
                     (networkSetInformation['ownerId'] == ndexUtility.getLoggedInUserExternalId()) ) {
                     networkSetController.showButtonsForSetOwner = true;
+
+                    // status of the Shareable URl is shown in the Share Set modal that pops up after
+                    // selecting Share button. This button is only shown to the owner of the set.
+                    networkSetController.getStatusOfShareableURL();
                 };
 
-                ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
+                ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, networkSetController.accesskey,
                     function (networkSummaries) {
                         networkSetController.networkSearchResults = networkSummaries;
                         populateNetworkTable();
@@ -92,7 +99,6 @@ ndexApp.controller('networkSetController',
                             displayErrorMessage(error);
                         };
                     });
-
             },
             function (error) {
                 if (error) {
@@ -493,7 +499,6 @@ ndexApp.controller('networkSetController',
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //------------------------------------------------------------------------------------
 
-    networkSetController.getStatusOfShareableURL();
     networkSetController.getNetworksOfNetworkSet();
 
     //------------------------------------------------------------------------------------//
