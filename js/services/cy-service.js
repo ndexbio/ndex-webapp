@@ -325,7 +325,7 @@ angular.module('ndexServiceApp')
         // convert from 0-255 to 0-1.
         var cyOpacityFromCX = function (string) {
             var trans = parseInt(string);
-            return Math.round(trans / 255);
+            return trans / 255.0;
         };
 
         // "COL=interaction,T=string,K=0=binds,V=0=#3300FF,K=1=isa,V=1=#FF0000"
@@ -738,7 +738,11 @@ angular.module('ndexServiceApp')
 
                                 } else if ( vp === 'NODE_SIZE') {
                                     node_size = value;
+                                } else if ( vp === 'NODE_LABEL_WIDTH') {
+                                    defaultNodeProperties['text-wrap'] = "wrap";
+                                    defaultNodeProperties['text-max-width'] = value;
                                 }
+
                             }
                         });
 
