@@ -1191,14 +1191,6 @@ ndexServiceApp.factory('ndexUtility', function () {
         return true;
     };
 
-    factory.setUserCredentials = function (accountName, externalId, token) {
-        var loggedInUser = {};
-        loggedInUser.userName = accountName;
-        loggedInUser.token = token;
-        loggedInUser.externalId = externalId;
-        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-    };
-
     factory.getUserCredentials = function () {
         if (factory.checkLocalStorage()) {
             if (localStorage.loggedInUser) {
@@ -1216,20 +1208,21 @@ ndexServiceApp.factory('ndexUtility', function () {
         return null;
     };
 
-    factory.setUserAuthToken = function (token) {
+    factory.setUserPassword = function (password) {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (!loggedInUser) loggedInUser = {};
-        loggedInUser.token = token;
+        loggedInUser.token = password;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
     };
 
-    factory.setUserInfo = function (accountName, firstName, lastName, externalId) {
+    factory.setUserInfo = function (accountName, firstName, lastName, externalId, password) {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (!loggedInUser) loggedInUser = {};
         loggedInUser.userName  = accountName;
         loggedInUser.firstName = firstName;
         loggedInUser.lastName  = lastName;
         loggedInUser.externalId = externalId;
+        loggedInUser.token = password;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
     };
 

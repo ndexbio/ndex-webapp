@@ -436,11 +436,11 @@ ndexApp.controller('networkSetController',
             function(data, status, headers, config, statusText) {
 
                 if (action == 'enable') {
-                    networkSetController.networkSetShareableURLLabel = "Deactivate Shareable URL";
+                    networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
                     networkSetController.networkSetShareableURL = buildShareableNetworkSetURL(data['accessKey']);
 
                 } else {
-                    networkSetController.networkSetShareableURLLabel = "Activate Shareable URL";
+                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
                     networkSetController.networkSetShareableURL = null;
                 };
                 successHandler();
@@ -477,17 +477,17 @@ ndexApp.controller('networkSetController',
                 if (!data) {
                     // empty string - access is deactivated
                     networkSetController.networkSetShareableURL = null;
-                    networkSetController.networkSetShareableURLLabel = "Activate Shareable URL";
+                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
 
                 } else if (data['accessKey']) {
                     // received  data['accessKey'] - access is enabled
                     networkSetController.networkSetShareableURL = buildShareableNetworkSetURL(data['accessKey']);
-                    networkSetController.networkSetShareableURLLabel = "Deactivate Shareable URL";
+                    networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
 
                 } else {
                     // this should not happen; something went wrong; access deactivated
                     networkSetController.networkSetShareableURL = null;
-                    networkSetController.networkSetShareableURLLabel = "Activate Shareable URL";
+                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
                 };
             },
             function(error) {

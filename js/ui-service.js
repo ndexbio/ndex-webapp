@@ -2557,7 +2557,7 @@
                             var userName = userCredentials['userName'];
                             var externalId = userCredentials['externalId'];
 
-                            ndexUtility.setUserCredentials(userName, externalId, $scope.change.newPassword);
+                            ndexUtility.setUserPassword($scope.change.newPassword);
                             modalInstance.close();
                             modalInstance = null;
                             $scope.isProcessing = false;

@@ -26,10 +26,10 @@
 				</div>
 
 				<h5 ng-if="networkManager.networkShareableURL">
-					<strong>Link Status:</strong><span style='color:green;'>&nbsp;Active</span>
+					<strong>Share URL Status:</strong><span style='color:green;'>&nbsp;Active</span>
 				</h5>
 				<h5 ng-if="!networkManager.networkShareableURL">
-					<strong>Link Status:</strong>&nbsp;Deactivated
+					<strong>Share URL Status:</strong>&nbsp;Inactive
 				</h5>
 
 				<button type="button" class="btn btn-default" ng-click='networkManager.switchShareableURL()'>
