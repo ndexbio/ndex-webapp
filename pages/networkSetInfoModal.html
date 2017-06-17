@@ -47,6 +47,18 @@
                 <span class="col-sm-8">
                     <p class="form-control-static" id="networkSetNetworksId" ng-bind-html="set.networkCount"></p>
                 </span>
+
+                <span ng-if="set.shareLinkStatus">
+                    <label for="networkSetShareURLStatusId" class="col-sm-3 control-label">
+                        Share URL Status:
+                    </label>
+                    <span class="col-sm-8">
+                        <p id="networkSetShareURLStatusId" class="form-control-static"
+                           ng-style="set.shareLinkStatus == 'Active' ? {color: 'green'} : {color: 'black'}"
+                           ng-bind-html="set.shareLinkStatus">
+                        </p>
+                    </span>
+                </span>
             </div>
 
             <div class='text-danger'>

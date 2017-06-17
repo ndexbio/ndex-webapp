@@ -24,7 +24,7 @@ ndexApp.controller('networkSetController',
 
     networkSetController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
-    networkSetController.showButtonsForSetOwner = false;
+    networkSetController.isSetOwner = false;
 
 
     networkSetController.displayedSet = {};
@@ -82,7 +82,7 @@ ndexApp.controller('networkSetController',
 
                 if (networkSetController.isLoggedInUser &&
                     (networkSetInformation['ownerId'] == ndexUtility.getLoggedInUserExternalId()) ) {
-                    networkSetController.showButtonsForSetOwner = true;
+                    networkSetController.isSetOwner = true;
 
                     // status of the Shareable URl is shown in the Share Set modal that pops up after
                     // selecting Share button. This button is only shown to the owner of the set.

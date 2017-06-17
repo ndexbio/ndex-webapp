@@ -45,9 +45,15 @@
                 <strong>Networks: </strong><span ng-bind-html="networkSetController.displayedSet.networks"></span>
             </div>
 
+            <div class="wrapLongLine" ng-if="networkSetController.isSetOwner">
+                <strong>Share URL Status: </strong>
+                <span ng-style="networkSetController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
+                    {{networkSetController.networkSetShareableURL ? 'Active' : 'Inactive'}}
+                </span>
+            </div>
 
             <div class="btn-group btn-group-vertical buttonWithMarginBottom" ng-if="networkSetController.isLoggedInUser">
-                <div ng-if="networkSetController.showButtonsForSetOwner">
+                <div ng-if="networkSetController.isSetOwner">
                     <hr>
                     <h5><strong>Actions:</strong></h5>
 
@@ -78,7 +84,7 @@
                 <h5><strong>Bulk Actions:</strong></h5>
 
 
-                <span ng-if="!networkSetController.showButtonsForSetOwner">
+                <span ng-if="!networkSetController.isSetOwner">
                     <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0">
                         <show-network-sets-modal my-account-controller='networkSetController'>
                              Add To Network Set
@@ -86,8 +92,7 @@
                     </a>
                 </span>
 
-
-                <span ng-if="networkSetController.showButtonsForSetOwner">
+                <span ng-if="networkSetController.isSetOwner">
                     <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0"
                        ng-click="networkSetController.confirmRemoveSelectedNetworksFromSet()">
                         Remove From Set

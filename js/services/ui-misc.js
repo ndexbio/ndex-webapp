@@ -312,11 +312,25 @@ angular.module('ndexServiceApp')
                 delete set['showcased'];
                 set['showcased'] = showCased ? "Yes" : "No";
 
-                /*
-                set['showcased'] = showCased ?
-                    '<img src="img/openedeye.png" width="25px" height="25px">' :
-                    '<img src="img/closedeye.png" width="25px" height="25px">';
-                */
+                ndexService.getAccessKeyOfNetworkSetV2(set['externalId'],
+                    function(data) {
+
+                        if (!data) {
+                            // empty string - access is deactivated
+                            set['shareLinkStatus'] = 'Inactive';
+
+                        } else if (data['accessKey']) {
+                            // received  data['accessKey'] - access is enabled
+                            set['shareLinkStatus'] = 'Active';
+
+                        } else {
+                            // this should not happen; something went wrong
+                            set['shareLinkStatus'] = 'Unknown';
+                        };
+                    },
+                    function(error) {
+                        console.log("unable to get access key for network set " + set['externalId']);
+                    });
 
             } else {
                 delete set['showcased'];
