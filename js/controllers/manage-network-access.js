@@ -1,8 +1,8 @@
 ndexApp.controller('manageNetworkAccessController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
-		'$routeParams', '$q', 'ndexNavigation',
+		'$routeParams', '$q', 'ndexNavigation', 'uiMisc',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location,
-				  $routeParams, $q, ndexNavigation) {
+				  $routeParams, $q, ndexNavigation, uiMisc) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -1013,7 +1013,8 @@ ndexApp.controller('manageNetworkAccessController',
 
                 if (action == 'enable') {
                     networkManager.networkShareableURLLabel = "Deactivate Share URL";
-                    networkManager.networkShareableURL = buildShareableNetworkURL(data['accessKey']);
+                    networkManager.networkShareableURL =
+						uiMisc.buildShareableNetworkURL(data['accessKey'], networkManager.externalId);
 
                 } else {networkManager.networkShareableURLLabel = "Activate Share URL";
                     networkManager.networkShareableURL = null;
@@ -1034,15 +1035,6 @@ ndexApp.controller('manageNetworkAccessController',
 		alert(message);
 	};
 
-	var buildShareableNetworkURL = function(accessKey) {
-
-        var currentServer = ndexService.getNdexServerUriV2().split("/");
-        currentServer[currentServer.length - 1] = '#';
-        var server = currentServer.join("/");
-
-        return server + "/network/" + networkManager.externalId + "?accesskey=" + accessKey;
-	};
-
 
 	networkManager.getStatusOfShareableURL = function() {
         ndexService.getAccessKeyOfNetworkV2(networkManager.externalId,
@@ -1055,7 +1047,8 @@ ndexApp.controller('manageNetworkAccessController',
 
 				} else if (data['accessKey']) {
 					// received  data['accessKey'] - access is enabled
-					networkManager.networkShareableURL = buildShareableNetworkURL(data['accessKey']);
+					networkManager.networkShareableURL =
+                        uiMisc.buildShareableNetworkURL(data['accessKey'], networkManager.externalId);
                     networkManager.networkShareableURLLabel = "Deactivate Share URL";
 
 				} else {

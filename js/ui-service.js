@@ -81,8 +81,18 @@
 
                             $scope.network = network;
 
-                            $scope.close = function() {
+                            $scope.close = function () {
                                 $modalInstance.dismiss();
+                            };
+
+                            $scope.showURLInClipboardMessage = function () {
+
+                                var message =
+                                    "The URL for this network was copied to the clipboard. \n" +
+                                    "To paste it using keyboard, press Ctrl-V. \n" +
+                                    "To paste it using mouse, Right-Click and select Paste.";
+
+                                alert(message);
                             };
                         }
                     });
@@ -99,6 +109,16 @@
 
                             $scope.close = function() {
                                 $modalInstance.dismiss();
+                            };
+
+                            $scope.showURLInClipboardMessage = function() {
+
+                                var message =
+                                    "The URL for this network set was copied to the clipboard. \n" +
+                                    "To paste it using keyboard, press Ctrl-V. \n" +
+                                    "To paste it using mouse, Right-Click and select Paste.";
+
+                                alert(message);
                             };
                         }
                     });
@@ -325,7 +345,8 @@
                             $scope.networkSetController.displayedSet['properties'] =
                                     {reference: $scope.networkSet['properties']['reference']};
 
-                            ndexService.getNetworkSetV2(networkSetId,
+                            var accessKey = null;
+                            ndexService.getNetworkSetV2(networkSetId, accessKey,
                                 function (networkSetInformation) {
                                     var networkUUIDs = networkSetInformation["networks"];
                                     $scope.networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];

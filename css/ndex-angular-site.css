@@ -610,6 +610,10 @@ hr {
     padding-top: 1em;
 }
 
+.rowWithHalfLineBottomPad {
+    padding-bottom: 0.5em;
+}
+
 .rowWithOneLineBottomPad {
     padding-bottom: 1em;
 }

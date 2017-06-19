@@ -437,7 +437,8 @@ ndexApp.controller('networkSetController',
 
                 if (action == 'enable') {
                     networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
-                    networkSetController.networkSetShareableURL = buildShareableNetworkSetURL(data['accessKey']);
+                    networkSetController.networkSetShareableURL =
+                        uiMisc.buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
 
                 } else {
                     networkSetController.networkSetShareableURLLabel = "Activate Share URL";
@@ -461,15 +462,6 @@ ndexApp.controller('networkSetController',
         alert(message);
     };
 
-    var buildShareableNetworkSetURL = function(accessKey) {
-
-        var currentServer = ndexService.getNdexServerUriV2().split("/");
-        currentServer[currentServer.length - 1] = '#';
-        var server = currentServer.join("/");
-
-        return server + "/networkset/" + networkSetController.identifier + "?accesskey=" + accessKey;
-    };
-
     networkSetController.getStatusOfShareableURL = function() {
         ndexService.getAccessKeyOfNetworkSetV2(networkSetController.identifier,
             function(data) {
@@ -481,7 +473,8 @@ ndexApp.controller('networkSetController',
 
                 } else if (data['accessKey']) {
                     // received  data['accessKey'] - access is enabled
-                    networkSetController.networkSetShareableURL = buildShareableNetworkSetURL(data['accessKey']);
+                    networkSetController.networkSetShareableURL =
+                        uiMisc.buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
                     networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
 
                 } else {

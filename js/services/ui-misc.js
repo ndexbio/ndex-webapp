@@ -322,6 +322,8 @@ angular.module('ndexServiceApp')
                         } else if (data['accessKey']) {
                             // received  data['accessKey'] - access is enabled
                             set['shareLinkStatus'] = 'Active';
+                            set['networkSetShareableURL'] =
+                                self.buildShareableNetworkSetURL(data['accessKey'], set['externalId']);
 
                         } else {
                             // this should not happen; something went wrong
@@ -364,6 +366,16 @@ angular.module('ndexServiceApp')
 
             ndexNavigation.networkInfoModal(network);
         };
+
+
+        self.buildShareableNetworkURL = function(accessKey, networkUUID) {
+            return self.getCurrentServerURL() + "network/" + networkUUID + "?accesskey=" + accessKey;
+        };
+
+        self.buildShareableNetworkSetURL = function(accessKey, networkSetUUID) {
+            return self.getCurrentServerURL() + "networkset/" + networkSetUUID + "?accesskey=" + accessKey;
+        };
+
 
     }
 ]);

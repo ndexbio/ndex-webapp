@@ -46,10 +46,15 @@
             </div>
 
             <div class="wrapLongLine" ng-if="networkSetController.isSetOwner">
-                <strong>Share URL Status: </strong>
+                <strong>Share URL: </strong>
                 <span ng-style="networkSetController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
                     {{networkSetController.networkSetShareableURL ? 'Active' : 'Inactive'}}
                 </span>
+                <button type="button" ng-disabled="!networkSetController.networkSetShareableURL"
+                        ngclipboard data-clipboard-text="{{networkSetController.networkSetShareableURL}}"
+                        ng-click="networkSetController.showURLInClipboardMessage()"
+                        class="btn btn-success btn-xs">Copy URL
+                </button>
             </div>
 
             <div class="btn-group btn-group-vertical buttonWithMarginBottom" ng-if="networkSetController.isLoggedInUser">
