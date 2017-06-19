@@ -785,7 +785,6 @@ angular.module('ndexServiceApp')
                             }
                         });
 
-                        console.log(node_default_mappings)
                     } else if (elementType === 'edges:default') {
 
                         var defaultEdgeProperties = {};
