@@ -438,7 +438,7 @@ ndexApp.controller('networkSetController',
                 if (action == 'enable') {
                     networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
                     networkSetController.networkSetShareableURL =
-                        uiMisc.buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
+                        buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
 
                 } else {
                     networkSetController.networkSetShareableURLLabel = "Activate Share URL";

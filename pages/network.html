@@ -230,6 +230,18 @@
                                 {{networkController.privilegeLevel}}<br/>
                             </span>
 
+                            <div class="wrapLongLine" ng-if="networkController.isNetworkOwner">
+                                <strong>Share URL: </strong>
+                                <span ng-style="networkController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
+                                    {{networkController.networkSetShareableURL ? 'Active' : 'Inactive'}}
+                                </span>
+                                <button type="button" ng-disabled="!networkController.networkSetShareableURL"
+                                        ngclipboard data-clipboard-text="{{networkController.networkSetShareableURL}}"
+                                        ng-click="networkController.showURLInClipboardMessage()"
+                                        class="btn btn-success btn-xs">Copy URL
+                                </button>
+                            </div>
+
                             <span ng-show="networkController.hasMultipleSubNetworks()" style="color:red">
                                 <span class="networkPropertyName">Warning: </span>
                                 This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}}

@@ -699,12 +699,10 @@ ndexServiceApp.factory('ndexService',
                 // The $http timeout property takes a deferred value that can abort AJAX request
                 var deferredAbort = $q.defer();
 
+                var url = "/network/" + networkId + "/summary?setAuthHeader=false";
 
-                //var url = "/network/" + networkId; // + "/summary?setAuthHeader=false";
-
-                var url = "/network/" + networkId + "/summary";
                 if (accesskey) {
-                    url = url + "?accesskey=" + accesskey;
+                    url = url + "&accesskey=" + accesskey;
                 };
 
                 var config = ndexConfigs.getGetConfigV2(url, null);

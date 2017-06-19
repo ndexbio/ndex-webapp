@@ -75,6 +75,9 @@ ndexApp.controller('networkController',
 
             networkController.networkSets = [];
 
+            networkController.isNetworkOwner = false;
+
+
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroudColor = function () {
@@ -2026,6 +2029,36 @@ ndexApp.controller('networkController',
                     );
             };
 
+            networkController.showURLInClipboardMessage = function() {
+
+                var message =
+                    "The URL for this network was copied to the clipboard. \n" +
+                    "To paste it using keyboard, press Ctrl-V. \n" +
+                    "To paste it using mouse, Right-Click and select Paste.";
+
+                alert(message);
+            };
+
+            networkController.getStatusOfShareableURL = function() {
+                ndexService.getAccessKeyOfNetworkV2(networkExternalId,
+                    function(data) {
+
+                        if (!data) {
+                            // empty string - access is deactivated
+                            networkController.networkSetShareableURL = null;
+                        } else if (data['accessKey']) {
+                            // received  data['accessKey'] - access is enabled
+                            networkController.networkSetShareableURL =
+                                uiMisc.buildShareableNetworkURL(data['accessKey'], networkExternalId);
+                        } else {
+                            // this should not happen; something went wrong; access deactivated
+                            networkController.networkSetShareableURL = null;
+                        };
+                    },
+                    function(error) {
+                        console.log("unable to get access key for network " + networkExternalId);
+                    });
+            };
 
 
             var initialize = function () {
@@ -2095,6 +2128,12 @@ ndexApp.controller('networkController',
                                 function(data, status) {
                                     ;
                                 });
+
+                            if (networkController.isLoggedInUser && (network['ownerUUID'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                                networkController.isNetworkOwner = true;
+                                networkController.getStatusOfShareableURL();
+                            };
+
                         }
                     )
                     .error(
