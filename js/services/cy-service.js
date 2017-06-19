@@ -772,11 +772,20 @@ angular.module('ndexServiceApp')
                         _.forEach(vpElement.mappings, function (mapping, vp) {
                             //console.log(mapping);
                             //console.log('VP = ' + vp);
-                            elementType = 'node';
-                            var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                            node_default_mappings = node_default_mappings.concat(styles);
+                            // need to check if the nodeSizedLocked is true for NODE_HEIGHT, NODE_WIDTH, and NODE_SIZE
+                            if ( !((vp ==='NODE_HEIGHT' || vp ==='NODE_HEIGHT')
+                                       && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'true') &&
+
+                                !(vp ==='NODE_SIZE' &&( !vpElement.dependencies.nodeSizeLocked || (vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'false')))
+                            ) {
+
+                                elementType = 'node';
+                                var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
+                                node_default_mappings = node_default_mappings.concat(styles);
+                            }
                         });
 
+                        console.log(node_default_mappings)
                     } else if (elementType === 'edges:default') {
 
                         var defaultEdgeProperties = {};
