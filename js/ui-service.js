@@ -81,8 +81,18 @@
 
                             $scope.network = network;
 
-                            $scope.close = function() {
+                            $scope.close = function () {
                                 $modalInstance.dismiss();
+                            };
+
+                            $scope.showURLInClipboardMessage = function () {
+
+                                var message =
+                                    "The URL for this network was copied to the clipboard. \n" +
+                                    "To paste it using keyboard, press Ctrl-V. \n" +
+                                    "To paste it using mouse, Right-Click and select Paste.";
+
+                                alert(message);
                             };
                         }
                     });
@@ -99,6 +109,16 @@
 
                             $scope.close = function() {
                                 $modalInstance.dismiss();
+                            };
+
+                            $scope.showURLInClipboardMessage = function() {
+
+                                var message =
+                                    "The URL for this network set was copied to the clipboard. \n" +
+                                    "To paste it using keyboard, press Ctrl-V. \n" +
+                                    "To paste it using mouse, Right-Click and select Paste.";
+
+                                alert(message);
                             };
                         }
                     });
@@ -277,9 +297,7 @@
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
 
-                //$scope.networkSet = {};
                 $scope.text  = $attrs.triggerEditNetworkSetModal;
-                $scope.title = $attrs.triggerEditNetworkSetModal;
 
                 var networkSetId = $scope.networkSetController.identifier;
 
@@ -289,6 +307,8 @@
                     $scope.networkSet['name']        = $scope.networkSetController.displayedSet.name;
                     $scope.networkSet['description'] = $scope.networkSetController.displayedSet.description;
                     $scope.networkSet['properties']  = {reference: ""};
+
+                    $scope.title = $attrs.triggerEditNetworkSetModal + ' ' +  $scope.networkSet['name'];
 
                     if ($scope.networkSetController.displayedSet['properties'] &&
                         $scope.networkSetController.displayedSet['properties']['reference']) {
@@ -325,7 +345,8 @@
                             $scope.networkSetController.displayedSet['properties'] =
                                     {reference: $scope.networkSet['properties']['reference']};
 
-                            ndexService.getNetworkSetV2(networkSetId,
+                            var accessKey = null;
+                            ndexService.getNetworkSetV2(networkSetId, accessKey,
                                 function (networkSetInformation) {
                                     var networkUUIDs = networkSetInformation["networks"];
                                     $scope.networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
@@ -349,37 +370,37 @@
         }
     });
 
-
-    /*
-    uiServiceApp.directive('triggerDeleteNetworkSetModal', function() {
+    uiServiceApp.directive('triggerShareNetworkSetModal', function() {
         return {
             scope: {
                 networkSetController: '=',
             },
             restrict: 'A',
-            templateUrl: 'pages/directives/editNetworkSetModal.html',
+            templateUrl: 'pages/directives/shareNetworkSetModal.html',
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
 
                 //$scope.networkSet = {};
-                $scope.text  = $attrs.triggerEditNetworkSetModal;
-                $scope.title = $attrs.triggerEditNetworkSetModal;
+                $scope.text  = $attrs.triggerShareNetworkSetModal;
+                //$scope.title = $attrs.triggerShareNetworkSetModal;
 
                 var networkSetId = $scope.networkSetController.identifier;
 
                 $scope.openMe = function() {
                     $scope.networkSet = {};
 
-                    $scope.networkSet['name']        = $scope.networkSetController.displayedSet.name;
-                    $scope.networkSet['description'] = $scope.networkSetController.displayedSet.description;
+                    $scope.title = $attrs.triggerShareNetworkSetModal + ' ' +  $scope.networkSetController.displayedSet.name;
+
+                    $scope.networkSetShareableURL      = $scope.networkSetController.networkSetShareableURL;
+                    $scope.networkSetShareableURLLabel = $scope.networkSetController.networkSetShareableURLLabel;
 
                     modalInstance = $modal.open({
-                        templateUrl: 'edit-network-set.html',
+                        templateUrl: 'share-network-set.html',
                         scope: $scope
                     });
                 };
 
-                $scope.cancel = function() {
+                $scope.close = function() {
                     modalInstance.dismiss();
                     delete $scope.errors;
                     $scope.networkSet = {};
@@ -388,32 +409,29 @@
 
                 $scope.isProcessing = false;
 
-                $scope.submit = function() {
+                $scope.switchShareableURL = function() {
                     if ($scope.isProcessing)
                         return;
                     $scope.isProcessing = true;
 
-                    ndexService.updateNetworkSetV2(networkSetId, $scope.networkSet,
-                        function(data){
-                            // success; update name and description in controller
-                            $scope.networkSetController.displayedSet.name = $scope.networkSet['name'];
-                            $scope.networkSetController.displayedSet.description = $scope.networkSet['description'];
-
-                            $scope.cancel();
+                    $scope.networkSetController.switchShareableURL(
+                        function() {
+                            $scope.networkSetShareableURL      = $scope.networkSetController.networkSetShareableURL;
+                            $scope.networkSetShareableURLLabel = $scope.networkSetController.networkSetShareableURLLabel;
                         },
-                        function(error){
-                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
-                                $scope.errors = "Network Set with name " + $scope.networkSet.networkSetName + " already exists.";
-                            } else {
-                                $scope.errors = error.data.message;
-                            }
-                            $scope.isProcessing = false;
+                        function() {
+
                         });
+
+                    $scope.isProcessing = false;
+                };
+
+                $scope.showURLInClipboardMessage = function() {
+                    $scope.networkSetController.showURLInClipboardMessage();
                 };
             }
         }
     });
-    */
 
     //----------------------------------------------------
     //              Elements
@@ -700,9 +718,8 @@
                                                 //$scope.main.serverIsDown = true;
                                                 $scope.isProcessing = false;
                                             });
-                                        $scope.closeModal();
                                     };
-                                    
+                                    delete $scope.progress;
                                     $scope.errors = error.message;
                                 });
                         };
@@ -2561,7 +2578,7 @@
                             var userName = userCredentials['userName'];
                             var externalId = userCredentials['externalId'];
 
-                            ndexUtility.setUserCredentials(userName, externalId, $scope.change.newPassword);
+                            ndexUtility.setUserPassword($scope.change.newPassword);
                             modalInstance.close();
                             modalInstance = null;
                             $scope.isProcessing = false;

@@ -1,0 +1,67 @@
+<span ng-click="openMe()">{{text}}</span>
+
+<script type="text/ng-template" id="share-network-set.html">
+    <div class='modal-content'>
+        <form class="form-horizontal" name="editNetworkSetForm" role="form" ng-submit='submit()'>
+
+            <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="form-group" ng-if="networkSetShareableURL">
+
+                    <div class="col-sm-12" style="padding-bottom:1em;">
+                        <h5><strong>Anyone with the link can view this network set</strong></h5>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control" readonly value="{{networkSetShareableURL}}">
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label  class="col-sm-4 control-label"
+                            style="font-size: 1.2em;">Share URL Status:
+                    </label>
+
+                    <span class="col-sm-8">
+                        <p class="form-control-static" ng-if="networkSetShareableURL"
+                           style="font-size: 1.2em; color: green">Active
+                        </p>
+                        <p class="form-control-static"  ng-if="!networkSetShareableURL"
+                           style="font-size: 1.2em">Inactive
+                        </p>
+                    </span>
+
+                </div>
+
+
+                <div ng-if="errors" class='text-danger'>
+                    <strong>
+                        {{errors}}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <a type='cancel' class="btn btn-default" ng-click="switchShareableURL()">{{networkSetShareableURLLabel}}</a>
+
+                <button id="copyButtonId" ng-hide="!networkSetShareableURL" type="button" class="btn btn-default"
+                        ng-click="showURLInClipboardMessage()"
+                        ngclipboard data-clipboard-text="{{networkSetShareableURL}}">
+                    Copy URL
+                </button>
+
+                <a type='cancel' class="btn btn-default" ng-click="close()">Close</a>
+
+            </div>
+
+        </form>
+    </div>
+</script>

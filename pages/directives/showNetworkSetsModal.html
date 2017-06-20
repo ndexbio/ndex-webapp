@@ -43,11 +43,10 @@
             <strong><span style="color: green; font-size: 1.3em" ng-bind-html="progress"></span></strong>
         </span>
 
-      <div class='text-danger'>
-        <strong>
-          {{errors}}
-        </strong>
-      </div>
+        <span class='text-danger'>
+           <br>
+           <strong><span style="font-size: 1.3em" ng-bind-html="errors"></span></strong>
+        </span>
 
     </div>
         
@@ -58,12 +57,11 @@
                 ng-disabled="noSetsSelected() || isProcessing">Add to Selected Sets
         </button>
 
-        <button class="btn btn-primary"
+        <a class="btn btn-primary"
             my-account-controller='myAccountController'
             signal-new-set-creation='true'
             trigger-create-network-set-modal="Create Network Set">
-                Create Network Set
-        </button>
+        </a>
 
     </div>
   </form>

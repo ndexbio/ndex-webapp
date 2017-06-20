@@ -43,6 +43,7 @@ ndexApp.controller('userController',
 
             $scope.enableUpgradePermissionButton = false;
 
+            userController.networkSetsOwnerOfPage = [];
             userController.networkSets = [];
 
             $scope.selectedNetworkRowsUids = {};
@@ -195,13 +196,12 @@ ndexApp.controller('userController',
 
 
             $scope.showNetworkTable = function() {
-                return (userController.networkSearchResults.length > 0) ||
-                    (userController.networkSets.length > 0);
+                return (userController.networkSearchResults.length > 0) || (userController.networkSetsOwnerOfPage.length > 0);
             };
 
 
             $scope.showSetInfo = function(setId) {
-                var networkSet = _.find(userController.networkSets, {externalId:setId});
+                var networkSet = _.find( userController.networkSetsOwnerOfPage, {externalId:setId});
 
                 // make a copy of network summary object since we are going to modify it
                 var set = JSON.parse(JSON.stringify(networkSet));
@@ -313,7 +313,7 @@ ndexApp.controller('userController',
             {
                 $scope.networkGridOptions.data = [];
 
-                _.forEach(userController.networkSets, function(networkSet) {
+                _.forEach( userController.networkSetsOwnerOfPage, function(networkSet) {
                     userController.addNetworkSetToTable(networkSet);
                 });
 
@@ -455,16 +455,47 @@ ndexApp.controller('userController',
                         });
             };
 
-            userController.getAllNetworkSetsOwnedByUser = function()
+            userController.getAllNetworkSetsOwnedByVisitingUser = function()
             {
-                ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
+                // get all network sets owned by logged in user who came to this page
+                if (userController.isLoggedInUser) {
 
-                    function (networkSets) {
-                        userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
-                    },
-                    function (error, status) {
-                        console.log("unable to get network sets");
-                    });
+                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.loggedInIdentifier,
+
+                        function (networkSets) {
+                            userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                        },
+                        function (error, status) {
+                            console.log("unable to get network sets");
+                        });
+                };
+            };
+
+            userController.getAllNetworkSetsOwnedByUser = function(successHandler, errorHandler)
+            {
+                if (userController.isLoggedInUser && (identifier != userController.loggedInIdentifier)) {
+
+                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.loggedInIdentifier,
+
+                        function (networkSets) {
+                            userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                            successHandler(userController.networkSets[0]);
+                        },
+                        function (error, status) {
+                            console.log("unable to get network sets");
+                            errorHandler(error, status);
+                        });
+
+                } else {
+
+                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
+                        function (networkSets) {
+                            userController.networkSetsOwnerOfPage = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                        },
+                        function (error, status) {
+                            console.log("unable to get network sets");
+                        });
+                };
             };
 
             userController.getIDsOfSelectedNetworks = function ()
@@ -695,6 +726,9 @@ ndexApp.controller('userController',
                     {
                         userController.displayedUser = user;
 
+                        // get all network sets owned by user visiting this page
+                        userController.getAllNetworkSetsOwnedByVisitingUser();
+
                         cUser = user;
 
                         // get groups. Server-side API requires authentication,
@@ -702,10 +736,7 @@ ndexApp.controller('userController',
                         if (userController.isLoggedInUser) {
                             var member = null;
                             userController.getUserGroupMemberships(member);
-                        }
-
-                        // get networks
-                        //userController.submitNetworkSearch();
+                        };
 
                         // get networks
                         userController.getUserShowcaseNetworks(
@@ -713,9 +744,9 @@ ndexApp.controller('userController',
                                 ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
 
                                     function (networkSets) {
-                                        userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                                        userController.networkSetsOwnerOfPage = _.orderBy(networkSets, ['modificationTime'], ['desc']);
 
-                                        _.forEach(userController.networkSets, function(networkSet) {
+                                        _.forEach( userController.networkSetsOwnerOfPage, function(networkSet) {
 
                                             if (networkSet['showcased']) {
                                                 userController.addNetworkSetToTable(networkSet);
@@ -730,8 +761,6 @@ ndexApp.controller('userController',
                                 console.log("unable to get showcased networks for user");
                             }
                         );
-
-                        //userController.getAllNetworkSetsOwnedByUser();
                     })
                 };
 

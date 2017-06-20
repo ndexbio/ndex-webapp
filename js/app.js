@@ -26,11 +26,16 @@ ndexApp.service('authInterceptor', function($q, $rootScope, $location) {
             return response || $q.when(response);
         },
         responseError: function (response) {
+            /*
             if (response.status == 401){
                 //$location.path('/signIn').search('returnTo', $location.path());
                 return $q.reject(response);
             }
-            //return $q.reject(response);
+            else if (response.status == 409) {
+                return $q.reject(response)
+            }
+            */
+            return $q.reject(response);
         }
     };
 
@@ -108,7 +113,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'groupController'
         })
 
-        // route for the group page
+        // route for the Network Set
         .when('/networkSet/:identifier', {
             templateUrl: 'pages/networkSet.html',
             controller: 'networkSetController'
@@ -193,7 +198,9 @@ var checkIfUserHasAccessToTheClickedNetwork =
      var loggedInUserId =
         (loggedInUser && loggedInUser['externalId']) ? loggedInUser['externalId'] : null;
      var networkUUID =  $route.current.params.identifier;
-    
+
+     var accessKey = ($route.current.params && $route.current.params['accesskey']) ?
+        $route.current.params['accesskey'] : null;
 
      var deferred = $q.defer();
 
@@ -202,7 +209,7 @@ var checkIfUserHasAccessToTheClickedNetwork =
          // user logged in and is trying to access a network ... check if (s)he has
          // permissions to do so (has at least READ access on this network)
          
-         (ndexService.getNetworkSummaryV2(networkUUID))
+         (ndexService.getNetworkSummaryV2(networkUUID, accessKey))
 
              .success(
                  function (network) {
@@ -231,7 +238,7 @@ var checkIfUserHasAccessToTheClickedNetwork =
          // this may execute when an owner of a private network sent a link to this network to
          // another user  who tries to access this network without being logged in (anonymously)
 
-         (ndexService.getNetworkSummaryV2(networkUUID))
+         (ndexService.getNetworkSummaryV2(networkUUID, accessKey))
 
              .success(
                  function (network) {

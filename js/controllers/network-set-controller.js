@@ -14,6 +14,7 @@ ndexApp.controller('networkSetController',
     var networkSetController = $scope.networkSetController;
 
     networkSetController.identifier = identifier;
+    networkSetController.accesskey = $routeParams.accesskey;
 
     // networks
     networkSetController.networkSearchResults = [];
@@ -23,57 +24,87 @@ ndexApp.controller('networkSetController',
 
     networkSetController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
 
+    networkSetController.isSetOwner = false;
+
+
     networkSetController.displayedSet = {};
 
+    networkSetController.networkSets = [];
 
-    //              scope functions
-    // called on Networks belonging to group displayed on page
+
+    networkSetController.networkSetShareableURL = null;
+    networkSetController.networkSetShareableURLLabel = null;
+    networkSetController.networkSetOwnerId = null;
+
+
 
     networkSetController.getNetworksOfNetworkSet = function() {
 
-        ndexService.getNetworkSetV2(networkSetController.identifier,
-            
-                function (networkSetInformation) {
-                    var networkUUIDs = networkSetInformation["networks"];
-
-                    networkSetController.displayedSet['name'] = networkSetInformation['name'];
-
-                    var desc = (networkSetInformation['description']) ? networkSetInformation['description'].trim() : "";
-                    if (!desc) {
-                        // sometime description contains string starting with new line followed by blank spaces ("\n   ").
-                        // To prevent it, we set description to null thus eliminating it from showing.
-                        networkSetController.displayedSet['description'] = null;
-                    } else {
-                        networkSetController.displayedSet['description'] = networkSetInformation['description'];
-                    };
-
-                    networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
-                    networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
-                    networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
-
-                    if (networkSetInformation['properties'] &&
-                        networkSetInformation['properties']['reference']) {
-                        networkSetController.displayedSet['properties'] =
-                            {reference: networkSetInformation['properties']['reference']};
-                    };
-                    
-                    ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
-                        function (networkSummaries) {
-                            networkSetController.networkSearchResults = networkSummaries;
-                            populateNetworkTable();
-                        },
-                        function (error) {
-                            if (error) {
-                                displayErrorMessage(error);
-                            };
-                        });
-
+        // need network sets owned by logged in user in order to show them in case user
+        // will want to add networks to his/her sets; thus calling networkSetController.getAllNetworkSetsOwnedByUser ...
+        if (networkSetController.isLoggedInUser) {
+            networkSetController.getAllNetworkSetsOwnedByUser(
+                // success handler
+                function(data) {
+                    ; //networkSetController.getNetworksOfNetworkSet();
                 },
-                function (error) {
-                    if (error) {
-                        displayErrorMessage(error);
-                    }
+                function(data, status) {
+                    ; //networkSetController.getNetworksOfNetworkSet();
                 });
+        }
+
+        ndexService.getNetworkSetV2(networkSetController.identifier, networkSetController.accesskey,
+            
+            function (networkSetInformation) {
+                var networkUUIDs = networkSetInformation["networks"];
+
+                networkSetController.networkSetOwnerId = networkSetInformation["ownerId"];
+                networkSetController.displayedSet['name'] = networkSetInformation['name'];
+
+                var desc = (networkSetInformation['description']) ? networkSetInformation['description'].trim() : "";
+                if (!desc) {
+                    // sometime description contains string starting with new line followed by blank spaces ("\n   ").
+                    // To prevent it, we set description to null thus eliminating it from showing.
+                    networkSetController.displayedSet['description'] = null;
+                } else {
+                    networkSetController.displayedSet['description'] = networkSetInformation['description'];
+                };
+
+                networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
+                networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
+                networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
+
+                if (networkSetInformation['properties'] &&
+                    networkSetInformation['properties']['reference']) {
+                    networkSetController.displayedSet['properties'] =
+                        {reference: networkSetInformation['properties']['reference']};
+                };
+
+                if (networkSetController.isLoggedInUser &&
+                    (networkSetInformation['ownerId'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                    networkSetController.isSetOwner = true;
+
+                    // status of the Shareable URl is shown in the Share Set modal that pops up after
+                    // selecting Share button. This button is only shown to the owner of the set.
+                    networkSetController.getStatusOfShareableURL();
+                };
+
+                ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, networkSetController.accesskey,
+                    function (networkSummaries) {
+                        networkSetController.networkSearchResults = networkSummaries;
+                        populateNetworkTable();
+                    },
+                    function (error) {
+                        if (error) {
+                            displayErrorMessage(error);
+                        };
+                    });
+            },
+            function (error) {
+                if (error) {
+                    displayErrorMessage(error);
+                }
+            });
     };
 
     //table
@@ -287,6 +318,35 @@ ndexApp.controller('networkSetController',
         return;
     };
 
+
+    networkSetController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
+        var userId = ndexUtility.getLoggedInUserExternalId();
+
+        ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+            function (networkSets) {
+                networkSetController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                successHandler(networkSetController.networkSets[0]);
+            },
+            function (error, status) {
+                networkSetController.networkSets = [];
+                console.log("unable to get network sets");
+                errorHandler(error, status);
+            });
+    };
+
+    networkSetController.getIDsOfSelectedNetworks = function () {
+        var selectedIds = [];
+        var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+        _.forEach(selectedNetworksRows, function(row) {
+            if (row.Status.toLowerCase() != "set") {
+                selectedIds.push(row['externalId']);
+            };
+        });
+
+        return selectedIds;
+    };
+
     networkSetController.deleteNetworkSet = function(networkSetId) {
         var noOfNetworksInThisSet = networkSetController.networkSearchResults.length;
         var title = 'Delete This Network Set';
@@ -366,13 +426,73 @@ ndexApp.controller('networkSetController',
 
         return;
     };
+
+
+    networkSetController.switchShareableURL = function(successHandler, errorHandler) {
+
+        var action = (networkSetController.networkSetShareableURL) ? "disable" : "enable";
+
+        ndexService.disableOrEnableAccessKeyOnNetworkSetV2(networkSetController.identifier, action,
+            function(data, status, headers, config, statusText) {
+
+                if (action == 'enable') {
+                    networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
+                    networkSetController.networkSetShareableURL =
+                        uiMisc.buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
+
+                } else {
+                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
+                    networkSetController.networkSetShareableURL = null;
+                };
+                successHandler();
+            },
+            function(error) {
+                console.log("unable to get access key for network set " + networkSetController.identifier);
+                errorHandler();
+            });
+    };
+
+    networkSetController.showURLInClipboardMessage = function() {
+
+        var message =
+            "The URL for this network set was copied to the clipboard. \n" +
+            "To paste it using keyboard, press Ctrl-V. \n" +
+            "To paste it using mouse, Right-Click and select Paste.";
+
+        alert(message);
+    };
+
+    networkSetController.getStatusOfShareableURL = function() {
+        ndexService.getAccessKeyOfNetworkSetV2(networkSetController.identifier,
+            function(data) {
+
+                if (!data) {
+                    // empty string - access is deactivated
+                    networkSetController.networkSetShareableURL = null;
+                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
+
+                } else if (data['accessKey']) {
+                    // received  data['accessKey'] - access is enabled
+                    networkSetController.networkSetShareableURL =
+                        uiMisc.buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
+                    networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
+
+                } else {
+                    // this should not happen; something went wrong; access deactivated
+                    networkSetController.networkSetShareableURL = null;
+                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
+                };
+            },
+            function(error) {
+                console.log("unable to get access key for network set " + networkSetController.identifier);
+            });
+    };
             
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
-    //----------------------------------------------------------------------------
-    networkSetController.isLoggedIn = (ndexUtility.getLoggedInUserAccountName() != null);
-
+    //------------------------------------------------------------------------------------
 
     networkSetController.getNetworksOfNetworkSet();
+
     //------------------------------------------------------------------------------------//
 }]);

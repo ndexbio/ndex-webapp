@@ -45,29 +45,59 @@
                 <strong>Networks: </strong><span ng-bind-html="networkSetController.displayedSet.networks"></span>
             </div>
 
+            <div class="wrapLongLine" ng-if="networkSetController.isSetOwner">
+                <strong>Share URL: </strong>
+                <span ng-style="networkSetController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
+                    {{networkSetController.networkSetShareableURL ? 'Active' : 'Inactive'}}
+                </span>
+                <button type="button" ng-disabled="!networkSetController.networkSetShareableURL"
+                        ngclipboard data-clipboard-text="{{networkSetController.networkSetShareableURL}}"
+                        ng-click="networkSetController.showURLInClipboardMessage()"
+                        class="btn btn-success btn-xs">Copy URL
+                </button>
+            </div>
 
             <div class="btn-group btn-group-vertical buttonWithMarginBottom" ng-if="networkSetController.isLoggedInUser">
-                <hr>
-                <h5><strong>Actions:</strong></h5>
+                <div ng-if="networkSetController.isSetOwner">
+                    <hr>
+                    <h5><strong>Actions:</strong></h5>
 
-                <span>
-                    <a class="btn btn-primary customButtonWidth"
-                       network-set-controller='networkSetController'
-                       trigger-edit-network-set-modal="Edit Network Set">
-                    </a>
-                </span>
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
+                           network-set-controller='networkSetController'
+                           trigger-edit-network-set-modal="Edit Network Set">
+                        </a>
+                    </span>
 
-                <span>
-                    <a class="btn btn-primary customButtonWidth"
-                       ng-click="networkSetController.deleteNetworkSet(networkSetController.identifier)">
-                       Delete Network Set
-                    </a>
-                </span>
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
+                           network-set-controller='networkSetController'
+                           trigger-share-network-set-modal="Share">
+                        </a>
+                    </span>
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
+                           ng-click="networkSetController.deleteNetworkSet(networkSetController.identifier)">
+                           Delete Network Set
+                        </a>
+                    </span>
+
+                </div>
 
                 <hr>
                 <h5><strong>Bulk Actions:</strong></h5>
 
-                <span>
+
+                <span ng-if="!networkSetController.isSetOwner">
+                    <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0">
+                        <show-network-sets-modal my-account-controller='networkSetController'>
+                             Add To Network Set
+                        </show-network-sets-modal>
+                    </a>
+                </span>
+
+                <span ng-if="networkSetController.isSetOwner">
                     <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0"
                        ng-click="networkSetController.confirmRemoveSelectedNetworksFromSet()">
                         Remove From Set

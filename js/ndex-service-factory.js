@@ -14,7 +14,7 @@ ndexServiceApp.factory('ndexService',
             var factory = {};
 
             var ndexServerURI = config.ndexServerUriV2;
-            var ndexServerURIV2 = config.ndexServerUriV2;            
+            var ndexServerURIV2 = config.ndexServerUriV2;
 
             factory.getNdexServerUri = function()
             {
@@ -692,15 +692,19 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getNetworkSummaryV2 = function (networkId) {
+            factory.getNetworkSummaryV2 = function (networkId, accesskey) {
                 // Server API: Get Network Summary
-                // GET /network/{networkid}/summary
+                // GET /network/{networkid}/summary?accesskey={accessKey}
 
                 // The $http timeout property takes a deferred value that can abort AJAX request
                 var deferredAbort = $q.defer();
 
-
                 var url = "/network/" + networkId + "/summary?setAuthHeader=false";
+
+                if (accesskey) {
+                    url = url + "&accesskey=" + accesskey;
+                };
+
                 var config = ndexConfigs.getGetConfigV2(url, null);
                 config.timeout = deferredAbort.promise;
 
@@ -868,7 +872,24 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getGetConfigV2(url, null);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
-            }
+            };
+
+            factory.getAccessKeyOfNetworkV2 = function(networkId, successHandler, errorHandler) {
+                // Server API: Get Access Key of Network
+                // GET /network/{networkid}/accesskey
+                var url = "/network/" + networkId + "/accesskey";
+                var config = ndexConfigs.getGetConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
+            factory.disableOrEnableAccessKeyOnNetworkV2 = function(networkId, action, successHandler, errorHandler) {
+                // Server API: Disable/enable Access Key on Network
+                // PUT /{networkid}/accesskey?action=disable|enable
+                var url = "/network/" + networkId + "/accesskey?action=" + action;
+                var config = ndexConfigs.getPutConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
 
             /*---------------------------------------------------------------------*
              * Network Sets
@@ -903,11 +924,15 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getNetworkSetV2 = function(networkSetId, successHandler, errorHandler) {
+            factory.getNetworkSetV2 = function(networkSetId, accesskey, successHandler, errorHandler) {
                 // API: Get a Network Set
-                // GET /networkset/{networkSetId}
+                // GET /networkset/{networkSetId}?accesskey={accesskey}
 
                 var url = "/networkset/" + networkSetId;
+
+                if (accesskey) {
+                    url = url + "?accesskey=" + accesskey;
+                };
 
                 var config = ndexConfigs.getGetConfigV2(url, null);
 
@@ -933,6 +958,25 @@ ndexServiceApp.factory('ndexService',
 
                 var config = ndexConfigs.getDeleteConfigV2(url, networkIds);
 
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.getAccessKeyOfNetworkSetV2 = function(networkSetId, successHandler, errorHandler) {
+                // API: Get Access Key of a  Network Set
+                // GET /networkset/{networkSetId}/accesskey
+
+                var url = "/networkset/" + networkSetId + "/accesskey";
+
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.disableOrEnableAccessKeyOnNetworkSetV2 = function(networkSetId, action, successHandler, errorHandler) {
+                // Server API: Disable/enable Access Key on Network Set
+                // PUT /{networksetid}/accesskey?action=disable|enable
+                var url = "/networkset/" + networkSetId + "/accesskey?action=" + action;
+                var config = ndexConfigs.getPutConfigV2(url, null);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
@@ -1022,13 +1066,16 @@ ndexServiceApp.factory('ndexService',
                 return request;
             }
 
-            factory.getNetworkSummariesByUUIDsV2 = function(networksUUIDsList, successHandler, errorHandler) {
+            factory.getNetworkSummariesByUUIDsV2 = function(networksUUIDsList, accesskey, successHandler, errorHandler) {
                 // Server API: Get Network Summaries by UUIDs
-                // POST /network/summaries
+                // POST /network/summaries?accesskey={accesskey}
 
                 var url = "/batch/network/summary";
-                var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
+                if (accesskey) {
+                    url = url + "?accesskey=" + accesskey;
+                };
 
+                var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             }
 
@@ -1142,14 +1189,6 @@ ndexServiceApp.factory('ndexUtility', function () {
         return true;
     };
 
-    factory.setUserCredentials = function (accountName, externalId, token) {
-        var loggedInUser = {};
-        loggedInUser.userName = accountName;
-        loggedInUser.token = token;
-        loggedInUser.externalId = externalId;
-        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-    };
-
     factory.getUserCredentials = function () {
         if (factory.checkLocalStorage()) {
             if (localStorage.loggedInUser) {
@@ -1167,20 +1206,21 @@ ndexServiceApp.factory('ndexUtility', function () {
         return null;
     };
 
-    factory.setUserAuthToken = function (token) {
+    factory.setUserPassword = function (password) {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (!loggedInUser) loggedInUser = {};
-        loggedInUser.token = token;
+        loggedInUser.token = password;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
     };
 
-    factory.setUserInfo = function (accountName, firstName, lastName, externalId) {
+    factory.setUserInfo = function (accountName, firstName, lastName, externalId, password) {
         var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (!loggedInUser) loggedInUser = {};
         loggedInUser.userName  = accountName;
         loggedInUser.firstName = firstName;
         loggedInUser.lastName  = lastName;
         loggedInUser.externalId = externalId;
+        loggedInUser.token = password;
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
     };
 

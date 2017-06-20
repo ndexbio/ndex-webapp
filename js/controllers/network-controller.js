@@ -15,6 +15,8 @@ ndexApp.controller('networkController',
             var currentNetworkSummary;
 
             var networkExternalId = $routeParams.identifier;
+            var accesskey = $routeParams.accesskey;
+
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
             $scope.showFooter = false;
@@ -73,11 +75,14 @@ ndexApp.controller('networkController',
 
             networkController.networkSets = [];
 
+            networkController.isNetworkOwner = false;
+
+
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroudColor = function () {
                 networkController.bgColor = '#8fbdd7';
-            }
+            };
 
             var localNetwork = undefined;
 
@@ -95,7 +100,7 @@ ndexApp.controller('networkController',
                     var citationsIDs = localNetwork.edgeCitations[edgeKey];
                     var edgeCitations = getCitations(citationsIDs);
                     showCitations(edgeCitations);
-                }
+                };
             };
 
             $scope.showNodeCitations = function(nodeKey)
@@ -1412,7 +1417,7 @@ ndexApp.controller('networkController',
                 }
             }
 
-            var getNetworkAndDisplay = function (networkId, callback) {
+            var getNetworkAndDisplay = function (networkId, callback, accesskey) {
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
@@ -1430,7 +1435,7 @@ ndexApp.controller('networkController',
                     (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
                     // get sample CX network
                     networkController.isSample = true;
-                    (request2 = networkService.getNetworkSampleV2(networkId) )
+                    (request2 = networkService.getNetworkSampleV2(networkId, accesskey) )
                         .success(
                             function (network) {
                                 callback(network, false);
@@ -1444,7 +1449,7 @@ ndexApp.controller('networkController',
                 } else {
                     // get complete CX stream and build the CX network object.
                     networkController.isSample = false;
-                    (request2 = networkService.getCompleteNetworkInCXV2(networkId) )
+                    (request2 = networkService.getCompleteNetworkInCXV2(networkId, accesskey) )
                         .success(
                             function (network) {
                                 callback(network, false);
@@ -2024,6 +2029,36 @@ ndexApp.controller('networkController',
                     );
             };
 
+            networkController.showURLInClipboardMessage = function() {
+
+                var message =
+                    "The URL for this network was copied to the clipboard. \n" +
+                    "To paste it using keyboard, press Ctrl-V. \n" +
+                    "To paste it using mouse, Right-Click and select Paste.";
+
+                alert(message);
+            };
+
+            networkController.getStatusOfShareableURL = function() {
+                ndexService.getAccessKeyOfNetworkV2(networkExternalId,
+                    function(data) {
+
+                        if (!data) {
+                            // empty string - access is deactivated
+                            networkController.networkSetShareableURL = null;
+                        } else if (data['accessKey']) {
+                            // received  data['accessKey'] - access is enabled
+                            networkController.networkSetShareableURL =
+                                uiMisc.buildShareableNetworkURL(data['accessKey'], networkExternalId);
+                        } else {
+                            // this should not happen; something went wrong; access deactivated
+                            networkController.networkSetShareableURL = null;
+                        };
+                    },
+                    function(error) {
+                        console.log("unable to get access key for network " + networkExternalId);
+                    });
+            };
 
 
             var initialize = function () {
@@ -2033,7 +2068,7 @@ ndexApp.controller('networkController',
 
                 // get network summary
                 // keep a reference to the promise
-                networkService.getNetworkSummaryFromNdexV2(networkExternalId)
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId, accesskey)
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
@@ -2058,9 +2093,10 @@ ndexApp.controller('networkController',
                                 if (network.visibility == 'PUBLIC'
                                     || networkController.isAdmin
                                     || networkController.canEdit
-                                    || networkController.canRead) {
+                                    || networkController.canRead
+                                    || accesskey) {
                                             resetBackgroudColor();
-                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas,accesskey);
                                 }
                             });
 
@@ -2092,6 +2128,12 @@ ndexApp.controller('networkController',
                                 function(data, status) {
                                     ;
                                 });
+
+                            if (networkController.isLoggedInUser && (network['ownerUUID'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                                networkController.isNetworkOwner = true;
+                                networkController.getStatusOfShareableURL();
+                            };
+
                         }
                     )
                     .error(

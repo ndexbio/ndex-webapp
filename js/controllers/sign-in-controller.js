@@ -22,8 +22,7 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
             ndexService.authenticateUserV2(userName, password,
                  function(data) {
                     sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-                    ndexUtility.setUserCredentials(data.userName, data.externalId, $scope.signIn.password);
-                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId);
+                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
                     $rootScope.$emit('LOGGED_IN');
                     //$location.path("/user/" + data.externalId);
                     $location.path("/myAccount");
@@ -60,6 +59,25 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
             $scope.signIn.newUser = {};
         };
 
+        $scope.$watch("signIn.userName", function () {
+            delete $scope.signIn.message;
+        });
+        $scope.$watch("signIn.password", function () {
+            delete $scope.signIn.message;
+        });
+
+        $scope.$watch("signIn.newUser.firstName", function () {
+            delete $scope.signIn.signUpErrors;
+        });
+        $scope.$watch("signIn.newUser.lastName", function () {
+            delete $scope.signIn.signUpErrors;
+        });
+        $scope.$watch("signIn.newUser.emailAddress", function () {
+            delete $scope.signIn.signUpErrors;
+        });
+        $scope.$watch("signIn.newUser.userName", function () {
+            delete $scope.signIn.signUpErrors;
+        });
         $scope.$watch("signIn.newUser.password", function () {
             delete $scope.signIn.signUpErrors;
         });
@@ -89,8 +107,7 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                         var password  = $scope.signIn.newUser.password;
 
                         sharedProperties.setCurrentUser(newUserId, userName);
-                        ndexUtility.setUserInfo(userName, firstName, lastName, newUserId);
-                        ndexUtility.setUserCredentials(userName, newUserId, password);
+                        ndexUtility.setUserInfo(userName, firstName, lastName, newUserId, password);
 
                         $scope.$emit('LOGGED_IN');
                         $scope.signIn.cancelSignUp();// doesnt really cancel
