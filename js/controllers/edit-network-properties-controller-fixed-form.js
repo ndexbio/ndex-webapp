@@ -39,6 +39,33 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         'rights': {predicateString: "rights", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
         'rightsHolder': {predicateString: "rightsHolder", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
         'tissue': {predicateString: "tissue", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId}
+    };
+
+    editor.scoringLookup = {
+        'author': 10,
+        'disease': 10,
+        'labels': 5,
+        'methods': 10,
+        'organism': 10,
+        'networkType': 10,
+        'rights': 5,
+        'rightsHolder': 5,
+        'tissue': 5,
+        'name': 10,
+        'description': 10,
+        'reference': 10,
+        'version': 10
+    };
+
+    editor.score = 0;
+    $scope.score = 0;
+    $scope.scoreClass = "progress-bar-danger";
+    $scope.mainProperty = {
+        "name": "",
+        "description": "",
+        "reference": "",
+        "version": "",
+        "visibility": "PRIVATE"
     }
 
     editor.buildAttributeDictionary = function() {
@@ -157,6 +184,43 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         }
     }
 
+    editor.updateScore = function() {
+        $scope.score = 0;
+
+        var myElement = angular.element(document.querySelector('#descriptionTextBox'));
+        console.log(myElement);
+
+        for(var i=0; i<editor.propertyValuePairs.length; i++) {
+            var pair = editor.propertyValuePairs[i];
+            var predicateStr = pair.predicateString;
+
+            if (editor.scoringLookup[predicateStr]) {
+                if (pair.value.length > 0) {
+                    $scope.score += editor.scoringLookup[predicateStr];
+                }
+            }
+        }
+
+        for(key in $scope.mainProperty) {
+
+            if (editor.scoringLookup[key]) {
+                if ($scope.mainProperty[key].length > 0) {
+                    $scope.score += editor.scoringLookup[key];
+                }
+            }
+        }
+
+        if($scope.score >= 25 && $scope.score < 50){
+            $scope.scoreClass = "progress-bar-warning";
+        } else if($scope.score >= 50 && $scope.score < 75){
+            $scope.scoreClass = "";
+        } else if($scope.score >= 75){
+            $scope.scoreClass = "progress-bar-success";
+        } else {
+            $scope.scoreClass = "progress-bar-danger";
+        }
+    };
+
     editor.checkIfFormIsValid = function(attributeDictionary) {
 
         var disableSaveChangesButton = false;
@@ -170,7 +234,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
             if(predicateStr === "custom..."){
                 predicateStr = (pair.predicateStringCustom) ? pair.predicateStringCustom : "";
-            };
+            }
 
             if (predicateStr.toLowerCase() === 'reference') {
 
@@ -229,6 +293,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
             var pair = editor.propertyValuePairs[i];
             var labelValue = pair.labelValue;
+            var predicateStr = pair.predicateString;
 
             if (((typeof(pair.predicateString) === 'undefined') || !(pair.predicateString)) &&
                 ((editor.propertyValuePairs.length - 1) != i)) {
@@ -236,6 +301,12 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 disableSaveChangesButton = true;
             }
 
+            //if(editor.scoringLookup[predicateStr]){
+            //    if(pair.value.length > 0){
+            //        $scope.score += editor.scoringLookup[predicateStr];
+            //    }
+            //}
+            editor.updateScore();
 
             // check labelValue (that is prefix:attribute) has been entered more than once
             if ((labelValue in attributeDictionary) && (attributeDictionary[labelValue] > 1)) {
@@ -254,6 +325,16 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             }
         }
 
+        if($scope.score >= 25 && $scope.score < 50){
+            $scope.scoreClass = "progress-bar-warning";
+        } else if($scope.score >= 50 && $scope.score < 75){
+            $scope.scoreClass = "";
+        } else if($scope.score >= 75){
+            $scope.scoreClass = "progress-bar-success";
+        } else {
+            $scope.scoreClass = "progress-bar-danger";
+        }
+
         if ((editor.propertyValuePairs.length == 0) ||
            ((editor.propertyValuePairs.length == 1) && ((typeof (editor.propertyValuePairs[0].predicateString) === 'undefined') ||
                 !(editor.propertyValuePairs[0].predicateString))) )
@@ -265,22 +346,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     }
 
-
-
-
     // these are names used by Solr for indexing.
     // They are found in the server's ndexbio-rest/src/main/resources/solr/ndex-networks/conf/schema.xml
     // under the "Collaborator required index fields" comment
     $scope.namesForSolrIndexing = [
-        "author",
-        "disease",
-        "labels",
-        "methods",
-        "organism",
-        "networkType",
-        "rights",
-        "rightsHolder",
-        "tissue"
+        "custom..."
     ];
 
     //This is for comparison
@@ -305,6 +375,17 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "sourceformat"
     ];
 
+    $scope.namesForCustom = [
+        "author",
+        "disease",
+        "labels",
+        "methods",
+        "organism",
+        "networkType",
+        "rights",
+        "rightsHolder",
+        "tissue"
+    ];
 
     $scope.namesForSolrIndexingDictionary = {};
 
@@ -312,8 +393,12 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         $scope.namesForSolrIndexingDictionary[val] = "";
     });
 
+    $scope.customItem = function (item) {
+        return item.predicateString == 'custom...';
+    };
 
-    editor.save = function() {
+
+            editor.save = function() {
         if( $scope.isProcessing )
             return;
         $scope.isProcessing = true;
@@ -497,6 +582,19 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                 editor.propertyValuePairs = [];
                 editor.hiddenValuePairs = [];
+                $scope.mainProperty.name = network.name;
+                $scope.mainProperty.description = network.description;
+                $scope.mainProperty.reference = network.reference;
+                if(!$scope.mainProperty.reference){
+                    for(var i=0;i<network.properties.length;i++){
+                        if(network.properties[i].predicateString === "reference"){
+                            $scope.mainProperty.reference = network.properties[i].value;
+                        }
+                    }
+
+                }
+                $scope.mainProperty.version = network.version;
+                $scope.mainProperty.visibility = network.visibility;
 
                 // break network properties into two sets: one set is "hidden", it contains
                 // "reserved property names" that every network has (these names are listed in $scope.reservedNames).
@@ -595,6 +693,20 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         function(error){
             editor.errors.push(error)
         });
+
+/*
+    ndexService.getNetworkSummaryV2(networkExternalId)
+        .success(
+            function (network) {
+                editor.currentNetwork = network;
+            }
+        )
+        .error(
+            function (error) {
+                displayErrorMessage(error);
+            }
+        );
+*/
 
     editor.showNameSpaces = (editor.namespaces.length > 0) ? true : false;
 
