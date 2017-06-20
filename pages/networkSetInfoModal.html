@@ -20,26 +20,26 @@
                     <span class="col-sm-8" ng-if="set.showcased" ng-bind-html="set.showcased"></span>
                 </div>
 
-                <div class="row rowWithHalfLineBottomPad">
+                <div class="row rowWithHalfLineBottomPad" ng-if="set.description">
                     <span class="col-sm-3" style="text-align: right" ng-if="set.description"><strong>Description:</strong></span>
                     <span class="col-sm-8" ng-if="set.description" ng-bind-html="set.description"></span>
                 </div>
 
-                <div class="row rowWithHalfLineBottomPad">
+                <div class="row rowWithHalfLineBottomPad" ng-if="set.reference">
                     <span class="col-sm-3" style="text-align: right" ng-if="set.reference"><strong>Reference:</strong></span>
                     <span class="col-sm-8" ng-if="set.reference" ng-bind-html="set.reference"></span>
                 </div>
 
                 <div class="row rowWithHalfLineBottomPad">
-                    <span class="col-sm-3" style="text-align: right" ng-if="set.modificationTime"><strong>Modified:</strong></span>
-                    <span class="col-sm-8" ng-if="set.modificationTime"
+                    <span class="col-sm-3" style="text-align: right"><strong>Modified:</strong></span>
+                    <span class="col-sm-8"
                           ng-bind-html="set.modificationTime | date: 'medium'">
                     </span>
                 </div>
 
                 <div class="row rowWithHalfLineBottomPad">
-                    <span class="col-sm-3" style="text-align: right" ng-if="set.creationTime"><strong>Created:</strong></span>
-                    <span class="col-sm-8" ng-if="set.creationTime"
+                    <span class="col-sm-3" style="text-align: right"><strong>Created:</strong></span>
+                    <span class="col-sm-8"
                           ng-bind-html="set.creationTime | date: 'medium'">
                     </span>
                 </div>

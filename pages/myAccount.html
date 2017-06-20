@@ -16,10 +16,17 @@
                 <small>{{myAccountController.displayedUser.accountName}}</small>
             </div>
             <div class="wrapLongLine">
-                <a href="{{myAccountController.displayedUser.website}}" target="_blank">{{myAccountController.displayedUser.website}}</a>
+                <a href="{{myAccountController.displayedUser.website}}" target="_blank">
+                    {{myAccountController.displayedUser.website}}
+                </a>
             </div>
 
-            <div ng-bind-html="myAccountController.displayedUser.description"></div>
+            <div class="wrapLongLine" ng-bind-html="myAccountController.displayedUser.description"></div>
+
+            <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskPercentageUsed}}%</div>
+            <div class="progress progress-striped">
+                <div ng-class="diskPercentageUsedClass" ng-style="diskPercentageUsedStyle"></div>
+            </div>
 
             <span ng-show="myAccountController.isLoggedInUser && myAccountController.identifier == myAccountController.loggedInIdentifier">
                 <div class="btn-group btn-group-vertical buttonWithMarginBottom">

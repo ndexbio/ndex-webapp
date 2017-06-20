@@ -1438,7 +1438,7 @@ ndexApp.controller('myAccountController',
                     "<strong>Name: </strong>" + networkName + "<br>" +
                     "<strong>Status: </strong>" + status + "<br>" +
                     "<strong>Error Message: </strong>" + errorMessage + "<br><br>" +
-                    "Would you like to permanently DELETE this network?"
+                    "<strong>Would you like to permanently DELETE this network?</strong>"
                 
                 ndexNavigation.openConfirmationModal(title, body, "Delete", "Cancel",
                     function () {
@@ -1468,8 +1468,39 @@ ndexApp.controller('myAccountController',
 
                 return;
             };
-            
-            
+
+
+            $scope.showAvailableDiskSpace = function(user) {
+
+                console.log("in showAvailableDisk");
+
+                $scope.diskQuota = user.diskQuota;
+                $scope.diskUsed  = user.diskUsed;
+
+                $scope.diskPercentageUsed = Math.floor(user.diskUsed / user.diskQuota * 100);
+
+                $scope.diskPercentageUsedStyle = {
+                    'width':  $scope.diskPercentageUsed + '%',
+                    'color': 'black'
+                };
+
+                if ($scope.diskPercentageUsed <= 25) {
+                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-success";
+
+                } else if (($scope.diskPercentageUsed > 25) && ($scope.diskPercentageUsed <= 50)) {
+                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-info";
+
+                } else if (($scope.diskPercentageUsed > 50) && ($scope.diskPercentageUsed <= 75)) {
+                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-warning";
+
+                } else { // 76% or more
+                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-danger";
+
+                };
+            };
+
+
+
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
@@ -1479,6 +1510,8 @@ ndexApp.controller('myAccountController',
                 function (user)
                 {
                     myAccountController.displayedUser = user;
+
+                    $scope.showAvailableDiskSpace(user);
 
                     cUser = user;
 
