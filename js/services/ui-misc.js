@@ -380,6 +380,16 @@ angular.module('ndexServiceApp')
             return self.getCurrentServerURL() + "networkset/" + networkSetUUID + "?accesskey=" + accessKey;
         };
 
+        self.hideSearchMenuItem = function() {
+            var searhMenuItemElement = document.getElementById("searchBarId");
+            searhMenuItemElement.style.display = 'none';
+        };
+
+        self.showSearchMenuItem = function() {
+            var searhMenuItemElement = document.getElementById("searchBarId");
+            searhMenuItemElement.style.display = 'block';
+        };
+
 
     }
 ]);

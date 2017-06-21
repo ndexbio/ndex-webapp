@@ -1,6 +1,6 @@
 ndexApp.controller('editNetworkPropertiesFixedFormController',
-	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout',
-		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout){
+	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout', 'uiMisc',
+		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc){
 	 //testing
 
 	//              Process the URL to get application state
@@ -66,7 +66,10 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "reference": "",
         "version": "",
         "visibility": "PRIVATE"
-    }
+    };
+
+    uiMisc.hideSearchMenuItem();
+    $scope.$parent.showSearchMenu = true;
 
     editor.buildAttributeDictionary = function() {
         var dict = {};
@@ -345,6 +348,16 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         return disableSaveChangesButton;
 
     }
+
+    // this function gets called when user navigates away from the current page
+    // (can also use "$locationChangeStart" instead of "$destroy"
+    $scope.$on("$destroy", function(){
+
+        // hide the Search menu item in Nav Bar
+        $scope.$parent.showSearchMenu = false;
+
+        uiMisc.showSearchMenuItem();
+    });
 
     // these are names used by Solr for indexing.
     // They are found in the server's ndexbio-rest/src/main/resources/solr/ndex-networks/conf/schema.xml

@@ -52,16 +52,17 @@ ndexApp.controller('myAccountController',
             // this map of Cytoscape collection networks; networkUUID is a key and <numberOfSubNetworks> is a value;
             // we only put networks with number of subnetwroks greater than 1
             myAccountController.networksWithMultipleSubNetworks = {};
-
-            // when My Account (this current) page loads, we need to hide the My Account menu link
-            //$scope.$parent.showMyAccountMenu = false;
             
-            // this function gets called when user navigates away from the current My Account page.
+            // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
-                // hide the My Account menu item in Nav Bar
-                $scope.$parent.showMyAccountMenu = true;
+                // hide the Search menu item in Nav Bar
+                $scope.$parent.showSearchMenu = false;
+                uiMisc.showSearchMenuItem();
             });
+
+            uiMisc.hideSearchMenuItem();
+            $scope.$parent.showSearchMenu = true;
 
             $scope.enableEditPropertiesBulkButton = false;
             $scope.enableShareBulkButton = false;

@@ -304,7 +304,7 @@
                 </li>
 
 
-                <li ng-show="main.loggedIn && showMyAccountMenu">
+                <li ng-show="main.loggedIn">
                     <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()"
                        ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
 
@@ -312,15 +312,6 @@
                         &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
                     </a>
                 </li>
-
-<!--
-                <li ng-show="main.loggedIn && showMyAccountMenu">
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser();"
-                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
-                        <span class="glyphicon glyphicon-home"></span> {{main.userFirstAndLastNames}}!
-                    </a>
-                </li>
--->
 
                 <li ng-show="main.loggedIn">
                     <a ng-click="collapseHamburgerMenu(); main.signout()">Sign Out</a>

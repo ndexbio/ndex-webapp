@@ -41,9 +41,6 @@ ndexApp.controller('networkController',
             // turn on (show) Search menu item on the Nav Bar
             $scope.$parent.showSearchMenu = true;
 
-            // turn on (show) Graphic View and Table View menu items on the Nav Bar
-            $scope.$parent.showViewMenus = true;
-
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
 
             networkController.advancedQueryNodeCriteria = 'Source';
@@ -298,10 +295,7 @@ ndexApp.controller('networkController',
                 // hide the Search menu item in Nav Bar
                 $scope.$parent.showSearchMenu = false;
 
-                showSearchMenuItem();
-
-                // also, hide the Graphic View nad Table View menu items from that nav bar
-                $scope.$parent.showViewMenus = false;
+                uiMisc.showSearchMenuItem();
             });
 
             /*
@@ -424,18 +418,6 @@ ndexApp.controller('networkController',
                     networkController.displayProvenance = obj;
                 });
             };
-
-
-            var hideSearchMenuItem = function() {
-                var searhMenuItemElement = document.getElementById("searchBarId");
-                searhMenuItemElement.style.display = 'none';
-            }
-
-            var showSearchMenuItem = function() {
-                var searhMenuItemElement = document.getElementById("searchBarId");
-                searhMenuItemElement.style.display = 'block';
-            }
-
 
             /*
             var getNetworkAdmins = function()
@@ -2497,7 +2479,7 @@ ndexApp.controller('networkController',
             
             startSpinner();
 
-            hideSearchMenuItem();
+            uiMisc.hideSearchMenuItem();
 
             initialize();
         }

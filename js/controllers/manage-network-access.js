@@ -42,7 +42,6 @@ ndexApp.controller('manageNetworkAccessController',
 
 	// turn on (show) Search menu item on the Nav Bar
 	$scope.$parent.showSearchMenu = true;
-	$scope.$parent.showViewMenus = true;
 
 
 	// this function gets called when user navigates away from the current view.
@@ -52,20 +51,8 @@ ndexApp.controller('manageNetworkAccessController',
 		// hide the Search menu item in Nav Bar
 		$scope.$parent.showSearchMenu = false;
 
-		showSearchMenuItem();
-
-		$scope.$parent.showViewMenus = false;
+		uiMisc.showSearchMenuItem();
 	});
-
-	var showSearchMenuItem = function() {
-		var searhMenuItemElement = document.getElementById("searchBarId");
-		searhMenuItemElement.style.display = 'block';
-	};
-
-	var hideSearchMenuItem = function() {
-		var searhMenuItemElement = document.getElementById("searchBarId");
-		searhMenuItemElement.style.display = 'none';
-	};
 
 	networkManager.accessWasRemoved = function(accessObj) {
 
@@ -1069,7 +1056,7 @@ ndexApp.controller('manageNetworkAccessController',
 	//              INTIALIZATIONS
     //------------------------------------------------------------------------------------
 
-	hideSearchMenuItem();
+	uiMisc.hideSearchMenuItem();
 
     ndexService.getNetworkSummaryV2(identifier)
     	.success(

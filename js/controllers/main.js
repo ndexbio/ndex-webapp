@@ -22,7 +22,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $scope.main.loggedIn = true;
             $scope.main.showSignIn = false;
             $scope.main.userName = sharedProperties.getCurrentUserAccountName();
-            $scope.showMyAccountMenu = true;
 
             var userFirstAndLastNames = ndexUtility.getLoggedInUserFirstAndLastNames();
             $scope.main.userFirstAndLastNames = userFirstAndLastNames ? "Hi, " + userFirstAndLastNames : "MyAccount";
@@ -71,11 +70,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 $scope.main.hideSearchBar = false;
         });
 
-        $scope.showViewMenus = false;
-        
-        // do not show Search anywhere except on New Network Page
-        // This value gets set to true when we load New Network page (in network-controller.js),
-        // and gets set back to false before we navigate away from New Network.
         $scope.showSearchMenu = false;
 
         $scope.main.goToNetworkView = function(path){
