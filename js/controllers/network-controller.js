@@ -61,6 +61,12 @@ ndexApp.controller('networkController',
 
             networkController.isAdmin = false;
 
+            networkController.networkShareURL = null;
+
+            // get URL of this network without network access key; this URL is used
+            // for copying it to clipboard if this Network is PUBLIC
+            networkController.networkURL = uiMisc.buildNetworkURL(null, networkExternalId);
+
             networkController.tabs = [
                 {"heading": "Network Info", 'active':true},
                 {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
@@ -76,6 +82,8 @@ ndexApp.controller('networkController',
             networkController.networkSets = [];
 
             networkController.isNetworkOwner = false;
+
+            networkController.otherProperties = [];
 
 
             //networkController.prettyStyle = "no style yet";
@@ -2045,14 +2053,14 @@ ndexApp.controller('networkController',
 
                         if (!data) {
                             // empty string - access is deactivated
-                            networkController.networkSetShareableURL = null;
+                            networkController.networkShareURL = null;
                         } else if (data['accessKey']) {
                             // received  data['accessKey'] - access is enabled
-                            networkController.networkSetShareableURL =
-                                uiMisc.buildShareableNetworkURL(data['accessKey'], networkExternalId);
+                            networkController.networkShareURL =
+                                uiMisc.buildNetworkURL(data['accessKey'], networkExternalId);
                         } else {
                             // this should not happen; something went wrong; access deactivated
-                            networkController.networkSetShareableURL = null;
+                            networkController.networkShareURL = null;
                         };
                     },
                     function(error) {

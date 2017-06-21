@@ -50,7 +50,7 @@
                 <span ng-style="networkSetController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
                     {{networkSetController.networkSetShareableURL ? 'Active' : 'Inactive'}}
                 </span>
-                <button type="button" ng-disabled="!networkSetController.networkSetShareableURL"
+                <button type="button" ng-hide="!networkSetController.networkSetShareableURL"
                         ngclipboard data-clipboard-text="{{networkSetController.networkSetShareableURL}}"
                         ng-click="networkSetController.showURLInClipboardMessage()"
                         class="btn btn-success btn-xs">Copy URL
@@ -92,7 +92,7 @@
                 <span ng-if="!networkSetController.isSetOwner">
                     <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0">
                         <show-network-sets-modal my-account-controller='networkSetController'>
-                             Add To Network Set
+                             Add To Set
                         </show-network-sets-modal>
                     </a>
                 </span>

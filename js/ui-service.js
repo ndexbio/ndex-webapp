@@ -1699,6 +1699,7 @@
 
 
     // modal to edit network summary
+/*
     uiServiceApp.directive('editNetworkSummaryModal', function() {
         return {
             scope: {
@@ -1905,7 +1906,7 @@
             }
         }
     });
-
+*/
 
     // modal to show network reference
     uiServiceApp.directive('showNetworkReference', function() {

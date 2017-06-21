@@ -70,7 +70,7 @@ ndexApp.controller('myAccountController',
 
             myAccountController.editProfilesLabel    = "Edit Profile";
             myAccountController.exportNetworksLabel  = "Export Network";
-            myAccountController.addToNetworkSetLabel = "Add To Network Set";
+            myAccountController.addToNetworkSetLabel = "Add To Set";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
             myAccountController.networkSets = [];

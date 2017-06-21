@@ -368,8 +368,12 @@ angular.module('ndexServiceApp')
         };
 
 
-        self.buildShareableNetworkURL = function(accessKey, networkUUID) {
-            return self.getCurrentServerURL() + "network/" + networkUUID + "?accesskey=" + accessKey;
+        self.buildNetworkURL = function(accessKey, networkUUID) {
+            var url = self.getCurrentServerURL() + "network/" + networkUUID;
+            if (accessKey) {
+                url = url + "?accesskey=" + accessKey;
+            };
+            return url;
         };
 
         self.buildShareableNetworkSetURL = function(accessKey, networkSetUUID) {
