@@ -821,6 +821,11 @@
                 </span>
             </span>
 
+            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin'>
+                <a class="actionsLabel btn btn-primary"
+                   ng-click="networkController.cloneNetwork()">Clone
+                </a>
+            </span>
 
             <span ng-show='networkController.isLoggedInUser
                 && ((networkController.currentNetwork.visibility == "PUBLIC")

@@ -885,11 +885,20 @@ ndexServiceApp.factory('ndexService',
 
             factory.disableOrEnableAccessKeyOnNetworkV2 = function(networkId, action, successHandler, errorHandler) {
                 // Server API: Disable/enable Access Key on Network
-                // PUT /{networkid}/accesskey?action=disable|enable
+                // PUT /network/{networkid}/accesskey?action=disable|enable
                 var url = "/network/" + networkId + "/accesskey?action=" + action;
                 var config = ndexConfigs.getPutConfigV2(url, null);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
+
+            factory.cloneNetworkV2 = function(networkId, successHandler, errorHandler) {
+                // Server API: Clone a Network
+                // POST /network/{networkid}/copy
+                var url = "/network/" + networkId + "/copy";
+                var config = ndexConfigs.getPostConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
 
             /*---------------------------------------------------------------------*
              * Network Sets

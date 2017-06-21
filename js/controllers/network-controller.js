@@ -2435,11 +2435,11 @@ ndexApp.controller('networkController',
                         , position: 'absolute' // Element positioning
                     }
 
-                    var target = document.getElementById(spinnerId)
+                    var target = document.getElementById(spinnerId);
                     spinner = new Spinner(opts).spin(target);
 
                 } else {
-                    var target = document.getElementById(spinnerId)
+                    var target = document.getElementById(spinnerId);
                     spinner.spin(target);
                 }
             }
@@ -2467,6 +2467,47 @@ ndexApp.controller('networkController',
                         console.log("unable to get network sets");
                         errorHandler(error, status);
                     });
+            };
+
+            networkController.cloneNetwork = function() {
+
+                var title = 'Clone This Network';
+
+                var networkName  = 'The network <strong>' + networkController.currentNetwork.name + '</strong> ';
+
+                var message = networkName +
+                    'will be cloned to your account. <br><br> Are you sure you want to proceed?';
+
+                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                    function () {
+                        ndexService.cloneNetworkV2(networkController.currentNetworkId,
+                            function(data, status, headers, config, statusText) {
+
+                                var clonedNetworkUUID = data.split("/").pop();
+                                var clonedNetworkURL = uiMisc.buildNetworkURL(null, clonedNetworkUUID);
+
+                                title = "Network Cloned";
+                                message  = networkName + " cloned to your account.<br><br>";
+                                message = message +
+                                    "Follow this <a href='" + clonedNetworkURL + "?setAuthHeader=false'>link</a> to go this network";
+
+                                ndexNavigation.genericInfoModal(title, message);
+                            },
+                            function(error) {
+                                console.log("unable to clone network UUID " + networkController.currentNetworkId);
+
+                                title = "Unable to Clone Network";
+                                message  = networkName + " wasn't cloned to your account.";
+
+                                ndexNavigation.genericInfoModal(title, message);
+                            });
+                    },
+                    function () {
+                        // User selected Cancel; return
+                        return;
+                    });
+
+                return;
             };
 
 
