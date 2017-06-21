@@ -2483,6 +2483,7 @@ ndexApp.controller('networkController',
                         ndexService.cloneNetworkV2(networkController.currentNetworkId,
                             function(data, status, headers, config, statusText) {
 
+                            /*
                                 var clonedNetworkUUID = data.split("/").pop();
                                 var clonedNetworkURL = uiMisc.buildNetworkURL(null, clonedNetworkUUID);
 
@@ -2490,6 +2491,10 @@ ndexApp.controller('networkController',
                                 message  = networkName + " cloned to your account.<br><br>";
                                 message = message +
                                     "Follow this <a href='" + clonedNetworkURL + "?setAuthHeader=false'>link</a> to go this network";
+                            */
+
+                                title = "Network Cloned";
+                                message  = networkName + " cloned to your account.";
 
                                 ndexNavigation.genericInfoModal(title, message);
                             },
