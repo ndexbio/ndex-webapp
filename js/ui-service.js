@@ -3309,6 +3309,7 @@
                 propertyModel: "=",
                 valuePairSplice: "&",
                 editorChanged: "&",
+                valueChanged: "&",
                 netIndex: "=",
                 isEdit: "=",
                 isAdmin: "="
@@ -3326,6 +3327,9 @@
                     $scope.editorChanged({passIndex: $scope.netIndex, predicateString: predString, property: $scope.propertyModel, del: "del"});
                 };
 
+                $scope.updateScore = function(){
+                    $scope.valueChanged();
+                };
                 //scope.onDropCompleteInner = function(parmData, parmEvent, planElementType){
                 //    scope.onDropComplete({index: parmData, evt: parmEvent, planType: scope.planType, planElementType: planElementType});
                     //console.log("In drop");
