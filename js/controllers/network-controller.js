@@ -2499,10 +2499,12 @@ ndexApp.controller('networkController',
                                 ndexNavigation.genericInfoModal(title, message);
                             },
                             function(error) {
-                                console.log("unable to clone network UUID " + networkController.currentNetworkId);
-
                                 title = "Unable to Clone Network";
                                 message  = networkName + " wasn't cloned to your account.";
+
+                                if (error.message) {
+                                    message = message + '<br><br>' + error.message;
+                                };
 
                                 ndexNavigation.genericInfoModal(title, message);
                             });
