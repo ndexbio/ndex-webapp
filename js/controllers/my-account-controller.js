@@ -564,7 +564,21 @@ ndexApp.controller('myAccountController',
                     myAccountController.checkIfSelectedNetworksCanBeDeletedOrChanged(checkWritePrivilege);
 
                 if (networksDeleteable) {
-                    myAccountController.confirmDeleteSelectedNetworks();
+                    myAccountController.confirmDeleteSelectedNetworks(
+                        function() {
+                            // all selected networks have been deleted ...
+                            // update available storage indication
+
+                            ndexService.getUserByUUIDV2(myAccountController.identifier)
+                                .success(
+                                    function (user) {
+                                        $scope.showAvailableDiskSpace(user);
+                                    });
+                        },
+                        function() {
+                            ; // canceled, nothing to do here
+                        }
+                    );
                 } else {
                     var title = "Cannot Delete Selected Networks";
                     var message =
@@ -595,7 +609,7 @@ ndexApp.controller('myAccountController',
                 });
             };
 
-            myAccountController.confirmDeleteSelectedNetworks = function()
+            myAccountController.confirmDeleteSelectedNetworks = function(deletedHandler, canceledHandler)
             {
                 var   modalInstance = $modal.open({
                     templateUrl: 'confirmation-modal.html',
@@ -610,13 +624,14 @@ ndexApp.controller('myAccountController',
                         $scope.cancel = function() {
                             $modalInstance.dismiss();
                             $scope.isProcessing = false;
+                            canceledHandler();
                         };
 
                         $scope.confirm = function() {
                             $scope.isProcessing = true;
-                            myAccountController.deleteSelectedNetworks($scope, $modalInstance);
+                            myAccountController.deleteSelectedNetworks($scope, $modalInstance, deletedHandler);
                             //$modalInstance.dismiss();
-                            //$scope.isProcessing = false;
+                            $scope.isProcessing = false;
                         };
                     }
                 });
@@ -837,7 +852,7 @@ ndexApp.controller('myAccountController',
                 };
             };
 
-            myAccountController.deleteSelectedNetworks = function ($scope, $modalInstance)
+            myAccountController.deleteSelectedNetworks = function ($scope, $modalInstance, deletedHandler)
             {
                 var selectedIds = [];
                 var successfullyDeletedNetworkIDs = {};
@@ -850,6 +865,7 @@ ndexApp.controller('myAccountController',
                     if (row.Status && row.Status.toLowerCase() == 'set') {
                         // this should never happen since we do not allow selecting sets,
                         // but just in case ...
+                        deletedNetworksCounter = deletedNetworksCounter + 1;
                         return;
                     };
 
@@ -873,6 +889,7 @@ ndexApp.controller('myAccountController',
                                 $scope.isProcessing = false;
 
                                 removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
+                                deletedHandler();
 
                             };
                         },
@@ -892,6 +909,7 @@ ndexApp.controller('myAccountController',
                                 $scope.isProcessing = false;
 
                                 removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
+                                deletedHandler();
                             };
                         });
                 });
@@ -1473,8 +1491,6 @@ ndexApp.controller('myAccountController',
 
             $scope.showAvailableDiskSpace = function(user) {
 
-                console.log("in showAvailableDisk");
-
                 $scope.diskQuota = user.diskQuota;
                 $scope.diskUsed  = user.diskUsed;
 
@@ -1499,8 +1515,6 @@ ndexApp.controller('myAccountController',
 
                 };
             };
-
-
 
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
