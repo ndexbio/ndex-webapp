@@ -38,8 +38,6 @@ ndexApp.controller('searchController',
             searchController.searchString = decodeURIComponent($location.search().searchString);
             searchController.searchType = decodeURIComponent($location.search().searchType);
 
-            searchController.browseFlag = (decodeURIComponent($location.search().browseFlag) == 'true');
-
 
             // Ensure that we have "search for all" as the default if no parameters are provided
             searchController.searchString = (searchController.searchString.toLowerCase() === 'undefined') ? "" : searchController.searchString;
@@ -693,25 +691,17 @@ ndexApp.controller('searchController',
             searchController.userSearchNoResults = true;
             searchController.networkSearchNoResults = true;
 
-            if (searchController.browseFlag) {
+             if (searchController.searchType === 'All'){
                 searchController.submitNetworkSearch();
                 searchController.submitGroupSearch();
                 searchController.submitUserSearch();
                 $scope.activateTab('Networks');
 
-            } else if (searchController.searchType === 'Genes'){
-                if (searchController.searchString) {
-                    searchController.submitGeneProteinSearch();
-                    $scope.activateTab('Networks');
-                };
+            } else if (searchController.searchType === 'Networks') {
+                 searchController.submitNetworkSearch();
+                 $scope.activateTab('Networks');
 
-            } else if (searchController.searchType === 'Keywords'){
-                searchController.submitNetworkSearch();
-                searchController.submitGroupSearch();
-                searchController.submitUserSearch();
-                $scope.activateTab('Networks');
-
-            } else if (searchController.searchType === 'Users'){
+             } else if (searchController.searchType === 'Users'){
                 searchController.submitUserSearch();
                 $scope.activateTab('Users');
 

@@ -9,8 +9,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         });
 
         $scope.showFooter = true;
-        
-        $scope.main = {'browseFlag': false};
+
+        $scope.main = {};
 
         $scope.main.url = $location; //expose the service to the scope for nav
 
@@ -239,10 +239,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
          Search
          ----------------------------------------------*/
 
-        $scope.main.searchType = 'Genes';
+        $scope.main.searchType = 'All';
         const SEARCH_PLACEHOLDER_TEXT_MAP = {
-            Keywords : "Search for genes and proteins, users, and groups",
-            Genes: "Perform term expansion on genes and proteins aliases",
+            All : "Search for networks, users, and groups",
             Networks : "Search for networks",
             Users : "Search for users",
             Groups : "Search for groups"
@@ -278,10 +277,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             var urlBeforePathChange = $location.absUrl();
             // add "?networks=<searchStringEncoded>" to the URL;
             // we do it to be able to get back to this search with the browser Back button
-            var searchType = $scope.main.searchType;
-            var browseFlag = $scope.main.browseFlag;
+            $location.search({'searchType': $scope.main.searchType, 'searchString': searchStringEncoded});
 
-            $location.search({'searchType': searchType, 'searchString': searchStringEncoded, 'browseFlag': browseFlag});
             var urlAfterPathChange = $location.absUrl();
             if (urlBeforePathChange === urlAfterPathChange) {
                 // if before and after urls are the same, it means that
@@ -368,17 +365,14 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.runSearchExample = function(example){
             $scope.main.searchString = example.searchString;
             $scope.main.searchType = example.searchType;
-            $scope.main.browseFlag = false;
             $scope.main.search();
 
         };
 
         $scope.main.browse = function(){
-            $scope.main.browseFlag = true;
             $scope.main.searchString = '';
-            $scope.main.searchType = 'Genes';
+            $scope.main.searchType = 'All';
             $scope.main.search();
-            $scope.main.browseFlag = false;
         };
 
         //end Search code
