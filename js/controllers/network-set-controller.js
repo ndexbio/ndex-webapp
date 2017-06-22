@@ -36,6 +36,9 @@ ndexApp.controller('networkSetController',
     networkSetController.networkSetShareableURLLabel = null;
     networkSetController.networkSetOwnerId = null;
 
+    var activateURLLabel   = "Activate URL";
+    var deActivateURLLabel = "Deactivate URL";
+
 
 
     networkSetController.getNetworksOfNetworkSet = function() {
@@ -428,7 +431,7 @@ ndexApp.controller('networkSetController',
     };
 
 
-    networkSetController.switchShareableURL = function(successHandler, errorHandler) {
+    networkSetController.switchShareableURL = function() {
 
         var action = (networkSetController.networkSetShareableURL) ? "disable" : "enable";
 
@@ -436,19 +439,28 @@ ndexApp.controller('networkSetController',
             function(data, status, headers, config, statusText) {
 
                 if (action == 'enable') {
-                    networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
+                    networkSetController.networkSetShareableURLLabel = deActivateURLLabel;
                     networkSetController.networkSetShareableURL =
                         uiMisc.buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
 
                 } else {
-                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
+                    networkSetController.networkSetShareableURLLabel = activateURLLabel;
                     networkSetController.networkSetShareableURL = null;
                 };
-                successHandler();
             },
             function(error) {
-                console.log("unable to get access key for network set " + networkSetController.identifier);
-                errorHandler();
+
+                var failedAction = (action == 'enable') ? " Activate " : " Deactivate ";
+
+                title = "Unable to " + failedAction + "URL";
+                message  = "Unable to " + failedAction.toLowerCase() + " URL on network set <strong>" +
+                    networkSetController.displayedSet['name'] + "</strong>.";
+
+                if (error.message) {
+                    message = message + '<br><br>' + error.message;
+                };
+
+                ndexNavigation.genericInfoModal(title, message);
             });
     };
 
@@ -469,25 +481,49 @@ ndexApp.controller('networkSetController',
                 if (!data) {
                     // empty string - access is deactivated
                     networkSetController.networkSetShareableURL = null;
-                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
+                    networkSetController.networkSetShareableURLLabel = activateURLLabel;
 
                 } else if (data['accessKey']) {
                     // received  data['accessKey'] - access is enabled
                     networkSetController.networkSetShareableURL =
                         uiMisc.buildShareableNetworkSetURL(data['accessKey'], networkSetController.identifier);
-                    networkSetController.networkSetShareableURLLabel = "Deactivate Share URL";
+                    networkSetController.networkSetShareableURLLabel = deActivateURLLabel;
 
                 } else {
                     // this should not happen; something went wrong; access deactivated
                     networkSetController.networkSetShareableURL = null;
-                    networkSetController.networkSetShareableURLLabel = "Activate Share URL";
+                    networkSetController.networkSetShareableURLLabel = activateURLLabel;
                 };
             },
             function(error) {
-                console.log("unable to get access key for network set " + networkSetController.identifier);
+                title = "Unable to Get Status of URL";
+                message  = "Unable to get status of share URL on network set <strong>" +
+                    networkSetController.displayedSet['name'] + "</strong>.";
+
+                if (error.message) {
+                    message = message + '<br><br>' + error.message;
+                };
+                networkSetController.networkSetShareableURLLabel = null;
+
+                ndexNavigation.genericInfoModal(title, message);
             });
     };
-            
+
+    /*
+    networkSetController.switchShareableURLModal = function() {
+
+        var action = (networkSetController.networkSetShareableURL) ? "disable" : "enable";
+
+        if (action == "disable") {
+            networkSetController.switchShareableURL(action);
+            return;
+        };
+
+        //alert("enabling ... ");
+        networkSetController.switchShareableURL(action);
+    }
+    */
+
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //------------------------------------------------------------------------------------

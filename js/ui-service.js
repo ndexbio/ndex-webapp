@@ -287,6 +287,7 @@
         }
     });
 
+
     uiServiceApp.directive('triggerEditNetworkSetModal', function() {
         return {
             scope: {
@@ -370,6 +371,7 @@
         }
     });
 
+    /*
     uiServiceApp.directive('triggerShareNetworkSetModal', function() {
         return {
             scope: {
@@ -432,6 +434,7 @@
             }
         }
     });
+    */
 
     //----------------------------------------------------
     //              Elements
