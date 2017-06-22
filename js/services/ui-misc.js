@@ -264,8 +264,7 @@ angular.module('ndexServiceApp')
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
             var link =
-                ndexService.getNdexServerUriV2() + "/network/" +
-                    rowEntity.externalId + "?download=true&setAuthHeader=false" ;
+                ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
 
             if (accountController.isLoggedInUser && rowEntity.Visibility &&
                 (rowEntity.Visibility.toLowerCase() == 'private'))
