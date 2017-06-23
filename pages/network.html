@@ -854,6 +854,7 @@
                 </a>
             </span>
 
+            <!--
             <span ng-show='networkController.isLoggedInUser && networkController.canRead'>
                 <a class="actionsLabel btn btn-primary customButtonWidth">
                     <create-request-network
@@ -863,14 +864,22 @@
                     </create-request-network>
                 </a>
             </span>
+            -->
 
             <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
-                <a class="actionsLabel btn btn-primary customButtonWidth" title="Request Read, Edit or Admin privilege">
-                    <create-request-network
-                            ndex-data='networkController.currentNetwork'
-                            privileges='networkController.privilegeLevel'>
+                <a class="actionsLabel btn btn-primary customButtonWidth"
+                   title="Request Read, Edit or Admin privilege"
+                   ng-show="!networkController.hasMultipleSubNetworks()">
+                        <create-request-network
+                                ndex-data='networkController.currentNetwork'
+                                privileges='networkController.privilegeLevel'>
+                            Upgrade Permission
+                        </create-request-network>
+                </a>
+                <a class="actionsLabelDisabled-btn btn btn-primary customButtonWidth"
+                   ng-show="networkController.hasMultipleSubNetworks()"
+                   title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
                         Upgrade Permission
-                    </create-request-network>
                 </a>
             </span>
 
