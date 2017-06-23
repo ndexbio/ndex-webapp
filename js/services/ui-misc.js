@@ -277,7 +277,7 @@ angular.module('ndexServiceApp')
                 var userName = userCredentials['userName'];
                 var password = userCredentials['token'];
 
-                link = link.replace("http://", "http://" + userName + ":" + password + "@");
+                link = link.replace("http://", "https://" + userName + ":" + password + "@");
             };
 
             return link;
