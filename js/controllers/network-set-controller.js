@@ -200,6 +200,9 @@ ndexApp.controller('networkSetController',
             };
 
             var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
+            if (networkSetController.accesskey) {
+                networkName = networkName + "?accesskey=" + networkSetController.accesskey;
+            };
             if (networkStatus == "failed") {
                 networkName = "Invalid Network. UUID: " + network.externalId;
             } else if (noOfSubNetworks > 1) {
