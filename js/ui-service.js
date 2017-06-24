@@ -59,6 +59,7 @@
                 {
                     var modalInstance = $modal.open({
                         templateUrl: 'pages/generic-info-modal.html',
+                        backdrop: 'static',
 
                         controller: function($scope, $modalInstance) {
 

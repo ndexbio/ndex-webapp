@@ -1,11 +1,11 @@
 ndexApp.controller('networkController',
     ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
-        'sharedProperties', '$scope', '$routeParams', '$modal',
+        'sharedProperties', '$scope', '$routeParams', '$modal', '$modalStack',
         '$route', '$location', 'uiGridConstants', 'uiMisc', /*'$filter', '$location','$q',*/
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
-                  sharedProperties, $scope, $routeParams, $modal,
+                  sharedProperties, $scope, $routeParams, $modal, $modalStack,
                   $route , $location, uiGridConstants, uiMisc /*, $filter /*, $location, $q */)
         {
             var self = this;
@@ -63,6 +63,12 @@ ndexApp.controller('networkController',
             // get URL of this network without network access key; this URL is used
             // for copying it to clipboard if this Network is PUBLIC
             networkController.networkURL = uiMisc.buildNetworkURL(null, networkExternalId);
+
+            // close any modal if opened.
+            // We need to close a modal in case we come to this page
+            // if we cloned a network and followed a link to the newly cloned network
+            // from the "Network Cloned" information modal.
+            $modalStack.dismissAll('close');
 
             networkController.tabs = [
                 {"heading": "Network Info", 'active':true},
@@ -2483,19 +2489,15 @@ ndexApp.controller('networkController',
                         ndexService.cloneNetworkV2(networkController.currentNetworkId,
                             function(data, status, headers, config, statusText) {
 
-                            /*
                                 var clonedNetworkUUID = data.split("/").pop();
-                                var clonedNetworkURL = uiMisc.buildNetworkURL(null, clonedNetworkUUID);
-
                                 title = "Network Cloned";
                                 message  = networkName + " cloned to your account.<br><br>";
                                 message = message +
-                                    "Follow this <a href='" + clonedNetworkURL + "?setAuthHeader=false'>link</a> to go this network";
-                            */
+                                    "Follow this <a href='#/network/" + clonedNetworkUUID + "'>link</a> " +
+                                    " to go the clone of <strong>" + networkController.currentNetwork.name +
+                                    "</strong>.";
 
                                 title = "Network Cloned";
-                                message  = networkName + " cloned to your account.";
-
                                 ndexNavigation.genericInfoModal(title, message);
                             },
                             function(error) {
