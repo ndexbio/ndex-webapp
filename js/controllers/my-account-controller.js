@@ -574,7 +574,7 @@ ndexApp.controller('myAccountController',
                             ndexService.getUserByUUIDV2(myAccountController.identifier)
                                 .success(
                                     function (user) {
-                                        $scope.showAvailableDiskSpace(user);
+                                        $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
                                     });
                         },
                         function() {
