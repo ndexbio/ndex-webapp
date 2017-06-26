@@ -1433,6 +1433,10 @@ ndexApp.controller('myAccountController',
                 };
             };
 
+            $scope.getNetworkURL = function(networkUUID) {
+                return "#/network/" + networkUUID;
+            };
+
             $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
             };

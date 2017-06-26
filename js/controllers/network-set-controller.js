@@ -200,9 +200,6 @@ ndexApp.controller('networkSetController',
             };
 
             var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
-            if (networkSetController.accesskey) {
-                networkName = networkName + "?accesskey=" + networkSetController.accesskey;
-            };
             if (networkStatus == "failed") {
                 networkName = "Invalid Network. UUID: " + network.externalId;
             } else if (noOfSubNetworks > 1) {
@@ -401,6 +398,16 @@ ndexApp.controller('networkSetController',
         };
 
         uiMisc.showNetworkWarningsOrErrors(rowEntity, networkSetController.networkSearchResults);
+    };
+
+    $scope.getNetworkURL = function(networkUUID) {
+        var url =  "#/network/" + networkUUID;
+
+        if (networkSetController.accesskey) {
+            url = url + "?accesskey=" + networkSetController.accesskey;
+        };
+
+        return url;
     };
 
     $scope.getNetworkDownloadLink = function(rowEntity) {

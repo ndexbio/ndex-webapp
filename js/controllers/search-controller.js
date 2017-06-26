@@ -672,9 +672,11 @@ ndexApp.controller('searchController',
                 } else {
                     uiMisc.showNetworkWarningsOrErrors(rowEntity, searchController.networkSearchResults);
                 };
-                
-                
-            }
+            };
+
+            $scope.getNetworkURL = function(networkUUID) {
+                return "#/network/" + networkUUID;
+            };
 
             $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(searchController, rowEntity);
