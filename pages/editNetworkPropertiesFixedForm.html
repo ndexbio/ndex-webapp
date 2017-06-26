@@ -69,7 +69,8 @@
 						<div class="col-sm-1">
 							<div class="input-group-btn">
 								<i ng-if="mainProperty.name.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-								<i ng-if="mainProperty.name.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+								<i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+								<i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
 							</div>
 						</div>
 					</div>
@@ -91,7 +92,9 @@
 						<div class="col-sm-1">
 							<div class="input-group-btn">
 								<i ng-if="mainProperty.description.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
-								<i ng-if="mainProperty.description.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+								<i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+
+								<i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
 							</div>
 						</div>
 					</div>
@@ -99,13 +102,13 @@
 					<div class="form-group">
 						<label class="col-sm-3 control-label">Visibility</label>
 						<div class="col-sm-4" style="margin-bottom: 15px;">
-							<span ng-if="network.isOwner">
+							<span ng-if="editor.isOwner">
 								<select class="form-control" ng-model='mainProperty.visibility'>
 									<option value='PUBLIC' ng-selected='mainProperty.visibility ==  "PUBLIC"'>Public</option>
 									<option value='PRIVATE' ng-selected='mainProperty.visibility ==  "PRIVATE"'>Private</option>
 								</select>
 							</span>
-							<span ng-if="!network.isOwner">
+							<span ng-if="!editor.isOwner">
 								<select class="form-control" ng-model='mainProperty.visibility'
 										title="Only network owners can change network Visibility" disabled>
 									<option value='PUBLIC' ng-selected='mainProperty.visibility ==  "PUBLIC"'>Public</option>
@@ -128,8 +131,9 @@
 						</div>
 						<div class="col-sm-1">
 							<div class="input-group-btn" style="margin-top: 40px;">
-								<i ng-if="mainProperty.version.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
-								<i ng-if="mainProperty.version.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+								<i ng-if="mainProperty.version.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+								<i ng-if="mainProperty.version.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+								<i ng-if="mainProperty.version.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
 							</div>
 						</div>
 					</div>
@@ -216,7 +220,7 @@
 				<div class='col-sm-offset-1 col-sm-4'>
 
 					<div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString"'>
-						<div class="row">
+						<div class="row" ng-if="property.predicateString == 'custom...'">
 							<div>
 								<div class="col-sm-3">
 									<input class="form-control input-sm" ng-show="property.predicateString == 'custom...'"
