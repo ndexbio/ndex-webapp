@@ -58,7 +58,7 @@
                                ng-bind-html="set.shareLinkStatus">
                             </span>
                             &nbsp;
-                            <button type="button" ng-disabled="set.shareLinkStatus != 'Active'"
+                            <button type="button" ng-hide="set.shareLinkStatus != 'Active'"
                                     class="btn btn-success btn-xs"
                                     ng-click="showURLInClipboardMessage()"
                                     ngclipboard data-clipboard-text="{{set.networkSetShareableURL}}">Copy URL

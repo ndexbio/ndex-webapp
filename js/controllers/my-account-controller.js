@@ -52,16 +52,17 @@ ndexApp.controller('myAccountController',
             // this map of Cytoscape collection networks; networkUUID is a key and <numberOfSubNetworks> is a value;
             // we only put networks with number of subnetwroks greater than 1
             myAccountController.networksWithMultipleSubNetworks = {};
-
-            // when My Account (this current) page loads, we need to hide the My Account menu link
-            //$scope.$parent.showMyAccountMenu = false;
             
-            // this function gets called when user navigates away from the current My Account page.
+            // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
-                // hide the My Account menu item in Nav Bar
-                $scope.$parent.showMyAccountMenu = true;
+                // hide the Search menu item in Nav Bar
+                $scope.$parent.showSearchMenu = false;
+                uiMisc.showSearchMenuItem();
             });
+
+            uiMisc.hideSearchMenuItem();
+            $scope.$parent.showSearchMenu = true;
 
             $scope.enableEditPropertiesBulkButton = false;
             $scope.enableShareBulkButton = false;
@@ -70,7 +71,7 @@ ndexApp.controller('myAccountController',
 
             myAccountController.editProfilesLabel    = "Edit Profile";
             myAccountController.exportNetworksLabel  = "Export Network";
-            myAccountController.addToNetworkSetLabel = "Add To Network Set";
+            myAccountController.addToNetworkSetLabel = "Add To Set";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
             myAccountController.networkSets = [];
@@ -563,7 +564,21 @@ ndexApp.controller('myAccountController',
                     myAccountController.checkIfSelectedNetworksCanBeDeletedOrChanged(checkWritePrivilege);
 
                 if (networksDeleteable) {
-                    myAccountController.confirmDeleteSelectedNetworks();
+                    myAccountController.confirmDeleteSelectedNetworks(
+                        function() {
+                            // all selected networks have been deleted ...
+                            // update available storage indication
+
+                            ndexService.getUserByUUIDV2(myAccountController.identifier)
+                                .success(
+                                    function (user) {
+                                        $scope.showAvailableDiskSpace(user);
+                                    });
+                        },
+                        function() {
+                            ; // canceled, nothing to do here
+                        }
+                    );
                 } else {
                     var title = "Cannot Delete Selected Networks";
                     var message =
@@ -594,7 +609,7 @@ ndexApp.controller('myAccountController',
                 });
             };
 
-            myAccountController.confirmDeleteSelectedNetworks = function()
+            myAccountController.confirmDeleteSelectedNetworks = function(deletedHandler, canceledHandler)
             {
                 var   modalInstance = $modal.open({
                     templateUrl: 'confirmation-modal.html',
@@ -609,13 +624,14 @@ ndexApp.controller('myAccountController',
                         $scope.cancel = function() {
                             $modalInstance.dismiss();
                             $scope.isProcessing = false;
+                            canceledHandler();
                         };
 
                         $scope.confirm = function() {
                             $scope.isProcessing = true;
-                            myAccountController.deleteSelectedNetworks($scope, $modalInstance);
+                            myAccountController.deleteSelectedNetworks($scope, $modalInstance, deletedHandler);
                             //$modalInstance.dismiss();
-                            //$scope.isProcessing = false;
+                            $scope.isProcessing = false;
                         };
                     }
                 });
@@ -836,7 +852,7 @@ ndexApp.controller('myAccountController',
                 };
             };
 
-            myAccountController.deleteSelectedNetworks = function ($scope, $modalInstance)
+            myAccountController.deleteSelectedNetworks = function ($scope, $modalInstance, deletedHandler)
             {
                 var selectedIds = [];
                 var successfullyDeletedNetworkIDs = {};
@@ -849,6 +865,7 @@ ndexApp.controller('myAccountController',
                     if (row.Status && row.Status.toLowerCase() == 'set') {
                         // this should never happen since we do not allow selecting sets,
                         // but just in case ...
+                        deletedNetworksCounter = deletedNetworksCounter + 1;
                         return;
                     };
 
@@ -872,6 +889,7 @@ ndexApp.controller('myAccountController',
                                 $scope.isProcessing = false;
 
                                 removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
+                                deletedHandler();
 
                             };
                         },
@@ -891,6 +909,7 @@ ndexApp.controller('myAccountController',
                                 $scope.isProcessing = false;
 
                                 removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
+                                deletedHandler();
                             };
                         });
                 });
@@ -1414,6 +1433,10 @@ ndexApp.controller('myAccountController',
                 };
             };
 
+            $scope.getNetworkURL = function(networkUUID) {
+                return "#/network/" + networkUUID;
+            };
+
             $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
             };
@@ -1472,8 +1495,6 @@ ndexApp.controller('myAccountController',
 
             $scope.showAvailableDiskSpace = function(user) {
 
-                console.log("in showAvailableDisk");
-
                 $scope.diskQuota = user.diskQuota;
                 $scope.diskUsed  = user.diskUsed;
 
@@ -1498,8 +1519,6 @@ ndexApp.controller('myAccountController',
 
                 };
             };
-
-
 
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS

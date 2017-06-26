@@ -179,8 +179,9 @@ ndexApp.controller('groupController',
             
                 function (networkPermissionsMap) {
                     var networkUUIDs = Object.keys(networkPermissionsMap);
+                    var accesskey = null;
 
-                    ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs,
+                    ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, accesskey,
                         function (networkSummaries) {
                             groupController.networkSearchResults = networkSummaries;
                             populateNetworkTable();
@@ -400,7 +401,11 @@ ndexApp.controller('groupController',
         }
 
         uiMisc.showNetworkWarningsOrErrors(rowEntity, groupController.networkSearchResults);
-    }
+    };
+
+    $scope.getNetworkURL = function(networkUUID) {
+        return "#/network/" + networkUUID;
+    };
 
     $scope.getNetworkDownloadLink = function(rowEntity) {
         return uiMisc.getNetworkDownloadLink(groupController, rowEntity);

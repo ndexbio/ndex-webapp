@@ -264,8 +264,7 @@ angular.module('ndexServiceApp')
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
             var link =
-                ndexService.getNdexServerUriV2() + "/network/" +
-                    rowEntity.externalId + "?download=true&setAuthHeader=false" ;
+                ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
 
             if (accountController.isLoggedInUser && rowEntity.Visibility &&
                 (rowEntity.Visibility.toLowerCase() == 'private'))
@@ -368,12 +367,26 @@ angular.module('ndexServiceApp')
         };
 
 
-        self.buildShareableNetworkURL = function(accessKey, networkUUID) {
-            return self.getCurrentServerURL() + "network/" + networkUUID + "?accesskey=" + accessKey;
+        self.buildNetworkURL = function(accessKey, networkUUID) {
+            var url = self.getCurrentServerURL() + "network/" + networkUUID;
+            if (accessKey) {
+                url = url + "?accesskey=" + accessKey;
+            };
+            return url;
         };
 
         self.buildShareableNetworkSetURL = function(accessKey, networkSetUUID) {
             return self.getCurrentServerURL() + "networkset/" + networkSetUUID + "?accesskey=" + accessKey;
+        };
+
+        self.hideSearchMenuItem = function() {
+            var searhMenuItemElement = document.getElementById("searchBarId");
+            searhMenuItemElement.style.display = 'none';
+        };
+
+        self.showSearchMenuItem = function() {
+            var searhMenuItemElement = document.getElementById("searchBarId");
+            searhMenuItemElement.style.display = 'block';
         };
 
 

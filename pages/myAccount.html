@@ -24,7 +24,7 @@
             <div class="wrapLongLine" ng-bind-html="myAccountController.displayedUser.description"></div>
 
             <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskPercentageUsed}}%</div>
-            <div class="progress progress-striped">
+            <div class="progress progress-striped" ng-if="diskPercentageUsed > 0">
                 <div ng-class="diskPercentageUsedClass" ng-style="diskPercentageUsedStyle"></div>
             </div>
 

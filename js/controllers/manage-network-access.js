@@ -25,6 +25,7 @@ ndexApp.controller('manageNetworkAccessController',
 
 	networkManager.selectedAccountsForUpdatingAccessPermissions = [];
 	networkManager.originalAccessPermissions = [];
+	networkManager.showShareURLControl = false;
 
 	networkManager.mapOfUserPermissions = {};
 	networkManager.mapOfGroupPermissions = {};
@@ -41,7 +42,6 @@ ndexApp.controller('manageNetworkAccessController',
 
 	// turn on (show) Search menu item on the Nav Bar
 	$scope.$parent.showSearchMenu = true;
-	$scope.$parent.showViewMenus = true;
 
 
 	// this function gets called when user navigates away from the current view.
@@ -51,20 +51,8 @@ ndexApp.controller('manageNetworkAccessController',
 		// hide the Search menu item in Nav Bar
 		$scope.$parent.showSearchMenu = false;
 
-		showSearchMenuItem();
-
-		$scope.$parent.showViewMenus = false;
+		uiMisc.showSearchMenuItem();
 	});
-
-	var showSearchMenuItem = function() {
-		var searhMenuItemElement = document.getElementById("searchBarId");
-		searhMenuItemElement.style.display = 'block';
-	};
-
-	var hideSearchMenuItem = function() {
-		var searhMenuItemElement = document.getElementById("searchBarId");
-		searhMenuItemElement.style.display = 'none';
-	};
 
 	networkManager.accessWasRemoved = function(accessObj) {
 
@@ -1014,7 +1002,7 @@ ndexApp.controller('manageNetworkAccessController',
                 if (action == 'enable') {
                     networkManager.networkShareableURLLabel = "Deactivate Share URL";
                     networkManager.networkShareableURL =
-						uiMisc.buildShareableNetworkURL(data['accessKey'], networkManager.externalId);
+						uiMisc.buildNetworkURL(data['accessKey'], networkManager.externalId);
 
                 } else {networkManager.networkShareableURLLabel = "Activate Share URL";
                     networkManager.networkShareableURL = null;
@@ -1048,7 +1036,7 @@ ndexApp.controller('manageNetworkAccessController',
 				} else if (data['accessKey']) {
 					// received  data['accessKey'] - access is enabled
 					networkManager.networkShareableURL =
-                        uiMisc.buildShareableNetworkURL(data['accessKey'], networkManager.externalId);
+                        uiMisc.buildNetworkURL(data['accessKey'], networkManager.externalId);
                     networkManager.networkShareableURLLabel = "Deactivate Share URL";
 
 				} else {
@@ -1068,12 +1056,17 @@ ndexApp.controller('manageNetworkAccessController',
 	//              INTIALIZATIONS
     //------------------------------------------------------------------------------------
 
-	hideSearchMenuItem();
+	uiMisc.hideSearchMenuItem();
 
     ndexService.getNetworkSummaryV2(identifier)
     	.success(
     	function(network){
     		networkManager.network = network;
+
+    		if (network.visibility && (network.visibility.toUpperCase() == 'PRIVATE')) {
+                networkManager.showShareURLControl = true;
+                networkManager.getStatusOfShareableURL();
+			};
     	})
     	.error(
     	function(error){
@@ -1098,7 +1091,6 @@ ndexApp.controller('manageNetworkAccessController',
     		networkManager.errors.push(error.data)
     	})
 
-	networkManager.getStatusOfShareableURL();
 	networkManager.loadUserPermissionsOnNetwork();
 	networkManager.loadGroupPermissionsOnNetwork();
 

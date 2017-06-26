@@ -59,6 +59,7 @@
                 {
                     var modalInstance = $modal.open({
                         templateUrl: 'pages/generic-info-modal.html',
+                        backdrop: 'static',
 
                         controller: function($scope, $modalInstance) {
 
@@ -287,6 +288,7 @@
         }
     });
 
+
     uiServiceApp.directive('triggerEditNetworkSetModal', function() {
         return {
             scope: {
@@ -370,6 +372,7 @@
         }
     });
 
+    /*
     uiServiceApp.directive('triggerShareNetworkSetModal', function() {
         return {
             scope: {
@@ -432,6 +435,7 @@
             }
         }
     });
+    */
 
     //----------------------------------------------------
     //              Elements
@@ -1699,6 +1703,7 @@
 
 
     // modal to edit network summary
+/*
     uiServiceApp.directive('editNetworkSummaryModal', function() {
         return {
             scope: {
@@ -1905,7 +1910,7 @@
             }
         }
     });
-
+*/
 
     // modal to show network reference
     uiServiceApp.directive('showNetworkReference', function() {

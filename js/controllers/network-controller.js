@@ -1,11 +1,11 @@
 ndexApp.controller('networkController',
     ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
-        'sharedProperties', '$scope', '$routeParams', '$modal',
+        'sharedProperties', '$scope', '$routeParams', '$modal', '$modalStack',
         '$route', '$location', 'uiGridConstants', 'uiMisc', /*'$filter', '$location','$q',*/
         function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
-                  sharedProperties, $scope, $routeParams, $modal,
+                  sharedProperties, $scope, $routeParams, $modal, $modalStack,
                   $route , $location, uiGridConstants, uiMisc /*, $filter /*, $location, $q */)
         {
             var self = this;
@@ -41,9 +41,6 @@ ndexApp.controller('networkController',
             // turn on (show) Search menu item on the Nav Bar
             $scope.$parent.showSearchMenu = true;
 
-            // turn on (show) Graphic View and Table View menu items on the Nav Bar
-            $scope.$parent.showViewMenus = true;
-
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
 
             networkController.advancedQueryNodeCriteria = 'Source';
@@ -61,6 +58,18 @@ ndexApp.controller('networkController',
 
             networkController.isAdmin = false;
 
+            networkController.networkShareURL = null;
+
+            // get URL of this network without network access key; this URL is used
+            // for copying it to clipboard if this Network is PUBLIC
+            networkController.networkURL = uiMisc.buildNetworkURL(null, networkExternalId);
+
+            // close any modal if opened.
+            // We need to close a modal in case we come to this page
+            // if we cloned a network and followed a link to the newly cloned network
+            // from the "Network Cloned" information modal.
+            $modalStack.dismissAll('close');
+
             networkController.tabs = [
                 {"heading": "Network Info", 'active':true},
                 {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
@@ -76,6 +85,8 @@ ndexApp.controller('networkController',
             networkController.networkSets = [];
 
             networkController.isNetworkOwner = false;
+
+            networkController.otherProperties = [];
 
 
             //networkController.prettyStyle = "no style yet";
@@ -290,10 +301,7 @@ ndexApp.controller('networkController',
                 // hide the Search menu item in Nav Bar
                 $scope.$parent.showSearchMenu = false;
 
-                showSearchMenuItem();
-
-                // also, hide the Graphic View nad Table View menu items from that nav bar
-                $scope.$parent.showViewMenus = false;
+                uiMisc.showSearchMenuItem();
             });
 
             /*
@@ -416,18 +424,6 @@ ndexApp.controller('networkController',
                     networkController.displayProvenance = obj;
                 });
             };
-
-
-            var hideSearchMenuItem = function() {
-                var searhMenuItemElement = document.getElementById("searchBarId");
-                searhMenuItemElement.style.display = 'none';
-            }
-
-            var showSearchMenuItem = function() {
-                var searhMenuItemElement = document.getElementById("searchBarId");
-                searhMenuItemElement.style.display = 'block';
-            }
-
 
             /*
             var getNetworkAdmins = function()
@@ -2045,14 +2041,14 @@ ndexApp.controller('networkController',
 
                         if (!data) {
                             // empty string - access is deactivated
-                            networkController.networkSetShareableURL = null;
+                            networkController.networkShareURL = null;
                         } else if (data['accessKey']) {
                             // received  data['accessKey'] - access is enabled
-                            networkController.networkSetShareableURL =
-                                uiMisc.buildShareableNetworkURL(data['accessKey'], networkExternalId);
+                            networkController.networkShareURL =
+                                uiMisc.buildNetworkURL(data['accessKey'], networkExternalId);
                         } else {
                             // this should not happen; something went wrong; access deactivated
-                            networkController.networkSetShareableURL = null;
+                            networkController.networkShareURL = null;
                         };
                     },
                     function(error) {
@@ -2445,11 +2441,11 @@ ndexApp.controller('networkController',
                         , position: 'absolute' // Element positioning
                     }
 
-                    var target = document.getElementById(spinnerId)
+                    var target = document.getElementById(spinnerId);
                     spinner = new Spinner(opts).spin(target);
 
                 } else {
-                    var target = document.getElementById(spinnerId)
+                    var target = document.getElementById(spinnerId);
                     spinner.spin(target);
                 }
             }
@@ -2479,6 +2475,50 @@ ndexApp.controller('networkController',
                     });
             };
 
+            networkController.cloneNetwork = function() {
+
+                var title = 'Clone This Network';
+
+                var networkName  = 'The network <strong>' + networkController.currentNetwork.name + '</strong> ';
+
+                var message = networkName +
+                    'will be cloned to your account. <br><br> Are you sure you want to proceed?';
+
+                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                    function () {
+                        ndexService.cloneNetworkV2(networkController.currentNetworkId,
+                            function(data, status, headers, config, statusText) {
+
+                                var clonedNetworkUUID = data.split("/").pop();
+                                title = "Network Cloned";
+                                message  = networkName + " cloned to your account.<br><br>";
+                                message = message +
+                                    "Follow this <a href='#/network/" + clonedNetworkUUID + "'>link</a> " +
+                                    " to go the clone of <strong>" + networkController.currentNetwork.name +
+                                    "</strong>.";
+
+                                title = "Network Cloned";
+                                ndexNavigation.genericInfoModal(title, message);
+                            },
+                            function(error) {
+                                title = "Unable to Clone Network";
+                                message  = networkName + " wasn't cloned to your account.";
+
+                                if (error.message) {
+                                    message = message + '<br><br>' + error.message;
+                                };
+
+                                ndexNavigation.genericInfoModal(title, message);
+                            });
+                    },
+                    function () {
+                        // User selected Cancel; return
+                        return;
+                    });
+
+                return;
+            };
+
 
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
@@ -2489,7 +2529,7 @@ ndexApp.controller('networkController',
             
             startSpinner();
 
-            hideSearchMenuItem();
+            uiMisc.hideSearchMenuItem();
 
             initialize();
         }
