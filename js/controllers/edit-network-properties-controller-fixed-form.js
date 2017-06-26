@@ -188,7 +188,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         $scope.score = 0;
 
         var myElement = angular.element(document.querySelector('#descriptionTextBox'));
-        console.log(myElement);
+        //console.log(myElement);
 
         for(var i=0; i<editor.propertyValuePairs.length; i++) {
             var pair = editor.propertyValuePairs[i];
@@ -398,7 +398,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     };
 
 
-            editor.save = function() {
+    editor.save = function() {
         if( $scope.isProcessing )
             return;
         $scope.isProcessing = true;
@@ -441,7 +441,44 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
         var networkProperties = editor.propertyValuePairs.concat(editor.hiddenValuePairs);
 
-		ndexService.setNetworkPropertiesV2(networkExternalId, networkProperties,
+        //$scope.mainProperty = {
+        //    "name": "",
+        //    "description": "",
+        //    "reference": "",
+        //    "version": "",
+        //    "visibility": "PRIVATE"
+        //}
+
+        var networkSummaryProperties = {
+            'properties': networkProperties,
+            'name': $scope.mainProperty.name,
+            'description': $scope.mainProperty.description,
+            'version': $scope.mainProperty.version
+        }
+
+        ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
+            function(data) {
+                //$route.reload();
+                var networkViewPage = sharedProperties.getNetworkViewPage();
+                var networkID = editor.networkExternalId;
+                $location.path(networkViewPage + networkID);
+                $scope.isProcessing = false;
+            },
+            function(error) {
+
+                if (error.data && error.data.message) {
+                    editor.errors.push(error.data.message);
+                } else {
+                    editor.errors.push("Server returned HTTP error response code : " +
+                        error.status + ". Error message : " + error.statusText + ".");
+                }
+
+                $scope.isProcessing = false;
+            });
+
+
+/*
+        ndexService.setNetworkPropertiesV2(networkExternalId, networkProperties,
 			function(data) {
 				//$route.reload();
                 var networkViewPage = sharedProperties.getNetworkViewPage();
@@ -460,6 +497,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                 $scope.isProcessing = false;
             });
+*/
 
 	};
 

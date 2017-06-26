@@ -25,6 +25,22 @@
 	<hr>
 </div>
 
+<div class='row'>
+	<div class='col-sm-offset-2 col-sm-2'>
+
+
+		<h4 style="margin-top:0px;" class="pull-right">NDEx Score {{score}}</h4>
+	</div>
+
+	<div class='col-sm-8'>
+		<div class="progress" style="width: 500px;">
+			<div class="progress-bar progress-bar-striped" ng-class="scoreClass" role="progressbar" style="min-width: 2%;" aria-valuenow="{{score}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( score + '%' ) }">
+			</div>
+		</div>
+	</div>
+</div>
+<hr style="margin-top:0px;">
+
 
 <div class='row'>
 	<div class='col-sm-9'>
@@ -33,22 +49,6 @@
 		<p class='text-info' ng-show='editor.isAdmin || editor.canEdit'>Selected ontologies must be defined. However, they are not required. Select none if you do not wish to use an ontology.</p>
 		<br>
 -->
-		<div class='row'>
-			<div class='col-sm-offset-3 col-sm-2'>
-
-
-				<h4 style="margin-top:0px;" class="pull-right">NDEx Score {{score}}</h4>
-			</div>
-
-			<div class='col-sm-7'>
-				<div class="progress" style="width: 500px;">
-					<div class="progress-bar progress-bar-striped" ng-class="scoreClass" role="progressbar" style="min-width: 2%;" aria-valuenow="{{score}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( score + '%' ) }">
-					</div>
-				</div>
-			</div>
-		</div>
-		<hr style="margin-top:0px;">
-
 		<form role="form" ng-submit='editor.save()'>
 
 			<!--
@@ -158,7 +158,7 @@
 
 			<div class="row">
 				<div class='col-sm-offset-1 col-sm-8'>
-					<hr style="margin-top:5px; margin-bottom:5px;">
+					<hr style="margin-top:5px; margin-bottom:15px;">
 				</div>
 			</div>
 

@@ -831,6 +831,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.setNetworkSummaryV2 = function(networkId, summaryProperties, successHandler, errorHandler) {
+                // Server API: Set Network Properties
+                // PUT /network/{networkId}/properties
+
+                var url = "/network/" + networkId + "/summary";
+                var config = ndexConfigs.getPutConfigV2(url, summaryProperties);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.updateNetworkProfileV2 = function (networkId, profile, successHandler, errorHandler) {
                 // Server API: Update Network Profile
                 // PUT /network/{networkId}/profile
