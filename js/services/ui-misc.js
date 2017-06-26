@@ -390,5 +390,35 @@ angular.module('ndexServiceApp')
         };
 
 
+        self.showAvailableDiskSpace = function(userInfo) {
+            var diskInfo = {};
+
+            diskInfo['diskQuota'] = userInfo.diskQuota;
+            diskInfo['diskUsed']  = userInfo.diskUsed;
+
+            //diskInfo['diskPercentageUsed'] = Math.floor(userInfo.diskUsed / userInfo.diskQuota * 100);
+            diskInfo['diskPercentageUsed'] = parseFloat(userInfo.diskUsed / userInfo.diskQuota * 100).toFixed(2);
+
+            diskInfo['diskPercentageUsedStyle'] = {
+                'width':  diskInfo['diskPercentageUsed'] + '%',
+                'color': 'black'
+            };
+
+            if (diskInfo['diskPercentageUsed'] <= 25) {
+                diskInfo['diskPercentageUsedClass'] = "progress-bar progress-bar-success";
+
+            } else if ((diskInfo['diskPercentageUsed'] > 25) && (diskInfo['diskPercentageUsed'] <= 50)) {
+                diskInfo['diskPercentageUsedClass'] = "progress-bar progress-bar-info";
+
+            } else if ((diskInfo['diskPercentageUsed'] > 50) && (diskInfo['diskPercentageUsed'] <= 75)) {
+                diskInfo['diskPercentageUsedClass'] = "progress-bar progress-bar-warning";
+
+            } else { // 76% or more
+                diskInfo['diskPercentageUsedClass'] = "progress-bar progress-bar-danger";
+            };
+
+            return diskInfo;
+        };
+
     }
 ]);

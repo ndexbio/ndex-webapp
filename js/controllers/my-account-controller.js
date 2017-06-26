@@ -61,6 +61,8 @@ ndexApp.controller('myAccountController',
                 uiMisc.showSearchMenuItem();
             });
 
+            $scope.diskSpaceInfo = {};
+
             uiMisc.hideSearchMenuItem();
             $scope.$parent.showSearchMenu = true;
 
@@ -1493,34 +1495,6 @@ ndexApp.controller('myAccountController',
             };
 
 
-            $scope.showAvailableDiskSpace = function(user) {
-
-                $scope.diskQuota = user.diskQuota;
-                $scope.diskUsed  = user.diskUsed;
-
-                $scope.diskPercentageUsed = Math.floor(user.diskUsed / user.diskQuota * 100);
-
-                $scope.diskPercentageUsedStyle = {
-                    'width':  $scope.diskPercentageUsed + '%',
-                    'color': 'black'
-                };
-
-                if ($scope.diskPercentageUsed <= 25) {
-                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-success";
-
-                } else if (($scope.diskPercentageUsed > 25) && ($scope.diskPercentageUsed <= 50)) {
-                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-info";
-
-                } else if (($scope.diskPercentageUsed > 50) && ($scope.diskPercentageUsed <= 75)) {
-                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-warning";
-
-                } else { // 76% or more
-                    $scope.diskPercentageUsedClass = "progress-bar progress-bar-danger";
-
-                };
-            };
-
-
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
@@ -1530,7 +1504,7 @@ ndexApp.controller('myAccountController',
                 {
                     myAccountController.displayedUser = user;
 
-                    $scope.showAvailableDiskSpace(user);
+                    $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
 
                     cUser = user;
 

@@ -2,7 +2,35 @@
 
     <div class="col-md-3">
 
-        <h3>Select files</h3>
+        <div class='row'>
+            <ndex-account-image
+                    ndex-class="'col-md-10'"
+                    ndex-src="uploadController.displayedUser.image">
+            </ndex-account-image>
+        </div>
+        <h4>
+            {{uploadController.displayedUser.firstName}} {{uploadController.displayedUser.lastName}}
+        </h4>
+        <div>
+            <small>{{uploadController.displayedUser.accountName}}</small>
+        </div>
+        <div class="wrapLongLine">
+            <a href="{{uploadController.displayedUser.website}}" target="_blank">
+                {{uploadController.displayedUser.website}}
+            </a>
+        </div>
+
+        <div class="wrapLongLine" ng-bind-html="uploadController.displayedUser.description"></div>
+
+        <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskSpaceInfo.diskPercentageUsed}}%</div>
+        <div class="progress progress-striped" ng-if="diskSpaceInfo.diskPercentageUsed > 0">
+            <div ng-class="diskSpaceInfo.diskPercentageUsedClass" ng-style="diskSpaceInfo.diskPercentageUsedStyle"></div>
+        </div>
+
+
+        <hr>
+
+        <h3><strong>Select files</strong></h3>
 
         <input type="file" class="btn btn-success btn-xs" nv-file-select uploader="uploader" multiple />
 
@@ -17,7 +45,9 @@
 
         <p>The status of each file will update as NDEx processes it.</p>
 
+
     </div>
+
 
     <div class="col-md-9" style="margin-bottom: 40px">
 
