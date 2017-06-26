@@ -4,7 +4,7 @@
     <div class="col-md-2">
         <div class="row">
             <div class='row'>
-                <ndex-account-image 
+                <ndex-account-image
                         ndex-class="'col-md-10'"
                         ndex-src="myAccountController.displayedUser.image">
                 </ndex-account-image>
@@ -23,9 +23,9 @@
 
             <div class="wrapLongLine" ng-bind-html="myAccountController.displayedUser.description"></div>
 
-            <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskPercentageUsed}}%</div>
-            <div class="progress progress-striped" ng-if="diskPercentageUsed > 0">
-                <div ng-class="diskPercentageUsedClass" ng-style="diskPercentageUsedStyle"></div>
+            <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskSpaceInfo.diskPercentageUsed}}%</div>
+            <div class="progress progress-striped" ng-if="diskSpaceInfo.diskPercentageUsed > 0">
+                <div ng-class="diskSpaceInfo.diskPercentageUsedClass" ng-style="diskSpaceInfo.diskPercentageUsedStyle"></div>
             </div>
 
             <span ng-show="myAccountController.isLoggedInUser && myAccountController.identifier == myAccountController.loggedInIdentifier">
@@ -440,3 +440,8 @@
     </div>
 
 </div>
+
+
+<script type="text/ng-template" id="my_account_info.html">
+
+</script>

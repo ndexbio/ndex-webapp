@@ -1,14 +1,20 @@
 ndexApp.controller('uploadController',
-    ['FileUploader', 'ndexService',  'ndexConfigs', 'ndexUtility', 'sharedProperties', '$scope', '$routeParams', '$modal', '$location',
-        function(FileUploader, ndexService, ndexConfigs, ndexUtility, sharedProperties, $scope, $routeParams, $modal, $location) {
+    ['FileUploader', 'ndexService',  'ndexConfigs', 'ndexUtility', 'sharedProperties',
+        '$scope', '$routeParams', '$modal', '$location', 'ndexNavigation', 'uiMisc',
+        function(FileUploader, ndexService, ndexConfigs, ndexUtility, sharedProperties,
+                 $scope, $routeParams, $modal, $location, ndexNavigation, uiMisc) {
 
             $scope.tasks = null;
             $scope.taskSkipBlocks = 0;
             $scope.taskBlockSize = 100;
 
             $scope.uploadController = {};
+            $scope.diskSpaceInfo = {};
 
             var uploadController = $scope.uploadController;
+
+            uploadController.displayedUser = {};
+            var userUUID = ndexUtility.getLoggedInUserExternalId();
 
             var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
             uploadController.uploadSizeLimit = config.uploadSizeLimit;
@@ -176,29 +182,60 @@ ndexApp.controller('uploadController',
                 uploadController.fileSizeError = false;
                 //console.info('onSuccessItem', fileItem, response, status, headers);
             };
+
             uploader.onErrorItem = function(fileItem, response, status, headers) {
                 //console.info('onErrorItem', fileItem, response, status, headers);
+
+                var title = "Unable to Upload Network";
+                var message  = "<strong>" + fileItem['file']['name'] + "</strong> wasn't uploaded to your account.";
+
+                if (response.message) {
+                    message = message + '<br><br>' + response.message;
+                };
+
+                ndexNavigation.genericInfoModal(title, message);
             };
+
             uploader.onCancelItem = function(fileItem, response, status, headers) {
                 uploadController.fileExtensionError = false;
                 uploadController.fileSizeError = false;
                 //console.info('onCancelItem', fileItem, response, status, headers);
             };
+
             uploader.onCompleteItem = function(fileItem, response, status, headers) {
                 uploadController.fileExtensionError = false;
                 uploadController.fileSizeError = false;
+
+                // file uploading is done, update available disk information
+                $scope.getUserAndDiskInfo();
+
                 //console.log('onCompleteItem', fileItem, response, status, headers);
                 //console.info('onCompleteItem', fileItem, response, status, headers);
             };
+
             uploader.onCompleteAll = function() {
                 uploadController.fileExtensionError = false;
                 uploadController.fileSizeError = false;
+
                 //console.info('onCompleteAll');
                 //console.log('onCompleteAll');
                 $scope.refreshTasks();
             };
 
+            $scope.getUserAndDiskInfo = function() {
+                    ndexService.getUserByUUIDV2(userUUID)
+                        .success(
+                            function (user) {
+                                uploadController.displayedUser = user;
+                                $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+                            })
+            };
+
             //console.info('uploader', uploader);
 
+            $scope.getUserAndDiskInfo();
+
             $scope.refreshTasks();
+
+
         }]);
