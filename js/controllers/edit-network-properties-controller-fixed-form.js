@@ -454,13 +454,18 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
         var networkProperties = editor.propertyValuePairs.concat(editor.hiddenValuePairs);
 
-        //$scope.mainProperty = {
-        //    "name": "",
-        //    "description": "",
-        //    "reference": "",
-        //    "version": "",
-        //    "visibility": "PRIVATE"
-        //}
+        var foundReference = false;
+        for (var i=0;i<networkProperties.length;i++){
+            if(networkProperties[i].predicateString === "reference"){
+                networkProperties[i].value = $scope.mainProperty.reference;
+                foundReference = true;
+            }
+        }
+
+        if(!foundReference){
+            networkProperties.push({"dataType": "string", "predicateString": "reference",
+                "subNetworkId": null, "value": $scope.mainProperty.reference});
+        }
 
         var networkSummaryProperties = {
             'properties': networkProperties,
