@@ -1,5 +1,5 @@
 <div>
-    <!--<div class="col-sm-offset-1 col-sm-5">
+    <div class="col-sm-offset-1 col-sm-4">
         <div class='input-group'>
             <input class="form-control input-sm" type="text"
                    placeholder="Label" disabled ng-model='propertyModel.predicateString'>
@@ -10,7 +10,7 @@
 							<strong>{{propertyModel.labelError}}</strong>
 						</span>
 
-    </div>-->
+    </div>
 
 
 
@@ -20,7 +20,7 @@
 
 
 
-    <div class="col-sm-offset-1 col-sm-5">
+<!--    <div class="col-sm-offset-1 col-sm-5">
         <div class='input-group'>
 
             <input class="form-control input-sm"
@@ -49,7 +49,7 @@
 				</span>
 
     </div>
-
+-->
 
 
 
@@ -58,14 +58,22 @@
 
 
     <div class="col-sm-5">
-        {{isAdmin}} {{isEdit}} {{propertyModel.predicateString}}
         <input class="form-control input-sm" placeholder="Value"
-               ng-model='propertyModel.value'
-               ng-readonly='!(isAdmin || isEdit) || !(propertyModel.predicateString)'>
+               ng-model='propertyModel.value' ng-change="updateScore()">
+        <!-- ng-readonly='!(isAdmin || isEdit) || !(propertyModel.predicateString)'>-->
     </div>
+    <div class="col-sm-1">
+        <i ng-if="propertyModel.value.length > 0" class="fa fa-star icon-fixed-width" style="color: gold; margin-top: 10px;" aria-hidden="true"></i>
+        <i ng-if="propertyModel.value.length < 1" class="fa fa-star-o icon-fixed-width" style="color: white; margin-top: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+        <button type='button' class='btn btn-link pull-right' style="margin-right: 5px;" ng-click='vpsplice(); editorChangedCall(propertyModel.predicateString, propertyModel);'>
+            <span class="glyphicon glyphicon-remove text-muted"></span>
+        </button>
+    </div>
+    <!--
     <div class='' ng-hide='$last || !(isAdmin || isEdit)'>
         <button type='button' class='btn btn-link' ng-click='vpsplice(); editorChangedCall(propertyModel.predicateString, propertyModel);'>
             <span class="glyphicon glyphicon-remove text-muted"></span>
         </button>
     </div>
+    -->
 </div>

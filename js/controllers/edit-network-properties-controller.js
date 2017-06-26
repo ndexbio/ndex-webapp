@@ -29,6 +29,17 @@ ndexApp.controller('editNetworkPropertiesController',
     editor.showNameSpaces = false;
     editor.propertyValuePairs = [];
     editor.hiddenValuePairs = [];
+    editor.propertyTemplate = {
+        'author': {predicateString: "author", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'disease': {predicateString: "disease", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'labels': {predicateString: "labels", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'methods': {predicateString: "methods", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'organism': {predicateString: "organism", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'networkType': {predicateString: "networkType", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'rights': {predicateString: "rights", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'rightsHolder': {predicateString: "rightsHolder", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
+        'tissue': {predicateString: "tissue", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId}
+    }
 
     editor.buildAttributeDictionary = function() {
         var dict = {};
@@ -527,6 +538,26 @@ ndexApp.controller('editNetworkPropertiesController',
                     $scope.namesForSolrIndexing.splice($scope.namesForSolrIndexing.indexOf("custom..."))
                 }
                 $scope.namesForSolrIndexing.push("custom...");
+
+
+
+                for (var label in editor.propertyTemplate) {
+                    // skip loop if the property is from prototype
+                    if(editor.propertyTemplate.hasOwnProperty(label)){
+                        var foundKey = false;
+                        for(var i=0; i< editor.propertyValuePairs.length; i++) {
+                            if(editor.propertyValuePairs[i].predicateString === label){
+                                foundKey = true;
+                                break;
+                            }
+                        }
+
+                        if(!foundKey){
+                            editor.propertyValuePairs.push(editor.propertyTemplate[label]);
+                        }
+
+                    }
+                }
 
 
                 editor.propertyValuePairs.push({dataType: "string", predicateString: "", value: "", subNetworkId: subNetworkId});
