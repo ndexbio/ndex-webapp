@@ -19,6 +19,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.isAdmin = false;
     editor.canEdit = false;
     editor.canRead = false;
+    editor.showcased = {"state": true};
 
     editor.reference = null;
 
@@ -484,6 +485,16 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     var networkID = editor.networkExternalId;
                     $location.path(networkViewPage + networkID);
                     $scope.isProcessing = false;
+
+                    if($scope.mainProperty.visibility == "PUBLIC"){
+                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", editor.showcased.state,
+                            function (data, networkId, property, value) {
+                                //myAccountController.updateShowcaseOfNetwork(networkId, true);
+                            },
+                            function (error, networkId, property, value) {
+                                console.log("unable to change showcase for Network with Id " + networkId);
+                            });
+                    }
                 },
                 function(error) {
 
@@ -671,6 +682,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 }
                 $scope.mainProperty.version = network.version;
                 $scope.mainProperty.visibility = network.visibility;
+                editor.showcased.state = network.isShowcase;
 
                 // break network properties into two sets: one set is "hidden", it contains
                 // "reserved property names" that every network has (these names are listed in $scope.reservedNames).
