@@ -116,6 +116,12 @@
 								</select>
 							</span>
 						</div>
+
+						<div class="col-sm-1">
+							<div class="input-group-btn">
+								<i ng-if="(mainProperty.description.length < 1 || mainProperty.name.length < 1 || mainProperty.version.length < 1) && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+							</div>
+						</div>
 					</div>
 				</div>
 

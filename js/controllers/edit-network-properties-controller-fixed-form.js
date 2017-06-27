@@ -473,7 +473,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 'properties': networkProperties,
                 'name': $scope.mainProperty.name,
                 'description': $scope.mainProperty.description,
-                'version': $scope.mainProperty.version
+                'version': $scope.mainProperty.version,
+                'visibility': $scope.mainProperty.visibility
             }
 
             ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
