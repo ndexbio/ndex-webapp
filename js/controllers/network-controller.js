@@ -2378,7 +2378,10 @@ ndexApp.controller('networkController',
                                 if (network.visibility == 'PUBLIC'
                                     || networkController.isAdmin
                                     || networkController.canEdit
-                                    || networkController.canRead) {
+                                    || networkController.canRead
+                                    || networkController.canRead
+                                    || accesskey)
+                                {
                                     getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
                                 }
                             });
