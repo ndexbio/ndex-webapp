@@ -1,6 +1,6 @@
 ndexApp.controller('editNetworkPropertiesFixedFormController',
-	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout', 'uiMisc',
-		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc){
+	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout', 'uiMisc', 'ndexNavigation',
+		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc, ndexNavigation){
 	 //testing
 
 	//              Process the URL to get application state
@@ -19,6 +19,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.isAdmin = false;
     editor.canEdit = false;
     editor.canRead = false;
+    editor.showcased = {"state": true};
 
     editor.reference = null;
 
@@ -412,112 +413,142 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
 
     editor.save = function() {
-        if( $scope.isProcessing )
-            return;
-        $scope.isProcessing = true;
+        if(editor.checkPublicRequirements()){
 
-		var length = editor.propertyValuePairs.length;
-        var i = 0;
+            if( $scope.isProcessing )
+                return;
+            $scope.isProcessing = true;
 
-        // remove all "reserved property" (listed in $scope.reservedNames) attributes from
-        // editor.propertyValuePairs, if there are any;
-        // also, remove all attributes with no values
-        while (i < length){
+            var length = editor.propertyValuePairs.length;
+            var i = 0;
 
-            if( (editor.propertyValuePairs[i].predicateString &&
-                ($scope.reservedNames.indexOf(editor.propertyValuePairs[i].predicateString.toLowerCase()) != -1)) ||
-                (!editor.propertyValuePairs[i].value) )
-            {
+            // remove all "reserved property" (listed in $scope.reservedNames) attributes from
+            // editor.propertyValuePairs, if there are any;
+            // also, remove all attributes with no values
+            while (i < length){
 
-                editor.propertyValuePairs.splice(i,1);
-                length = length - 1;
+                if( (editor.propertyValuePairs[i].predicateString &&
+                    ($scope.reservedNames.indexOf(editor.propertyValuePairs[i].predicateString.toLowerCase()) != -1)) ||
+                    (!editor.propertyValuePairs[i].value) )
+                {
 
-                // here, DO NOT increment the loop counter i since array has shrunk
-                // after splicing and we have a new element at editor.propertyValuePairs[i] after splicing
-                continue;
-            }
-            i = i + 1;
-        }
+                    editor.propertyValuePairs.splice(i,1);
+                    length = length - 1;
 
-        length = editor.propertyValuePairs.length;
-
-		for(var ii=0; ii<length; ii++){
-			var pair = editor.propertyValuePairs[ii];
-
-            if(pair.predicateString === 'custom...')
-                pair.predicateString = pair.predicateStringCustom;
-
-            delete pair.isReadOnlyLabel;
-            delete pair.labelValue;
-            delete pair.labelValue;
-		}
-
-        var networkProperties = editor.propertyValuePairs.concat(editor.hiddenValuePairs);
-
-        var foundReference = false;
-        for (var i=0;i<networkProperties.length;i++){
-            if(networkProperties[i].predicateString === "reference"){
-                networkProperties[i].value = $scope.mainProperty.reference;
-                foundReference = true;
-            }
-        }
-
-        if(!foundReference){
-            networkProperties.push({"dataType": "string", "predicateString": "reference",
-                "subNetworkId": null, "value": $scope.mainProperty.reference});
-        }
-
-        var networkSummaryProperties = {
-            'properties': networkProperties,
-            'name': $scope.mainProperty.name,
-            'description': $scope.mainProperty.description,
-            'version': $scope.mainProperty.version
-        }
-
-        ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
-            function(data) {
-                //$route.reload();
-                var networkViewPage = sharedProperties.getNetworkViewPage();
-                var networkID = editor.networkExternalId;
-                $location.path(networkViewPage + networkID);
-                $scope.isProcessing = false;
-            },
-            function(error) {
-
-                if (error.data && error.data.message) {
-                    editor.errors.push(error.data.message);
-                } else {
-                    editor.errors.push("Server returned HTTP error response code : " +
-                        error.status + ". Error message : " + error.statusText + ".");
+                    // here, DO NOT increment the loop counter i since array has shrunk
+                    // after splicing and we have a new element at editor.propertyValuePairs[i] after splicing
+                    continue;
                 }
+                i = i + 1;
+            }
 
-                $scope.isProcessing = false;
-            });
+            length = editor.propertyValuePairs.length;
 
+            for(var ii=0; ii<length; ii++){
+                var pair = editor.propertyValuePairs[ii];
 
-/*
-        ndexService.setNetworkPropertiesV2(networkExternalId, networkProperties,
-			function(data) {
-				//$route.reload();
-                var networkViewPage = sharedProperties.getNetworkViewPage();
-                var networkID = editor.networkExternalId;
-                $location.path(networkViewPage + networkID);
-                $scope.isProcessing = false;
-			},
-			function(error) {
+                if(pair.predicateString === 'custom...')
+                    pair.predicateString = pair.predicateStringCustom;
 
-                if (error.data && error.data.message) {
-                    editor.errors.push(error.data.message);
-                } else {
-                    editor.errors.push("Server returned HTTP error response code : " +
-                        error.status + ". Error message : " + error.statusText + ".");
+                delete pair.isReadOnlyLabel;
+                delete pair.labelValue;
+                delete pair.labelValue;
+            }
+
+            var networkProperties = editor.propertyValuePairs.concat(editor.hiddenValuePairs);
+
+            var foundReference = false;
+            for (var i=0;i<networkProperties.length;i++){
+                if(networkProperties[i].predicateString === "reference"){
+                    networkProperties[i].value = $scope.mainProperty.reference;
+                    foundReference = true;
                 }
+            }
 
-                $scope.isProcessing = false;
-            });
-*/
+            if(!foundReference){
+                networkProperties.push({"dataType": "string", "predicateString": "reference",
+                    "subNetworkId": null, "value": $scope.mainProperty.reference});
+            }
+
+            var networkSummaryProperties = {
+                'properties': networkProperties,
+                'name': $scope.mainProperty.name,
+                'description': $scope.mainProperty.description,
+                'version': $scope.mainProperty.version,
+                'visibility': $scope.mainProperty.visibility
+            }
+
+            ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
+                function(data) {
+                    //$route.reload();
+                    var networkViewPage = sharedProperties.getNetworkViewPage();
+                    var networkID = editor.networkExternalId;
+                    $location.path(networkViewPage + networkID);
+                    $scope.isProcessing = false;
+
+                    if($scope.mainProperty.visibility == "PUBLIC"){
+                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", editor.showcased.state,
+                            function (data, networkId, property, value) {
+                                //myAccountController.updateShowcaseOfNetwork(networkId, true);
+                            },
+                            function (error, networkId, property, value) {
+                                console.log("unable to change showcase for Network with Id " + networkId);
+                            });
+                    }
+                },
+                function(error) {
+
+                    if (error.data && error.data.message) {
+                        editor.errors.push(error.data.message);
+                    } else {
+                        editor.errors.push("Server returned HTTP error response code : " +
+                            error.status + ". Error message : " + error.statusText + ".");
+                    }
+
+                    $scope.isProcessing = false;
+                });
+
+
+    /*
+            ndexService.setNetworkPropertiesV2(networkExternalId, networkProperties,
+                function(data) {
+                    //$route.reload();
+                    var networkViewPage = sharedProperties.getNetworkViewPage();
+                    var networkID = editor.networkExternalId;
+                    $location.path(networkViewPage + networkID);
+                    $scope.isProcessing = false;
+                },
+                function(error) {
+
+                    if (error.data && error.data.message) {
+                        editor.errors.push(error.data.message);
+                    } else {
+                        editor.errors.push("Server returned HTTP error response code : " +
+                            error.status + ". Error message : " + error.statusText + ".");
+                    }
+
+                    $scope.isProcessing = false;
+                });
+    */
+        } else {
+            console.log("can't make public");
+            var title = "Unable to Update Network Access";
+            var message = "Unable to make network public. <br /><br /> <strong>Name, Description and Version</strong> fields are all required to make this network Public";
+            ndexNavigation.genericInfoModal(title, message);
+        }
+
 
 	};
+
+	editor.checkPublicRequirements = function(){
+        if($scope.mainProperty.visibility != "PRIVATE"){
+            if($scope.mainProperty.name.length < 1 || $scope.mainProperty.description.length < 1 || $scope.mainProperty.version.length < 1){
+                return false;
+            }
+        }
+
+        return true;
+    };
 
 	editor.removeNamespace = function(index) {
 		editor.ontologies.splice(index,1);
@@ -651,6 +682,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 }
                 $scope.mainProperty.version = network.version;
                 $scope.mainProperty.visibility = network.visibility;
+                editor.showcased.state = network.isShowcase;
 
                 // break network properties into two sets: one set is "hidden", it contains
                 // "reserved property names" that every network has (these names are listed in $scope.reservedNames).
@@ -717,6 +749,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.propertyValuePairs.push({dataType: "string", predicateString: "", value: "", subNetworkId: subNetworkId});
 
                 editor.disableSaveChangesButton = editor.checkIfFormIsValidOnLoad();
+                var networkOwnerUUID = network.ownerUUID;
+                var loggedInUserUUID = sharedProperties.getCurrentUserId();
+                editor.isOwner = (networkOwnerUUID == loggedInUserUUID);
+                var me = "";
+
             }
         )
         .error(

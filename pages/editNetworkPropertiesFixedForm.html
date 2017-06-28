@@ -3,6 +3,47 @@
 	border: 2px solid green;
 }
 
+
+@media (min-width: 1599px) {
+	.main-area {
+		width: 75%;
+	}
+}
+
+@media (max-width: 1600px) {
+	.main-area {
+		width: 100%;
+	}
+}
+
+input[type='radio']:after {
+	width: 15px;
+	height: 15px;
+	border-radius: 15px;
+	top: -2px;
+	left: -1px;
+	position: relative;
+	background-color: #eee;/*#d1d3d1;*/
+	content: '';
+	display: inline-block;
+	visibility: visible;
+	border: 2px solid white;
+}
+
+input[type='radio']:checked:after {
+	width: 15px;
+	height: 15px;
+	border-radius: 15px;
+	top: -2px;
+	left: -1px;
+	position: relative;
+	background-color: #606060;
+	content: '';
+	display: inline-block;
+	visibility: visible;
+	border: 2px solid white;
+}
+
 </style>
 <div class ='row'>
 	<div class='col-sm-offset-2 col-sm-8'>
@@ -43,7 +84,7 @@
 
 
 <div class='row'>
-	<div class='col-sm-9'>
+	<div class='main-area'>
 
 		<!--<h5><em ng-show='editor.isAdmin || editor.canEdit'>Editing </em>{{editor.networkName}}</h5>
 		<p class='text-info' ng-show='editor.isAdmin || editor.canEdit'>Selected ontologies must be defined. However, they are not required. Select none if you do not wish to use an ontology.</p>
@@ -57,7 +98,7 @@
 			==========================
 			-->
 			<div class='row'>
-				<div class='col-sm-offset-1 col-sm-4'>
+				<div class='col-sm-offset-1 col-sm-5'>
 
 					<div class="form-group rowWithOneLineTopPad">
 						<label class="col-sm-3 control-label">Name</label>
@@ -69,7 +110,10 @@
 						<div class="col-sm-1">
 							<div class="input-group-btn">
 								<i ng-if="mainProperty.name.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-								<i ng-if="mainProperty.name.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+								<div title="Name is required for public status">
+									<i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+								</div>
+								<i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
 							</div>
 						</div>
 					</div>
@@ -91,21 +135,24 @@
 						<div class="col-sm-1">
 							<div class="input-group-btn">
 								<i ng-if="mainProperty.description.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
-								<i ng-if="mainProperty.description.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+								<div title="Description is required for public status">
+									<i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+								</div>
+								<i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
 							</div>
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group" ng-init="eyeopened=false">
 						<label class="col-sm-3 control-label">Visibility</label>
 						<div class="col-sm-4" style="margin-bottom: 15px;">
-							<span ng-if="network.isOwner">
+							<span ng-if="editor.isOwner">
 								<select class="form-control" ng-model='mainProperty.visibility'>
 									<option value='PUBLIC' ng-selected='mainProperty.visibility ==  "PUBLIC"'>Public</option>
 									<option value='PRIVATE' ng-selected='mainProperty.visibility ==  "PRIVATE"'>Private</option>
 								</select>
 							</span>
-							<span ng-if="!network.isOwner">
+							<span ng-if="!editor.isOwner">
 								<select class="form-control" ng-model='mainProperty.visibility'
 										title="Only network owners can change network Visibility" disabled>
 									<option value='PUBLIC' ng-selected='mainProperty.visibility ==  "PUBLIC"'>Public</option>
@@ -113,10 +160,47 @@
 								</select>
 							</span>
 						</div>
+
+						<div class="col-sm-1">
+							<div class="input-group-btn">
+								<div title="Name, Description and Version are required for public status">
+									<i ng-if="(mainProperty.description.length < 1 || mainProperty.name.length < 1 || mainProperty.version.length < 1) && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width"
+									   style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+
+
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-4" ng-if="mainProperty.visibility == 'PUBLIC' && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: -5px;">
+							<div style="font-size: 10px; height: 14px;">Showcase</div>
+							<div>
+								<label class="radio-inline"><input type="radio" ng-model="editor.showcased.state" ng-value="true" id="showcased_r" style="cursor: pointer;" name="optradio">
+									<!--<img src="img/openedeye.png" width="20px" height="20px" style="margin-top: -5px;">-->
+									<i class="fa fa-eye fa-lg" style="color: #4CAE47;" aria-hidden="true"></i>
+								</label>
+								<label class="radio-inline"><input type="radio" ng-model="editor.showcased.state" ng-value="false" id="unshowcased_r" style="cursor: pointer;" name="optradio">
+									<!--<img src="img/closedeye.png" width="20px" height="20px">-->
+									<i class="fa fa-eye-slash fa-lg" style="color: #CF393A;" aria-hidden="true"></i>
+								</label>
+							</div>
+
+
+							<!--<a class="btn btn-default" ng-click="editor.isShowcased=!editor.isShowcased" ng-if="mainProperty.visibility == 'PUBLIXC'">
+								Set showcase
+								<img ng-if="mainProperty.visibility ==  'PUBLIC' && !editor.isShowcased" src="img/openedeye.png"
+									 width="20px" height="20px" style="cursor: pointer; margin-top: -5px;">
+								<img ng-if="mainProperty.visibility ==  'PUBLIC' && editor.isShowcased" src="img/closedeye.png"
+									 width="20px" height="20px" style="cursor: pointer; margin-top: -5px;">
+
+							</a>-->
+						</div>
+
+
 					</div>
 				</div>
 
-				<div class='col-sm-4'>
+				<div class='col-sm-5'>
 
 					<div class="form-group rowWithOneLineTopPad">
 						<label class="col-sm-3 control-label">Version</label>
@@ -128,8 +212,11 @@
 						</div>
 						<div class="col-sm-1">
 							<div class="input-group-btn" style="margin-top: 40px;">
-								<i ng-if="mainProperty.version.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
-								<i ng-if="mainProperty.version.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+								<i ng-if="mainProperty.version.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+								<div title="Version is required for public status">
+									<i ng-if="mainProperty.version.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+								</div>
+								<i ng-if="mainProperty.version.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
 							</div>
 						</div>
 					</div>
@@ -153,11 +240,31 @@
 							</div>
 						</div>
 					</div>
+
+
+
+
+
+					<div class="form-group" ng-show='editor.isAdmin || editor.canEdit'>
+								<div class="pull-right">
+									<button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
+									<button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save Changes</button>
+								</div>
+
+
+					</div>
+
+
+
 				</div>
 			</div>
 
+
+
+
+
 			<div class="row">
-				<div class='col-sm-offset-1 col-sm-8'>
+				<div class='col-sm-offset-1 col-sm-10'>
 					<hr style="margin-top:5px; margin-bottom:15px;">
 				</div>
 			</div>
@@ -168,7 +275,7 @@
 			===================
 			-->
 			<div class='row'>
-				<div class='col-sm-offset-1 col-sm-4'>
+				<div class='col-sm-offset-1 col-sm-5'>
 					<div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
 						<div ng-if="$index <= 5 && property.predicateString != 'custom...'">
 							<label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}" style="text-transform: capitalize;">{{property.predicateString}}</label>
@@ -187,7 +294,7 @@
 					</div>
 
 				</div>
-				<div class='col-sm-4'>
+				<div class='col-sm-5'>
 					<div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
 						<div ng-if="$index > 5 && property.predicateString != 'custom...'">
 							<label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input2{{property.predicateString}}" style="text-transform: capitalize;">{{property.predicateString}}</label>
@@ -213,10 +320,10 @@
 			===================
 			-->
 			<div class='row'>
-				<div class='col-sm-offset-1 col-sm-4'>
+				<div class='col-sm-offset-1 col-sm-5'>
 
 					<div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString"'>
-						<div class="row">
+						<div class="row" ng-if="property.predicateString == 'custom...'">
 							<div>
 								<div class="col-sm-3">
 									<input class="form-control input-sm" ng-show="property.predicateString == 'custom...'"
@@ -246,12 +353,12 @@
 			</div>
 
 			<div class="row" ng-show='editor.isAdmin || editor.canEdit'>
-				<div class='col-sm-offset-1 col-sm-8'>
+				<div class='col-sm-offset-1 col-sm-10'>
 				<hr>
 				</div>
 			</div>
 			<div class="row" ng-show='editor.isAdmin || editor.canEdit'>
-				<div class='col-sm-offset-1 col-sm-8'>
+				<div class='col-sm-offset-1 col-sm-10'>
 					<div class="pull-right">
 						<button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
 						<button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save Changes</button>
