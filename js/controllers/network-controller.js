@@ -1792,7 +1792,7 @@ ndexApp.controller('networkController',
 
                 startSpinner();
                 var edgeLimit = config.networkQueryLimit;
-                networkService.neighborhoodQuery(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, edgeLimit)
+                networkService.neighborhoodQuery(networkController.currentNetworkId, accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
                         function (network) {
                             var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
@@ -1973,7 +1973,7 @@ ndexApp.controller('networkController',
 
                 //console.log(JSON.stringify(postData,null,2));
                 
-                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, postData)
+                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, accesskey, postData)
                     .success(
                         function (networkInNiceCX) {
 
@@ -2353,7 +2353,7 @@ ndexApp.controller('networkController',
 
                 // get network summary
                 // keep a reference to the promise
-                networkService.getNetworkSummaryFromNdexV2(networkExternalId)
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId, accesskey)
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
