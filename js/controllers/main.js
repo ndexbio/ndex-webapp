@@ -600,20 +600,21 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.logoLink.showWarning = false;
             }
 
-            if (typeof config.homeLink === 'undefined') {
-                config.homeLink = {};
+
+            if (typeof config.newsLink === 'undefined') {
+                config.newsLink = {};
             }
-            if (typeof config.homeLink.label === 'undefined') {
-                config.homeLink.label = "Home";
+            if (typeof config.newsLink.label === 'undefined') {
+                config.newsLink.label = "News";
             }
-            if (typeof config.homeLink.href === 'undefined') {
-                config.homeLink.href = "http://www.home.ndexbio.org";
+            if (typeof config.newsLink.href === 'undefined') {
+                config.newsLink.href = "http://www.home.ndexbio.org/index";
             }
-            if (typeof config.homeLink.warning === 'undefined') {
-                config.homeLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+            if (typeof config.newsLink.warning === 'undefined') {
+                config.newsLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
             }
-            if (typeof config.homeLink.showWarning === 'undefined') {
-                config.homeLink.showWarning = false;
+            if (typeof config.newsLink.showWarning === 'undefined') {
+                config.newsLink.showWarning = false;
             }
 
             if (typeof config.aboutLink === 'undefined') {

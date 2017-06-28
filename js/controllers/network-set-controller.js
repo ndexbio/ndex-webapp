@@ -36,8 +36,8 @@ ndexApp.controller('networkSetController',
     networkSetController.networkSetShareableURLLabel = null;
     networkSetController.networkSetOwnerId = null;
 
-    var activateURLLabel   = "Activate URL";
-    var deActivateURLLabel = "Deactivate URL";
+    var activateURLLabel   = "Enable Share URL";
+    var deActivateURLLabel = "Disable Share URL";
 
 
 
