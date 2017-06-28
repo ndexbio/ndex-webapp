@@ -324,6 +324,7 @@ ndexApp.controller('searchController',
 
                         } else {
                             searchController.networkSearchNoResults = true;
+                            searchController.networkSearchInProgress = false;
                         };
                     },
                     function (error)
@@ -331,6 +332,7 @@ ndexApp.controller('searchController',
                         if (error) {
                             searchController.networkSearchResults = [];
                             searchController.errors.push(error.message);
+                            searchController.networkSearchInProgress = false;
                             searchController.networkSearchNoResults = true;
                         };
                     });
@@ -370,6 +372,7 @@ ndexApp.controller('searchController',
 
                         } else {
                             searchController.networkSearchNoResults = true;
+                            searchController.networkSearchInProgress = false;
                         };
                     },
                     function (error)
