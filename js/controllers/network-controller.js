@@ -1413,7 +1413,7 @@ ndexApp.controller('networkController',
                 }
             }
 
-            var getNetworkAndDisplay = function (networkId, callback, accesskey) {
+            var getNetworkAndDisplay = function (networkId, callback) {
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
@@ -2092,7 +2092,7 @@ ndexApp.controller('networkController',
                                     || networkController.canRead
                                     || accesskey) {
                                             resetBackgroudColor();
-                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas,accesskey);
+                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
                                 }
                             });
 
