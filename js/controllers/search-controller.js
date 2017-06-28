@@ -37,11 +37,13 @@ ndexApp.controller('searchController',
             // http://localhost:63342/ndex-webapp/index.html#/search?abccba=test
             searchController.searchString = decodeURIComponent($location.search().searchString);
             searchController.searchType = decodeURIComponent($location.search().searchType);
-
+            searchController.searchTermExpansionSelected =
+                (decodeURIComponent($location.search().searchTermExpansion) == 'true');
 
             // Ensure that we have "search for all" as the default if no parameters are provided
             searchController.searchString = (searchController.searchString.toLowerCase() === 'undefined') ? "" : searchController.searchString;
             searchController.searchType = (searchController.searchType.toLowerCase() === 'undefined') ? "All" : searchController.searchType;
+
 
             // set $scope.main.searchString to searchController.searchString; - this ensures that $scope.main.searchString
             // stays the same (doesn't get reset) in the search window in case of page reload (F5);
@@ -694,12 +696,21 @@ ndexApp.controller('searchController',
             searchController.networkSearchNoResults = true;
 
              if (searchController.searchType === 'All'){
-                searchController.submitNetworkSearch();
+                 if (searchController.searchTermExpansionSelected) {
+                     searchController.submitGeneProteinSearch();
+                 } else {
+                     searchController.submitNetworkSearch();
+                 };
                 searchController.submitGroupSearch();
                 searchController.submitUserSearch();
                 $scope.activateTab('Networks');
 
             } else if (searchController.searchType === 'Networks') {
+                 if (searchController.searchTermExpansionSelected) {
+                     searchController.submitGeneProteinSearch();
+                 } else {
+                     searchController.submitNetworkSearch();
+                 };
                  searchController.submitNetworkSearch();
                  $scope.activateTab('Networks');
 

@@ -217,38 +217,54 @@
                                                 <span class="glyphicon glyphicon-search"></span>
                                             </button>
                                         </span>
-
                                     </div>
-
                                 </div>
-
                             </td>
-
                         </tr>
-                        <tr ng-hide="true" style="border:hidden">
+                        <tr ng-show="stringTooLongWarning">
                             <td bgcolor="#FFFFFF"></td>
                             <td bgcolor="#FFFFFF"></td>
 
                             <td bgcolor="#FFFFFF">
-                                <div class="row" style="margin-left:60px;" ng-click="searchTermExpansion.selected = !searchTermExpansion.selected;">
-                                    <i ng-show="searchTermExpansion.selected" style="color: green;" class="fa fa-check-square fa-lg" aria-hidden="true"></i>
-                                    <i ng-show="!searchTermExpansion.selected" class="fa fa-square-o fa-lg" aria-hidden="true"></i>
+                                <div ng-show="stringTooLongWarning"
+                                     style="color:red; font-size:1.1em; font-weight:bold; margin-left:60px;"
+                                     ng-bind-html="stringTooLongWarning">
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr style="border:hidden">
+                            <td bgcolor="#FFFFFF"></td>
+                            <td bgcolor="#FFFFFF"></td>
+
+                            <td bgcolor="#FFFFFF">
+                                <div class="row" style="margin-left:60px;">
+
+                                    <input type="checkbox"
+                                           ng-disabled="checkSearchTypeAndTermExpansion()"
+                                           title="{{main.searchTitle}}"
+                                           ng-model="main.searchTermExpansionSelected">
+                                            &nbsp;
+                                            <span title="{{main.searchTitle}}">Perform Search Term Expansion (genes and proteins only)</span>
+
+<!--
+                                    <i disabled ng-show="searchTermExpansion.selected" style="color: green;"
+                                       class="fa fa-check-square fa-lg" aria-hidden="true"></i>
+                                    <i disabled ng-show="!searchTermExpansion.selected"
+                                       class="fa fa-square-o fa-lg" aria-hidden="true"></i>
+
                                     <span ng-style="searchTermExpansion.selected ? {'font-size':'1.1em', 'color':'black'} : {'font-size':'1.1em', 'color':'#878787'}">
-                                        &nbsp;Perform Search Term Expansion
+                                        &nbsp;Perform Search Term Expansion (genes and proteins only)
                                     </span>
+ -->
                                 </div>
 
                             </td>
-
                         </tr>
+
                     </div>
 
             </table>
-
-            <div ng-show="stringTooLongWarning"
-                 style="color:red; padding-top:1em; font-size:1.1em; font-weight:bold; margin-left:340px"
-                 ng-bind-html="stringTooLongWarning"></div>
-
         </form>
     </div>
 </script>

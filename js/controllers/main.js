@@ -37,6 +37,16 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.strLength = 0;
         $scope.maxSearchInputLength = 250;
 
+        $scope.notAllowedInSearchExpansion      = [" NOT ", " OR ", " AND ", ":"];
+        $scope.notAllowedInSearchExpansionStart = ["NOT ",  "OR ",  "AND "];
+        $scope.notAllowedInSearchExpansionEnd   = [" NOT",  " OR",  " AND"];
+        $scope.notAllowedInSearchExpansionEqual = ["NOT",   "OR",   "AND", ":"];
+
+        $scope.arrayOfValsForSearchExpansion = ["ALL", "NETWORKS"];
+        $scope.main.searchTitle = "";
+        $scope.main.searchTermExpansionSelected = false;
+
+
         $scope.checkLengthOfSearchString = function() {
             var strLength = $scope.main.searchString.length;
             //console.log("strLength = " + strLength);
@@ -277,7 +287,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             var urlBeforePathChange = $location.absUrl();
             // add "?networks=<searchStringEncoded>" to the URL;
             // we do it to be able to get back to this search with the browser Back button
-            $location.search({'searchType': $scope.main.searchType, 'searchString': searchStringEncoded});
+            $location.search({
+                'searchType': $scope.main.searchType,
+                'searchString': searchStringEncoded,
+                'searchTermExpansion':  $scope.main.searchTermExpansionSelected
+            });
 
             var urlAfterPathChange = $location.absUrl();
             if (urlBeforePathChange === urlAfterPathChange) {
@@ -507,7 +521,80 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                      
                  }
              });
+         };
 
+
+         $scope.checkSearchTypeAndTermExpansion = function() {
+
+             var foundNotAllowedInSearchExpansion = false;
+
+
+             if ($scope.main.searchType.toUpperCase() == "USERS") {
+                 $scope.main.searchTitle = "Search Term Expansion is not available when performing a User search";
+                 return true;
+             };
+             if ($scope.main.searchType.toUpperCase() == "GROUPS") {
+                 $scope.main.searchTitle = "Search Term Expansion is not available when performing a Group search";
+                 return true;
+             };
+             if (!$scope.main.searchString) {
+                 return true;
+             };
+
+             // check if $scope.main.searchString contains illegal characters (' OR ', ' NOT ', etc.)
+
+             _.forEach($scope.notAllowedInSearchExpansionEqual, function(term) {
+                 if ($scope.main.searchString == term) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+             _.forEach($scope.notAllowedInSearchExpansionStart, function(term) {
+
+                 if ($scope.main.searchString.indexOf(term) > -1) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+             _.forEach($scope.notAllowedInSearchExpansion, function(term) {
+
+                 if ($scope.main.searchString.indexOf(term) > -1) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+             _.forEach($scope.notAllowedInSearchExpansionEnd, function(term) {
+                 if ($scope.main.searchString.endsWith(term)) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+             $scope.main.searchTitle = ""
+             return false;
          };
 
 
