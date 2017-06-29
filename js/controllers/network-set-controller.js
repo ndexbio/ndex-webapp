@@ -460,7 +460,7 @@ ndexApp.controller('networkSetController',
             },
             function(error) {
 
-                var failedAction = (action == 'enable') ? " Activate " : " Deactivate ";
+                var failedAction = (action == 'enable') ? " Enable " : " Disable ";
 
                 title = "Unable to " + failedAction + "URL";
                 message  = "Unable to " + failedAction.toLowerCase() + " URL on network set <strong>" +

@@ -214,7 +214,7 @@
                             <span ng-if="networkController.isNetworkOwner && (networkController.currentNetwork.visibility.toUpperCase() == 'PRIVATE')">
                                 <strong>Share URL: </strong>
                                 <span ng-style="networkController.networkShareURL ? {color:'green'} : {color:'black'}">
-                                    {{networkController.networkShareURL ? 'Active' : 'Inactive'}}
+                                    {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
                                 </span>
                                 <button type="button" ng-hide="!networkController.networkShareURL"
                                         ngclipboard data-clipboard-text="{{networkController.networkShareURL}}"

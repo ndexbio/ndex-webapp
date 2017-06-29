@@ -1000,11 +1000,11 @@ ndexApp.controller('manageNetworkAccessController',
             function(data, status, headers, config, statusText) {
 
                 if (action == 'enable') {
-                    networkManager.networkShareableURLLabel = "Deactivate Share URL";
+                    networkManager.networkShareableURLLabel = "Disable Share URL";
                     networkManager.networkShareableURL =
 						uiMisc.buildNetworkURL(data['accessKey'], networkManager.externalId);
 
-                } else {networkManager.networkShareableURLLabel = "Activate Share URL";
+                } else {networkManager.networkShareableURLLabel = "Disable Share URL";
                     networkManager.networkShareableURL = null;
 				};
             },
@@ -1031,18 +1031,18 @@ ndexApp.controller('manageNetworkAccessController',
 				if (!data) {
 					// empty string - access is deactivated
                     networkManager.networkShareableURL = null;
-                    networkManager.networkShareableURLLabel = "Activate Share URL";
+                    networkManager.networkShareableURLLabel = "Enable Share URL";
 
 				} else if (data['accessKey']) {
 					// received  data['accessKey'] - access is enabled
 					networkManager.networkShareableURL =
                         uiMisc.buildNetworkURL(data['accessKey'], networkManager.externalId);
-                    networkManager.networkShareableURLLabel = "Deactivate Share URL";
+                    networkManager.networkShareableURLLabel = "Disable Share URL";
 
 				} else {
 					// this should not happen; something went wrong; access deactivated
                     networkManager.networkShareableURL = null;
-                    networkManager.networkShareableURLLabel = "Activate Share URL";
+                    networkManager.networkShareableURLLabel = "Enable Share URL";
 				};
             },
 			function(error) {

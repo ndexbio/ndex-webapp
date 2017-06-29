@@ -316,11 +316,11 @@ angular.module('ndexServiceApp')
 
                         if (!data) {
                             // empty string - access is deactivated
-                            set['shareLinkStatus'] = 'Inactive';
+                            set['shareLinkStatus'] = 'Disabled';
 
                         } else if (data['accessKey']) {
                             // received  data['accessKey'] - access is enabled
-                            set['shareLinkStatus'] = 'Active';
+                            set['shareLinkStatus'] = 'Enabled';
                             set['networkSetShareableURL'] =
                                 self.buildShareableNetworkSetURL(data['accessKey'], set['externalId']);
 
@@ -397,7 +397,14 @@ angular.module('ndexServiceApp')
             diskInfo['diskUsed']  = userInfo.diskUsed;
 
             //diskInfo['diskPercentageUsed'] = Math.floor(userInfo.diskUsed / userInfo.diskQuota * 100);
-            diskInfo['diskPercentageUsed'] = parseFloat(userInfo.diskUsed / userInfo.diskQuota * 100).toFixed(2);
+            //diskInfo['diskPercentageUsed'] = parseFloat(userInfo.diskUsed / userInfo.diskQuota * 100).toFixed(2);
+
+            diskInfo['diskPercentageUsed'] =
+                (_.round(parseFloat(userInfo.diskUsed / userInfo.diskQuota * 100), 1)).toFixed(1);
+
+            diskInfo['diskQuotaMB'] = userInfo.diskQuota / (1000.0 * 1000.0);
+            diskInfo['diskFree']    = (userInfo.diskQuota - userInfo.diskUsed);
+            diskInfo['diskFreeMB']  = (userInfo.diskQuota - userInfo.diskUsed) / (1000.0 * 1000.0);
 
             diskInfo['diskPercentageUsedStyle'] = {
                 'width':  diskInfo['diskPercentageUsed'] + '%',

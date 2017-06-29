@@ -26,10 +26,10 @@
 				</div>
 
 				<h5 ng-if="networkManager.networkShareableURL">
-					<strong>Share URL Status:</strong><span style='color:green;'>&nbsp;Active</span>
+					<strong>Share URL Status:</strong><span style='color:green;'>&nbsp;Enabled</span>
 				</h5>
 				<h5 ng-if="!networkManager.networkShareableURL">
-					<strong>Share URL Status:</strong>&nbsp;Inactive
+					<strong>Share URL Status:</strong>&nbsp;Disabled
 				</h5>
 
 				<button type="button" class="btn btn-default" ng-click='networkManager.switchShareableURL()'>
@@ -43,6 +43,8 @@
 				</button>
 			</div>
 		</div>
+
+		<hr class="row" ng-if="networkManager.showShareURLControl">
 
 		<div class='row	rowWithThreeLinesTopPad'>
 			<h4>Manage who has access for <strong>{{networkManager.network.name}}</strong></h4>

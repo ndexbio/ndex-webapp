@@ -54,11 +54,11 @@
                         <span class="col-sm-3" style="text-align: right" ><strong>Share URL Status:</strong></span>
                         <span class="col-sm-8">
                             <span
-                               ng-style="set.shareLinkStatus == 'Active' ? {color: 'green'} : {color: 'black'}"
+                               ng-style="set.shareLinkStatus == 'Enabled' ? {color: 'green'} : {color: 'black'}"
                                ng-bind-html="set.shareLinkStatus">
                             </span>
                             &nbsp;
-                            <button type="button" ng-hide="set.shareLinkStatus != 'Active'"
+                            <button type="button" ng-hide="set.shareLinkStatus != 'Enabled'"
                                     class="btn btn-success btn-xs"
                                     ng-click="showURLInClipboardMessage()"
                                     ngclipboard data-clipboard-text="{{set.networkSetShareableURL}}">Copy URL
