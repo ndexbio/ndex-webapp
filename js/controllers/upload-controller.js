@@ -25,7 +25,6 @@ ndexApp.controller('uploadController',
                     uploadController.hasSizeLimit = true;
             }
 
-
             uploadController.fileSizeError = false;
             uploadController.fileExtensionError = false;
 
@@ -41,7 +40,16 @@ ndexApp.controller('uploadController',
                 uploader.clearQueue();
             };
 
+            $scope.$on("$destroy", function(){
+                // hide the Search menu item in Nav Bar
+                $scope.$parent.showSearchMenu = false;
+                uiMisc.showSearchMenuItem();
+            });
 
+            // turn on (show) Search menu item on the Nav Bar
+            $scope.$parent.showSearchMenu = true;
+
+            uiMisc.hideSearchMenuItem();
 
             $scope.refreshTasks = function(){
                 ndexService.getUserTasksV2(
