@@ -46,6 +46,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.searchTitle = "";
         $scope.main.searchTermExpansionSelected = false;
 
+        $scope.searchTermExpansionEnabled = false;
+
 
         $scope.checkLengthOfSearchString = function() {
             var strLength = $scope.main.searchString.length;
@@ -182,7 +184,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 {
                     $scope.main.signout();
                 }
-            }
+            };
         };
 
         if (window.addEventListener)
@@ -290,8 +292,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             $location.search({
                 'searchType': $scope.main.searchType,
                 'searchString': searchStringEncoded,
-                'searchTermExpansion':  $scope.main.searchTermExpansionSelected
+                'searchTermExpansion':  ($scope.main.searchTermExpansionSelected && $scope.searchTermExpansionEnabled)
             });
+
 
             var urlAfterPathChange = $location.absUrl();
             if (urlBeforePathChange === urlAfterPathChange) {
@@ -527,6 +530,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
          $scope.checkSearchTypeAndTermExpansion = function() {
 
              var foundNotAllowedInSearchExpansion = false;
+             $scope.searchTermExpansionEnabled = false;
 
 
              if ($scope.main.searchType.toUpperCase() == "USERS") {
@@ -593,7 +597,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  return true;
              };
 
-             $scope.main.searchTitle = ""
+             $scope.main.searchTitle = "";
+             $scope.searchTermExpansionEnabled = true;
              return false;
          };
 
