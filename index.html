@@ -212,8 +212,10 @@
                                                maxlength="{{maxSearchInputLength}}"
                                                ng-change="checkLengthOfSearchString()">
 
+                                        <!--!$scope.main.searchString-->
+
                                         <span class="input-group-btn">
-                                            <button type="submit" ng-click="closeModal();" class="btn btn-default">
+                                            <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();" class="btn btn-default">
                                                 <span class="glyphicon glyphicon-search"></span>
                                             </button>
                                         </span>
@@ -241,11 +243,11 @@
                                 <div class="row" style="margin-left:60px;">
 
                                     <input type="checkbox"
-                                           ng-disabled="checkSearchTypeAndTermExpansion()"
+                                           ng-hide="checkSearchTypeAndTermExpansion()"
                                            title="{{main.searchTitle}}"
                                            ng-model="main.searchTermExpansionSelected">
                                             &nbsp;
-                                            <span title="{{main.searchTitle}}">Perform Search Term Expansion (genes and proteins only)</span>
+                                            <span>{{main.searchTitle}}</span>
 
 <!--
                                     <i disabled ng-show="searchTermExpansion.selected" style="color: green;"

@@ -35,7 +35,7 @@ ndexApp.controller('networkController',
             networkController.selectionContainer = {};
             networkController.baseURL = $location.absUrl();
             networkController.isSample=false;
-            networkController.displayLimit = config.networkDisplayLimit;
+            networkController.sampleSize = 0;
             networkController.successfullyQueried = false;
 
             // turn on (show) Search menu item on the Nav Bar
@@ -88,6 +88,14 @@ ndexApp.controller('networkController',
 
             networkController.otherProperties = [];
 
+            $scope.disableQuery = false;
+            $scope.warningQuery = false;
+            $scope.egeCountForDisablingQuery = 500000;
+            $scope.egeCountForQueryWarning   = 100000;
+
+            $scope.disabledQueryTooltip = "At this moment, the query service only supports networks with up to " +
+                $scope.egeCountForDisablingQuery + " edges";
+
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -100,7 +108,14 @@ ndexApp.controller('networkController',
             var spinner = undefined;
 
             networkController.hasMultipleSubNetworks = function() {
-                return (networkController.noOfSubNetworks > 1);
+                var retValue = false;
+                if (networkController.noOfSubNetworks > 1) {
+                    networkController.title =
+                        "This network is part of a Cytoscape collection with " +
+                        networkController.noOfSubNetworks + " subnetworks and cannot be edited in NDEx.";
+                    retValue = true;
+                };
+                return retValue;
             };
 
             $scope.showEdgeCitations = function(edgeKey)
@@ -1428,12 +1443,13 @@ ndexApp.controller('networkController',
                 }
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
-                    (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
+                    (  (!hasLayout) && networkController.currentNetwork.edgeCount > 500 ) ) {
                     // get sample CX network
                     networkController.isSample = true;
                     (request2 = networkService.getNetworkSampleV2(networkId, accesskey) )
                         .success(
                             function (network) {
+                                networkController.sampleSize = (network.edges) ? _.size(network.edges) : 0;
                                 callback(network, false);
                             }
                         )
@@ -1785,10 +1801,17 @@ ndexApp.controller('networkController',
                 }
             };
 
+            networkController.checkQueryNetworkAndDisplay = function () {
+                networkController.queryNetworkAndDisplay();
+            };
+
             networkController.queryNetworkAndDisplay = function () {
                 // remove old query and error messages, if any
                 networkController.queryWarnings = [];
                 networkController.queryErrors = [];
+
+
+
 
                 startSpinner();
                 var edgeLimit = config.networkQueryLimit;
@@ -2072,12 +2095,24 @@ ndexApp.controller('networkController',
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
-                            }
+                            };
+
+
+                            $scope.disableQuery = (network.edgeCount > $scope.egeCountForDisablingQuery);
+                            $scope.warningQuery = ((network.edgeCount > $scope.egeCountForQueryWarning)
+                                && (network.edgeCount <= $scope.egeCountForDisablingQuery));
+
+
+
 
                             // subNetworkId is the current subNetwork we are displaying
                             networkController.subNetworkId = uiMisc.getSubNetworkId(network);
 
                             networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
+
+                            if ($scope.disableQuery && networkController.noOfSubNetworks < 2) {
+                                networkController.title = $scope.disabledQueryTooltip;
+                            };
 
                             if (networkController.subNetworkId != null) {
                                 networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
@@ -2358,6 +2393,7 @@ ndexApp.controller('networkController',
                         function (network) {
                             networkController.currentNetwork = network;
                             currentNetworkSummary = network;
+                            $scope.disableQuery = (network.edgeCount > 250000);
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";

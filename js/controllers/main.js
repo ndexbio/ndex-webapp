@@ -43,7 +43,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.notAllowedInSearchExpansionEqual = ["NOT",   "OR",   "AND", ":"];
 
         $scope.arrayOfValsForSearchExpansion = ["ALL", "NETWORKS"];
-        $scope.main.searchTitle = "";
+        $scope.main.searchTitle = "Perform Search Term Expansion (genes and proteins only)";
+
         $scope.main.searchTermExpansionSelected = false;
 
         $scope.searchTermExpansionEnabled = false;
@@ -541,9 +542,11 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  $scope.main.searchTitle = "Search Term Expansion is not available when performing a Group search";
                  return true;
              };
+             /*
              if (!$scope.main.searchString) {
                  return true;
              };
+             */
 
              // check if $scope.main.searchString contains illegal characters (' OR ', ' NOT ', etc.)
 
@@ -597,7 +600,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  return true;
              };
 
-             $scope.main.searchTitle = "";
+             $scope.main.searchTitle = "Perform Search Term Expansion (genes and proteins only)";
              $scope.searchTermExpansionEnabled = true;
              return false;
          };
@@ -619,9 +622,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             }
             if (typeof config.networkQueryLimit === 'undefined') {
                 config.networkQueryLimit = 1500;
-            }
-            if (typeof config.networkDisplayLimit === 'undefined') {
-                config.networkDisplayLimit = 300;
             }
             if (typeof config.networkTableLimit === 'undefined') {
                 config.networkTableLimit = 500;
