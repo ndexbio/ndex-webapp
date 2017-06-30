@@ -65,7 +65,7 @@
                  id="simpleQueryNetworkViewId">
 
                 <form id="frmSearchNetwork"
-                      ng-submit="networkController.checkQueryNetworkAndDisplay()"
+                      ng-submit="networkController.checkQueryNetworkAndDisplay('neighborhood')"
                       class="form-inline pull-left">
 
                     <div class="form-group">
@@ -605,7 +605,7 @@
 
                     <div>
 
-                        <form novalidate ng-submit="networkController.runAdvancedQuery()"
+                        <form novalidate ng-submit="networkController.checkQueryNetworkAndDisplay('advanced')"
                           style="padding-left:15px">
 
                             <!--

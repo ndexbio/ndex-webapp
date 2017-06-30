@@ -43,7 +43,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.notAllowedInSearchExpansionEqual = ["NOT",   "OR",   "AND", ":"];
 
         $scope.arrayOfValsForSearchExpansion = ["ALL", "NETWORKS"];
-        $scope.main.searchTitle = "Perform Search Term Expansion (genes and proteins only)";
+        var searchTitle = "Perform Search Term Expansion (Genes and Proteins only)";
 
         $scope.main.searchTermExpansionSelected = false;
 
@@ -496,10 +496,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.showNDExCitationInClipboardMessage = function() {
 
             var message =
-                "The NDEx citation information was copied to the clipboard. \n" +
-                "To paste it using keyboard, press Ctrl-V. \n" +
-                "To paste it using mouse, Right-Click and select Paste.";
-
+                "The NDEx citation information was copied to the clipboard. ";
             alert(message);
         };
 
@@ -600,7 +597,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  return true;
              };
 
-             $scope.main.searchTitle = "Perform Search Term Expansion (genes and proteins only)";
+             $scope.main.searchTitle = searchTitle;
              $scope.searchTermExpansionEnabled = true;
              return false;
          };

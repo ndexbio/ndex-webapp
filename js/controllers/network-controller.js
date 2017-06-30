@@ -1801,17 +1801,41 @@ ndexApp.controller('networkController',
                 }
             };
 
-            networkController.checkQueryNetworkAndDisplay = function () {
-                networkController.queryNetworkAndDisplay();
+            networkController.checkQueryNetworkAndDisplay = function (query) {
+
+                if (!$scope.warningQuery) {
+                    if (query == 'neighborhood') {
+                        networkController.queryNetworkAndDisplay();
+                    } else {
+                        networkController.runAdvancedQuery();
+                    };
+
+                } else {
+
+                    var title = "Running Query Might Take Some Time";
+                    var message = "This is a large network and your query might take some time... Please be patient " +
+                        " as this process cannot be executed in background. <br><br>" +
+                        "Proceed?";
+
+                    ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                        function () {
+                            if (query == 'neighborhood') {
+                                networkController.queryNetworkAndDisplay();
+                            } else {
+                                networkController.runAdvancedQuery();
+                            };
+                        },
+                        function () {
+                            // user canceled - do nothing
+                        });
+                };
+
             };
 
             networkController.queryNetworkAndDisplay = function () {
                 // remove old query and error messages, if any
                 networkController.queryWarnings = [];
                 networkController.queryErrors = [];
-
-
-
 
                 startSpinner();
                 var edgeLimit = config.networkQueryLimit;
@@ -2051,9 +2075,7 @@ ndexApp.controller('networkController',
             networkController.showURLInClipboardMessage = function() {
 
                 var message =
-                    "The URL for this network was copied to the clipboard. \n" +
-                    "To paste it using keyboard, press Ctrl-V. \n" +
-                    "To paste it using mouse, Right-Click and select Paste.";
+                    "The URL for this network was copied to the clipboard." ;
 
                 alert(message);
             };
