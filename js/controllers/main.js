@@ -539,16 +539,17 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  $scope.main.searchTitle = "Search Term Expansion is not available when performing a Group search";
                  return true;
              };
-             /*
-             if (!$scope.main.searchString) {
-                 return true;
-             };
-             */
 
-             // check if $scope.main.searchString contains illegal characters (' OR ', ' NOT ', etc.)
+
+             if (!$scope.main.searchTermExpansionSelected) {
+                 $scope.main.searchTitle = searchTitle;
+                 $scope.searchTermExpansionEnabled = true;
+                 return false;
+             };
+
 
              _.forEach($scope.notAllowedInSearchExpansionEqual, function(term) {
-                 if ($scope.main.searchString == term) {
+                 if ($scope.main.searchString.trim() == term) {
                      foundNotAllowedInSearchExpansion = true;
                      // the return false;  statement breaks out of the current lodash _.forEach loop
                      return false;
@@ -559,9 +560,10 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  return true;
              };
 
+
              _.forEach($scope.notAllowedInSearchExpansionStart, function(term) {
 
-                 if ($scope.main.searchString.indexOf(term) > -1) {
+                 if ($scope.main.searchString.startsWith(term)) {
                      foundNotAllowedInSearchExpansion = true;
                      // the return false;  statement breaks out of the current lodash _.forEach loop
                      return false;
@@ -584,6 +586,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                  $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
                  return true;
              };
+
 
              _.forEach($scope.notAllowedInSearchExpansionEnd, function(term) {
                  if ($scope.main.searchString.endsWith(term)) {
