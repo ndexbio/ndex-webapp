@@ -137,69 +137,141 @@
 <body ng-controller="mainController" style="padding-bottom: 20em;height: 100%;">
 
 <!-- template for search bar -->
-<script type="text/ng-template" id=" search_bar.html">
-    <div class="" style="background-color:white; color:black; padding-top:0px; padding-bottom:15px; ">
+<script type="text/ng-template" id="search_bar.html">
+    <div class="" style="background-color:white; color:black;">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
               ng-submit="main.search()">
 
-            <div class="input-group">
-                <div class="input-group-btn dropdown" style="padding-right:20px;">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="border-radius: 24px;">
-                        Search Examples <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
+            <table class="table">
 
-                        <li class="AlignLeft" style="padding-left: 5px;"
-                            ng-repeat="item in main.searchNetworksExamples">
-                            <a ng-click="main.runSearchExample(item); closeModal()">
-                                {{item.description}}
-                            </a>
-                        </li>
+                    <div class="input-group">
+                        <tr style="border:hidden">
+                            <td style="width: 70px;"  bgcolor="#FFFFFF">
 
-                        <li class="AlignLeft" ng-show="config.searchDocLink">
-                            <a style="color:#428bca; background-color:white;" ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
-                                <u>{{config.searchDocLink.label}}</u>
-                            </a>
-                        </li>
+                                <div class="input-group-btn dropdown">
+                                    <button type="button" class="btn btn-default dropdown-toggle"
+                                            data-toggle="dropdown" style="border-radius: 24px;">
+                                        Search Examples <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
 
-                    </ul>
-                </div>
+                                        <li class="AlignLeft" style="padding-left: 5px;"
+                                            ng-repeat="item in main.searchNetworksExamples">
+                                            <a ng-click="main.runSearchExample(item); closeModal()">
+                                                {{item.description}}
+                                            </a>
+                                        </li>
 
-                <div class="input-group-btn" style="padding-right:20px;">
-                    <button type="button" ng-click="main.browse(); closeModal()" class="btn btn-default">Browse</button>
-                </div>
+                                        <li class="AlignLeft" ng-show="config.searchDocLink">
+                                            <a style="color:#428bca; background-color:white;"
+                                               ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
+                                                <u>{{config.searchDocLink.label}}</u>
+                                            </a>
+                                        </li>
 
-                <div class="input-group-btn dropdown AlignLeft">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                            style="border-bottom-right-radius:0px; border-top-right-radius:0px; margin-right: -1px;">
-                        {{main.searchType}} <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a class="dropdown-toggle"
-                               ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
-                        <li><a class="dropdown-toggle"
-                               ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
-                        <li><a class="dropdown-toggle"
-                               ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
-                        <li><a class="dropdown-toggle"
-                               ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
-                    </ul>
-                </div>
+                                    </ul>
+                                </div>
+                            </td>
 
-                <input type="text" class="form-control" placeholder="{{main.getSearchPlaceholder()}}"
-                       ng-model="main.searchString" maxlength="{{maxSearchInputLength}}" ng-change="checkLengthOfSearchString()">
+                            <td style="width: 35px;"  bgcolor="#FFFFFF">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default"
+                                            ng-click="main.browse(); closeModal()" style="border-radius: 24px;">Browse
+                                    </button>
+                                </div>
+                            </td>
 
-                <div class="input-group-btn">
-                    <button type="submit" ng-click="closeModal();" class="btn btn-default">
-                        <span class="glyphicon glyphicon-search"></span>
-                    </button>
-                </div>
-            </div>
+                            <td bgcolor="#FFFFFF">
+                                <div class="row" style="margin-left:5px; margin-right:5px">
 
-            <div ng-show="stringTooLongWarning"
-                 style="color:red; padding-top:1em; font-size:1.1em; font-weight:bold; margin-left:340px"
-                 ng-bind-html="stringTooLongWarning"></div>
+                                    <div class="input-group">
 
+                                        <span class="input-group-btn dropdown"
+                                            style="border-bottom-right-radius:0px; border-top-right-radius:0px">
+                                            <button type="button" class="btn btn-default dropdown-toggle"
+                                                    data-toggle="dropdown" style="margin-right:-2px;">
+                                                {{main.searchType}} <span class="caret"></span>
+                                            </button>
+
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a class="dropdown-toggle"
+                                                       ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
+                                                <li><a class="dropdown-toggle"
+                                                       ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
+                                                <li><a class="dropdown-toggle"
+                                                       ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
+                                                <li><a class="dropdown-toggle"
+                                                       ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
+                                            </ul>
+                                        </span>
+
+                                        <input type="text"
+                                               class="form-control"
+                                               placeholder="{{main.getSearchPlaceholder()}}"
+                                               ng-model="main.searchString"
+                                               maxlength="{{maxSearchInputLength}}"
+                                               ng-change="checkLengthOfSearchString()">
+
+                                        <!--!$scope.main.searchString-->
+
+                                        <span class="input-group-btn">
+                                            <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();" class="btn btn-default">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-show="stringTooLongWarning">
+                            <td bgcolor="#FFFFFF"></td>
+                            <td bgcolor="#FFFFFF"></td>
+
+                            <td bgcolor="#FFFFFF">
+                                <div ng-show="stringTooLongWarning"
+                                     style="color:red; font-size:1.15em; font-weight:bold; margin-left:60px;"
+                                     ng-bind-html="stringTooLongWarning">
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr style="border:hidden">
+                            <td bgcolor="#FFFFFF"></td>
+                            <td bgcolor="#FFFFFF"></td>
+
+                            <td bgcolor="#FFFFFF">
+                                <div class="row" style="margin-left:60px;">
+
+                                    <input type="checkbox"
+                                           ng-hide="checkSearchTypeAndTermExpansion()"
+                                           title="{{main.searchTitle}}"
+                                           ng-model="main.searchTermExpansionSelected">
+                                            &nbsp;
+                                            <span ng-style="searchTermExpansionEnabled ?
+                                            {'color':'black', 'font-size':'1.15em'} : {'color':'red', 'font-size':'1.15em'}">
+                                                <strong>{{main.searchTitle}}</strong>
+                                            </span>
+
+<!--
+<span ng-style="networkSetController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
+
+                                    <i disabled ng-show="searchTermExpansion.selected" style="color: green;"
+                                       class="fa fa-check-square fa-lg" aria-hidden="true"></i>
+                                    <i disabled ng-show="!searchTermExpansion.selected"
+                                       class="fa fa-square-o fa-lg" aria-hidden="true"></i>
+
+                                    <span ng-style="searchTermExpansion.selected ? {'font-size':'1.1em', 'color':'black'} : {'font-size':'1.1em', 'color':'#878787'}">
+                                        &nbsp;Perform Search Term Expansion (genes and proteins only)
+                                    </span>
+ -->
+                                </div>
+
+                            </td>
+                        </tr>
+
+                    </div>
+
+            </table>
         </form>
     </div>
 </script>

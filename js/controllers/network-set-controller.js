@@ -36,8 +36,8 @@ ndexApp.controller('networkSetController',
     networkSetController.networkSetShareableURLLabel = null;
     networkSetController.networkSetOwnerId = null;
 
-    var activateURLLabel   = "Activate URL";
-    var deActivateURLLabel = "Deactivate URL";
+    var activateURLLabel   = "Enable Share URL";
+    var deActivateURLLabel = "Disable Share URL";
 
 
 
@@ -460,7 +460,7 @@ ndexApp.controller('networkSetController',
             },
             function(error) {
 
-                var failedAction = (action == 'enable') ? " Activate " : " Deactivate ";
+                var failedAction = (action == 'enable') ? " Enable " : " Disable ";
 
                 title = "Unable to " + failedAction + "URL";
                 message  = "Unable to " + failedAction.toLowerCase() + " URL on network set <strong>" +
@@ -477,10 +477,7 @@ ndexApp.controller('networkSetController',
     networkSetController.showURLInClipboardMessage = function() {
 
         var message =
-            "The URL for this network set was copied to the clipboard. \n" +
-            "To paste it using keyboard, press Ctrl-V. \n" +
-            "To paste it using mouse, Right-Click and select Paste.";
-
+            "The URL for this network set was copied to the clipboard.";
         alert(message);
     };
 

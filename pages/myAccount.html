@@ -28,9 +28,10 @@
                 <div ng-class="diskSpaceInfo.diskPercentageUsedClass" ng-style="diskSpaceInfo.diskPercentageUsedStyle"></div>
             </div>
 
+            <hr>
+
             <span ng-show="myAccountController.isLoggedInUser && myAccountController.identifier == myAccountController.loggedInIdentifier">
                 <div class="btn-group btn-group-vertical buttonWithMarginBottom">
-                    <hr>
                     <h5><strong>Actions:</strong></h5>
 
                     <span>
@@ -440,8 +441,3 @@
     </div>
 
 </div>
-
-
-<script type="text/ng-template" id="my_account_info.html">
-
-</script>

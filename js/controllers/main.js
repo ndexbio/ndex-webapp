@@ -37,6 +37,19 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.strLength = 0;
         $scope.maxSearchInputLength = 250;
 
+        $scope.notAllowedInSearchExpansion      = [" NOT ", " OR ", " AND ", ":"];
+        $scope.notAllowedInSearchExpansionStart = ["NOT ",  "OR ",  "AND "];
+        $scope.notAllowedInSearchExpansionEnd   = [" NOT",  " OR",  " AND"];
+        $scope.notAllowedInSearchExpansionEqual = ["NOT",   "OR",   "AND", ":"];
+
+        $scope.arrayOfValsForSearchExpansion = ["ALL", "NETWORKS"];
+        var searchTitle = "Perform Search Term Expansion (Genes and Proteins only)";
+
+        $scope.main.searchTermExpansionSelected = false;
+
+        $scope.searchTermExpansionEnabled = false;
+
+
         $scope.checkLengthOfSearchString = function() {
             var strLength = $scope.main.searchString.length;
             //console.log("strLength = " + strLength);
@@ -172,7 +185,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 {
                     $scope.main.signout();
                 }
-            }
+            };
         };
 
         if (window.addEventListener)
@@ -277,7 +290,12 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             var urlBeforePathChange = $location.absUrl();
             // add "?networks=<searchStringEncoded>" to the URL;
             // we do it to be able to get back to this search with the browser Back button
-            $location.search({'searchType': $scope.main.searchType, 'searchString': searchStringEncoded});
+            $location.search({
+                'searchType': $scope.main.searchType,
+                'searchString': searchStringEncoded,
+                'searchTermExpansion':  ($scope.main.searchTermExpansionSelected && $scope.searchTermExpansionEnabled)
+            });
+
 
             var urlAfterPathChange = $location.absUrl();
             if (urlBeforePathChange === urlAfterPathChange) {
@@ -478,10 +496,7 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.showNDExCitationInClipboardMessage = function() {
 
             var message =
-                "The NDEx citation information was copied to the clipboard. \n" +
-                "To paste it using keyboard, press Ctrl-V. \n" +
-                "To paste it using mouse, Right-Click and select Paste.";
-
+                "The NDEx citation information was copied to the clipboard. ";
             alert(message);
         };
 
@@ -507,7 +522,87 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                      
                  }
              });
+         };
 
+
+         $scope.checkSearchTypeAndTermExpansion = function() {
+
+             var foundNotAllowedInSearchExpansion = false;
+             $scope.searchTermExpansionEnabled = false;
+
+
+             if ($scope.main.searchType.toUpperCase() == "USERS") {
+                 $scope.main.searchTitle = "Search Term Expansion is not available when performing a User search";
+                 return true;
+             };
+             if ($scope.main.searchType.toUpperCase() == "GROUPS") {
+                 $scope.main.searchTitle = "Search Term Expansion is not available when performing a Group search";
+                 return true;
+             };
+
+
+             if (!$scope.main.searchTermExpansionSelected) {
+                 $scope.main.searchTitle = searchTitle;
+                 $scope.searchTermExpansionEnabled = true;
+                 return false;
+             };
+
+
+             _.forEach($scope.notAllowedInSearchExpansionEqual, function(term) {
+                 if ($scope.main.searchString.trim() == term) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+
+             _.forEach($scope.notAllowedInSearchExpansionStart, function(term) {
+
+                 if ($scope.main.searchString.startsWith(term)) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+             _.forEach($scope.notAllowedInSearchExpansion, function(term) {
+
+                 if ($scope.main.searchString.indexOf(term) > -1) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+
+             _.forEach($scope.notAllowedInSearchExpansionEnd, function(term) {
+                 if ($scope.main.searchString.endsWith(term)) {
+                     foundNotAllowedInSearchExpansion = true;
+                     // the return false;  statement breaks out of the current lodash _.forEach loop
+                     return false;
+                 };
+             });
+             if (foundNotAllowedInSearchExpansion) {
+                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 return true;
+             };
+
+             $scope.main.searchTitle = searchTitle;
+             $scope.searchTermExpansionEnabled = true;
+             return false;
          };
 
 
@@ -527,9 +622,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             }
             if (typeof config.networkQueryLimit === 'undefined') {
                 config.networkQueryLimit = 1500;
-            }
-            if (typeof config.networkDisplayLimit === 'undefined') {
-                config.networkDisplayLimit = 300;
             }
             if (typeof config.networkTableLimit === 'undefined') {
                 config.networkTableLimit = 500;
@@ -600,20 +692,21 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
                 config.logoLink.showWarning = false;
             }
 
-            if (typeof config.homeLink === 'undefined') {
-                config.homeLink = {};
+
+            if (typeof config.newsLink === 'undefined') {
+                config.newsLink = {};
             }
-            if (typeof config.homeLink.label === 'undefined') {
-                config.homeLink.label = "Home";
+            if (typeof config.newsLink.label === 'undefined') {
+                config.newsLink.label = "News";
             }
-            if (typeof config.homeLink.href === 'undefined') {
-                config.homeLink.href = "http://www.home.ndexbio.org";
+            if (typeof config.newsLink.href === 'undefined') {
+                config.newsLink.href = "http://www.home.ndexbio.org/index";
             }
-            if (typeof config.homeLink.warning === 'undefined') {
-                config.homeLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+            if (typeof config.newsLink.warning === 'undefined') {
+                config.newsLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
             }
-            if (typeof config.homeLink.showWarning === 'undefined') {
-                config.homeLink.showWarning = false;
+            if (typeof config.newsLink.showWarning === 'undefined') {
+                config.newsLink.showWarning = false;
             }
 
             if (typeof config.aboutLink === 'undefined') {

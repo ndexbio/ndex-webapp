@@ -1,61 +1,63 @@
 <div class="row">
 
-    <div class="col-md-3">
+    <div class="col-md-2">
+        <div class="row">
 
-        <div class='row'>
-            <ndex-account-image
-                    ndex-class="'col-md-10'"
-                    ndex-src="uploadController.displayedUser.image">
-            </ndex-account-image>
+            <div class='row'>
+                <ndex-account-image
+                        ndex-class="'col-md-10'"
+                        ndex-src="uploadController.displayedUser.image">
+                </ndex-account-image>
+            </div>
+            <h4>
+                {{uploadController.displayedUser.firstName}} {{uploadController.displayedUser.lastName}}
+            </h4>
+            <div>
+                <small>{{uploadController.displayedUser.accountName}}</small>
+            </div>
+            <div class="wrapLongLine">
+                <a href="{{uploadController.displayedUser.website}}" target="_blank">
+                    {{uploadController.displayedUser.website}}
+                </a>
+            </div>
+
+            <div class="wrapLongLine" ng-bind-html="uploadController.displayedUser.description"></div>
+
+            <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskSpaceInfo.diskPercentageUsed}}%</div>
+            <div class="progress progress-striped" ng-if="diskSpaceInfo.diskPercentageUsed > 0">
+                <div ng-class="diskSpaceInfo.diskPercentageUsedClass" ng-style="diskSpaceInfo.diskPercentageUsedStyle"></div>
+            </div>
+
+
+            <hr>
+
+            <h3><strong>Select files</strong></h3>
+
+            <input type="file"
+                   class="btn btn-success btn-xs"
+                   nv-file-select
+                   uploader="uploader"
+                   ng-style="{'width':'189px', 'text-align':'left'}"
+                   multiple />
+
+            <h3>How It Works:</h3>
+
+            <p>Currently, the NDEx UI only allows to load networks in CX format.</p>
+
+            <p>Networks in other formats can be loaded using Cytoscape and the CyNDEx App. For more info, please check
+                <a href="http://www.home.ndexbio.org/ndex-cyapp-tutorial-alt/" target="_blank">THIS TUTORIAL</a>.</p>
+
+            <p>Each uploaded file is assigned a network loading task, displayed at the bottom of this page.</p>
+
+            <p>The status of each file will update as NDEx processes it.</p>
         </div>
-        <h4>
-            {{uploadController.displayedUser.firstName}} {{uploadController.displayedUser.lastName}}
-        </h4>
-        <div>
-            <small>{{uploadController.displayedUser.accountName}}</small>
-        </div>
-        <div class="wrapLongLine">
-            <a href="{{uploadController.displayedUser.website}}" target="_blank">
-                {{uploadController.displayedUser.website}}
-            </a>
-        </div>
-
-        <div class="wrapLongLine" ng-bind-html="uploadController.displayedUser.description"></div>
-
-        <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskSpaceInfo.diskPercentageUsed}}%</div>
-        <div class="progress progress-striped" ng-if="diskSpaceInfo.diskPercentageUsed > 0">
-            <div ng-class="diskSpaceInfo.diskPercentageUsedClass" ng-style="diskSpaceInfo.diskPercentageUsedStyle"></div>
-        </div>
-
-
-        <hr>
-
-        <h3><strong>Select files</strong></h3>
-
-        <input type="file" class="btn btn-success btn-xs" nv-file-select uploader="uploader" multiple />
-
-        <h3>How It Works:</h3>
-
-        <p>Currently, the NDEx UI only allows to load networks in CX format.</p>
-
-        <p>Networks in other formats can be loaded using Cytoscape and the CyNDEx App. For more info, please check
-            <a href="http://www.home.ndexbio.org/ndex-cyapp-tutorial-alt/" target="_blank">THIS TUTORIAL</a>.</p>
-
-        <p>Each uploaded file is assigned a network loading task, displayed at the bottom of this page.</p>
-
-        <p>The status of each file will update as NDEx processes it.</p>
-
-
     </div>
 
-
-    <div class="col-md-9" style="margin-bottom: 40px">
-
+    <div class="col-md-10">
         <h3>List of Files to Upload</h3>
         <div ng-show="uploadController.hasSizeLimit">Files in list limited to {{config.uploadSizeLimit}} MB total.</div>
         <div style="color:red" ng-show="uploadController.fileSizeError">Sorry. You may not upload a file that makes the list larger than {{uploadController.uploadSizeLimit}} MB.</div>
         <p style="color:red" ng-show="uploadController.fileExtensionError">Sorry. Only CX networks (.cx file extension) are allowed for upload.</p>
-        <p></p>
 
 
         <table class="table">
@@ -92,7 +94,7 @@
                         <span class="glyphicon glyphicon-ban-circle"></span> Cancel
                     </button>
                     <button type="button" class="btn btn-danger btn-xs" ng-click="removeItemFromQueue(item)">
-                        <span class="glyphicon glyphicon-trash"></span> Remove
+                        <span class="glyphicon glyphicon-trash"></span> Clear
                     </button>
                 </td>
             </tr>
@@ -116,7 +118,7 @@
             </button>
             <button type="button" class="btn btn-danger btn-s" ng-click="removeAllFromQueue(uploader)"
                     ng-disabled="!uploader.queue.length">
-                <span class="glyphicon glyphicon-trash"></span> Remove all
+                <span class="glyphicon glyphicon-trash"></span> Clear all
             </button>
         </div>
 

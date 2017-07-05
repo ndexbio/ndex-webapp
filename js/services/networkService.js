@@ -346,15 +346,19 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return promise;
         };
 
-        factory.neighborhoodQuery = function (networkId, searchString, searchDepth, edgeLimit) {
+        factory.neighborhoodQuery = function (networkId, accesskey, searchString, searchDepth, edgeLimit) {
             // Server API : Querey Network As CX
-            // POST /search/network/{networkId}/query
+            // POST /search/network/{networkId}/query?accesskey={accesskey}
 
             var url = "/search/network/" + networkId + "/query";
             var postData = {
                 searchString: searchString,
                 searchDepth: searchDepth,
                 edgeLimit: edgeLimit
+            };
+
+            if (accesskey) {
+                url = url + "?accesskey=" + accesskey;
             };
 
             var urlConfig = ndexConfigs.getPostConfigV2(url, postData);
@@ -577,11 +581,14 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         };
 
 
-        factory.advancedNetworkQueryV2 = function (networkId, query, size) {
+        factory.advancedNetworkQueryV2 = function (networkId, accesskey, query, size) {
             // Server API: Query Network
-            // POST /search/network/{networkId}/advancedquery
+            // POST /search/network/{networkId}/advancedquery?accesskey={accesskey}
 
             var url = "/search/network/" + networkId + "/advancedquery";
+            if (accesskey) {
+                url = url + "?accesskey=" + accesskey;
+            };
             
             //var urlConfig = ndexConfigs.getPostConfigAdvQueryV2(url, query);
             var urlConfig = ndexConfigs.getPostConfigV2(url, query);

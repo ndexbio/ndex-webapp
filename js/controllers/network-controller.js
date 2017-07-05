@@ -35,7 +35,7 @@ ndexApp.controller('networkController',
             networkController.selectionContainer = {};
             networkController.baseURL = $location.absUrl();
             networkController.isSample=false;
-            networkController.displayLimit = config.networkDisplayLimit;
+            networkController.sampleSize = 0;
             networkController.successfullyQueried = false;
 
             // turn on (show) Search menu item on the Nav Bar
@@ -88,6 +88,14 @@ ndexApp.controller('networkController',
 
             networkController.otherProperties = [];
 
+            $scope.disableQuery = false;
+            $scope.warningQuery = false;
+            $scope.egeCountForDisablingQuery = 500000;
+            $scope.egeCountForQueryWarning   = 100000;
+
+            $scope.disabledQueryTooltip = "At this moment, the query service only supports networks with up to " +
+                $scope.egeCountForDisablingQuery + " edges";
+
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -100,7 +108,14 @@ ndexApp.controller('networkController',
             var spinner = undefined;
 
             networkController.hasMultipleSubNetworks = function() {
-                return (networkController.noOfSubNetworks > 1);
+                var retValue = false;
+                if (networkController.noOfSubNetworks > 1) {
+                    networkController.title =
+                        "This network is part of a Cytoscape collection with " +
+                        networkController.noOfSubNetworks + " subnetworks and cannot be edited in NDEx.";
+                    retValue = true;
+                };
+                return retValue;
             };
 
             $scope.showEdgeCitations = function(edgeKey)
@@ -1413,7 +1428,7 @@ ndexApp.controller('networkController',
                 }
             }
 
-            var getNetworkAndDisplay = function (networkId, callback, accesskey) {
+            var getNetworkAndDisplay = function (networkId, callback) {
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
@@ -1428,12 +1443,13 @@ ndexApp.controller('networkController',
                 }
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
-                    (  (!hasLayout) && networkController.currentNetwork.edgeCount > config.networkDisplayLimit ) ) {
+                    (  (!hasLayout) && networkController.currentNetwork.edgeCount > 500 ) ) {
                     // get sample CX network
                     networkController.isSample = true;
                     (request2 = networkService.getNetworkSampleV2(networkId, accesskey) )
                         .success(
                             function (network) {
+                                networkController.sampleSize = (network.edges) ? _.size(network.edges) : 0;
                                 callback(network, false);
                             }
                         )
@@ -1785,6 +1801,37 @@ ndexApp.controller('networkController',
                 }
             };
 
+            networkController.checkQueryNetworkAndDisplay = function (query) {
+
+                if (!$scope.warningQuery) {
+                    if (query == 'neighborhood') {
+                        networkController.queryNetworkAndDisplay();
+                    } else {
+                        networkController.runAdvancedQuery();
+                    };
+
+                } else {
+
+                    var title = "Running Query Might Take Some Time";
+                    var message = "This is a large network and your query might take some time... Please be patient " +
+                        " as this process cannot be executed in background. <br><br>" +
+                        "Proceed?";
+
+                    ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                        function () {
+                            if (query == 'neighborhood') {
+                                networkController.queryNetworkAndDisplay();
+                            } else {
+                                networkController.runAdvancedQuery();
+                            };
+                        },
+                        function () {
+                            // user canceled - do nothing
+                        });
+                };
+
+            };
+
             networkController.queryNetworkAndDisplay = function () {
                 // remove old query and error messages, if any
                 networkController.queryWarnings = [];
@@ -1792,7 +1839,7 @@ ndexApp.controller('networkController',
 
                 startSpinner();
                 var edgeLimit = config.networkQueryLimit;
-                networkService.neighborhoodQuery(networkController.currentNetworkId, networkController.searchString, networkController.searchDepth.value, edgeLimit)
+                networkService.neighborhoodQuery(networkController.currentNetworkId, accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
                         function (network) {
                             var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
@@ -1973,7 +2020,7 @@ ndexApp.controller('networkController',
 
                 //console.log(JSON.stringify(postData,null,2));
                 
-                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, postData)
+                networkService.advancedNetworkQueryV2(networkController.currentNetworkId, accesskey, postData)
                     .success(
                         function (networkInNiceCX) {
 
@@ -2028,9 +2075,7 @@ ndexApp.controller('networkController',
             networkController.showURLInClipboardMessage = function() {
 
                 var message =
-                    "The URL for this network was copied to the clipboard. \n" +
-                    "To paste it using keyboard, press Ctrl-V. \n" +
-                    "To paste it using mouse, Right-Click and select Paste.";
+                    "The URL for this network was copied to the clipboard." ;
 
                 alert(message);
             };
@@ -2072,12 +2117,24 @@ ndexApp.controller('networkController',
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
-                            }
+                            };
+
+
+                            $scope.disableQuery = (network.edgeCount > $scope.egeCountForDisablingQuery);
+                            $scope.warningQuery = ((network.edgeCount > $scope.egeCountForQueryWarning)
+                                && (network.edgeCount <= $scope.egeCountForDisablingQuery));
+
+
+
 
                             // subNetworkId is the current subNetwork we are displaying
                             networkController.subNetworkId = uiMisc.getSubNetworkId(network);
 
                             networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
+
+                            if ($scope.disableQuery && networkController.noOfSubNetworks < 2) {
+                                networkController.title = $scope.disabledQueryTooltip;
+                            };
 
                             if (networkController.subNetworkId != null) {
                                 networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
@@ -2092,7 +2149,7 @@ ndexApp.controller('networkController',
                                     || networkController.canRead
                                     || accesskey) {
                                             resetBackgroudColor();
-                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas,accesskey);
+                                            getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
                                 }
                             });
 
@@ -2353,11 +2410,12 @@ ndexApp.controller('networkController',
 
                 // get network summary
                 // keep a reference to the promise
-                networkService.getNetworkSummaryFromNdexV2(networkExternalId)
+                networkService.getNetworkSummaryFromNdexV2(networkExternalId, accesskey)
                     .success(
                         function (network) {
                             networkController.currentNetwork = network;
                             currentNetworkSummary = network;
+                            $scope.disableQuery = (network.edgeCount > 250000);
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
@@ -2378,7 +2436,10 @@ ndexApp.controller('networkController',
                                 if (network.visibility == 'PUBLIC'
                                     || networkController.isAdmin
                                     || networkController.canEdit
-                                    || networkController.canRead) {
+                                    || networkController.canRead
+                                    || networkController.canRead
+                                    || accesskey)
+                                {
                                     getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
                                 }
                             });

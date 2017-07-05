@@ -89,10 +89,7 @@
                             $scope.showURLInClipboardMessage = function () {
 
                                 var message =
-                                    "The URL for this network was copied to the clipboard. \n" +
-                                    "To paste it using keyboard, press Ctrl-V. \n" +
-                                    "To paste it using mouse, Right-Click and select Paste.";
-
+                                    "The URL for this network was copied to the clipboard.";
                                 alert(message);
                             };
                         }
@@ -115,9 +112,7 @@
                             $scope.showURLInClipboardMessage = function() {
 
                                 var message =
-                                    "The URL for this network set was copied to the clipboard. \n" +
-                                    "To paste it using keyboard, press Ctrl-V. \n" +
-                                    "To paste it using mouse, Right-Click and select Paste.";
+                                    "The URL for this network set was copied to the clipboard.";
 
                                 alert(message);
                             };
