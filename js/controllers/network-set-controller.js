@@ -40,6 +40,15 @@ ndexApp.controller('networkSetController',
     var deActivateURLLabel = "Disable Share URL";
 
 
+    $scope.$on("$destroy", function(){
+        // hide the Search menu item in Nav Bar
+        $scope.$parent.showSearchMenu = false;
+        uiMisc.showSearchMenuItem();
+    });
+
+    uiMisc.hideSearchMenuItem();
+    $scope.$parent.showSearchMenu = true;
+
 
     networkSetController.getNetworksOfNetworkSet = function() {
 
