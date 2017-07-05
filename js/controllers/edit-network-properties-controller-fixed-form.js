@@ -199,7 +199,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             var predicateStr = pair.predicateString;
 
             if (editor.scoringLookup[predicateStr]) {
-                if (pair.value.length > 0) {
+                if (pair.value && pair.value.length > 0) {
                     $scope.score += editor.scoringLookup[predicateStr];
                 }
             }
@@ -208,7 +208,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         for(key in $scope.mainProperty) {
 
             if (editor.scoringLookup[key]) {
-                if ($scope.mainProperty[key].length > 0) {
+                if ($scope.mainProperty[key] && $scope.mainProperty[key].length > 0) {
                     $scope.score += editor.scoringLookup[key];
                 }
             }
