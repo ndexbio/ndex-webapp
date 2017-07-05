@@ -542,7 +542,9 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
 	editor.checkPublicRequirements = function(){
         if($scope.mainProperty.visibility != "PRIVATE"){
-            if($scope.mainProperty.name.length < 1 || $scope.mainProperty.description.length < 1 || $scope.mainProperty.version.length < 1){
+            if (!$scope.mainProperty.name || !$scope.mainProperty.description || !$scope.mainProperty.version || $scope.mainProperty.name.length < 1 || $scope.mainProperty.description.length < 1 ||
+                $scope.mainProperty.version.length < 1){
+            //if($scope.mainProperty.name.length < 1 || $scope.mainProperty.description.length < 1 || $scope.mainProperty.version.length < 1){
                 return false;
             }
         }
@@ -670,7 +672,13 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.propertyValuePairs = [];
                 editor.hiddenValuePairs = [];
                 $scope.mainProperty.name = network.name;
+                if(!$scope.mainProperty.name){
+                    $scope.mainProperty.name = "";
+                }
                 $scope.mainProperty.description = network.description;
+                if(!$scope.mainProperty.description){
+                    $scope.mainProperty.description = "";
+                }
                 $scope.mainProperty.reference = network.reference;
                 if(!$scope.mainProperty.reference){
                     for(var i=0;i<network.properties.length;i++){
@@ -678,9 +686,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                             $scope.mainProperty.reference = network.properties[i].value;
                         }
                     }
-
+                    // Still couldn't find references and references are undefined
+                    if(!$scope.mainProperty.reference){
+                        $scope.mainProperty.reference = "";
+                    }
                 }
                 $scope.mainProperty.version = network.version;
+                if(!$scope.mainProperty.version) {
+                    $scope.mainProperty.version = "";
+                }
                 $scope.mainProperty.visibility = network.visibility;
                 editor.showcased.state = network.isShowcase;
 
