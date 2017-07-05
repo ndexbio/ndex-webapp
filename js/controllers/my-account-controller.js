@@ -1068,7 +1068,7 @@ ndexApp.controller('myAccountController',
                 var setDisease   = "";
                 var setTissue    = "";
                 var setEdges     = "";
-                var setVisibility = "";
+                var setVisibility = networkSet['visibility'] ? networkSet['visibility'] : "PUBLIC";
                 var setOwner = sharedProperties.getCurrentUserAccountName();
 
                 var setModified = new Date(networkSet['modificationTime']);
