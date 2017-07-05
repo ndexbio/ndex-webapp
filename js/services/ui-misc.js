@@ -393,18 +393,98 @@ angular.module('ndexServiceApp')
         self.showAvailableDiskSpace = function(userInfo) {
             var diskInfo = {};
 
-            diskInfo['diskQuota'] = userInfo.diskQuota;
-            diskInfo['diskUsed']  = userInfo.diskUsed;
+            var oneMB    = 1024.0 * 1024.0;
+            var one100MB = 100 * oneMB;
 
-            //diskInfo['diskPercentageUsed'] = Math.floor(userInfo.diskUsed / userInfo.diskQuota * 100);
-            //diskInfo['diskPercentageUsed'] = parseFloat(userInfo.diskUsed / userInfo.diskQuota * 100).toFixed(2);
+            var oneGB    = 1024.0 * 1024.0 * 1024.0;
+            var one100GB = 100 * oneGB;
+
+            var oneTB = 1024.0 * 1024.0 * 1024.0 * 1024.0;
+
+            var diskUsed        = 0.0;
+            var diskUsedRounded = 0.0;
+
+            var diskQuota        = 0.0;
+            var diskQuotaRounded = 0.0;
+
+
+
+            diskInfo['diskQuota']            = userInfo.diskQuota;
+            diskInfo['diskQuotaUnlimited']   = (diskInfo['diskQuota'] <= 0);
+            diskInfo['diskUsed']             = userInfo.diskUsed;
+
+            // initialize to 0 in case disk quota is unlimited; it will not be shown in view
+            // if diskInfo['diskPercentageUsed'] is 0
+            diskInfo['diskPercentageUsed']   = 0;
+
+
+
+            if (diskInfo['diskUsed'] < oneGB) {
+                // used less than 1 GB
+                diskUsed = userInfo.diskUsed / oneMB;
+
+                // we need + below to drop 0
+                diskUsedRounded = +diskUsed.toFixed(1);
+                if ((diskUsedRounded == 0) && (userInfo.diskUsed > 0)) {
+                    diskUsedRounded = 0.1;
+                }
+
+                diskInfo['diskUsedString'] = diskUsedRounded + " MB of ";
+
+            } else if ((diskInfo['diskUsed'] >= oneGB) && (diskInfo['diskUsed'] < oneTB)) {
+                // used between 1 GB and 1 TB
+
+                diskUsed = userInfo.diskUsed / oneGB;
+
+                diskUsedRounded = +((diskUsed * 10) / 10).toFixed(2);
+
+                diskInfo['diskUsedString'] = diskUsedRounded + " GB of ";
+
+            } else {
+                // used more than 1 TB used
+                diskUsed = userInfo.diskUsed / oneTB;
+
+                diskUsedRounded = +((diskUsed * 10) / 10).toFixed(3);
+
+                diskInfo['diskUsedString'] = diskUsedRounded + " TB of ";
+            };
+
+
+
+            if (diskInfo['diskQuotaUnlimited']) {
+                diskInfo['diskUsedString'] += " Unlimited";
+                return diskInfo;
+
+            } else  if (diskInfo['diskQuota'] < oneGB) {
+                // disk quota less than 1 GB
+                diskQuota        = diskInfo['diskQuota'] / oneMB;
+                diskQuotaRounded = +((diskQuota * 10) / 10).toFixed(1);
+
+                diskInfo['diskUsedString'] += diskQuotaRounded + " MB used";
+
+            } else if ((diskInfo['diskQuota'] >= oneGB) && (diskInfo['diskQuota'] < oneTB)) {
+                // disk quota between 1 GB and 1 TB
+                diskQuota        = diskInfo['diskQuota'] / oneGB;
+                diskQuotaRounded = +((diskQuota * 10) / 10).toFixed(1);
+
+                diskInfo['diskUsedString'] += diskQuotaRounded + " GB used";
+
+            } else if (diskInfo['diskQuota'] >= oneTB) {
+                // disk quota more than 100GB; measure in TB
+                diskQuota        = diskInfo['diskQuota'] / oneTB;
+                diskQuotaRounded = +((diskQuota * 10) / 10).toFixed(1);
+
+                diskInfo['diskUsedString'] += diskQuotaRounded + " TB used";
+            };
+
 
             diskInfo['diskPercentageUsed'] =
-                (_.round(parseFloat(userInfo.diskUsed / userInfo.diskQuota * 100), 1)).toFixed(1);
+                +(_.round(parseFloat(userInfo.diskUsed / userInfo.diskQuota * 100), 1)).toFixed(1);
 
-            diskInfo['diskQuotaMB'] = userInfo.diskQuota / (1000.0 * 1000.0);
-            diskInfo['diskFree']    = (userInfo.diskQuota - userInfo.diskUsed);
-            diskInfo['diskFreeMB']  = (userInfo.diskQuota - userInfo.diskUsed) / (1000.0 * 1000.0);
+            if (diskInfo['diskPercentageUsed'] == 0.0) {
+                diskInfo['diskPercentageUsed'] = (diskInfo['diskUsed'] > 0) ? 0.1 : 0;
+            };
+
 
             diskInfo['diskPercentageUsedStyle'] = {
                 'width':  diskInfo['diskPercentageUsed'] + '%',

@@ -23,8 +23,15 @@
 
             <div class="wrapLongLine" ng-bind-html="uploadController.displayedUser.description"></div>
 
-            <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>{{diskSpaceInfo.diskPercentageUsed}}%</div>
-            <div class="progress progress-striped" ng-if="diskSpaceInfo.diskPercentageUsed > 0">
+            <div class="rowWithOneLineTopPad"><strong>Disk Space Used: </strong>
+                <span ng-if="!diskSpaceInfo.diskQuotaUnlimited">{{diskSpaceInfo.diskPercentageUsed}}%</span>
+                <span ng-if="diskSpaceInfo.diskUsed>0">
+                    <br>
+                    ( {{diskSpaceInfo.diskUsedString}} )
+                </span>
+            </div>
+
+            <div class="progress progress-striped" ng-if="diskSpaceInfo.diskUsed > 0">
                 <div ng-class="diskSpaceInfo.diskPercentageUsedClass" ng-style="diskSpaceInfo.diskPercentageUsedStyle"></div>
             </div>
 
