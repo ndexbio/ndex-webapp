@@ -20,6 +20,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.canEdit = false;
     editor.canRead = false;
     editor.showcased = {"state": true};
+    editor.subNetworkId = subNetworkId;
 
     editor.reference = null;
 
@@ -466,8 +467,13 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             }
 
             if(!foundReference){
-                networkProperties.push({"dataType": "string", "predicateString": "reference",
-                    "subNetworkId": null, "value": $scope.mainProperty.reference});
+                if(editor.subNetworkId && $scope.mainProperty.reference && $scope.mainProperty.reference.length > 0){
+                    networkProperties.push({"dataType": "string", "predicateString": "reference",
+                        "subNetworkId": parseInt(editor.subNetworkId), "value": $scope.mainProperty.reference});
+                } else if($scope.mainProperty.reference && $scope.mainProperty.reference.length() > 0){
+                    networkProperties.push({"dataType": "string", "predicateString": "reference",
+                       "value": $scope.mainProperty.reference});
+                }
             }
 
             var networkSummaryProperties = {
