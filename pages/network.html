@@ -165,7 +165,9 @@
                         <div ng-show = "networkController.successfullyQueried">
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
                             <br>
-                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryDepth">Search depth: </span>{{networkController.currentNetwork.queryDepth}}
+                            <span class="networkPropertyName"
+                                  ng-show="networkController.currentNetwork.queryDepth">Search depth: </span>
+                            {{networkController.currentNetwork.queryDepth}}
 
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter:
                                 <br>

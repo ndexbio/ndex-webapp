@@ -2032,9 +2032,7 @@ ndexApp.controller('networkController',
                             networkController.currentNetwork =
                             {name: resultName,
                                 "nodeCount": (localNiceCX.nodes) ? Object.keys(localNiceCX.nodes).length : 0,
-                                "edgeCount": (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0,
-                                "queryString": networkController.searchString,
-                                "queryDepth" : networkController.searchDepth.value
+                                "edgeCount": (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0
                             };
 
                             cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
