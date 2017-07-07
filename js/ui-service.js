@@ -2080,6 +2080,8 @@
 
                     var data;
 
+                    updatedNetworksCounter = 0;
+
                     if (operation == "description") {
                         data = $scope.network.description;
 
