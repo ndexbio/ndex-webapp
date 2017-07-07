@@ -142,18 +142,18 @@ angular.module('ndexServiceApp')
         };
 
         /*
-         * self.getNoOfSubNetworks calculates number of subnetworks in network.properties.
-         * Instead of just returning length of network.subnetworkIds, we iterate through network.properties and
-         * store each unique subnetworkId in subNetworkIdsList. This is more reliable, since it is possible to
-         * have situations where length of network.subnetworkIds doesn't correctly reflect number of subnetwork Ids in
-         * network.properties.
+         * self.getNoOfSubNetworks calculates number of subnetworks in networkSummary.properties.
+         * Instead of just returning length of networkSummary.subnetworkIds, we iterate through
+         * networkSummary.properties and store each unique subnetworkId in subNetworkIdsList. This is more reliable,
+         * since it is possible to have situations where length of network.subnetworkIds doesn't correctly reflect
+         * number of subnetwork Ids in networkSummary.properties.
          */
-        self.getNoOfSubNetworks = function(network) {
+        self.getNoOfSubNetworks = function(networkSummary) {
             var subNetworkIdsList = [];
 
-            if (network && network.properties) {
+            if (networkSummary && networkSummary.properties) {
 
-                _.forEach(network.properties, function(networkProperty) {
+                _.forEach(networkSummary.properties, function(networkProperty) {
 
                     if ("subNetworkId" in networkProperty) {
                         if (subNetworkIdsList.indexOf(networkProperty['subNetworkId']) == -1) {

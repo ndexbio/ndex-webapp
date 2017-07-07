@@ -705,14 +705,15 @@ ul.ndex-nav-pills > li > a:hover {
 
 
 /* the following classes (ta-toolbar, ta-toolbar.focussed ) only show textAngular toolbar when a
- * textAngular-edited field (i.e., Description or Reference in Edit Profile Modal) is in focus. */
+ * textAngular-edited field (i.e., Description or Reference in Edit Profile Modal) is in focus.
+ // this is taken from https://stackoverflow.com/questions/27070859/show-textangular-toolbar-only-when-editor-is-in-focus-for-multiple-editors-with
 .ta-toolbar {
     display: none;
 }
 .ta-toolbar.focussed {
     display: block;
 }
-
+*/
 /*
 .networkViewFrame {
     border-style: solid;
