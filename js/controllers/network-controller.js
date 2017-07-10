@@ -428,9 +428,9 @@ ndexApp.controller('networkController',
                 provenanceService.showProvenance(networkController);
             };
 
-            $scope.getProvenanceTitle = function()
+            $scope.getProvenanceTitle = function(prov)
             {
-               return provenanceService.getProvenanceTitle();
+               return provenanceService.getProvenanceTitle(prov);
             };
 
 
