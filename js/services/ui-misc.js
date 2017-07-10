@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService', 'config', 'ndexUtility',
-                function (ndexNavigation, ndexService, config, ndexUtility) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility',
+                function (ndexNavigation, ndexService, ndexUtility) {
 
         var self = this;
 
@@ -142,18 +142,18 @@ angular.module('ndexServiceApp')
         };
 
         /*
-         * self.getNoOfSubNetworks calculates number of subnetworks in network.properties.
-         * Instead of just returning length of network.subnetworkIds, we iterate through network.properties and
-         * store each unique subnetworkId in subNetworkIdsList. This is more reliable, since it is possible to
-         * have situations where length of network.subnetworkIds doesn't correctly reflect number of subnetwork Ids in
-         * network.properties.
+         * self.getNoOfSubNetworks calculates number of subnetworks in networkSummary.properties.
+         * Instead of just returning length of networkSummary.subnetworkIds, we iterate through
+         * networkSummary.properties and store each unique subnetworkId in subNetworkIdsList. This is more reliable,
+         * since it is possible to have situations where length of network.subnetworkIds doesn't correctly reflect
+         * number of subnetwork Ids in networkSummary.properties.
          */
-        self.getNoOfSubNetworks = function(network) {
+        self.getNoOfSubNetworks = function(networkSummary) {
             var subNetworkIdsList = [];
 
-            if (network && network.properties) {
+            if (networkSummary && networkSummary.properties) {
 
-                _.forEach(network.properties, function(networkProperty) {
+                _.forEach(networkSummary.properties, function(networkProperty) {
 
                     if ("subNetworkId" in networkProperty) {
                         if (subNetworkIdsList.indexOf(networkProperty['subNetworkId']) == -1) {
@@ -255,7 +255,7 @@ angular.module('ndexServiceApp')
 
         self.getCurrentServerURL = function() {
             var parser = document.createElement('a');
-            parser.href = config.ndexServerUriV2;
+            parser.href = ndexService.getNdexServerUri();
 
             return parser.protocol + "//" + parser.hostname + "/#/";
         };
@@ -264,7 +264,7 @@ angular.module('ndexServiceApp')
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
             var link =
-                ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+                ndexService.getNdexServerUri() + "/network/" + rowEntity.externalId + "?download=true";
 
             if (accountController.isLoggedInUser && rowEntity.Visibility &&
                 (rowEntity.Visibility.toLowerCase() == 'private'))
