@@ -1004,7 +1004,8 @@ ndexApp.controller('manageNetworkAccessController',
                     networkManager.networkShareableURL =
 						uiMisc.buildNetworkURL(data['accessKey'], networkManager.externalId);
 
-                } else {networkManager.networkShareableURLLabel = "Disable Share URL";
+                } else {
+                	networkManager.networkShareableURLLabel = "Enable Share URL";
                     networkManager.networkShareableURL = null;
 				};
             },
