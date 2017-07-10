@@ -13,22 +13,15 @@ ndexServiceApp.factory('ndexService',
             // define and initialize factory object
             var factory = {};
 
-            var ndexServerURI = config.ndexServerUriV2;
-            var ndexServerURIV2 = config.ndexServerUriV2;
+            var ndexServerURI = config.ndexServerUri;
 
             factory.getNdexServerUri = function()
             {
-                return ndexServerURIV2;
-            };
-            
-            factory.getNdexServerUriV2 = function()
-            {
-                return ndexServerURIV2;
+                return ndexServerURI;
             };
             
             factory.getNetworkUploadURI = function () {
-                //return ndexServerURI + "/network/upload";
-                return ndexServerURIV2 + "/network";
+                return factory.getNdexServerUri() + "/network";
             };
 
             factory.sendHTTPRequest = function(config, successHandler, errorHandler) {
@@ -1345,7 +1338,6 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     var factory = {};
 
     var ndexServerURI = config.ndexServerUri;
-    var ndexServerURIV2 = config.ndexServerUriV2;
 
 
     /*---------------------------------------------------------------------*
@@ -1354,7 +1346,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     factory.getGetConfigV2 = function (url, queryArgs) {
         var config = {
             method: 'GET',
-            url: ndexServerURIV2 + url,
+            url: ndexServerURI + url,
             headers: {
                 //Authorization: "Basic " + factory.getEncodedUser()
             }
@@ -1379,7 +1371,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     factory.getPostConfigV2 = function (url, postData) {
         var config = {
             method: 'POST',
-            url: ndexServerURIV2 + url,
+            url: ndexServerURI + url,
             data: angular.toJson(postData),
             headers: {}
         };
@@ -1399,7 +1391,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
 
         var config = {
             method: 'POST',
-            //url: ndexServerURIV2 + url,
+            //url: ndexServerURI + url,
             url: 'http://0.0.0.0:8072' + url,
             data: angular.toJson(postData),
             headers: {}
@@ -1424,7 +1416,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     factory.getPutConfigV2 = function (url, putData) {
         var config = {
             method: 'PUT',
-            url: ndexServerURIV2 + url,
+            url: ndexServerURI + url,
             //data: angular.toJson(putData),
             headers: {}
         };
@@ -1452,7 +1444,7 @@ ndexServiceApp.factory('ndexConfigs', function (config, ndexUtility) {
     factory.getDeleteConfigV2 = function (url, deleteData) {
         var config = {
             method: 'DELETE',
-            url: ndexServerURIV2 + url,
+            url: ndexServerURI + url,
             headers: {}
         };
         if( factory.getEncodedUser() )

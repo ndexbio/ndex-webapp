@@ -10,8 +10,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
         
         var currentNetworkSummary = undefined;
 
-        var ndexServerURI = config.ndexServerUriV2;
-        var ndexServerURIV2 = config.ndexServerUriV2;
+        var ndexServerURI = config.ndexServerUri;
 
         //var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
@@ -22,7 +21,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         factory.getNdexServerUri = function()
         {
-            return ndexServerURIV2;
+            return ndexServerURI;
         };
 
 
@@ -543,7 +542,7 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
 
         factory.createCXNetwork = function (rawCX, onSuccess, onError) {
 
-            var url = ndexServerURIV2 + '/network';
+            var url = ndexServerURI + '/network';
 
             var XHR = new XMLHttpRequest();
             var FD  = new FormData();

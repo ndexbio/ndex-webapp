@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService', 'config', 'ndexUtility',
-                function (ndexNavigation, ndexService, config, ndexUtility) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility',
+                function (ndexNavigation, ndexService, ndexUtility) {
 
         var self = this;
 
@@ -255,7 +255,7 @@ angular.module('ndexServiceApp')
 
         self.getCurrentServerURL = function() {
             var parser = document.createElement('a');
-            parser.href = config.ndexServerUriV2;
+            parser.href = ndexService.getNdexServerUri();
 
             return parser.protocol + "//" + parser.hostname + "/#/";
         };
@@ -264,7 +264,7 @@ angular.module('ndexServiceApp')
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
             var link =
-                ndexService.getNdexServerUriV2() + "/network/" + rowEntity.externalId + "?download=true";
+                ndexService.getNdexServerUri() + "/network/" + rowEntity.externalId + "?download=true";
 
             if (accountController.isLoggedInUser && rowEntity.Visibility &&
                 (rowEntity.Visibility.toLowerCase() == 'private'))

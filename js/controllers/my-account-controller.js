@@ -266,7 +266,7 @@ ndexApp.controller('myAccountController',
             */
 
             $scope.getExportedNetworkDownloadLink = function(taskId) {
-                return ndexService.getNdexServerUriV2() + "/task/" + taskId + "/file?download=true";
+                return ndexService.getNdexServerUri() + "/task/" + taskId + "/file?download=true";
             };
 
             $scope.getCredentialsForExportedNetworkDownload = function() {
