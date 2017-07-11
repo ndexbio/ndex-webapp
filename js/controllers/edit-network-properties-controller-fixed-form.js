@@ -702,7 +702,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     $scope.mainProperty.version = "";
                 }
                 $scope.mainProperty.visibility = network.visibility;
-                editor.showcased.state = network.isShowcase;
+                if($scope.mainProperty.visibility === "PRIVATE"){
+                    editor.showcased.state = true;
+                } else {
+                    editor.showcased.state = network.isShowcase;
+                }
 
                 // break network properties into two sets: one set is "hidden", it contains
                 // "reserved property names" that every network has (these names are listed in $scope.reservedNames).
