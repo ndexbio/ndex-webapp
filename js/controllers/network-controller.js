@@ -2425,11 +2425,25 @@ ndexApp.controller('networkController',
                 networkController.advancedQueryNodeCriteria = 'Source';
             };
 
+            var checkNetworkViewMode = function() {
+                localNetwork = networkService.getNiceCX();
+
+                if ("Graphic" == $scope.currentView) {
+                    drawCXNetworkOnCanvas(localNetwork,false);
+
+                } else {
+
+                    var enableFiltering = true;
+                    var setGridWidth = false;
+
+                    populateNodeTable(localNetwork, enableFiltering, setGridWidth);
+                    populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                };
+            };
+
             networkController.resetAdvancedQuery = function () {
                 provenanceService.resetProvenance();
                 networkController.successfullyQueried = false;
-                $scope.currentView = "Graphic";
-                $scope.buttonLabel = "Table View";
 
                 // get network summary
                 // keep a reference to the promise
@@ -2463,8 +2477,9 @@ ndexApp.controller('networkController',
                                     || networkController.canRead
                                     || accesskey)
                                 {
-                                    getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
-                                }
+                                    getNetworkAndDisplay(networkExternalId, checkNetworkViewMode);
+                                };
+
                             });
 
                             networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
