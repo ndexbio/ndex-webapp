@@ -57,7 +57,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
         }
 
 
-        factory.getProvenanceTitle = function()
+   /*     factory.getProvenanceTitle = function()
         {
             var untitled = "Untitled Network";
 
@@ -71,8 +71,23 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
                     return p.value;
             }
             return untitled; //provenance.uri;
-        };
+        }; */
 
+        factory.getProvenanceTitle = function(prov)
+        {
+            var untitled = "Untitled Network";
+
+            if( typeof prov == 'undefined' || prov.properties == null )
+                return untitled;
+
+            for( var i = 0; i < prov.properties.length; i++ )
+            {
+                var p = prov.properties[i];
+                if(p.name.toLowerCase() == "dc:title")
+                    return p.value;
+            }
+            return untitled; //provenance.uri;
+        };
 
         factory.showProvenance = function (controller) {
             if (!provenance) {

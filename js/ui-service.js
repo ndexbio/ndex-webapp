@@ -2080,6 +2080,8 @@
 
                     var data;
 
+                    updatedNetworksCounter = 0;
+
                     if (operation == "description") {
                         data = $scope.network.description;
 
@@ -2226,6 +2228,7 @@
                     };
 
                     $scope.network.submitButtonLabel = $scope.label;
+                    $scope.network.showcase = false;
 
                     modalInstance = $modal.open({
                         templateUrl: 'bulk-edit-network-property-modal.html',
@@ -2264,9 +2267,9 @@
 
                                     if (value == 'PUBLIC') {
 
-                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", true,
+                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", $scope.network.showcase,
                                             function (data, networkId, property, value) {
-                                                myAccountController.updateShowcaseOfNetwork(networkId, true);
+                                                myAccountController.updateShowcaseOfNetwork(networkId, $scope.network.showcase);
                                             },
                                             function (error, networkId, property, value) {
                                                 console.log("unable to change showcase for Network with Id " + networkId);
@@ -2286,7 +2289,7 @@
                                         $scope.isProcessing = false;
                                         modalInstance.close();
 
-                                        if (value == 'PUBLIC') {
+                                        if ((value == 'PUBLIC') && $scope.network.showcase) {
                                             var title = "The Selected Networks are Now Public and Showcased";
                                             var message =
                                                 "The selected networks are now public and showcased on your account page. " +
@@ -2816,7 +2819,7 @@
                                 var networkUUID = $scope.ndexNetworkUuid;
                                 var prefix = $scope.namespace.selectedNameSpace.prefix;
 
-                                var URI = ndexService.getNdexServerUriV2() + '/network/' + networkUUID + '/namespaceFile/' + prefix;
+                                var URI = ndexService.getNdexServerUri() + '/network/' + networkUUID + '/namespaceFile/' + prefix;
 
                                 // since the server REST API returns String (text/plain), we need to use the $http service.
                                 // When server was returning String as application/json,  the client (Web UI) was unable to pase the expected JSON and threw errors,
@@ -3147,6 +3150,7 @@
         }
     });
 
+    /*
     uiServiceApp.directive('saveSubnetwork', function(){
         return {
             restrict: 'E',
@@ -3300,6 +3304,7 @@
             }
         }
     });
+    */
 
     // modal to delete user
     uiServiceApp.directive('networkProperty', function(){
