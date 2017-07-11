@@ -2228,6 +2228,7 @@
                     };
 
                     $scope.network.submitButtonLabel = $scope.label;
+                    $scope.network.showcase = false;
 
                     modalInstance = $modal.open({
                         templateUrl: 'bulk-edit-network-property-modal.html',
@@ -2266,9 +2267,9 @@
 
                                     if (value == 'PUBLIC') {
 
-                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", true,
+                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", $scope.network.showcase,
                                             function (data, networkId, property, value) {
-                                                myAccountController.updateShowcaseOfNetwork(networkId, true);
+                                                myAccountController.updateShowcaseOfNetwork(networkId, $scope.network.showcase);
                                             },
                                             function (error, networkId, property, value) {
                                                 console.log("unable to change showcase for Network with Id " + networkId);
@@ -2288,7 +2289,7 @@
                                         $scope.isProcessing = false;
                                         modalInstance.close();
 
-                                        if (value == 'PUBLIC') {
+                                        if ((value == 'PUBLIC') && $scope.network.showcase) {
                                             var title = "The Selected Networks are Now Public and Showcased";
                                             var message =
                                                 "The selected networks are now public and showcased on your account page. " +

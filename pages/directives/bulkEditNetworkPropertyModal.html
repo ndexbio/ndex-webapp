@@ -55,14 +55,36 @@
                 </div>
 
                 <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='visibility'" ng-init="network.visibility='[Select Network Visibility]'">
-                    <label class="col-sm-3 control-label">Visibility</label>
-                    <div class="col-sm-5">
-                        <select class="form-control input-sm" ng-model="network.visibility">
-                            <option>[Select Network Visibility]</option>
-                            <option value="PUBLIC">Public</option>
-                            <option value="PRIVATE">Private</option>
-                        </select>
+                    <div class="row">
+                        <label class="col-sm-3 control-label">Visibility</label>
+                        <div class="col-sm-5">
+                            <select class="form-control input-sm" ng-model="network.visibility">
+                                <option>[Select Network Visibility]</option>
+                                <option value="PUBLIC">Public</option>
+                                <option value="PRIVATE">Private</option>
+                            </select>
+                        </div>
                     </div>
+
+
+                    <div class="row rowWithOneLineTopPad" ng-if="network.visibility == 'PUBLIC'">
+
+                        <label class="col-sm-3 control-label">Showcase</label>
+                        <div class="col-sm-5">
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="network.showcase"
+                                       ng-value="true" id="showcased_r" style="cursor: pointer;" name="optradio">
+                                <i class="fa fa-eye fa-lg" style="color: #4CAE47;" aria-hidden="true"></i>
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="network.showcase"
+                                       ng-value="false" id="unshowcased_r" style="cursor: pointer;" name="optradio">
+                                <i class="fa fa-eye-slash fa-lg" style="color: #CF393A;" aria-hidden="true"></i>
+                            </label>
+                        </div>
+
+                    </div>
+
                 </div>
 
                 <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='readOnly'"
