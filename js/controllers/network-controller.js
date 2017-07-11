@@ -96,6 +96,7 @@ ndexApp.controller('networkController',
             $scope.disabledQueryTooltip = "At this moment, the query service only supports networks with up to " +
                 $scope.egeCountForDisablingQuery + " edges";
 
+            $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -262,7 +263,7 @@ ndexApp.controller('networkController',
                 if ($scope.currentView == "Graphic") {
                     // switch to table view
                     $scope.currentView = "Table";
-                    $scope.buttonLabel = "Graph View"
+                    $scope.buttonLabel = "Graph View";
 
                     var enableFiltering = true;
                     var setGridWidth = true;
@@ -280,9 +281,24 @@ ndexApp.controller('networkController',
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
                     $scope.currentView = "Graphic";
-                    $scope.buttonLabel = "Table View"
-                }
-            }
+                    $scope.buttonLabel = "Table View";
+
+                    if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
+                        $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+
+                        localNetwork = networkService.getNiceCX();
+                        checkIfCanvasIsVisibleAndDrawNetwork();
+                    };
+
+                };
+            };
+            function checkIfCanvasIsVisibleAndDrawNetwork() {
+                if($('#cytoscape-canvas').is(':visible')) {
+                    drawCXNetworkOnCanvas(localNetwork, false);
+                } else {
+                    setTimeout(checkIfCanvasIsVisibleAndDrawNetwork, 50);
+                };
+            };
 
             $scope.setReturnView = function(view) {
                 sharedProperties.setNetworkViewPage(view);
@@ -1860,14 +1876,17 @@ ndexApp.controller('networkController',
 
                             stopSpinner();
 
+                            // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
+                            drawCXNetworkOnCanvas(network,false);
+
                             if ($scope.currentView == "Table") {
                                 var enableFiltering = true;
                                 var setGridWidth = false;
-                                //localNetwork = networkService.getNiceCX();
                                 populateNodeTable(network, enableFiltering, setGridWidth);
                                 populateEdgeTable(network, enableFiltering, setGridWidth);
+                                $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
                             } else {
-                                drawCXNetworkOnCanvas(network,false);
+                                $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
                             }
 
                             if (networkController.currentNetwork.nodeCount == 0) {
@@ -2037,6 +2056,9 @@ ndexApp.controller('networkController',
 
                             cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
 
+                            stopSpinner();
+
+                            // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                             drawCXNetworkOnCanvas(localNiceCX,false);
 
                             networkController.selectionContainer = {};
@@ -2046,6 +2068,9 @@ ndexApp.controller('networkController',
                                 var setGridWidth = false;
                                 populateNodeTable(localNiceCX, enableFiltering, setGridWidth);
                                 populateEdgeTable(localNiceCX, enableFiltering, setGridWidth);
+                                $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
+                            } else {
+                                $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
                             };
 
                             if (networkController.currentNetwork.nodeCount == 0) {

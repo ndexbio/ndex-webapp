@@ -14,7 +14,8 @@
 
         <div class="row">
 
-            <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}" ng-show="currentView == 'Graphic'">
+            <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}"
+                 ng-show="currentView == 'Graphic'">
                 <div id="spinnerGraphId"></div>
                 <div id="messageOverlay"
                      style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
@@ -750,11 +751,18 @@
         <div class="rowWithOneLineTopPad"></div>
 
         <div class="networkActionsSection pull-left"
-             ng-show="networkController.isLoggedInUser && networkController.successfullyQueried &&
+             ng-show="networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
-            <button id="saveQueryButton" class="actionsLabel btn btn-primary customButtonWidth" ng-click="networkController.saveQueryResult()" >
+            <button id="saveQueryButton"
+                    ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary customButtonWidth"
+                    ng-click="networkController.saveQueryResult()" >
                 Save Query Result
+            </button>
+
+            <button type="button" class="actionsLabel btn btn-primary"
+                    ng-click="switchView()">
+                {{buttonLabel}}
             </button>
 
         </div>
@@ -783,9 +791,7 @@
                    title="{{networkController.title}}">
                         {{buttonLabel}}
                 </a>
-
             </span>
-
 
             <!--
             <span ng-show='networkController.isLoggedInUser &&
