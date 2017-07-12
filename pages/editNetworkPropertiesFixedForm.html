@@ -172,7 +172,18 @@ input[type='radio']:checked:after {
 						</div>
 
 						<div class="col-sm-4" ng-if="mainProperty.visibility == 'PUBLIC' && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
-							<input type="checkbox" ng-model="editor.showcased.state"> Showcase</input>
+							<a ng-click="editor.showcased.state = !editor.showcased.state" style="text-decoration: none; color: #656565;">
+
+								<span class="fa-stack" ng-show="!editor.showcased.state">
+									<i class="fa fa-square-o fa-stack-2x"></i>
+								</span>
+
+								<span class="fa-stack" ng-show="editor.showcased.state">
+									<i class="fa fa-square-o fa-stack-2x"></i>
+									<i class="fa fa-check fa-stack-1x"></i>
+								</span>
+								Showcase
+							</a>
 						</div>
 
 					</div>
