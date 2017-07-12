@@ -99,9 +99,20 @@
                     </div>
                 </div>
 
-                <div class='text-danger'>
+
+                <div ng-if="progress">
+                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress"></span></strong>
+                </div>
+
+                <div ng-if="progress2">
+                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
+                </div>
+
+                <div ng-if="errors" class='text-danger'>
+                    <br>
                     <strong>{{errors}}</strong>
                 </div>
+
             </div>
 
             <div class="modal-footer">
