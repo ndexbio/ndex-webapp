@@ -2228,7 +2228,7 @@
                     };
 
                     $scope.network.submitButtonLabel = $scope.label;
-                    $scope.network.showcase = false;
+                    $scope.network.showcase = true;
 
                     modalInstance = $modal.open({
                         templateUrl: 'bulk-edit-network-property-modal.html',
