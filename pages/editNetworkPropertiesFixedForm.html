@@ -167,36 +167,13 @@ input[type='radio']:checked:after {
 								<div title="Name, Description and Version are required for public status">
 									<i ng-if="(mainProperty.description.length < 1 || mainProperty.name.length < 1 || mainProperty.version.length < 1) && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width"
 									   style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-
-
 								</div>
 							</div>
 						</div>
 
-						<div class="col-sm-4" ng-if="mainProperty.visibility == 'PUBLIC' && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: -5px;">
-							<div style="font-size: 10px; height: 14px;">Showcase</div>
-							<div>
-								<label class="radio"><input type="radio" ng-model="editor.showcased.state" ng-value="true" id="showcased_r" style="cursor: pointer;" name="optradio">
-									<!--<img src="img/openedeye.png" width="20px" height="20px" style="margin-top: -5px;">-->
-									<i class="fa fa-eye fa-lg" style="color: #4CAE47;" aria-hidden="true"></i>
-								</label>
-								<label class="radio"><input type="radio" ng-model="editor.showcased.state" ng-value="false" id="unshowcased_r" style="cursor: pointer;" name="optradio">
-									<!--<img src="img/closedeye.png" width="20px" height="20px">-->
-									<i class="fa fa-eye-slash fa-lg" style="color: #CF393A;" aria-hidden="true"></i>
-								</label>
-							</div>
-
-
-							<!--<a class="btn btn-default" ng-click="editor.isShowcased=!editor.isShowcased" ng-if="mainProperty.visibility == 'PUBLIXC'">
-								Set showcase
-								<img ng-if="mainProperty.visibility ==  'PUBLIC' && !editor.isShowcased" src="img/openedeye.png"
-									 width="20px" height="20px" style="cursor: pointer; margin-top: -5px;">
-								<img ng-if="mainProperty.visibility ==  'PUBLIC' && editor.isShowcased" src="img/closedeye.png"
-									 width="20px" height="20px" style="cursor: pointer; margin-top: -5px;">
-
-							</a>-->
+						<div class="col-sm-4" ng-if="mainProperty.visibility == 'PUBLIC' && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
+							<input type="checkbox" ng-model="editor.showcased.state"> Showcase</input>
 						</div>
-
 
 					</div>
 				</div>
