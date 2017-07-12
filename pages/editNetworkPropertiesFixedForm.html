@@ -101,7 +101,7 @@ input[type='radio']:checked:after {
 				<div class='col-sm-offset-1 col-sm-5'>
 
 					<div class="form-group rowWithOneLineTopPad">
-						<label class="col-sm-3 control-label">Name</label>
+						<label class="col-sm-3 control-label">name</label>
 						<div class="col-sm-8" style="margin-bottom: 15px;">
 							<input type="text" class="form-control" ng-change="editor.updateScore()"
 								   ng-class="mainProperty.name.length > 0 ? 'competeInput': ''"
@@ -119,7 +119,7 @@ input[type='radio']:checked:after {
 					</div>
 
 					<div class="form-group">
-						<label class="col-sm-3 control-label">Description</label>
+						<label class="col-sm-3 control-label">description</label>
 						<div class="col-sm-8" style="margin-bottom: 15px;">
 							<text-angular
 									ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
@@ -145,7 +145,7 @@ input[type='radio']:checked:after {
 					</div>
 
 					<div class="form-group" ng-init="eyeopened=false">
-						<label class="col-sm-3 control-label">Visibility</label>
+						<label class="col-sm-3 control-label">visibility</label>
 						<div class="col-sm-4" style="margin-bottom: 15px;">
 							<span ng-if="editor.isOwner">
 								<select class="form-control" ng-model='mainProperty.visibility'>
@@ -167,36 +167,24 @@ input[type='radio']:checked:after {
 								<div title="Name, Description and Version are required for public status">
 									<i ng-if="(mainProperty.description.length < 1 || mainProperty.name.length < 1 || mainProperty.version.length < 1) && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width"
 									   style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-
-
 								</div>
 							</div>
 						</div>
 
-						<div class="col-sm-4" ng-if="mainProperty.visibility == 'PUBLIC' && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: -5px;">
-							<div style="font-size: 10px; height: 14px;">Showcase</div>
-							<div>
-								<label class="radio-inline"><input type="radio" ng-model="editor.showcased.state" ng-value="true" id="showcased_r" style="cursor: pointer;" name="optradio">
-									<!--<img src="img/openedeye.png" width="20px" height="20px" style="margin-top: -5px;">-->
-									<i class="fa fa-eye fa-lg" style="color: #4CAE47;" aria-hidden="true"></i>
-								</label>
-								<label class="radio-inline"><input type="radio" ng-model="editor.showcased.state" ng-value="false" id="unshowcased_r" style="cursor: pointer;" name="optradio">
-									<!--<img src="img/closedeye.png" width="20px" height="20px">-->
-									<i class="fa fa-eye-slash fa-lg" style="color: #CF393A;" aria-hidden="true"></i>
-								</label>
-							</div>
+						<div class="col-sm-4" ng-if="mainProperty.visibility == 'PUBLIC' && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
+							<a ng-click="editor.showcased.state = !editor.showcased.state" style="text-decoration: none; color: #656565;">
 
+								<span class="fa-stack" ng-show="!editor.showcased.state">
+									<i class="fa fa-square-o fa-stack-2x"></i>
+								</span>
 
-							<!--<a class="btn btn-default" ng-click="editor.isShowcased=!editor.isShowcased" ng-if="mainProperty.visibility == 'PUBLIXC'">
-								Set showcase
-								<img ng-if="mainProperty.visibility ==  'PUBLIC' && !editor.isShowcased" src="img/openedeye.png"
-									 width="20px" height="20px" style="cursor: pointer; margin-top: -5px;">
-								<img ng-if="mainProperty.visibility ==  'PUBLIC' && editor.isShowcased" src="img/closedeye.png"
-									 width="20px" height="20px" style="cursor: pointer; margin-top: -5px;">
-
-							</a>-->
+								<span class="fa-stack" ng-show="editor.showcased.state">
+									<i class="fa fa-square-o fa-stack-2x"></i>
+									<i class="fa fa-check fa-stack-1x"></i>
+								</span>
+								Showcase
+							</a>
 						</div>
-
 
 					</div>
 				</div>
@@ -204,7 +192,7 @@ input[type='radio']:checked:after {
 				<div class='col-sm-5'>
 
 					<div class="form-group rowWithOneLineTopPad">
-						<label class="col-sm-3 control-label">Version</label>
+						<label class="col-sm-3 control-label">version</label>
 						<div class="col-sm-8" style="margin-bottom: 15px;">
 							<input type="text" class="form-control" placeholder="1.0"
 								   ng-change="editor.updateScore()"
@@ -222,7 +210,7 @@ input[type='radio']:checked:after {
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 control-label">Reference</label>
+						<label class="col-sm-3 control-label">reference</label>
 						<div class="col-sm-8" style="margin-bottom: 15px;">
 							<text-angular
 									ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
@@ -280,7 +268,7 @@ input[type='radio']:checked:after {
 				<div class='col-sm-offset-1 col-sm-5'>
 					<div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
 						<div ng-if="$index <= 5 && property.predicateString != 'custom...'">
-							<label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}" style="text-transform: capitalize;">{{property.predicateString}}</label>
+							<label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}">{{property.predicateString}}</label>
 							<div ng-if="property.predicateString.length > 0" class="input-group col-sm-9" style="margin-bottom: 15px;">
 								<input
 									   class="form-control input-sm" ng-change="editor.updateScore()"
@@ -299,7 +287,7 @@ input[type='radio']:checked:after {
 				<div class='col-sm-5'>
 					<div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
 						<div ng-if="$index > 5 && property.predicateString != 'custom...'">
-							<label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input2{{property.predicateString}}" style="text-transform: capitalize;">{{property.predicateString}}</label>
+							<label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input2{{property.predicateString}}">{{property.predicateString}}</label>
 							<div ng-if="property.predicateString.length > 0" class="input-group col-sm-9" style="margin-bottom: 15px;">
 								<input
 										class="form-control input-sm" ng-change="editor.updateScore()"

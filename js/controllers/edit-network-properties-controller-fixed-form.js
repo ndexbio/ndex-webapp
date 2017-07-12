@@ -460,9 +460,10 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
             var foundReference = false;
             for (var i=0;i<networkProperties.length;i++){
-                if(networkProperties[i].predicateString === "reference"){
+                if(networkProperties[i].predicateString.toLowerCase() === "reference"){
                     networkProperties[i].value = $scope.mainProperty.reference;
                     foundReference = true;
+                    break;
                 }
             }
 
@@ -688,8 +689,9 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 $scope.mainProperty.reference = network.reference;
                 if(!$scope.mainProperty.reference){
                     for(var i=0;i<network.properties.length;i++){
-                        if(network.properties[i].predicateString === "reference"){
+                        if(network.properties[i].predicateString.toLowerCase() === "reference"){
                             $scope.mainProperty.reference = network.properties[i].value;
+                            break;
                         }
                     }
                     // Still couldn't find references and references are undefined
