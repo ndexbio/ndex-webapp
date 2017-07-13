@@ -66,23 +66,23 @@
                         </div>
                     </div>
 
-
                     <div class="row rowWithOneLineTopPad" ng-if="network.visibility == 'PUBLIC'">
 
-                        <label class="col-sm-3 control-label">Showcase</label>
-                        <div class="col-sm-5">
-                            <label class="radio-inline">
-                                <input type="radio" ng-model="network.showcase"
-                                       ng-value="true" id="showcased_r" style="cursor: pointer;" name="optradio">
-                                <i class="fa fa-eye fa-lg" style="color: #4CAE47;" aria-hidden="true"></i>
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" ng-model="network.showcase"
-                                       ng-value="false" id="unshowcased_r" style="cursor: pointer;" name="optradio">
-                                <i class="fa fa-eye-slash fa-lg" style="color: #CF393A;" aria-hidden="true"></i>
-                            </label>
-                        </div>
+                        <div class="col-sm-3"></div>
 
+                        <div class="col-sm-5">
+                            <a ng-click="network.showcase = !network.showcase" style="text-decoration: none; color: #656565;">
+                                <span class="fa-stack" ng-show="!network.showcase">
+                                    <i class="fa fa-square-o fa-stack-2x"></i>
+                                </span>
+
+                                <span class="fa-stack" ng-show="network.showcase">
+                                    <i class="fa fa-square-o fa-stack-2x"></i>
+                                    <i class="fa fa-check fa-stack-1x"></i>
+                                </span>
+                                <strong>Showcase</strong>
+                            </a>
+                        </div>
                     </div>
 
                 </div>
@@ -99,9 +99,20 @@
                     </div>
                 </div>
 
-                <div class='text-danger'>
+
+                <div ng-if="progress">
+                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress"></span></strong>
+                </div>
+
+                <div ng-if="progress2">
+                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
+                </div>
+
+                <div ng-if="errors" class='text-danger'>
+                    <br>
                     <strong>{{errors}}</strong>
                 </div>
+
             </div>
 
             <div class="modal-footer">

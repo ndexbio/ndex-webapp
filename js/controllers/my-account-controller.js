@@ -713,6 +713,7 @@ ndexApp.controller('myAccountController',
             {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
+                // change Visibility in the Network Table
                 for (var i = 0; i < selectedNetworksRows.length; i ++)
                 {
                     if (selectedNetworksRows[i].externalId == networkId) {
@@ -721,6 +722,7 @@ ndexApp.controller('myAccountController',
                     };
                 };
 
+                // change Visibility in the Network Search list
                 for (var i = 0; i < myAccountController.networkSearchResults.length; i ++)
                 {
                     if (myAccountController.networkSearchResults[i].externalId == networkId) {
@@ -728,6 +730,36 @@ ndexApp.controller('myAccountController',
                         break;
                     };
                 };
+            };
+
+            myAccountController.updateDescriptionOfNetworks = function (networkUUIDs, newDescription)
+            {
+                var description = (newDescription) ? $scope.stripHTML(newDescription) : newDescription;
+
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                // change Network Summaries in Network table
+                _.forEach(selectedNetworksRows, function(row) {
+                    var networkId = row.externalId;
+
+                    if (networkId in networkUUIDs) {
+                        row['description'] = description;
+                    };
+                });
+
+
+                // change Network Summary in Network Search list
+                _.forEach(myAccountController.networkSearchResults, function (row) {
+
+                    var networkId = row.externalId;
+
+                    if (networkId in networkUUIDs) {
+                        row['description'] = description;
+                    };
+
+                });
+
+                return;
             };
             
             myAccountController.updateShowcaseOfNetwork = function (networkId, networkShowcase)
@@ -880,37 +912,42 @@ ndexApp.controller('myAccountController',
                             deletedNetworksCounter = deletedNetworksCounter + 1;
                             successfullyDeletedNetworkIDs[networkId] = "";
 
-                            $scope.progress  = "Deleted: " + deletedNetworksCounter + " of " + selectedNetworkCount + " selected";
+                            $scope.progress  = "Deleted: " + deletedNetworksCounter + " of " + selectedNetworkCount + " selected networks";
                             $scope.progress2 = "Deleted: " + networkName;
 
                             if (deletedNetworksCounter == selectedNetworkCount) {
-                                delete $scope.progress;
-                                delete $scope.progress2;
-
-                                $modalInstance.dismiss();
-                                $scope.isProcessing = false;
 
                                 removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
-                                deletedHandler();
 
+                                setTimeout(function() {
+                                    delete $scope.progress;
+                                    delete $scope.progress2;
+                                    delete $scope.errors;
+                                    $scope.isProcessing = false;
+                                    $modalInstance.dismiss();
+                                }, 1000);
+
+                                deletedHandler();
                             };
                         },
                         function (error)
                         {
                             deletedNetworksCounter = deletedNetworksCounter + 1;
-                            //$scope.networkGridApi.grid.selection.selectedCount =
-                            //    $scope.networkGridApi.grid.selection.selectedCount - 1;
-                            console.log("unable to delete network");
+
                             $scope.error = "Unable to delete network " + networkName;
 
                             if (deletedNetworksCounter == selectedNetworkCount) {
-                                delete $scope.progress;
-                                delete $scope.progress2;
-
-                                $modalInstance.dismiss();
-                                $scope.isProcessing = false;
 
                                 removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
+
+                                setTimeout(function() {
+                                    delete $scope.progress;
+                                    delete $scope.progress2;
+                                    delete $scope.errors;
+                                    $scope.isProcessing = false;
+                                    $modalInstance.dismiss();
+                                }, 1000);
+
                                 deletedHandler();
                             };
                         });
