@@ -442,6 +442,7 @@ ndexApp.controller('myAccountController',
                     var errorMessage = network.errorMessage;
 
                     var networks = 0;
+                    var isReadOnly = network['isReadOnly'] ? network['isReadOnly'] : false;
 
                     /*
                     if (networkStatus == "collection") {
@@ -469,7 +470,8 @@ ndexApp.controller('myAccountController',
                         "name"          :   networkName,
                         "errorMessage"  :   errorMessage,
                         "subnetworks"   :   noOfSubNetworks,
-                        "networks"      :   networks
+                        "networks"      :   networks,
+                        "isReadOnly"    :   isReadOnly
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
@@ -709,28 +711,98 @@ ndexApp.controller('myAccountController',
                 return selectedIds;
             };
 
-            myAccountController.updateVisibilityOfNetwork = function (networkId, networkVisibility)
+            myAccountController.getVisibilityAndShowcaseOfSelectedNetworks = function ()
+            {
+                var visibilityAndShowcase = {};
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                _.forEach(selectedNetworksRows, function(row) {
+                    if (row.Format.toLowerCase() != "set") {
+
+                        visibilityAndShowcase[row['externalId']] =
+                            {
+                                'visibility':  row['Visibility'] ? row['Visibility'] : 'PRIVATE',
+                                'showCase':    row['Show'] ? row['Show'] : false,
+                                'networkName': row['name']
+                            };
+                    };
+                });
+
+                return visibilityAndShowcase;
+            };
+
+            myAccountController.getReadOnlyOfSelectedNetworks = function ()
+            {
+                var readOnly = {};
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                _.forEach(selectedNetworksRows, function(row) {
+                    if (row.Format.toLowerCase() != "set") {
+
+                        readOnly[row['externalId']] =
+                            {
+                                'isReadOnly':  row['isReadOnly'] ? row['isReadOnly'] : false,
+                                'networkName': row['name']
+                            };
+                    };
+                });
+
+                return readOnly;
+            };
+
+            myAccountController.updateVisibilityOfNetworks = function (networkUUIDs, networkVisibility)
             {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
-                // change Visibility in the Network Table
-                for (var i = 0; i < selectedNetworksRows.length; i ++)
-                {
-                    if (selectedNetworksRows[i].externalId == networkId) {
-                        selectedNetworksRows[i].Visibility = networkVisibility;
-                        break;
+                // change 'Visibility' in the Network Table
+                _.forEach(selectedNetworksRows, function(row) {
+                    if (row['externalId'] in networkUUIDs) {
+                        row['Visibility'] = networkVisibility;
                     };
-                };
+                });
 
-                // change Visibility in the Network Search list
-                for (var i = 0; i < myAccountController.networkSearchResults.length; i ++)
-                {
-                    if (myAccountController.networkSearchResults[i].externalId == networkId) {
-                        myAccountController.networkSearchResults[i].visibility = networkVisibility;
-                        break;
+                // change 'visibility' in the Network Search list
+                _.forEach(myAccountController.networkSearchResults, function(row) {
+                    if (row['externalId'] in networkUUIDs) {
+                        row['visibility'] = networkVisibility;
                     };
-                };
+                });
             };
+
+            myAccountController.updateShowcaseOfNetworks = function (networkUUIDs, showCase)
+            {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                _.forEach(selectedNetworksRows, function(row) {
+                    if (row['externalId'] in networkUUIDs) {
+                        row['Show'] = showCase;
+                    };
+                });
+
+                _.forEach(myAccountController.networkSearchResults, function(row) {
+                    if (row['externalId'] in networkUUIDs) {
+                        row['isShowcase'] = showCase;
+                    };
+                }
+                );
+            };
+            myAccountController.updateReadOnlyOfNetworks = function (networkUUIDs, readOnly)
+            {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                _.forEach(selectedNetworksRows, function(row) {
+                    if (row['externalId'] in networkUUIDs) {
+                        row['isReadOnly'] = readOnly;
+                    };
+                });
+
+                _.forEach(myAccountController.networkSearchResults, function(row) {
+                    if (row['externalId'] in networkUUIDs) {
+                        row['isReadOnly'] = readOnly;
+                    };
+                });
+            };
+
 
             myAccountController.updateDescriptionOfNetworks = function (networkUUIDs, newDescription)
             {
@@ -761,18 +833,39 @@ ndexApp.controller('myAccountController',
 
                 return;
             };
-            
-            myAccountController.updateShowcaseOfNetwork = function (networkId, networkShowcase)
+
+            myAccountController.updateReferenceOfNetworks = function (networkUUIDs, newReference)
             {
+                //var reference = (newReference) ? $scope.stripHTML(newDescription) : newDescription;
+
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
 
-                for( var i = 0; i < selectedNetworksRows.length; i ++ )
-                {
-                    if (selectedNetworksRows[i].externalId == networkId) {
-                        selectedNetworksRows[i].Show = networkShowcase;
-                        break;
-                    }
-                }
+                var mySearch = myAccountController.networkSearchResults;
+
+                // change Network References in Network table
+                _.forEach(selectedNetworksRows, function(row) {
+                    var networkId = row.externalId;
+
+                    if (networkId in networkUUIDs) {
+                        row['Reference'] = newReference;
+                    };
+                });
+
+
+                // change Network Summary in Network Search list
+                /*
+                _.forEach(myAccountController.networkSearchResults, function (row) {
+
+                    var networkId = row.externalId;
+
+                    if (networkId in networkUUIDs) {
+                        row['reference'] = description;
+                    };
+
+                });
+                */
+
+                return;
             };
 
             /*
@@ -893,6 +986,8 @@ ndexApp.controller('myAccountController',
 
                 var deletedNetworksCounter = 0;
                 var selectedNetworkCount = $scope.networkGridApi.selection.getSelectedRows().length;
+
+                $scope.progress  = "Deleted: " + deletedNetworksCounter + " of " + selectedNetworkCount + " selected networks";
 
                 _.forEach($scope.networkGridApi.selection.getSelectedRows(), function(row) {
 

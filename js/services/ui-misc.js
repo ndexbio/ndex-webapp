@@ -43,7 +43,38 @@ angular.module('ndexServiceApp')
 
              ndexNavigation.genericInfoModal(title, message);
         };
-                    
+
+
+        self.constructReferenceObj = function(referenceStr) {
+            var referenceInPlainText;
+
+            // referenceStr can be plain text (has no HTML tags), in which case the text() method of jQuery
+            // will throw exception.  In this case, don't convert referenceStr to text
+            try {
+                referenceInPlainText = jQuery(referenceStr).text();
+            } catch(err) {
+                referenceInPlainText = referenceStr;
+            }
+
+            var url;
+
+            // in case jQuery can't find URL and throws exception, initialize URL to an empty string
+            try {
+                url = jQuery(referenceStr).find('a').attr('href');
+            } catch(err) {
+                url = "";
+            }
+
+            var countURLs = (referenceStr.toLowerCase().match(/a href=/g) || []).length;
+
+            return {
+                referenceText: referenceInPlainText ? referenceInPlainText : "",
+                referenceHTML: referenceStr ? referenceStr : "",
+                url: url ? url : "",
+                urlCount: countURLs
+            };
+        };
+
         self.getNetworkReferenceObj = function(subNetworkId, network) {
             var reference = "";
 
@@ -61,33 +92,7 @@ angular.module('ndexServiceApp')
                 }
             }
 
-            var referenceInPlainText;
-
-            // reference can be plain text (has no HTML tags), in which case the text() method of jQuery
-            // will throw exception.  In this case, don't convert reference to text
-            try {
-                referenceInPlainText = jQuery(reference).text();
-            } catch(err) {
-                referenceInPlainText = reference;
-            }
-
-            var url;
-
-            // in case jQuery can't find URL and throws exception, initialize URL to an empty string
-            try {
-                url = jQuery(reference).find('a').attr('href');
-            } catch(err) {
-                url = "";
-            }
-
-            var countURLs = (reference.toLowerCase().match(/a href=/g) || []).length;
-
-            return {
-                referenceText: referenceInPlainText ? referenceInPlainText : "",
-                referenceHTML: reference ? reference : "",
-                url: url ? url : "",
-                urlCount: countURLs
-            };
+            return self.constructReferenceObj(reference);
         };
 
         self.getSetReferenceObj = function(networkSet) {
