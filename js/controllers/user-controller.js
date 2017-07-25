@@ -46,8 +46,6 @@ ndexApp.controller('userController',
             userController.networkSetsOwnerOfPage = [];
             userController.networkSets = [];
 
-            $scope.selectedNetworkRowsUids = {};
-
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -56,31 +54,6 @@ ndexApp.controller('userController',
                 if( isLastColumn )
                     result += 40;
                 return result > 250 ? 250 : result;
-            };
-
-
-            $scope.updateSelectedNetworksRowsUidsList = function(row) {
-                if (row['isSelected']) {
-                    $scope.selectedNetworkRowsUids[row.entity.externalId] = true;
-                } else {
-                    delete $scope.selectedNetworkRowsUids[row.entity.externalId];
-                };
-            };
-
-            $scope.selectPreviouslySelectedNetworks = function() {
-                var selectedCount = 0;
-
-                _.forEach($scope.networkGridApi.grid.rowHashMap, function(hashMapObj) {
-
-                    if (hashMapObj.entity &&  hashMapObj.entity.externalId &&
-                        (hashMapObj.entity.externalId in $scope.selectedNetworkRowsUids)) {
-                        hashMapObj.isSelected = true;
-                        selectedCount = selectedCount + 1;
-                    };
-                });
-
-                // This shows (Selected Items: <>) at the bottom of network table
-                $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
             };
 
             //table
@@ -99,6 +72,13 @@ ndexApp.controller('userController',
                 onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
+
+
+                    gridApi.core.on.rowsRendered($scope, function() {
+                        // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
+                        $scope.networkGridApi.core.handleWindowResize();
+                    });
+
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
 
                         if ((row.entity.Status == 'Set') && (row.isSelected)) {
@@ -121,14 +101,13 @@ ndexApp.controller('userController',
                         var selectedRows = gridApi.selection.getSelectedRows();
                         userController.networkTableRowsSelected = selectedRows.length;
 
-                        $scope.updateSelectedNetworksRowsUidsList(row);
-
                         enableOrDisableUpgradePermissionButton();
                     });
 
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows) {
 
                         _.forEach(rows, function(row) {
+                            // unselect a Set: make row.isSelected false and decrement the number of selected items
                             if ((row.entity.Status == 'Set') && (row.isSelected)) {
                                 row.isSelected = false;
 
@@ -136,8 +115,6 @@ ndexApp.controller('userController',
                                 if (selectedCount > 0) {
                                     $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
                                 };
-                            } else {
-                                $scope.updateSelectedNetworksRowsUidsList(row);
                             };
                         });
 

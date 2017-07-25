@@ -78,34 +78,6 @@ ndexApp.controller('myAccountController',
 
             myAccountController.networkSets = [];
 
-            $scope.selectedNetworkRowsUids = {};
-            $scope.selectedCollectionRowsUids = {};
-
-
-            $scope.updateSelectedNetworksRowsUidsList = function(row) {
-                if (row['isSelected']) {
-                    $scope.selectedNetworkRowsUids[row.entity.externalId] = true;
-                } else {
-                    delete $scope.selectedNetworkRowsUids[row.entity.externalId];
-                };
-            };
-
-            $scope.selectPreviouslySelectedNetworks = function() {
-                var selectedCount = 0;
-
-                _.forEach($scope.networkGridApi.grid.rowHashMap, function(hashMapObj) {
-
-                    if (hashMapObj.entity &&  hashMapObj.entity.externalId &&
-                        (hashMapObj.entity.externalId in $scope.selectedNetworkRowsUids)) {
-                        hashMapObj.isSelected = true;
-                        selectedCount = selectedCount + 1;
-                    };
-                });
-
-                // This shows (Selected Items: <>) at the bottom of network table
-                $scope.networkGridApi.grid.selection.selectedCount = selectedCount;
-            };
-
             //table
             $scope.networkGridOptions =
             {
@@ -121,6 +93,12 @@ ndexApp.controller('myAccountController',
                 onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
+
+                    gridApi.core.on.rowsRendered($scope, function() {
+                        // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
+                        $scope.networkGridApi.core.handleWindowResize();
+                    });
+
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
 
                         if ((row.entity.Status == 'Set') && (row.isSelected)) {
@@ -143,8 +121,6 @@ ndexApp.controller('myAccountController',
                         var selectedRows = gridApi.selection.getSelectedRows();
                         myAccountController.networkTableRowsSelected = selectedRows.length;
 
-                        $scope.updateSelectedNetworksRowsUidsList(row);
-
                         changeNetworkBulkActionsButtonsLabels();
 
                         enableOrDisableEditAndExportBulkButtons();
@@ -156,14 +132,13 @@ ndexApp.controller('myAccountController',
 
                         _.forEach(rows, function(row) {
                             if ((row.entity.Status == 'Set') && (row.isSelected)) {
+                                // unselect a Set: make row.isSelected false and decrement the number of selected items
                                 row.isSelected = false;
 
                                 var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
                                 if (selectedCount > 0) {
                                     $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
                                 };
-                            } else {
-                                $scope.updateSelectedNetworksRowsUidsList(row);
                             };
                         });
 
@@ -474,7 +449,7 @@ ndexApp.controller('myAccountController',
                         "isReadOnly"    :   isReadOnly
                     };
                     $scope.networkGridOptions.data.push(row);
-                }
+                };
             };
 
             myAccountController.tasksNotificationsTabDisabled = function() {
