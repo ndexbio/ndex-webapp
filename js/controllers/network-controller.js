@@ -852,9 +852,33 @@ ndexApp.controller('networkController',
                     if (index > -1) {
                         attributeNames.splice(index, 1);
                     }
-                }
+                };
 
-                return resultList.concat(attributeNames);
+
+                // here, we want the last elements in resultList to be ndex:internalLink and ndex:externalLink (if
+                // they are present in attributeNames).  So we remove them from attributeNames, and then add them
+                // to the end of the list.
+                // This is done so that they are in the same order in the Nodes/Edges tab on the right  as in pop-up
+                // Qtip menu (when clicking on a node in a network map).
+                var links = [];
+                var ndexInternalLink = 'ndex:internalLink';
+                var ndexExternalLink = 'ndex:externalLink';
+
+                if (attributeNames.indexOf(ndexInternalLink) > -1) {
+                    links.push(ndexInternalLink);
+                    _.pull(attributeNames, ndexInternalLink);
+                };
+                if (attributeNames.indexOf(ndexExternalLink) > -1) {
+                    links.push(ndexExternalLink);
+                    _.pull(attributeNames, ndexExternalLink);
+                };
+
+                resultList = resultList.concat(attributeNames);
+                if (links.length > 0) {
+                    resultList = resultList.concat(links);
+                };
+
+                return resultList;
             };
 
             $scope.getEdgeAttributesNames = function(node) {
@@ -873,6 +897,51 @@ ndexApp.controller('networkController',
                 return attributeNames;
             };
 
+            var getURLForNdexInternalLink = function(attribute) {
+
+                if (!attribute) {
+                    return null;
+                };
+
+                var attributeValue = null;
+                var markup = parseNdexMarkupValue(attribute);
+
+                if (markup.id) {
+                    var url = networkController.baseURL + markup.id;
+
+                    attributeValue =
+                        '<a target=\"_blank\" href=\"' + url + '\">' + (markup.n? markup.n : markup.id)+ '</a>';
+                };
+
+                return attributeValue;
+            };
+
+            var getURLsForNdexExternalLink = function(attribute) {
+
+                if (!attribute) {
+                    return null;
+                };
+
+                var urls = "";
+
+                _.forEach(attribute, function (e) {
+                    var markup = parseNdexMarkupValue(e);
+                    if (markup.id) {
+                        if (urls) {
+                            urls = urls + '<br>' +
+                                '<a target=\"_blank\" href=\"' + markup.id + '\">' + (markup.n ? markup.n : 'external link') + '</a>';
+                        } else {
+                            urls =
+                                '<a target=\"_blank\" href=\"' + markup.id + '\">' + (markup.n ? markup.n : 'external link') + '</a>';
+                        };
+
+                    };
+                });
+
+                return urls;
+            };
+
+
             $scope.getAttributeValue = function(attributeName, attribute) {
 
                 if (!attribute && (attribute != 0)) {
@@ -888,8 +957,9 @@ ndexApp.controller('networkController',
                 var attributeValue = "";
 
                 if (attribute instanceof Object) {
-                    if (attribute['v'] && Array.isArray(attribute['v']) && attribute['v'].length > 0) {
-
+                    if (attribute['v'] && Array.isArray(attribute['v']) && (attribute['v'].length > 0) &&
+                        (attributeName.toLowerCase() != 'ndex:externallink'))
+                    {
                         if(attribute['v'].length > 5) {
 
                             for (var i = 0; i < 5; i++) {
@@ -916,13 +986,24 @@ ndexApp.controller('networkController',
                         }
                         
                     } else {
+
+                        if (attributeName.toLowerCase() == 'ndex:internallink') {
+
+                            return getURLForNdexInternalLink(attribute.v);
+
+                        } else if (attributeName.toLowerCase() == 'ndex:externallink') {
+
+                            return  getURLsForNdexExternalLink(attribute.v);
+                        };
+
+
                         attributeValue = (attribute['v']) ? attribute['v'] : '';
 
                         var typeOfAttributeValue = typeof(attributeValue);
 
                         if (attributeValue && (typeOfAttributeValue === 'string')) {
                             attributeValue = getStringAttributeValue(attributeValue);
-                        }
+                        };
                     }
 
                 } else {
@@ -1213,19 +1294,33 @@ ndexApp.controller('networkController',
                                 var ndexLinkList = n.data(ndexLink);
                                 if ( typeof ndexLinkList === 'string')
                                     ndexLinkList = [ndexLinkList];
+
                                 _.forEach(ndexLinkList, function (e) {
+
+                                    var ndexInternalLink = getURLForNdexInternalLink(e);
+                                    if (ndexInternalLink) {
+                                        menuList.push(ndexInternalLink);
+                                    };
+                                    /*
                                     var markup = parseNdexMarkupValue(e);
                                     if ( markup.id) {
                                         var url = networkController.baseURL + markup.id;
                                         menuList.push('<a target="_blank" href="' + url + '">' +
                                             (markup.n? markup.n : markup.id)+ '</a>');
                                     }
+                                    */
                                 });
                             }
                             if ( ndexExtLink) {
                                 var extLinkList = n.data(ndexExtLink);
                                 if ( typeof extLinkList === 'string')
                                     extLinkList = [ extLinkList];
+
+                                var ndexExternalLinks = getURLsForNdexExternalLink(extLinkList);
+                                if (ndexExternalLinks) {
+                                    menuList.push(ndexExternalLinks);
+                                };
+                                /*
                                 _.forEach(extLinkList, function (e) {
                                     var markup = parseNdexMarkupValue(e);
                                     if ( markup.id) {
@@ -1233,6 +1328,7 @@ ndexApp.controller('networkController',
                                             (markup.n? markup.n : 'external link') + '</a>');
                                     }
                                 });
+                                */
                             }
                             n.qtip({
                                 content:
@@ -1757,8 +1853,8 @@ ndexApp.controller('networkController',
                                     minWidth: calcColumnWidth(nodeAttributteProperty, false),
                                     enableFiltering: filteringEnabled,
                                     cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
-                                }
-                            }
+                                };
+                            };
                             nodeAttributesHeaders[nodeAttributteProperty] = columnDef;
                         }
                     }

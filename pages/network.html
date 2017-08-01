@@ -418,6 +418,16 @@
                                                     </span>
                                                 </span>
 
+                                                <span ng-switch-when="ndex:internalLink">
+                                                    <br />
+                                                   <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                </span>
+
+                                                <span ng-switch-when="ndex:externalLink">
+                                                    <br />
+                                                   <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                </span>
+
                                                 <span ng-switch-default>
                                                    &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
                                                     <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
