@@ -191,6 +191,28 @@ ndexApp.controller('networkController',
                 return numOfNodeAttributes;
             };
 
+            $scope.getInternalNetworkUUID = function(nodeAttributeInternalLink)
+            {
+                var markup = parseNdexMarkupValue(nodeAttributeInternalLink);
+                return (markup && markup.id) ? markup.id : null;
+            };
+
+             $scope.getURLForMapNode = function(attribute) {
+
+                 if (!attribute) {
+                    return null;
+                 };
+
+                 var url = null;
+                 var markup = parseNdexMarkupValue(attribute);
+
+                 if (markup && markup.id) {
+                     url = networkController.baseURL + markup.id;
+                 };
+                 return url;
+             };
+
+
             $scope.showNodeAttributes = function(attributesObj)
             {
                 if (attributesObj && attributesObj['n'] && attributesObj['v'] && attributesObj['v'].length > 0) {
@@ -271,12 +293,9 @@ ndexApp.controller('networkController',
                     populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                     populateNodeTable(localNetwork, enableFiltering, setGridWidth);
 
-                    //$scope.edgeGridApi.core.queueRefresh();
-                    //$scope.edgeGridApi.core.queueGridRefresh();
-
-                    //$scope.edgeGridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
-
-                    //gridApi.core.notifyDataChange( uiGridConstants.dataChange.ALL)
+                    networkController.tabs[0].active = true;
+                    networkController.tabs[1].active = false;
+                    networkController.tabs[2].active = false;
 
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
@@ -290,6 +309,17 @@ ndexApp.controller('networkController',
                         checkIfCanvasIsVisibleAndDrawNetwork();
                     };
 
+                    // if any nodes or edges selected, show Tab 1 - Nodes/Edges
+                    if (networkController.selectionContainer['nodes'].length > 0 ||
+                        networkController.selectionContainer['edges'].length > 0 ) {
+                        networkController.tabs[0].active = false;
+                        networkController.tabs[1].active = true;
+                        networkController.tabs[2].active = false;
+                    } else {
+                        networkController.tabs[0].active = true;
+                        networkController.tabs[1].active = false;
+                        networkController.tabs[2].active = false;
+                    };
                 };
             };
             function checkIfCanvasIsVisibleAndDrawNetwork() {
@@ -903,17 +933,21 @@ ndexApp.controller('networkController',
                     return null;
                 };
 
-                var attributeValue = null;
+                var url = null;
                 var markup = parseNdexMarkupValue(attribute);
 
                 if (markup.id) {
                     var url = networkController.baseURL + markup.id;
 
-                    attributeValue =
+                    url =
                         '<a target=\"_blank\" href=\"' + url + '\">' + (markup.n? markup.n : markup.id)+ '</a>';
+
+                    url = url.replace(/<br\s*\/?>/gi,'');
+                    url = url.replace(/&nbsp;&nbsp;&nbsp;/gi,'&nbsp;');
+                    url = url + "&nbsp;&nbsp;&nbsp;";
                 };
 
-                return attributeValue;
+                return url;
             };
 
             var getURLsForNdexExternalLink = function(attribute) {
@@ -923,20 +957,22 @@ ndexApp.controller('networkController',
                 };
 
                 var urls = "";
+                var url  = "";
 
                 _.forEach(attribute, function (e) {
                     var markup = parseNdexMarkupValue(e);
-                    if (markup.id) {
-                        if (urls) {
-                            urls = urls + '<br>' +
-                                '<a target=\"_blank\" href=\"' + markup.id + '\">' + (markup.n ? markup.n : 'external link') + '</a>';
-                        } else {
-                            urls =
-                                '<a target=\"_blank\" href=\"' + markup.id + '\">' + (markup.n ? markup.n : 'external link') + '</a>';
-                        };
 
+                    if (markup.id) {
+
+                        url = '<a target=\"_blank\" href=\"' + markup.id + '\">' + (markup.n ? markup.n : 'external link') + '</a>';
+                        url = url.replace(/<br\s*\/?>/gi,'');
+                        url = url.replace(/&nbsp;&nbsp;&nbsp;/gi,'&nbsp;');
+                        url = url + "&nbsp;&nbsp;&nbsp;";
+
+                        urls = urls + url;
                     };
                 });
+
 
                 return urls;
             };
@@ -1241,7 +1277,7 @@ ndexApp.controller('networkController',
 
 
                             $scope.$apply(function () {
-                                networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges} ; //{'nodes': selectedNodes, 'edges': selectedEdges};
+                                networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges}; //{'nodes': selectedNodes, 'edges': selectedEdges};
 
                                 if ( cxNodes.length ===0 && cxEdges.length ===0 ) {
                                     networkController.tabs[0].active = true;
@@ -1284,13 +1320,13 @@ ndexApp.controller('networkController',
                         cy.nodes(selectorStr).forEach(function (n) {
                             var menuList = [];
                             // check description
-                            if ( ndexDesc) {
+                            if (ndexDesc) {
                                 var desc = n.data(ndexDesc);
                                 if (desc) {
                                     menuList.push(desc);
                                 }
                             }
-                            if ( ndexLink) {
+                            if (ndexLink) {
                                 var ndexLinkList = n.data(ndexLink);
                                 if ( typeof ndexLinkList === 'string')
                                     ndexLinkList = [ndexLinkList];
@@ -1301,35 +1337,19 @@ ndexApp.controller('networkController',
                                     if (ndexInternalLink) {
                                         menuList.push(ndexInternalLink);
                                     };
-                                    /*
-                                    var markup = parseNdexMarkupValue(e);
-                                    if ( markup.id) {
-                                        var url = networkController.baseURL + markup.id;
-                                        menuList.push('<a target="_blank" href="' + url + '">' +
-                                            (markup.n? markup.n : markup.id)+ '</a>');
-                                    }
-                                    */
                                 });
-                            }
-                            if ( ndexExtLink) {
+                            };
+                            if (ndexExtLink) {
                                 var extLinkList = n.data(ndexExtLink);
-                                if ( typeof extLinkList === 'string')
+                                if (typeof extLinkList === 'string')
                                     extLinkList = [ extLinkList];
 
                                 var ndexExternalLinks = getURLsForNdexExternalLink(extLinkList);
                                 if (ndexExternalLinks) {
                                     menuList.push(ndexExternalLinks);
                                 };
-                                /*
-                                _.forEach(extLinkList, function (e) {
-                                    var markup = parseNdexMarkupValue(e);
-                                    if ( markup.id) {
-                                        menuList.push('<a target="_blank" href="' + markup.id + '">' +
-                                            (markup.n? markup.n : 'external link') + '</a>');
-                                    }
-                                });
-                                */
-                            }
+                            };
+                            /*
                             n.qtip({
                                 content:
                                   menuList.join('<br />\n'),
@@ -1345,6 +1365,7 @@ ndexApp.controller('networkController',
                                     }
                                 }
                             });
+                            */
                         });
 
                         // handles edges
@@ -1812,7 +1833,6 @@ ndexApp.controller('networkController',
                     }
                     columnDefs.push(citationsHeader);
                 }
-                
 
                 var nodeAttributes = network.nodeAttributes;
                 var nodeAttributesHeaders = {};
@@ -1827,10 +1847,27 @@ ndexApp.controller('networkController',
 
                         var nodeAttributePropertiesKeys = Object.keys(nodeAttributes[nodeAttributeKey]);
 
+                        var links = [];
+                        var ndexInternalLink = 'ndex:internalLink';
+                        var ndexExternalLink = 'ndex:externalLink';
+
+                        if (nodeAttributePropertiesKeys.indexOf(ndexInternalLink) > -1) {
+                            links.push(ndexInternalLink);
+                            _.pull(nodeAttributePropertiesKeys, ndexInternalLink);
+                        };
+                        if (nodeAttributePropertiesKeys.indexOf(ndexExternalLink) > -1) {
+                            _.pull(nodeAttributePropertiesKeys, ndexExternalLink);
+                        };
+
+                        if (links.length > 0) {
+                            nodeAttributePropertiesKeys = nodeAttributePropertiesKeys.concat(links);
+                        };
+
                         for (var j=0; j<nodeAttributePropertiesKeys.length; j++) {
                             var nodeAttributteProperty = nodeAttributePropertiesKeys[j];
 
                             var columnDef;
+
                             if ((nodeAttributteProperty == "alias") || (nodeAttributteProperty == "relatedTo")) {
                                 columnDef = {
                                     field: nodeAttributteProperty,
@@ -1845,6 +1882,23 @@ ndexApp.controller('networkController',
                                     "{{grid.appScope.getNumNodeAttributes(COL_FIELD)}}" +
                                     "</h6></div>"
                                 };
+
+                            } else if (nodeAttributteProperty == ndexInternalLink) {
+
+                                var sampleUUIDToCalcFieldWidth = "cfab341c-362d-11e5-8ac5-06603eb7f303";
+
+                                columnDef = {
+                                    field: nodeAttributteProperty,
+                                    displayName: "View Network",
+                                    cellTooltip: true,
+                                    minWidth: calcColumnWidth(sampleUUIDToCalcFieldWidth, false),
+                                    enableFiltering: filteringEnabled,
+                                    cellTemplate: "<a class='ui-grid-cell-contents hideLongLine' " +
+                                        "ng-bind-html='grid.appScope.getInternalNetworkUUID(COL_FIELD)' " +
+                                        "ng-href='{{grid.appScope.getURLForMapNode(COL_FIELD)}}' target='_blank'>" +
+                                    "</a>"
+                                };
+
                             } else {
                                 columnDef = {
                                     field: nodeAttributteProperty,
