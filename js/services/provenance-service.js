@@ -18,9 +18,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
             var uuidRegExPattern = /[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/i;
 
             var n = uri.search(uuidRegExPattern);
-            var uuid = uri.substr(n, 36);
-
-            return uuid;
+            return  uri.substr(n, 36);
         };
 
         var extractHostFromUri = function( uri )
@@ -42,7 +40,9 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
         factory.resetProvenance = function () {provenance = undefined;};
 
         factory.getNetworkProvenance = function (networkId, onSuccess, onError) {
-            if (! provenance ) {
+            if (provenance) {
+                onSuccess(provenance);
+            } else {
                 ndexService.getNetworkProvenanceV2(networkId,
                     function (data) {
                         provenance = data;
@@ -51,10 +51,9 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
                         onError(error);
 
                     });
-            } else
-              onSuccess(provenance);
+            }
 
-        }
+        };
 
 
    /*     factory.getProvenanceTitle = function()
@@ -114,8 +113,8 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
                 build_provenance_view(controller);  
         };
 
-        var buildGraph = function(currentNetworkId, prov, level, parent_node, edge_label, merge, nodes, edges, provMap)
-        {
+        var buildGraph;
+        buildGraph = function (currentNetworkId, prov, level, parent_node, edge_label, merge, nodes, edges, provMap) {
             var node_id = nodes.length;
 
             var node = {
@@ -126,7 +125,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
             nodes.push(node);
             provMap[node_id] = prov;
-            if ( prov.uri ) {
+            if (prov.uri) {
                 var uuid = extractUuidFromUri(prov.uri);
                 provMap[node_id].uuid = uuid;
                 provMap[node_id].host = extractHostFromUri(prov.uri);
@@ -145,26 +144,22 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
                 }
             }
 
-            if( parent_node != -1 )
-            {
+            if (parent_node != -1) {
                 var edge = {
                     to: parent_node,
                     from: node_id
                 };
 
-                if( !merge )
-                {
+                if (!merge) {
                     edge.label = edge_label;
 
                 }
                 edges.push(edge);
             }
 
-            var inputs = prov.creationEvent.inputs;
-            if( inputs != null )
-            {
-                if( inputs.length > 1 )
-                {
+            var inputs = (prov.creationEvent != null ) ? prov.creationEvent.inputs : null;
+            if (inputs != null) {
+                if (inputs.length > 1) {
                     var join_id = node_id + 1;
                     level++;
                     var join_node = {
@@ -182,34 +177,34 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
                     node_id = join_id;
                     merge = true;
                 }
-                else
-                {
+                else {
                     merge = false;
                 }
 
-                for(var i = 0; i < inputs.length; i++ )
-                {
+                for (var i = 0; i < inputs.length; i++) {
                     var edgeLabel = prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate');
-                    buildGraph(currentNetworkId, inputs[i], level+1, node_id, edgeLabel, merge, nodes, edges, provMap);
+                    buildGraph(currentNetworkId, inputs[i], level + 1, node_id, edgeLabel, merge, nodes, edges, provMap);
                 }
             }
-            else
-            {
+            else {
 
-                var start_node = {
-                    id: node_id+1,
-                    label: 'Start',
-                    level: level+1
-                };
-                nodes.push(start_node);
+                if (prov.creationEvent != null) {
 
-                var tmpEdge = {
-                    to: node_id,
-                    from: node_id+1,
-                    label: prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
-                };
+                    var start_node = {
+                        id: node_id + 1,
+                        label: 'Start',
+                        level: level + 1
+                    };
+                    nodes.push(start_node);
 
-                edges.push(tmpEdge)
+                    var tmpEdge = {
+                        to: node_id,
+                        from: node_id + 1,
+                        label: prov.creationEvent.eventType + "\non\n" + $filter('date')(prov.creationEvent.endedAtTime, 'mediumDate')
+                    };
+
+                    edges.push(tmpEdge)
+                }
             }
 
         };
