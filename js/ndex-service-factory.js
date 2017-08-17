@@ -558,6 +558,10 @@ ndexServiceApp.factory('ndexService',
                 // Server API: Accept or Deny a permission request
                 // PUT /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}
 
+                if (!message) {
+                    message = "";
+                };
+
                 var url =
                     "/user/" + recipientId + "/permissionrequest/" + requestId +
                     "?action=" + action + "&message=" + message;
@@ -569,6 +573,10 @@ ndexServiceApp.factory('ndexService',
             factory.acceptOrDenyMembershipRequestV2 = function (recipientId, requestId, action, message, successHandler, errorHandler) {
                 // Server API: Accept or Deny a membership request
                 // PUT /user/{recipient_id}/membershiprequest/{requestid}?action={accept|deny}&message={message}
+
+                if (!message) {
+                    message = "";
+                };
 
                 var url =
                     "/user/" + recipientId + "/membershiprequest/" + requestId +

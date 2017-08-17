@@ -496,7 +496,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     if($scope.mainProperty.visibility == "PUBLIC"){
                         ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", editor.showcased.state,
                             function (data, networkId, property, value) {
-                                //myAccountController.updateShowcaseOfNetwork(networkId, true);
+                                ;
                             },
                             function (error, networkId, property, value) {
                                 console.log("unable to change showcase for Network with Id " + networkId);

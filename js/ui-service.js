@@ -1057,16 +1057,29 @@
                         var action = "deny";
                         var message = $scope.request.responseMessage;
 
-                        ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
-                            function (data) {
-                                modalInstance.close();
-                                $scope.userController.refreshRequests();
-                            },
-                            function (error) {
-                                if (error && error.message) {
-                                    $scope.request.error = error.message;
-                                }
-                            });
+                        if ($scope.request.requestType.toLowerCase() == "groupnetworkaccess") {
+                            ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
+                                function (data) {
+                                    modalInstance.close();
+                                    $scope.userController.refreshRequests();
+                                },
+                                function (error) {
+                                    if (error && error.message) {
+                                        $scope.request.error = error.message;
+                                    }
+                                });
+                        } else if ($scope.request.requestType.toLowerCase() == "joingroup") {
+                            ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
+                                function (data) {
+                                    modalInstance.close();
+                                    $scope.userController.refreshRequests();
+                                },
+                                function (error) {
+                                    if (error && error.message) {
+                                        $scope.request.error = error.message;
+                                    }
+                                });
+                        };
                     }
                 }
 
@@ -1327,23 +1340,96 @@
                 $scope.openMe = function() {
                     $scope.selectedNetworks = $scope.ndexData.getUUIDsOfNetworksForSendingPermissionRequests();
                     $scope.getLoggedInUserPermissions();
-                    intialize();
 
-                    if (($scope.privileges == 'Write') || ($scope.privileges == 'Admin')) {
-                        var title = "You Already Have Maximum Permission Level";
-                        var message =
-                            "You already have the highest permission level available.";
-                        ndexNavigation.genericInfoModal(title, message);
+                    intialize(
+                        function() {
+                            if (($scope.privileges == 'Write') || ($scope.privileges == 'Admin')) {
+                                var title = "You Already Have Maximum Permission Level";
+                                var message =
+                                    "You already have the highest permission level available.";
+                                ndexNavigation.genericInfoModal(title, message);
 
-                    } else {
+                            } else {
 
-                        modalInstance = $modal.open({
-                            templateUrl: 'create-request-network-modal.html',
-                            scope: $scope,
-                            backdrop: 'static'
-                        });
-                    }
+                                modalInstance = $modal.open({
+                                    templateUrl: 'create-request-network-modal.html',
+                                    scope: $scope,
+                                    backdrop: 'static'
+                                });
+                            };
+                        },
+                        function(errorMessage) {
+                            var title = "Unable To Upgrade Permission";
+                            var message = errorMessage;
+                            ndexNavigation.genericInfoModal(title, message);
+                        }
+                    );
                 };
+
+                var intialize = function(successHandler, errorHandler) {
+                    $scope.accounts = [];
+
+                    $scope.request.destinationName = "selected networks";
+                    $scope.request.destinationUUID = $scope.ndexData.externalId;
+
+                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
+                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+
+                    $scope.request.accountType = undefined;
+
+                    if ($scope.loggedInUserPermissions['NONE'] > 0) {
+                        $scope.privileges = 'None';
+                    } else if ($scope.loggedInUserPermissions['READ'] > 0) {
+                        $scope.privileges = 'Read';
+                    } else if ($scope.loggedInUserPermissions['WRITE'] > 0) {
+                        $scope.privileges = 'Write';
+                    } else if ($scope.loggedInUserPermissions['ADMIN'] > 0) {
+                        $scope.privileges = 'Admin';
+                    }
+
+                    $scope.modal.permissionLabel = ($scope.privileges == 'None') ? 'Can read' : 'Can edit';
+
+                    $scope.selected.account = undefined;
+
+                    //if( $scope.privileges == 'Edit' )
+                    //    $scope.modal.permissionLabel ='Is admin';
+
+                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
+                        function (userMembershipsMap) {
+
+                            var groupsUUIDs = Object.keys(userMembershipsMap);
+
+                            ndexService.getGroupsByUUIDsV2(groupsUUIDs)
+                                .success(
+                                    function (groupList) {
+
+                                        for(var i=0; i < groupList.length; i++) {
+                                            var groupAccount = groupList[i];
+                                            groupAccount['accountType'] = 'group';
+                                            $scope.accounts.push(groupAccount);
+                                        }
+                                        var currentUserAccount = {
+                                            accountType: 'user',
+                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
+                                            externalId: ndexUtility.getLoggedInUserExternalId()
+                                        }
+                                        $scope.accounts.push(currentUserAccount);
+                                        $scope.selected.account = currentUserAccount;
+                                        successHandler();
+
+                                    })
+                                .error(
+                                    function(error) {
+                                        console.log("unable to get groups by UUIDs");
+                                        errorHandler("unable to get groups by UUIDs");
+                                    }
+                                )
+                        },
+                        function (error, data) {
+                            console.log("unable to get user group memberships");
+                            errorHandler("unable to get groups by UUIDs");
+                        });
+                }
 
                 $scope.getLoggedInUserPermissions = function() {
                     var permissionsStats = {
@@ -1359,8 +1445,7 @@
                         permissionsStats[permission] = permissionsStats[permission] + 1;
                     });
                     $scope.loggedInUserPermissions = permissionsStats;
-
-                }
+                };
 
                 $scope.close = function() {
                     modalInstance.close();
@@ -1377,6 +1462,14 @@
                     var requestType =  $scope.selected.account.accountType;
 
                     var selectedNetworks = $scope.selectedNetworks;
+                    var adminPrivilege = $scope.loggedInUserPermissions['ADMIN'];
+                    var editPrivilege  = $scope.loggedInUserPermissions['EDIT'];
+                    var readPrivilege  = $scope.loggedInUserPermissions['READ'];
+                    var nonePrivilege  = $scope.loggedInUserPermissions['NONE'];
+                    var loggedInUserPermission2 = loggedInUserPermission;
+
+
+
 
                     for (var i = 0; i < selectedNetworks.length; i++) {
                         var networkUUID = selectedNetworks[i]['networkUUID'];
@@ -1397,21 +1490,28 @@
                                 "networkid": networkUUID,
                                 "permission": $scope.request.permission,
                                 "message": $scope.request.message,
-                            }
+                            };
 
                             var userUUID = $scope.selected.account.externalId;
+
+                            var perms   = $scope.loggedInUserPermissions;
+                            var priv    = $scope.privileges;
+                            var request = $scope.request.permission;
+
 
                             $scope.request.progress = "Sending " + $scope.request.permission +
                                 " permission request for network " + selectedNetworks[i]['name'];
 
+                            //var action =
+
                             ndexService.createUserPermissionRequestV2(userUUID, userPermissionRequest,
                                 function(data) {
-                                    //$scope.close();
+                                    ; //$scope.close();
                                 },
                                 function(error) {
                                     console.log("unable to send network permission request for the authenticated user");
                                     //$scope.close();
-                                })
+                                });
 
 
                         } else if (requestType == 'group') {
@@ -1453,67 +1553,6 @@
                 //$scope.$watch('privileges', function(value) {
                 //    $scope.request.privileges = $scope.privileges;
                 //});
-
-                var intialize = function() {
-                    $scope.accounts = [];
-
-                    $scope.request.destinationName = "selected networks";
-                    $scope.request.destinationUUID = $scope.ndexData.externalId;
-
-                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
-                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
-
-                    $scope.request.accountType = undefined;
-                    
-                    if ($scope.loggedInUserPermissions['NONE'] > 0) {
-                        $scope.privileges = 'None';
-                    } else if ($scope.loggedInUserPermissions['READ'] > 0) {
-                        $scope.privileges = 'Read';
-                    } else if ($scope.loggedInUserPermissions['WRITE'] > 0) {
-                        $scope.privileges = 'Write';
-                    } else if ($scope.loggedInUserPermissions['ADMIN'] > 0) {
-                        $scope.privileges = 'Admin';
-                    }
-
-                    $scope.modal.permissionLabel = ($scope.privileges == 'None') ? 'Can read' : 'Can edit';
-
-                    $scope.selected.account = undefined;
-
-                    //if( $scope.privileges == 'Edit' )
-                    //    $scope.modal.permissionLabel ='Is admin';
-
-                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
-                        function (userMembershipsMap) {
-
-                            var groupsUUIDs = Object.keys(userMembershipsMap);
-
-                            ndexService.getGroupsByUUIDsV2(groupsUUIDs)
-                                .success(
-                                    function (groupList) {
-
-                                        for(var i=0; i < groupList.length; i++) {
-                                            var groupAccount = groupList[i];
-                                            groupAccount['accountType'] = 'group';
-                                            $scope.accounts.push(groupAccount);
-                                        }
-                                        var currentUserAccount = {
-                                            accountType: 'user',
-                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
-                                            externalId: ndexUtility.getLoggedInUserExternalId()
-                                        }
-                                        $scope.accounts.push(currentUserAccount);
-                                        $scope.selected.account = currentUserAccount;
-                                    })
-                                .error(
-                                    function(error) {
-                                        console.log("unable to get groups by UUIDs");
-                                    }
-                                )
-                        },
-                        function (error, data) {
-                            console.log("unable to get user group memberships");
-                        });
-                }
             }
         }
     });
@@ -1981,6 +2020,7 @@
                 var successfullyChangedNetworkIDs = {};
 
                 var operation = null;
+                var referenceObj = null;
 
                 $scope.openMe = function() {
 
@@ -2075,17 +2115,20 @@
 
                     updatedNetworksCounter = updatedNetworksCounter + 1;
 
-                    $scope.progress  =
+                    $scope.progress1  =
                         "Changed: " + updatedNetworksCounter + " of " + IdsOfSelectedNetworks.length + " selected networks";
                     $scope.progress2 = "Changed: " + networkName;
 
 
                     if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
 
+                        var myAccountController = $scope.ndexData;
                         if ("description" == operation) {
-                            var myAccountController = $scope.ndexData;
                             myAccountController.updateDescriptionOfNetworks(
                                 successfullyChangedNetworkIDs, $scope.network.description);
+                        } else if ("reference" == operation) {
+                            myAccountController.updateReferenceOfNetworks(
+                                successfullyChangedNetworkIDs, referenceObj);
                         };
 
                         // wait for 1 sec before closing modal; if we don't wait, then the
@@ -2093,7 +2136,7 @@
                         // update the number of networks updated), even though all selected networks have Changed
                         // successfully.
                         setTimeout(function() {
-                            delete $scope.progress;
+                            delete $scope.progress1;
                             delete $scope.progress2;
                             delete $scope.errors;
                             $scope.isProcessing = false;
@@ -2102,6 +2145,9 @@
                     };
                 };
 
+                String.prototype.capitalize = function() {
+                    return this.charAt(0).toUpperCase() + this.slice(1);
+                };
 
                 $scope.submit = function() {
                     if( $scope.isProcessing )
@@ -2114,6 +2160,7 @@
                     operation = $scope.action;
 
                     var data;
+                    referenceObj = null;
 
                     updatedNetworksCounter = 0;
                     successfullyChangedNetworkIDs = {};
@@ -2130,9 +2177,10 @@
                         data = $scope.network.version;
                     };
 
-                    
-                    _.forEach (IdsOfSelectedNetworks, function(networkId) {
+                    $scope.progress1  =
+                        "Changing " + operation.capitalize() + " of " + IdsOfSelectedNetworks.length + " selected networks ... ";
 
+                    _.forEach(IdsOfSelectedNetworks, function(networkId) {
                         var networkSummary = getNetworkSummary(networkId);
                         var networkName    = networkSummary["name"];
 
@@ -2183,7 +2231,20 @@
                             upsertProperty(operation, data, properties, subNetworkId);
 
                             ndexService.setNetworkPropertiesV2(networkId, properties,
-                                function (data) {
+                                function (data, status, headers, config, statusText) {
+
+                                    if (config && config.data && !referenceObj) {
+
+                                        var jsonObj = JSON.parse(config.data);
+                                        var refObj = _.find(jsonObj, {"predicateString" : "reference"});
+
+                                        if (refObj) {
+                                            var refStr = (refObj.value) ? refObj.value : "";
+                                            referenceObj = uiMisc.constructReferenceObj(refStr);
+                                        };
+                                    };
+
+                                    successfullyChangedNetworkIDs[networkId] = "";
                                     incrementUpdatedNetworksCounter(IdsOfSelectedNetworks, networkName);
                                 },
                                 function (error) {
@@ -2191,7 +2252,6 @@
                                     console.log("unable to update Network properites");
                                 });
                         };
-
                     });
                 };
             }
@@ -2220,6 +2280,11 @@
 
                 var successfullyChangedNetworkIDs = {};
                 var operation = null;
+
+                var myAccountController = $scope.ndexData;
+                var systemPropertiesOfSelectedNetworks = {};
+
+                var updatedNetworksCounter = 0;
 
                 $scope.openMe = function() {
 
@@ -2292,132 +2357,218 @@
                     $scope.network = {};
                 };
 
+                String.prototype.capitalize = function() {
+                    return this.charAt(0).toUpperCase() + this.slice(1);
+                };
+
+                var updateShowCaseOfSelectedNetworks = function(networkUUIDs, showCase) {
+
+                    var noOfNetworksToUpdate   = _.size(networkUUIDs);
+                    var updatedShowCaseCounter = 0;
+                    var successfullyChangedShowCaseIDs = {};
+
+                    $scope.progress1 =
+                        "Changing Showcase of " + noOfNetworksToUpdate + " networks ... ";
+
+                    delete $scope.progress2;
+
+                    _.forOwn(networkUUIDs, function(unusedArg, networkUUID) {
+
+                        if (showCase == systemPropertiesOfSelectedNetworks[networkUUID]['showCase']) {
+
+                            updatedShowCaseCounter = updatedShowCaseCounter + 1;
+                            successfullyChangedShowCaseIDs[networkUUID] = "";
+
+                            $scope.progress1  =
+                                "Changed Showcase: " + updatedShowCaseCounter + " of " + noOfNetworksToUpdate + " selected networks";
+                            $scope.progress2 = "Changed Showcase: " +
+                                systemPropertiesOfSelectedNetworks[networkUUID]['networkName'];
+
+                            if (updatedShowCaseCounter == noOfNetworksToUpdate) {
+
+                                myAccountController.updateShowcaseOfNetworks(
+                                    successfullyChangedShowCaseIDs, showCase);
+
+                                setTimeout(function() {
+                                    delete $scope.progress1;
+                                    delete $scope.progress2;
+                                    delete $scope.errors;
+                                    $scope.isProcessing = false;
+                                    modalInstance.close();
+
+                                    return false;
+                                }, 1000);
+                            };
+                            return true;
+                        };
+
+                        ndexService.setNetworkSystemPropertiesV2(networkUUID, "showcase", showCase,
+                            function (data, networkId, property, value) {
+
+                                updatedShowCaseCounter = updatedShowCaseCounter + 1;
+
+                                successfullyChangedShowCaseIDs[networkId] = "";
+
+                                $scope.progress1  =
+                                    "Changed Showcase: " + updatedShowCaseCounter + " of " + noOfNetworksToUpdate + " selected networks";
+                                $scope.progress2 = "Changed Showcase: " +
+                                    systemPropertiesOfSelectedNetworks[networkUUID]['networkName'];
+
+                                if (updatedShowCaseCounter == noOfNetworksToUpdate) {
+
+                                    myAccountController.updateShowcaseOfNetworks(
+                                        successfullyChangedShowCaseIDs, showCase);
+
+                                    setTimeout(function() {
+                                        delete $scope.progress1;
+                                        delete $scope.progress2;
+                                        delete $scope.errors;
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+                                    }, 1000);
+                                };
+                            },
+                            function (error, networkId, property, value) {
+                                updatedShowCaseCounter = updatedShowCaseCounter + 1;
+                                console.log("unable to change showcase for Network with Id " + networkId);
+
+                                if (updatedShowCaseCounter == noOfNetworksToUpdate) {
+
+                                    myAccountController.updateShowcaseOfNetworks(
+                                        successfullyChangedShowCaseIDs, showCase);
+
+                                    setTimeout(function() {
+                                        delete $scope.progress1;
+                                        delete $scope.progress2;
+                                        delete $scope.errors;
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
+                                    }, 1000);
+                                };
+
+                            });
+                    });
+                };
+
+
+                var incrementUpdatedNetworksCounter = function(
+                    networkId, numOfSelectedNetworks, networkName, visibility, showCase) {
+
+                    updatedNetworksCounter = updatedNetworksCounter + 1;
+
+                    $scope.progress1  =
+                        "Changed: " + updatedNetworksCounter + " of " + numOfSelectedNetworks + " selected networks";
+                    $scope.progress2 = "Changed: " + networkName;
+
+
+                    if (numOfSelectedNetworks == updatedNetworksCounter) {
+
+                        myAccountController.updateVisibilityOfNetworks(
+                            successfullyChangedNetworkIDs, visibility);
+
+                        updateShowCaseOfSelectedNetworks(
+                            successfullyChangedNetworkIDs, showCase);
+                        return false;
+                    };
+
+                    return true;
+                };
+
                 $scope.submit = function() {
                     if( $scope.isProcessing )
                         return;
                     $scope.isProcessing = true;
 
-                    var myAccountController = $scope.ndexData;
-                    var IdsOfSelectedNetworks = myAccountController.getIDsOfSelectedNetworks();
-
                     operation = $scope.action;
 
-                    var updatedNetworksCounter = 0;
-                    var networkSummary = null;
-                    var networkName    = null;
+                    systemPropertiesOfSelectedNetworks =
+                        (operation == "visibility")
+                            ? myAccountController.getVisibilityAndShowcaseOfSelectedNetworks()
+                            : myAccountController.getReadOnlyOfSelectedNetworks();
+
+                    var numOfSelectedNetworks = _.size(systemPropertiesOfSelectedNetworks);
+
+                    updatedNetworksCounter = 0;
+                    var visibility = $scope.network.visibility;
+
+                    successfullyChangedNetworkIDs = {};
+
+                    $scope.progress1 =
+                        "Changing " + operation.capitalize() + " of " +
+                            numOfSelectedNetworks + " selected networks ... ";
 
                     if (operation == "visibility") {
 
-                        _.forEach (IdsOfSelectedNetworks, function(networkId) {
-                            var myNet = {};
-                            myNet.networkId = networkId;
-                            myNet.visibility = $scope.network.visibility;
+                        var showCase = ('PRIVATE' == visibility) ? false : $scope.network.showcase;
 
-                            successfullyChangedNetworkIDs = {};
+                        _.forOwn(systemPropertiesOfSelectedNetworks, function(systemPropertiesObj, networkId) {
 
-                            ndexService.setNetworkSystemPropertiesV2(myNet.networkId, "visibility", myNet.visibility,
+                            if (visibility == systemPropertiesObj['visibility']) {
+
+                                successfullyChangedNetworkIDs[networkId] = "";
+
+                                var continueLoop = incrementUpdatedNetworksCounter(networkId,
+                                    numOfSelectedNetworks,
+                                    systemPropertiesOfSelectedNetworks[networkId]['networkName'],
+                                    visibility, showCase);
+
+                                return continueLoop;
+                            };
+
+                            ndexService.setNetworkSystemPropertiesV2(networkId, "visibility", visibility,
                                 function (data, networkId, property, value) {
-
-                                    networkSummary = getNetworkSummary(networkId);
-                                    networkName    = networkSummary['name'];
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
 
                                     successfullyChangedNetworkIDs[networkId] = "";
 
-                                    $scope.progress  =
-                                        "Changed: " + updatedNetworksCounter + " of " + IdsOfSelectedNetworks.length + " selected networks";
-                                    $scope.progress2 = "Changed: " + networkName;
-
-                                    myAccountController.updateVisibilityOfNetwork(networkId, myNet.visibility);
-
-                                    if (value == 'PUBLIC') {
-
-                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", $scope.network.showcase,
-                                            function (data, networkId, property, value) {
-                                                myAccountController.updateShowcaseOfNetwork(networkId, $scope.network.showcase);
-                                            },
-                                            function (error, networkId, property, value) {
-                                                console.log("unable to change showcase for Network with Id " + networkId);
-                                            });
-
-                                    } else {
-
-                                        ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", false,
-                                            function (data, networkId, property, value) {
-                                                myAccountController.updateShowcaseOfNetwork(networkId, false);
-                                            },
-                                            function (error, networkId, property, value) {
-                                                console.log("unable to change showcase for Network with Id " + networkId);
-                                            });
-                                    };
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        //$scope.isProcessing = false;
-                                        //modalInstance.close();
-
-                                        setTimeout(function() {
-                                            delete $scope.progress;
-                                            delete $scope.progress2;
-                                            delete $scope.errors;
-                                            $scope.isProcessing = false;
-                                            modalInstance.close();
-
-                                            if ((value == 'PUBLIC') && $scope.network.showcase) {
-                                                var title = "The Selected Networks are Now Public and Showcased";
-                                                var message =
-                                                    "The selected networks are now public and showcased on your account page. " +
-                                                    "You can decide to disable the showcase feature for these networks " +
-                                                    "by clicking the corresponding eye icon on your My Account page.";
-                                                ndexNavigation.genericInfoModal(title, message);
-                                            };
-
-                                        }, 1000);
-
-                                    };
+                                    incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
+                                        systemPropertiesOfSelectedNetworks[networkId]['networkName'],
+                                        visibility, showCase);
                                 },
                                 function (error, networkId, property, value) {
-                                    updatedNetworksCounter = updatedNetworksCounter + 1;
+
+                                    incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
+                                        systemPropertiesOfSelectedNetworks[networkId]['networkName'],
+                                        visibility, showCase);
 
                                     console.log("unable to update Network Visibility for Network with Id " + networkId);
-
-                                    if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                        setTimeout(function() {
-                                            delete $scope.progress;
-                                            delete $scope.progress2;
-                                            delete $scope.errors;
-                                            $scope.isProcessing = false;
-                                            modalInstance.close();
-                                        }, 1000);
-                                    };
                                 });
                         });
                         
                     } else if (operation == "readOnly") {
 
-                        for (var i = 0; i < myAccountController.networkSearchResults.length; i++ )
-                        {
-                            var networkObj  = myAccountController.networkSearchResults[i];
-                            var networkUUID = myAccountController.networkSearchResults[i].externalId;
+                        //IdsOfSelectedNetworks = myAccountController.getIDsOfSelectedNetworks();
 
-                            networkSummary = getNetworkSummary(networkUUID);
-                            networkName    = networkSummary['name'];
+                        //_.forOwn(systemPropertiesOfSelectedNetworks, function(systemPropertiesObj, networkId)
 
-                            if (IdsOfSelectedNetworks.indexOf(networkUUID) == -1) {
-                                continue;
-                            };
+                        var readOnlyOperation        = $scope.network.readOnly.toUpperCase();
+                        var readOnlyOperationBoolean = ('SET' == readOnlyOperation);
 
-                            if ((networkObj.isReadOnly) && ($scope.network.readOnly.toUpperCase()==='UNSET')) {
+                        _.forOwn(systemPropertiesOfSelectedNetworks, function(networkObj, networkUUID) {
 
-                                // the network is read-only and the operation is UNSET, so let's remove the read-only flag
-                                ndexService.setNetworkSystemPropertiesV2(networkUUID, "readOnly", false,
+                        //for (var i = 0; i < myAccountController.networkSearchResults.length; i++ ) {
+                            //var networkObj  = myAccountController.networkSearchResults[i];
+                            // networkUUID = myAccountController.networkSearchResults[i].externalId;
+
+                            if (( networkObj['isReadOnly'] && ('UNSET' == readOnlyOperation)) ||
+                                (!networkObj['isReadOnly'] && ('SET' == readOnlyOperation)))
+                            {
+                                ndexService.setNetworkSystemPropertiesV2(networkUUID, "readOnly", readOnlyOperationBoolean,
                                     function(data, networkId, property, value) {
                                         updatedNetworksCounter = updatedNetworksCounter + 1;
-                                        $scope.progress  =
-                                            "Changed: " + updatedNetworksCounter + " of " + IdsOfSelectedNetworks.length + " selected networks";
-                                        $scope.progress2 = "Changed: " + networkName;
+                                        $scope.progress1  =
+                                            "Changed: " + updatedNetworksCounter + " of " + numOfSelectedNetworks + " selected networks";
+                                        $scope.progress2 = "Changed: " +
+                                            systemPropertiesOfSelectedNetworks[networkUUID]['networkName'];
 
-                                        if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
+                                        successfullyChangedNetworkIDs[networkUUID] = "";
+
+                                        if (numOfSelectedNetworks == updatedNetworksCounter) {
+
+                                            myAccountController.updateReadOnlyOfNetworks(
+                                                successfullyChangedNetworkIDs, readOnlyOperationBoolean);
+
                                             setTimeout(function() {
-                                                delete $scope.progress;
+                                                delete $scope.progress1;
                                                 delete $scope.progress2;
                                                 delete $scope.errors;
                                                 $scope.isProcessing = false;
@@ -2426,72 +2577,61 @@
                                         };
                                     },
                                     function(error, networkId, property, value) {
-                                        console.log("unable to un-set Read-Only");
+                                        console.log("unable to change Read-Only");
                                         updatedNetworksCounter = updatedNetworksCounter + 1;
-                                        $scope.progress  =
-                                            "Changed: " + updatedNetworksCounter + " of " + IdsOfSelectedNetworks.length + " selected networks";
-                                        $scope.progress2 = "Changed: " + networkName;
+                                        $scope.progress1  =
+                                            "Changed: " + updatedNetworksCounter + " of " + numOfSelectedNetworks + " selected networks";
+                                        $scope.progress2 = "Changed: " +
+                                            systemPropertiesOfSelectedNetworks[networkId]['networkName'];
 
-                                        if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
+
+                                        if (numOfSelectedNetworks == updatedNetworksCounter) {
+
+                                            myAccountController.updateReadOnlyOfNetworks(
+                                                successfullyChangedNetworkIDs, readOnlyOperationBoolean);
+
                                             setTimeout(function() {
-                                                delete $scope.progress;
+                                                delete $scope.progress1;
                                                 delete $scope.progress2;
                                                 delete $scope.errors;
                                                 $scope.isProcessing = false;
                                                 modalInstance.close();
+
+                                                return false;
                                             }, 1000);
                                         };
                                     });
 
                                 // set the read-only flags in networkSearchResults to false showing that this network
                                 // is now read-write
-                                myAccountController.networkSearchResults[i].isReadOnly = false;
+                                //myAccountController.networkSearchResults[i].isReadOnly = readOnlyOperationBoolean;
+                            } else {
 
-                            } else  if (!networkObj.isReadOnly && ($scope.network.readOnly.toUpperCase()==='SET')) {
+                                updatedNetworksCounter = updatedNetworksCounter + 1;
+                                $scope.progress1  =
+                                    "Changed: " + updatedNetworksCounter + " of " + numOfSelectedNetworks + " selected networks";
+                                $scope.progress2 = "Changed: " +
+                                    systemPropertiesOfSelectedNetworks[networkUUID]['networkName'];
 
-                                // the network is not read-only and the true is SET, so let's make network read-only
-                                ndexService.setNetworkSystemPropertiesV2(networkUUID, "readOnly", true,
-                                    function(data, networkId, property, value) {
-                                        updatedNetworksCounter = updatedNetworksCounter + 1;
-                                        $scope.progress  =
-                                            "Changed: " + updatedNetworksCounter + " of " + IdsOfSelectedNetworks.length + " selected networks";
-                                        $scope.progress2 = "Changed: " + networkName;
+                                if (numOfSelectedNetworks == updatedNetworksCounter) {
 
-                                        if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                            setTimeout(function() {
-                                                delete $scope.progress;
-                                                delete $scope.progress2;
-                                                delete $scope.errors;
-                                                $scope.isProcessing = false;
-                                                modalInstance.close();
-                                            }, 1000);
-                                        };
-                                    },
-                                    function(error, networkId, property, value) {
-                                        console.log("unable to make network Read-Only");
-                                        updatedNetworksCounter = updatedNetworksCounter + 1;
-                                        $scope.progress  =
-                                            "Changed: " + updatedNetworksCounter + " of " + IdsOfSelectedNetworks.length + " selected networks";
-                                        $scope.progress2 = "Changed: " + networkName;
+                                    myAccountController.updateReadOnlyOfNetworks(
+                                        successfullyChangedNetworkIDs, readOnlyOperationBoolean);
 
-                                        if (IdsOfSelectedNetworks.length == updatedNetworksCounter) {
-                                            setTimeout(function() {
-                                                delete $scope.progress;
-                                                delete $scope.progress2;
-                                                delete $scope.errors;
-                                                $scope.isProcessing = false;
-                                                modalInstance.close();
-                                            }, 1000);
-                                        };
-                                    });
+                                    setTimeout(function() {
+                                        delete $scope.progress1;
+                                        delete $scope.progress2;
+                                        delete $scope.errors;
+                                        $scope.isProcessing = false;
+                                        modalInstance.close();
 
-                                // set the read-only flags to true showing that this network is now read-only;
-                                // the isReadOnly flag will be re-set
-                                // when we reload user page and re-populate the myAccountController.networkSearchResults structure;
-                                // But for now, keep this value as true so that UI behaves correctly with these networks.
-                                myAccountController.networkSearchResults[i].isReadOnly = true;
+                                        return false;
+                                    }, 1000);
+                                };
+
                             };
-                        };
+
+                        });
 
                     };
                 };

@@ -100,8 +100,8 @@
                 </div>
 
 
-                <div ng-if="progress">
-                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress"></span></strong>
+                <div ng-if="progress1">
+                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress1"></span></strong>
                 </div>
 
                 <div ng-if="progress2">
@@ -116,7 +116,7 @@
             </div>
 
             <div class="modal-footer">
-                <a class="btn btn-default" type='button' ng-click='cancel()'>Cancel</a>
+                <a class="btn btn-default" type='button' ng-disabled="isProcessing" ng-click='cancel()'>Cancel</a>
 
                 <button class="btn btn-primary"
                         type='submit'

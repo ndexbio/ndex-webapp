@@ -418,6 +418,15 @@
                                                     </span>
                                                 </span>
 
+                                                <span ng-switch-when="ndex:internalLink">
+                                                    <br>
+                                                   <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                </span>
+
+                                                <span ng-switch-when="ndex:externalLink">
+                                                   <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                </span>
+
                                                 <span ng-switch-default>
                                                    &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
                                                     <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
@@ -874,7 +883,7 @@
             </span>
             -->
 
-            <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit && !networkController.canRead'>
+            <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit'>
                 <a class="actionsLabel btn btn-primary customButtonWidth"
                    title="Request Read, Edit or Admin privilege"
                    ng-show="!networkController.hasMultipleSubNetworks()">
