@@ -471,7 +471,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 if(editor.subNetworkId && $scope.mainProperty.reference && $scope.mainProperty.reference.length > 0){
                     networkProperties.push({"dataType": "string", "predicateString": "reference",
                         "subNetworkId": parseInt(editor.subNetworkId), "value": $scope.mainProperty.reference});
-                } else if($scope.mainProperty.reference && $scope.mainProperty.reference.length() > 0){
+                } else if($scope.mainProperty.reference && $scope.mainProperty.reference.length > 0){
                     networkProperties.push({"dataType": "string", "predicateString": "reference",
                        "value": $scope.mainProperty.reference});
                 }
