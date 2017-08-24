@@ -228,9 +228,21 @@
     <!-- tabs -->
     <div class="col-md-10" ng-show="myAccountController.displayedUser">
 
+
+        <div class="row">
+            <div id="spinnerMyAccountPageId" style="position:relative; top:20em"></div>
+        </div>
+
         <tabset justified="false">
 
-            <tab heading="My Networks" ng-click="networkGridApi.core.handleWindowResize()">
+            <button ng-click="myAccountController.refreshTableAndDiskInfo();" ng-disabled="refreshButtonDisabled"
+                    style="float: left;" type="button" class="btn btn-default btn-md">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh
+            </button>
+
+
+            <tab style="padding-left: 10px" heading="My Networks" ng-click="networkGridApi.core.handleWindowResize()">
+
                 <!-- adding ui-grid-auto-resize fixes the issue of distorted Networks Tab (NDEX-578).
                  Resolution is described here: http://ui-grid.info/docs/#/tutorial/108_hidden_grids
                  The use ng-if="tabShown" ... described on the page above introduces another issue:
@@ -332,7 +344,7 @@
                         <div class="row well well-sm classWithPad">
                             <ol class="list-inline">
                                 <li><strong>Tasks</strong></li>
-                                <a ng-click="myAccountController.refreshTasks(); myAccountController.submitNetworkSearch();">
+                                <a ng-click="myAccountController.refreshTasks(true); myAccountController.submitNetworkSearch();">
                                     <span class='glyphicon glyphicon-refresh'></span>
                                 </a>
                                 <li class='pull-right' style='vertical-align: top'  ng-show="myAccountController.allTasksCompleted()">
@@ -395,7 +407,7 @@
                                             Sent
                                         </a>
                                     </li>
-                                    <li><a ng-click='myAccountController.refreshRequests()'>
+                                    <li><a ng-click='myAccountController.refreshRequests(true)'>
                                             <span class='glyphicon glyphicon-refresh'></span>
                                         </a>
                                     </li>

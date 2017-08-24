@@ -1,8 +1,8 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
-        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants',
+        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants', 'ndexSpinner',
         function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
-                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants)
+                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants, ndexSpinner)
         {
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -78,6 +78,13 @@ ndexApp.controller('myAccountController',
 
             myAccountController.networkSets = [];
 
+            $scope.selectedRowsNetworkExternalIds = {};
+
+            $scope.refreshButtonDisabled = true;
+
+            var spinnerMyAccountPageId = "spinnerMyAccountPageId";
+
+
             //table
             $scope.networkGridOptions =
             {
@@ -97,6 +104,19 @@ ndexApp.controller('myAccountController',
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
                         $scope.networkGridApi.core.handleWindowResize();
+
+                        if (myAccountController.networkTableRowsSelected > 0) {
+                            for (var i = 0; i < $scope.networkGridApi.grid.rows.length; i++) {
+                                var row = $scope.networkGridApi.grid.rows[i];
+                                if (row['entity'] && row['entity']['externalId'] && (row['entity']['externalId'] in $scope.selectedRowsNetworkExternalIds)) {
+                                    $scope.networkGridApi.grid.rows[i].isSelected = true;
+                                };
+                            };
+                        };
+
+                        $scope.refreshButtonDisabled = false;
+
+                        ndexSpinner.stopSpinner();
                     });
 
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
@@ -178,7 +198,7 @@ ndexApp.controller('myAccountController',
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
 
-                    { field: 'Format', enableFiltering: true, maxWidth:63,
+                    { field: 'Format', enableFiltering: true, maxWidth:77,
                         sort: {
                             direction: uiGridConstants.DESC,
                             priority: 0,
@@ -223,6 +243,8 @@ ndexApp.controller('myAccountController',
                     { field: 'name',        enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+
+                ndexSpinner.startSpinner(spinnerMyAccountPageId);
                 refreshNetworkTable();
             };
 
@@ -367,10 +389,6 @@ ndexApp.controller('myAccountController',
             var refreshNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
-
-                _.forEach(myAccountController.networkSets, function(networkSet) {
-                    myAccountController.addNetworkSetToTable(networkSet);
-                });
 
                 for(var i = 0; i < myAccountController.networkSearchResults.length; i++ )
                 {
@@ -1230,7 +1248,8 @@ ndexApp.controller('myAccountController',
                 ndexService.deleteTaskV2(taskUUID,
                     function (data)
                     {
-                        myAccountController.refreshTasks();
+                        var showSpinner = true;
+                        myAccountController.refreshTasks(showSpinner);
                     },
                     function (error)
                     {
@@ -1239,8 +1258,12 @@ ndexApp.controller('myAccountController',
                 )
             };
 
-            myAccountController.refreshTasks = function ()
+            myAccountController.refreshTasks = function (showSpinner)
             {
+                if (showSpinner) {
+                    ndexSpinner.startSpinner(spinnerMyAccountPageId);
+                };
+
                 ndexService.getUserTasksV2(
                     "ALL",
                     0,
@@ -1249,17 +1272,23 @@ ndexApp.controller('myAccountController',
                     function (tasks)
                     {
                         myAccountController.tasks = tasks;
+                        if (showSpinner) {
+                            ndexSpinner.stopSpinner();
+                        };
                     },
                     function (error)
                     {
                         console.log("unable to get user's tasks");
+                        if (showSpinner) {
+                            ndexSpinner.stopSpinner();
+                        };
                     }
                 )
             };
 
-            myAccountController.refreshRequests = function ()
+            myAccountController.refreshRequests = function(showSpinner)
             {
-                getRequests();
+                getRequests(showSpinner);
             };
 
             // local functions
@@ -1300,8 +1329,13 @@ ndexApp.controller('myAccountController',
                 }
             }
 
-            var getRequests = function ()
+            var getRequests = function (showSpinner)
             {
+
+                if (showSpinner) {
+                    ndexSpinner.startSpinner(spinnerMyAccountPageId);
+                };
+
                 // get all user pending requests
                 ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
                     function (requests)
@@ -1323,7 +1357,7 @@ ndexApp.controller('myAccountController',
                                             if (requests && requests.length > 0) {
                                                 myAccountController.pendingRequests =
                                                     myAccountController.pendingRequests.concat(requests);
-                                            }
+                                            };
                                         },
                                         function (error)
                                         {
@@ -1363,24 +1397,35 @@ ndexApp.controller('myAccountController',
                                             if (requests && requests.length > 0) {
                                                 myAccountController.sentRequests =
                                                     myAccountController.sentRequests.concat(requests);
-                                            }
+                                            };
+                                            if (showSpinner) {
+                                                ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                                            };
                                         },
                                         function (error)
                                         {
                                             console.log("unable to get sent requests");
+                                            if (showSpinner) {
+                                                ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                                            };
                                         });
                                 })
                             .error(
                                 function(error) {
                                     console.log("unable to get users by UUIDs");
+                                    if (showSpinner) {
+                                        ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                                    };
                                 }
                             )
                     },
                     function (error)
                     {
                         console.log("unable to get sent requests");
+                        if (showSpinner) {
+                            ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                        };
                     })
-
             };
 
             myAccountController.getUserAccountPageNetworks = function (successHandler, errorHandler)
@@ -1605,49 +1650,73 @@ ndexApp.controller('myAccountController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
-            ndexService.getUserByUUIDV2(myAccountController.identifier)
-                .success(
-                function (user)
-                {
-                    myAccountController.displayedUser = user;
 
-                    $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+            myAccountController.refreshTableAndDiskInfo = function() {
+                $scope.refreshButtonDisabled = true;
 
-                    cUser = user;
+                ndexSpinner.startSpinner(spinnerMyAccountPageId);
 
-                    // get requests
-                    getRequests();
 
-                    //get tasks
-                    myAccountController.refreshTasks();
+                ndexService.getUserByUUIDV2(myAccountController.identifier)
+                    .success(
+                        function (user) {
+                            myAccountController.displayedUser = user;
 
-                    // get networks
-                    myAccountController.getUserAccountPageNetworks(
-                        function() {
-                            populateNetworkTable();
+                            $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
 
-                            ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+                            cUser = user;
 
-                                function (networkSets) {
-                                    myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                            // get requests
+                            var showSpinner = false;
+                            getRequests(showSpinner);
 
-                                    _.forEach(myAccountController.networkSets, function(networkSet) {
-                                        myAccountController.addNetworkSetToTable(networkSet);
-                                    });
+                            //get tasks
+                            myAccountController.refreshTasks(showSpinner);
+
+                            // get networks
+                            myAccountController.getUserAccountPageNetworks(
+                                function () {
+
+                                    ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+
+                                        function (networkSets) {
+                                            myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+
+                                            _.forEach(myAccountController.networkSets, function (networkSet) {
+                                                myAccountController.addNetworkSetToTable(networkSet);
+                                            });
+                                        },
+                                        function (error, status, headers, config, statusText) {
+                                            console.log("unable to get network sets");
+                                        });
+
+
+                                    $scope.selectedRowsNetworkExternalIds = {};
+
+                                    if (myAccountController.networkTableRowsSelected > 0) {
+
+                                        var selectedRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                                        _.forEach(selectedRows, function(row) {
+                                            $scope.selectedRowsNetworkExternalIds[row.externalId] = '';
+                                        });
+                                    };
+
+                                    populateNetworkTable();
                                 },
-                                function (error, status, headers, config, statusText) {
-                                    console.log("unable to get network sets");
-                                });
-                        },
-                        function() {
+                                function () {
 
-                        }
-                    );
+                                }
+                            );
 
-                    // get groups
-                    var member = null;
-                    myAccountController.getUserGroupMemberships(member);
-                })
+                        });
+            };
+
+            myAccountController.refreshTableAndDiskInfo();
+
+            // get groups
+            var member = null;
+            myAccountController.getUserGroupMemberships(member);
+
         }]);
-
             //------------------------------------------------------------------------------------//
