@@ -1,8 +1,10 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
         '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants', 'ndexSpinner',
+        'config',
         function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
-                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants, ndexSpinner)
+                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants, ndexSpinner,
+                  config)
         {
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -59,6 +61,10 @@ ndexApp.controller('myAccountController',
                 // hide the Search menu item in Nav Bar
                 $scope.$parent.showSearchMenu = false;
                 uiMisc.showSearchMenuItem();
+
+                if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
+                    clearInterval(timerVariable);
+                };
             });
 
             $scope.diskSpaceInfo = {};
@@ -83,6 +89,8 @@ ndexApp.controller('myAccountController',
             $scope.refreshButtonDisabled = true;
 
             var spinnerMyAccountPageId = "spinnerMyAccountPageId";
+            var refreshIntervalInSeconds = config.refreshIntervalInSeconds;
+            var timerVariable = undefined;
 
 
             //table
@@ -108,15 +116,14 @@ ndexApp.controller('myAccountController',
                         if (myAccountController.networkTableRowsSelected > 0) {
                             for (var i = 0; i < $scope.networkGridApi.grid.rows.length; i++) {
                                 var row = $scope.networkGridApi.grid.rows[i];
-                                if (row['entity'] && row['entity']['externalId'] && (row['entity']['externalId'] in $scope.selectedRowsNetworkExternalIds)) {
+                                if (row['entity'] && row['entity']['externalId']
+                                        && (row['entity']['externalId'] in $scope.selectedRowsNetworkExternalIds)) {
                                     $scope.networkGridApi.grid.rows[i].isSelected = true;
                                 };
                             };
                         };
 
                         $scope.refreshButtonDisabled = false;
-
-                        ndexSpinner.stopSpinner();
                     });
 
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
@@ -244,7 +251,6 @@ ndexApp.controller('myAccountController',
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
 
-                ndexSpinner.startSpinner(spinnerMyAccountPageId);
                 refreshNetworkTable();
             };
 
@@ -1399,14 +1405,14 @@ ndexApp.controller('myAccountController',
                                                     myAccountController.sentRequests.concat(requests);
                                             };
                                             if (showSpinner) {
-                                                ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                                                ndexSpinner.stopSpinner();
                                             };
                                         },
                                         function (error)
                                         {
                                             console.log("unable to get sent requests");
                                             if (showSpinner) {
-                                                ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                                                ndexSpinner.stopSpinner();
                                             };
                                         });
                                 })
@@ -1414,7 +1420,7 @@ ndexApp.controller('myAccountController',
                                 function(error) {
                                     console.log("unable to get users by UUIDs");
                                     if (showSpinner) {
-                                        ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                                        ndexSpinner.stopSpinner();
                                     };
                                 }
                             )
@@ -1423,7 +1429,7 @@ ndexApp.controller('myAccountController',
                     {
                         console.log("unable to get sent requests");
                         if (showSpinner) {
-                            ndexSpinner.stopSpinner(spinnerMyAccountPageId);
+                            ndexSpinner.stopSpinner();
                         };
                     })
             };
@@ -1650,8 +1656,45 @@ ndexApp.controller('myAccountController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
+            myAccountController.refreshMyAccount = function() {
 
-            myAccountController.refreshTableAndDiskInfo = function() {
+                if ($scope.refreshButtonDisabled) {
+                    // we need this check to safeguard against rapid multiple hits of refresh button,
+                    // in which case it may start multiple refresh timers
+                    return;
+                }
+
+                if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
+                    clearInterval(timerVariable);
+                };
+
+                myAccountController.refreshTableAndDiskInfo(
+                    function() {
+
+                        if (refreshIntervalInSeconds > 0) {
+                            timerVariable =
+                                setInterval(myAccountController.refreshTableAndDiskInfo, refreshIntervalInSeconds * 1000);
+                        };
+
+                    },
+                    function() {
+
+                    }
+                );
+            };
+            /*
+            myAccountController.doNothing = function() {
+                // just consume mouse click
+                console.log("timerVariable=" + timerVariable);
+                if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
+                    clearInterval(timerVariable);
+                };
+
+            };
+            */
+
+            myAccountController.refreshTableAndDiskInfo = function(successHandler, errorHandler) {
+
                 $scope.refreshButtonDisabled = true;
 
                 ndexSpinner.startSpinner(spinnerMyAccountPageId);
@@ -1677,6 +1720,8 @@ ndexApp.controller('myAccountController',
                             myAccountController.getUserAccountPageNetworks(
                                 function () {
 
+                                    populateNetworkTable();
+
                                     ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
 
                                         function (networkSets) {
@@ -1685,9 +1730,11 @@ ndexApp.controller('myAccountController',
                                             _.forEach(myAccountController.networkSets, function (networkSet) {
                                                 myAccountController.addNetworkSetToTable(networkSet);
                                             });
+                                            ndexSpinner.stopSpinner();
                                         },
                                         function (error, status, headers, config, statusText) {
                                             console.log("unable to get network sets");
+                                            ndexSpinner.stopSpinner();
                                         });
 
 
@@ -1702,9 +1749,15 @@ ndexApp.controller('myAccountController',
                                         });
                                     };
 
-                                    populateNetworkTable();
+                                    if (successHandler) {
+                                        successHandler();
+                                    };
+
                                 },
                                 function () {
+                                    if (errorHandler) {
+                                        errorHandler();
+                                    };
 
                                 }
                             );
@@ -1712,7 +1765,20 @@ ndexApp.controller('myAccountController',
                         });
             };
 
-            myAccountController.refreshTableAndDiskInfo();
+
+            myAccountController.refreshTableAndDiskInfo(
+                function() {
+
+                    if (refreshIntervalInSeconds > 0) {
+                        timerVariable =
+                            setInterval(myAccountController.refreshTableAndDiskInfo, refreshIntervalInSeconds * 1000);
+                    };
+
+                },
+                function() {
+
+                }
+            );
 
             // get groups
             var member = null;

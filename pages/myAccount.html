@@ -235,13 +235,27 @@
 
         <tabset justified="false">
 
+            <!--
             <button ng-click="myAccountController.refreshTableAndDiskInfo();" ng-disabled="refreshButtonDisabled"
                     style="float: left;" type="button" class="btn btn-default btn-md">
                 <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh
             </button>
+            -->
 
+            <!--<tab style="padding-left: 10px" heading="My Networks" ng-click="networkGridApi.core.handleWindowResize()">-->
+            <tab ng-click="networkGridApi.core.handleWindowResize()">
+                <tab-heading style="padding-left: 10px" >
+                    My Networks
+                    &nbsp;
 
-            <tab style="padding-left: 10px" heading="My Networks" ng-click="networkGridApi.core.handleWindowResize()">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"
+                          ng-click="myAccountController.refreshMyAccount();"
+                          title="Refresh Networks and Tasks"
+                          ng-disabled="refreshButtonDisabled"
+                          ng-style="refreshButtonDisabled ? {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
+                    </span>
+
+                </tab-heading>
 
                 <!-- adding ui-grid-auto-resize fixes the issue of distorted Networks Tab (NDEX-578).
                  Resolution is described here: http://ui-grid.info/docs/#/tutorial/108_hidden_grids

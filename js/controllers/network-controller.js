@@ -1238,7 +1238,7 @@ ndexApp.controller('networkController',
 
                             ready: function () {
                                 window.cy = this;
-                                ndexSpinner.stopSpinner(spinnerNetworkPageId);
+                                ndexSpinner.stopSpinner();
                             }
                         });
                     }
@@ -1255,7 +1255,7 @@ ndexApp.controller('networkController',
 
                             ready: function () {
                                 window.cy = this;
-                                ndexSpinner.stopSpinner(spinnerNetworkPageId);
+                                ndexSpinner.stopSpinner();
                             }
                         });
                         console.log(e);
@@ -2031,7 +2031,7 @@ ndexApp.controller('networkController',
                                 networkController.tabs[0].active = true;
                             networkController.selectionContainer = {};
 
-                            ndexSpinner.stopSpinner(spinnerNetworkPageId);
+                            ndexSpinner.stopSpinner();
 
                             // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                             drawCXNetworkOnCanvas(network,false);
@@ -2053,7 +2053,7 @@ ndexApp.controller('networkController',
                     )
                     .error(
                         function (error) {
-                            ndexSpinner.stopSpinner(spinnerNetworkPageId);
+                            ndexSpinner.stopSpinner();
                             if (error.status != 0) {
                                 if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {
@@ -2213,7 +2213,7 @@ ndexApp.controller('networkController',
 
                             cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
 
-                            ndexSpinner.stopSpinner(spinnerNetworkPageId);
+                            ndexSpinner.stopSpinner();
 
                             // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                             drawCXNetworkOnCanvas(localNiceCX,false);
@@ -2237,7 +2237,7 @@ ndexApp.controller('networkController',
                     .error(
 
                         function (error) {
-                            ndexSpinner.stopSpinner(spinnerNetworkPageId);
+                            ndexSpinner.stopSpinner();
                             if (error.status != 0) {
                                 if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {

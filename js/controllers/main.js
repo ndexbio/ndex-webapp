@@ -740,6 +740,12 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             if (typeof config.documentationLink.showWarning === 'undefined') {
                 config.documentationLink.showWarning = false;
             }
+            if ((typeof config.refreshIntervalInSeconds === 'undefined') ||
+                (typeof config.refreshIntervalInSeconds != 'number')) {
+                // refresh interval defaults to 30 seconds in case it is not explicitly defined or defined as non-number
+                config.refreshIntervalInSeconds = 30;
+            };
+
 
             /*
             if (typeof config.apiLink === 'undefined') {
