@@ -92,6 +92,7 @@ ndexApp.controller('myAccountController',
             var refreshIntervalInSeconds = config.refreshIntervalInSeconds;
             var timerVariable = undefined;
 
+            var networkTableDefined = false;
 
             //table
             $scope.networkGridOptions =
@@ -198,7 +199,7 @@ ndexApp.controller('myAccountController',
                 };
             };
 
-            var populateNetworkTable = function()
+            var defineNetworkTable = function()
             {
                 var columnDefs = [
                     { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatusOnMyAccountPage.html'},
@@ -250,8 +251,6 @@ ndexApp.controller('myAccountController',
                     { field: 'name',        enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
-
-                refreshNetworkTable();
             };
 
             /*
@@ -392,7 +391,7 @@ ndexApp.controller('myAccountController',
                 $scope.enableShareBulkButton = true;
             };
             
-            var refreshNetworkTable = function()
+            var populateNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
 
@@ -1634,7 +1633,7 @@ ndexApp.controller('myAccountController',
                                     var externalId = myAccountController.networkSearchResults[i].externalId;
                                     if (externalId == networkUUID) {
                                         myAccountController.networkSearchResults.splice(i, 1);
-                                        refreshNetworkTable();
+                                        populateNetworkTable();
                                         break;
                                     }
                                 }
@@ -1682,16 +1681,6 @@ ndexApp.controller('myAccountController',
                     }
                 );
             };
-            /*
-            myAccountController.doNothing = function() {
-                // just consume mouse click
-                console.log("timerVariable=" + timerVariable);
-                if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
-                    clearInterval(timerVariable);
-                };
-
-            };
-            */
 
             myAccountController.refreshTableAndDiskInfo = function(successHandler, errorHandler) {
 
@@ -1719,6 +1708,11 @@ ndexApp.controller('myAccountController',
                             // get networks
                             myAccountController.getUserAccountPageNetworks(
                                 function () {
+
+                                    if (!networkTableDefined) {
+                                        networkTableDefined = true;
+                                        defineNetworkTable();
+                                    };
 
                                     populateNetworkTable();
 
