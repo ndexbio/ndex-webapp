@@ -1004,6 +1004,8 @@
 
                     if (type == 'usernetworkaccess' || type == 'groupnetworkaccess') {
 
+                        type = (type == 'usernetworkaccess') ? 'user' : 'group';
+
                         ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
                             function (data) {
 
