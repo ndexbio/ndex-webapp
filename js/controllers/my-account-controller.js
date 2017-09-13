@@ -394,11 +394,6 @@ ndexApp.controller('myAccountController',
                                     _.find(myAccountController.tasksAndRequestsGridOptions.data,
                                         {'taskId': entity.taskId});
 
-                                if (request) {
-                                    request[" "] = " ";
-                                };
-
-
                             },
                             function (error) {
                                 console.log("unable to update task");
@@ -1688,6 +1683,10 @@ ndexApp.controller('myAccountController',
                 }
 
                 for (var i = 0; i < requests.length; i++) {
+                    if (requests[i].requestType && (requests[i].requestType.toLowerCase() != "usernetworkaccess")) {
+                        continue;
+                    };
+
                     var requesterId = requests[i].requesterId;
 
                     for (var j = 0; j < users.length; j++) {
