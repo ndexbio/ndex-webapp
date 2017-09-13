@@ -1002,7 +1002,7 @@
 
                     var permission = $scope.request.permission;
 
-                    if (type == 'usernetworkaccess' || type == 'groupnetworkaceess') {
+                    if (type == 'usernetworkaccess' || type == 'groupnetworkaccess') {
 
                         ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
                             function (data) {
@@ -1078,7 +1078,7 @@
                     var action = "deny";
                     var message = $scope.request.responseMessage;
 
-                    if (type == 'usernetworkaccess' || type == 'groupnetworkaceess') {
+                    if (type == 'usernetworkaccess' || type == 'groupnetworkaccess') {
 
                         ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                             function (data) {
