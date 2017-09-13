@@ -836,10 +836,9 @@
                                 });
                         } else {
                             $scope.userSearchResults = [];
-                        }
-
+                        };
                     }
-                }, true)
+                }, true);
 
                 // ndexData is undefined at first pass. This seems to be a common problem
                 // most likey we aren't doing something the angular way, quick fix below
@@ -886,8 +885,8 @@
     uiServiceApp.directive('sentRequest', function() {
         return {
             scope: {
-                ndexData:'=',
-                userController:'='
+                requestId:'=',
+                myAccountController:'='
             },
             restrict: 'E',
             transclude: true,
@@ -897,6 +896,10 @@
                 $scope.errors = null;
 
                 $scope.openMe = function() {
+
+                    $scope.request =
+                        _.find($scope.myAccountController.sentRequests, {'externalId':$scope.requestId});
+
                     modalInstance = $modal.open({
                         templateUrl: 'sent-request-modal.html',
                         scope: $scope,
@@ -905,28 +908,55 @@
                 };
 
                 $scope.close = function() {
+                    delete $scope.request.error;
+                    delete $scope.request;
                     modalInstance.close();
                 }
 
                 $scope.delete = function() {
-                    ndexService.deleteRequestV2($scope.request,
-                        function(data) {
-                            modalInstance.close();
 
-                            var userController = $scope.userController;
-                            userController.refreshRequests();
-                        },
-                        function(error){
-                            console.log("unable to delete request");
-                        })
-                }
+                    var request = {
+                        "requesterId": $scope.request.requesterId,
+                        "externalId":  $scope.request.externalId
+                    };
 
-                $scope.$watch('ndexData', function(value) {
-                    $scope.request = {};
-                    for(var key in value) {
-                        $scope.request[key] = value[key];
-                    }
-                });
+                    var requestType = $scope.request.requestType.toLowerCase();
+
+                    if (requestType == "usernetworkaccess" || requestType == "groupnetworkaccess") {
+
+                        ndexService.deletePermissionRequestV2(request,
+                            function (data) {
+                                // remove request from the table and sent requests list
+                                _.remove($scope.myAccountController.sentRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+
+                                modalInstance.close();
+                            },
+                            function (error) {
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                };
+                            });
+
+                    } else if (requestType == "joingroup") {
+
+                        ndexService.deleteMembershipRequestV2(request,
+                            function(data) {
+                                // remove request from the table and sent requests list
+                                _.remove($scope.myAccountController.sentRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+
+                                modalInstance.close();
+                            },
+                            function(error){
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                };
+                            });
+                    };
+                };
             }
         }
     });
@@ -934,10 +964,12 @@
     // modal to view and act on received request
     uiServiceApp.directive('receivedRequest', function() {
         return {
+
             scope: {
-                ndexData:'=',
-                userController:'='
+                requestId:'=',
+                myAccountController:'='
             },
+
             restrict: 'E',
             transclude: true,
             templateUrl: 'pages/directives/receivedRequest.html',
@@ -946,6 +978,10 @@
                 $scope.errors = null;
 
                 $scope.openMe = function() {
+
+                    $scope.request = _.find($scope.myAccountController.pendingRequests,
+                        {'externalId':$scope.requestId});
+
                     modalInstance = $modal.open({
                         templateUrl: 'received-request-modal.html',
                         scope: $scope,
@@ -954,36 +990,43 @@
                 };
 
                 $scope.close = function() {
-                    for(var key in $scope.ndexData) {
-                        $scope.request[key] = $scope.ndexData[key];
-                    }
                     modalInstance.close();
                     delete $scope.request.error;
                 };
 
                 $scope.accept = function() {
 
-                    var type = ($scope.request.requestType.toLowerCase() == "usernetworkaccess") ? "user" : "group";
+                    var type = $scope.request.requestType.toLowerCase();
+                    var networkId     = $scope.request.destinationUUID;
+                    var userOrGroupId = $scope.request.sourceUUID;
 
-                    if (type == 'user') {
+                    var permission = $scope.request.permission;
 
-                        var networkId     = $scope.request.destinationUUID;
-                        var userOrGroupId = $scope.request.sourceUUID;
-
-                        var permission = $scope.request.permission
+                    if (type == 'usernetworkaccess' || type == 'groupnetworkaceess') {
 
                         ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
                             function (data) {
 
-                                var recipientId = $scope.userController.identifier;
+                                var recipientId = $scope.myAccountController.identifier;
                                 var requestId = $scope.request.externalId;
                                 var action = "accept";
                                 var message = $scope.request.responseMessage;
 
                                 ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                                     function (data) {
+
+                                        var request =
+                                            _.find($scope.myAccountController.tasksAndRequestsGridOptions.data, {'taskId': $scope.requestId});
+
+                                        if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                            $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                        };
+
+                                        _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                        _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                            {'taskId': $scope.request.externalId});
+
                                         modalInstance.close();
-                                        $scope.userController.refreshRequests();
                                     },
                                     function (error) {
                                         console.log("unable to accept network permission request");
@@ -995,54 +1038,62 @@
                                 }
                             });
 
-                    } else {
+                    } else if (type == 'joingroup') {
 
-                        var groupId = $scope.request.destinationUUID;
-                        var requesterId = $scope.request.requesterId;
-                        var permission = $scope.request.permission;
+                        var recipientId = $scope.myAccountController.identifier;
+                        var requestId = $scope.request.externalId;
+                        var action = "accept";
+                        var message = $scope.request.responseMessage;
 
-                        ndexService.addOrUpdateGroupMemberV2(groupId, requesterId, permission,
-                            function(success) {
+                        ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
+                            function (data) {
+                                var request =
+                                    _.find($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                        {'taskId': $scope.requestId});
 
-                                var recipientId = $scope.userController.identifier;
-                                var requestId = $scope.request.externalId;
-                                var action = "accept";
-                                var message = $scope.request.responseMessage;
+                                if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                    $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                };
 
-                                ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
-                                    function (data) {
-                                        modalInstance.close();
-                                        $scope.userController.refreshRequests();
-                                    },
-                                    function (error) {
-                                        if (error && error.message) {
-                                            $scope.request.error = error.message;
-                                        }
-                                    });
+                                _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+                                modalInstance.close();
                             },
-                            function(error){
+                            function (error) {
                                 if (error && error.message) {
                                     $scope.request.error = error.message;
                                 }
                             });
-                    }
+                    };
+
                 };
 
                 $scope.decline = function() {
 
-                    var type = ($scope.request.requestType.toLowerCase() == "usernetworkaccess") ? "user" : "group";
+                    var type = $scope.request.requestType.toLowerCase();
 
-                    if (type == 'user') {
+                    var recipientId = $scope.myAccountController.identifier;
+                    var requestId = $scope.request.externalId;
+                    var action = "deny";
+                    var message = $scope.request.responseMessage;
 
-                        var recipientId = $scope.userController.identifier;
-                        var requestId   = $scope.request.externalId;
-                        var action      = "deny";
-                        var message     = $scope.request.responseMessage;
+                    if (type == 'usernetworkaccess' || type == 'groupnetworkaceess') {
 
                         ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                             function (data) {
+                                var request =
+                                    _.find($scope.myAccountController.tasksAndRequestsGridOptions.data, {'taskId': $scope.requestId});
+
+                                if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                    $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                };
+
+                                _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+
                                 modalInstance.close();
-                                $scope.userController.refreshRequests();
                             },
                             function (error) {
                                 if (error && error.message) {
@@ -1050,45 +1101,35 @@
                                 }
                             });
 
-                    } else {
+                    } else if (type == 'joingroup') {
 
-                        var recipientId = $scope.userController.identifier;
+                        var recipientId = $scope.myAccountController.identifier;
                         var requestId = $scope.request.externalId;
                         var action = "deny";
                         var message = $scope.request.responseMessage;
 
-                        if ($scope.request.requestType.toLowerCase() == "groupnetworkaccess") {
-                            ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
-                                function (data) {
-                                    modalInstance.close();
-                                    $scope.userController.refreshRequests();
-                                },
-                                function (error) {
-                                    if (error && error.message) {
-                                        $scope.request.error = error.message;
-                                    }
-                                });
-                        } else if ($scope.request.requestType.toLowerCase() == "joingroup") {
-                            ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
-                                function (data) {
-                                    modalInstance.close();
-                                    $scope.userController.refreshRequests();
-                                },
-                                function (error) {
-                                    if (error && error.message) {
-                                        $scope.request.error = error.message;
-                                    }
-                                });
-                        };
-                    }
-                }
+                        ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
+                            function (data) {
+                                var request =
+                                    _.find($scope.myAccountController.tasksAndRequestsGridOptions.data, {'taskId': $scope.requestId});
 
-                $scope.$watch('ndexData', function(value) {
-                    $scope.request = {};
-                    for(var key in value) {
-                        $scope.request[key] = value[key];
-                    }
-                });
+                                if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                    $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                };
+
+                                _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+                                modalInstance.close();
+                            },
+                            function (error) {
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                }
+                            });
+                    };
+
+                }
             }
         }
     });
@@ -1232,8 +1273,9 @@
                         var groupPermissionRequest = {
                             "networkid"  : $scope.request.destinationUUID,
                             "permission" : $scope.request.permission,
-                            "message"    : $scope.request.message,
-                        }
+                            "message"    : $scope.request.message
+                        };
+
                         var groupUUID = $scope.selected.account.externalId;
 
                         ndexService.createGroupPermissionRequestV2(groupUUID, groupPermissionRequest,
@@ -1724,16 +1766,16 @@
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
-                            if (accountController.refreshTasks) {
-                                accountController.refreshTasks();
-                            }
+                            if (accountController.checkAndRefreshMyTaskAndNotification) {
+                                accountController.checkAndRefreshMyTaskAndNotification();
+                            };
                             modalInstance.close();
                         },
                         function(error) {
                             //console.log(error);
                             $scope.isProcessing = false;
-                            if (accountController.refreshTasks) {
-                                accountController.refreshTasks();
+                            if (accountController.getTasks) {
+                                accountController.getTasks();
                             }
                             modalInstance.close();
                         });

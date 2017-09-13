@@ -1,0 +1,11 @@
+<div id="deleteTaskTemplate" class="ui-grid-cell-contents text-center">
+
+    <span ng-if="(row.entity.Status && row.entity.Status != 'processing')
+                    && (grid.appScope.getLoggedInUserUUID() == row.entity.ownerUUID)">
+        <a ng-href="{{$location.path()}}"
+           ng-click="grid.appScope.deleteTask(row.entity)" title="Delete">
+           <span class="text-danger glyphicon glyphicon-trash"></span>
+        </a>
+    </span>
+
+</div>

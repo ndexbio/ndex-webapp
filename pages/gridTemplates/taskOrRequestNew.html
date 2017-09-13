@@ -1,0 +1,29 @@
+<div id="taskOrRequestNewTemplate" class="ui-grid-cell-contents text-middle text-info">
+
+
+    <span ng-if="(row.entity.typeFromServer == 'export_network_to_file') && row.entity.newTask &&
+            (row.entity.Status == 'completed' || row.entity.Status == 'failed') &&
+            (row.entity.whatType != 'received')">
+
+        <span class="badge"
+              ng-style="{'font-style':'normal', 'font-weight':'normal', 'background-color':'#3576BE'}">
+            New
+        </span>
+    </span>
+
+    <span ng-if="row.entity.whatType == 'received'">
+        <span class="badge"
+              ng-style="{'font-style':'normal', 'font-weight':'normal', 'background-color':'#3576BE'}">
+            New
+        </span>
+    </span>
+
+    <span ng-if="(row.entity.whatType == 'sent') && (row.entity.newSent) &&
+                (row.entity.Status == 'accepted' || row.entity.Status == 'declined')">
+        <span class="badge"
+              ng-style="{'font-style':'normal', 'font-weight':'normal', 'background-color':'#3576BE'}">
+            New
+        </span>
+    </span>
+
+</div>

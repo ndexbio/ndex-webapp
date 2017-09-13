@@ -500,6 +500,27 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+
+            factory.updateTaskPropertiesV2 = function (taskId, properties, successHandler, errorHandler) {
+                // Server API: Update Task Properties
+                // PUT /task/{taskid}/ownerProperties
+
+                var url = "/task/" + taskId + "/ownerProperties";
+                var config = ndexConfigs.getPutConfigV2(url, properties);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.updateRequestPropertiesV2 = function (requestId, properties, successHandler, errorHandler) {
+                // Server API: Update Request Properties
+                // PUT /request/{requestid}/properties
+
+                var url = "/request/" + requestId + "/properties";
+                var config = ndexConfigs.getPutConfigV2(url, properties);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             /*---------------------------------------------------------------------*
              * Request and Response
              *---------------------------------------------------------------------*/
@@ -586,6 +607,7 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            /*
             factory.deleteRequestV2 = function (request, successHandler, errorHandler) {
                 // Server API: Delete a Permission Request or Delete a Membership Request (depending on request.requestType)
                 //    DELETE /user/{sender_id}/permissionrequest/{requestid}
@@ -601,6 +623,43 @@ ndexServiceApp.factory('ndexService',
                     'membershiprequest';
 
                 var url = "/user/" + senderId + "/" + type + "/" + requestId;
+
+                var config =  ndexConfigs.getDeleteConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+            */
+
+            factory.deletePermissionRequestV2 = function (request, successHandler, errorHandler) {
+                // Server API: Delete a Permission Request
+                //    DELETE /user/{sender_id}/permissionrequest/{requestid}
+
+                if (!request || !request.requesterId || !request.externalId) {
+                    errorHandler();
+                };
+
+                var senderId  = request.requesterId;
+                var requestId = request.externalId;
+
+                var url = "/user/" + senderId + "/permissionrequest/" + requestId;
+
+                var config =  ndexConfigs.getDeleteConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.deleteMembershipRequestV2 = function (request, successHandler, errorHandler) {
+                // Server API: Delete a Membership Request
+                //    DELETE /user/{sender_id}/membershiprequest/{requestid}
+
+                if (!request || !request.requesterId || !request.externalId) {
+                    errorHandler();
+                };
+
+                var senderId  = request.requesterId;
+                var requestId = request.externalId;
+
+                var url = "/user/" + senderId + "/membershiprequest/" + requestId;
 
                 var config =  ndexConfigs.getDeleteConfigV2(url, null);
 

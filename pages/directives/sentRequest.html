@@ -6,7 +6,8 @@
 			<h5>
 				<strong>
 					<div class="wrapLongLine">
-				        You requested <span class='text-success'>{{request.permission | permissionToLabel}}</span> access to {{request.destinationName}} for {{request.sourceName}}
+				        You requested <span class='text-success'>{{request.permission | permissionToLabel}}</span>
+						access to {{request.destinationName}} for {{request.sourceName}}
 				    </div>
 				</strong>
 				<em class='text-muted' 
@@ -22,6 +23,14 @@
 				<h5><strong>Response</strong> - <em>from {{request.responder}}</em></h5>
 				<p ng-show='request.responseMessage'>{{request.responseMessage}}</p>
 			</div>
+
+			<div class='text-danger' ng-if="request.error">
+				<strong>
+					<br>
+					{{request.error}}
+				</strong>
+			</div>
+
 		</div>
 
 		<div class='modal-footer' ng-hide='false'>

@@ -38,47 +38,9 @@
             <hr>
 
             <span ng-show="myAccountController.isLoggedInUser && myAccountController.identifier == myAccountController.loggedInIdentifier">
-                <div class="btn-group btn-group-vertical buttonWithMarginBottom">
-                    <h5><strong>Actions:</strong></h5>
-
-                    <span>
-                       <div class="btn-group dropdown">
-                           <button id="editAccountButton" type="button" data-toggle="dropdown"
-                                   class="btn btn-primary dropdown-toggle customButtonWidth">
-                               Edit Account
-                               <span class="caret"></span>
-                           </button>
-
-                           <ul class="dropdown-menu" role="menu" aria-labelledby="editAccountButton">
-                               <li><a><edit-user-modal ndex-data='myAccountController.displayedUser'>Edit Personal Info</edit-user-modal></a></li>
-                               <li><a><change-password-modal>Change Password</change-password-modal></a></li>
-                               <li class="disabled"><a href="#">Notification Settings</a></li>
-                               <li><a><delete-user>Delete Account</delete-user></a></li>
-                           </ul>
-                       </div>
-                    </span>
-
-                    <span>
-                        <a class="btn btn-primary customButtonWidth" trigger-create-group-modal="Create Group">Create Group</a>
-                    </span>
-
-                    <span>
-                        <a class="btn btn-primary customButtonWidth"
-                           my-account-controller='myAccountController'
-                           signal-new-set-creation='false'
-                           trigger-create-network-set-modal="Create Network Set">Create Network Set
-                        </a>
-                    </span>
-
-                    <span>
-                        <a class="btn btn-primary customButtonWidth" ng-href="#upload">Upload Networks</a>
-                    </span>
-
-                </div>
 
                 <div class="btn-group btn-group-vertical buttonWithMarginBottom"
                      ng-show="myAccountController.networkTableRowsSelected > 0">
-                    <hr>
                     <h5><strong>Bulk Actions:</strong></h5>
 
                     <span  ng-show="myAccountController.networkTableRowsSelected > 0">
@@ -170,7 +132,6 @@
 
                             </div>
 
-
                         </span>
 
                         <span>
@@ -207,16 +168,44 @@
                         </span>
                     </span>
 
-                    <!--
-                    <span ng-show="myAccountController.collectionTableRowsSelected > 0">
-                        <span>
-                            <a class="btn btn-primary customButtonWidth"
-                               ng-click="myAccountController.confirmDeleteSelectedSets()">
-                                {{myAccountController.deleteCollectionsLabel}}
-                            </a>
-                        </span>
+                    <hr>
+                </div>
+
+                <div class="btn-group btn-group-vertical buttonWithMarginBottom">
+                    <h5><strong>Actions:</strong></h5>
+
+                    <span>
+                       <div class="btn-group dropdown">
+                           <button id="editAccountButton" type="button" data-toggle="dropdown"
+                                   class="btn btn-primary dropdown-toggle customButtonWidth">
+                               Edit Account
+                               <span class="caret"></span>
+                           </button>
+
+                           <ul class="dropdown-menu" role="menu" aria-labelledby="editAccountButton">
+                               <li><a><edit-user-modal ndex-data='myAccountController.displayedUser'>Edit Personal Info</edit-user-modal></a></li>
+                               <li><a><change-password-modal>Change Password</change-password-modal></a></li>
+                               <li class="disabled"><a href="#">Notification Settings</a></li>
+                               <li><a><delete-user>Delete Account</delete-user></a></li>
+                           </ul>
+                       </div>
                     </span>
-                    -->
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth" trigger-create-group-modal="Create Group">Create Group</a>
+                    </span>
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth"
+                           my-account-controller='myAccountController'
+                           signal-new-set-creation='false'
+                           trigger-create-network-set-modal="Create Network Set">Create Network Set
+                        </a>
+                    </span>
+
+                    <span>
+                        <a class="btn btn-primary customButtonWidth" ng-href="#upload">Upload Networks</a>
+                    </span>
 
                 </div>
 
@@ -236,23 +225,22 @@
         <tabset justified="false">
 
             <!--
-            <button ng-click="myAccountController.refreshTableAndDiskInfo();" ng-disabled="refreshButtonDisabled"
+            <button ng-click="myAccountController.refreshMyNetworksTableAndDiskInfo();" ng-disabled="refreshNetworksButtonDisabled"
                     style="float: left;" type="button" class="btn btn-default btn-md">
                 <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh
             </button>
             -->
 
             <!--<tab style="padding-left: 10px" heading="My Networks" ng-click="networkGridApi.core.handleWindowResize()">-->
-            <tab ng-click="networkGridApi.core.handleWindowResize()">
-                <tab-heading style="padding-left: 10px" >
-                    My Networks
-                    &nbsp;
+            <tab ng-click="onTabSelect('networks'); networkGridApi.core.handleWindowResize()">
+                <tab-heading>
+                    My Networks &nbsp;
 
                     <span class="glyphicon glyphicon-refresh" aria-hidden="true"
-                          ng-click="myAccountController.refreshMyAccount();"
-                          title="Refresh Networks and Tasks"
-                          ng-disabled="refreshButtonDisabled"
-                          ng-style="refreshButtonDisabled ? {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
+                          ng-click="myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();"
+                          title="Refresh My Networks"
+                          ng-disabled="refreshNetworksButtonDisabled"
+                          ng-style="refreshNetworksButtonDisabled ? {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
                     </span>
 
                 </tab-heading>
@@ -273,12 +261,12 @@
 
                 <div class='row' ng-hide='myAccountController.networkSearchResults.length > 0'>
                     <br>
-                    <p class='text-center text-muted'>No networks to display</p>
+                    <p class='text-center text-muted'>No Networks to display</p>
                 </div>
 
             </tab>
 
-            <tab heading="My Groups">
+            <tab heading="My Groups" ng-click="onTabSelect('groups')">
                 <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
@@ -344,131 +332,43 @@
 
             </tab>
 
-            <!-- only show Tasks & Notifications tab if
-                 1) user is logged in (it is not an anonymous search), and
-                 2) selected user is the same as the one who logged in.  In other words, this tab will be hidden if
-                 a user logged in as say "aaa" and gets networks for user "bbb" --->
-            <tab heading="My Tasks & Notifications"
-                 ng-show="(myAccountController.isLoggedInUser) && (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)"
-                 disabled="myAccountController.tasksNotificationsTabDisabled()">
+            <tab ng-click="onTabSelect('tasks'); updateLastTimeVisitedMyTasksTimestamp(); taskGridApi.core.handleWindowResize()"
+                 disabled="myAccountController.tasksNotificationsTabDisabled()"
+                 ng-show="(myAccountController.isLoggedInUser) &&
+                    (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)">
+                <tab-heading>
+                    My Tasks & Notifications &nbsp;
 
-                <div class="row" ng-show="(myAccountController.tasks.length > 0) || (myAccountController.pendingRequests.length > 0 || myAccountController.sentRequests.length > 0)">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"
+                          ng-click="myAccountController.checkAndRefreshMyTaskAndNotification();"
+                          title="Refresh My Tasks & Notifications"
+                          ng-disabled="refreshTasksButtonDisabled"
+                          ng-style="refreshTasksButtonDisabled ? {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
+                    </span>
 
-                    <div class="col-md-6"  ng-show='myAccountController.tasks.length > 0'>
-                        <div class="row well well-sm classWithPad">
-                            <ol class="list-inline">
-                                <li><strong>Tasks</strong></li>
-                                <a ng-click="myAccountController.refreshTasks(true); myAccountController.submitNetworkSearch();">
-                                    <span class='glyphicon glyphicon-refresh'></span>
-                                </a>
-                                <li class='pull-right' style='vertical-align: top'  ng-show="myAccountController.allTasksCompleted()">
-                                    <button class="btn-link" ng-click="myAccountController.deleteAllTasks()">Delete All</button>
-                                </li>
-                            </ol>
-                            <div class="panel panel-default">
-                                <ul class="list-group" ng-repeat='task in myAccountController.tasks'>
-                                    <!--ng-repeat='task in myAccountController.pendingTasks'> -->
-                                    <!--ng-hide="task.status == 'COMPLETED' && task.taskType != 'EXPORT_NETWORK_TO_FILE'"-->
-                                    <li class="list-group-item">
-                                        <div class='row' data-toggle="tooltip" data-placement="left" tooltip="{{task.description}}">
-                                            <div class='col-sm-10 user-tasks-panel'>
-                                                <span class='text-info'>{{task.taskType}}</span>
-                                                <span class='text-info' >{{task.description}}</span>
-                                                <span class='text-muted'>{{task.status | taskStatusToLabel}}</span>
-                                                <br />
+                    <span class="badge text-right" ng-if="myAccountController.numberOfNewTasksAndRequests > 0"
+                          style="background-color:#3576BE; font-weight:normal;">
+                        New: {{myAccountController.numberOfNewTasksAndRequests}}
+                    </span>
+                </tab-heading>
 
-
-                                                <a id="exportedNetworkDownoadLinkId"
-                                                   ng-show="task.status == 'COMPLETED' && task.taskType == 'EXPORT_NETWORK_TO_FILE'"
-                                                   ng-href="{{getExportedNetworkDownloadLink(task.externalId)}}"
-                                                   download="{{myAccountController.getNetworkDownloadName(task)}}"
-                                                   ng-click="getCredentialsForExportedNetworkDownload()">
-                                                        Download {{myAccountController.getNetworkName(task)}}
-                                                </a>
-
-                                                <a>
-                                                    <show-task-failure-info ng-show="task.status == 'FAILED'" ndex-data='task'>
-                                                        Click for details
-                                                    </show-task-failure-info>
-                                                </a>
-
-                                            </div>
-                                            <a class='btn btn-xs btn-link' ng-click="myAccountController.deleteTask(task.externalId)" ng-show="task.status != 'PROCESSING'">
-                                                <span class="text-danger glyphicon glyphicon-trash"></span>
-                                            </a>
-                                        </div>
-
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6" ng-show='myAccountController.pendingRequests.length > 0 || myAccountController.sentRequests.length > 0'>
-                        <div class="row well well-sm classWithPad">
-                            <div class="">
-                                <ol class="list-inline">
-                                    <li><strong>Requests</strong></li>
-                                    <li><a ng-click='sentTab = null'
-                                            ng-class="{'text-primary': sentTab == null, 'text-muted': sentTab}"
-                                            ng-show='myAccountController.pendingRequests.length > 0'>
-                                            Received
-                                        </a>
-                                    </li>
-                                    <li><a ng-click='sentTab = true'
-                                            ng-class="{'text-muted': sentTab == null, 'text-primary': sentTab}"
-                                            ng-show='myAccountController.sentRequests.length > 0'>
-                                            Sent
-                                        </a>
-                                    </li>
-                                    <li><a ng-click='myAccountController.refreshRequests(true)'>
-                                            <span class='glyphicon glyphicon-refresh'></span>
-                                        </a>
-                                    </li>
-                                </ol>
-                            </div>
-                            <div class="panel panel-default">
-                                <ul class="list-group"
-                                    ng-hide='sentTab'
-                                    ng-repeat='request in myAccountController.pendingRequests'>
-                                    <li class="list-group-item">
-                                    <!-- destination names should be cut off -->
-                                        <received-request ndex-data='request' class="wrapLongLine" user-controller="myAccountController">
-                                            <span class='text-success'>{{request.sourceName}}</span> requests
-                                            <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to
-                                            <span class='text-success'>{{request.destinationName}}</span>
-                                            <br>
-                                            <em class='text-muted'>{{request.response | requestStatusToLabel}}</em>
-                                        </received-request>
-                                    </li>
-                                </ul>
-                                <ul class="list-group"
-                                    ng-show='(sentTab && (myAccountController.sentRequests.length > 0))
-                                            || (myAccountController.sentRequests.length > 0 && myAccountController.pendingRequests.length < 1)'
-                                            ng-repeat='request in myAccountController.sentRequests'>
-                                    <li class="list-group-item">
-                                        <!-- destination names should be cut off -->
-                                        <sent-request ndex-data='request' class="wrapLongLine" user-controller="myAccountController">
-                                            <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to
-                                            <span class='text-success'>{{request.destinationName}}</span> for
-                                            <span class='text-success'>{{request.sourceName}}</span>
-                                            <br>
-                                            <em class='text-muted'
-                                                ng-class='{"text-danger":request.response=="DECLINED", "text-success":request.response=="ACCEPTED"}'>
-                                                {{request.response | requestStatusToLabel}}
-                                            </em>
-                                        </sent-request>
-                                    <!--<button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button
-                                    -->
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                <div ng-show='showTasksAndRequestsTable()'>
+                    <div ui-grid-selection
+                         ui-grid="tasksAndRequestsGridOptions"
+                         ui-grid-resize-columns
+                         ui-grid-auto-resize
+                         class="networkGrid">
                     </div>
                 </div>
+
+                <div class='row' ng-hide='showTasksAndRequestsTable()'>
+                    <br>
+                    <p class='text-center text-muted'>No Tasks or Notifications to display</p>
+                </div>
+
             </tab>
 
-        </tabset>
+         </tabset>
     </div>
 
 </div>
