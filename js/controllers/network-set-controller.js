@@ -334,7 +334,10 @@ ndexApp.controller('networkSetController',
     networkSetController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
         var userId = ndexUtility.getLoggedInUserExternalId();
 
-        ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+        var offset = undefined;
+        var limit  = undefined;
+
+        ndexService.getAllNetworkSetsOwnedByUserV2(userId, offset, limit,
             function (networkSets) {
                 networkSetController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
                 successHandler(networkSetController.networkSets[0]);

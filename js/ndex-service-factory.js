@@ -253,21 +253,41 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getUserAccountPageNetworksV2 = function (userId, successHandler, errorHandler) {
+            factory.getUserAccountPageNetworksV2 = function (userId, offset, limit, successHandler, errorHandler) {
                 // Server API: Get User’s Account Page Networks (used for MyAccount page)
-                // GET /user/{userid}/networksummary
+                // GET /user/{userid}/networksummary[?offset={offset}&limit={limit}]
 
                 var url = "/user/" + userId + "/networksummary";
+
+                if ((offset >= 0) && (limit >= 0)) {
+                    url = url + "?offset=" + offset + "&limit=" + limit;
+                };
+
                 var config = ndexConfigs.getGetConfigV2(url, null);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getAllNetworkSetsOwnedByUserV2 = function (userId, successHandler, errorHandler) {
+            factory.getNumberOfNetworksInUsersAccountPageV2 = function (userId, successHandler, errorHandler) {
+                // Server API: Get Number of Networks in User’s account page - the returned
+                // object tells the number of NetworkSummary and NetworkSet objects for this page.
+                // GET /user/{userid}/networkcount
+
+                var url = "/user/" + userId + "/networkcount";
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.getAllNetworkSetsOwnedByUserV2 = function (userId, offset, limit, successHandler, errorHandler) {
                 // Server API: Get All Network Sets Owned by a User
-                // GET /user/{userid}/networksets
+                // GET /user/{userid}/networksets[?offset={offset}&limit={limit}]
 
                 var url = "/user/" + userId + "/networksets";
+
+                if ((offset >= 0)  && (limit >=0)) {
+                    url = url + "?offset=" + offset + "&limit=" + limit;
+                };
                 var config = ndexConfigs.getGetConfigV2(url, null);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
@@ -1143,11 +1163,11 @@ ndexServiceApp.factory('ndexService',
                 );
 
                 return request;
-            }
+            };
 
             factory.getNetworkSummariesByUUIDsV2 = function(networksUUIDsList, accesskey, successHandler, errorHandler) {
                 // Server API: Get Network Summaries by UUIDs
-                // POST /network/summaries?accesskey={accesskey}
+                // POST /batch/network/summary?accesskey={accesskey}
 
                 var url = "/batch/network/summary";
                 if (accesskey) {
@@ -1156,7 +1176,20 @@ ndexServiceApp.factory('ndexService',
 
                 var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
-            }
+            };
+
+            factory.getNetworkPermissionsByUUIDsV2 = function(networksUUIDsList, successHandler, errorHandler) {
+                // Server API: Get Network Permissions by UUIDs
+                // POST /batch/network/permission
+
+                var url = "/batch/network/permission";
+                //if (accesskey) {
+                //    url = url + "?accesskey=" + accesskey;
+                //};
+
+                var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
 
             factory.exportNetworksV2 = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
             {

@@ -248,6 +248,8 @@
                                     // success handler
                                     function(newNetworkSet) {
 
+                                        // in case of success, returns the newly created set
+
                                         if ($scope.signalNewSetCreation) {
                                             $rootScope.$emit('NEW_NETWORK_SET_CREATED');
                                         };

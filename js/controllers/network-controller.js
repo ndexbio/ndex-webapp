@@ -2679,7 +2679,10 @@ ndexApp.controller('networkController',
 
                 var userId = ndexUtility.getLoggedInUserExternalId();
 
-                ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+                var offset = undefined;
+                var limit  = undefined;
+
+                ndexService.getAllNetworkSetsOwnedByUserV2(userId, offset, limit,
                     function (networkSets) {
                         networkController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
                         successHandler(networkController.networkSets[0]);

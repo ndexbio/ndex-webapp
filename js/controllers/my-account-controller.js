@@ -1,10 +1,10 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
         '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants', 'ndexSpinner',
-        'config',
+        'config', '$compile',
         function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
                   $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants, ndexSpinner,
-                  config)
+                  config, $compile)
         {
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ ndexApp.controller('myAccountController',
             // this map of Cytoscape collection networks; networkUUID is a key and <numberOfSubNetworks> is a value;
             // we only put networks with number of subnetwroks greater than 1
             myAccountController.networksWithMultipleSubNetworks = {};
-            
+
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
@@ -129,6 +129,15 @@ ndexApp.controller('myAccountController',
                 myAccountController.currentTab = tabName;
             };
 
+
+            var paginationOptions = {
+                pageNumber: 1,
+                pageSize: 15,
+                sort: null,
+                networkCount: 0,
+                networkSetCount: 0
+            };
+
             //table
             $scope.networkGridOptions =
             {
@@ -141,9 +150,29 @@ ndexApp.controller('myAccountController',
                 enableColumnMenus: false,
                 enableRowHeaderSelection: true,
 
+                paginationPageSizes: [15, 20, 25],
+                paginationPageSize: 15,
+                useExternalPagination: true,
+
                 onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
+
+                    gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
+                        paginationOptions.pageNumber = newPage;
+                        paginationOptions.pageSize = pageSize;
+                        myAccountController.getNoOfNetworksAndSets(
+                            function() {
+                                myAccountController.loadNetworks();
+                            },
+                            function() {
+                                console.log("unable to get No of Networks and Sets for this account");
+                            });
+
+                        $scope.networkGridApi.selection.clearSelectedRows();
+                        myAccountController.networkTableRowsSelected = 0;
+
+                    });
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
@@ -538,6 +567,10 @@ ndexApp.controller('myAccountController',
             var populateNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
+
+                _.forEach(myAccountController.networkSets, function(networkSet) {
+                    myAccountController.addNetworkSetToTable(networkSet);
+                });
 
                 for(var i = 0; i < myAccountController.networkSearchResults.length; i++ )
                 {
@@ -1465,7 +1498,10 @@ ndexApp.controller('myAccountController',
 
             myAccountController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler)
             {
-                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+                var offset = undefined;
+                var limit  = undefined;
+
+                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier, offset, limit,
                     
                     function (networkSets) {
                         myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
@@ -1789,55 +1825,107 @@ ndexApp.controller('myAccountController',
 
             myAccountController.getUserAccountPageNetworks = function (successHandler, errorHandler)
             {
-                var directOnly = false;
-                ndexService.getUserNetworkPermissionsV2(myAccountController.identifier, 'READ', 0, 1000000, directOnly,
-                    function (networkPermissionsMap) {
+                var noOfNetworkSetsOnPage = myAccountController.networkSets.length;
 
-                        ndexService.getUserAccountPageNetworksV2(myAccountController.identifier,
-                            function(networkSummaries) {
-                                myAccountController.networkSearchResults = networkSummaries;
+                if (noOfNetworkSetsOnPage >= paginationOptions.pageSize) {
+                    successHandler();
+                };
 
-                                myAccountController.networksWithAdminAccess = [];
-                                myAccountController.networksWithWriteAccess = [];
+                if ((noOfNetworkSetsOnPage > 0) && (noOfNetworkSetsOnPage < paginationOptions.pageSize)) {
+                    var offset = 0;
+                    var limit = paginationOptions.pageSize - noOfNetworkSetsOnPage;
+                }
+                else if ((noOfNetworkSetsOnPage == 0) && (paginationOptions.networkSetCount == 0)) {
+                    offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
+                    limit  = paginationOptions.pageSize;
 
-                                // loop through the network summaries and fill in lists of UUIDs
-                                // for networks with ADMIN and WRITE permissions
+                } else if ((noOfNetworkSetsOnPage == 0) && (paginationOptions.networkSetCount > 0)) {
+                    offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize - paginationOptions.networkSetCount;
+                    limit  = paginationOptions.pageSize;
+                };
+
+                ndexService.getUserAccountPageNetworksV2(myAccountController.identifier, offset, limit,
+                    function(networkSummaries) {
+
+                        myAccountController.networkSearchResults = networkSummaries;
+
+                        var networkUUIDs = _.map(networkSummaries, 'externalId');
+
+                        ndexService.getNetworkPermissionsByUUIDsV2(networkUUIDs,
+                            function(networkPermissionsMap) {
+
+                                // build list of networks with ADMIN and WRITE permissions
+                                var invertedMapsPermissions = _.invertBy(networkPermissionsMap);
+
+                                var networksWithAdminPermissions = invertedMapsPermissions['ADMIN'];
+                                var networksWithWritePermissions = invertedMapsPermissions['WRITE'];
+
+                                myAccountController.networksWithAdminAccess =
+                                    networksWithAdminPermissions ? networksWithAdminPermissions : [];
+
+                                myAccountController.networksWithWriteAccess =
+                                    networksWithWritePermissions ? networksWithWritePermissions : [];
+
+
+                                // loop through the network summaries and find what networks have multiple subnetworks
                                 _.forEach(myAccountController.networkSearchResults, function (networkSummaryObj) {
-
-                                    var networkUUID = networkSummaryObj.externalId;
-
-                                    if (networkUUID in networkPermissionsMap) {
-                                        var networkPermission = networkPermissionsMap[networkUUID];
-
-                                        if (networkPermission) {
-                                            networkPermission = networkPermission.toUpperCase();
-
-                                            if (networkPermission == "ADMIN") {
-                                                myAccountController.networksWithAdminAccess.push(networkUUID);
-                                            } else if (networkPermission == "WRITE") {
-                                                myAccountController.networksWithWriteAccess.push(networkUUID);
-                                            };
-                                        };
-                                    };
 
                                     var noOfSubNetworks = uiMisc.getNoOfSubNetworks(networkSummaryObj);
 
                                     if (noOfSubNetworks > 1) {
-                                        myAccountController.networksWithMultipleSubNetworks[networkUUID] = noOfSubNetworks;
+                                        myAccountController.networksWithMultipleSubNetworks[networkSummaryObj.externalId] = noOfSubNetworks;
                                     };
                                 });
+
                                 successHandler();
                             },
                             function(error) {
-                               console.log("unable to get user account page networks");
-                               errorHandler();
+                                console.log("unable to get user network permissions for the logged in user");
+                                errorHandler();
                             });
-
                     },
-                    function (error, data) {
-                        console.log("unable to get user network memberships");
+                    function(error) {
+                       console.log("unable to get user account page networks");
+                       errorHandler();
                     });
             };
+
+
+            myAccountController.getUserNetworksAndPopulateTable = function (successHandler, errorHandler)
+            {
+                // get networks
+                myAccountController.getUserAccountPageNetworks(
+                    function () {
+
+                        if (!networkTableDefined) {
+                            networkTableDefined = true;
+                            defineNetworkTable();
+                        };
+
+                        populateNetworkTable();
+
+                        $scope.selectedRowsNetworkExternalIds = {};
+
+                        if (myAccountController.networkTableRowsSelected > 0) {
+
+                            var selectedRows = $scope.networkGridApi.selection.getSelectedRows();
+
+                            _.forEach(selectedRows, function (row) {
+                                $scope.selectedRowsNetworkExternalIds[row.externalId] = '';
+                            });
+                        };
+
+                        if (successHandler) {
+                            successHandler();
+                        };
+                    },
+                    function () {
+                        if (errorHandler) {
+                            errorHandler();
+                        };
+                    });
+            };
+
 
             $scope.showWarningsOrErrors = function(rowEntity) {
 
@@ -2024,6 +2112,26 @@ ndexApp.controller('myAccountController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
+            myAccountController.getNoOfNetworksAndSets = function(successHandler, errorHandler) {
+                ndexService.getNumberOfNetworksInUsersAccountPageV2(myAccountController.identifier,
+                    function(data) {
+
+                        paginationOptions.networkCount       = data.networkCount;
+                        paginationOptions.networkSetCount    = data.networkSetCount;
+                        $scope.networkGridOptions.totalItems =
+                            paginationOptions.networkCount + paginationOptions.networkSetCount;
+
+                        if(successHandler) {
+                            successHandler();
+                        };
+                    },
+                    function(error) {
+                        if(errorHandler) {
+                            errorHandler();
+                        };
+                    });
+            };
+
             myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo = function() {
 
                 if ($scope.refreshNetworksButtonDisabled) {
@@ -2035,6 +2143,15 @@ ndexApp.controller('myAccountController',
                 if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
                     clearInterval(timerVariable);
                 };
+
+                myAccountController.getNoOfNetworksAndSets(
+                    function() {
+                        myAccountController.loadNetworks();
+                    },
+                    function() {
+                        console.log("unable to get No of Networks and Sets for this account");
+                    }
+                );
 
                 myAccountController.loadNetworks();
             };
@@ -2065,55 +2182,28 @@ ndexApp.controller('myAccountController',
 
                             cUser = user;
 
-                            // get networks
-                            myAccountController.getUserAccountPageNetworks(
-                                function () {
+                            if (paginationOptions.networkSetCount > 0) {
 
-                                    if (!networkTableDefined) {
-                                        networkTableDefined = true;
-                                        defineNetworkTable();
-                                    };
+                                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+                                    (paginationOptions.pageNumber - 1) * paginationOptions.pageSize, paginationOptions.pageSize,
 
-                                    populateNetworkTable();
+                                    function (networkSets) {
+                                        myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
 
-                                    ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+                                        myAccountController.getUserNetworksAndPopulateTable(successHandler, errorHandler);
 
-                                        function (networkSets) {
-                                            myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                                    },
+                                    function (error, status, headers, config, statusText) {
+                                        console.log("unable to get network sets");
+                                    });
 
-                                            _.forEach(myAccountController.networkSets, function (networkSet) {
-                                                myAccountController.addNetworkSetToTable(networkSet);
-                                            });
-                                        },
-                                        function (error, status, headers, config, statusText) {
-                                            console.log("unable to get network sets");
-                                        });
+                            } else {
+                                //  network set count is 0; no need to call API to call network sets
+                                myAccountController.networkSets = [];
 
-
-                                    $scope.selectedRowsNetworkExternalIds = {};
-
-                                    if (myAccountController.networkTableRowsSelected > 0) {
-
-                                        var selectedRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                                        _.forEach(selectedRows, function(row) {
-                                            $scope.selectedRowsNetworkExternalIds[row.externalId] = '';
-                                        });
-                                    };
-
-                                    if (successHandler) {
-                                        successHandler();
-                                    };
-
-                                },
-                                function () {
-                                    if (errorHandler) {
-                                        errorHandler();
-                                    };
-
-                                }
-                            );
-
+                                // get networks
+                                myAccountController.getUserNetworksAndPopulateTable(successHandler, errorHandler);
+                            };
                         });
             };
 
@@ -2130,6 +2220,8 @@ ndexApp.controller('myAccountController',
 
                 // start spinner if it is not already started
                 ndexSpinner.startSpinner(spinnerMyAccountPageId);
+
+
 
                 myAccountController.refreshMyNetworksTableAndDiskInfo(
                     function() {
@@ -2215,9 +2307,6 @@ ndexApp.controller('myAccountController',
             };
 
 
-
-
-
             $scope.$watchGroup(['tasksReceived', 'sentRequestsReceived', 'receivedRequestsReceived'],
                 function (newValue, oldValue) {
                     if ($scope.tasksReceived && $scope.sentRequestsReceived && $scope.receivedRequestsReceived) {
@@ -2231,8 +2320,15 @@ ndexApp.controller('myAccountController',
                 },
                 true);
 
-            myAccountController.loadNetworksTasksAndRequests();
 
+            myAccountController.getNoOfNetworksAndSets(
+                function() {
+                    myAccountController.loadNetworksTasksAndRequests();
+                },
+                function() {
+                    console.log("unable to get No of Networks and Sets for this account");
+                }
+            );
 
             // get groups
             var member = null;
