@@ -131,8 +131,10 @@
     uiServiceApp.directive('triggerCreateGroupModal', function() {
         return {
             scope: {},
-            restrict: 'A',
-            templateUrl: 'pages/directives/createGroupModal.html',
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Create Group</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
                 $scope.group = {};
@@ -140,7 +142,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'modal.html',
+                        templateUrl: 'pages/directives/createGroupModal.html',
                         scope: $scope
                     });
                 };
@@ -199,21 +201,22 @@
                 myAccountController: '=',
                 signalNewSetCreation: '='
             },
-            restrict: 'A',
-            templateUrl: 'pages/directives/createNetworkSetModal.html',
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Create Network Set</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService, $rootScope, $route) {
                 var modalInstance;
 
-                //$scope.networkSet = {};
-                $scope.text = $attrs.triggerCreateNetworkSetModal;
-
                 $scope.openMe = function() {
+
                     $scope.networkSet = {};
                     $scope.networkSet['properties'] = {};
                     $scope.networkSet['properties']['reference'] = "";
                     $scope.title = 'Create Network Set';
+
                     modalInstance = $modal.open({
-                        templateUrl: 'modalx.html',
+                        templateUrl: 'pages/directives/createNetworkSetModal.html',
                         scope: $scope
                     });
                 };
@@ -281,24 +284,24 @@
                             };
                             $scope.isProcessing = false;
                         });
-
                 };
             }
-        }
+        };
     });
-
 
     uiServiceApp.directive('triggerEditNetworkSetModal', function() {
         return {
             scope: {
                 networkSetController: '=',
             },
-            restrict: 'A',
-            templateUrl: 'pages/directives/editNetworkSetModal.html',
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Edit Network Set</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
 
-                $scope.text  = $attrs.triggerEditNetworkSetModal;
+                //$scope.text  = $attrs.triggerEditNetworkSetModal;
 
                 var networkSetId = $scope.networkSetController.identifier;
 
@@ -319,7 +322,7 @@
                     };
 
                     modalInstance = $modal.open({
-                        templateUrl: 'edit-network-set.html',
+                        templateUrl: 'pages/directives/editNetworkSetModal.html',
                         scope: $scope
                     });
                 };
@@ -485,9 +488,9 @@
             scope: {
                 ndexData: '='
             },
-            restrict: 'E',
-            templateUrl: 'pages/directives/editUserModal.html',
-            transclude: true,
+            restrict: 'AE',
+            template: '<button class="dropdown-btn" ng-click="openMe()">Edit Personal Info</span>',
+
             controller: function($scope, $modal, $location, ndexService, $route) {
 
                 var modalInstance;
@@ -495,7 +498,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'edit-user-modal.html',
+                        templateUrl: 'pages/directives/editUserModal.html',
                         scope: $scope
                     });
                 };
@@ -556,14 +559,15 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/editGroupModal.html',
-            transclude: true,
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Edit Group Profile</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService, $route) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'edit-group-modal.html',
+                        templateUrl: 'pages/directives/editGroupModal.html',
                         scope: $scope
                     });
                 };
@@ -617,11 +621,12 @@
     uiServiceApp.directive('showNetworkSetsModal', function() {
         return {
             scope: {
-                myAccountController: '='
+                myAccountController: '=',
+                myClass: '@'
             },
-            restrict: 'E',
-            templateUrl: 'pages/directives/showNetworkSetsModal.html',
-            transclude: true,
+            restrict: 'AE',
+            template: "<button class='{{myClass}}' ng-click='openMe()'>Add To My Sets</button>",
+
             controller: function($scope, $attrs, $modal, $location, ndexService, $route, $rootScope) {
                 var modalInstance;
                 $scope.errors = null;
@@ -633,7 +638,7 @@
                     initializeListOfCollections();
 
                     modalInstance = $modal.open({
-                        templateUrl: 'show-network-sets-modal.html',
+                        templateUrl: 'pages/directives/showNetworkSetsModal.html',
                         scope: $scope
                     });
                 };
@@ -1146,12 +1151,13 @@
                 ndexData: '='
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/createRequestGroup.html',
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Ask to Join!</button>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility) {
                 $scope.openMe = function() {
                     $modal.open({
-                        templateUrl: 'create-request-group-modal.html',
+                        templateUrl: 'pages/directives/createRequestGroup.html',
                         scope: $scope,
                         backdrop: 'static',
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
@@ -1208,16 +1214,19 @@
         }
     });
 
+
     // modal to request access to network
     uiServiceApp.directive('createRequestNetwork', function() {
         return {
             scope: {
                 ndexData: '=',
-                privileges: '='
+                privileges: '=',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/createRequestNetwork.html',
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility) {
                 var modalInstance;
                 $scope.errors = null;
@@ -1230,7 +1239,7 @@
                 $scope.openMe = function() {
                     intialize();
                     modalInstance = $modal.open({
-                        templateUrl: 'create-request-network-modal.html',
+                        templateUrl: 'pages/directives/createRequestNetwork.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
@@ -1367,11 +1376,13 @@
         return {
             scope: {
                 ndexData: '=',
-                privileges: '@privileges'
+                privileges: '@privileges',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/createRequestNetwork.html',
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation) {
                 var modalInstance;
                 $scope.errors = null;
@@ -1398,7 +1409,7 @@
                             } else {
 
                                 modalInstance = $modal.open({
-                                    templateUrl: 'create-request-network-modal.html',
+                                    templateUrl: 'pages/directives/createRequestNetwork.html',
                                     scope: $scope,
                                     backdrop: 'static'
                                 });
@@ -1608,12 +1619,13 @@
     uiServiceApp.directive('exportNetwork', function() {
         return {
             scope: {
-                ndexData: '='
-                //userController: '='
+                ndexData: '=',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/exportNetwork.html',
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">Export</button>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
@@ -1638,7 +1650,7 @@
                         $scope.exporters[0].description : "No description available for this export format.";
 
                     modalInstance = $modal.open({
-                        templateUrl: 'export-network-modal.html',
+                        templateUrl: 'pages/directives/exportNetwork.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
@@ -1701,12 +1713,13 @@
     uiServiceApp.directive('bulkExportNetwork', function() {
         return {
             scope: {
-                ndexData: '='
+                ndexData: '=',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/bulkExportNetwork.html',
-            //templateUrl: 'pages/directives/exportNetwork.html',
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">{{ndexData.exportNetworksLabel}}</button>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
@@ -1730,7 +1743,7 @@
                         $scope.exporters[0].description : "No description available for this export format.";
 
                     modalInstance = $modal.open({
-                        templateUrl: 'bulk-export-network-modal.html',
+                        templateUrl: 'pages/directives/bulkExportNetwork.html',
                         //templateUrl: 'export-network-modal.html',
                         scope: $scope,
                         backdrop: 'static'
@@ -2054,8 +2067,9 @@
             },
 
             restrict: 'E',
-            templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
+            template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</span>',
             transclude: true,
+
             controller: function($scope, $modal, ndexService, uiMisc) {
 
                 var modalInstance;
@@ -2099,7 +2113,7 @@
                     $scope.network.submitButtonLabel = $scope.label;
 
                     modalInstance = $modal.open({
-                        templateUrl: 'bulk-edit-network-property-modal.html',
+                        templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html', //'bulk-edit-network-property-modal.html',
                         scope: $scope
                     });
                 };
@@ -2316,7 +2330,8 @@
             },
 
             restrict: 'E',
-            templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
+            template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</span>',
+
             transclude: true,
             controller: function($scope, $modal, ndexService, ndexNavigation) {
 
@@ -2386,7 +2401,7 @@
                     $scope.network.showcase = true;
 
                     modalInstance = $modal.open({
-                        templateUrl: 'bulk-edit-network-property-modal.html',
+                        templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
                         scope: $scope
                     });
                 };
@@ -2856,9 +2871,10 @@
     uiServiceApp.directive('changePasswordModal', function() {
         return {
             scope: {},
-            restrict: 'E',
-            templateUrl: 'pages/directives/changePasswordModal.html',
-            transclude: true,
+            restrict: 'AE',
+
+            template: '<button class="dropdown-btn" ng-click="openMe()">Change Password</span>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation) {
                 var modalInstance;
                 $scope.errors = null;
@@ -2867,7 +2883,7 @@
                 $scope.openMe = function() {
                     $scope.change = {};
                     modalInstance = $modal.open({
-                        templateUrl: 'change-password-modal.html',
+                        templateUrl: 'pages/directives/changePasswordModal.html',
                         scope: $scope
                     });
                 };
@@ -2934,7 +2950,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
                             $scope.title = 'Disaffiliate this Network'
@@ -2977,14 +2993,14 @@
             scope: {
                 ndexData: '='
             },
-            restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary actionsLabel" ng-click="openMe()">Delete</button>',
             controller: function($scope, $modal, $location) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
 
@@ -3033,13 +3049,13 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
+            //templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
             controller: function($scope, $modal, $location) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
 
@@ -3212,13 +3228,14 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Leave Group</button>',
+
             controller: function($scope, $modal, $route, ndexService) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
                             $scope.title = 'Leave '+ $scope.group.groupName;
@@ -3277,13 +3294,14 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Delete Group</button>',
+
             controller: function($scope, $modal, $location, ndexService) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
                             $scope.title = 'Delete this Group'
@@ -3324,14 +3342,16 @@
     uiServiceApp.directive('deleteUser', function(){
         return {
             scope: {},
-            restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+            restrict: 'AE',
+            //templateUrl: 'pages/directives/confirmationModal.html',
+            template: '<button class="dropdown-btn" ng-click="openMe()">Delete Account</span>',
+
+
             controller: function($scope, $modal, $location, ndexService) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
                             $scope.title = 'Delete Your Account'
@@ -3345,6 +3365,7 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
+
                                 ndexService.deleteUserV2(
                                     function(data) {
                                         $modalInstance.close();
@@ -3448,7 +3469,7 @@
                         $scope.canProceed = false;
                         $scope.isProcessing = false;
                         modalInstance = $modal.open({
-                            templateUrl: 'confirmation-modal.html',
+                            templateUrl: 'pages/directives/confirmationModal.html',
                             scope: $scope,
                             controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
                                 $scope.title = adminCheck['title'];
@@ -3596,7 +3617,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService) {
                             $scope.title = 'Save Subnetwork?'

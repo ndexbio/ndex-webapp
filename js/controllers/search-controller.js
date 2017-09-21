@@ -404,7 +404,7 @@ ndexApp.controller('searchController',
                 var offset = undefined;
                 var limit  = undefined;
                 
-                ndexService.getAllNetworkSetsOwnedByUserV2(userId, offsett, limit,
+                ndexService.getAllNetworkSetsOwnedByUserV2(userId, offset, limit,
                     function (networkSets) {
                         searchController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
 

@@ -2103,7 +2103,7 @@ ndexApp.controller('networkController',
             networkController.saveQueryResult = function() {
 
                 var  modalInstanceSave = $modal.open({
-                    templateUrl: 'confirmation-modal.html',
+                    templateUrl: 'pages/directives/confirmationModal.html',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
                         $scope.title = 'Save query result?';

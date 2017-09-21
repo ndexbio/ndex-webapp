@@ -55,78 +55,79 @@
                                    <span class="caret"></span>
                                </button>
 
+
+                                <!--
+                               <ul class="dropdown-menu" role="menu" aria-labelledby="editAccountButton">
+                                   <li>
+                                       <edit-user-modal ndex-data='myAccountController.displayedUser'></edit-user-modal>
+                                   </li>
+                                   <li>
+                                       <change-password-modal></change-password-modal>
+                                   </li>
+                                   <li class="disabled"><a href="#">Notification Settings</a></li>
+                                   <li>
+                                       <delete-user></delete-user>
+                                   </li>
+                               </ul>
+                               -->
+
                                <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
                                    <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
-                                       <a>
-                                           <bulk-change-network-property
-                                                   ndex-data='myAccountController'
-                                                   directive-title="Change Description of Selected Networks"
-                                                   directive-action="description"
-                                                   directive-description="Change Descriptions of the selected networks to the one below:"
-                                                   title="{{enableEditPropertiesBulkButton ?
-                                                        'Change Description of the selected networks' :
-                                                        '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
-                                                   directive-label="Change Description">
-                                                Change Description
-                                            </bulk-change-network-property>
-                                       </a>
+                                       <bulk-change-network-property
+                                               ndex-data='myAccountController'
+                                               directive-title="Change Description of Selected Networks"
+                                               directive-action="description"
+                                               directive-description="Change Descriptions of the selected networks to the one below:"
+                                               title="{{enableEditPropertiesBulkButton ?
+                                                    'Change Description of the selected networks' :
+                                                    '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
+                                               directive-label="Change Description">
+                                        </bulk-change-network-property>
                                    </li>
                                    <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
-                                       <a>
-                                           <bulk-change-network-property
-                                                   ndex-data='myAccountController'
-                                                   directive-title="Change Reference of Selected Networks"
-                                                   directive-action="reference"
-                                                   directive-description="Change Reference of the selected networks to the one below:"
-                                                   title="{{enableEditPropertiesBulkButton ?
-                                                        'Change Reference of the selected networks' :
-                                                        '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
-                                                   directive-label="Change Reference">
-                                               Change Reference
-                                           </bulk-change-network-property>
-                                       </a>
-                                   </li>
-                                   <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
-                                       <a>
-                                           <bulk-change-network-property
-                                                   ndex-data='myAccountController'
-                                                   directive-title="Change Version of Selected Networks"
-                                                   directive-action="version"
-                                                   directive-description="Change Versions of the selected networks to the one below:"
-                                                   title="{{enableEditPropertiesBulkButton ?
-                                                        'Change Version of the selected networks' :
-                                                        '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
-                                                   directive-label="Change Version">
-                                               Change Version
-                                           </bulk-change-network-property>
-                                       </a>
-                                   </li>
-                                   <li>
-                                       <a>
-                                           <bulk-change-network-system-property
-                                                   ndex-data='myAccountController'
-                                                   directive-title="Change Visibility of Selected Networks"
-                                                   directive-action="visibility"
-                                                   directive-description="Change Visibility of the selected networks to the one below:"
-                                                   title="Change Visibility of the selected networks"
-                                                   directive-label="Change Visibility">
-                                               Change Visibility
-                                           </bulk-change-network-system-property>
+                                       <bulk-change-network-property
+                                               ndex-data='myAccountController'
+                                               directive-title="Change Reference of Selected Networks"
+                                               directive-action="reference"
+                                               directive-description="Change Reference of the selected networks to the one below:"
+                                               title="{{enableEditPropertiesBulkButton ?
+                                                    'Change Reference of the selected networks' :
+                                                    '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
+                                               directive-label="Change Reference">
+                                       </bulk-change-network-property>
 
-                                       </a>
+                                   </li>
+                                   <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
+                                       <bulk-change-network-property
+                                               ndex-data='myAccountController'
+                                               directive-title="Change Version of Selected Networks"
+                                               directive-action="version"
+                                               directive-description="Change Versions of the selected networks to the one below:"
+                                               title="{{enableEditPropertiesBulkButton ?
+                                                    'Change Version of the selected networks' :
+                                                    '1 or more selected networks are Cytoscape collections with multiple subnetworks and cannot be edited in NDEx.'}}"
+                                               directive-label="Change Version">
+                                       </bulk-change-network-property>
                                    </li>
                                    <li>
-                                       <a>
-                                           <bulk-change-network-system-property
-                                                   ndex-data='myAccountController'
-                                                   directive-title="Change Read-Only Flag of Selected Networks"
-                                                   directive-action="readOnly"
-                                                   directive-description="Change Read-Only flag of the selected networks to the one below:"
-                                                   title="Set/Unset Read-Only Flag of the selected networks"
-                                                   directive-label="Change Read-Only Flag">
-                                               Set/Unset Read-Only Flag
-                                           </bulk-change-network-system-property>
-                                       </a>
+                                       <bulk-change-network-system-property
+                                               ndex-data='myAccountController'
+                                               directive-title="Change Visibility of Selected Networks"
+                                               directive-action="visibility"
+                                               directive-description="Change Visibility of the selected networks to the one below:"
+                                               title="Change Visibility of the selected networks"
+                                               directive-label="Change Visibility">
+                                       </bulk-change-network-system-property>
+                                   </li>
+                                   <li>
+                                       <bulk-change-network-system-property
+                                               ndex-data='myAccountController'
+                                               directive-title="Change Read-Only Flag of Selected Networks"
+                                               directive-action="readOnly"
+                                               directive-description="Change Read-Only flag of the selected networks to the one below:"
+                                               title="Set/Unset Read-Only Flag of the selected networks"
+                                               directive-label="Set/Unset Read-Only Flag">
+                                       </bulk-change-network-system-property>
                                    </li>
                                </ul>
 
@@ -135,12 +136,13 @@
                         </span>
 
                         <span>
-                            <a ng-class="enableEditAndExportBulkButtons ? 'btn btn-primary customButtonWidth' :
-                                    'btn btn-primary customButtonWidth disabled'">
-                                <bulk-export-network ndex-data='myAccountController' ng-model="selection">
-                                    {{myAccountController.exportNetworksLabel}}
+                           <!-- <a ng-class="enableEditAndExportBulkButtons ? 'btn btn-primary customButtonWidth' :'btn btn-primary customButtonWidth disabled'">-->
+                                <bulk-export-network
+                                        ndex-data='myAccountController'
+                                        my-class="{{enableEditAndExportBulkButtons ?
+                                            'btn btn-primary customButtonWidth' :
+                                            'btn btn-primary customButtonWidth disabled'}}">
                                 </bulk-export-network>
-                            </a>
                         </span>
 
                         <span>
@@ -151,14 +153,10 @@
                             </a>
                         </span>
 
-                        <span>
-                            <a class="btn btn-primary customButtonWidth">
-                                <show-network-sets-modal
-                                        my-account-controller='myAccountController'>
-                                     {{myAccountController.addToNetworkSetLabel}}
-                                </show-network-sets-modal>
-                            </a>
-                        </span>
+                        <show-network-sets-modal
+                                my-account-controller='myAccountController'
+                                my-class="btn btn-primary customButtonWidth">
+                        </show-network-sets-modal>
 
                         <span>
                             <a class="btn btn-primary customButtonWidth"
@@ -183,25 +181,28 @@
                            </button>
 
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editAccountButton">
-                               <li><a><edit-user-modal ndex-data='myAccountController.displayedUser'>Edit Personal Info</edit-user-modal></a></li>
-                               <li><a><change-password-modal>Change Password</change-password-modal></a></li>
+                               <li>
+                                   <edit-user-modal ndex-data='myAccountController.displayedUser'></edit-user-modal>
+                               </li>
+                               <li>
+                                   <change-password-modal></change-password-modal>
+                               </li>
                                <li class="disabled"><a href="#">Notification Settings</a></li>
-                               <li><a><delete-user>Delete Account</delete-user></a></li>
+                               <li>
+                                   <delete-user></delete-user>
+                               </li>
                            </ul>
                        </div>
                     </span>
 
-                    <span>
-                        <a class="btn btn-primary customButtonWidth" trigger-create-group-modal="Create Group">Create Group</a>
-                    </span>
 
-                    <span>
-                        <a class="btn btn-primary customButtonWidth"
-                           my-account-controller='myAccountController'
-                           signal-new-set-creation='false'
-                           trigger-create-network-set-modal="Create Network Set">Create Network Set
-                        </a>
-                    </span>
+                    <trigger-create-group-modal></trigger-create-group-modal>
+
+                    <trigger-create-network-set-modal
+                            my-account-controller='myAccountController'
+                            signal-new-set-creation='false'>
+                    </trigger-create-network-set-modal>
+
 
                     <span>
                         <a class="btn btn-primary customButtonWidth" ng-href="#upload">Upload Networks</a>
@@ -215,6 +216,7 @@
     </div>
 
     <!-- tabs -->
+
     <div class="col-md-10" ng-show="myAccountController.displayedUser">
 
 

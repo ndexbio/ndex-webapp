@@ -56,6 +56,7 @@ ndexApp.controller('myAccountController',
             // we only put networks with number of subnetwroks greater than 1
             myAccountController.networksWithMultipleSubNetworks = {};
 
+
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
@@ -80,7 +81,6 @@ ndexApp.controller('myAccountController',
 
             myAccountController.editProfilesLabel    = "Edit Profile";
             myAccountController.exportNetworksLabel  = "Export Network";
-            myAccountController.addToNetworkSetLabel = "Add To Set";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
             myAccountController.networkSets = [];
@@ -150,7 +150,7 @@ ndexApp.controller('myAccountController',
                 enableColumnMenus: false,
                 enableRowHeaderSelection: true,
 
-                paginationPageSizes: [15, 20, 25],
+                paginationPageSizes: [15, 30, 50],
                 paginationPageSize: 15,
                 useExternalPagination: true,
 
@@ -171,7 +171,6 @@ ndexApp.controller('myAccountController',
 
                         $scope.networkGridApi.selection.clearSelectedRows();
                         myAccountController.networkTableRowsSelected = 0;
-
                     });
 
                     gridApi.core.on.rowsRendered($scope, function() {
@@ -419,9 +418,9 @@ ndexApp.controller('myAccountController',
                                     myAccountController.numberOfNewTasksAndRequests--;
                                 };
 
-                                var request =
-                                    _.find(myAccountController.tasksAndRequestsGridOptions.data,
-                                        {'taskId': entity.taskId});
+                                //var request =
+                                //    _.find(myAccountController.tasksAndRequestsGridOptions.data,
+                                //        {'taskId': entity.taskId});
 
                             },
                             function (error) {
@@ -940,7 +939,7 @@ ndexApp.controller('myAccountController',
             myAccountController.confirmDeleteSelectedNetworks = function(deletedHandler, canceledHandler)
             {
                 var   modalInstance = $modal.open({
-                    templateUrl: 'confirmation-modal.html',
+                    templateUrl: 'pages/directives/confirmationModal.html',
                     scope: $scope,
 
                     controller: function($scope, $modalInstance) {
@@ -969,7 +968,7 @@ ndexApp.controller('myAccountController',
             myAccountController.confirmDeleteSelectedSets = function()
             {
                 var   modalInstance = $modal.open({
-                    templateUrl: 'confirmation-modal.html',
+                    templateUrl: 'pages/directives/confirmationModal.html',
                     scope: $scope,
 
                     controller: function($scope, $modalInstance) {
@@ -1913,6 +1912,10 @@ ndexApp.controller('myAccountController',
                             _.forEach(selectedRows, function (row) {
                                 $scope.selectedRowsNetworkExternalIds[row.externalId] = '';
                             });
+
+                            enableOrDisableEditAndExportBulkButtons();
+                            enableOrDisableEditPropertiesBulkButton();
+                            enableOrDisableManageAccessBulkButton();
                         };
 
                         if (successHandler) {
@@ -2153,7 +2156,7 @@ ndexApp.controller('myAccountController',
                     }
                 );
 
-                myAccountController.loadNetworks();
+                //myAccountController.loadNetworks();
             };
 
             myAccountController.checkAndRefreshMyTaskAndNotification = function() {
@@ -2191,10 +2194,10 @@ ndexApp.controller('myAccountController',
                                         myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
 
                                         myAccountController.getUserNetworksAndPopulateTable(successHandler, errorHandler);
-
                                     },
                                     function (error, status, headers, config, statusText) {
                                         console.log("unable to get network sets");
+                                        errorHandler();
                                     });
 
                             } else {
@@ -2220,7 +2223,6 @@ ndexApp.controller('myAccountController',
 
                 // start spinner if it is not already started
                 ndexSpinner.startSpinner(spinnerMyAccountPageId);
-
 
 
                 myAccountController.refreshMyNetworksTableAndDiskInfo(

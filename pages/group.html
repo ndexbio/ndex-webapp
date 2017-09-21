@@ -43,12 +43,11 @@
                 <h5><strong>Actions:</strong></h5>
 
                  <span ng-show='groupController.isAdmin'>
-                    <a class="btn btn-primary customButtonWidth">
-                        <edit-group-modal
-                                ndex-data='groupController.displayedGroup'>
-                            Edit Group Profile
-                        </edit-group-modal>
-                    </a>
+
+                    <edit-group-modal
+                            ndex-data='groupController.displayedGroup'>
+                    </edit-group-modal>
+
 
                     <a class="btn btn-primary customButtonWidth"
                         ng-href="{{'#/access/group/'+groupController.displayedGroup.externalId}}">
@@ -56,21 +55,12 @@
                     </a>
                  </span>
 
-                 <span>
-                    <a class="btn btn-primary customButtonWidth">
-                       <leave-group ndex-data='groupController'>
-                          Leave Group
-                       </leave-group>
-                    </a>
-                 </span>
+                 <leave-group ndex-data='groupController'></leave-group>
 
                  <span ng-show='groupController.isAdmin'>
-                    <a class="btn btn-primary customButtonWidth">
-                        <delete-group
-                            ndex-data='groupController.displayedGroup.externalId'>
-                            Delete Group
-                        </delete-group>
-                    </a>
+                    <delete-group
+                        ndex-data='groupController.displayedGroup.externalId'>
+                    </delete-group>
                  </span>
 
             </span>
@@ -79,13 +69,7 @@
                 ng-hide='groupController.isMember || groupController.isAdmin || !groupController.isLoggedInUser'>
                 <hr>
                 <h5><strong>Actions:</strong></h5>
-                <span>
-                    <a class="btn btn-primary customButtonWidth">
-                        <create-request-group ndex-data='groupController.displayedGroup'>
-                            Ask to Join!
-                        </create-request-group>
-                    </a>
-                </span>
+                <create-request-group ndex-data='groupController.displayedGroup'></create-request-group>
             </span>
         </div>
     </div>
