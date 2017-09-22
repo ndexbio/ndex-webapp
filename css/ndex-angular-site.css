@@ -903,3 +903,18 @@ ul.ndex-nav-pills > li > a:hover {
 .ui-grid-viewport {
     overflow-anchor: none;
 }
+
+.badge-notify{
+    background:red;
+    position:relative;
+    //top: -10px;
+    //float: right;
+    //padding-right: -70px;
+    //right: 0px;
+    margin-right: -2em;
+    top: -1.5em;
+}
+
+span.glyphicon-refresh {
+    font-size: 1.15em;
+}

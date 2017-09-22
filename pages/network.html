@@ -870,6 +870,7 @@
             <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit'>
 
                 <create-request-network
+                    privileges='networkController.privilegeLevel'
                     ndex-data='networkController.currentNetwork'
                     my-class="{{networkController.hasMultipleSubNetworks() ?
                             'actionsLabelDisabled-btn btn btn-primary' : 'actionsLabel btn btn-primary'}}"

@@ -346,13 +346,18 @@
                           ng-click="myAccountController.checkAndRefreshMyTaskAndNotification();"
                           title="Refresh My Tasks & Notifications"
                           ng-disabled="refreshTasksButtonDisabled"
-                          ng-style="refreshTasksButtonDisabled ? {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
+                          ng-style="refreshTasksButtonDisabled ?
+                          {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
                     </span>
-
-                    <span class="badge text-right" ng-if="myAccountController.numberOfNewTasksAndRequests > 0"
-                          style="background-color:#3576BE; font-weight:normal;">
-                        New: {{myAccountController.numberOfNewTasksAndRequests}}
+                    <span class="badge badge-notify" ng-if="myAccountController.numberOfNewTasksAndRequests > 0">
+                        {{myAccountController.numberOfNewTasksAndRequests}}
                     </span>
+                    <!--
+                    <span class="badge  badge-success pull-right" ng-if="myAccountController.numberOfNewTasksAndRequests > 0"
+                          style="color:white; background-color:red; font-weight:bold; position: relative; top: -18px; left: 10px">
+                        {{myAccountController.numberOfNewTasksAndRequests}}
+                    </span>
+                    -->
                 </tab-heading>
 
                 <div ng-show='showTasksAndRequestsTable()'>

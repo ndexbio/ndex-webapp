@@ -362,7 +362,7 @@ ndexApp.controller('myAccountController',
             var defineTasksAndNotificationsTable = function()
             {
                 var columnDefs = [
-                    { field: '  ',   enableFiltering: true, width: 52, sort: {direction: 'desc', priority: 5},
+                    { field: 'New',   enableFiltering: true, width: 60, sort: {direction: 'desc', priority: 5},
                         cellTemplate: 'pages/gridTemplates/taskOrRequestNew.html' },  // , new, etc. cellTemplate: 'pages/gridTemplates/taskStatusOnTasksPage.html'
                     { field: 'Status', enableFiltering: true, maxWidth: 80, cellTemplate: 'pages/gridTemplates/taskOrRequestStatus.html' },
                     { field: 'Type', enableFiltering: true,   width: 150, cellTemplate: 'pages/gridTemplates/taskOrRequestType.html' },  // task, sent notif., received notific.
@@ -413,15 +413,13 @@ ndexApp.controller('myAccountController',
                         ndexService.updateTaskPropertiesV2(entity.taskId, properties,
                             function (data) {
                                 entity.newTask = false;
+                                entity.New = '&nbsp;&nbsp;';
 
                                 if (myAccountController.numberOfNewTasksAndRequests > 0) {
                                     myAccountController.numberOfNewTasksAndRequests--;
                                 };
 
-                                //var request =
-                                //    _.find(myAccountController.tasksAndRequestsGridOptions.data,
-                                //        {'taskId': entity.taskId});
-
+                                $scope.taskGridApi.core.refresh();
                             },
                             function (error) {
                                 console.log("unable to update task");
@@ -436,10 +434,13 @@ ndexApp.controller('myAccountController',
                         ndexService.updateRequestPropertiesV2(entity.taskId, properties,
                             function (data) {
                                 entity.newSent = false;
+                                entity.New = '&nbsp;&nbsp;';
 
                                 if (myAccountController.numberOfNewTasksAndRequests > 0) {
                                     myAccountController.numberOfNewTasksAndRequests--;
                                 };
+
+                                $scope.taskGridApi.core.refresh();
                             },
                             function (error) {
                                 console.log("unable to update request");
@@ -689,7 +690,7 @@ ndexApp.controller('myAccountController',
                             && (typeof task.ownerProperties.newTask !== 'undefined')) ? task.ownerProperties.newTask : true;
 
                     if (newTask && (taskStatus == 'failed' || taskStatus == 'completed')) {
-                        var newLabel = "New";
+                        var newLabel = "New!";
                         newTasksAndNotifications++;
                     } else {
                         newLabel = " ";
@@ -699,7 +700,7 @@ ndexApp.controller('myAccountController',
                     var newReceived = undefined;
 
                     var row = {
-                        "  "             : newLabel,
+                        "New"            : newLabel,
                         "Status"         : taskStatus,
                         "Type"           : taskType,
                         "Description"    : taskDescription,
@@ -743,7 +744,7 @@ ndexApp.controller('myAccountController',
                             ? pendingRequest.properties.newReceived : true;
 
                     if (newRequest) {
-                        var newLabel = "New";
+                        var newLabel = "New!";
                         newTasksAndNotifications++;
                     } else {
                         newLabel = " ";
@@ -755,7 +756,7 @@ ndexApp.controller('myAccountController',
                     var newSent = undefined;
 
                     var row = {
-                        "  "             : newLabel,
+                        "New"             : newLabel,
                         "Status"         : requestStatus,
                         "Type"           : requestType,
                         "Description"    : requestDescription,
@@ -800,7 +801,7 @@ ndexApp.controller('myAccountController',
                             ? sentRequest.properties.newSent : true;
 
                     if (newRequest && (requestStatus == 'accepted' || requestStatus == 'declined')) {
-                        var newLabel = "New";
+                        var newLabel = "New!";
                         newTasksAndNotifications++;
                     } else {
                         newLabel = " ";
@@ -813,7 +814,7 @@ ndexApp.controller('myAccountController',
                     var newReceived = undefined;
 
                     var row = {
-                        "  "             : newLabel,
+                        "New"             : newLabel,
                         "Status"         : requestStatus,
                         "Type"           : requestType,
                         "Description"    : requestDescription,
