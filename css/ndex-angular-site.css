@@ -907,12 +907,12 @@ ul.ndex-nav-pills > li > a:hover {
 .badge-notify{
     background:red;
     position:relative;
-    //top: -10px;
-    //float: right;
-    //padding-right: -70px;
-    //right: 0px;
     margin-right: -2em;
     top: -1.5em;
+
+    //width: 1.5em;
+    //height: 1.5em;
+    //border-radius: 50%;
 }
 
 span.glyphicon-refresh {

@@ -154,6 +154,56 @@
                     <hr>
                 </div>
 
+                <div class="btn-group btn-group-vertical buttonWithMarginBottom"
+                     ng-show="(myAccountController.taskTableRowsSelected > 0) &&
+                               (myAccountController.currentTab == 'tasks')">
+                    <h5><strong>Bulk Actions:</strong></h5>
+
+                    <span  ng-show="(myAccountController.taskTableRowsSelected > 0) &&
+                               (myAccountController.currentTab == 'tasks')">
+
+                        <span>
+                            <a class="btn btn-primary customButtonWidth"
+                               ng-click="myAccountController.checkAndMarkAsRead()">
+                                Mark As Read
+                            </a>
+                        </span>
+
+                        <span>
+                            <a class="btn btn-primary customButtonWidth"
+                               ng-click="myAccountController.checkAndDeleteSelectedTasks()">
+                                Delete
+                            </a>
+                        </span>
+
+                        <span>
+                            <a class="btn btn-primary customButtonWidth"
+                               ng-click="myAccountController.acceptSelectedRequests()">
+                                Accept Requests
+                            </a>
+                        </span>
+
+                        <span>
+                            <a class="btn btn-primary customButtonWidth"
+                               ng-click="myAccountController.declineSelectedRequests()">
+                                Decline Requests
+                            </a>
+                        </span>
+
+                        <span>
+                            <a class="btn btn-primary customButtonWidth"
+                               ng-click="myAccountController.downloadSelectedTasks()">
+                                Download
+                            </a>
+                        </span>
+
+                    </span>
+
+                    <hr>
+                </div>
+
+
+
                 <div class="btn-group btn-group-vertical buttonWithMarginBottom">
                     <h5><strong>Actions:</strong></h5>
 
@@ -337,12 +387,7 @@
                     <span class="badge badge-notify" ng-if="myAccountController.numberOfNewTasksAndRequests > 0">
                         {{myAccountController.numberOfNewTasksAndRequests}}
                     </span>
-                    <!--
-                    <span class="badge  badge-success pull-right" ng-if="myAccountController.numberOfNewTasksAndRequests > 0"
-                          style="color:white; background-color:red; font-weight:bold; position: relative; top: -18px; left: 10px">
-                        {{myAccountController.numberOfNewTasksAndRequests}}
-                    </span>
-                    -->
+
                 </tab-heading>
 
                 <div ng-show='showTasksAndRequestsTable()'>

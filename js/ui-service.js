@@ -1802,8 +1802,6 @@
         }
     });
 
-
-
     // modal to edit network summary
 /*
     uiServiceApp.directive('editNetworkSummaryModal', function() {

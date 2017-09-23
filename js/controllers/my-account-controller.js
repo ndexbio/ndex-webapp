@@ -85,8 +85,6 @@ ndexApp.controller('myAccountController',
 
             myAccountController.networkSets = [];
 
-            $scope.selectedRowsNetworkExternalIds = {};
-
             $scope.refreshNetworksButtonDisabled = true;
             $scope.refreshTasksButtonDisabled    = true;
 
@@ -102,6 +100,9 @@ ndexApp.controller('myAccountController',
             $scope.tasksReceived             = false;
             $scope.sentRequestsReceived      = false;
             $scope.receivedRequestsReceived  = false;
+
+            $scope.selectedRowsNetworkExternalIds = {};
+            $scope.selectedRowsTasksExternalIds   = {};
 
 
             myAccountController.numberOfNewTasksAndRequests = 0;
@@ -169,8 +170,8 @@ ndexApp.controller('myAccountController',
                                 console.log("unable to get No of Networks and Sets for this account");
                             });
 
-                        $scope.networkGridApi.selection.clearSelectedRows();
-                        myAccountController.networkTableRowsSelected = 0;
+                        //$scope.networkGridApi.selection.clearSelectedRows();
+                        //myAccountController.networkTableRowsSelected = 0;
                     });
 
                     gridApi.core.on.rowsRendered($scope, function() {
@@ -188,6 +189,10 @@ ndexApp.controller('myAccountController',
                         };
 
                         $scope.refreshNetworksButtonDisabled = false;
+
+                        enableOrDisableEditAndExportBulkButtons();
+                        enableOrDisableEditPropertiesBulkButton();
+                        enableOrDisableManageAccessBulkButton();
                     });
 
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
@@ -209,8 +214,13 @@ ndexApp.controller('myAccountController',
                             return;
                         };
 
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.networkTableRowsSelected = selectedRows.length;
+                        if (row.isSelected) {
+                            $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = '';
+                        } else {
+                            delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
+                        };
+
+                        myAccountController.networkTableRowsSelected = _.size( $scope.selectedRowsNetworkExternalIds);
 
                         changeNetworkBulkActionsButtonsLabels();
 
@@ -222,19 +232,26 @@ ndexApp.controller('myAccountController',
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
 
                         _.forEach(rows, function(row) {
-                            if ((row.entity.Status == 'Set') && (row.isSelected)) {
-                                // unselect a Set: make row.isSelected false and decrement the number of selected items
-                                row.isSelected = false;
+                            if (row.entity.Status == 'Set') {
+                                if (row.isSelected) {
+                                    // unselect a Set: make row.isSelected false and decrement the number of selected items
+                                    row.isSelected = false;
 
-                                var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
-                                if (selectedCount > 0) {
-                                    $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
+                                    var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
+                                    if (selectedCount > 0) {
+                                        $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
+                                    };
+                                };
+                            } else {
+                                if (row.isSelected) {
+                                    $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = '';
+                                } else {
+                                    delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
                                 };
                             };
                         });
 
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.networkTableRowsSelected = selectedRows.length;
+                        myAccountController.networkTableRowsSelected = _.size( $scope.selectedRowsNetworkExternalIds);
 
                         changeNetworkBulkActionsButtonsLabels();
 
@@ -264,16 +281,54 @@ ndexApp.controller('myAccountController',
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
                         $scope.taskGridApi.core.handleWindowResize();
                         $scope.refreshTasksButtonDisabled = false;
+
+                        if (myAccountController.taskTableRowsSelected > 0) {
+
+                            _.forEach ($scope.taskGridApi.grid.rows, function(row) {
+                                //var row = $scope.taskGridApi.grid.rows[i];
+
+                                if (row['entity']) {
+
+                                    if (row['entity']['taskId']
+                                        && (row['entity']['taskId'] in $scope.selectedRowsTasksExternalIds)) {
+                                        //$scope.taskGridApi.grid.rows[i].isSelected = true;
+                                        row.isSelected = true;
+                                    };
+                                };
+                            });
+
+                        };
                     });
 
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.taskTableRowsSelected = selectedRows.length;
+                        if (row.isSelected) {
+                            if (row['entity']['taskId']) {
+                                $scope.selectedRowsTasksExternalIds[row['entity']['taskId']] = '';
+                            };
+                        } else {
+                            if (row['entity']['taskId']) {
+                                delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
+                            };
+                        };
+
+                        myAccountController.taskTableRowsSelected = _.size($scope.selectedRowsTasksExternalIds);
                     });
 
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.taskTableRowsSelected = selectedRows.length;
+
+                        _.forEach(rows, function(row) {
+                            if (row.isSelected) {
+                                if (row['entity']['taskId']) {
+                                    $scope.selectedRowsTasksExternalIds[row['entity']['taskId']] = '';
+                                };
+                            } else {
+                                if (row['entity']['taskId']) {
+                                    delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
+                                };
+                            };
+                        });
+
+                        myAccountController.taskTableRowsSelected = _.size($scope.selectedRowsTasksExternalIds);
                     });
                 }
             };
@@ -916,6 +971,32 @@ ndexApp.controller('myAccountController',
 
                     myAccountController.genericInfoModal(title, message);
                 }
+                return;
+            };
+
+
+            myAccountController.checkAndMarkAsRead = function() {
+                alert("mark as read here");
+                return;
+            };
+
+            myAccountController.checkAndDeleteSelectedTasks = function() {
+                alert("delete selected tasks here");
+                return;
+            };
+
+            myAccountController.acceptSelectedRequests = function() {
+                alert("accept selected requests here");
+                return;
+            };
+
+            myAccountController.declineSelectedRequests = function() {
+                alert("decline selected requests here");
+                return;
+            };
+
+            myAccountController.downloadSelectedTasks = function() {
+                alert("download selected tasks here");
                 return;
             };
 
@@ -1903,21 +1984,6 @@ ndexApp.controller('myAccountController',
                         };
 
                         populateNetworkTable();
-
-                        $scope.selectedRowsNetworkExternalIds = {};
-
-                        if (myAccountController.networkTableRowsSelected > 0) {
-
-                            var selectedRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                            _.forEach(selectedRows, function (row) {
-                                $scope.selectedRowsNetworkExternalIds[row.externalId] = '';
-                            });
-
-                            enableOrDisableEditAndExportBulkButtons();
-                            enableOrDisableEditPropertiesBulkButton();
-                            enableOrDisableManageAccessBulkButton();
-                        };
 
                         if (successHandler) {
                             successHandler();
