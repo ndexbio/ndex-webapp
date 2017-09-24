@@ -426,8 +426,8 @@ ndexApp.controller('networkSetController',
         return uiMisc.getNetworkDownloadLink(networkSetController, rowEntity);
     }; */
 
-    $scope.downloadNetwork = function () {
-                uiMisc.downloadCXNetwork(networkExternalId);
+    $scope.downloadNetwork= function(rowEntity) {
+        uiMisc.downloadCXNetwork(rowEntity.externalId);
     }
 
     $scope.isOwnerOfNetwork = function(networkOwnerUUID)
