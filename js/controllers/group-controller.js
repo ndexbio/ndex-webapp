@@ -31,7 +31,7 @@ ndexApp.controller('groupController',
     groupController.networkQuery = {};
     groupController.errors = [];
 
-    groupController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+    groupController.isLoggedInUser = (window.currentNdexUser != null);
 
     //              scope functions
     // called on Networks belonging to group displayed on page

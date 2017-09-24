@@ -1,16 +1,16 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
         '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants', 'ndexSpinner',
-        'config', '$compile',
+         '$compile',
         function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
                   $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants, ndexSpinner,
-                  config, $compile)
+                  $compile)
         {
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
             
-            var identifier = ndexUtility.getUserCredentials()["externalId"];
-            //var identifier = sharedProperties.getCurrentUserId(); //$routeParams.identifier;
+          //  var identifier = ndexUtility.getUserCredentials()["externalId"];
+            var identifier = sharedProperties.getCurrentUserId(); //$routeParams.identifier;
 
 
             //              CONTROLLER INTIALIZATIONS
@@ -18,7 +18,7 @@ ndexApp.controller('myAccountController',
 
             $scope.myAccountController = {};
             var myAccountController = $scope.myAccountController;
-            myAccountController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            myAccountController.isLoggedInUser = (window.currentNdexUser != null);
             myAccountController.identifier = identifier;
             myAccountController.loggedInIdentifier = sharedProperties.getCurrentUserId();
             myAccountController.displayedUser = {};
@@ -89,7 +89,7 @@ ndexApp.controller('myAccountController',
             $scope.refreshTasksButtonDisabled    = true;
 
             var spinnerMyAccountPageId = "spinnerMyAccountPageId";
-            var refreshIntervalInSeconds = config.refreshIntervalInSeconds;
+            var refreshIntervalInSeconds = ndexSettings.refreshIntervalInSeconds;
             var timerVariable = undefined;
 
             var networkTableDefined               = false;
@@ -2108,9 +2108,15 @@ ndexApp.controller('myAccountController',
                 return "#/network/" + networkUUID;
             };
 
-            $scope.getNetworkDownloadLink = function(rowEntity) {
+            $scope.downloadNetwork= function(rowEntity) {
+
+                uiMisc.downloadCXNetwork(rowEntity.externalId);
+
+            }
+
+      /*      $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
-            };
+            }; */
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)
             {

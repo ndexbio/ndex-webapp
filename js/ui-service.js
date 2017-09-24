@@ -1180,8 +1180,8 @@
                                 else
                                     $scope.request.permission = 'GROUPADMIN'
 
-                                $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
-                                $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+                                $scope.request.sourceName = sharedProperties.getLoggedInUserAccountName();
+                                $scope.request.sourceUUID = sharedProperties.getCurrentUserId();// ndexUtility.getLoggedInUserExternalId();
 
                                 ndexService.createMembershipRequestV2($scope.request,
                                     function(request) {
@@ -1322,8 +1322,8 @@
                     $scope.request.destinationName = $scope.ndexData.name;
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
 
-                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
-                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+                    $scope.request.sourceName = sharedProperties.getLoggedInUserFirstAndLastNames();
+                    $scope.request.sourceUUID = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
                     $scope.request.accountType = undefined;
 
@@ -1334,7 +1334,7 @@
                     //if( $scope.privileges == 'Edit' )
                     //    $scope.modal.permissionLabel ='Is admin';
 
-                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
+                    ndexService.getUserGroupMembershipsV2(sharedProperties.getCurrentUserId(), 'GROUPADMIN', 0, 1000000,
                         function (userMembershipsMap) {
 
                             var groupsUUIDs = Object.keys(userMembershipsMap);
@@ -1350,8 +1350,8 @@
                                         }
                                         var currentUserAccount = {
                                             accountType: 'user',
-                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
-                                            externalId: ndexUtility.getLoggedInUserExternalId()
+                                            userName: sharedProperties.getLoggedInUserFirstAndLastNames(),
+                                            externalId: sharedProperties.getCurrentUserId() // .getLoggedInUserExternalId()
                                         }
                                         $scope.accounts.push(currentUserAccount);
                                         $scope.selected.account = currentUserAccount;
@@ -1383,7 +1383,7 @@
 
             template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
 
-            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation,sharedProperties) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.request = {};
@@ -1429,8 +1429,8 @@
                     $scope.request.destinationName = "selected networks";
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
 
-                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
-                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+                    $scope.request.sourceName = sharedProperties.getLoggedInUserFirstAndLastNames();
+                    $scope.request.sourceUUID = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
                     $scope.request.accountType = undefined;
 
@@ -1451,7 +1451,7 @@
                     //if( $scope.privileges == 'Edit' )
                     //    $scope.modal.permissionLabel ='Is admin';
 
-                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
+                    ndexService.getUserGroupMembershipsV2(sharedProperties.getCurrentUserId(), 'GROUPADMIN', 0, 1000000,
                         function (userMembershipsMap) {
 
                             var groupsUUIDs = Object.keys(userMembershipsMap);
@@ -1467,8 +1467,8 @@
                                         }
                                         var currentUserAccount = {
                                             accountType: 'user',
-                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
-                                            externalId: ndexUtility.getLoggedInUserExternalId()
+                                            userName: sharedProperties.getLoggedInUserFirstAndLastNames(),
+                                            externalId: sharedProperties.getCurrentUserId()//ndexUtility.getLoggedInUserExternalId()
                                         }
                                         $scope.accounts.push(currentUserAccount);
                                         $scope.selected.account = currentUserAccount;
@@ -3019,7 +3019,7 @@
                                     function(data) {
                                         sharedProperties.setCurrentNetworkId(null);
                                         $modalInstance.close();
-                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $location.path('/user/'+ sharedProperties.getCurrentUserId());
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
@@ -3260,10 +3260,10 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
-                                ndexService.removeGroupMemberV2($scope.group.externalId, ndexUtility.getLoggedInUserExternalId(),
+                                ndexService.removeGroupMemberV2($scope.group.externalId, sharedProperties.getCurrentUserId(), // ndexUtility.getLoggedInUserExternalId(),
                                     function(data) {
                                         $modalInstance.close();
-                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $location.path('/user/'+sharedProperties.getCurrentUserId());
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
@@ -3316,7 +3316,7 @@
                                 ndexService.deleteGroupV2($scope.externalId,
                                     function(data) {
                                         $modalInstance.close();
-                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $location.path('/user/'+sharedProperties.getCurrentUserId());
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {

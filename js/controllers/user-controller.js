@@ -15,7 +15,7 @@ ndexApp.controller('userController',
 
             $scope.userController = {};
             var userController = $scope.userController;
-            userController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            userController.isLoggedInUser = (window.currentNdexUser != null);
             userController.identifier = identifier;
             userController.loggedInIdentifier = sharedProperties.getCurrentUserId();
             userController.displayedUser = {};
@@ -258,7 +258,7 @@ ndexApp.controller('userController',
                     return UUIDs;
                 }
 
-                var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
+          //      var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
 
                 _.forEach(selectedNetworksRows, function(selectedNetworkRow) {
 
@@ -542,7 +542,7 @@ ndexApp.controller('userController',
                         populateNetworkTable();
 
                         var directOnly = false;
-                        var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
+                        var loggedInUserId = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
                         // get IDs of all networks shown on User page
                         getNetworksUUIDs(networks);

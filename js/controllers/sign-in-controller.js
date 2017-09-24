@@ -1,10 +1,10 @@
-ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties',
+ndexApp.controller('signInController', [ 'ndexService', 'ndexUtility', 'sharedProperties',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', '$rootScope',
-    function (config, ndexService, ndexUtility, sharedProperties,
+    function (ndexService, ndexUtility, sharedProperties,
               $scope, $location, $modal, $route, $http, $interval, $rootScope) {
 
 
-        $scope.config = config;
+        $scope.config = window.ndexSettings;
 
 //---------------------------------------------
 // SignIn / SignUp Handler
@@ -20,31 +20,76 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
             var password = $scope.signIn.password;
 
             ndexService.authenticateUserV2(userName, password,
-                 function(data) {
-                    sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
-                    $rootScope.$emit('LOGGED_IN');
-                    //$location.path("/user/" + data.externalId);
-                    $location.path("/myAccount");
-                    $scope.signIn.userName = null;
-                    $scope.signIn.password = null;
-                },
+                basicAuthSuccessHandler,
                 function(error, status) { //.error(function (data, status, headers, config, statusText) {
 
                     if (error && error.message) {
-                        $scope.signIn.message = error.message;
+                        $sope.signIn.message = error.message;
                     } else {
                         $scope.signIn.message = "Unexpected error during sign-in with status " + error.status;
                     }
             });
         };
-        
+
+        var basicAuthSuccessHandler = function(data) {
+            sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+            ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
+
+            window.currentNdexUser = data;
+            window.currentSignInType = 'basic';
+
+            $rootScope.$emit('LOGGED_IN');
+            //$location.path("/user/" + data.externalId);
+            $location.path("/myAccount");
+            $scope.signIn.userName = null;
+            $scope.signIn.password = null;
+        }
+
+        $scope.signIn.SignInWithGoogle = function () {
+            ndexUtility.clearUserCredentials();
+
+            gapi.auth2.getAuthInstance().signIn({prompt:'consent select_account'}).then(googleUserHandler, googleFailureHandler);
+        };
+
+
+        var googleUserHandler = function (curUser) {
+
+                ndexService.authenticateUserWithGoogleIdToken(
+                    function(data) {
+                        sharedProperties.setCurrentUser(data.externalId, data.userName);
+
+                        window.currentNdexUser = data;
+                        window.currentSignInType = 'google';
+
+                        $rootScope.$emit('LOGGED_IN');
+
+                        $location.path("/myAccount");
+                        $scope.signIn.userName = null;
+                        $scope.signIn.password = null;
+
+                    },
+                    function(error, status) {
+
+                        if (error && error.message) {
+                            $scope.signIn.message = error.message;
+                        } else {
+                            $scope.signIn.message = "Unexpected error during sign-in with status " + error.status;
+                        }
+                    });
+
+        }
+
+        var googleFailureHandler = function ( err) {
+            if ( err.error != "popup_closed_by_user")
+                $scope.signIn.message = "Failed to authenticate with google: " + err.error;
+        }
 
         $scope.signIn.cancel = function () {
             $location.path("/");
         };
 
         $scope.signIn.openSignUp = function () {
+            $scope.isProcessing = false;
             $scope.signIn.modalInstance = $modal.open({
                 templateUrl: 'signUp.html',
                 scope: $scope,
@@ -109,11 +154,12 @@ ndexApp.controller('signInController', ['config', 'ndexService', 'ndexUtility', 
                         sharedProperties.setCurrentUser(newUserId, userName);
                         ndexUtility.setUserInfo(userName, firstName, lastName, newUserId, password);
 
-                        $scope.$emit('LOGGED_IN');
                         $scope.signIn.cancelSignUp();// doesnt really cancel
-                        $location.path('user/' + newUserId);
-                        $scope.isProcessing = false;
-
+                        ndexService.authenticateUserV2(userName,password,basicAuthSuccessHandler,
+                             function (error ) {
+                                $scope.signIn.message = "Unexpect error from server: " + error;
+                                $scope.isProcessing=false;
+                            });
                     } else {
 
                         $scope.isProcessing = false;

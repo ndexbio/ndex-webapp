@@ -1,9 +1,9 @@
 ndexApp.controller('networkController',
-    ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
+    ['provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal', '$modalStack',
         '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', /*'$filter', '$location','$q',*/
-        function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
+        function ( provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal, $modalStack,
                   $route , $location, uiGridConstants, uiMisc, ndexSpinner /*, $filter /*, $location, $q */)
@@ -24,7 +24,7 @@ ndexApp.controller('networkController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
-            networkController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            networkController.isLoggedInUser = ( window.currentNdexUser != null);
 
             networkController.privilegeLevel = "None";
             networkController.currentNetworkId = networkExternalId;
@@ -523,7 +523,7 @@ ndexApp.controller('networkController',
             };
             */
 
-            $scope.getNetworkDownloadLink = function(currentNetwork) {
+       /*     $scope.getNetworkDownloadLink = function(currentNetwork) {
                 //var visibility = networkController.currentNetwork.visibility;
                 if (currentNetwork) {
                     var rowEntity = {
@@ -534,7 +534,11 @@ ndexApp.controller('networkController',
                 };
 
                 return;
-            };
+            }; */
+
+            $scope.downloadNetwork = function () {
+                uiMisc.downloadCXNetwork(networkExternalId);
+            }
 
             var parseNdexMarkupValue = function ( value ) {
                 return {n:  value.replace(/(\[(.*)\])?\(.*\)$/, '$2'),
@@ -2362,7 +2366,7 @@ ndexApp.controller('networkController',
                                     ;
                                 });
 
-                            if (networkController.isLoggedInUser && (network['ownerUUID'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                            if (networkController.isLoggedInUser && (network['ownerUUID'] == sharedProperties.getCurrentUserId()) ) {
                                 networkController.isNetworkOwner = true;
                                 networkController.getStatusOfShareableURL();
                             };
@@ -2677,7 +2681,7 @@ ndexApp.controller('networkController',
                     return;
                 };
 
-                var userId = ndexUtility.getLoggedInUserExternalId();
+                var userId = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
                 var offset = undefined;
                 var limit  = undefined;
