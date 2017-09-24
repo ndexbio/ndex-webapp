@@ -407,9 +407,16 @@ ndexApp.controller('groupController',
         return "#/network/" + networkUUID;
     };
 
-    $scope.getNetworkDownloadLink = function(rowEntity) {
+ /*   $scope.getNetworkDownloadLink = function(rowEntity) {
         return uiMisc.getNetworkDownloadLink(groupController, rowEntity);
-    };
+    }; */
+
+
+    $scope.downloadNetwork= function(rowEntity) {
+
+                uiMisc.downloadCXNetwork(rowEntity.externalId);
+
+    }
     
     $scope.isOwnerOfNetwork = function(networkOwnerUUID)
     {

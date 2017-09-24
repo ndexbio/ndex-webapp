@@ -684,10 +684,15 @@ ndexApp.controller('searchController',
                 return "#/network/" + networkUUID;
             };
 
-            $scope.getNetworkDownloadLink = function(rowEntity) {
+       /*     $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(searchController, rowEntity);
-            };
+            };*/
 
+            $scope.downloadNetwork= function(rowEntity) {
+
+                uiMisc.downloadCXNetwork(rowEntity.externalId);
+
+            }
             /*---------------------------
 
              Perform the Search

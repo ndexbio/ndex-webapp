@@ -439,14 +439,35 @@ ndexApp.controller('myAccountController',
                 $scope.taskGridApi.grid.options.columnDefs = columnDefs;
             };
 
-
+/*
             $scope.getExportedNetworkDownloadLink = function(taskId) {
                 return ndexService.getNdexServerUri() + "/task/" + taskId + "/file?download=true";
-            };
+            }; */
 
-            $scope.getCredentialsForExportedNetworkDownload = function() {
-                document.getElementById("exportedNetworkDownoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
-                document.getElementById("exportedNetworkDownoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+            $scope.getCredentialsForExportedNetworkDownload = function(taskId) {
+                var link = ndexService.getNdexServerUri() + "/task/" + taskId + "/file?download=true";
+                var anchor = document.createElement('a');
+
+                if ( window.currentSignInType=='google')
+                    anchor.setAttribute('href', link + "&id_token=" +
+                        gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+                else if (window.currentSignInType == 'basic') {
+                    var userCredentials = ndexUtility.getUserCredentials();
+
+   //                 var userName = userCredentials['userName'];
+   //                 var password = userCredentials['token'];
+
+   //                 link = link.replace("http://", "http://" + userName + ":" + password + "@");
+                    anchor.setAttribute('href', link);
+                    anchor.username = ndexUtility.getUserCredentials()['userName'];
+                    anchor.password = ndexUtility.getUserCredentials()['token'];
+                }
+
+                //   anchor.setAttribute('target', "_blank");
+                anchor.click();
+                anchor.remove();
+             //   document.getElementById("exportedNetworkDownoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
+             //   document.getElementById("exportedNetworkDownoadLinkId").password = ndexUtility.getUserCredentials()['token'];
             };
 
             $scope.markAsRead = function(entity) {
