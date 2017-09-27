@@ -1185,7 +1185,7 @@
 
             template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Ask to Join!</button>',
 
-            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties) {
                 $scope.openMe = function() {
                     $modal.open({
                         templateUrl: 'pages/directives/createRequestGroup.html',
@@ -1258,7 +1258,7 @@
 
             template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
 
-            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.request = {};

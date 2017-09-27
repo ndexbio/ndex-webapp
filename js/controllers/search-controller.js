@@ -399,7 +399,7 @@ ndexApp.controller('searchController',
             };
 
             searchController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
-                var userId = ndexUtility.getLoggedInUserExternalId();
+                var userId = sharedProperties.getCurrentUserId(); // ndexUtility.getLoggedInUserExternalId();
                 var offset = undefined;
                 var limit  = undefined;
                 
