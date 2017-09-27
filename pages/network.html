@@ -780,12 +780,14 @@
             <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
                     || networkController.isAdmin
                     || networkController.canEdit
-                    || networkController.canRead)'>
+                    || networkController.canRead)'
+                  class="actionsLabel btn btn-primary download-btn"
+                  ng-click="downloadNetwork()" >
 
-                    <a ng-href={{getNetworkDownloadLink(networkController.currentNetwork)}}
-                       class="actionsLabel btn btn-primary download-btn">
+               <!--     <a ng-href={{getNetworkDownloadLink(networkController.currentNetwork)}}
+                       class="actionsLabel btn btn-primary download-btn">  -->
                         Download
-                    </a>
+                  <!--  </a>  -->
             </span>
 
             <span>

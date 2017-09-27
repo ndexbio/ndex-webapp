@@ -23,6 +23,9 @@
                             ng-disabled="!signInForm.accountName.$valid || !signInForm.password.$valid">
                         Sign in
                     </button>
+                    <button class="btn btn-lg btn-primary" type="button" ng-click="signIn.SignInWithGoogle()">
+                        Sign in with Google
+                    </button>
                     <br><br>
                     <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
                 </div>

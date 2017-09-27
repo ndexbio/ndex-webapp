@@ -1,15 +1,15 @@
-ndexApp.controller('homeController', ['sharedProperties', 'config', '$scope', 'uiMisc',
-    function (sharedProperties, config, $scope, uiMisc) {
+ndexApp.controller('homeController', ['sharedProperties', '$scope', 'uiMisc',
+    function (sharedProperties, $scope, uiMisc) {
 
         $scope.homeController = {};
         var homeController = $scope.homeController;
         homeController.featuredCollections = [];
         homeController.URL = uiMisc.getCurrentServerURL();
-        homeController.welcomeHeader = config.welcome.header;
-        homeController.welcomeMessage = config.welcome.message;
+        homeController.welcomeHeader = window.ndexSettings.welcome.header;
+        homeController.welcomeMessage = window.ndexSettings.welcome.message;
 
-        if (config.featuredCollections) {
-            homeController.featuredCollections = config.featuredCollections;
+        if (window.ndexSettings.featuredCollections) {
+            homeController.featuredCollections = window.ndexSettings.featuredCollections;
         }
 
         homeController.getURLOfFeaturedCollection = function(collection) {

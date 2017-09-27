@@ -79,10 +79,9 @@
 
         <a ng-if="row.entity.Status == 'completed'"
             id="exportedNetworkDownoadLinkId"
-           ng-href="{{grid.appScope.getExportedNetworkDownloadLink(row.entity.taskId)}}"
 
            title = "{{row.entity.Description}}"
-           ng-click="grid.appScope.getCredentialsForExportedNetworkDownload(); grid.appScope.markAsRead(row.entity)"
+           ng-click="grid.appScope.getCredentialsForExportedNetworkDownload(row.entity.taskId); grid.appScope.markAsRead(row.entity)"
            ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
                 {'font-weight':'bold',   'color':'#428bca'} :{'font-weight':'normal', 'color':'#428bca'}">
 

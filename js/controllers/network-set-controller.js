@@ -22,7 +22,7 @@ ndexApp.controller('networkSetController',
 
     networkSetController.networkTableRowsSelected = 0;
 
-    networkSetController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+    networkSetController.isLoggedInUser = (window.currentNdexUser != null);
 
     networkSetController.isSetOwner = false;
 
@@ -93,7 +93,7 @@ ndexApp.controller('networkSetController',
                 };
 
                 if (networkSetController.isLoggedInUser &&
-                    (networkSetInformation['ownerId'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                    (networkSetInformation['ownerId'] == sharedProperties.getCurrentUserId()) ) {
                     networkSetController.isSetOwner = true;
 
                     // status of the Shareable URl is shown in the Share Set modal that pops up after
@@ -333,7 +333,7 @@ ndexApp.controller('networkSetController',
 
 
     networkSetController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
-        var userId = ndexUtility.getLoggedInUserExternalId();
+        var userId = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
         var offset = undefined;
         var limit  = undefined;
@@ -424,9 +424,13 @@ ndexApp.controller('networkSetController',
         return url;
     };
 
-    $scope.getNetworkDownloadLink = function(rowEntity) {
+ /*   $scope.getNetworkDownloadLink = function(rowEntity) {
         return uiMisc.getNetworkDownloadLink(networkSetController, rowEntity);
-    };
+    }; */
+
+    $scope.downloadNetwork= function(rowEntity) {
+        uiMisc.downloadCXNetwork(rowEntity.externalId);
+    }
 
     $scope.isOwnerOfNetwork = function(networkOwnerUUID)
     {

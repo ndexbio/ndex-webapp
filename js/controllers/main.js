@@ -1,11 +1,12 @@
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 'sharedProperties', '$route',
+ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', '$route',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
-    function (config, ndexService, ndexUtility, sharedProperties, $route,
+    function ( ndexService, ndexUtility, sharedProperties, $route,
               $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
 
         $scope.$on('IdleStart', function() {
-            $scope.main.signout();
+            if ( window.currentSignInType == 'basic')
+                $scope.main.signout();
         });
 
         $scope.showFooter = true;
@@ -17,21 +18,38 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         $scope.main.loggedIn = false;
         $scope.main.showSignIn = true;
 
-        $rootScope.$on('LOGGED_IN', function () {
+        var signInHandler = function () {
             //listener for changes in log in.
             $scope.main.loggedIn = true;
             $scope.main.showSignIn = false;
             $scope.main.userName = sharedProperties.getCurrentUserAccountName();
 
-            var userFirstAndLastNames = ndexUtility.getLoggedInUserFirstAndLastNames();
+            var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
             $scope.main.userFirstAndLastNames = userFirstAndLastNames ? "Hi, " + userFirstAndLastNames : "MyAccount";
 
             if ($rootScope.reloadRoute) {
                 delete $rootScope.reloadRoute;
                 $route.reload();
             };
-        });
+        }
 
+        $rootScope.$on('LOGGED_IN', signInHandler);
+
+        var signOutHandler = function () {
+            $scope.main.loggedIn = false;
+            delete $scope.main.userName;
+            if ( window.currentSignInType == "basic") {
+                ndexUtility.clearUserCredentials();
+                delete $http.defaults.headers.common['Authorization'];
+            } else {
+                gapi.auth2.getAuthInstance().signOut();
+            }
+            sharedProperties.currentNetworkId = null;
+            sharedProperties.currentUserId = null;
+            $scope.main.showSignIn = true;
+        }
+
+        $scope.$on('LOGGED_OUT', signOutHandler);
 
         $scope.main.searchString = '';
         $scope.strLength = 0;
@@ -61,15 +79,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             };
         };
 
-        $scope.$on('LOGGED_OUT', function () {
-            $scope.main.loggedIn = false;
-            delete $scope.main.userName;
-            ndexUtility.clearUserCredentials();
-            sharedProperties.currentNetworkId = null;
-            sharedProperties.currentUserId = null;
-            delete $http.defaults.headers.common['Authorization'];
-            $scope.main.showSignIn = true;
-        });
 
         if( $location.path() == '/' || $location.path() == '/signIn')
             $scope.main.hideSearchBar = true;
@@ -114,14 +123,15 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         
         // check configuration parameters loaded from ndex-webapp-config.js;
         // if any of config parameters missing, assign default values
-        initMissingConfigParams(config);
+
+        initMissingConfigParams(window.ndexSettings);
 
         // "Cite NDEx" menu item is not configurable.
-        config.citeNDEx = {};
-        config.citeNDEx.label = "Cite NDEx";
+        window.ndexSettings.citeNDEx = {};
+        window.ndexSettings.citeNDEx.label = "Cite NDEx";
 
 
-        $scope.config = config;
+        $scope.config = window.ndexSettings;
 
         //Test whether the server is up or not.
         $scope.main.serverIsDown = false;
@@ -199,9 +209,9 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
 
         //The purpose of the heart beat is measure the time since the app was last used.
         var lastHeartbeat = localStorage.getItem('last-heartbeat');
-        if( lastHeartbeat )
+        if( lastHeartbeat && window.currentSignInType == 'basic')
         {
-            if( Date.now() - lastHeartbeat > config.idleTime * 1000 )
+            if( Date.now() - lastHeartbeat > $scope.config.idleTime * 1000 )
                 $scope.main.signout(true); // true = no redirect to home
         }
 
@@ -226,7 +236,8 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         };
 
         //Hard-coding the heartbeat as a ratio of the idle time for now. So, a heart-beat will be set
-        $interval(recordHeartbeat, config.idleTime * 10 );
+        if (window.currentSignInType == 'basic')
+            $interval(recordHeartbeat, $scope.config.idleTime * 10 );
 
         //Whenever the browser or a tab containing the app is closed, record the heart beat.
         window.onbeforeunload = function (event)
@@ -396,13 +407,6 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
         //end Search code
 
         //initializions for page refresh
-        var accountName = ndexUtility.getLoggedInUserAccountName();
-        if (accountName) {
-            sharedProperties.setCurrentUser(ndexUtility.getLoggedInUserExternalId(), accountName);
-            $scope.main.userName = accountName;
-            $scope.$emit('LOGGED_IN');
-        }
-
 
         /*----------------------------------------------
          Citing NDEx
@@ -816,6 +820,20 @@ ndexApp.controller('mainController', ['config', 'ndexService', 'ndexUtility', 's
             }
         }
 
+
+        function registerSignedInUser(data, type) {
+            sharedProperties.setCurrentUser(data.externalId, data.userName);
+
+            $rootScope.$emit('LOGGED_IN');
+            if ( $scope.signIn != null) {
+                $scope.signIn.userName = null;
+                $scope.signIn.password = null;
+            }
+        }
+
+        if (window.currentSignInType != null ) {
+            registerSignedInUser(window.currentNdexUser, window.currentSignInType);
+        }
 
 
     }]);

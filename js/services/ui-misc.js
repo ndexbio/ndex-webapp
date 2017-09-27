@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility',
-                function (ndexNavigation, ndexService, ndexUtility) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility','sharedProperties',
+                function (ndexNavigation, ndexService, ndexUtility, sharedProperties) {
 
         var self = this;
 
@@ -266,12 +266,41 @@ angular.module('ndexServiceApp')
         };
 
 
+        self.downloadCXNetwork = function(networkId) {
+
+            var anchor = document.createElement('a');
+
+            if ( window.currentSignInType=='google')
+                anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" + networkId +
+                                "?download=true&id_token=" +
+                    gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+            else if (window.currentSignInType == 'basic') {
+                var link = ndexService.getNdexServerUri() + "/network/" + networkId +
+                                "?download=true";
+
+                var userCredentials = ndexUtility.getUserCredentials();
+
+                var userName = userCredentials['userName'];
+                var password = userCredentials['token'];
+
+                link = link.replace("http://", "http://" + userName + ":" + password + "@");
+                anchor.setAttribute('href', link);
+            } else
+                anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
+                                networkId + "?download=true");
+
+         //   anchor.setAttribute('target', "_blank");
+            anchor.click();
+            anchor.remove();
+
+        }
+
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
             var link =
                 ndexService.getNdexServerUri() + "/network/" + rowEntity.externalId + "?download=true";
 
-            if (accountController.isLoggedInUser && rowEntity.Visibility &&
+/*            if (accountController.isLoggedInUser && rowEntity.Visibility &&
                 (rowEntity.Visibility.toLowerCase() == 'private'))
             {
                 var userCredentials = ndexUtility.getUserCredentials();
@@ -283,9 +312,25 @@ angular.module('ndexServiceApp')
                 var password = userCredentials['token'];
 
                 link = link.replace("http://", "http://" + userName + ":" + password + "@");
-            };
+            }; */
 
-            return link;
+            if (window.currentSignInType == 'basic')
+            {
+                var userCredentials = ndexUtility.getUserCredentials();
+
+                if (!userCredentials || !userCredentials['userName'] || !userCredentials['token']) {
+                    return link;
+                }
+                var userName = userCredentials['userName'];
+                var password = userCredentials['token'];
+
+                link = link.replace("http://", "http://" + userName + ":" + password + "@");
+            } else if ( window.currentSignInType == 'google') {
+
+               link = link + "?id_token=" + gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+            }
+
+          return link;
         };
 
         self.showSetInfo = function(set) {
@@ -309,7 +354,7 @@ angular.module('ndexServiceApp')
             set['networkCount'] = set['networks'] ? set['networks'].length : 0;
 
             // if user is a set owner, ahow if networksa is showcased
-            var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
+            var loggedInUserId = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
             if (loggedInUserId && loggedInUserId == set.ownerId) {
                 var showCased = set['showcased'];
