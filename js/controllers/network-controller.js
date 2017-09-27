@@ -1990,7 +1990,8 @@ ndexApp.controller('networkController',
                         " as this process cannot be executed in background. <br><br>" +
                         "Proceed?";
 
-                    ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                    var dismissModal = true;
+                    ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel", dismissModal,
                         function () {
                             if (query == 'neighborhood') {
                                 networkController.queryNetworkAndDisplay();
@@ -2703,7 +2704,8 @@ ndexApp.controller('networkController',
                 var message = networkName +
                     'will be cloned to your account. <br><br> Are you sure you want to proceed?';
 
-                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                var dismissModal = true;
+                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel", dismissModal,
                     function () {
                         ndexService.cloneNetworkV2(networkController.currentNetworkId,
                             function(data, status, headers, config, statusText) {

@@ -317,7 +317,8 @@ ndexApp.controller('networkSetController',
             var body = 'The selected  network will be removed from this Set. Are you sure you want to proceed?';
         };
 
-        ndexNavigation.openConfirmationModal(title, body, "Remove", "Cancel",
+        var dismissModal = true;
+        ndexNavigation.openConfirmationModal(title, body, "Remove", "Cancel", dismissModal,
             function () {
                 $scope.isProcessing = true;
                 removeSelectedNetworksFromSet();
@@ -375,7 +376,8 @@ ndexApp.controller('networkSetController',
 
         body = body + 'Are you sure you want to proceed?';
 
-        ndexNavigation.openConfirmationModal(title, body, "Confirm", "Cancel",
+        var dismissModal = true;
+        ndexNavigation.openConfirmationModal(title, body, "Confirm", "Cancel", dismissModal,
             function () {
                 $scope.isProcessing = true;
 

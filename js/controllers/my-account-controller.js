@@ -955,7 +955,18 @@ ndexApp.controller('myAccountController',
                             ndexService.getUserByUUIDV2(myAccountController.identifier)
                                 .success(
                                     function (user) {
-                                        $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+                                        //$scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+
+                                        myAccountController.getNoOfNetworksAndSets(
+                                            function() {
+                                                myAccountController.loadNetworks();
+                                            },
+                                            function() {
+                                                console.log("unable to get No of Networks and Sets for this account");
+                                            }
+                                        );
+
+
                                     });
                         },
                         function() {
@@ -981,9 +992,196 @@ ndexApp.controller('myAccountController',
             };
 
             myAccountController.checkAndDeleteSelectedTasks = function() {
-                alert("delete selected tasks here");
+
+                var selectedTasksRows = $scope.taskGridApi.selection.getSelectedRows();
+
+                var countTasksThatCannotBeDeleted =
+                    _.sumBy($scope.taskGridApi.selection.getSelectedRows(), {'newReceived' : true});
+
+                var selectedTasks = myAccountController.taskTableRowsSelected;
+
+
+                if (countTasksThatCannotBeDeleted == selectedTasks) {
+                    var title = (countTasksThatCannotBeDeleted == 1) ? "Cannot Delete Selected Task" :
+                        "Cannot Delete Selected Tasks";
+
+                    var message =(countTasksThatCannotBeDeleted == 1) ?
+                        "The selected task is received and cannot be deleted." :
+                        "All of " + countTasksThatCannotBeDeleted + " selected tasks are received and cannot be deleted."
+
+                    myAccountController.genericInfoModal(title, message);
+                    return;
+                };
+
+                var numberOfTasksToDelete = selectedTasks - countTasksThatCannotBeDeleted;
+
+                if (numberOfTasksToDelete > 1) {
+                    title = 'Remove Selected Tasks';
+
+                    message = (countTasksThatCannotBeDeleted > 0) ?
+                        numberOfTasksToDelete + ' of the selected ' +  selectedTasks +
+                        ' tasks will be deleted. Are you sure you want to proceed?' :
+
+                        'The selected ' + numberOfTasksToDelete + ' tasks will be deleted. Are you sure you want to proceed?';
+                } else {
+
+                    title = 'Remove Selected Task';
+
+                    message = (countTasksThatCannotBeDeleted > 0) ?
+                        numberOfTasksToDelete + ' of the selected ' +  selectedTasks +
+                        ' tasks will be deleted. Are you sure you want to proceed?' :
+
+                        'The selected task will be deleted. Are you sure you want to proceed?';
+                };
+
+                var dismissModal = false;
+
+                $rootScope.progress  = null;
+                $rootScope.progress2 = null;
+                $rootScope.errors    = null;
+                $rootScope.confirmButtonDisabled = false;
+
+                var deletedCount = 0;
+
+                var cancelHit = false;
+                var errorFromServer = false;
+
+
+                ndexNavigation.openConfirmationModal(title, message, "Delete", "Cancel", dismissModal,
+                    function ($modalInstance) {
+                        $scope.isProcessing = true;
+                        $rootScope.confirmButtonDisabled = true;
+
+                        var selTaskRows = $scope.taskGridApi.selection.getSelectedRows();
+
+                        var tasks =
+                            _.map(selTaskRows, function(task) {
+                                    return task.newReceived ? null :
+                                        {
+                                            'id': task.taskId,
+                                            'typeFromServer' : task.typeFromServer,
+                                            'ownerUUID' : task.ownerUUID
+                                        };
+                            });
+
+                        var tasksToDel = _.without(tasks, null);
+
+                        sequence(tasksToDel, function (task) {
+                            if (cancelHit|| errorFromServer) {
+                                return;
+                            };
+
+                            return delTask(task, deletedCount).then(function (info) {
+                                deletedCount++;
+
+                                var taskId = task.id;
+                                myAccountController.taskTableRowsSelected--;
+                                delete $scope.selectedRowsTasksExternalIds[taskId];
+
+                                $rootScope.progress = "Deleted: " + deletedCount + " of " + numberOfTasksToDelete + " selected tasks";
+
+                                //$modalInstance.$scope.progress  = "Deleted: " + deletedCount + " of " + numberOfTasksToDelete + " selected tasks";
+                                //$scope.progress2 = "Deleted: " + networkName;
+
+/*
+                                var deletedElement = _.find($scope.tasksAndRequestsGridOptions.data, {'taskId' : taskId});
+                                if (deletedElement.newTask || deletedElement.newTask) {
+                                    myAccountController.numberOfNewTasksAndRequests--;
+                                };
+                                if (deletedElement.whatType == 'task') {
+                                    _.remove(myAccountController.tasks, {'externalId' : taskId});
+                                } else if (deletedElement.whatType == 'sent') {
+                                    _.remove(myAccountController.sentRequests, {'taskId' : taskId});
+                                }
+                               _.remove($scope.tasksAndRequestsGridOptions.data, {'taskId' : taskId});
+*/
+
+                                if ((deletedCount == numberOfTasksToDelete) || !$scope.isProcessing) {
+                                    myAccountController.checkAndRefreshMyTaskAndNotification();
+                                    $scope.taskGridApi.grid.selection.selectedCount = myAccountController.taskTableRowsSelected;
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+                                        delete $rootScope.confirmButtonDisabled;
+
+                                        $scope.isProcessing = false;
+                                        $modalInstance.dismiss();
+                                    }, 1000);
+                                };
+                            });
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to delete';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ": " +  reason.data.message : ".";
+
+                            myAccountController.checkAndRefreshMyTaskAndNotification();
+                            $scope.taskGridApi.grid.selection.selectedCount = myAccountController.taskTableRowsSelected;
+
+                        });
+                    },
+                    function ($modalInstance) {
+                        $scope.isProcessing = false;
+
+                        if (deletedCount == 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+                            delete $rootScope.confirmButtonDisabled;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+
+                                $modalInstance.dismiss();
+                            }, 2000);
+                        };
+                    });
                 return;
             };
+
+            function sequence(array, callback) {
+                return array.reduce(function chain(promise, item) {
+                    return promise.then(function () {
+                        return callback(item);
+                    });
+                }, Promise.resolve());
+            };
+
+            function delTask(task, deletedCount) {
+                var typeFromServer = task.typeFromServer.toLowerCase();
+
+                if (typeFromServer == 'export_network_to_file') {
+
+                    return ndexService.deleteTaskNoHandlersV2(task.id);
+
+                } else {
+
+                    var request = {"requesterId": task.ownerUUID, "externalId":  task.id};
+
+                    if (typeFromServer == 'usernetworkaccess'  || typeFromServer == "groupnetworkaccess") {
+
+                        return ndexService.deletePermissionRequestNoHandlersV2(request);
+
+                    } else if  (typeFromServer == 'joingroup') {
+
+                        return ndexService.deleteMembershipRequestNoHandlersV2(request);
+
+                    }
+                };
+            };
+
+
 
             myAccountController.acceptSelectedRequests = function() {
                 alert("accept selected requests here");
@@ -1681,6 +1879,14 @@ ndexApp.controller('myAccountController',
                            if (entity.newTask && myAccountController.numberOfNewTasksAndRequests > 0) {
                                myAccountController.numberOfNewTasksAndRequests--;
                            };
+                           if (taskUUID in $scope.selectedRowsTasksExternalIds) {
+                               delete $scope.selectedRowsTasksExternalIds[taskUUID];
+
+                               $scope.taskGridApi.grid.selection.selectedCount =
+                               myAccountController.taskTableRowsSelected =
+                                      _.size($scope.selectedRowsTasksExternalIds);
+
+                           };
                        },
                        function (error) {
                            console.log("unable to delete task");
@@ -1701,8 +1907,16 @@ ndexApp.controller('myAccountController',
                            // remove task from the table and task list
                            _.remove($scope.tasksAndRequestsGridOptions.data, {taskId: entity.taskId});
                            _.remove(myAccountController.sentRequests,   { externalId: entity.taskId});
-                           if ((entity.newSent || entity.newReceived) && myAccountController.numberOfNewTasksAndRequests > 0) {
+                           if (((entity.newSent && (entity.Status != 'pending')) ||
+                                    entity.newReceived) && myAccountController.numberOfNewTasksAndRequests > 0) {
                                myAccountController.numberOfNewTasksAndRequests--;
+                           };
+                           if (entity.taskId in $scope.selectedRowsTasksExternalIds) {
+                               delete $scope.selectedRowsTasksExternalIds[taskUUID];
+
+                               $scope.taskGridApi.grid.selection.selectedCount =
+                               myAccountController.taskTableRowsSelected =
+                                       _.size($scope.selectedRowsTasksExternalIds);
                            };
                        },
                        function(error){
@@ -1725,6 +1939,13 @@ ndexApp.controller('myAccountController',
                            if ((entity.newSent || entity.newReceived) && myAccountController.numberOfNewTasksAndRequests > 0) {
                                myAccountController.numberOfNewTasksAndRequests--;
                            };
+                           if (entity.taskId in $scope.selectedRowsTasksExternalIds) {
+                               delete $scope.selectedRowsTasksExternalIds[taskUUID];
+
+                               $scope.taskGridApi.grid.selection.selectedCount =
+                               myAccountController.taskTableRowsSelected =
+                                       _.size($scope.selectedRowsTasksExternalIds);
+                           };
                        },
                        function(error){
                            console.log("unable to delete request");
@@ -1737,12 +1958,16 @@ ndexApp.controller('myAccountController',
                 ndexService.deleteTaskV2(taskUUID,
                     function (data)
                     {
-                        successHandler(data);
+                        if (successHandler) {
+                            successHandler(data);
+                        };
                     },
                     function (error)
                     {
                         console.log("unable to delete task");
-                        errorHandler();
+                        if (errorHandler) {
+                            errorHandler();
+                        };
                     }
                 )
             };
@@ -1752,7 +1977,7 @@ ndexApp.controller('myAccountController',
                 ndexService.getUserTasksV2(
                     "ALL",
                     0,
-                    100,
+                    0,
                     // Success
                     function (tasks)
                     {
@@ -2049,7 +2274,8 @@ ndexApp.controller('myAccountController',
                                 var title = "Activate Showcase function";
                                 message = message + "Do you want to proceed and activate the Showcase function?";
 
-                                ndexNavigation.openConfirmationModal(title, message, "Proceed", "Cancel",
+                                var dismissModal = true;
+                                ndexNavigation.openConfirmationModal(title, message, "Proceed", "Cancel", dismissModal,
                                     function () {
                                         ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
                                             function (data, networkId, property, value) {
@@ -2133,8 +2359,9 @@ ndexApp.controller('myAccountController',
                     "<strong>Status: </strong>" + status + "<br>" +
                     "<strong>Error Message: </strong>" + errorMessage + "<br><br>" +
                     "<strong>Would you like to permanently DELETE this network?</strong>"
-                
-                ndexNavigation.openConfirmationModal(title, body, "Delete", "Cancel",
+
+                var dismissModal = true;
+                ndexNavigation.openConfirmationModal(title, body, "Delete", "Cancel", dismissModal,
                     function () {
                         ndexService.deleteNetworkV2(networkUUID,
                             function (data)

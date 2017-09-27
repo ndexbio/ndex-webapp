@@ -520,6 +520,15 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.deleteTaskNoHandlersV2 = function (taskId) {
+                // Server API: Delete A Task
+                // DELETE /task/{taskid}
+
+                var url = "/task/" + taskId;
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+
+                return $http(config);
+            };
 
             factory.updateTaskPropertiesV2 = function (taskId, properties, successHandler, errorHandler) {
                 // Server API: Update Task Properties
@@ -668,6 +677,19 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.deletePermissionRequestNoHandlersV2 = function (request) {
+                // Server API: Delete a Permission Request
+                //    DELETE /user/{sender_id}/permissionrequest/{requestid}
+                var senderId  = request.requesterId;
+                var requestId = request.externalId;
+
+                var url = "/user/" + senderId + "/permissionrequest/" + requestId;
+
+                var config =  ndexConfigs.getDeleteConfigV2(url, null);
+
+                return $http(config);
+            };
+
             factory.deleteMembershipRequestV2 = function (request, successHandler, errorHandler) {
                 // Server API: Delete a Membership Request
                 //    DELETE /user/{sender_id}/membershiprequest/{requestid}
@@ -686,6 +708,18 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.deleteMembershipRequestNoHandlersV2 = function (request) {
+                // Server API: Delete a Membership Request
+                //    DELETE /user/{sender_id}/membershiprequest/{requestid}
+                var senderId  = request.requesterId;
+                var requestId = request.externalId;
+
+                var url = "/user/" + senderId + "/membershiprequest/" + requestId;
+
+                var config =  ndexConfigs.getDeleteConfigV2(url, null);
+
+                return $http(config);
+            };
             /*---------------------------------------------------------------------*
              * Networks
              *---------------------------------------------------------------------*/

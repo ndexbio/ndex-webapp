@@ -4,8 +4,8 @@
     var uiServiceApp = angular.module('uiServiceApp', []);
 
     uiServiceApp.factory('ndexNavigation',
-        ['sharedProperties', '$location', '$modal',
-            function (sharedProperties, $location, $modal) {
+        ['sharedProperties', '$location', '$modal', '$rootScope',
+            function (sharedProperties, $location, $modal, $rootScope) {
                 var factory = {};
 
                 /*-----------------------------------------------------------------------*
@@ -30,29 +30,60 @@
                     $location.path("/user/" + userId);
                 };
 
-                factory.openConfirmationModal = function(title, message, confirmLabel, cancelLabel, confirmHandler, cancelHandler){
+                factory.openConfirmationModal = function(title, message, confirmLabel, cancelLabel,
+                                                         dismissModal, confirmHandler, cancelHandler){
+
                     ////console.log("attempting to open confirmationModal");
-                    var ConfirmCtrl = function($scope, $modalInstance) {
-                        $scope.input = {};
+
+                    var ConfirmCtrl = function($scope, $modalInstance, $rootScope) {
+
                         $scope.title = title;
                         $scope.message = message;
                         $scope.cancelLabel = cancelLabel ? cancelLabel : "Cancel";
                         $scope.confirmLabel = confirmLabel ? confirmLabel : "Delete";
+
+                        $scope.progress  = $rootScope.progress;
+                        $scope.progress2 = $rootScope.progress2;
+                        $scope.errors    = $rootScope.errors;
+                        $scope.confirmButtonDisabled = $rootScope.confirmButtonDisabled;
+
                         $scope.confirm = function(){
-                            $modalInstance.dismiss();
-                            confirmHandler();
+                            if (dismissModal) {
+                                $modalInstance.dismiss();
+                                confirmHandler();
+                            } else {
+                                confirmHandler($modalInstance);
+                            };
                         };
 
                         $scope.cancel = function(){
-                            $modalInstance.dismiss();
-                            cancelHandler();
+                            if (dismissModal) {
+                                $modalInstance.dismiss();
+                                cancelHandler();
+                            } else {
+                                cancelHandler($modalInstance);
+                            };
                         };
+
+                        $rootScope.$watch('progress', function(newValue, oldValue) {
+                            $scope.progress = newValue;
+                        });
+                        $rootScope.$watch('progress2', function(newValue, oldValue) {
+                            $scope.progress2 = newValue;
+                        });
+                        $rootScope.$watch('errors', function(newValue, oldValue) {
+                            $scope.errors = newValue;
+                        });
+                        $rootScope.$watch('confirmButtonDisabled', function(newValue, oldValue) {
+                            $scope.confirmButtonDisabled = newValue;
+                        });
                     };
 
                     $modal.open({
                         templateUrl: 'pages/confirmationModal.html',
                         controller: ConfirmCtrl
-                    })
+                    });
+
                 };
 
                 factory.genericInfoModal = function(title, message)
