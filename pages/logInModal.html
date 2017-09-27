@@ -29,14 +29,29 @@
     </div>
 
     <div class="modal-footer">
+        <div class="AlignCenter">
         <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
         <button class="btn btn-primary" ng-click="signIn()"
                 ng-disabled="!credentials.user || !credentials.password">
             Sign In
         </button>
-        <button class="btn btn-primary" ng-click="signInWithGoogle()">
+            <br><br>
+            <div >OR</div>
+            <br>
+            <div class="google-button">
+                <button class="google-sign-in-button" type="button" ng-click="signInWithGoogle()">
+                        <span class="google-sign-in-button-span">
+                            <img src="img/google-logo.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
+                            <span>Sign in with Google</span>
+                        </span>
+                </button>
+            </div>
+            <br>
+        </div>
+   <!--     <button class="btn btn-primary" ng-click="signInWithGoogle()">
             Sign In With Google
-        </button>
+        </button> -->
+
     </div>
 
 </div>

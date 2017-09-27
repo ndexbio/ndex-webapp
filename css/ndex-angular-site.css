@@ -918,3 +918,98 @@ ul.ndex-nav-pills > li > a:hover {
 span.glyphicon-refresh {
     font-size: 1.15em;
 }
+
+.google-sign-in-button {
+    align-items: baseline;
+    -webkit-box-align: baseline;
+    -ms-flex-align: baseline;
+    -webkit-align-items: baseline;
+    background: rgba(9, 30, 66, 0.04);
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-shadow: ;
+    border-radius: 3px;
+    border-width: 0;
+    width: 100%;
+    color: #505F79 ;
+    cursor: default;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-inline-flexbox;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    font-style: normal;
+    font-size: inherit;
+    height: 2.2857142857142856em;
+    line-height: 2.2857142857142856em;
+    margin: 0;
+    outline: none ;
+    padding: 0 8px;
+    pointer-events: auto;
+    text-align: center;
+    text-decoration: none;
+    transition-duration: 0.1s, 0.15s;
+    -webkit-transition-duration: 0.1s, 0.15s;
+    transition: background 0.1s ease-out, box-shadow 0.15s cubic-bezier(0.47, 0.03, 0.49, 1.38);
+    -webkit-transition: background 0.1s ease-out, box-shadow 0.15s cubic-bezier(0.47, 0.03, 0.49, 1.38);
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    vertical-align: middle;
+    white-space: nowrap;
+
+    background: #FFFFFF ;
+    box-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.2) ;
+    font-weight: bold;
+    font-size: 15px;
+    font-style: normal;
+
+    height: 40px ;
+    line-height: 40px !important;
+    width: 250px;
+}
+
+
+
+.google-sign-in-button-span {
+    align-self: center;
+    -ms-flex-item-align: center;
+    -webkit-align-self: center;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-inline-flexbox;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    -webkit-box-lines: nowrap;
+    -ms-flex-wrap: nowrap;
+    -webkit-flex-wrap: nowrap;
+    max-width: 100%;
+    width: 100%;
+    justify-content: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+
+    align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-self: center;
+    -ms-flex-item-align: center;
+    -webkit-align-self: center;
+    flex-shrink: 0;
+    -ms-flex-negative: 0;
+    -webkit-flex-shrink: 0;
+    margin: 0 4px;
+    max-width: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.google-button button:hover {
+    background: #dddddd;
+}

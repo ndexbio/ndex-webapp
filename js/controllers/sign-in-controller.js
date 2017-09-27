@@ -24,7 +24,7 @@ ndexApp.controller('signInController', [ 'ndexService', 'ndexUtility', 'sharedPr
                 function(error, status) { //.error(function (data, status, headers, config, statusText) {
 
                     if (error && error.message) {
-                        $sope.signIn.message = error.message;
+                        $scope.signIn.message = error.message;
                     } else {
                         $scope.signIn.message = "Unexpected error during sign-in with status " + error.status;
                     }
