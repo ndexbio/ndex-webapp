@@ -36,17 +36,19 @@
             Sign In
         </button>
             <br><br>
-            <div >OR</div>
-            <br>
-            <div class="google-button">
-                <button class="google-sign-in-button" type="button" ng-click="signInWithGoogle()">
+            <div ng-show="isNotSafari">
+                <div >OR</div>
+                <br>
+                <div class="google-button">
+                    <button class="google-sign-in-button" type="button" ng-click="signInWithGoogle()">
                         <span class="google-sign-in-button-span">
                             <img src="img/google-logo.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
                             <span>Sign in with Google</span>
                         </span>
-                </button>
+                    </button>
+                </div>
+                <br>
             </div>
-            <br>
         </div>
    <!--     <button class="btn btn-primary" ng-click="signInWithGoogle()">
             Sign In With Google

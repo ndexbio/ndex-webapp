@@ -13,6 +13,9 @@ ndexApp.controller('signInController', [ 'ndexService', 'ndexUtility', 'sharedPr
         $scope.signIn = {};
         $scope.signIn.newUser = {};
 
+      //  var ff= navigator.userAgent;
+        $scope.isNotSafari = !window.isSafari;
+
         $scope.signIn.submitSignIn = function () {
             ndexUtility.clearUserCredentials();
 
