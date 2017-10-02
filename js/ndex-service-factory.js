@@ -557,6 +557,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.updateTaskPropertiesNoHandlersV2 = function (taskId, properties) {
+                // Server API: Update Task Properties
+                // PUT /task/{taskid}/ownerProperties
+
+                var url = "/task/" + taskId + "/ownerProperties";
+                var config = ndexConfigs.getPutConfigV2(url, properties);
+
+                return $http(config);
+            };
+
             factory.updateRequestPropertiesV2 = function (requestId, properties, successHandler, errorHandler) {
                 // Server API: Update Request Properties
                 // PUT /request/{requestid}/properties
@@ -565,6 +575,16 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getPutConfigV2(url, properties);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.updateRequestPropertiesNoHandlersV2 = function (requestId, properties) {
+                // Server API: Update Request Properties
+                // PUT /request/{requestid}/properties
+
+                var url = "/request/" + requestId + "/properties";
+                var config = ndexConfigs.getPutConfigV2(url, properties);
+
+                return $http(config);
             };
 
             /*---------------------------------------------------------------------*

@@ -472,57 +472,51 @@ ndexApp.controller('myAccountController',
 
             $scope.markAsRead = function(entity) {
 
-                // we only update sent requests; can't update received requests since logged int user doesn't own them
+                // we only update sent requests; can't update received requests since logged in user doesn't own them
 
                 if ((entity.whatType == 'sent') && (entity.newSent) &&
-                    (entity.Status != 'accepted') && (entity.Status != 'declined')) {
+                    (entity.Status != 'accepted') && (entity.Status != 'declined') ||
+                    (!entity.newTask && !entity.newSent)) {
                     return;
                 };
 
-                // we only update sent requests; can't update received requests since logged int user doesn't own them
-                var isItNewTaskOrRequest = (entity.newTask || entity.newSent);
+                if (entity.whatType == "task") {
+                    var properties = {"newTask" : false};
+                    ndexService.updateTaskPropertiesV2(entity.taskId, properties,
+                        function (data) {
+                            entity.newTask = false;
+                            entity.New = '&nbsp;&nbsp;';
 
-                if (isItNewTaskOrRequest) {
+                            if (myAccountController.numberOfNewTasksAndRequests > 0) {
+                                myAccountController.numberOfNewTasksAndRequests--;
+                            };
 
-                    if (entity.whatType == "task") {
-                        var properties = {"newTask" : false};
-                        ndexService.updateTaskPropertiesV2(entity.taskId, properties,
-                            function (data) {
-                                entity.newTask = false;
-                                entity.New = '&nbsp;&nbsp;';
+                            $scope.taskGridApi.core.refresh();
+                        },
+                        function (error) {
+                            console.log("unable to update task");
+                        }
+                    );
+                } else if (entity.whatType == "sent") {
 
-                                if (myAccountController.numberOfNewTasksAndRequests > 0) {
-                                    myAccountController.numberOfNewTasksAndRequests--;
-                                };
+                    properties = {"newSent" : false};
 
-                                $scope.taskGridApi.core.refresh();
-                            },
-                            function (error) {
-                                console.log("unable to update task");
-                            }
-                        );
-                    } else if (entity.whatType == "sent") {
+                    // entity.taskId below is in fact request Id
+                    ndexService.updateRequestPropertiesV2(entity.taskId, properties,
+                        function (data) {
+                            entity.newSent = false;
+                            entity.New = '&nbsp;&nbsp;';
 
-                        //properties = (entity.whatType == "received") ? {"newReceived" : false} : {"newSent" : false};
-                        properties = {"newSent" : false};
+                            if (myAccountController.numberOfNewTasksAndRequests > 0) {
+                                myAccountController.numberOfNewTasksAndRequests--;
+                            };
 
-                        // entity.taskId below is in fact request Id
-                        ndexService.updateRequestPropertiesV2(entity.taskId, properties,
-                            function (data) {
-                                entity.newSent = false;
-                                entity.New = '&nbsp;&nbsp;';
-
-                                if (myAccountController.numberOfNewTasksAndRequests > 0) {
-                                    myAccountController.numberOfNewTasksAndRequests--;
-                                };
-
-                                $scope.taskGridApi.core.refresh();
-                            },
-                            function (error) {
-                                console.log("unable to update request");
-                            }
-                        );
-                    }
+                            $scope.taskGridApi.core.refresh();
+                        },
+                        function (error) {
+                            console.log("unable to update request");
+                        }
+                    );
                 };
             };
 
@@ -772,8 +766,8 @@ ndexApp.controller('myAccountController',
                         newLabel = " ";
                     };
 
-                    var newSent     = undefined;
-                    var newReceived = undefined;
+                    var newSent     = false;
+                    var newReceived = false;
 
                     var row = {
                         "New"            : newLabel,
@@ -828,8 +822,8 @@ ndexApp.controller('myAccountController',
 
                     var typeFromServer = pendingRequest.requestType.toLowerCase();
 
-                    var newTask = undefined;
-                    var newSent = undefined;
+                    var newTask = false;
+                    var newSent = false;
 
                     var row = {
                         "New"             : newLabel,
@@ -886,8 +880,8 @@ ndexApp.controller('myAccountController',
 
                     var typeFromServer = sentRequest.requestType.toLowerCase();
 
-                    var newTask     = undefined;
-                    var newReceived = undefined;
+                    var newTask     = false;
+                    var newReceived = false;
 
                     var row = {
                         "New"             : newLabel,
@@ -1008,16 +1002,145 @@ ndexApp.controller('myAccountController',
 
 
             myAccountController.checkAndMarkAsRead = function() {
-                alert("mark as read here");
+
+                var tasksToMark =
+                    _.map($scope.taskGridApi.selection.getSelectedRows(),
+                        function(task)
+                        {
+                            var taskNotToMark =
+                                task.newReceived || (!task.newTask && !task.newSent) ||
+                                task.Status == 'queued' || task.Status == 'processing';
+
+                            return taskNotToMark ? null :
+                                {
+                                    'id': task.taskId,
+                                    'typeFromServer' : task.typeFromServer,
+                                    'ownerUUID' : task.ownerUUID
+                                };
+                        });
+
+                tasksToMark = _.without(tasksToMark, null);
+                var numberOfTasksToMark = tasksToMark.length;
+                var selectedTasks = myAccountController.taskTableRowsSelected;
+
+
+                if ((numberOfTasksToMark == 0) && (selectedTasks > 0)) {
+                    var title = (selectedTasks == 1) ? "Cannot Mark Selected Task" :
+                        "Cannot Mark Selected Tasks";
+
+                    var message = (selectedTasks == 1) ?
+                        "The selected task cannot be marked as read." :
+                        "The selected " + selectedTasks + " tasks can not be marked as read.";
+
+                    myAccountController.genericInfoModal(title, message);
+                    return;
+                };
+
+                if (numberOfTasksToMark > 1) {
+                    title = 'Mark Selected Tasks';
+
+                    message = (numberOfTasksToMark != selectedTasks) ?
+                        numberOfTasksToMark + ' of the selected ' +  selectedTasks +
+                        ' tasks will be marked as read. Are you sure you want to proceed?' :
+
+                        'The selected ' + numberOfTasksToMark + ' tasks will be marked as read. ' +
+                        'Are you sure you want to proceed?';
+                } else {
+
+                    title = 'Mark Selected Task';
+
+                    message = (selectedTasks > 1) ?
+                        numberOfTasksToMark + ' of the selected ' +  selectedTasks +
+                        ' tasks will be marked as read. Are you sure you want to proceed?' :
+
+                        'The selected task will be marked as read. Are you sure you want to proceed?';
+                };
+
+                var dismissModal = false;
+
+                $rootScope.progress  = null;
+                $rootScope.progress2 = null;
+                $rootScope.errors    = null;
+                $rootScope.confirmButtonDisabled = false;
+
+                var markedCount = 0;
+
+                var cancelHit = false;
+                var errorFromServer = false;
+
+                ndexNavigation.openConfirmationModal(title, message, "Mark As Read", "Cancel", dismissModal,
+                    function ($modalInstance) {
+                        $scope.isProcessing = true;
+                        $rootScope.confirmButtonDisabled = true;
+
+                        sequence(tasksToMark, function (task) {
+                            if (cancelHit|| errorFromServer) {
+                                return;
+                            };
+
+                            return markTask(task).then(function (info) {
+                                markedCount++;
+
+                                var taskId = task.id;
+
+                                $rootScope.progress = "Marked: " + markedCount + " of " + numberOfTasksToMark + " selected tasks";
+
+                                if ((markedCount == numberOfTasksToMark) || !$scope.isProcessing) {
+                                    myAccountController.checkAndRefreshMyTaskAndNotification();
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+                                        delete $rootScope.confirmButtonDisabled;
+
+                                        $scope.isProcessing = false;
+                                        $modalInstance.dismiss();
+                                    }, 1000);
+                                };
+                            });
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to mark';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ": " +  reason.data.message : ".";
+
+                            myAccountController.checkAndRefreshMyTaskAndNotification();
+                        });
+                    },
+                    function ($modalInstance) {
+                        $scope.isProcessing = false;
+
+                        if (markedCount == 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+                            delete $rootScope.confirmButtonDisabled;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+
+                                $modalInstance.dismiss();
+                            }, 2000);
+                        };
+                    });
+
                 return;
             };
 
             myAccountController.checkAndDeleteSelectedTasks = function() {
 
-                var selectedTasksRows = $scope.taskGridApi.selection.getSelectedRows();
-
-                var countTasksThatCannotBeDeleted =
-                    _.sumBy($scope.taskGridApi.selection.getSelectedRows(), {'newReceived' : true});
+                var countTasksThatCannotBeDeleted = _.sumBy($scope.taskGridApi.selection.getSelectedRows(),
+                    function(task){return task.newReceived ? 1 : 0});
 
                 var selectedTasks = myAccountController.taskTableRowsSelected;
 
@@ -1028,7 +1151,7 @@ ndexApp.controller('myAccountController',
 
                     var message =(countTasksThatCannotBeDeleted == 1) ?
                         "The selected task is received and cannot be deleted." :
-                        "All of " + countTasksThatCannotBeDeleted + " selected tasks are received and cannot be deleted."
+                        "All of " + countTasksThatCannotBeDeleted + " selected tasks are received and cannot be deleted.";
 
                     myAccountController.genericInfoModal(title, message);
                     return;
@@ -1092,7 +1215,7 @@ ndexApp.controller('myAccountController',
                                 return;
                             };
 
-                            return delTask(task, deletedCount).then(function (info) {
+                            return delTask(task).then(function (info) {
                                 deletedCount++;
 
                                 var taskId = task.id;
@@ -1100,22 +1223,6 @@ ndexApp.controller('myAccountController',
                                 delete $scope.selectedRowsTasksExternalIds[taskId];
 
                                 $rootScope.progress = "Deleted: " + deletedCount + " of " + numberOfTasksToDelete + " selected tasks";
-
-                                //$modalInstance.$scope.progress  = "Deleted: " + deletedCount + " of " + numberOfTasksToDelete + " selected tasks";
-                                //$scope.progress2 = "Deleted: " + networkName;
-
-/*
-                                var deletedElement = _.find($scope.tasksAndRequestsGridOptions.data, {'taskId' : taskId});
-                                if (deletedElement.newTask || deletedElement.newTask) {
-                                    myAccountController.numberOfNewTasksAndRequests--;
-                                };
-                                if (deletedElement.whatType == 'task') {
-                                    _.remove(myAccountController.tasks, {'externalId' : taskId});
-                                } else if (deletedElement.whatType == 'sent') {
-                                    _.remove(myAccountController.sentRequests, {'taskId' : taskId});
-                                }
-                               _.remove($scope.tasksAndRequestsGridOptions.data, {'taskId' : taskId});
-*/
 
                                 if ((deletedCount == numberOfTasksToDelete) || !$scope.isProcessing) {
                                     myAccountController.checkAndRefreshMyTaskAndNotification();
@@ -1179,7 +1286,7 @@ ndexApp.controller('myAccountController',
                 }, Promise.resolve());
             };
 
-            function delTask(task, deletedCount) {
+            function delTask(task) {
                 var typeFromServer = task.typeFromServer.toLowerCase();
 
                 if (typeFromServer == 'export_network_to_file') {
@@ -1197,8 +1304,26 @@ ndexApp.controller('myAccountController',
                     } else if  (typeFromServer == 'joingroup') {
 
                         return ndexService.deleteMembershipRequestNoHandlersV2(request);
-
                     }
+                };
+            };
+
+            function markTask(task) {
+
+                var typeFromServer = task.typeFromServer.toLowerCase();
+
+                if (typeFromServer == 'export_network_to_file') {
+                    var properties = {"newTask" : false};
+                    return ndexService.updateTaskPropertiesNoHandlersV2(task.id, properties);
+
+                } else {
+
+                    if (typeFromServer == 'usernetworkaccess'  || typeFromServer == "groupnetworkaccess" ||
+                        typeFromServer == 'joingroup')
+                    {
+                        properties = {"newSent" : false};
+                        return ndexService.updateRequestPropertiesNoHandlersV2(task.id, properties);
+                    };
                 };
             };
 
@@ -1258,7 +1383,6 @@ ndexApp.controller('myAccountController',
                         $scope.confirm = function() {
                             $scope.isProcessing = true;
                             myAccountController.deleteSelectedNetworks($scope, $modalInstance, deletedHandler);
-                            //$modalInstance.dismiss();
                             $scope.isProcessing = false;
                         };
                     }
@@ -1897,7 +2021,8 @@ ndexApp.controller('myAccountController',
                            // remove task from the table and task list
                            _.remove($scope.tasksAndRequestsGridOptions.data, {taskId: taskUUID});
                            _.remove(myAccountController.tasks, {externalId: taskUUID});
-                           if (entity.newTask && myAccountController.numberOfNewTasksAndRequests > 0) {
+                           if (entity.newTask && (entity.Status != 'queued') && (entity.Status != 'processing') &&
+                                myAccountController.numberOfNewTasksAndRequests > 0) {
                                myAccountController.numberOfNewTasksAndRequests--;
                            };
                            if (taskUUID in $scope.selectedRowsTasksExternalIds) {

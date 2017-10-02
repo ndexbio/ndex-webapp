@@ -1191,7 +1191,7 @@
                         templateUrl: 'pages/directives/createRequestGroup.html',
                         scope: $scope,
                         backdrop: 'static',
-                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
                             $scope.request = {};
                             $scope.request.groupName = $scope.$parent.ndexData.groupName;
                             $scope.request.permissionLabel ='Is member';
@@ -1211,8 +1211,8 @@
                                 else
                                     $scope.request.permission = 'GROUPADMIN'
 
-                                $scope.request.sourceName = sharedProperties.getLoggedInUserAccountName();
-                                $scope.request.sourceUUID = sharedProperties.getCurrentUserId();// ndexUtility.getLoggedInUserExternalId();
+                                $scope.request.sourceName = sharedProperties.getCurrentUserAccountName();
+                                $scope.request.sourceUUID = sharedProperties.getCurrentUserId();
 
                                 ndexService.createMembershipRequestV2($scope.request,
                                     function(request) {
@@ -3266,7 +3266,7 @@
                     modalInstance = $modal.open({
                         templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
-                        controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
+                        controller: function($scope, $modalInstance, $location, ndexService, ndexUtility, sharedProperties) {
                             $scope.title = 'Leave '+ $scope.group.groupName;
 
                             var groupController = $scope.ndexData;
@@ -3291,7 +3291,8 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
-                                ndexService.removeGroupMemberV2($scope.group.externalId, sharedProperties.getCurrentUserId(), // ndexUtility.getLoggedInUserExternalId(),
+                                ndexService.removeGroupMemberV2($scope.group.externalId,
+                                    sharedProperties.getCurrentUserId(), // ndexUtility.getLoggedInUserExternalId(),
                                     function(data) {
                                         $modalInstance.close();
                                         $location.path('/user/'+sharedProperties.getCurrentUserId());
