@@ -106,6 +106,8 @@ ndexApp.controller('myAccountController',
 
 
             myAccountController.numberOfNewTasksAndRequests = 0;
+            myAccountController.numberOfDownloadableTasks = 0;
+
 
             myAccountController.currentTab = 'networks';
 
@@ -129,7 +131,6 @@ ndexApp.controller('myAccountController',
             $scope.onTabSelect = function(tabName) {
                 myAccountController.currentTab = tabName;
             };
-
 
             var paginationOptions = {
                 pageNumber: 1,
@@ -305,9 +306,17 @@ ndexApp.controller('myAccountController',
                             if (row['entity']['taskId']) {
                                 $scope.selectedRowsTasksExternalIds[row['entity']['taskId']] = '';
                             };
+                            if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                (row['entity']['Status'] == 'completed')) {
+                                myAccountController.numberOfDownloadableTasks++;
+                            };
                         } else {
                             if (row['entity']['taskId']) {
                                 delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
+                            };
+                            if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                (myAccountController.numberOfDownloadableTasks > 0)) {
+                                myAccountController.numberOfDownloadableTasks--;
                             };
                         };
 
@@ -321,9 +330,17 @@ ndexApp.controller('myAccountController',
                                 if (row['entity']['taskId']) {
                                     $scope.selectedRowsTasksExternalIds[row['entity']['taskId']] = '';
                                 };
+                                if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                    (row['entity']['Status'] == 'completed')) {
+                                    myAccountController.numberOfDownloadableTasks++;
+                                };
                             } else {
                                 if (row['entity']['taskId']) {
                                     delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
+                                };
+                                if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                    (myAccountController.numberOfDownloadableTasks > 0)) {
+                                    myAccountController.numberOfDownloadableTasks--;
                                 };
                             };
                         });
@@ -447,27 +464,40 @@ ndexApp.controller('myAccountController',
             $scope.getCredentialsForExportedNetworkDownload = function(taskId) {
                 var link = ndexService.getNdexServerUri() + "/task/" + taskId + "/file?download=true";
                 var anchor = document.createElement('a');
+                var myId = taskId + "";
 
                 if ( window.currentSignInType=='google')
                     anchor.setAttribute('href', link + "&id_token=" +
                         gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+
                 else if (window.currentSignInType == 'basic') {
                     var userCredentials = ndexUtility.getUserCredentials();
-
-   //                 var userName = userCredentials['userName'];
-   //                 var password = userCredentials['token'];
-
-   //                 link = link.replace("http://", "http://" + userName + ":" + password + "@");
                     anchor.setAttribute('href', link);
+                    anchor.setAttribute('id', myId);
                     anchor.username = ndexUtility.getUserCredentials()['userName'];
                     anchor.password = ndexUtility.getUserCredentials()['token'];
                 }
 
-                //   anchor.setAttribute('target', "_blank");
                 anchor.click();
                 anchor.remove();
-             //   document.getElementById("exportedNetworkDownoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
-             //   document.getElementById("exportedNetworkDownoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+            };
+
+
+
+            myAccountController.downloadSelectedTasks = function() {
+                var tasksToDownload = _.filter($scope.taskGridApi.selection.getSelectedRows(),
+                        {typeFromServer: 'export_network_to_file', Status: 'completed'});
+                var countSelectedRows = tasksToDownload.length;
+
+                for (i = 0; i < countSelectedRows; i++) {
+                    var taskId = tasksToDownload[i].taskId;
+                    setTimeout(
+                        $scope.getCredentialsForExportedNetworkDownload, i*200, taskId);
+                };
+            };
+
+            $scope.enabledBulkDownload = function() {
+                return myAccountController.numberOfDownloadableTasks > 0;
             };
 
             $scope.markAsRead = function(entity) {
@@ -980,8 +1010,6 @@ ndexApp.controller('myAccountController',
                                                 console.log("unable to get No of Networks and Sets for this account");
                                             }
                                         );
-
-
                                     });
                         },
                         function() {
@@ -1339,10 +1367,6 @@ ndexApp.controller('myAccountController',
                 return;
             };
 
-            myAccountController.downloadSelectedTasks = function() {
-                alert("download selected tasks here");
-                return;
-            };
 
             myAccountController.genericInfoModal = function(title, message)
             {

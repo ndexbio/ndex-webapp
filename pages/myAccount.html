@@ -176,6 +176,7 @@
                             </a>
                         </span>
 
+
                         <!--
                         <span>
                             <a class="btn btn-primary customButtonWidth"
@@ -190,14 +191,16 @@
                                 Decline Requests
                             </a>
                         </span>
+                        -->
 
                         <span>
-                            <a class="btn btn-primary customButtonWidth"
+                            <a ng-class="enabledBulkDownload() ? 'btn btn-primary customButtonWidth' :
+                                        'btn btn-primary customButtonWidth disabled'"
                                ng-click="myAccountController.downloadSelectedTasks()">
                                 Download
                             </a>
                         </span>
-                        -->
+
 
                     </span>
 
