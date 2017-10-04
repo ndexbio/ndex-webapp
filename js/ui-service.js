@@ -83,7 +83,6 @@
                         templateUrl: 'pages/confirmationModal.html',
                         controller: ConfirmCtrl
                     });
-
                 };
 
                 factory.genericInfoModal = function(title, message)
@@ -101,6 +100,54 @@
                                 $modalInstance.dismiss();
                             };
                         }
+                    });
+                };
+
+                factory.openManageBulkRequestsModal = function(title, message, acceptLabel, declineLabel, cancelLabel,
+                                                         manageHandler, cancelHandler) {
+                    var ConfirmCtrl = function($scope, $modalInstance, $rootScope, uiMisc) {
+
+                        $scope.title = title;
+                        $scope.message = message;
+                        $scope.responseMessage = null;
+
+                        $scope.acceptLabel  = acceptLabel  ? acceptLabel  : "Accept";
+                        $scope.declineLabel = declineLabel ? declineLabel : "Decline";
+                        $scope.cancelLabel  = cancelLabel  ? cancelLabel  : "Cancel";
+
+                        $scope.progress  = $rootScope.progress;
+                        $scope.progress2 = $rootScope.progress2;
+                        $scope.errors    = $rootScope.errors;
+
+
+                        $scope.accept = function() {
+                            var acceptRequests = true;
+                            var message = uiMisc.replaceNewLinesAndSpaces($scope.responseMessage);
+                            manageHandler($modalInstance, acceptRequests, message);
+                        };
+                        $scope.decline = function() {
+                            acceptRequests = false;
+                            message = uiMisc.replaceNewLinesAndSpaces($scope.responseMessage);
+                            manageHandler($modalInstance, acceptRequests, message);
+                        };
+                        $scope.cancel = function(){
+                            cancelHandler($modalInstance);
+                        };
+
+                        $rootScope.$watch('progress', function(newValue, oldValue) {
+                            $scope.progress = newValue;
+                        });
+                        $rootScope.$watch('progress2', function(newValue, oldValue) {
+                            $scope.progress2 = newValue;
+                        });
+                        $rootScope.$watch('errors', function(newValue, oldValue) {
+                            $scope.errors = newValue;
+                        });
+                    };
+
+                    $modal.open({
+                        templateUrl: 'pages/receivedBulkRequests.html',
+                        controller: ConfirmCtrl
                     });
                 };
 
@@ -1011,7 +1058,7 @@
             restrict: 'E',
             transclude: true,
             templateUrl: 'pages/directives/receivedRequest.html',
-            controller: function($scope, $modal, $route, ndexService) {
+            controller: function($scope, $modal, $route, ndexService, uiMisc) {
                 var modalInstance;
                 $scope.errors = null;
 
@@ -1040,17 +1087,18 @@
 
                     var permission = $scope.request.permission;
 
+                    var recipientId = $scope.myAccountController.identifier;
+                    var requestId = $scope.request.externalId;
+                    var action = "accept";
+
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.responseMessage);
+
                     if (type == 'usernetworkaccess' || type == 'groupnetworkaccess') {
 
                         type = (type == 'usernetworkaccess') ? 'user' : 'group';
 
                         ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
                             function (data) {
-
-                                var recipientId = $scope.myAccountController.identifier;
-                                var requestId = $scope.request.externalId;
-                                var action = "accept";
-                                var message = $scope.request.responseMessage;
 
                                 ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                                     function (data) {
@@ -1079,11 +1127,6 @@
                             });
 
                     } else if (type == 'joingroup') {
-
-                        var recipientId = $scope.myAccountController.identifier;
-                        var requestId = $scope.request.externalId;
-                        var action = "accept";
-                        var message = $scope.request.responseMessage;
 
                         ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
                             function (data) {
@@ -1116,7 +1159,8 @@
                     var recipientId = $scope.myAccountController.identifier;
                     var requestId = $scope.request.externalId;
                     var action = "deny";
-                    var message = $scope.request.responseMessage;
+
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.responseMessage);
 
                     if (type == 'usernetworkaccess' || type == 'groupnetworkaccess') {
 
@@ -1142,11 +1186,6 @@
                             });
 
                     } else if (type == 'joingroup') {
-
-                        var recipientId = $scope.myAccountController.identifier;
-                        var requestId = $scope.request.externalId;
-                        var action = "deny";
-                        var message = $scope.request.responseMessage;
 
                         ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
                             function (data) {
@@ -1185,7 +1224,7 @@
 
             template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Ask to Join!</button>',
 
-            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties, uiMisc) {
                 $scope.openMe = function() {
                     $modal.open({
                         templateUrl: 'pages/directives/createRequestGroup.html',
@@ -1213,6 +1252,9 @@
 
                                 $scope.request.sourceName = sharedProperties.getCurrentUserAccountName();
                                 $scope.request.sourceUUID = sharedProperties.getCurrentUserId();
+
+                                var message = uiMisc.replaceNewLinesAndSpaces($scope.request.message);
+                                $scope.request.message = message;
 
                                 ndexService.createMembershipRequestV2($scope.request,
                                     function(request) {
@@ -1258,7 +1300,7 @@
 
             template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
 
-            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties, uiMisc) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.request = {};
@@ -1290,6 +1332,12 @@
                     if($scope.modal.permissionLabel == 'Can read')
                         $scope.request.permission = 'READ';
 
+                    // let's close the modal so that the user didn't see how  $scope.request.message
+                    // will be changed ...
+                    modalInstance.close();
+
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.message);
+
                     var requestType =  $scope.selected.account.accountType;
 
                     if (requestType == 'user') {
@@ -1298,7 +1346,7 @@
                         var userPermissionRequest = {
                             "networkid"  : $scope.request.destinationUUID,
                             "permission" : $scope.request.permission,
-                            "message"    : $scope.request.message,
+                            "message"    : message,
                         }
                         var userUUID = $scope.selected.account.externalId;
 
@@ -1317,7 +1365,7 @@
                         var groupPermissionRequest = {
                             "networkid"  : $scope.request.destinationUUID,
                             "permission" : $scope.request.permission,
-                            "message"    : $scope.request.message
+                            "message"    : message
                         };
 
                         var groupUUID = $scope.selected.account.externalId;
@@ -1414,7 +1462,8 @@
 
             template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
 
-            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation,sharedProperties) {
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation,
+                                 sharedProperties, uiMisc) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.request = {};
@@ -1557,6 +1606,7 @@
                     var loggedInUserPermission2 = loggedInUserPermission;
 
 
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.message);
 
 
                     for (var i = 0; i < selectedNetworks.length; i++) {
@@ -1577,7 +1627,7 @@
                             var userPermissionRequest = {
                                 "networkid": networkUUID,
                                 "permission": $scope.request.permission,
-                                "message": $scope.request.message,
+                                "message": message,
                             };
 
                             var userUUID = $scope.selected.account.externalId;
@@ -1608,7 +1658,7 @@
                             var groupPermissionRequest = {
                                 "networkid": networkUUID,
                                 "permission": $scope.request.permission,
-                                "message": $scope.request.message,
+                                "message": message,
                             }
                             var groupUUID = $scope.selected.account.externalId;
 

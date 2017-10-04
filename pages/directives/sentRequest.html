@@ -2,7 +2,7 @@
 
 <script type="text/ng-template" id="sent-request-modal.html">
 	<div class='modal-content'>
-		<div class='modal-body' ng-hide='false'>
+		<div class='modal-body wrapLongLine'>
 			<h5>
 				<strong>
 					<div class="wrapLongLine">
@@ -17,11 +17,11 @@
 			</h5>
 			<hr ng-show='request.message'>
 			<strong ng-show='request.message'>Message</strong>
-			<p>{{request.message}}</p>
+			<p><span ng-bind-html="request.message"></span></p>
 			<div ng-hide='request.response == "PENDING"'>
 				<hr>
 				<h5><strong>Response</strong> - <em>from {{request.responder}}</em></h5>
-				<p ng-show='request.responseMessage'>{{request.responseMessage}}</p>
+				<p ng-show='request.responseMessage' ng-bind-html="request.responseMessage"></p>
 			</div>
 
 			<div class='text-danger' ng-if="request.error">

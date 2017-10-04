@@ -557,5 +557,13 @@ angular.module('ndexServiceApp')
             return diskInfo;
         };
 
+        self.replaceNewLinesAndSpaces = function(str) {
+            if (str) {
+                var str1 = str.replace(/\n/g, '<br>');
+                return str1.replace(/\s/g, '&nbsp;');
+            };
+            return str;
+        };
+
     }
 ]);

@@ -176,25 +176,16 @@
                             </a>
                         </span>
 
-
-                        <!--
                         <span>
-                            <a class="btn btn-primary customButtonWidth"
-                               ng-click="myAccountController.acceptSelectedRequests()">
-                                Accept Requests
+                            <a ng-class="enabledManageRequestsBulkButton() ? 'btn btn-primary customButtonWidth' :
+                                        'btn btn-primary customButtonWidth disabled'"
+                               ng-click="myAccountController.manageSelectedRequests()">
+                                Manage Requests
                             </a>
                         </span>
 
                         <span>
-                            <a class="btn btn-primary customButtonWidth"
-                               ng-click="myAccountController.declineSelectedRequests()">
-                                Decline Requests
-                            </a>
-                        </span>
-                        -->
-
-                        <span>
-                            <a ng-class="enabledBulkDownload() ? 'btn btn-primary customButtonWidth' :
+                            <a ng-class="enabledBulkDownloadButton() ? 'btn btn-primary customButtonWidth' :
                                         'btn btn-primary customButtonWidth disabled'"
                                ng-click="myAccountController.downloadSelectedTasks()">
                                 Download

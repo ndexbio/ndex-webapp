@@ -106,7 +106,8 @@ ndexApp.controller('myAccountController',
 
 
             myAccountController.numberOfNewTasksAndRequests = 0;
-            myAccountController.numberOfDownloadableTasks = 0;
+            myAccountController.numberOfReceivedRequests    = 0;
+            myAccountController.numberOfDownloadableTasks   = 0;
 
 
             myAccountController.currentTab = 'networks';
@@ -310,6 +311,9 @@ ndexApp.controller('myAccountController',
                                 (row['entity']['Status'] == 'completed')) {
                                 myAccountController.numberOfDownloadableTasks++;
                             };
+                            if (row['entity']['whatType'] == 'received') {
+                                myAccountController.numberOfReceivedRequests++;
+                            };
                         } else {
                             if (row['entity']['taskId']) {
                                 delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
@@ -317,6 +321,10 @@ ndexApp.controller('myAccountController',
                             if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
                                 (myAccountController.numberOfDownloadableTasks > 0)) {
                                 myAccountController.numberOfDownloadableTasks--;
+                            };
+                            if ((row['entity']['whatType'] == 'received') &&
+                                (myAccountController.numberOfReceivedRequests > 0)) {
+                                myAccountController.numberOfReceivedRequests--;
                             };
                         };
 
@@ -334,6 +342,9 @@ ndexApp.controller('myAccountController',
                                     (row['entity']['Status'] == 'completed')) {
                                     myAccountController.numberOfDownloadableTasks++;
                                 };
+                                if (row['entity']['whatType'] == 'received') {
+                                    myAccountController.numberOfReceivedRequests++;
+                                };
                             } else {
                                 if (row['entity']['taskId']) {
                                     delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
@@ -341,6 +352,10 @@ ndexApp.controller('myAccountController',
                                 if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
                                     (myAccountController.numberOfDownloadableTasks > 0)) {
                                     myAccountController.numberOfDownloadableTasks--;
+                                };
+                                if ((row['entity']['whatType'] == 'received') &&
+                                    (myAccountController.numberOfReceivedRequests > 0)) {
+                                    myAccountController.numberOfReceivedRequests--;
                                 };
                             };
                         });
@@ -476,7 +491,7 @@ ndexApp.controller('myAccountController',
                     anchor.setAttribute('id', myId);
                     anchor.username = ndexUtility.getUserCredentials()['userName'];
                     anchor.password = ndexUtility.getUserCredentials()['token'];
-                }
+                };
 
                 anchor.click();
                 anchor.remove();
@@ -492,11 +507,14 @@ ndexApp.controller('myAccountController',
                 for (i = 0; i < countSelectedRows; i++) {
                     var taskId = tasksToDownload[i].taskId;
                     setTimeout(
-                        $scope.getCredentialsForExportedNetworkDownload, i*200, taskId);
+                        $scope.getCredentialsForExportedNetworkDownload, i*500, taskId);
                 };
             };
 
-            $scope.enabledBulkDownload = function() {
+            $scope.enabledManageRequestsBulkButton = function() {
+                return myAccountController.numberOfReceivedRequests > 0;
+            };
+            $scope.enabledBulkDownloadButton = function() {
                 return myAccountController.numberOfDownloadableTasks > 0;
             };
 
@@ -1037,7 +1055,8 @@ ndexApp.controller('myAccountController',
                         {
                             var taskNotToMark =
                                 task.newReceived || (!task.newTask && !task.newSent) ||
-                                task.Status == 'queued' || task.Status == 'processing';
+                                task.Status == 'queued' || task.Status == 'processing' ||
+                                (task.newSent && (task.Status == 'processing'));
 
                             return taskNotToMark ? null :
                                 {
@@ -1124,7 +1143,7 @@ ndexApp.controller('myAccountController',
 
                                         $scope.isProcessing = false;
                                         $modalInstance.dismiss();
-                                    }, 1000);
+                                    }, 2000);
                                 };
                             });
                         }).catch(function (reason) {
@@ -1264,7 +1283,7 @@ ndexApp.controller('myAccountController',
 
                                         $scope.isProcessing = false;
                                         $modalInstance.dismiss();
-                                    }, 1000);
+                                    }, 2000);
                                 };
                             });
                         }).catch(function (reason) {
@@ -1356,14 +1375,145 @@ ndexApp.controller('myAccountController',
             };
 
 
+            function manageRequest(request, acceptRequests, message) {
 
-            myAccountController.acceptSelectedRequests = function() {
-                alert("accept selected requests here");
-                return;
+                var typeFromServer = request.typeFromServer.toLowerCase();
+
+                var recipientId = myAccountController.identifier;
+                var requestId   = request.taskId;
+                var action      = acceptRequests ? "accept" : "deny";
+
+                if (acceptRequests) {
+                    // request(s) accepted/approved
+
+                    if (typeFromServer == 'usernetworkaccess' || typeFromServer == "groupnetworkaccess") {
+
+                        var receivedRequest =
+                            _.find($scope.myAccountController.pendingRequests, {'externalId': requestId});
+
+                        var networkId     = receivedRequest.destinationUUID;
+                        var userOrGroupId = receivedRequest.sourceUUID;
+                        var permission    = receivedRequest.permission;
+
+                        var type = (typeFromServer == 'usernetworkaccess') ? 'user' : 'group';
+
+                        return ndexService.updateNetworkPermissionNoHandlersV2(networkId, type, userOrGroupId, permission).then(
+                            function (data) {
+                                return ndexService.acceptOrDenyPermissionRequestNoHandlersV2(recipientId,
+                                    requestId, action, message);
+
+                        }).catch(
+                            function (data) {
+                                return ndexService.acceptOrDenyPermissionRequestNoHandlersV2(recipientId,
+                                    requestId, action, message);
+                            });
+
+                    } else if (typeFromServer == 'joingroup') {
+
+                        return ndexService.acceptOrDenyMembershipRequestNoHandlersV2(recipientId,
+                            requestId, action, message);
+                    };
+
+                } else {
+                    // request(s) declined/denied
+
+                    if (typeFromServer == 'usernetworkaccess' || typeFromServer == "groupnetworkaccess") {
+
+                       return ndexService.acceptOrDenyPermissionRequestNoHandlersV2(recipientId,
+                           requestId, action, message);
+
+                    } else if (typeFromServer == 'joingroup') {
+
+                        return ndexService.acceptOrDenyMembershipRequestNoHandlersV2(recipientId,
+                            requestId, action, message);
+                    };
+
+                };
             };
 
-            myAccountController.declineSelectedRequests = function() {
-                alert("decline selected requests here");
+            myAccountController.manageSelectedRequests = function() {
+
+                var requestsToManage = _.filter($scope.taskGridApi.selection.getSelectedRows(), {whatType: 'received'});
+                var countSelectedRequests = requestsToManage.length;
+
+                $rootScope.progress  = null;
+                $rootScope.progress2 = null;
+                $rootScope.errors    = null;
+
+                var managedCount = 0;
+
+                var cancelHit = false;
+                var errorFromServer = false;
+
+                var title = "Respond to " + countSelectedRequests + " Selected "  +
+                    (countSelectedRequests > 1 ? "Requests"  : "Request");
+
+                var message = null;
+
+                ndexNavigation.openManageBulkRequestsModal(title, message, "Accept", "Decline", "Cancel",
+                    function ($modalInstance, acceptRequests, responseMessage) {
+
+                        var progressLabel = acceptRequests ? "Accepted: " : "Declined: ";
+
+                        $scope.isProcessing = true;
+
+                        sequence(requestsToManage, function (request) {
+                            if (cancelHit || errorFromServer) {
+                                return;
+                            };
+
+                            return manageRequest(request, acceptRequests, responseMessage).then(function (info) {
+                                managedCount++;
+
+                                $rootScope.progress = progressLabel + managedCount + " of " + countSelectedRequests + " selected requests";
+
+                                if ((managedCount == countSelectedRequests) || !$scope.isProcessing) {
+                                    myAccountController.checkAndRefreshMyTaskAndNotification();
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+
+                                        $modalInstance.dismiss();
+                                    }, 2000);
+                                };
+                            });
+
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to process request';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ": " +  reason.data.message : ".";
+
+                            myAccountController.checkAndRefreshMyTaskAndNotification();
+                        });
+
+                    },
+
+                    function ($modalInstance) {
+
+                        if (managedCount == 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+
+                                $modalInstance.dismiss();
+                            }, 2000);
+                        };
+                    });
+
                 return;
             };
 

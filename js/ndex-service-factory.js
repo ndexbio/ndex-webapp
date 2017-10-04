@@ -647,6 +647,8 @@ ndexServiceApp.factory('ndexService',
 
                 if (!message) {
                     message = "";
+                } else {
+                    message = encodeURIComponent(message);
                 };
 
                 var url =
@@ -657,12 +659,32 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.acceptOrDenyPermissionRequestNoHandlersV2 = function (recipientId, requestId, action, message) {
+                // Server API: Accept or Deny a permission request
+                // PUT /user/{recipient_id}/permissionrequest/{requestid}?action={accept|deny}&message={message}
+
+                if (!message) {
+                    message = "";
+                } else {
+                    message = encodeURIComponent(message);
+                };
+
+                var url =
+                    "/user/" + recipientId + "/permissionrequest/" + requestId +
+                    "?action=" + action + "&message=" + message;
+
+                var config = ndexConfigs.getPutConfigV2(url, null);
+                return $http(config);
+            };
+
             factory.acceptOrDenyMembershipRequestV2 = function (recipientId, requestId, action, message, successHandler, errorHandler) {
                 // Server API: Accept or Deny a membership request
                 // PUT /user/{recipient_id}/membershiprequest/{requestid}?action={accept|deny}&message={message}
 
                 if (!message) {
                     message = "";
+                } else {
+                    message = encodeURIComponent(message);
                 };
 
                 var url =
@@ -671,6 +693,25 @@ ndexServiceApp.factory('ndexService',
 
                 var config = ndexConfigs.getPutConfigV2(url, null);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.acceptOrDenyMembershipRequestNoHandlersV2 = function (recipientId, requestId, action, message) {
+                // Server API: Accept or Deny a membership request
+                // PUT /user/{recipient_id}/membershiprequest/{requestid}?action={accept|deny}&message={message}
+
+                if (!message) {
+                    message = "";
+                } else {
+                    message = encodeURIComponent(message);
+                };
+
+
+                var url =
+                    "/user/" + recipientId + "/membershiprequest/" + requestId +
+                    "?action=" + action + "&message=" + message;
+
+                var config = ndexConfigs.getPutConfigV2(url, null);
+                return $http(config);
             };
 
             /*
@@ -954,6 +995,23 @@ ndexServiceApp.factory('ndexService',
                 var config = ndexConfigs.getPutConfigV2(url, null);
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+            factory.updateNetworkPermissionNoHandlersV2 = function (networkId, type, resourceId, permission) {
+                // Server API: Update Network Permission
+                // PUT /network/{networkid}/permission?(userid={uuid}|groupid={uuid})&permission={permission}
+
+                var url = "/network/" + networkId + "/permission?";
+                if (type == 'user') {
+                    url = url + 'userid=';
+                } else if (type == 'group') {
+                    url = url + 'groupid=';
+                }
+                url = url + resourceId + '&permission=' + permission;
+
+                var config = ndexConfigs.getPutConfigV2(url, null);
+
+                return $http(config);
             };
 
             factory.deleteNetworkPermissionV2 = function (networkId, type, resourceId, successHandler, errorHandler) {
