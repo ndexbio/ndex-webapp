@@ -3,7 +3,7 @@
 var ndexApp = angular.module('ndexApp',
     ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp',//'ngDialog',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
-     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ngIdle', 'ngclipboard', 'textAngular']);
+     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ui.grid.pagination', 'ngIdle', 'ngclipboard', 'textAngular']);
 //'ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.resizeColumns'
 //var net1, net2;
 var cn, csn;
@@ -192,11 +192,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
  */
 
 var checkIfUserHasAccessToTheClickedNetwork =
-    function ($q, $location, $route, ndexUtility, ndexService, ndexNavigation, logInService, $rootScope) {
+    function ($q, $location, $route, ndexUtility, ndexService, ndexNavigation, logInService, $rootScope, sharedProperties) {
 
-     var loggedInUser = ndexUtility.getUserCredentials();
-     var loggedInUserId =
-        (loggedInUser && loggedInUser['externalId']) ? loggedInUser['externalId'] : null;
+     //var loggedInUser = ndexUtility.getUserCredentials();
+     var loggedInUserId = sharedProperties.getCurrentUserId();
+      //  (loggedInUser && loggedInUser['externalId']) ? loggedInUser['externalId'] : null;
      var networkUUID =  $route.current.params.identifier;
 
      var accessKey = ($route.current.params && $route.current.params['accesskey']) ?
@@ -276,8 +276,7 @@ var checkIfUserHasAccessToTheClickedNetwork =
 
 //Idle
 ndexApp.config(["IdleProvider", function(IdleProvider) {
-    var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
-    IdleProvider.idle( config.idleTime );
+    IdleProvider.idle( window.ndexSettings.idleTime );
 }]);
 
 ndexApp.run(function(Idle){

@@ -14,9 +14,9 @@ ndexApp.controller('uploadController',
             var uploadController = $scope.uploadController;
 
             uploadController.displayedUser = {};
-            var userUUID = ndexUtility.getLoggedInUserExternalId();
+            var userUUID = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
-            var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
+            var config = window.ndexSettings;
             uploadController.uploadSizeLimit = config.uploadSizeLimit;
             uploadController.hasSizeLimit = false;
             if( uploadController.uploadSizeLimit )
@@ -110,7 +110,7 @@ ndexApp.controller('uploadController',
                 url: ndexService.getNetworkUploadURI(),
                 alias: "CXNetworkStream",
                 headers: {
-                    Authorization: "Basic " + ndexConfigs.getEncodedUser()
+                    Authorization: ndexUtility.getAuthHeaderValue()
                 }
             });
 

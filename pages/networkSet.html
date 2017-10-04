@@ -63,12 +63,8 @@
                     <hr>
                     <h5><strong>Actions:</strong></h5>
 
-                    <span>
-                        <a class="btn btn-primary customButtonWidth"
-                           network-set-controller='networkSetController'
-                           trigger-edit-network-set-modal="Edit Network Set">
-                        </a>
-                    </span>
+                    <trigger-edit-network-set-modal network-set-controller='networkSetController'>
+                    </trigger-edit-network-set-modal>
 
                     <span>
                         <a class="btn btn-primary customButtonWidth"
@@ -92,11 +88,15 @@
 
 
                 <span ng-if="!networkSetController.isSetOwner">
-                    <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0">
-                        <show-network-sets-modal my-account-controller='networkSetController'>
-                             Add To Set
-                        </show-network-sets-modal>
-                    </a>
+
+                    <show-network-sets-modal
+                        my-account-controller='networkSetController'
+                        my-class=
+                                "{{networkSetController.networkTableRowsSelected == 0 ?
+                                'btn btn-primary customButtonWidth disabled' :
+                                'btn btn-primary customButtonWidth'}}">
+                    </show-network-sets-modal>
+
                 </span>
 
                 <span ng-if="networkSetController.isSetOwner">

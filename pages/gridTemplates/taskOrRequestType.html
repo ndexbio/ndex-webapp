@@ -1,0 +1,29 @@
+<div id="taskOrRequestTypeTemplate" class="ui-grid-cell-contents text-left text-info">
+
+
+    <span ng-if="row.entity.Status == 'queued' || row.entity.Status == 'processing'">
+
+        <span ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+            {'font-weight':'bold', 'font-style':'italic'} : {'font-weight':'normal', 'font-style':'italic'}">
+                {{row.entity.Type}}
+        </span>
+
+    </span>
+
+    <span ng-if="row.entity.Status == 'completed' || row.entity.Status == 'accepted' || row.entity.Status == 'declined'">
+
+        <span ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+            {'font-weight':'bold'} : {'font-weight':'normal'}">
+                {{row.entity.Type}}
+        </span>
+
+    </span>
+
+    <span ng-if="row.entity.Status == 'pending'">
+        <span ng-style="{'font-weight':'bold', 'font-style':'italic'}">
+            {{row.entity.Type}}
+        </span>
+    </span>
+
+
+</div>

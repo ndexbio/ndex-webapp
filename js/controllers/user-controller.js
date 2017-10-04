@@ -15,7 +15,7 @@ ndexApp.controller('userController',
 
             $scope.userController = {};
             var userController = $scope.userController;
-            userController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            userController.isLoggedInUser = (window.currentNdexUser != null);
             userController.identifier = identifier;
             userController.loggedInIdentifier = sharedProperties.getCurrentUserId();
             userController.displayedUser = {};
@@ -258,7 +258,7 @@ ndexApp.controller('userController',
                     return UUIDs;
                 }
 
-                var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
+          //      var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
 
                 _.forEach(selectedNetworksRows, function(selectedNetworkRow) {
 
@@ -436,8 +436,10 @@ ndexApp.controller('userController',
             {
                 // get all network sets owned by logged in user who came to this page
                 if (userController.isLoggedInUser) {
+                    var offset = undefined;
+                    var limit  = undefined;
 
-                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.loggedInIdentifier,
+                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.loggedInIdentifier, offset, limit,
 
                         function (networkSets) {
                             userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
@@ -450,9 +452,12 @@ ndexApp.controller('userController',
 
             userController.getAllNetworkSetsOwnedByUser = function(successHandler, errorHandler)
             {
+                var offset = undefined;
+                var limit  = undefined;
+
                 if (userController.isLoggedInUser && (identifier != userController.loggedInIdentifier)) {
 
-                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.loggedInIdentifier,
+                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.loggedInIdentifier, offset, limit,
 
                         function (networkSets) {
                             userController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
@@ -465,7 +470,7 @@ ndexApp.controller('userController',
 
                 } else {
 
-                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
+                    ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier, offset, limit,
                         function (networkSets) {
                             userController.networkSetsOwnerOfPage = _.orderBy(networkSets, ['modificationTime'], ['desc']);
                         },
@@ -537,7 +542,7 @@ ndexApp.controller('userController',
                         populateNetworkTable();
 
                         var directOnly = false;
-                        var loggedInUserId = ndexUtility.getLoggedInUserExternalId();
+                        var loggedInUserId = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
                         // get IDs of all networks shown on User page
                         getNetworksUUIDs(networks);
@@ -677,10 +682,15 @@ ndexApp.controller('userController',
                 return "#/network/" + networkUUID;
             };
 
-            $scope.getNetworkDownloadLink = function(rowEntity) {
+ /*           $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(userController, rowEntity);
-            };
+            }; */
 
+            $scope.downloadNetwork= function(rowEntity) {
+
+                uiMisc.downloadCXNetwork(rowEntity.externalId);
+
+            }
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)
             {
@@ -722,7 +732,10 @@ ndexApp.controller('userController',
                         // get networks
                         userController.getUserShowcaseNetworks(
                             function() {
-                                ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier,
+                                var offset = undefined;
+                                var limit  = undefined;
+
+                                ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier, offset, limit,
 
                                     function (networkSets) {
                                         userController.networkSetsOwnerOfPage = _.orderBy(networkSets, ['modificationTime'], ['desc']);

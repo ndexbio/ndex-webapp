@@ -1,0 +1,118 @@
+<div id="taskOrRequestNewTemplate" class="ui-grid-cell-contents">
+
+    <span ng-if="(row.entity.typeFromServer == 'usernetworkaccess') ||
+        (row.entity.typeFromServer == 'groupnetworkaccess') || (row.entity.typeFromServer == 'joingroup')">
+
+        <a ng-if="row.entity.Status == 'completed' || row.entity.Status == 'declined' || row.entity.Status == 'accepted'">
+
+            <span ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+                {'font-weight':'bold',   'font-style':'normal', 'color':'#428bca'} :
+                {'font-weight':'normal', 'font-style':'normal', 'color':'#428bca'}">
+
+                <sent-request
+                        ng-if="row.entity.whatType == 'sent'"
+                        class="wrapLongLine"
+                        my-account-controller="grid.appScope.myAccountController"
+                        request-id='row.entity.taskId'
+                        class="wrapLongLine"
+                        ng-click="grid.appScope.markAsRead(row.entity)"
+                        title="{{row.entity.Description}}">
+                    {{row.entity.Description}}
+                </sent-request>
+
+                <received-request
+                        ng-if="row.entity.whatType == 'received'"
+                        class="wrapLongLine"
+                        my-account-controller="grid.appScope.myAccountController"
+                        request-id='row.entity.taskId'
+                        class="wrapLongLine"
+                        ng-click="grid.appScope.markAsRead(row.entity)"
+                        title="{{row.entity.Description}}">
+                    {{row.entity.Description}}
+                </received-request>
+            </span>
+        </a>
+
+        <a ng-if="row.entity.Status == 'pending'">
+
+            <span ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+                {'font-weight':'bold',   'font-style':'italic', 'color':'#428bca'} :
+                {'font-weight':'normal', 'font-style':'italic', 'color':'#428bca'}">
+
+                <sent-request
+                        ng-if="row.entity.whatType == 'sent'"
+                        class="wrapLongLine"
+                        my-account-controller="grid.appScope.myAccountController"
+                        request-id='row.entity.taskId'
+                        class="wrapLongLine"
+                        ng-click="grid.appScope.markAsRead(row.entity)"
+                        title="{{row.entity.Description}}">
+                    {{row.entity.Description}}
+                </sent-request>
+
+                <received-request
+                        ng-if="row.entity.whatType == 'received'"
+                        class="wrapLongLine"
+                        my-account-controller="grid.appScope.myAccountController"
+                        request-id='row.entity.taskId'
+                        class="wrapLongLine"
+                        ng-click="grid.appScope.markAsRead(row.entity)"
+                        title="{{row.entity.Description}}">
+                    {{row.entity.Description}}
+                </received-request>
+            </span>
+        </a>
+    </span>
+
+
+
+
+    <span ng-if="(row.entity.typeFromServer == 'export_network_to_file')">
+
+        <span ng-if="row.entity.Status != 'completed'">
+            <span ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+                {'font-weight':'bold',   'font-style':'italic', 'color':'#428bca'} :
+                {'font-weight':'normal', 'font-style':'italic', 'color':'#428bca'}">
+                    {{row.entity.Description}}
+            </span>
+        </span>
+
+        <a ng-if="row.entity.Status == 'completed'"
+            id="exportedNetworkDownoadLinkId"
+
+           title = "{{row.entity.Description}}"
+           ng-click="grid.appScope.getCredentialsForExportedNetworkDownload(row.entity.taskId); grid.appScope.markAsRead(row.entity)"
+           ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+                {'font-weight':'bold',   'color':'#428bca'} :{'font-weight':'normal', 'color':'#428bca'}">
+
+                    {{row.entity.Description}}
+        </a>
+    </span>
+
+<!--
+        <sent-request ndex-data='request' class="wrapLongLine" user-controller="myAccountController"
+                      typeFromServer
+                   ng-style="">
+            <span class='text-info'>{{request.permission | permissionToLabel}}</span> access to
+            <span class='text-success'>{{request.destinationName}}</span> for
+            <span class='text-success'>{{request.sourceName}}</span>
+            <br>
+            <em class='text-muted'
+            ng-class='{"text-danger":request.response=="DECLINED", "text-success":request.response=="ACCEPTED"}'>
+                {{request.response | requestStatusToLabel}}
+            </em>
+        </sent-request>
+
+-->
+
+
+<!--
+        <span ng-style="row.entity.new ?
+            {'font-weight':'bold',   'color':'#428bca'} :
+            {'font-weight':'normal', 'color':'#428bca'}">
+                {{row.entity.Description}}
+        </span>
+-->
+
+
+</div>

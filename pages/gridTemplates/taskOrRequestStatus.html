@@ -1,0 +1,47 @@
+<div id="taskOrRequestStatusTemplate" class="ui-grid-cell-contents text-left text-muted">
+
+
+    <span ng-if="(row.entity.Status == 'queued') || (row.entity.Status == 'processing')">
+        <span ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+            {'font-weight':'bold', 'font-style':'italic'} : {'font-weight':'normal', 'font-style':'italic'}">
+                {{row.entity.Status}}
+        </span>
+    </span>
+
+    <span ng-if="(row.entity.Status == 'completed') || (row.entity.Status == 'failed')">
+        <span ng-style="(row.entity.newTask || row.entity.newSent || row.entity.newReceived) ?
+            {'font-weight':'bold', 'color':'green'} : {'font-weight':'normal', 'color':'green'}">
+                {{row.entity.Status}}
+        </span>
+    </span>
+
+    <span ng-if="row.entity.Status == 'declined' || row.entity.Status == 'accepted'">
+        <span ng-style="row.entity.newSent ?
+            {'font-weight':'bold', 'color':'green'} : {'font-weight':'normal', 'color':'green'}">
+                {{row.entity.Status}}
+        </span>
+    </span>
+
+    <span ng-if="row.entity.Status == 'pending'">
+        <span ng-style="{'font-weight':'bold', 'color':'green', 'font-style':'italic'}">
+            {{row.entity.Status}}
+        </span>
+    </span>
+
+
+    <!--
+    <span ng-if="row.entity.Status == 'accepted'">
+        <span ng-style="row.entity.newSent ?
+            {'font-weight':'bold', 'color':'green', 'font-style':'italic'} : {'font-weight':'normal', 'color':'green'}">
+                {{row.entity.Status}}
+        </span>
+    </span>
+-->
+
+</div>
+
+
+
+<!--
+&& (row.entity.Status == 'accepted' || row.entity.Status == 'declined')
+-->

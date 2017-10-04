@@ -4,8 +4,8 @@
     var uiServiceApp = angular.module('uiServiceApp', []);
 
     uiServiceApp.factory('ndexNavigation',
-        ['sharedProperties', '$location', '$modal',
-            function (sharedProperties, $location, $modal) {
+        ['sharedProperties', '$location', '$modal', '$rootScope',
+            function (sharedProperties, $location, $modal, $rootScope) {
                 var factory = {};
 
                 /*-----------------------------------------------------------------------*
@@ -30,29 +30,59 @@
                     $location.path("/user/" + userId);
                 };
 
-                factory.openConfirmationModal = function(title, message, confirmLabel, cancelLabel, confirmHandler, cancelHandler){
+                factory.openConfirmationModal = function(title, message, confirmLabel, cancelLabel,
+                                                         dismissModal, confirmHandler, cancelHandler){
+
                     ////console.log("attempting to open confirmationModal");
-                    var ConfirmCtrl = function($scope, $modalInstance) {
-                        $scope.input = {};
+
+                    var ConfirmCtrl = function($scope, $modalInstance, $rootScope) {
+
                         $scope.title = title;
                         $scope.message = message;
                         $scope.cancelLabel = cancelLabel ? cancelLabel : "Cancel";
                         $scope.confirmLabel = confirmLabel ? confirmLabel : "Delete";
+
+                        $scope.progress  = $rootScope.progress;
+                        $scope.progress2 = $rootScope.progress2;
+                        $scope.errors    = $rootScope.errors;
+                        $scope.confirmButtonDisabled = $rootScope.confirmButtonDisabled;
+
                         $scope.confirm = function(){
-                            $modalInstance.dismiss();
-                            confirmHandler();
+                            if (dismissModal) {
+                                $modalInstance.dismiss();
+                                confirmHandler();
+                            } else {
+                                confirmHandler($modalInstance);
+                            };
                         };
 
                         $scope.cancel = function(){
-                            $modalInstance.dismiss();
-                            cancelHandler();
+                            if (dismissModal) {
+                                $modalInstance.dismiss();
+                                cancelHandler();
+                            } else {
+                                cancelHandler($modalInstance);
+                            };
                         };
+
+                        $rootScope.$watch('progress', function(newValue, oldValue) {
+                            $scope.progress = newValue;
+                        });
+                        $rootScope.$watch('progress2', function(newValue, oldValue) {
+                            $scope.progress2 = newValue;
+                        });
+                        $rootScope.$watch('errors', function(newValue, oldValue) {
+                            $scope.errors = newValue;
+                        });
+                        $rootScope.$watch('confirmButtonDisabled', function(newValue, oldValue) {
+                            $scope.confirmButtonDisabled = newValue;
+                        });
                     };
 
                     $modal.open({
                         templateUrl: 'pages/confirmationModal.html',
                         controller: ConfirmCtrl
-                    })
+                    });
                 };
 
                 factory.genericInfoModal = function(title, message)
@@ -70,6 +100,54 @@
                                 $modalInstance.dismiss();
                             };
                         }
+                    });
+                };
+
+                factory.openManageBulkRequestsModal = function(title, message, acceptLabel, declineLabel, cancelLabel,
+                                                         manageHandler, cancelHandler) {
+                    var ConfirmCtrl = function($scope, $modalInstance, $rootScope, uiMisc) {
+
+                        $scope.title = title;
+                        $scope.message = message;
+                        $scope.responseMessage = null;
+
+                        $scope.acceptLabel  = acceptLabel  ? acceptLabel  : "Accept";
+                        $scope.declineLabel = declineLabel ? declineLabel : "Decline";
+                        $scope.cancelLabel  = cancelLabel  ? cancelLabel  : "Cancel";
+
+                        $scope.progress  = $rootScope.progress;
+                        $scope.progress2 = $rootScope.progress2;
+                        $scope.errors    = $rootScope.errors;
+
+
+                        $scope.accept = function() {
+                            var acceptRequests = true;
+                            var message = uiMisc.replaceNewLinesAndSpaces($scope.responseMessage);
+                            manageHandler($modalInstance, acceptRequests, message);
+                        };
+                        $scope.decline = function() {
+                            acceptRequests = false;
+                            message = uiMisc.replaceNewLinesAndSpaces($scope.responseMessage);
+                            manageHandler($modalInstance, acceptRequests, message);
+                        };
+                        $scope.cancel = function(){
+                            cancelHandler($modalInstance);
+                        };
+
+                        $rootScope.$watch('progress', function(newValue, oldValue) {
+                            $scope.progress = newValue;
+                        });
+                        $rootScope.$watch('progress2', function(newValue, oldValue) {
+                            $scope.progress2 = newValue;
+                        });
+                        $rootScope.$watch('errors', function(newValue, oldValue) {
+                            $scope.errors = newValue;
+                        });
+                    };
+
+                    $modal.open({
+                        templateUrl: 'pages/receivedBulkRequests.html',
+                        controller: ConfirmCtrl
                     });
                 };
 
@@ -131,8 +209,10 @@
     uiServiceApp.directive('triggerCreateGroupModal', function() {
         return {
             scope: {},
-            restrict: 'A',
-            templateUrl: 'pages/directives/createGroupModal.html',
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Create Group</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
                 $scope.group = {};
@@ -140,7 +220,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'modal.html',
+                        templateUrl: 'pages/directives/createGroupModal.html',
                         scope: $scope
                     });
                 };
@@ -199,21 +279,22 @@
                 myAccountController: '=',
                 signalNewSetCreation: '='
             },
-            restrict: 'A',
-            templateUrl: 'pages/directives/createNetworkSetModal.html',
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Create Network Set</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService, $rootScope, $route) {
                 var modalInstance;
 
-                //$scope.networkSet = {};
-                $scope.text = $attrs.triggerCreateNetworkSetModal;
-
                 $scope.openMe = function() {
+
                     $scope.networkSet = {};
                     $scope.networkSet['properties'] = {};
                     $scope.networkSet['properties']['reference'] = "";
                     $scope.title = 'Create Network Set';
+
                     modalInstance = $modal.open({
-                        templateUrl: 'modalx.html',
+                        templateUrl: 'pages/directives/createNetworkSetModal.html',
                         scope: $scope
                     });
                 };
@@ -248,6 +329,8 @@
                                     // success handler
                                     function(newNetworkSet) {
 
+                                        // in case of success, returns the newly created set
+
                                         if ($scope.signalNewSetCreation) {
                                             $rootScope.$emit('NEW_NETWORK_SET_CREATED');
                                         };
@@ -279,24 +362,24 @@
                             };
                             $scope.isProcessing = false;
                         });
-
                 };
             }
-        }
+        };
     });
-
 
     uiServiceApp.directive('triggerEditNetworkSetModal', function() {
         return {
             scope: {
                 networkSetController: '=',
             },
-            restrict: 'A',
-            templateUrl: 'pages/directives/editNetworkSetModal.html',
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Edit Network Set</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService) {
                 var modalInstance;
 
-                $scope.text  = $attrs.triggerEditNetworkSetModal;
+                //$scope.text  = $attrs.triggerEditNetworkSetModal;
 
                 var networkSetId = $scope.networkSetController.identifier;
 
@@ -317,7 +400,7 @@
                     };
 
                     modalInstance = $modal.open({
-                        templateUrl: 'edit-network-set.html',
+                        templateUrl: 'pages/directives/editNetworkSetModal.html',
                         scope: $scope
                     });
                 };
@@ -483,9 +566,9 @@
             scope: {
                 ndexData: '='
             },
-            restrict: 'E',
-            templateUrl: 'pages/directives/editUserModal.html',
-            transclude: true,
+            restrict: 'AE',
+            template: '<button class="dropdown-btn" ng-click="openMe()">Edit Personal Info</span>',
+
             controller: function($scope, $modal, $location, ndexService, $route) {
 
                 var modalInstance;
@@ -493,7 +576,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'edit-user-modal.html',
+                        templateUrl: 'pages/directives/editUserModal.html',
                         scope: $scope
                     });
                 };
@@ -554,14 +637,15 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/editGroupModal.html',
-            transclude: true,
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Edit Group Profile</button>',
+
             controller: function($scope, $attrs, $modal, $location, ndexService, $route) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'edit-group-modal.html',
+                        templateUrl: 'pages/directives/editGroupModal.html',
                         scope: $scope
                     });
                 };
@@ -615,11 +699,12 @@
     uiServiceApp.directive('showNetworkSetsModal', function() {
         return {
             scope: {
-                myAccountController: '='
+                myAccountController: '=',
+                myClass: '@'
             },
-            restrict: 'E',
-            templateUrl: 'pages/directives/showNetworkSetsModal.html',
-            transclude: true,
+            restrict: 'AE',
+            template: "<button class='{{myClass}}' ng-click='openMe()'>Add To My Sets</button>",
+
             controller: function($scope, $attrs, $modal, $location, ndexService, $route, $rootScope) {
                 var modalInstance;
                 $scope.errors = null;
@@ -631,7 +716,7 @@
                     initializeListOfCollections();
 
                     modalInstance = $modal.open({
-                        templateUrl: 'show-network-sets-modal.html',
+                        templateUrl: 'pages/directives/showNetworkSetsModal.html',
                         scope: $scope
                     });
                 };
@@ -836,10 +921,9 @@
                                 });
                         } else {
                             $scope.userSearchResults = [];
-                        }
-
+                        };
                     }
-                }, true)
+                }, true);
 
                 // ndexData is undefined at first pass. This seems to be a common problem
                 // most likey we aren't doing something the angular way, quick fix below
@@ -886,8 +970,8 @@
     uiServiceApp.directive('sentRequest', function() {
         return {
             scope: {
-                ndexData:'=',
-                userController:'='
+                requestId:'=',
+                myAccountController:'='
             },
             restrict: 'E',
             transclude: true,
@@ -897,6 +981,10 @@
                 $scope.errors = null;
 
                 $scope.openMe = function() {
+
+                    $scope.request =
+                        _.find($scope.myAccountController.sentRequests, {'externalId':$scope.requestId});
+
                     modalInstance = $modal.open({
                         templateUrl: 'sent-request-modal.html',
                         scope: $scope,
@@ -905,28 +993,55 @@
                 };
 
                 $scope.close = function() {
+                    delete $scope.request.error;
+                    delete $scope.request;
                     modalInstance.close();
                 }
 
                 $scope.delete = function() {
-                    ndexService.deleteRequestV2($scope.request,
-                        function(data) {
-                            modalInstance.close();
 
-                            var userController = $scope.userController;
-                            userController.refreshRequests();
-                        },
-                        function(error){
-                            console.log("unable to delete request");
-                        })
-                }
+                    var request = {
+                        "requesterId": $scope.request.requesterId,
+                        "externalId":  $scope.request.externalId
+                    };
 
-                $scope.$watch('ndexData', function(value) {
-                    $scope.request = {};
-                    for(var key in value) {
-                        $scope.request[key] = value[key];
-                    }
-                });
+                    var requestType = $scope.request.requestType.toLowerCase();
+
+                    if (requestType == "usernetworkaccess" || requestType == "groupnetworkaccess") {
+
+                        ndexService.deletePermissionRequestV2(request,
+                            function (data) {
+                                // remove request from the table and sent requests list
+                                _.remove($scope.myAccountController.sentRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+
+                                modalInstance.close();
+                            },
+                            function (error) {
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                };
+                            });
+
+                    } else if (requestType == "joingroup") {
+
+                        ndexService.deleteMembershipRequestV2(request,
+                            function(data) {
+                                // remove request from the table and sent requests list
+                                _.remove($scope.myAccountController.sentRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+
+                                modalInstance.close();
+                            },
+                            function(error){
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                };
+                            });
+                    };
+                };
             }
         }
     });
@@ -934,18 +1049,24 @@
     // modal to view and act on received request
     uiServiceApp.directive('receivedRequest', function() {
         return {
+
             scope: {
-                ndexData:'=',
-                userController:'='
+                requestId:'=',
+                myAccountController:'='
             },
+
             restrict: 'E',
             transclude: true,
             templateUrl: 'pages/directives/receivedRequest.html',
-            controller: function($scope, $modal, $route, ndexService) {
+            controller: function($scope, $modal, $route, ndexService, uiMisc) {
                 var modalInstance;
                 $scope.errors = null;
 
                 $scope.openMe = function() {
+
+                    $scope.request = _.find($scope.myAccountController.pendingRequests,
+                        {'externalId':$scope.requestId});
+
                     modalInstance = $modal.open({
                         templateUrl: 'received-request-modal.html',
                         scope: $scope,
@@ -954,36 +1075,46 @@
                 };
 
                 $scope.close = function() {
-                    for(var key in $scope.ndexData) {
-                        $scope.request[key] = $scope.ndexData[key];
-                    }
                     modalInstance.close();
                     delete $scope.request.error;
                 };
 
                 $scope.accept = function() {
 
-                    var type = ($scope.request.requestType.toLowerCase() == "usernetworkaccess") ? "user" : "group";
+                    var type = $scope.request.requestType.toLowerCase();
+                    var networkId     = $scope.request.destinationUUID;
+                    var userOrGroupId = $scope.request.sourceUUID;
 
-                    if (type == 'user') {
+                    var permission = $scope.request.permission;
 
-                        var networkId     = $scope.request.destinationUUID;
-                        var userOrGroupId = $scope.request.sourceUUID;
+                    var recipientId = $scope.myAccountController.identifier;
+                    var requestId = $scope.request.externalId;
+                    var action = "accept";
 
-                        var permission = $scope.request.permission
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.responseMessage);
+
+                    if (type == 'usernetworkaccess' || type == 'groupnetworkaccess') {
+
+                        type = (type == 'usernetworkaccess') ? 'user' : 'group';
 
                         ndexService.updateNetworkPermissionV2(networkId, type, userOrGroupId, permission,
                             function (data) {
 
-                                var recipientId = $scope.userController.identifier;
-                                var requestId = $scope.request.externalId;
-                                var action = "accept";
-                                var message = $scope.request.responseMessage;
-
                                 ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                                     function (data) {
+
+                                        var request =
+                                            _.find($scope.myAccountController.tasksAndRequestsGridOptions.data, {'taskId': $scope.requestId});
+
+                                        if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                            $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                        };
+
+                                        _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                        _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                            {'taskId': $scope.request.externalId});
+
                                         modalInstance.close();
-                                        $scope.userController.refreshRequests();
                                     },
                                     function (error) {
                                         console.log("unable to accept network permission request");
@@ -995,54 +1126,58 @@
                                 }
                             });
 
-                    } else {
+                    } else if (type == 'joingroup') {
 
-                        var groupId = $scope.request.destinationUUID;
-                        var requesterId = $scope.request.requesterId;
-                        var permission = $scope.request.permission;
+                        ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
+                            function (data) {
+                                var request =
+                                    _.find($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                        {'taskId': $scope.requestId});
 
-                        ndexService.addOrUpdateGroupMemberV2(groupId, requesterId, permission,
-                            function(success) {
+                                if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                    $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                };
 
-                                var recipientId = $scope.userController.identifier;
-                                var requestId = $scope.request.externalId;
-                                var action = "accept";
-                                var message = $scope.request.responseMessage;
-
-                                ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
-                                    function (data) {
-                                        modalInstance.close();
-                                        $scope.userController.refreshRequests();
-                                    },
-                                    function (error) {
-                                        if (error && error.message) {
-                                            $scope.request.error = error.message;
-                                        }
-                                    });
+                                _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+                                modalInstance.close();
                             },
-                            function(error){
+                            function (error) {
                                 if (error && error.message) {
                                     $scope.request.error = error.message;
                                 }
                             });
-                    }
+                    };
+
                 };
 
                 $scope.decline = function() {
 
-                    var type = ($scope.request.requestType.toLowerCase() == "usernetworkaccess") ? "user" : "group";
+                    var type = $scope.request.requestType.toLowerCase();
 
-                    if (type == 'user') {
+                    var recipientId = $scope.myAccountController.identifier;
+                    var requestId = $scope.request.externalId;
+                    var action = "deny";
 
-                        var recipientId = $scope.userController.identifier;
-                        var requestId   = $scope.request.externalId;
-                        var action      = "deny";
-                        var message     = $scope.request.responseMessage;
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.responseMessage);
+
+                    if (type == 'usernetworkaccess' || type == 'groupnetworkaccess') {
 
                         ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
                             function (data) {
+                                var request =
+                                    _.find($scope.myAccountController.tasksAndRequestsGridOptions.data, {'taskId': $scope.requestId});
+
+                                if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                    $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                };
+
+                                _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+
                                 modalInstance.close();
-                                $scope.userController.refreshRequests();
                             },
                             function (error) {
                                 if (error && error.message) {
@@ -1050,45 +1185,30 @@
                                 }
                             });
 
-                    } else {
+                    } else if (type == 'joingroup') {
 
-                        var recipientId = $scope.userController.identifier;
-                        var requestId = $scope.request.externalId;
-                        var action = "deny";
-                        var message = $scope.request.responseMessage;
+                        ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
+                            function (data) {
+                                var request =
+                                    _.find($scope.myAccountController.tasksAndRequestsGridOptions.data, {'taskId': $scope.requestId});
 
-                        if ($scope.request.requestType.toLowerCase() == "groupnetworkaccess") {
-                            ndexService.acceptOrDenyPermissionRequestV2(recipientId, requestId, action, message,
-                                function (data) {
-                                    modalInstance.close();
-                                    $scope.userController.refreshRequests();
-                                },
-                                function (error) {
-                                    if (error && error.message) {
-                                        $scope.request.error = error.message;
-                                    }
-                                });
-                        } else if ($scope.request.requestType.toLowerCase() == "joingroup") {
-                            ndexService.acceptOrDenyMembershipRequestV2(recipientId, requestId, action, message,
-                                function (data) {
-                                    modalInstance.close();
-                                    $scope.userController.refreshRequests();
-                                },
-                                function (error) {
-                                    if (error && error.message) {
-                                        $scope.request.error = error.message;
-                                    }
-                                });
-                        };
-                    }
+                                if (request.newReceived && $scope.myAccountController.numberOfNewTasksAndRequests > 0) {
+                                    $scope.myAccountController.numberOfNewTasksAndRequests--;
+                                };
+
+                                _.remove($scope.myAccountController.pendingRequests, {'externalId': $scope.request.externalId});
+                                _.remove($scope.myAccountController.tasksAndRequestsGridOptions.data,
+                                    {'taskId': $scope.request.externalId});
+                                modalInstance.close();
+                            },
+                            function (error) {
+                                if (error && error.message) {
+                                    $scope.request.error = error.message;
+                                }
+                            });
+                    };
+
                 }
-
-                $scope.$watch('ndexData', function(value) {
-                    $scope.request = {};
-                    for(var key in value) {
-                        $scope.request[key] = value[key];
-                    }
-                });
             }
         }
     });
@@ -1101,15 +1221,16 @@
                 ndexData: '='
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/createRequestGroup.html',
-            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Ask to Join!</button>',
+
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties, uiMisc) {
                 $scope.openMe = function() {
                     $modal.open({
-                        templateUrl: 'create-request-group-modal.html',
+                        templateUrl: 'pages/directives/createRequestGroup.html',
                         scope: $scope,
                         backdrop: 'static',
-                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
                             $scope.request = {};
                             $scope.request.groupName = $scope.$parent.ndexData.groupName;
                             $scope.request.permissionLabel ='Is member';
@@ -1129,8 +1250,11 @@
                                 else
                                     $scope.request.permission = 'GROUPADMIN'
 
-                                $scope.request.sourceName = ndexUtility.getLoggedInUserAccountName();
-                                $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+                                $scope.request.sourceName = sharedProperties.getCurrentUserAccountName();
+                                $scope.request.sourceUUID = sharedProperties.getCurrentUserId();
+
+                                var message = uiMisc.replaceNewLinesAndSpaces($scope.request.message);
+                                $scope.request.message = message;
 
                                 ndexService.createMembershipRequestV2($scope.request,
                                     function(request) {
@@ -1163,17 +1287,20 @@
         }
     });
 
+
     // modal to request access to network
     uiServiceApp.directive('createRequestNetwork', function() {
         return {
             scope: {
                 ndexData: '=',
-                privileges: '='
+                privileges: '=',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/createRequestNetwork.html',
-            controller: function($scope, $modal, $route, ndexService, ndexUtility) {
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
+
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties, uiMisc) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.request = {};
@@ -1185,7 +1312,7 @@
                 $scope.openMe = function() {
                     intialize();
                     modalInstance = $modal.open({
-                        templateUrl: 'create-request-network-modal.html',
+                        templateUrl: 'pages/directives/createRequestNetwork.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
@@ -1205,6 +1332,12 @@
                     if($scope.modal.permissionLabel == 'Can read')
                         $scope.request.permission = 'READ';
 
+                    // let's close the modal so that the user didn't see how  $scope.request.message
+                    // will be changed ...
+                    modalInstance.close();
+
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.message);
+
                     var requestType =  $scope.selected.account.accountType;
 
                     if (requestType == 'user') {
@@ -1213,7 +1346,7 @@
                         var userPermissionRequest = {
                             "networkid"  : $scope.request.destinationUUID,
                             "permission" : $scope.request.permission,
-                            "message"    : $scope.request.message,
+                            "message"    : message,
                         }
                         var userUUID = $scope.selected.account.externalId;
 
@@ -1232,8 +1365,9 @@
                         var groupPermissionRequest = {
                             "networkid"  : $scope.request.destinationUUID,
                             "permission" : $scope.request.permission,
-                            "message"    : $scope.request.message,
-                        }
+                            "message"    : message
+                        };
+
                         var groupUUID = $scope.selected.account.externalId;
 
                         ndexService.createGroupPermissionRequestV2(groupUUID, groupPermissionRequest,
@@ -1267,8 +1401,8 @@
                     $scope.request.destinationName = $scope.ndexData.name;
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
 
-                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
-                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+                    $scope.request.sourceName = sharedProperties.getLoggedInUserFirstAndLastNames();
+                    $scope.request.sourceUUID = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
                     $scope.request.accountType = undefined;
 
@@ -1279,7 +1413,7 @@
                     //if( $scope.privileges == 'Edit' )
                     //    $scope.modal.permissionLabel ='Is admin';
 
-                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
+                    ndexService.getUserGroupMembershipsV2(sharedProperties.getCurrentUserId(), 'GROUPADMIN', 0, 1000000,
                         function (userMembershipsMap) {
 
                             var groupsUUIDs = Object.keys(userMembershipsMap);
@@ -1295,8 +1429,8 @@
                                         }
                                         var currentUserAccount = {
                                             accountType: 'user',
-                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
-                                            externalId: ndexUtility.getLoggedInUserExternalId()
+                                            userName: sharedProperties.getLoggedInUserFirstAndLastNames(),
+                                            externalId: sharedProperties.getCurrentUserId() // .getLoggedInUserExternalId()
                                         }
                                         $scope.accounts.push(currentUserAccount);
                                         $scope.selected.account = currentUserAccount;
@@ -1321,12 +1455,15 @@
         return {
             scope: {
                 ndexData: '=',
-                privileges: '@privileges'
+                privileges: '@privileges',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/createRequestNetwork.html',
-            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation) {
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
+
+            controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation,
+                                 sharedProperties, uiMisc) {
                 var modalInstance;
                 $scope.errors = null;
                 $scope.request = {};
@@ -1352,7 +1489,7 @@
                             } else {
 
                                 modalInstance = $modal.open({
-                                    templateUrl: 'create-request-network-modal.html',
+                                    templateUrl: 'pages/directives/createRequestNetwork.html',
                                     scope: $scope,
                                     backdrop: 'static'
                                 });
@@ -1372,8 +1509,8 @@
                     $scope.request.destinationName = "selected networks";
                     $scope.request.destinationUUID = $scope.ndexData.externalId;
 
-                    $scope.request.sourceName = ndexUtility.getLoggedInUserFirstAndLastNames();
-                    $scope.request.sourceUUID = ndexUtility.getLoggedInUserExternalId();
+                    $scope.request.sourceName = sharedProperties.getLoggedInUserFirstAndLastNames();
+                    $scope.request.sourceUUID = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
                     $scope.request.accountType = undefined;
 
@@ -1394,7 +1531,7 @@
                     //if( $scope.privileges == 'Edit' )
                     //    $scope.modal.permissionLabel ='Is admin';
 
-                    ndexService.getUserGroupMembershipsV2(ndexUtility.getLoggedInUserExternalId(), 'GROUPADMIN', 0, 1000000,
+                    ndexService.getUserGroupMembershipsV2(sharedProperties.getCurrentUserId(), 'GROUPADMIN', 0, 1000000,
                         function (userMembershipsMap) {
 
                             var groupsUUIDs = Object.keys(userMembershipsMap);
@@ -1410,8 +1547,8 @@
                                         }
                                         var currentUserAccount = {
                                             accountType: 'user',
-                                            userName: ndexUtility.getLoggedInUserFirstAndLastNames(),
-                                            externalId: ndexUtility.getLoggedInUserExternalId()
+                                            userName: sharedProperties.getLoggedInUserFirstAndLastNames(),
+                                            externalId: sharedProperties.getCurrentUserId()//ndexUtility.getLoggedInUserExternalId()
                                         }
                                         $scope.accounts.push(currentUserAccount);
                                         $scope.selected.account = currentUserAccount;
@@ -1469,6 +1606,7 @@
                     var loggedInUserPermission2 = loggedInUserPermission;
 
 
+                    var message = uiMisc.replaceNewLinesAndSpaces($scope.request.message);
 
 
                     for (var i = 0; i < selectedNetworks.length; i++) {
@@ -1489,7 +1627,7 @@
                             var userPermissionRequest = {
                                 "networkid": networkUUID,
                                 "permission": $scope.request.permission,
-                                "message": $scope.request.message,
+                                "message": message,
                             };
 
                             var userUUID = $scope.selected.account.externalId;
@@ -1520,7 +1658,7 @@
                             var groupPermissionRequest = {
                                 "networkid": networkUUID,
                                 "permission": $scope.request.permission,
-                                "message": $scope.request.message,
+                                "message": message,
                             }
                             var groupUUID = $scope.selected.account.externalId;
 
@@ -1562,12 +1700,13 @@
     uiServiceApp.directive('exportNetwork', function() {
         return {
             scope: {
-                ndexData: '='
-                //userController: '='
+                ndexData: '=',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/exportNetwork.html',
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">Export</button>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
@@ -1592,7 +1731,7 @@
                         $scope.exporters[0].description : "No description available for this export format.";
 
                     modalInstance = $modal.open({
-                        templateUrl: 'export-network-modal.html',
+                        templateUrl: 'pages/directives/exportNetwork.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
@@ -1655,12 +1794,13 @@
     uiServiceApp.directive('bulkExportNetwork', function() {
         return {
             scope: {
-                ndexData: '='
+                ndexData: '=',
+                myClass: '@'
             },
             restrict: 'E',
-            transclude: true,
-            templateUrl: 'pages/directives/bulkExportNetwork.html',
-            //templateUrl: 'pages/directives/exportNetwork.html',
+
+            template: '<button class="{{myClass}}" ng-click="openMe()">{{ndexData.exportNetworksLabel}}</button>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
@@ -1684,7 +1824,7 @@
                         $scope.exporters[0].description : "No description available for this export format.";
 
                     modalInstance = $modal.open({
-                        templateUrl: 'bulk-export-network-modal.html',
+                        templateUrl: 'pages/directives/bulkExportNetwork.html',
                         //templateUrl: 'export-network-modal.html',
                         scope: $scope,
                         backdrop: 'static'
@@ -1724,16 +1864,16 @@
                         function(data) {
                             ///console.log(data);
                             $scope.isProcessing = false;
-                            if (accountController.refreshTasks) {
-                                accountController.refreshTasks();
-                            }
+                            if (accountController.checkAndRefreshMyTaskAndNotification) {
+                                accountController.checkAndRefreshMyTaskAndNotification();
+                            };
                             modalInstance.close();
                         },
                         function(error) {
                             //console.log(error);
                             $scope.isProcessing = false;
-                            if (accountController.refreshTasks) {
-                                accountController.refreshTasks();
+                            if (accountController.getTasks) {
+                                accountController.getTasks();
                             }
                             modalInstance.close();
                         });
@@ -1742,8 +1882,6 @@
             }
         }
     });
-
-
 
     // modal to edit network summary
 /*
@@ -2008,8 +2146,9 @@
             },
 
             restrict: 'E',
-            templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
+            template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</span>',
             transclude: true,
+
             controller: function($scope, $modal, ndexService, uiMisc) {
 
                 var modalInstance;
@@ -2053,7 +2192,7 @@
                     $scope.network.submitButtonLabel = $scope.label;
 
                     modalInstance = $modal.open({
-                        templateUrl: 'bulk-edit-network-property-modal.html',
+                        templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html', //'bulk-edit-network-property-modal.html',
                         scope: $scope
                     });
                 };
@@ -2270,7 +2409,8 @@
             },
 
             restrict: 'E',
-            templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
+            template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</span>',
+
             transclude: true,
             controller: function($scope, $modal, ndexService, ndexNavigation) {
 
@@ -2340,7 +2480,7 @@
                     $scope.network.showcase = true;
 
                     modalInstance = $modal.open({
-                        templateUrl: 'bulk-edit-network-property-modal.html',
+                        templateUrl: 'pages/directives/bulkEditNetworkPropertyModal.html',
                         scope: $scope
                     });
                 };
@@ -2810,9 +2950,10 @@
     uiServiceApp.directive('changePasswordModal', function() {
         return {
             scope: {},
-            restrict: 'E',
-            templateUrl: 'pages/directives/changePasswordModal.html',
-            transclude: true,
+            restrict: 'AE',
+
+            template: '<button class="dropdown-btn" ng-click="openMe()">Change Password</span>',
+
             controller: function($scope, $modal, $route, ndexService, ndexUtility, ndexNavigation) {
                 var modalInstance;
                 $scope.errors = null;
@@ -2821,7 +2962,7 @@
                 $scope.openMe = function() {
                     $scope.change = {};
                     modalInstance = $modal.open({
-                        templateUrl: 'change-password-modal.html',
+                        templateUrl: 'pages/directives/changePasswordModal.html',
                         scope: $scope
                     });
                 };
@@ -2888,7 +3029,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
                             $scope.title = 'Disaffiliate this Network'
@@ -2931,14 +3072,14 @@
             scope: {
                 ndexData: '='
             },
-            restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+            restrict: 'AE',
+
+            template: '<button class="btn btn-primary actionsLabel" ng-click="openMe()">Delete</button>',
             controller: function($scope, $modal, $location) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
 
@@ -2959,7 +3100,7 @@
                                     function(data) {
                                         sharedProperties.setCurrentNetworkId(null);
                                         $modalInstance.close();
-                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $location.path('/user/'+ sharedProperties.getCurrentUserId());
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
@@ -2987,13 +3128,13 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
+            //templateUrl: 'pages/directives/confirmationModal.html',
             transclude: true,
             controller: function($scope, $modal, $location) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, sharedProperties) {
 
@@ -3166,15 +3307,16 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Leave Group</button>',
+
             controller: function($scope, $modal, $route, ndexService) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
-                        controller: function($scope, $modalInstance, $location, ndexService, ndexUtility) {
+                        controller: function($scope, $modalInstance, $location, ndexService, ndexUtility, sharedProperties) {
                             $scope.title = 'Leave '+ $scope.group.groupName;
 
                             var groupController = $scope.ndexData;
@@ -3199,10 +3341,11 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
-                                ndexService.removeGroupMemberV2($scope.group.externalId, ndexUtility.getLoggedInUserExternalId(),
+                                ndexService.removeGroupMemberV2($scope.group.externalId,
+                                    sharedProperties.getCurrentUserId(), // ndexUtility.getLoggedInUserExternalId(),
                                     function(data) {
                                         $modalInstance.close();
-                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $location.path('/user/'+sharedProperties.getCurrentUserId());
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
@@ -3231,13 +3374,14 @@
                 ndexData: '='
             },
             restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+
+            template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Delete Group</button>',
+
             controller: function($scope, $modal, $location, ndexService) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
                             $scope.title = 'Delete this Group'
@@ -3254,7 +3398,7 @@
                                 ndexService.deleteGroupV2($scope.externalId,
                                     function(data) {
                                         $modalInstance.close();
-                                        $location.path('/user/'+ndexUtility.getLoggedInUserExternalId());
+                                        $location.path('/user/'+sharedProperties.getCurrentUserId());
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
@@ -3278,14 +3422,16 @@
     uiServiceApp.directive('deleteUser', function(){
         return {
             scope: {},
-            restrict: 'E',
-            templateUrl: 'pages/directives/confirmationModal.html',
-            transclude: true,
+            restrict: 'AE',
+            //templateUrl: 'pages/directives/confirmationModal.html',
+            template: '<button class="dropdown-btn" ng-click="openMe()">Delete Account</span>',
+
+
             controller: function($scope, $modal, $location, ndexService) {
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
                             $scope.title = 'Delete Your Account'
@@ -3299,6 +3445,7 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
+
                                 ndexService.deleteUserV2(
                                     function(data) {
                                         $modalInstance.close();
@@ -3402,7 +3549,7 @@
                         $scope.canProceed = false;
                         $scope.isProcessing = false;
                         modalInstance = $modal.open({
-                            templateUrl: 'confirmation-modal.html',
+                            templateUrl: 'pages/directives/confirmationModal.html',
                             scope: $scope,
                             controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
                                 $scope.title = adminCheck['title'];
@@ -3550,7 +3697,7 @@
 
                 $scope.openMe = function() {
                     modalInstance = $modal.open({
-                        templateUrl: 'confirmation-modal.html',
+                        templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance, $location, $route, ndexService) {
                             $scope.title = 'Save Subnetwork?'

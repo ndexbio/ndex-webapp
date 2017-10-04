@@ -1,41 +1,35 @@
-<span ng-click="openMe()" ng-transclude></span>
+<div class="modal-content">
 
-<script type="text/ng-template" id="confirmation-modal.html">
+	<div class="modal-header">
+		<h4 class="modal-title">{{title}}</h4>
+	</div>
 
-
-	<div class="modal-content">
-
-	    <div class="modal-header">
-	        <h4 class="modal-title">{{title}}</h4>
-	    </div>
-
-	    <div class="modal-body">
-			<div>
-				<br>
-				{{message}}
-			</div>
-
-			<div ng-if="progress">
-				<br>
-				<strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress"></span></strong>
-			</div>
-
-			<div ng-if="progress2">
-				<strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
-			</div>
-
-			<div ng-if="errors" class='text-danger'>
-				<br>
-				<strong>{{errors}}</strong>
-			</div>
-
+	<div class="modal-body">
+		<div>
+			<br>
+			{{message}}
 		</div>
 
-		<div class="modal-footer">
-			<button class="btn btn-default" ng-click="cancel()">Cancel</button>
-			<button class="btn btn-primary" ng-click="confirm()" ng-disabled="isProcessing">Confirm</button>
+		<div ng-if="progress">
+			<br>
+			<strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress"></span></strong>
+		</div>
+
+		<div ng-if="progress2">
+			<strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
+		</div>
+
+		<div ng-if="errors" class='text-danger'>
+			<br>
+			<strong>{{errors}}</strong>
 		</div>
 
 	</div>
 
-</script>
+	<div class="modal-footer">
+		<button class="btn btn-default" ng-click="cancel()">Cancel</button>
+		<button class="btn btn-primary" ng-click="confirm()" ng-disabled="isProcessing">Confirm</button>
+	</div>
+
+</div>
+

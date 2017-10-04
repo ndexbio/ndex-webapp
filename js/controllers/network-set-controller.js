@@ -22,7 +22,7 @@ ndexApp.controller('networkSetController',
 
     networkSetController.networkTableRowsSelected = 0;
 
-    networkSetController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+    networkSetController.isLoggedInUser = (window.currentNdexUser != null);
 
     networkSetController.isSetOwner = false;
 
@@ -93,7 +93,7 @@ ndexApp.controller('networkSetController',
                 };
 
                 if (networkSetController.isLoggedInUser &&
-                    (networkSetInformation['ownerId'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                    (networkSetInformation['ownerId'] == sharedProperties.getCurrentUserId()) ) {
                     networkSetController.isSetOwner = true;
 
                     // status of the Shareable URl is shown in the Share Set modal that pops up after
@@ -317,7 +317,8 @@ ndexApp.controller('networkSetController',
             var body = 'The selected  network will be removed from this Set. Are you sure you want to proceed?';
         };
 
-        ndexNavigation.openConfirmationModal(title, body, "Remove", "Cancel",
+        var dismissModal = true;
+        ndexNavigation.openConfirmationModal(title, body, "Remove", "Cancel", dismissModal,
             function () {
                 $scope.isProcessing = true;
                 removeSelectedNetworksFromSet();
@@ -332,9 +333,12 @@ ndexApp.controller('networkSetController',
 
 
     networkSetController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
-        var userId = ndexUtility.getLoggedInUserExternalId();
+        var userId = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
-        ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+        var offset = undefined;
+        var limit  = undefined;
+
+        ndexService.getAllNetworkSetsOwnedByUserV2(userId, offset, limit,
             function (networkSets) {
                 networkSetController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
                 successHandler(networkSetController.networkSets[0]);
@@ -372,7 +376,8 @@ ndexApp.controller('networkSetController',
 
         body = body + 'Are you sure you want to proceed?';
 
-        ndexNavigation.openConfirmationModal(title, body, "Confirm", "Cancel",
+        var dismissModal = true;
+        ndexNavigation.openConfirmationModal(title, body, "Confirm", "Cancel", dismissModal,
             function () {
                 $scope.isProcessing = true;
 
@@ -419,9 +424,13 @@ ndexApp.controller('networkSetController',
         return url;
     };
 
-    $scope.getNetworkDownloadLink = function(rowEntity) {
+ /*   $scope.getNetworkDownloadLink = function(rowEntity) {
         return uiMisc.getNetworkDownloadLink(networkSetController, rowEntity);
-    };
+    }; */
+
+    $scope.downloadNetwork= function(rowEntity) {
+        uiMisc.downloadCXNetwork(rowEntity.externalId);
+    }
 
     $scope.isOwnerOfNetwork = function(networkOwnerUUID)
     {

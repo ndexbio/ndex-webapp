@@ -780,12 +780,14 @@
             <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
                     || networkController.isAdmin
                     || networkController.canEdit
-                    || networkController.canRead)'>
+                    || networkController.canRead)'
+                  class="actionsLabel btn btn-primary download-btn"
+                  ng-click="downloadNetwork()" >
 
-                    <a ng-href={{getNetworkDownloadLink(networkController.currentNetwork)}}
-                       class="actionsLabel btn btn-primary download-btn">
+               <!--     <a ng-href={{getNetworkDownloadLink(networkController.currentNetwork)}}
+                       class="actionsLabel btn btn-primary download-btn">  -->
                         Download
-                    </a>
+                  <!--  </a>  -->
             </span>
 
             <span>
@@ -866,54 +868,33 @@
                     || networkController.canEdit
                     || networkController.canRead)'>
 
-                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()">
-                        <export-network
-                                ndex-data='networkController.currentNetwork'>
-                            Export
-                        </export-network>
-                    </a>
-                    <a class="actionsLabelDisabled-btn btn btn-primary"
-                       ng-show="networkController.hasMultipleSubNetworks()"
-                       title="{{networkController.title}}">
-                            Export
-                    </a>
+                <export-network
+                        ndex-data='networkController.currentNetwork'
+                        my-class="{{networkController.hasMultipleSubNetworks() ?
+                            'actionsLabelDisabled-btn btn btn-primary' : 'actionsLabel btn btn-primary'}}"
+                        title="{{networkController.hasMultipleSubNetworks() ? networkController.title : ''}}">
+                </export-network>
+
             </span>
 
             <span ng-show='networkController.isLoggedInUser'>
-                <a class="actionsLabel btn btn-primary">
-                    <show-network-sets-modal my-account-controller='networkController'>
-                        Add To Set
-                    </show-network-sets-modal>
-                </a>
+                <show-network-sets-modal
+                        my-account-controller='networkController'
+                        my-class="btn btn-primary">
+                </show-network-sets-modal>
             </span>
 
-            <!--
-            <span ng-show='networkController.isLoggedInUser && networkController.canRead'>
-                <a class="actionsLabel btn btn-primary customButtonWidth">
-                    <create-request-network
-                            ndex-data='networkController.currentNetwork'
-                            privileges='networkController.privilegeLevel'>
-                        Upgrade Permission
-                    </create-request-network>
-                </a>
-            </span>
-            -->
 
             <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit'>
-                <a class="actionsLabel btn btn-primary customButtonWidth"
-                   title="Request Read, Edit or Admin privilege"
-                   ng-show="!networkController.hasMultipleSubNetworks()">
-                        <create-request-network
-                                ndex-data='networkController.currentNetwork'
-                                privileges='networkController.privilegeLevel'>
-                            Upgrade Permission
-                        </create-request-network>
-                </a>
-                <a class="actionsLabelDisabled-btn btn btn-primary customButtonWidth"
-                   ng-show="networkController.hasMultipleSubNetworks()"
-                   title="{{networkController.title}}">
-                        Upgrade Permission
-                </a>
+
+                <create-request-network
+                    privileges='networkController.privilegeLevel'
+                    ndex-data='networkController.currentNetwork'
+                    my-class="{{networkController.hasMultipleSubNetworks() ?
+                            'actionsLabelDisabled-btn btn btn-primary' : 'actionsLabel btn btn-primary'}}"
+                    title="{{networkController.hasMultipleSubNetworks() ? networkController.title : 'Request Read, Edit or Admin privilege'}}">
+                </create-request-network>
+
             </span>
 
             <span ng-show='networkController.isLoggedInUser && networkController.isAdmin' title="Request Read, Edit or Admin privilege">
@@ -967,11 +948,8 @@
 
             <span ng-show='networkController.isLoggedInUser && networkController.isAdmin &&
                           !networkController.readOnlyChecked'>
-                <a class=" actionsLabel btn btn-primary">
-                    <delete-network ndex-data='networkController.currentNetwork.externalId'>
-                        Delete
-                    </delete-network>
-                </a>
+                <delete-network ndex-data='networkController.currentNetwork.externalId'>
+                </delete-network>
             </span>
 
             <span ng-show='!networkController.isLoggedInUser'>

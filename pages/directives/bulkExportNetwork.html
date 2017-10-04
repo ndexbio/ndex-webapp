@@ -1,46 +1,42 @@
-<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
-
-<script type="text/ng-template" id="bulk-export-network-modal.html">
-    <div class='modal-content'>
-        <div class="modal-header">
-            <h4 class="modal-title">{{title}}</h4>
-        </div>
-
-        <div class='modal-body'>
-
-            <div class="rowWithOneLineTopPad">
-                Choose the export format using the dropdown menu below.
-                The NDEx team will be adding other export options in future updates.
-            </div>
-
-            <h5>
-                <strong>
-                    Export Format:
-                    <span class="dropdown">
-                          <a  class="dropdown-toggle" data-toggle="dropdown">
-                              {{networkExporterName}} <span class="caret"></span>
-                          </a>
-
-                          <ul class="dropdown-menu" ng-if="exporters.length > 0">
-                                <li ng-repeat="exporter in exporters">
-                                    <a ng-click="exporterSelected(exporter)">{{exporter.name}}</a>
-                                </li>
-                          </ul>
-                    </span>
-                </strong>
-            </h5>
-
-            <div ng-if="exporters.length > 0"
-                 style="border:1px; border-style:solid; border-color:#428BCA; padding: 1em; background-color:#f9f9f9">
-                {{description}}
-            </div>
-
-        </div>
-
-        <div class='modal-footer'>
-            <button class='btn btn-default' ng-click='close()'>Cancel</button>
-            <button class='btn btn-primary' ng-click='exportNetworks()'
-                    ng-disabled='isProcessing  || exporters.length == 0'>{{exportButtonLabel}}</button>
-        </div>
+<div class='modal-content'>
+    <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
     </div>
-</script>
+
+    <div class='modal-body'>
+
+        <div class="rowWithOneLineTopPad">
+            Choose the export format using the dropdown menu below.
+            The NDEx team will be adding other export options in future updates.
+        </div>
+
+        <h5>
+            <strong>
+                Export Format:
+                <span class="dropdown">
+                      <a  class="dropdown-toggle" data-toggle="dropdown">
+                          {{networkExporterName}} <span class="caret"></span>
+                      </a>
+
+                      <ul class="dropdown-menu" ng-if="exporters.length > 0">
+                            <li ng-repeat="exporter in exporters">
+                                <a ng-click="exporterSelected(exporter)">{{exporter.name}}</a>
+                            </li>
+                      </ul>
+                </span>
+            </strong>
+        </h5>
+
+        <div ng-if="exporters.length > 0"
+             style="border:1px; border-style:solid; border-color:#428BCA; padding: 1em; background-color:#f9f9f9">
+            {{description}}
+        </div>
+
+    </div>
+
+    <div class='modal-footer'>
+        <button class='btn btn-default' ng-click='close()'>Cancel</button>
+        <button class='btn btn-primary' ng-click='exportNetworks()'
+                ng-disabled='isProcessing  || exporters.length == 0'>{{exportButtonLabel}}</button>
+    </div>
+</div>

@@ -7,7 +7,7 @@ ndexApp.controller('searchController',
             //---------------------------------------------------------------------
             $scope.searcher = {};
             var searchController = $scope.searcher;
-            searchController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            searchController.isLoggedInUser = (window.currentNdexUser != null);
 
             searchController.errors = [];
             searchController.pageSize = 1000000;
@@ -54,8 +54,7 @@ ndexApp.controller('searchController',
             searchController.networkTableRowsSelected = 0;
             searchController.networkSets = [];
 
-            searchController.loggedInUserId = (searchController.isLoggedInUser) ?
-                ndexUtility.getLoggedInUserExternalId() : null;
+            searchController.loggedInUserId = sharedProperties.getCurrentUserId();
 
 
             $(document).ready(function() {
@@ -400,9 +399,11 @@ ndexApp.controller('searchController',
             };
 
             searchController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
-                var userId = ndexUtility.getLoggedInUserExternalId();
+                var userId = sharedProperties.getCurrentUserId(); // ndexUtility.getLoggedInUserExternalId();
+                var offset = undefined;
+                var limit  = undefined;
                 
-                ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+                ndexService.getAllNetworkSetsOwnedByUserV2(userId, offset, limit,
                     function (networkSets) {
                         searchController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
 
@@ -683,10 +684,15 @@ ndexApp.controller('searchController',
                 return "#/network/" + networkUUID;
             };
 
-            $scope.getNetworkDownloadLink = function(rowEntity) {
+       /*     $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(searchController, rowEntity);
-            };
+            };*/
 
+            $scope.downloadNetwork= function(rowEntity) {
+
+                uiMisc.downloadCXNetwork(rowEntity.externalId);
+
+            }
             /*---------------------------
 
              Perform the Search

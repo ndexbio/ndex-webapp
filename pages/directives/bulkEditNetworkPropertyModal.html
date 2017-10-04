@@ -1,148 +1,142 @@
-<span ng-click="openMe()" ng-transclude></span>
+<div class='modal-content'>
 
-<script type="text/ng-template" id="bulk-edit-network-property-modal.html">
+    <form class="form-horizontal" role="form" ng-submit='submit()'>
 
-    <div class='modal-content'>
+        <div class="modal-header">
+            <h4 class="modal-title">{{title}}</h4>
+        </div>
 
-        <form class="form-horizontal" role="form" ng-submit='submit()'>
+        <div class="modal-body">
 
-            <div class="modal-header">
-                <h4 class="modal-title">{{title}}</h4>
+            <div class="rowWithOneLineTopPad">
+                {{text}}
             </div>
 
-            <div class="modal-body">
-
-                <div class="rowWithOneLineTopPad">
-                    {{text}}
+            <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='description'">
+                <label class="col-sm-3 control-label">Description</label>
+                <div class="col-sm-8">
+                    <text-angular
+                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
+                            ta-toolbar-class="btn-toolbar"
+                            ta-toolbar-group-class="btn-group btn-group-xs"
+                            ta-toolbar-button-class="btn btn-default"
+                            ta-toolbar-button-active-class="active"
+                            ta-default-wrap="div"
+                            ng-model='network.description'>
+                    </text-angular>
                 </div>
+            </div>
 
-                <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='description'">
-                    <label class="col-sm-3 control-label">Description</label>
-                    <div class="col-sm-8">
-                        <text-angular
-                                ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
-                                ta-toolbar-class="btn-toolbar"
-                                ta-toolbar-group-class="btn-group btn-group-xs"
-                                ta-toolbar-button-class="btn btn-default"
-                                ta-toolbar-button-active-class="active"
-                                ta-default-wrap="div"
-                                ng-model='network.description'>
-                        </text-angular>
-                    </div>
+
+            <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='reference'">
+                <label class="col-sm-3 control-label">Reference</label>
+                <div class="col-sm-8">
+                    <text-angular
+                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
+                            ta-toolbar-class="btn-toolbar"
+                            ta-toolbar-group-class="btn-group btn-group-xs"
+                            ta-toolbar-button-class="btn btn-default"
+                            ta-toolbar-button-active-class="active"
+                            ta-default-wrap="div"
+                            ng-model='network.reference'>
+                    </text-angular>
                 </div>
+            </div>
 
-
-                <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='reference'">
-                    <label class="col-sm-3 control-label">Reference</label>
-                    <div class="col-sm-8">
-                        <text-angular
-                                ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
-                                ta-toolbar-class="btn-toolbar"
-                                ta-toolbar-group-class="btn-group btn-group-xs"
-                                ta-toolbar-button-class="btn btn-default"
-                                ta-toolbar-button-active-class="active"
-                                ta-default-wrap="div"
-                                ng-model='network.reference'>
-                        </text-angular>
-                    </div>
+            <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='version'">
+                <label class="col-sm-3 control-label">Version</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" placeholder="1.0" ng-model='network.version'>
                 </div>
+            </div>
 
-                <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='version'">
-                    <label class="col-sm-3 control-label">Version</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" placeholder="1.0" ng-model='network.version'>
-                    </div>
-                </div>
-
-                <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='visibility'" ng-init="network.visibility='[Select Network Visibility]'">
-                    <div class="row">
-                        <label class="col-sm-3 control-label">Visibility</label>
-                        <div class="col-sm-5">
-                            <select class="form-control input-sm" ng-model="network.visibility">
-                                <option>[Select Network Visibility]</option>
-                                <option value="PUBLIC">Public</option>
-                                <option value="PRIVATE">Private</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row rowWithOneLineTopPad" ng-if="network.visibility == 'PUBLIC'">
-
-                        <div class="col-sm-3"></div>
-
-                        <div class="col-sm-5">
-                            <a ng-click="network.showcase = !network.showcase" style="text-decoration: none; color: #656565;">
-                                <span class="fa-stack" ng-show="!network.showcase">
-                                    <i class="fa fa-square-o fa-stack-2x"></i>
-                                </span>
-
-                                <span class="fa-stack" ng-show="network.showcase">
-                                    <i class="fa fa-square-o fa-stack-2x"></i>
-                                    <i class="fa fa-check fa-stack-1x"></i>
-                                </span>
-                                <strong>Showcase</strong>
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='readOnly'"
-                     ng-init="network.readOnly='[Select Network Read-Only Flag]'">
-                    <label class="col-sm-3 control-label">Read-Only Flag</label>
+            <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='visibility'" ng-init="network.visibility='[Select Network Visibility]'">
+                <div class="row">
+                    <label class="col-sm-3 control-label">Visibility</label>
                     <div class="col-sm-5">
-                        <select class="form-control input-sm" ng-model="network.readOnly">
-                            <option>[Select Network Read-Only Flag]</option>
-                            <option value="SET">Set the flag</option>
-                            <option value="UNSET">Unset the flag</option>
+                        <select class="form-control input-sm" ng-model="network.visibility">
+                            <option>[Select Network Visibility]</option>
+                            <option value="PUBLIC">Public</option>
+                            <option value="PRIVATE">Private</option>
                         </select>
                     </div>
                 </div>
 
+                <div class="row rowWithOneLineTopPad" ng-if="network.visibility == 'PUBLIC'">
 
-                <div ng-if="progress1">
-                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress1"></span></strong>
-                </div>
+                    <div class="col-sm-3"></div>
 
-                <div ng-if="progress2">
-                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
-                </div>
+                    <div class="col-sm-5">
+                        <a ng-click="network.showcase = !network.showcase" style="text-decoration: none; color: #656565;">
+                            <span class="fa-stack" ng-show="!network.showcase">
+                                <i class="fa fa-square-o fa-stack-2x"></i>
+                            </span>
 
-                <div ng-if="errors" class='text-danger'>
-                    <br>
-                    <strong>{{errors}}</strong>
+                            <span class="fa-stack" ng-show="network.showcase">
+                                <i class="fa fa-square-o fa-stack-2x"></i>
+                                <i class="fa fa-check fa-stack-1x"></i>
+                            </span>
+                            <strong>Showcase</strong>
+                        </a>
+                    </div>
                 </div>
 
             </div>
 
-            <div class="modal-footer">
-                <a class="btn btn-default" type='button' ng-disabled="isProcessing" ng-click='cancel()'>Cancel</a>
-
-                <button class="btn btn-primary"
-                        type='submit'
-                        ng-disabled='isProcessing'
-                        ng-show="action=='version' || action=='reference' || action=='description'">
-                    {{network.submitButtonLabel}}
-                </button>
-
-                <button class="btn btn-primary"
-                        type='submit'
-                        ng-disabled="isProcessing || network.visibility=='[Select Network Visibility]'"
-                        ng-show="action=='visibility'">
-                    {{network.submitButtonLabel}}
-                </button>
-
-                <button class="btn btn-primary"
-                        type='submit'
-                        ng-disabled="network.readOnly=='[Select Network Read-Only Flag]'"
-                        ng-show="action=='readOnly'">
-                    {{network.submitButtonLabel}}
-                </button>
-
+            <div class="form-group rowWithTwoLinesTopPad" ng-show="action=='readOnly'"
+                 ng-init="network.readOnly='[Select Network Read-Only Flag]'">
+                <label class="col-sm-3 control-label">Read-Only Flag</label>
+                <div class="col-sm-5">
+                    <select class="form-control input-sm" ng-model="network.readOnly">
+                        <option>[Select Network Read-Only Flag]</option>
+                        <option value="SET">Set the flag</option>
+                        <option value="UNSET">Unset the flag</option>
+                    </select>
+                </div>
             </div>
 
-        </form>
 
-    </div>
+            <div ng-if="progress1">
+                <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress1"></span></strong>
+            </div>
 
-</script>
+            <div ng-if="progress2">
+                <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
+            </div>
+
+            <div ng-if="errors" class='text-danger'>
+                <br>
+                <strong>{{errors}}</strong>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <a class="btn btn-default" type='button' ng-disabled="isProcessing" ng-click='cancel()'>Cancel</a>
+
+            <button class="btn btn-primary"
+                    type='submit'
+                    ng-disabled='isProcessing'
+                    ng-show="action=='version' || action=='reference' || action=='description'">
+                {{network.submitButtonLabel}}
+            </button>
+
+            <button class="btn btn-primary"
+                    type='submit'
+                    ng-disabled="isProcessing || network.visibility=='[Select Network Visibility]'"
+                    ng-show="action=='visibility'">
+                {{network.submitButtonLabel}}
+            </button>
+
+            <button class="btn btn-primary"
+                    type='submit'
+                    ng-disabled="network.readOnly=='[Select Network Read-Only Flag]'"
+                    ng-show="action=='readOnly'">
+                {{network.submitButtonLabel}}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>

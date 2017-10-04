@@ -1,8 +1,8 @@
-<div class="row" style="padding-top:100px">
+<div class="row" style="padding-top:60px">
 
-    <div class='col-md-3'></div>
+    <div class='col-sm-4'></div>
 
-    <div class='col-md-6'>
+    <div class='col-sm-4'>
         <div class="home-box home-margins">
             <form name="signInForm" class="form-signin" role="form" ng-submit="signIn.submitSignIn()">
                 <div class="AlignCenter" style="font-size: 14px">
@@ -24,7 +24,26 @@
                         Sign in
                     </button>
                     <br><br>
-                    <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
+                    <div ng-show="isNotSafari">
+                        <div class="AlignCenter">OR</div>
+                        <br>
+                        <div class="AlignCenter google-button">
+                            <button class="google-sign-in-button" type="button" ng-click="signIn.SignInWithGoogle()">
+                        <span class="google-sign-in-button-span">
+                            <img src="img/google-logo.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
+                            <span>Sign in with Google</span>
+                        </span>
+                            </button>
+                        </div>
+                        <br>
+                    </div>
+                    <div ng-show="!isNotSafari">
+                        Single Sign on is not supported in this browser. Please use Chrome or Firefox if you want to use this feature.
+                     <br>
+                    </div>
+                    <div>
+                        <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
+                    </div>
                 </div>
                 <hr>
                 <div class="AlignCenter" style="font-size: 14px">

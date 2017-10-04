@@ -1,12 +1,12 @@
 ndexApp.controller('networkController',
-    ['config','provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
+    ['provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$routeParams', '$modal', '$modalStack',
-        '$route', '$location', 'uiGridConstants', 'uiMisc', /*'$filter', '$location','$q',*/
-        function (config, provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
+        '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', /*'$filter', '$location','$q',*/
+        function ( provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $routeParams, $modal, $modalStack,
-                  $route , $location, uiGridConstants, uiMisc /*, $filter /*, $location, $q */)
+                  $route , $location, uiGridConstants, uiMisc, ndexSpinner /*, $filter /*, $location, $q */)
         {
             var self = this;
 
@@ -24,7 +24,7 @@ ndexApp.controller('networkController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
-            networkController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            networkController.isLoggedInUser = ( window.currentNdexUser != null);
 
             networkController.privilegeLevel = "None";
             networkController.currentNetworkId = networkExternalId;
@@ -97,6 +97,9 @@ ndexApp.controller('networkController',
                 $scope.egeCountForDisablingQuery + " edges";
 
             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+
+            var spinnerNetworkPageId = "spinnerGraphId";
+
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -287,6 +290,8 @@ ndexApp.controller('networkController',
                     $scope.currentView = "Table";
                     $scope.buttonLabel = "Graph View";
 
+                    spinnerNetworkPageId = "spinnerTableId";
+
                     var enableFiltering = true;
                     var setGridWidth = true;
                     localNetwork = networkService.getNiceCX();
@@ -301,6 +306,8 @@ ndexApp.controller('networkController',
                     // switch to graphic view
                     $scope.currentView = "Graphic";
                     $scope.buttonLabel = "Table View";
+
+                    spinnerNetworkPageId = "spinnerGraphId";
 
                     if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -516,7 +523,7 @@ ndexApp.controller('networkController',
             };
             */
 
-            $scope.getNetworkDownloadLink = function(currentNetwork) {
+       /*     $scope.getNetworkDownloadLink = function(currentNetwork) {
                 //var visibility = networkController.currentNetwork.visibility;
                 if (currentNetwork) {
                     var rowEntity = {
@@ -527,7 +534,11 @@ ndexApp.controller('networkController',
                 };
 
                 return;
-            };
+            }; */
+
+            $scope.downloadNetwork = function () {
+                uiMisc.downloadCXNetwork(networkExternalId);
+            }
 
             var parseNdexMarkupValue = function ( value ) {
                 return {n:  value.replace(/(\[(.*)\])?\(.*\)$/, '$2'),
@@ -1231,7 +1242,7 @@ ndexApp.controller('networkController',
 
                             ready: function () {
                                 window.cy = this;
-                                stopSpinner();
+                                ndexSpinner.stopSpinner();
                             }
                         });
                     }
@@ -1248,7 +1259,7 @@ ndexApp.controller('networkController',
 
                             ready: function () {
                                 window.cy = this;
-                                stopSpinner();
+                                ndexSpinner.stopSpinner();
                             }
                         });
                         console.log(e);
@@ -1983,7 +1994,8 @@ ndexApp.controller('networkController',
                         " as this process cannot be executed in background. <br><br>" +
                         "Proceed?";
 
-                    ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                    var dismissModal = true;
+                    ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel", dismissModal,
                         function () {
                             if (query == 'neighborhood') {
                                 networkController.queryNetworkAndDisplay();
@@ -2003,7 +2015,7 @@ ndexApp.controller('networkController',
                 networkController.queryWarnings = [];
                 networkController.queryErrors = [];
 
-                startSpinner();
+                ndexSpinner.startSpinner(spinnerNetworkPageId);
                 var edgeLimit = config.networkQueryLimit;
                 networkService.neighborhoodQuery(networkController.currentNetworkId, accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
@@ -2024,7 +2036,7 @@ ndexApp.controller('networkController',
                                 networkController.tabs[0].active = true;
                             networkController.selectionContainer = {};
 
-                            stopSpinner();
+                            ndexSpinner.stopSpinner();
 
                             // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                             drawCXNetworkOnCanvas(network,false);
@@ -2046,7 +2058,7 @@ ndexApp.controller('networkController',
                     )
                     .error(
                         function (error) {
-                            stopSpinner();
+                            ndexSpinner.stopSpinner();
                             if (error.status != 0) {
                                 if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {
@@ -2096,7 +2108,7 @@ ndexApp.controller('networkController',
             networkController.saveQueryResult = function() {
 
                 var  modalInstanceSave = $modal.open({
-                    templateUrl: 'confirmation-modal.html',
+                    templateUrl: 'pages/directives/confirmationModal.html',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
                         $scope.title = 'Save query result?';
@@ -2150,7 +2162,7 @@ ndexApp.controller('networkController',
 
                 var networkQueryLimit = config.networkQueryLimit;
 
-                startSpinner();
+                ndexSpinner.startSpinner(spinnerNetworkPageId);
 
                 var postData =
                 {
@@ -2206,7 +2218,7 @@ ndexApp.controller('networkController',
 
                             cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
 
-                            stopSpinner();
+                            ndexSpinner.stopSpinner();
 
                             // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                             drawCXNetworkOnCanvas(localNiceCX,false);
@@ -2230,7 +2242,7 @@ ndexApp.controller('networkController',
                     .error(
 
                         function (error) {
-                            stopSpinner();
+                            ndexSpinner.stopSpinner();
                             if (error.status != 0) {
                                 if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {
@@ -2355,7 +2367,7 @@ ndexApp.controller('networkController',
                                     ;
                                 });
 
-                            if (networkController.isLoggedInUser && (network['ownerUUID'] == ndexUtility.getLoggedInUserExternalId()) ) {
+                            if (networkController.isLoggedInUser && (network['ownerUUID'] == sharedProperties.getCurrentUserId()) ) {
                                 networkController.isNetworkOwner = true;
                                 networkController.getStatusOfShareableURL();
                             };
@@ -2661,47 +2673,7 @@ ndexApp.controller('networkController',
                     );
             };
 
-            var startSpinner = function () {
 
-                var spinnerId = ($scope.currentView == "Graphic") ? "spinnerGraphId" : "spinnerTableId";
-
-                // please see more info about this spinner at http://spin.js.org/
-                if (!spinner) {
-                    var opts = {
-                        lines: 11 // The number of lines to draw
-                        , length: 19 // The length of each line
-                        , width: 13 // The line thickness
-                        , radius: 26 // The radius of the inner circle
-                        , scale: 0.5 // Scales overall size of the spinner
-                        , corners: 1 // Corner roundness (0..1)
-                        , color: '#ff0000' // #rgb or #rrggbb or array of colors
-                        , opacity: 0.25 // Opacity of the lines
-                        , rotate: 11 // The rotation offset
-                        , direction: 1 // 1: clockwise, -1: counterclockwise
-                        , speed: 0.6 // Rounds per second
-                        , trail: 100 // Afterglow percentage
-                        , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
-                        , zIndex: 2e9 // The z-index (defaults to 2000000000)
-                        , className: 'spinner' // The CSS class to assign to the spinner
-                        , top: '50%' // Top position relative to parent
-                        , left: '51%' // Left position relative to parent
-                        , shadow: true // Whether to render a shadow
-                        , hwaccel: false // Whether to use hardware acceleration
-                        , position: 'absolute' // Element positioning
-                    }
-
-                    var target = document.getElementById(spinnerId);
-                    spinner = new Spinner(opts).spin(target);
-
-                } else {
-                    var target = document.getElementById(spinnerId);
-                    spinner.spin(target);
-                }
-            }
-
-            var stopSpinner = function() {
-                spinner.stop();
-            };
 
 
             networkController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
@@ -2710,9 +2682,12 @@ ndexApp.controller('networkController',
                     return;
                 };
 
-                var userId = ndexUtility.getLoggedInUserExternalId();
+                var userId = sharedProperties.getCurrentUserId(); //ndexUtility.getLoggedInUserExternalId();
 
-                ndexService.getAllNetworkSetsOwnedByUserV2(userId,
+                var offset = undefined;
+                var limit  = undefined;
+
+                ndexService.getAllNetworkSetsOwnedByUserV2(userId, offset, limit,
                     function (networkSets) {
                         networkController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
                         successHandler(networkController.networkSets[0]);
@@ -2733,7 +2708,8 @@ ndexApp.controller('networkController',
                 var message = networkName +
                     'will be cloned to your account. <br><br> Are you sure you want to proceed?';
 
-                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel",
+                var dismissModal = true;
+                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel", dismissModal,
                     function () {
                         ndexService.cloneNetworkV2(networkController.currentNetworkId,
                             function(data, status, headers, config, statusText) {
@@ -2775,8 +2751,8 @@ ndexApp.controller('networkController',
             
             $("#cytoscape-canvas").height($(window).height() - 200);
             $("#divNetworkTabs").height($(window).height() - 200);
-            
-            startSpinner();
+
+            ndexSpinner.startSpinner(spinnerNetworkPageId);
 
             uiMisc.hideSearchMenuItem();
 

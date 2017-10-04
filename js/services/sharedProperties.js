@@ -63,5 +63,11 @@ ndexApp.service('sharedProperties', function () {
         {
             return this.networkView;
         },
-    }
+        getLoggedInUserFirstAndLastNames: function () {
+            if ( window.currentNdexUser != null) {
+                return window.currentNdexUser.firstName + " " + window.currentNdexUser.lastName;
+            } else
+                return "";
+        }
+     }
 });

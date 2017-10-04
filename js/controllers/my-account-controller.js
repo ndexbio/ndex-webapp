@@ -1,14 +1,16 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
-        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants',
+        '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants', 'ndexSpinner',
+         '$compile',
         function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
-                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants)
+                  $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants, ndexSpinner,
+                  $compile)
         {
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
             
-            var identifier = ndexUtility.getUserCredentials()["externalId"];
-            //var identifier = sharedProperties.getCurrentUserId(); //$routeParams.identifier;
+          //  var identifier = ndexUtility.getUserCredentials()["externalId"];
+            var identifier = sharedProperties.getCurrentUserId(); //$routeParams.identifier;
 
 
             //              CONTROLLER INTIALIZATIONS
@@ -16,7 +18,7 @@ ndexApp.controller('myAccountController',
 
             $scope.myAccountController = {};
             var myAccountController = $scope.myAccountController;
-            myAccountController.isLoggedInUser = (ndexUtility.getLoggedInUserAccountName() != null);
+            myAccountController.isLoggedInUser = (window.currentNdexUser != null);
             myAccountController.identifier = identifier;
             myAccountController.loggedInIdentifier = sharedProperties.getCurrentUserId();
             myAccountController.displayedUser = {};
@@ -33,7 +35,8 @@ ndexApp.controller('myAccountController',
             myAccountController.skip = 0;
             myAccountController.skipSize = 10000;
             myAccountController.networkTableRowsSelected = 0;
-            //myAccountController.collectionTableRowsSelected = 0;
+
+            myAccountController.taskTableRowsSelected = 0;
 
             myAccountController.pendingRequests = [];
             myAccountController.sentRequests = [];
@@ -52,13 +55,18 @@ ndexApp.controller('myAccountController',
             // this map of Cytoscape collection networks; networkUUID is a key and <numberOfSubNetworks> is a value;
             // we only put networks with number of subnetwroks greater than 1
             myAccountController.networksWithMultipleSubNetworks = {};
-            
+
+
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
                 // hide the Search menu item in Nav Bar
                 $scope.$parent.showSearchMenu = false;
                 uiMisc.showSearchMenuItem();
+
+                if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
+                    clearInterval(timerVariable);
+                };
             });
 
             $scope.diskSpaceInfo = {};
@@ -73,10 +81,65 @@ ndexApp.controller('myAccountController',
 
             myAccountController.editProfilesLabel    = "Edit Profile";
             myAccountController.exportNetworksLabel  = "Export Network";
-            myAccountController.addToNetworkSetLabel = "Add To Set";
             myAccountController.deleteNetworksLabel  = "Delete Network";
 
             myAccountController.networkSets = [];
+
+            $scope.refreshNetworksButtonDisabled = true;
+            $scope.refreshTasksButtonDisabled    = true;
+
+            var spinnerMyAccountPageId = "spinnerMyAccountPageId";
+            var refreshIntervalInSeconds = ndexSettings.refreshIntervalInSeconds;
+            var timerVariable = undefined;
+
+            var networkTableDefined               = false;
+            var tasksAndNotificationsTableDefined = false;
+
+            var networksReceived             = false;
+
+            $scope.tasksReceived             = false;
+            $scope.sentRequestsReceived      = false;
+            $scope.receivedRequestsReceived  = false;
+
+            $scope.selectedRowsNetworkExternalIds = {};
+            $scope.selectedRowsTasksExternalIds   = {};
+
+
+            myAccountController.numberOfNewTasksAndRequests = 0;
+            myAccountController.numberOfReceivedRequests    = 0;
+            myAccountController.numberOfDownloadableTasks   = 0;
+
+
+            myAccountController.currentTab = 'networks';
+
+            $scope.networksTasksAndRequestsReceived = function() {
+                return (networksReceived &&
+                $scope.tasksReceived &&
+                $scope.sentRequestsReceived && $scope.receivedRequestsReceived);
+            };
+            $scope.resetNetworksFlag = function() {
+                networksReceived = false;
+            };
+            $scope.resetTasksAndRequestsReceivedFlags = function() {
+                $scope.tasksReceived = $scope.sentRequestsReceived = $scope.receivedRequestsReceived = false;
+            };
+            $scope.resetNetworksTasksAndRequestsReceivedFlags = function() {
+                networksReceived = false;
+                $scope.resetTasksAndRequestsReceivedFlags();
+            };
+
+
+            $scope.onTabSelect = function(tabName) {
+                myAccountController.currentTab = tabName;
+            };
+
+            var paginationOptions = {
+                pageNumber: 1,
+                pageSize: 15,
+                sort: null,
+                networkCount: 0,
+                networkSetCount: 0
+            };
 
             //table
             $scope.networkGridOptions =
@@ -90,13 +153,48 @@ ndexApp.controller('myAccountController',
                 enableColumnMenus: false,
                 enableRowHeaderSelection: true,
 
+                paginationPageSizes: [15, 30, 50],
+                paginationPageSize: 15,
+                useExternalPagination: true,
+
                 onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
 
+                    gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
+                        paginationOptions.pageNumber = newPage;
+                        paginationOptions.pageSize = pageSize;
+                        myAccountController.getNoOfNetworksAndSets(
+                            function() {
+                                myAccountController.loadNetworks();
+                            },
+                            function() {
+                                console.log("unable to get No of Networks and Sets for this account");
+                            });
+
+                        //$scope.networkGridApi.selection.clearSelectedRows();
+                        //myAccountController.networkTableRowsSelected = 0;
+                    });
+
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
                         $scope.networkGridApi.core.handleWindowResize();
+
+                        if (myAccountController.networkTableRowsSelected > 0) {
+                            for (var i = 0; i < $scope.networkGridApi.grid.rows.length; i++) {
+                                var row = $scope.networkGridApi.grid.rows[i];
+                                if (row['entity'] && row['entity']['externalId']
+                                        && (row['entity']['externalId'] in $scope.selectedRowsNetworkExternalIds)) {
+                                    $scope.networkGridApi.grid.rows[i].isSelected = true;
+                                };
+                            };
+                        };
+
+                        $scope.refreshNetworksButtonDisabled = false;
+
+                        enableOrDisableEditAndExportBulkButtons();
+                        enableOrDisableEditPropertiesBulkButton();
+                        enableOrDisableManageAccessBulkButton();
                     });
 
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
@@ -118,8 +216,13 @@ ndexApp.controller('myAccountController',
                             return;
                         };
 
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.networkTableRowsSelected = selectedRows.length;
+                        if (row.isSelected) {
+                            $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = '';
+                        } else {
+                            delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
+                        };
+
+                        myAccountController.networkTableRowsSelected = _.size( $scope.selectedRowsNetworkExternalIds);
 
                         changeNetworkBulkActionsButtonsLabels();
 
@@ -131,19 +234,26 @@ ndexApp.controller('myAccountController',
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
 
                         _.forEach(rows, function(row) {
-                            if ((row.entity.Status == 'Set') && (row.isSelected)) {
-                                // unselect a Set: make row.isSelected false and decrement the number of selected items
-                                row.isSelected = false;
+                            if (row.entity.Status == 'Set') {
+                                if (row.isSelected) {
+                                    // unselect a Set: make row.isSelected false and decrement the number of selected items
+                                    row.isSelected = false;
 
-                                var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
-                                if (selectedCount > 0) {
-                                    $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
+                                    var selectedCount = $scope.networkGridApi.grid.selection.selectedCount;
+                                    if (selectedCount > 0) {
+                                        $scope.networkGridApi.grid.selection.selectedCount = selectedCount - 1;
+                                    };
+                                };
+                            } else {
+                                if (row.isSelected) {
+                                    $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = '';
+                                } else {
+                                    delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
                                 };
                             };
                         });
 
-                        var selectedRows = gridApi.selection.getSelectedRows();
-                        myAccountController.networkTableRowsSelected = selectedRows.length;
+                        myAccountController.networkTableRowsSelected = _.size( $scope.selectedRowsNetworkExternalIds);
 
                         changeNetworkBulkActionsButtonsLabels();
 
@@ -154,9 +264,120 @@ ndexApp.controller('myAccountController',
                 }
             };
 
+            $scope.tasksAndRequestsGridOptions =
+            {
+                enableSorting: true,
+                enableFiltering: true,
+                showGridFooter: true,
+                // the default value value of columnVirtualizationThreshold is 10; we need to set it to 20 because
+                // otherwise it will not show all columns if we display more than 10 columns in our table
+                columnVirtualizationThreshold: 20,
+                enableColumnMenus: false,
+                enableRowHeaderSelection: true,
+
+                onRegisterApi: function( gridApi )
+                {
+                    $scope.taskGridApi = gridApi;
+
+                    gridApi.core.on.rowsRendered($scope, function() {
+                        // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
+                        $scope.taskGridApi.core.handleWindowResize();
+                        $scope.refreshTasksButtonDisabled = false;
+
+                        if (myAccountController.taskTableRowsSelected > 0) {
+
+                            _.forEach ($scope.taskGridApi.grid.rows, function(row) {
+                                //var row = $scope.taskGridApi.grid.rows[i];
+
+                                if (row['entity']) {
+
+                                    if (row['entity']['taskId']
+                                        && (row['entity']['taskId'] in $scope.selectedRowsTasksExternalIds)) {
+                                        //$scope.taskGridApi.grid.rows[i].isSelected = true;
+                                        row.isSelected = true;
+                                    };
+                                };
+                            });
+
+                        };
+                    });
+
+                    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                        if (row.isSelected) {
+                            if (row['entity']['taskId']) {
+                                $scope.selectedRowsTasksExternalIds[row['entity']['taskId']] = '';
+                            };
+                            if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                (row['entity']['Status'] == 'completed')) {
+                                myAccountController.numberOfDownloadableTasks++;
+                            };
+                            if (row['entity']['whatType'] == 'received') {
+                                myAccountController.numberOfReceivedRequests++;
+                            };
+                        } else {
+                            if (row['entity']['taskId']) {
+                                delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
+                            };
+                            if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                (myAccountController.numberOfDownloadableTasks > 0)) {
+                                myAccountController.numberOfDownloadableTasks--;
+                            };
+                            if ((row['entity']['whatType'] == 'received') &&
+                                (myAccountController.numberOfReceivedRequests > 0)) {
+                                myAccountController.numberOfReceivedRequests--;
+                            };
+                        };
+
+                        myAccountController.taskTableRowsSelected = _.size($scope.selectedRowsTasksExternalIds);
+                    });
+
+                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+
+                        _.forEach(rows, function(row) {
+                            if (row.isSelected) {
+                                if (row['entity']['taskId']) {
+                                    $scope.selectedRowsTasksExternalIds[row['entity']['taskId']] = '';
+                                };
+                                if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                    (row['entity']['Status'] == 'completed')) {
+                                    myAccountController.numberOfDownloadableTasks++;
+                                };
+                                if (row['entity']['whatType'] == 'received') {
+                                    myAccountController.numberOfReceivedRequests++;
+                                };
+                            } else {
+                                if (row['entity']['taskId']) {
+                                    delete $scope.selectedRowsTasksExternalIds[row['entity']['taskId']];
+                                };
+                                if ((row['entity']['typeFromServer'] == 'export_network_to_file') &&
+                                    (myAccountController.numberOfDownloadableTasks > 0)) {
+                                    myAccountController.numberOfDownloadableTasks--;
+                                };
+                                if ((row['entity']['whatType'] == 'received') &&
+                                    (myAccountController.numberOfReceivedRequests > 0)) {
+                                    myAccountController.numberOfReceivedRequests--;
+                                };
+                            };
+                        });
+
+                        myAccountController.taskTableRowsSelected = _.size($scope.selectedRowsTasksExternalIds);
+                    });
+                }
+            };
+
+            myAccountController.tasksAndRequestsGridOptions = $scope.tasksAndRequestsGridOptions;
+
             $scope.showNetworkTable = function() {
-                return (myAccountController.networkSearchResults.length > 0) ||
-                       (myAccountController.networkSets.length > 0);
+                return myAccountController.networkSearchResults.length > 0
+                    || myAccountController.networkSets.length > 0;
+            };
+
+            $scope.showTasksAndRequestsTable = function() {
+                var retValue =
+                        myAccountController.pendingRequests.length > 0
+                    || myAccountController.sentRequests.length > 0
+                    || myAccountController.tasks.length > 0;
+                return retValue;
             };
 
             var changeNetworkBulkActionsButtonsLabels = function() {
@@ -171,14 +392,14 @@ ndexApp.controller('myAccountController',
                 };
             };
 
-            var populateNetworkTable = function()
+            var defineNetworkTable = function()
             {
                 var columnDefs = [
                     { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'pages/gridTemplates/networkStatusOnMyAccountPage.html'},
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'pages/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'pages/gridTemplates/downloadNetwork.html' },
 
-                    { field: 'Format', enableFiltering: true, maxWidth:63,
+                    { field: 'Format', enableFiltering: true, maxWidth:77,
                         sort: {
                             direction: uiGridConstants.DESC,
                             priority: 0,
@@ -223,32 +444,131 @@ ndexApp.controller('myAccountController',
                     { field: 'name',        enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
-                refreshNetworkTable();
             };
 
-            /*
-            $scope.signClicked = function(networkSetExpanded, row) {
-                //alert('sign clicked; row.$$height=' + row.$$height);
-                //row.$$height = (networkSetExpanded) ? 30 : row.$$height + row.$$height * row.entity.networks.length;
+            var defineTasksAndNotificationsTable = function()
+            {
+                var columnDefs = [
+                    { field: 'New',   enableFiltering: true, width: 60, sort: {direction: 'desc', priority: 5},
+                        cellTemplate: 'pages/gridTemplates/taskOrRequestNew.html' },  // , new, etc. cellTemplate: 'pages/gridTemplates/taskStatusOnTasksPage.html'
+                    { field: 'Status', enableFiltering: true, maxWidth: 80, cellTemplate: 'pages/gridTemplates/taskOrRequestStatus.html' },
+                    { field: 'Type', enableFiltering: true,   width: 150, cellTemplate: 'pages/gridTemplates/taskOrRequestType.html' },  // task, sent notif., received notific.
+                    { field: 'Description', enableFiltering: true, cellTemplate: 'pages/gridTemplates/taskOrRequestDescription.html'},
+                    { field: 'Created', enableFiltering: false, maxWidth: 120,
+                        cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 5}
+                    },
+                    //{ field: 'Last Accessed', enableFiltering: false, cellFilter: "date:'short'", visible: false },
+                    { field: 'Delete',  enableFiltering: false, maxWidth: 60, cellTemplate: 'pages/gridTemplates/deleteTask.html' },
 
-
-                //$scope.collectionGridApi.grid.options.rowHeight = 'autopx'; //(networkSetExpanded) ? 30 : row.$$height * row.entity.networks.length;
-                //$scope.collectionGridApi.grid.rows[1].$$height = (networkSetExpanded) ? 30 : row.$$height * row.entity.networks.length;
-                //$scope.collectionGridApi.grid.rowHashMap.grid.rows[1].$$height = (networkSetExpanded) ? 30 : row.$$height * row.entity.networks.length;
-
-                return;
+                    { field: 'taskId',      enableFiltering: false,  visible: false},
+                    { field: 'ownerUUID',   enableFiltering: false,  visible: false},
+                    { field: 'typeFromServer',  enableFiltering: false,  visible: false},
+                    { field: 'newTask',      enableFiltering: false,  visible: false},
+                    { field: 'newSent',      enableFiltering: false,  visible: false},
+                    { field: 'newReceived',  enableFiltering: false,  visible: false},
+                    { field: 'whatType',     enableFiltering: false,  visible: false}
+                ];
+                $scope.taskGridApi.grid.options.columnDefs = columnDefs;
             };
-            */
 
+/*
             $scope.getExportedNetworkDownloadLink = function(taskId) {
                 return ndexService.getNdexServerUri() + "/task/" + taskId + "/file?download=true";
+            }; */
+
+            $scope.getCredentialsForExportedNetworkDownload = function(taskId) {
+                var link = ndexService.getNdexServerUri() + "/task/" + taskId + "/file?download=true";
+                var anchor = document.createElement('a');
+                var myId = taskId + "";
+
+                if ( window.currentSignInType=='google')
+                    anchor.setAttribute('href', link + "&id_token=" +
+                        gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+
+                else if (window.currentSignInType == 'basic') {
+                    var userCredentials = ndexUtility.getUserCredentials();
+                    anchor.setAttribute('href', link);
+                    anchor.setAttribute('id', myId);
+                    anchor.username = ndexUtility.getUserCredentials()['userName'];
+                    anchor.password = ndexUtility.getUserCredentials()['token'];
+                };
+
+                anchor.setAttribute("type","hidden");
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
             };
 
-            $scope.getCredentialsForExportedNetworkDownload = function() {
-                document.getElementById("exportedNetworkDownoadLinkId").username = ndexUtility.getUserCredentials()['userName'];
-                document.getElementById("exportedNetworkDownoadLinkId").password = ndexUtility.getUserCredentials()['token'];
+
+
+            myAccountController.downloadSelectedTasks = function() {
+                var tasksToDownload = _.filter($scope.taskGridApi.selection.getSelectedRows(),
+                        {typeFromServer: 'export_network_to_file', Status: 'completed'});
+                var countSelectedRows = tasksToDownload.length;
+
+                for (i = 0; i < countSelectedRows; i++) {
+                    var taskId = tasksToDownload[i].taskId;
+                    setTimeout(
+                        $scope.getCredentialsForExportedNetworkDownload, i*500, taskId);
+                };
             };
 
+            $scope.enabledManageRequestsBulkButton = function() {
+                return myAccountController.numberOfReceivedRequests > 0;
+            };
+            $scope.enabledBulkDownloadButton = function() {
+                return myAccountController.numberOfDownloadableTasks > 0;
+            };
+
+            $scope.markAsRead = function(entity) {
+
+                // we only update sent requests; can't update received requests since logged in user doesn't own them
+
+                if ((entity.whatType == 'sent') && (entity.newSent) &&
+                    (entity.Status != 'accepted') && (entity.Status != 'declined') ||
+                    (!entity.newTask && !entity.newSent)) {
+                    return;
+                };
+
+                if (entity.whatType == "task") {
+                    var properties = {"newTask" : false};
+                    ndexService.updateTaskPropertiesV2(entity.taskId, properties,
+                        function (data) {
+                            entity.newTask = false;
+                            entity.New = '&nbsp;&nbsp;';
+
+                            if (myAccountController.numberOfNewTasksAndRequests > 0) {
+                                myAccountController.numberOfNewTasksAndRequests--;
+                            };
+
+                            $scope.taskGridApi.core.refresh();
+                        },
+                        function (error) {
+                            console.log("unable to update task");
+                        }
+                    );
+                } else if (entity.whatType == "sent") {
+
+                    properties = {"newSent" : false};
+
+                    // entity.taskId below is in fact request Id
+                    ndexService.updateRequestPropertiesV2(entity.taskId, properties,
+                        function (data) {
+                            entity.newSent = false;
+                            entity.New = '&nbsp;&nbsp;';
+
+                            if (myAccountController.numberOfNewTasksAndRequests > 0) {
+                                myAccountController.numberOfNewTasksAndRequests--;
+                            };
+
+                            $scope.taskGridApi.core.refresh();
+                        },
+                        function (error) {
+                            console.log("unable to update request");
+                        }
+                    );
+                };
+            };
 
             $scope.showSetInfo = function(setId) {
                 var networkSet = _.find(myAccountController.networkSets, {externalId:setId});
@@ -364,7 +684,7 @@ ndexApp.controller('myAccountController',
                 $scope.enableShareBulkButton = true;
             };
             
-            var refreshNetworkTable = function()
+            var populateNetworkTable = function()
             {
                 $scope.networkGridOptions.data = [];
 
@@ -452,6 +772,188 @@ ndexApp.controller('myAccountController',
                 };
             };
 
+
+
+            var populateTasksAndNotificationsTable = function()
+            {
+                $scope.tasksAndRequestsGridOptions.data = [];
+
+                var newTasksAndNotifications = 0;
+
+                _.forEach(myAccountController.tasks, function(task)
+                {
+                    var taskType         = task.taskType.toLowerCase();
+                    var taskCreationTime = task.creationTime;
+                    var taskDescription  = task.description;
+                    var taskUUID         = task.externalId;
+                    var taskOwnerUUID    = task.taskOwnerId;
+                    var taskStatus       = task.status.toLowerCase();
+
+                    if (taskType && taskType.toUpperCase() == 'EXPORT_NETWORK_TO_FILE' && task.attributes) {
+                        var taskDownloadFileExtension = task.attributes.downloadFileExtension;
+                        var taskDownloadFileName      = task.attributes.downloadFileName;
+                        var taskAtributeName          = task.attributes.name;
+
+                        if (taskStatus == 'processing') {
+                            taskDescription = 'Exporting ' + taskDownloadFileName + '...';
+                        } else if (taskStatus == 'completed') {
+                            taskDescription = 'Download ' + taskDownloadFileName;
+                        }
+                    };
+
+                    if (taskType == 'export_network_to_file') {
+                        taskType = 'export network to file';
+                    };
+
+                    var newTask =
+                        (task.ownerProperties
+                            && (typeof task.ownerProperties.newTask !== 'undefined')) ? task.ownerProperties.newTask : true;
+
+                    if (newTask && (taskStatus == 'failed' || taskStatus == 'completed')) {
+                        var newLabel = "New!";
+                        newTasksAndNotifications++;
+                    } else {
+                        newLabel = " ";
+                    };
+
+                    var newSent     = false;
+                    var newReceived = false;
+
+                    var row = {
+                        "New"            : newLabel,
+                        "Status"         : taskStatus,
+                        "Type"           : taskType,
+                        "Description"    : taskDescription,
+                        "Created"        : taskCreationTime,
+                        "Delete"         : "delete",
+                        "taskId"         : taskUUID,
+                        "ownerUUID"      : taskOwnerUUID,
+                        "typeFromServer" : task.taskType.toLowerCase(),
+                        "newTask"        : newTask,
+                        "newSent"        : newSent,
+                        "newReceived"    : newReceived,
+                        "whatType"       : "task"
+                    };
+                    $scope.tasksAndRequestsGridOptions.data.push(row);
+                });
+
+                _.forEach(myAccountController.pendingRequests, function(pendingRequest)  {
+
+                    var requestType = "unknown";
+                    if (pendingRequest.requestType) {
+                        if (pendingRequest.requestType.toLowerCase() == "usernetworkaccess") {
+                            requestType = "user network access";
+                        } else if (pendingRequest.requestType.toLowerCase() == "groupnetworkaccess") {
+                            requestType = "group network access";
+                        } else if (pendingRequest.requestType.toLowerCase() == "joingroup") {
+                            requestType = "received join group";
+                        };
+                    }
+
+                    var requestCreationTime    = pendingRequest.creationTime;
+
+                    var requestDescription = pendingRequest.sourceName + " requests " +
+                        _.startCase(pendingRequest.permission.toLowerCase()) + " access to " + pendingRequest.destinationName;
+
+                    var requestUUID      = pendingRequest.externalId;
+                    var requestOwnerUUID = pendingRequest.requesterId;
+                    var requestStatus    = pendingRequest.response.toLowerCase();
+
+                    var newRequest =
+                        (pendingRequest.properties && (typeof pendingRequest.properties.newReceived !== 'undefined'))
+                            ? pendingRequest.properties.newReceived : true;
+
+                    if (newRequest) {
+                        var newLabel = "New!";
+                        newTasksAndNotifications++;
+                    } else {
+                        newLabel = " ";
+                    };
+
+                    var typeFromServer = pendingRequest.requestType.toLowerCase();
+
+                    var newTask = false;
+                    var newSent = false;
+
+                    var row = {
+                        "New"             : newLabel,
+                        "Status"         : requestStatus,
+                        "Type"           : requestType,
+                        "Description"    : requestDescription,
+                        "Created"        : requestCreationTime,
+                        "Delete"         : "delete",
+                        "taskId"         : requestUUID,
+                        "ownerUUID"      : requestOwnerUUID,
+                        "typeFromServer" : typeFromServer,
+                        "newTask"        : newTask,
+                        "newSent"        : newSent,
+                        "newReceived"    : newRequest,
+                        "whatType"       : "received"
+                    };
+                    $scope.tasksAndRequestsGridOptions.data.push(row);
+
+                });
+
+                _.forEach(myAccountController.sentRequests, function(sentRequest) {
+
+                    var requestType = "unknown";
+                    if (sentRequest.requestType) {
+                        if (sentRequest.requestType.toLowerCase() == "usernetworkaccess") {
+                            requestType = "user network access";
+                        } else if (sentRequest.requestType.toLowerCase() == "groupnetworkaccess") {
+                            requestType = "group network access";
+                        } else if (sentRequest.requestType.toLowerCase() == "joingroup") {
+                            requestType = "sent join group";
+                        };
+                    };
+
+                    var requestCreationTime    = sentRequest.creationTime;
+
+                    var requestDescription = sentRequest.sourceName + " requests " +
+                        _.startCase(sentRequest.permission.toLowerCase()) + " access to " + sentRequest.destinationName;
+
+                    var requestUUID       = sentRequest.externalId;
+                    var requestOwnerUUID  = sentRequest.requesterId;
+                    var requestStatus     = sentRequest.response.toLowerCase();
+
+                    var newRequest =
+                        (sentRequest.properties && (typeof sentRequest.properties.newSent !== 'undefined'))
+                            ? sentRequest.properties.newSent : true;
+
+                    if (newRequest && (requestStatus == 'accepted' || requestStatus == 'declined')) {
+                        var newLabel = "New!";
+                        newTasksAndNotifications++;
+                    } else {
+                        newLabel = " ";
+                    };
+
+
+                    var typeFromServer = sentRequest.requestType.toLowerCase();
+
+                    var newTask     = false;
+                    var newReceived = false;
+
+                    var row = {
+                        "New"             : newLabel,
+                        "Status"         : requestStatus,
+                        "Type"           : requestType,
+                        "Description"    : requestDescription,
+                        "Created"        : requestCreationTime,
+                        "Delete"         : "delete",
+                        "taskId"         : requestUUID,
+                        "ownerUUID"      : requestOwnerUUID,
+                        "typeFromServer" : typeFromServer,
+                        "newTask"        : newTask,
+                        "newSent"        : newRequest,
+                        "newReceived"    : newReceived,
+                        "whatType"       : "sent"
+                    };
+                    $scope.tasksAndRequestsGridOptions.data.push(row);
+                });
+
+                myAccountController.numberOfNewTasksAndRequests = newTasksAndNotifications;
+            };
+
             myAccountController.tasksNotificationsTabDisabled = function() {
 
                 if ( (myAccountController.tasks.length > 0) ||
@@ -475,9 +977,11 @@ ndexApp.controller('myAccountController',
                 }
             };
 
-            myAccountController.getNetworkDownloadName = function(task)
+            myAccountController.getNetworkDownloadName = function(taskId)
             {
-                if (typeof task.attributes === 'undefined') {
+                var task = _.find(myAccountController.tasks, {'externalId': taskId});
+
+                if (!task || typeof task.attributes === 'undefined') {
                     return;
                 }
 
@@ -502,41 +1006,6 @@ ndexApp.controller('myAccountController',
                 return task.attributes.downloadFileName;
             };
 
-            // recursive function that deletes all tasks from the server
-            myAccountController.deleteAllTasks = function()
-            {
-                // delete all tasks that are visible to the user
-                for (var i = 0; i < myAccountController.tasks.length; i++) {
-                    var task = myAccountController.tasks[i];
-                    myAccountController.deleteTask(task.externalId);
-                }
-
-                // there may be more tasks on the server; try to get them
-                ndexService.getUserTasksV2(
-                     "ALL",
-                     0,
-                     100,
-                     // Success callback function
-                     function (tasks)
-                     {
-                         if (tasks.length == 0) {
-                             // recursive base case: no task was retrieved from the server
-                             return;
-                         }
-
-                         // recursive general case: more tasks were retrieved -- call itself
-                         // (myAccountController.deleteAllTasks) to delete them
-                         myAccountController.tasks = tasks;
-                         myAccountController.deleteAllTasks();
-                     },
-                     // Error
-                     function (response)
-                     {
-                         return;
-                     }
-                )
-            };
-
             myAccountController.checkAndDeleteSelectedNetworks = function() {
                 var checkWritePrivilege = false;
                 var networksDeleteable =
@@ -551,7 +1020,16 @@ ndexApp.controller('myAccountController',
                             ndexService.getUserByUUIDV2(myAccountController.identifier)
                                 .success(
                                     function (user) {
-                                        $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+                                        //$scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+
+                                        myAccountController.getNoOfNetworksAndSets(
+                                            function() {
+                                                myAccountController.loadNetworks();
+                                            },
+                                            function() {
+                                                console.log("unable to get No of Networks and Sets for this account");
+                                            }
+                                        );
                                     });
                         },
                         function() {
@@ -569,6 +1047,478 @@ ndexApp.controller('myAccountController',
                 }
                 return;
             };
+
+
+            myAccountController.checkAndMarkAsRead = function() {
+
+                var tasksToMark =
+                    _.map($scope.taskGridApi.selection.getSelectedRows(),
+                        function(task)
+                        {
+                            var taskNotToMark =
+                                task.newReceived || (!task.newTask && !task.newSent) ||
+                                task.Status == 'queued' || task.Status == 'processing' ||
+                                (task.newSent && (task.Status == 'processing'));
+
+                            return taskNotToMark ? null :
+                                {
+                                    'id': task.taskId,
+                                    'typeFromServer' : task.typeFromServer,
+                                    'ownerUUID' : task.ownerUUID
+                                };
+                        });
+
+                tasksToMark = _.without(tasksToMark, null);
+                var numberOfTasksToMark = tasksToMark.length;
+                var selectedTasks = myAccountController.taskTableRowsSelected;
+
+
+                if ((numberOfTasksToMark == 0) && (selectedTasks > 0)) {
+                    var title = (selectedTasks == 1) ? "Cannot Mark Selected Task" :
+                        "Cannot Mark Selected Tasks";
+
+                    var message = (selectedTasks == 1) ?
+                        "The selected task cannot be marked as read." :
+                        "The selected " + selectedTasks + " tasks can not be marked as read.";
+
+                    myAccountController.genericInfoModal(title, message);
+                    return;
+                };
+
+                if (numberOfTasksToMark > 1) {
+                    title = 'Mark Selected Tasks';
+
+                    message = (numberOfTasksToMark != selectedTasks) ?
+                        numberOfTasksToMark + ' of the selected ' +  selectedTasks +
+                        ' tasks will be marked as read. Are you sure you want to proceed?' :
+
+                        'The selected ' + numberOfTasksToMark + ' tasks will be marked as read. ' +
+                        'Are you sure you want to proceed?';
+                } else {
+
+                    title = 'Mark Selected Task';
+
+                    message = (selectedTasks > 1) ?
+                        numberOfTasksToMark + ' of the selected ' +  selectedTasks +
+                        ' tasks will be marked as read. Are you sure you want to proceed?' :
+
+                        'The selected task will be marked as read. Are you sure you want to proceed?';
+                };
+
+                var dismissModal = false;
+
+                $rootScope.progress  = null;
+                $rootScope.progress2 = null;
+                $rootScope.errors    = null;
+                $rootScope.confirmButtonDisabled = false;
+
+                var markedCount = 0;
+
+                var cancelHit = false;
+                var errorFromServer = false;
+
+                ndexNavigation.openConfirmationModal(title, message, "Mark As Read", "Cancel", dismissModal,
+                    function ($modalInstance) {
+                        $scope.isProcessing = true;
+                        $rootScope.confirmButtonDisabled = true;
+
+                        sequence(tasksToMark, function (task) {
+                            if (cancelHit|| errorFromServer) {
+                                return;
+                            };
+
+                            return markTask(task).then(function (info) {
+                                markedCount++;
+
+                                var taskId = task.id;
+
+                                $rootScope.progress = "Marked: " + markedCount + " of " + numberOfTasksToMark + " selected tasks";
+
+                                if ((markedCount == numberOfTasksToMark) || !$scope.isProcessing) {
+                                    myAccountController.checkAndRefreshMyTaskAndNotification();
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+                                        delete $rootScope.confirmButtonDisabled;
+
+                                        $scope.isProcessing = false;
+                                        $modalInstance.dismiss();
+                                    }, 2000);
+                                };
+                            });
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to mark';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ": " +  reason.data.message : ".";
+
+                            myAccountController.checkAndRefreshMyTaskAndNotification();
+                        });
+                    },
+                    function ($modalInstance) {
+                        $scope.isProcessing = false;
+
+                        if (markedCount == 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+                            delete $rootScope.confirmButtonDisabled;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+
+                                $modalInstance.dismiss();
+                            }, 2000);
+                        };
+                    });
+
+                return;
+            };
+
+            myAccountController.checkAndDeleteSelectedTasks = function() {
+
+                var countTasksThatCannotBeDeleted = _.sumBy($scope.taskGridApi.selection.getSelectedRows(),
+                    function(task){return task.newReceived ? 1 : 0});
+
+                var selectedTasks = myAccountController.taskTableRowsSelected;
+
+
+                if (countTasksThatCannotBeDeleted == selectedTasks) {
+                    var title = (countTasksThatCannotBeDeleted == 1) ? "Cannot Delete Selected Task" :
+                        "Cannot Delete Selected Tasks";
+
+                    var message =(countTasksThatCannotBeDeleted == 1) ?
+                        "The selected task is received and cannot be deleted." :
+                        "All of " + countTasksThatCannotBeDeleted + " selected tasks are received and cannot be deleted.";
+
+                    myAccountController.genericInfoModal(title, message);
+                    return;
+                };
+
+                var numberOfTasksToDelete = selectedTasks - countTasksThatCannotBeDeleted;
+
+                if (numberOfTasksToDelete > 1) {
+                    title = 'Remove Selected Tasks';
+
+                    message = (countTasksThatCannotBeDeleted > 0) ?
+                        numberOfTasksToDelete + ' of the selected ' +  selectedTasks +
+                        ' tasks will be deleted. Are you sure you want to proceed?' :
+
+                        'The selected ' + numberOfTasksToDelete + ' tasks will be deleted. Are you sure you want to proceed?';
+                } else {
+
+                    title = 'Remove Selected Task';
+
+                    message = (countTasksThatCannotBeDeleted > 0) ?
+                        numberOfTasksToDelete + ' of the selected ' +  selectedTasks +
+                        ' tasks will be deleted. Are you sure you want to proceed?' :
+
+                        'The selected task will be deleted. Are you sure you want to proceed?';
+                };
+
+                var dismissModal = false;
+
+                $rootScope.progress  = null;
+                $rootScope.progress2 = null;
+                $rootScope.errors    = null;
+                $rootScope.confirmButtonDisabled = false;
+
+                var deletedCount = 0;
+
+                var cancelHit = false;
+                var errorFromServer = false;
+
+
+                ndexNavigation.openConfirmationModal(title, message, "Delete", "Cancel", dismissModal,
+                    function ($modalInstance) {
+                        $scope.isProcessing = true;
+                        $rootScope.confirmButtonDisabled = true;
+
+                        var selTaskRows = $scope.taskGridApi.selection.getSelectedRows();
+
+                        var tasks =
+                            _.map(selTaskRows, function(task) {
+                                    return task.newReceived ? null :
+                                        {
+                                            'id': task.taskId,
+                                            'typeFromServer' : task.typeFromServer,
+                                            'ownerUUID' : task.ownerUUID
+                                        };
+                            });
+
+                        var tasksToDel = _.without(tasks, null);
+
+                        sequence(tasksToDel, function (task) {
+                            if (cancelHit|| errorFromServer) {
+                                return;
+                            };
+
+                            return delTask(task).then(function (info) {
+                                deletedCount++;
+
+                                var taskId = task.id;
+                                myAccountController.taskTableRowsSelected--;
+                                delete $scope.selectedRowsTasksExternalIds[taskId];
+
+                                $rootScope.progress = "Deleted: " + deletedCount + " of " + numberOfTasksToDelete + " selected tasks";
+
+                                if ((deletedCount == numberOfTasksToDelete) || !$scope.isProcessing) {
+                                    myAccountController.checkAndRefreshMyTaskAndNotification();
+                                    $scope.taskGridApi.grid.selection.selectedCount = myAccountController.taskTableRowsSelected;
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+                                        delete $rootScope.confirmButtonDisabled;
+
+                                        $scope.isProcessing = false;
+                                        $modalInstance.dismiss();
+                                    }, 2000);
+                                };
+                            });
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to delete';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ": " +  reason.data.message : ".";
+
+                            myAccountController.checkAndRefreshMyTaskAndNotification();
+                            $scope.taskGridApi.grid.selection.selectedCount = myAccountController.taskTableRowsSelected;
+
+                        });
+                    },
+                    function ($modalInstance) {
+                        $scope.isProcessing = false;
+
+                        if (deletedCount == 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+                            delete $rootScope.confirmButtonDisabled;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+
+                                $modalInstance.dismiss();
+                            }, 2000);
+                        };
+                    });
+                return;
+            };
+
+            function sequence(array, callback) {
+                return array.reduce(function chain(promise, item) {
+                    return promise.then(function () {
+                        return callback(item);
+                    });
+                }, Promise.resolve());
+            };
+
+            function delTask(task) {
+                var typeFromServer = task.typeFromServer.toLowerCase();
+
+                if (typeFromServer == 'export_network_to_file') {
+
+                    return ndexService.deleteTaskNoHandlersV2(task.id);
+
+                } else {
+
+                    var request = {"requesterId": task.ownerUUID, "externalId":  task.id};
+
+                    if (typeFromServer == 'usernetworkaccess'  || typeFromServer == "groupnetworkaccess") {
+
+                        return ndexService.deletePermissionRequestNoHandlersV2(request);
+
+                    } else if  (typeFromServer == 'joingroup') {
+
+                        return ndexService.deleteMembershipRequestNoHandlersV2(request);
+                    }
+                };
+            };
+
+            function markTask(task) {
+
+                var typeFromServer = task.typeFromServer.toLowerCase();
+
+                if (typeFromServer == 'export_network_to_file') {
+                    var properties = {"newTask" : false};
+                    return ndexService.updateTaskPropertiesNoHandlersV2(task.id, properties);
+
+                } else {
+
+                    if (typeFromServer == 'usernetworkaccess'  || typeFromServer == "groupnetworkaccess" ||
+                        typeFromServer == 'joingroup')
+                    {
+                        properties = {"newSent" : false};
+                        return ndexService.updateRequestPropertiesNoHandlersV2(task.id, properties);
+                    };
+                };
+            };
+
+
+            function manageRequest(request, acceptRequests, message) {
+
+                var typeFromServer = request.typeFromServer.toLowerCase();
+
+                var recipientId = myAccountController.identifier;
+                var requestId   = request.taskId;
+                var action      = acceptRequests ? "accept" : "deny";
+
+                if (acceptRequests) {
+                    // request(s) accepted/approved
+
+                    if (typeFromServer == 'usernetworkaccess' || typeFromServer == "groupnetworkaccess") {
+
+                        var receivedRequest =
+                            _.find($scope.myAccountController.pendingRequests, {'externalId': requestId});
+
+                        var networkId     = receivedRequest.destinationUUID;
+                        var userOrGroupId = receivedRequest.sourceUUID;
+                        var permission    = receivedRequest.permission;
+
+                        var type = (typeFromServer == 'usernetworkaccess') ? 'user' : 'group';
+
+                        return ndexService.updateNetworkPermissionNoHandlersV2(networkId, type, userOrGroupId, permission).then(
+                            function (data) {
+                                return ndexService.acceptOrDenyPermissionRequestNoHandlersV2(recipientId,
+                                    requestId, action, message);
+
+                        }).catch(
+                            function (data) {
+                                return ndexService.acceptOrDenyPermissionRequestNoHandlersV2(recipientId,
+                                    requestId, action, message);
+                            });
+
+                    } else if (typeFromServer == 'joingroup') {
+
+                        return ndexService.acceptOrDenyMembershipRequestNoHandlersV2(recipientId,
+                            requestId, action, message);
+                    };
+
+                } else {
+                    // request(s) declined/denied
+
+                    if (typeFromServer == 'usernetworkaccess' || typeFromServer == "groupnetworkaccess") {
+
+                       return ndexService.acceptOrDenyPermissionRequestNoHandlersV2(recipientId,
+                           requestId, action, message);
+
+                    } else if (typeFromServer == 'joingroup') {
+
+                        return ndexService.acceptOrDenyMembershipRequestNoHandlersV2(recipientId,
+                            requestId, action, message);
+                    };
+
+                };
+            };
+
+            myAccountController.manageSelectedRequests = function() {
+
+                var requestsToManage = _.filter($scope.taskGridApi.selection.getSelectedRows(), {whatType: 'received'});
+                var countSelectedRequests = requestsToManage.length;
+
+                $rootScope.progress  = null;
+                $rootScope.progress2 = null;
+                $rootScope.errors    = null;
+
+                var managedCount = 0;
+
+                var cancelHit = false;
+                var errorFromServer = false;
+
+                var title = "Respond to " + countSelectedRequests + " Selected "  +
+                    (countSelectedRequests > 1 ? "Requests"  : "Request");
+
+                var message = null;
+
+                ndexNavigation.openManageBulkRequestsModal(title, message, "Accept", "Decline", "Cancel",
+                    function ($modalInstance, acceptRequests, responseMessage) {
+
+                        var progressLabel = acceptRequests ? "Accepted: " : "Declined: ";
+
+                        $scope.isProcessing = true;
+
+                        sequence(requestsToManage, function (request) {
+                            if (cancelHit || errorFromServer) {
+                                return;
+                            };
+
+                            return manageRequest(request, acceptRequests, responseMessage).then(function (info) {
+                                managedCount++;
+
+                                $rootScope.progress = progressLabel + managedCount + " of " + countSelectedRequests + " selected requests";
+
+                                if ((managedCount == countSelectedRequests) || !$scope.isProcessing) {
+                                    myAccountController.checkAndRefreshMyTaskAndNotification();
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+
+                                        $modalInstance.dismiss();
+                                    }, 2000);
+                                };
+                            });
+
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to process request';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ": " +  reason.data.message : ".";
+
+                            myAccountController.checkAndRefreshMyTaskAndNotification();
+                        });
+
+                    },
+
+                    function ($modalInstance) {
+
+                        if (managedCount == 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+
+                                $modalInstance.dismiss();
+                            }, 2000);
+                        };
+                    });
+
+                return;
+            };
+
 
             myAccountController.genericInfoModal = function(title, message)
             {
@@ -591,7 +1541,7 @@ ndexApp.controller('myAccountController',
             myAccountController.confirmDeleteSelectedNetworks = function(deletedHandler, canceledHandler)
             {
                 var   modalInstance = $modal.open({
-                    templateUrl: 'confirmation-modal.html',
+                    templateUrl: 'pages/directives/confirmationModal.html',
                     scope: $scope,
 
                     controller: function($scope, $modalInstance) {
@@ -609,7 +1559,6 @@ ndexApp.controller('myAccountController',
                         $scope.confirm = function() {
                             $scope.isProcessing = true;
                             myAccountController.deleteSelectedNetworks($scope, $modalInstance, deletedHandler);
-                            //$modalInstance.dismiss();
                             $scope.isProcessing = false;
                         };
                     }
@@ -620,7 +1569,7 @@ ndexApp.controller('myAccountController',
             myAccountController.confirmDeleteSelectedSets = function()
             {
                 var   modalInstance = $modal.open({
-                    templateUrl: 'confirmation-modal.html',
+                    templateUrl: 'pages/directives/confirmationModal.html',
                     scope: $scope,
 
                     controller: function($scope, $modalInstance) {
@@ -1149,7 +2098,10 @@ ndexApp.controller('myAccountController',
 
             myAccountController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler)
             {
-                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+                var offset = undefined;
+                var limit  = undefined;
+
+                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier, offset, limit,
                     
                     function (networkSets) {
                         myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
@@ -1224,43 +2176,149 @@ ndexApp.controller('myAccountController',
 
                 myAccountController.getUserGroupMemberships(member);
             };
-            
-            myAccountController.deleteTask = function (taskUUID)
+
+            $scope.getLoggedInUserUUID = function() {
+                return myAccountController.loggedInIdentifier;
+            };
+
+            $scope.deleteTask = function (entity)
+            {
+               if (entity.typeFromServer == "export_network_to_file") {
+
+                   if (entity.ownerUUID != myAccountController.loggedInIdentifier) {
+                       alert("You cannot delete this task since you are not the owner.");
+                       return;
+                   };
+
+                   var taskUUID = entity.taskId;
+
+                   myAccountController.deleteTask(taskUUID,
+                       function (data) {
+                           // remove task from the table and task list
+                           _.remove($scope.tasksAndRequestsGridOptions.data, {taskId: taskUUID});
+                           _.remove(myAccountController.tasks, {externalId: taskUUID});
+                           if (entity.newTask && (entity.Status != 'queued') && (entity.Status != 'processing') &&
+                                myAccountController.numberOfNewTasksAndRequests > 0) {
+                               myAccountController.numberOfNewTasksAndRequests--;
+                           };
+                           if (taskUUID in $scope.selectedRowsTasksExternalIds) {
+                               delete $scope.selectedRowsTasksExternalIds[taskUUID];
+
+                               $scope.taskGridApi.grid.selection.selectedCount =
+                               myAccountController.taskTableRowsSelected =
+                                      _.size($scope.selectedRowsTasksExternalIds);
+
+                           };
+                       },
+                       function (error) {
+                           console.log("unable to delete task");
+                       }
+                   )
+               } else if (entity.typeFromServer == "usernetworkaccess"
+                       || entity.typeFromServer == "groupnetworkaccess") {
+
+                   if (entity.ownerUUID != myAccountController.loggedInIdentifier) {
+                       alert("You cannot delete this request since you are not the owner.");
+                       return;
+                   };
+
+                   var request = {"requesterId": entity.ownerUUID, "externalId":  entity.taskId};
+
+                   ndexService.deletePermissionRequestV2(request,
+                       function(data) {
+                           // remove task from the table and task list
+                           _.remove($scope.tasksAndRequestsGridOptions.data, {taskId: entity.taskId});
+                           _.remove(myAccountController.sentRequests,   { externalId: entity.taskId});
+                           if (((entity.newSent && (entity.Status != 'pending')) ||
+                                    entity.newReceived) && myAccountController.numberOfNewTasksAndRequests > 0) {
+                               myAccountController.numberOfNewTasksAndRequests--;
+                           };
+                           if (entity.taskId in $scope.selectedRowsTasksExternalIds) {
+                               delete $scope.selectedRowsTasksExternalIds[taskUUID];
+
+                               $scope.taskGridApi.grid.selection.selectedCount =
+                               myAccountController.taskTableRowsSelected =
+                                       _.size($scope.selectedRowsTasksExternalIds);
+                           };
+                       },
+                       function(error){
+                           console.log("unable to delete request");
+                       });
+               }
+               else if (entity.typeFromServer == "joingroup") {
+                   if (entity.ownerUUID != myAccountController.loggedInIdentifier) {
+                       alert("You cannot delete this request since you are not the owner.");
+                       return;
+                   };
+
+                   var request = {"requesterId": entity.ownerUUID, "externalId": entity.taskId};
+
+                   ndexService.deleteMembershipRequestV2(request,
+                       function(data) {
+                           // remove task from the table and task list
+                           _.remove($scope.tasksAndRequestsGridOptions.data, {taskId: entity.taskId});
+                           _.remove(myAccountController.sentRequests,    {externalId: entity.taskId});
+                           if ((entity.newSent || entity.newReceived) && myAccountController.numberOfNewTasksAndRequests > 0) {
+                               myAccountController.numberOfNewTasksAndRequests--;
+                           };
+                           if (entity.taskId in $scope.selectedRowsTasksExternalIds) {
+                               delete $scope.selectedRowsTasksExternalIds[taskUUID];
+
+                               $scope.taskGridApi.grid.selection.selectedCount =
+                               myAccountController.taskTableRowsSelected =
+                                       _.size($scope.selectedRowsTasksExternalIds);
+                           };
+                       },
+                       function(error){
+                           console.log("unable to delete request");
+                       });
+               };
+            };
+
+            myAccountController.deleteTask = function (taskUUID, successHandler, errorHandler)
             {
                 ndexService.deleteTaskV2(taskUUID,
                     function (data)
                     {
-                        myAccountController.refreshTasks();
+                        if (successHandler) {
+                            successHandler(data);
+                        };
                     },
                     function (error)
                     {
                         console.log("unable to delete task");
+                        if (errorHandler) {
+                            errorHandler();
+                        };
                     }
                 )
             };
 
-            myAccountController.refreshTasks = function ()
+            myAccountController.getTasks = function (successHandler, errorHandler)
             {
                 ndexService.getUserTasksV2(
                     "ALL",
                     0,
-                    100,
+                    0,
                     // Success
                     function (tasks)
                     {
                         myAccountController.tasks = tasks;
+
+                        if (successHandler) {
+                            successHandler();
+                        };
                     },
                     function (error)
                     {
                         console.log("unable to get user's tasks");
+                        if (errorHandler) {
+                            errorHandler();
+                        };
                     }
                 )
             };
 
-            myAccountController.refreshRequests = function ()
-            {
-                getRequests();
-            };
 
             // local functions
 
@@ -1289,6 +2347,10 @@ ndexApp.controller('myAccountController',
                 }
 
                 for (var i = 0; i < requests.length; i++) {
+                    if (requests[i].requestType && (requests[i].requestType.toLowerCase() != "usernetworkaccess")) {
+                        continue;
+                    };
+
                     var requesterId = requests[i].requesterId;
 
                     for (var j = 0; j < users.length; j++) {
@@ -1298,50 +2360,9 @@ ndexApp.controller('myAccountController',
                         }
                     }
                 }
-            }
+            };
 
-            var getRequests = function ()
-            {
-                // get all user pending requests
-                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
-                    function (requests)
-                    {
-                        var userUUIDs = getUsersUUIDs(requests);
-
-                        ndexService.getUsersByUUIDsV2(userUUIDs)
-                            .success(
-                                function (userList) {
-                                    // make sure that sourceName has "First Name  Second Name" instead of "Account Name"
-                                    getNamesOfRequesters(requests, userList);
-
-                                    myAccountController.pendingRequests = requests;
-
-                                    // get all group pending requests
-                                    ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "received",
-                                        function (requests)
-                                        {
-                                            if (requests && requests.length > 0) {
-                                                myAccountController.pendingRequests =
-                                                    myAccountController.pendingRequests.concat(requests);
-                                            }
-                                        },
-                                        function (error)
-                                        {
-                                            console.log("unable to get pending requests");
-                                        });
-                                })
-                            .error(
-                                function(error) {
-                                    console.log("unable to get users by UUIDs");
-                                }
-                            )
-
-                    },
-                    function (error)
-                    {
-                        console.log("unable to get pending requests");
-                    });
-
+            myAccountController.getSentRequests = function (successHandler, errorHandler) {
                 // get all user sent requests
                 ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "sent",
                     function (requests)
@@ -1363,77 +2384,165 @@ ndexApp.controller('myAccountController',
                                             if (requests && requests.length > 0) {
                                                 myAccountController.sentRequests =
                                                     myAccountController.sentRequests.concat(requests);
-                                            }
+                                            };
+                                            successHandler();
                                         },
                                         function (error)
                                         {
                                             console.log("unable to get sent requests");
+                                            errorHandler();
                                         });
                                 })
                             .error(
                                 function(error) {
                                     console.log("unable to get users by UUIDs");
+                                    errorHandler();
                                 }
                             )
                     },
                     function (error)
                     {
                         console.log("unable to get sent requests");
-                    })
+                        errorHandler();
+                    });
+            };
 
+            myAccountController.getReceivedRequests = function (successHandler, errorHandler) {
+                // get all user pending requests
+                ndexService.getUserPermissionRequestsV2(myAccountController.identifier, "received",
+                    function (requests)
+                    {
+                        var userUUIDs = getUsersUUIDs(requests);
+
+                        ndexService.getUsersByUUIDsV2(userUUIDs)
+                            .success(
+                                function (userList) {
+                                    // make sure that sourceName has "First Name  Second Name" instead of "Account Name"
+                                    getNamesOfRequesters(requests, userList);
+
+                                    myAccountController.pendingRequests = requests;
+
+                                    // get all group pending requests
+                                    ndexService.getUserMembershipRequestsV2(myAccountController.identifier, "received",
+                                        function (requests)
+                                        {
+                                            if (requests && requests.length > 0) {
+                                                myAccountController.pendingRequests =
+                                                    myAccountController.pendingRequests.concat(requests);
+                                            };
+                                            successHandler();
+                                        },
+                                        function (error)
+                                        {
+                                            console.log("unable to get pending requests");
+                                            errorHandler();
+                                        });
+                                })
+                            .error(
+                                function(error) {
+                                    console.log("unable to get users by UUIDs");
+                                    errorHandler();
+                                });
+                    },
+                    function (error)
+                    {
+                        console.log("unable to get pending requests");
+                        errorHandler();
+                    });
             };
 
             myAccountController.getUserAccountPageNetworks = function (successHandler, errorHandler)
             {
-                var directOnly = false;
-                ndexService.getUserNetworkPermissionsV2(myAccountController.identifier, 'READ', 0, 1000000, directOnly,
-                    function (networkPermissionsMap) {
+                var noOfNetworkSetsOnPage = myAccountController.networkSets.length;
 
-                        ndexService.getUserAccountPageNetworksV2(myAccountController.identifier,
-                            function(networkSummaries) {
-                                myAccountController.networkSearchResults = networkSummaries;
+                if (noOfNetworkSetsOnPage >= paginationOptions.pageSize) {
+                    successHandler();
+                };
 
-                                myAccountController.networksWithAdminAccess = [];
-                                myAccountController.networksWithWriteAccess = [];
+                if ((noOfNetworkSetsOnPage > 0) && (noOfNetworkSetsOnPage < paginationOptions.pageSize)) {
+                    var offset = 0;
+                    var limit = paginationOptions.pageSize - noOfNetworkSetsOnPage;
+                }
+                else if ((noOfNetworkSetsOnPage == 0) && (paginationOptions.networkSetCount == 0)) {
+                    offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
+                    limit  = paginationOptions.pageSize;
 
-                                // loop through the network summaries and fill in lists of UUIDs
-                                // for networks with ADMIN and WRITE permissions
+                } else if ((noOfNetworkSetsOnPage == 0) && (paginationOptions.networkSetCount > 0)) {
+                    offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize - paginationOptions.networkSetCount;
+                    limit  = paginationOptions.pageSize;
+                };
+
+                ndexService.getUserAccountPageNetworksV2(myAccountController.identifier, offset, limit,
+                    function(networkSummaries) {
+
+                        myAccountController.networkSearchResults = networkSummaries;
+
+                        var networkUUIDs = _.map(networkSummaries, 'externalId');
+
+                        ndexService.getNetworkPermissionsByUUIDsV2(networkUUIDs,
+                            function(networkPermissionsMap) {
+
+                                // build list of networks with ADMIN and WRITE permissions
+                                var invertedMapsPermissions = _.invertBy(networkPermissionsMap);
+
+                                var networksWithAdminPermissions = invertedMapsPermissions['ADMIN'];
+                                var networksWithWritePermissions = invertedMapsPermissions['WRITE'];
+
+                                myAccountController.networksWithAdminAccess =
+                                    networksWithAdminPermissions ? networksWithAdminPermissions : [];
+
+                                myAccountController.networksWithWriteAccess =
+                                    networksWithWritePermissions ? networksWithWritePermissions : [];
+
+
+                                // loop through the network summaries and find what networks have multiple subnetworks
                                 _.forEach(myAccountController.networkSearchResults, function (networkSummaryObj) {
-
-                                    var networkUUID = networkSummaryObj.externalId;
-
-                                    if (networkUUID in networkPermissionsMap) {
-                                        var networkPermission = networkPermissionsMap[networkUUID];
-
-                                        if (networkPermission) {
-                                            networkPermission = networkPermission.toUpperCase();
-
-                                            if (networkPermission == "ADMIN") {
-                                                myAccountController.networksWithAdminAccess.push(networkUUID);
-                                            } else if (networkPermission == "WRITE") {
-                                                myAccountController.networksWithWriteAccess.push(networkUUID);
-                                            };
-                                        };
-                                    };
 
                                     var noOfSubNetworks = uiMisc.getNoOfSubNetworks(networkSummaryObj);
 
                                     if (noOfSubNetworks > 1) {
-                                        myAccountController.networksWithMultipleSubNetworks[networkUUID] = noOfSubNetworks;
+                                        myAccountController.networksWithMultipleSubNetworks[networkSummaryObj.externalId] = noOfSubNetworks;
                                     };
                                 });
+
                                 successHandler();
                             },
                             function(error) {
-                               console.log("unable to get user account page networks");
-                               errorHandler();
+                                console.log("unable to get user network permissions for the logged in user");
+                                errorHandler();
                             });
-
                     },
-                    function (error, data) {
-                        console.log("unable to get user network memberships");
+                    function(error) {
+                       console.log("unable to get user account page networks");
+                       errorHandler();
                     });
             };
+
+
+            myAccountController.getUserNetworksAndPopulateTable = function (successHandler, errorHandler)
+            {
+                // get networks
+                myAccountController.getUserAccountPageNetworks(
+                    function () {
+
+                        if (!networkTableDefined) {
+                            networkTableDefined = true;
+                            defineNetworkTable();
+                        };
+
+                        populateNetworkTable();
+
+                        if (successHandler) {
+                            successHandler();
+                        };
+                    },
+                    function () {
+                        if (errorHandler) {
+                            errorHandler();
+                        };
+                    });
+            };
+
 
             $scope.showWarningsOrErrors = function(rowEntity) {
 
@@ -1487,7 +2596,8 @@ ndexApp.controller('myAccountController',
                                 var title = "Activate Showcase function";
                                 message = message + "Do you want to proceed and activate the Showcase function?";
 
-                                ndexNavigation.openConfirmationModal(title, message, "Proceed", "Cancel",
+                                var dismissModal = true;
+                                ndexNavigation.openConfirmationModal(title, message, "Proceed", "Cancel", dismissModal,
                                     function () {
                                         ndexService.updateNetworkSetSystemPropertiesV2(row.entity.externalId, "showcase", show,
                                             function (data, networkId, property, value) {
@@ -1546,9 +2656,15 @@ ndexApp.controller('myAccountController',
                 return "#/network/" + networkUUID;
             };
 
-            $scope.getNetworkDownloadLink = function(rowEntity) {
+            $scope.downloadNetwork= function(rowEntity) {
+
+                uiMisc.downloadCXNetwork(rowEntity.externalId);
+
+            }
+
+      /*      $scope.getNetworkDownloadLink = function(rowEntity) {
                 return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
-            };
+            }; */
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)
             {
@@ -1556,7 +2672,7 @@ ndexApp.controller('myAccountController',
                     return false;
                 }
                 return (myAccountController.loggedInIdentifier == networkOwnerUUID);
-            }
+            };
 
             $scope.failedNetworkWarning = function(rowEntity) {
                 var networkName  = rowEntity.name;
@@ -1571,8 +2687,9 @@ ndexApp.controller('myAccountController',
                     "<strong>Status: </strong>" + status + "<br>" +
                     "<strong>Error Message: </strong>" + errorMessage + "<br><br>" +
                     "<strong>Would you like to permanently DELETE this network?</strong>"
-                
-                ndexNavigation.openConfirmationModal(title, body, "Delete", "Cancel",
+
+                var dismissModal = true;
+                ndexNavigation.openConfirmationModal(title, body, "Delete", "Cancel", dismissModal,
                     function () {
                         ndexService.deleteNetworkV2(networkUUID,
                             function (data)
@@ -1583,7 +2700,7 @@ ndexApp.controller('myAccountController',
                                     var externalId = myAccountController.networkSearchResults[i].externalId;
                                     if (externalId == networkUUID) {
                                         myAccountController.networkSearchResults.splice(i, 1);
-                                        refreshNetworkTable();
+                                        populateNetworkTable();
                                         break;
                                     }
                                 }
@@ -1602,52 +2719,244 @@ ndexApp.controller('myAccountController',
             };
 
 
+            $scope.updateLastTimeVisitedMyTasksTimestamp = function() {
+
+                myAccountController.displayedUser.properties.lastTimeVisitedMyTasksTab =
+                    new Date().getTime();
+
+                    ndexService.updateUserV2(myAccountController.displayedUser,
+                        function (userData) {
+                            ;
+                        },
+                        function (error) {
+                            ;
+                        });
+            };
+
+
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
-            ndexService.getUserByUUIDV2(myAccountController.identifier)
-                .success(
-                function (user)
-                {
-                    myAccountController.displayedUser = user;
+            myAccountController.getNoOfNetworksAndSets = function(successHandler, errorHandler) {
+                ndexService.getNumberOfNetworksInUsersAccountPageV2(myAccountController.identifier,
+                    function(data) {
 
-                    $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+                        paginationOptions.networkCount       = data.networkCount;
+                        paginationOptions.networkSetCount    = data.networkSetCount;
+                        $scope.networkGridOptions.totalItems =
+                            paginationOptions.networkCount + paginationOptions.networkSetCount;
 
-                    cUser = user;
+                        if(successHandler) {
+                            successHandler();
+                        };
+                    },
+                    function(error) {
+                        if(errorHandler) {
+                            errorHandler();
+                        };
+                    });
+            };
 
-                    // get requests
-                    getRequests();
+            myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo = function() {
 
-                    //get tasks
-                    myAccountController.refreshTasks();
+                if ($scope.refreshNetworksButtonDisabled) {
+                    // we need this check to safeguard against rapid multiple hits of refresh button,
+                    // in which case it may start multiple refresh timers
+                    return;
+                }
 
-                    // get networks
-                    myAccountController.getUserAccountPageNetworks(
-                        function() {
-                            populateNetworkTable();
+                if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
+                    clearInterval(timerVariable);
+                };
 
-                            ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+                myAccountController.getNoOfNetworksAndSets(
+                    function() {
+                        myAccountController.loadNetworks();
+                    },
+                    function() {
+                        console.log("unable to get No of Networks and Sets for this account");
+                    }
+                );
 
-                                function (networkSets) {
-                                    myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                //myAccountController.loadNetworks();
+            };
 
-                                    _.forEach(myAccountController.networkSets, function(networkSet) {
-                                        myAccountController.addNetworkSetToTable(networkSet);
+            myAccountController.checkAndRefreshMyTaskAndNotification = function() {
+
+                if ($scope.refreshTasksButtonDisabled) {
+                    // we need this check to safeguard against rapid multiple hits of refresh button,
+                    // in which case it may start multiple refresh timers
+                    return;
+                }
+
+                if ((refreshIntervalInSeconds > 0) && (timerVariable)) {
+                    clearInterval(timerVariable);
+                };
+
+                myAccountController.loadTasksAndRequests();
+            };
+
+            myAccountController.refreshMyNetworksTableAndDiskInfo = function(successHandler, errorHandler) {
+
+                ndexService.getUserByUUIDV2(myAccountController.identifier)
+                    .success(
+                        function (user) {
+                            myAccountController.displayedUser = user;
+
+                            $scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+
+                            cUser = user;
+
+                            if (paginationOptions.networkSetCount > 0) {
+
+                                ndexService.getAllNetworkSetsOwnedByUserV2(myAccountController.identifier,
+                                    (paginationOptions.pageNumber - 1) * paginationOptions.pageSize, paginationOptions.pageSize,
+
+                                    function (networkSets) {
+                                        myAccountController.networkSets = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+
+                                        myAccountController.getUserNetworksAndPopulateTable(successHandler, errorHandler);
+                                    },
+                                    function (error, status, headers, config, statusText) {
+                                        console.log("unable to get network sets");
+                                        errorHandler();
                                     });
-                                },
-                                function (error, status, headers, config, statusText) {
-                                    console.log("unable to get network sets");
-                                });
-                        },
-                        function() {
 
-                        }
-                    );
+                            } else {
+                                //  network set count is 0; no need to call API to call network sets
+                                myAccountController.networkSets = [];
 
-                    // get groups
-                    var member = null;
-                    myAccountController.getUserGroupMemberships(member);
-                })
+                                // get networks
+                                myAccountController.getUserNetworksAndPopulateTable(successHandler, errorHandler);
+                            };
+                        });
+            };
+
+
+            myAccountController.loadNetworksTasksAndRequests = function() {
+                myAccountController.loadNetworks();
+                myAccountController.loadTasksAndRequests();
+            };
+
+            myAccountController.loadNetworks = function() {
+                $scope.resetNetworksFlag();
+
+                $scope.refreshNetworksButtonDisabled = true;
+
+                // start spinner if it is not already started
+                ndexSpinner.startSpinner(spinnerMyAccountPageId);
+
+
+                myAccountController.refreshMyNetworksTableAndDiskInfo(
+                    function() {
+                        networksReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                        $scope.refreshNetworksButtonDisabled = false;
+                    },
+                    function() {
+                        networksReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                        $scope.refreshNetworksButtonDisabled = false;
+                    }
+                );
+            };
+
+
+            $scope.loadTasksAndRequests = function() {
+                // wrapper for calling myAccountController.loadTasksAndRequests from deleteTask.html template
+                myAccountController.loadTasksAndRequests();
+            };
+
+
+            myAccountController.loadTasksAndRequests = function() {
+                $scope.resetTasksAndRequestsReceivedFlags();
+
+                $scope.refreshTasksButtonDisabled = true;
+
+                // start spinner if it is not already started
+                ndexSpinner.startSpinner(spinnerMyAccountPageId);
+
+                //get tasks
+                myAccountController.getTasks(
+                    function() {
+                        $scope.tasksReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                    },
+                    function() {
+                        $scope.tasksReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                    }
+                );
+
+                // get requests
+                myAccountController.getSentRequests(
+                    function() {
+                        $scope.sentRequestsReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                    },
+                    function() {
+                        $scope.sentRequestsReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                    }
+                );
+
+                myAccountController.getReceivedRequests(
+                    function() {
+                        $scope.receivedRequestsReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                    },
+                    function() {
+                        $scope.receivedRequestsReceived = true;
+                        stopSpinnerAndRestartRefreshTimer();
+                    }
+                );
+            };
+
+
+            var stopSpinnerAndRestartRefreshTimer = function() {
+                
+                if ($scope.networksTasksAndRequestsReceived()) {
+                    ndexSpinner.stopSpinner();
+                    $scope.refreshTasksButtonDisabled = false;
+
+                    if (refreshIntervalInSeconds > 0) {
+                        if (timerVariable) {
+                            clearInterval(timerVariable);
+                        };
+
+                        timerVariable = setInterval(myAccountController.loadNetworksTasksAndRequests,
+                                refreshIntervalInSeconds * 1000);
+                    };
+                };
+            };
+
+
+            $scope.$watchGroup(['tasksReceived', 'sentRequestsReceived', 'receivedRequestsReceived'],
+                function (newValue, oldValue) {
+                    if ($scope.tasksReceived && $scope.sentRequestsReceived && $scope.receivedRequestsReceived) {
+
+                        if (!tasksAndNotificationsTableDefined) {
+                            tasksAndNotificationsTableDefined = true;
+                            defineTasksAndNotificationsTable();
+                        };
+                        populateTasksAndNotificationsTable();
+                    };
+                },
+                true);
+
+
+            myAccountController.getNoOfNetworksAndSets(
+                function() {
+                    myAccountController.loadNetworksTasksAndRequests();
+                },
+                function() {
+                    console.log("unable to get No of Networks and Sets for this account");
+                }
+            );
+
+            // get groups
+            var member = null;
+            myAccountController.getUserGroupMemberships(member);
+
         }]);
-
             //------------------------------------------------------------------------------------//

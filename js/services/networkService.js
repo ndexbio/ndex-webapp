@@ -3,14 +3,14 @@
  */
 
 
-ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'provenanceService', 'ndexService','$http', '$q',
-    function (cxNetworkUtils, config, ndexConfigs, ndexUtility, ndexHelper, provenanceService, ndexService, $http, $q) {
+ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'provenanceService', 'ndexService','$http', '$q',
+    function (sharedProperties, cxNetworkUtils, ndexConfigs, ndexUtility, ndexHelper, provenanceService, ndexService, $http, $q) {
 
         var factory = {};
         
         var currentNetworkSummary = undefined;
 
-        var ndexServerURI = config.ndexServerUri;
+        var ndexServerURI = window.ndexSettings.ndexServerUri;
 
         //var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
@@ -24,13 +24,6 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             return ndexServerURI;
         };
 
-
-        var getEncodedUser = function () {
-            if (ndexUtility.getLoggedInUserAccountName)
-                return btoa(ndexUtility.getLoggedInUserAccountName() + ":" + ndexUtility.getLoggedInUserAuthToken());
-            else
-                return null;
-        };
 
         factory.getNetworkSummaryFromNdexV2 = function (networkId,accesskey) {
 
@@ -572,7 +565,9 @@ ndexServiceApp.factory('networkService', ['cxNetworkUtils', 'config', 'ndexConfi
             });
 
             XHR.open('POST', url);
-            XHR.setRequestHeader("Authorization", "Basic " + getEncodedUser());
+            var authValue = ndexUtility.getAuthHeaderValue();
+            if ( authValue != null )
+            XHR.setRequestHeader("Authorization", authValue );
 
             // We just send our FormData object, HTTP headers are set automatically
             var foo =  XHR.send(FD);

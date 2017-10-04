@@ -26,27 +26,19 @@
                 <hr>
                 <h5><strong>Bulk Actions:</strong></h5>
 
-                <span>
-                    <a class="btn btn-primary customButtonWidth" ng-disabled="networkSetController.networkTableRowsSelected == 0">
-                        <show-network-sets-modal my-account-controller='userController'>
-                             Add To Set
-                        </show-network-sets-modal>
-                    </a>
-                </span>
+                    <show-network-sets-modal
+                            my-account-controller='userController'
+                            my-class="btn btn-primary customButtonWidth">
+                    </show-network-sets-modal>
 
-                <span>
-                    <a class="btn btn-primary customButtonWidth" title="Request Read or Edit Privilege"
-                       ng-show="enableUpgradePermissionButton">
-                        <bulk-create-request-network ndex-data='userController' ng-model="selection"
-                                                     privileges='None'>
-                            Upgrade Permission
-                        </bulk-create-request-network>
-                    </a>
+                    <bulk-create-request-network
+                            ndex-data='userController'
+                            privileges='None'
+                            my-class="{{enableUpgradePermissionButton ?
+                                'btn btn-primary customButtonWidth' : 'btn btn-primary customButtonWidth disabled'}}"
+                            title="{{enableUpgradePermissionButton ? 'Request Read or Edit Privilege' : ''}}">
+                    </bulk-create-request-network >
 
-                    <a class="btn btn-primary customButtonWidth disabled" ng-show="!enableUpgradePermissionButton">
-                            Upgrade Permission
-                    </a>
-                </span>
 
             </span>
 

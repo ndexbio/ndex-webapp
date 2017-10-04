@@ -1,4 +1,3 @@
-<span ng-click="openMe()" ng-transclude></span>
 <style>
     tbody > tr:nth-child(odd)
     {
@@ -10,7 +9,7 @@
         background: #F0F0F0;
     }
 </style>
-<script type="text/ng-template" id="show-network-sets-modal.html">
+
 <div class='modal-content'>
 
   <form class="form-horizontal" role="form">
@@ -57,15 +56,12 @@
                 ng-disabled="noSetsSelected() || isProcessing">Add to Selected Sets
         </button>
 
-        <a class="btn btn-primary"
-            my-account-controller='myAccountController'
-            signal-new-set-creation='true'
-            trigger-create-network-set-modal="Create Network Set">
-        </a>
+        <trigger-create-network-set-modal
+                my-account-controller='myAccountController'
+                signal-new-set-creation='true'>
+        </trigger-create-network-set-modal>
 
     </div>
   </form>
 
 </div>
-
-</script>

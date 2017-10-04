@@ -1,72 +1,68 @@
-<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
+<div class='modal-content'>
+	<div class='modal-body' ng-hide='false'>
 
-<script type="text/ng-template" id="create-request-network-modal.html">
-	<div class='modal-content'>
-		<div class='modal-body' ng-hide='false'>
-			
-			<h5><strong>
-				<div class="wrapLongLine">
-			        Ask for access to {{request.destinationName}}!
-				</div>
-			</strong></h5>
-
-			<span class="dropdown">
-		      <a href class="dropdown-toggle" data-toggle="dropdown">
-		        {{modal.permissionLabel}}<span class="caret"></span>
-		      </a>
-		      <ul class="dropdown-menu">
-				  <!--
-		      	<li>
-		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Is admin"'><small>Is Admin</small></a>
-		        </li>
-		        -->
-		        <li ng-show="privileges=='None' || privileges=='Read'">
-		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can edit"'><small>Can edit</small></a>
-		        </li>
-
-		        <li ng-show="privileges=='None'">
-		          <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can read"'><small>Can read</small></a>
-		        </li>
-		      </ul>
-		    </span>
-
-		    <span>&nbspfor&nbsp</span>
-
-		    <span class="dropdown">
-		      <a href class="dropdown-toggle" data-toggle="dropdown">
-		        {{request.sourceName}}<span class="caret"></span>
-		      </a>
-		      <ul class="dropdown-menu">
-		      	<li ng-repeat='account in accounts'>
-		          <a class="dropdown-toggle"
-					 ng-click='request.sourceName = ((account.groupName) ? account.groupName : account.userName); selected.account=account'>
-		          	<small>{{account.groupName}} {{account.userName}}</small>
-		          </a>
-		        </li>
-		      </ul>
-		    </span>
-
-			<hr>
-			<strong>Message</strong>
-			<textarea class='form-control' rows='3' placeholder='' ng-model='request.message'></textarea>
-
-			<div class='text-success'>
-				<br>
-				<strong>{{request.progress}}</strong>
+		<h5><strong>
+			<div class="wrapLongLine">
+				Ask for access to {{request.destinationName}}!
 			</div>
+		</strong></h5>
 
-			<div class='text-danger text-center'>
-				<br>
-	            <strong>
-	            {{request.error}}
-	            </strong>
-	        </div>
+		<span class="dropdown">
+		  <a href class="dropdown-toggle" data-toggle="dropdown">
+			{{modal.permissionLabel}}<span class="caret"></span>
+		  </a>
+		  <ul class="dropdown-menu">
+			  <!--
+			<li>
+			  <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Is admin"'><small>Is Admin</small></a>
+			</li>
+			-->
+			<li ng-show="privileges=='None' || privileges=='Read'">
+			  <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can edit"'><small>Can edit</small></a>
+			</li>
 
+			<li ng-show="privileges=='None'">
+			  <a class="dropdown-toggle" ng-click='modal.permissionLabel = "Can read"'><small>Can read</small></a>
+			</li>
+		  </ul>
+		</span>
+
+		<span>&nbspfor&nbsp</span>
+
+		<span class="dropdown">
+		  <a href class="dropdown-toggle" data-toggle="dropdown">
+			{{request.sourceName}}<span class="caret"></span>
+		  </a>
+		  <ul class="dropdown-menu">
+			<li ng-repeat='account in accounts'>
+			  <a class="dropdown-toggle"
+				 ng-click='request.sourceName = ((account.groupName) ? account.groupName : account.userName); selected.account=account'>
+				<small>{{account.groupName}} {{account.userName}}</small>
+			  </a>
+			</li>
+		  </ul>
+		</span>
+
+		<hr>
+		<strong>Message</strong>
+		<textarea class='form-control' rows='3' placeholder='' ng-model='request.message'></textarea>
+
+		<div class='text-success'>
+			<br>
+			<strong>{{request.progress}}</strong>
 		</div>
 
-		<div class='modal-footer' ng-hide='false'>
-			<button class='btn btn-default' ng-click='close()'>Cancel</button>
-			<button class='btn btn-primary' ng-click='submitRequest()'>Send</button>
+		<div class='text-danger text-center'>
+			<br>
+			<strong>
+			{{request.error}}
+			</strong>
 		</div>
+
 	</div>
-</script>
+
+	<div class='modal-footer' ng-hide='false'>
+		<button class='btn btn-default' ng-click='close()'>Cancel</button>
+		<button class='btn btn-primary' ng-click='submitRequest()'>Send</button>
+	</div>
+</div>

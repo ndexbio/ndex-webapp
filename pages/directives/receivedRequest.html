@@ -1,14 +1,14 @@
 <span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
 
 <script type="text/ng-template" id="received-request-modal.html">
-	<div class='modal-content'>
+	<div class='modal-content wrapLongLine'>
 		<div class='modal-body' ng-hide='false'>
 			<h5><strong>
 				<div class="wrapLongLine">
 			       {{request.sourceName}} requests <span class='text-success'>{{request.permission | permissionToLabel}}</span> access to {{request.destinationName}}
 			    </div>
 			</strong></h5>
-			<p>{{request.message}}</p>
+			<p><span ng-bind-html="request.message"></span></p>
 
 			<hr>
 			<strong>Response Message</strong>
@@ -22,7 +22,7 @@
 			</div>
 		</div>
 
-		<div class='modal-footer' ng-hide='false'>
+		<div class='modal-footer'>
 			<button class='btn btn-default' ng-click='close()'>Cancel</button>
 			<button class='btn btn-danger' ng-click='decline()'>Decline</button>
 			<button class='btn btn-primary' ng-click='accept()'>Accept</button>

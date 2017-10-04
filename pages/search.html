@@ -18,12 +18,13 @@
     <div class="col-md-2" ng-if="searcher.isLoggedInUser">
         <h5><strong>Bulk Actions:</strong></h5>
 
-        <show-network-sets-modal
-                my-account-controller='searcher'
-                ng-class="searcher.networkTableRowsSelected > 0 ? 'btn btn-primary' : 'btn btn-primary disabled'"
-                style="float:left; margin-right:1%">
-            Add To Set
-        </show-network-sets-modal>
+        <span style="float:left; margin-right:1%">
+            <show-network-sets-modal
+                    my-account-controller='searcher'
+                    my-class="{{(searcher.networkTableRowsSelected == 0) ?
+                            'btn btn-primary customButtonWidth disabled' : 'btn btn-primary customButtonWidth'}}">
+            </show-network-sets-modal>
+        </span>
     </div>
 
     <div id="searchResultTableId" class="col-md-10">
