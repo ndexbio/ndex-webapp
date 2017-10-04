@@ -1,6 +1,6 @@
 ndexApp.controller('editNetworkPropertiesFixedFormController',
-	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout', 'uiMisc', 'ndexNavigation',
-		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc, ndexNavigation){
+	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout', 'uiMisc', 'ndexNavigation', 'ndexUtility',
+		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc, ndexNavigation, ndexUtility){
 	 //testing
 
 	//              Process the URL to get application state
@@ -28,8 +28,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     editor.namespaces = [];
 
+    editor.viewfilter = {"state": "MAIN"};
+
     editor.showNameSpaces = false;
     editor.propertyValuePairs = [];
+    editor.propertyValuePairsIndex = {};
     editor.hiddenValuePairs = [];
     editor.propertyTemplate = {
         'author': {predicateString: "author", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId},
@@ -69,6 +72,22 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "version": "",
         "visibility": "PRIVATE"
     };
+
+    editor.doiRequired = {
+        'name': $scope.mainProperty.name,
+        'description': $scope.mainProperty.decription,
+        'author': editor.propertyTemplate.author,
+        'rights': editor.propertyTemplate.rights,
+        'rightsHolder': editor.propertyTemplate.rightsHolder,
+        'reference': $scope.mainProperty.reference
+    };
+
+    var loggedInUser = ndexUtility.getUserCredentials();
+    var loggedInUserName = (loggedInUser && loggedInUser['userName']) ? loggedInUser['userName'] : null;
+
+    editor.doiInfo = {
+        "user": {"username": loggedInUserName}
+    }
 
     uiMisc.hideSearchMenuItem();
     $scope.$parent.showSearchMenu = true;
@@ -412,6 +431,28 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         return item.predicateString == 'custom...';
     };
 
+    $scope.updateFieldFilters = function(filterType){
+        editor.viewfilter.state = filterType;
+    }
+
+    editor.saveAndSubmitDOI = function(){
+        if(editor.errors.length < 1){
+            if(editor.checkDOIRequirements()){
+                editor.save();
+
+                ndexService.requestDoi(editor.networkExternalId,
+                    function() {
+                        console.log("request created successfully!");
+                    },
+                    function(error){
+                        editor.errors.push(error)
+                    });
+
+            } else {
+                alert("ERROR");
+            }
+        }
+    };
 
     editor.save = function() {
         if(editor.checkPublicRequirements()){
@@ -549,9 +590,12 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
 	editor.checkPublicRequirements = function(){
         if($scope.mainProperty.visibility != "PRIVATE"){
-            if (!$scope.mainProperty.name || !$scope.mainProperty.description || !$scope.mainProperty.version || $scope.mainProperty.name.length < 1 || $scope.mainProperty.description.length < 1 ||
+            if (!$scope.mainProperty.name ||
+                !$scope.mainProperty.description ||
+                !$scope.mainProperty.version ||
+                $scope.mainProperty.name.length < 1 ||
+                $scope.mainProperty.description.length < 1 ||
                 $scope.mainProperty.version.length < 1){
-            //if($scope.mainProperty.name.length < 1 || $scope.mainProperty.description.length < 1 || $scope.mainProperty.version.length < 1){
                 return false;
             }
         }
@@ -559,7 +603,30 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         return true;
     };
 
-	editor.removeNamespace = function(index) {
+
+    editor.checkDOIRequirements = function(){
+        if (!$scope.mainProperty.name ||
+            !$scope.mainProperty.description ||
+            !$scope.mainProperty.version ||
+            !editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value ||
+            !editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value ||
+            !editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value ||
+            !$scope.mainProperty.reference ||
+            $scope.mainProperty.name.length < 1 ||
+            $scope.mainProperty.description.length < 1 ||
+            $scope.mainProperty.version.length < 1 ||
+            editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length < 1 ||
+            editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length < 1 ||
+            editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length < 1 ||
+            $scope.mainProperty.reference.length < 1)
+        {
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+        editor.removeNamespace = function(index) {
 		editor.ontologies.splice(index,1);
 		//TODO api call
 	};
@@ -586,6 +653,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 	};
 
     editor.refresh = $route.reload;
+
+    editor.cancel = function() {
+        $location.path("/network/" + editor.networkExternalId);
+    }
+
 
     editor.preloadedOntologies = [
         {
@@ -714,6 +786,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 // "reserved property names" that every network has (these names are listed in $scope.reservedNames).
                 // The hidden properties are not available for modification.  Another set (editor.propertyValuePairs)
                 // are properties presented to user for editing.
+                var propIndex = 0;
                 for(var i=0; i< network.properties.length; i++){
                     if ( network.properties[i].predicateString
                           && ($scope.reservedNames.indexOf(network.properties[i].predicateString.toLowerCase()) === -1)
@@ -721,10 +794,13 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     {
                         network.properties[i].labelValue = network.properties[i].predicateString;
                         editor.propertyValuePairs.push(network.properties[i]);
+                        editor.propertyValuePairsIndex[network.properties[i].predicateString] = propIndex;
+                        propIndex++;
                     } else {
                         editor.hiddenValuePairs.push(network.properties[i]);
                     }
                 }
+
 
                 if (editor.propertyValuePairs.length > 1) {
                     editor.propertyValuePairs = _.sortBy(editor.propertyValuePairs, 'predicateString');
@@ -766,6 +842,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                         if(!foundKey){
                             editor.propertyValuePairs.push(editor.propertyTemplate[label]);
+                            editor.propertyValuePairsIndex[label] = propIndex;
+                            propIndex++;
                         }
 
                     }
@@ -780,12 +858,34 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.isOwner = (networkOwnerUUID == loggedInUserUUID);
                 var me = "";
 
+                if($routeParams.doi){
+                    editor.viewfilter.state = "DOI"
+                } else {
+                    editor.viewfilter.state = "MAIN"
+                }
+
             }
         )
         .error(
             function(error) {
                 editor.errors.push(error)
             }
+        )
+        .then(
+            ndexService.getUserByUserNameV2(editor.doiInfo.user.username,
+                function(data) {
+                    var userId = (data && data.externalId) ? data.externalId : null;
+                    if (userId) {
+                        editor.doiInfo.user.email = data.emailAddress;
+                    }
+                    else {
+                        forgot.errorMsg = "Unable to get User Id for user " + $scope.forgot.accountName +
+                            " and request password reset."
+                    }
+                },
+                function(error){
+                    editor.errors.push(error)
+                })
         );
 
     var userId = sharedProperties.getCurrentUserId();

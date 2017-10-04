@@ -838,6 +838,22 @@
                 </span>
             </span>
 
+            <span ng-show='networkController.isLoggedInUser &&
+                        ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
+                <span>
+                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()"
+                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
+                       ng-click="setReturnView('network/')">
+                        Request DOI
+
+                    </a>
+                    <a class="actionsLabelDisabled-btn btn btn-primary" ng-show="networkController.hasMultipleSubNetworks()"
+                       title="{{networkController.title}}">
+                        Request DOI
+                    </a>
+                </span>
+            </span>
+
             <span ng-show='networkController.isLoggedInUser'>
                 <a class="actionsLabel btn btn-primary"
                    ng-click="networkController.cloneNetwork()">Clone
