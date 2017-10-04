@@ -493,6 +493,8 @@ ndexApp.controller('myAccountController',
                     anchor.password = ndexUtility.getUserCredentials()['token'];
                 };
 
+                anchor.setAttribute("type","hidden");
+                document.body.appendChild(anchor);
                 anchor.click();
                 anchor.remove();
             };

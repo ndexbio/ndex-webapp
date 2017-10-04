@@ -289,7 +289,9 @@ angular.module('ndexServiceApp')
                 anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
                                 networkId + "?download=true");
 
-         //   anchor.setAttribute('target', "_blank");
+          // anchor.setAttribute('target', "_blank");
+            anchor.setAttribute("type","hidden");
+            document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
 
