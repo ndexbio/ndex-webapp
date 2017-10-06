@@ -1413,6 +1413,21 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.requestDoi = function (networkId, successHandler, errorHandler) {
+                // Server API: Search Networks by Gene/Protein
+                // POST /search/network/genes?start={number}&size={number}
+
+                requestData = {
+                    "type": "DOI",
+                    "networkId": networkId
+                }
+
+                var url = "/admin/request";
+                var config = ndexConfigs.getPostConfigV2(url, requestData);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             // return factory object
             return factory;
         }]);

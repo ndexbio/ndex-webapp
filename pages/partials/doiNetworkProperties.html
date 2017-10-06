@@ -1,0 +1,247 @@
+<form role="form" ng-submit='editor.saveAndSubmitDOI()' name="doiform">
+
+    <!--
+    ==========================
+    = Main profile properties
+    ==========================
+    -->
+    <!------------------------
+        NAME and place holder
+    -------------------------->
+    <div class='row'>
+        <div class="col-sm-12">
+            <h3 class="text-center" style="font-weight: bold;"><i class="fa fa-certificate" aria-hidden="true" style="color: #406DC9;"></i> Required DOI Properties <br />
+                <small>Please fill out all the fields below and verify your contact email <br />address.  When you are ready click on the green request button.</small>
+            </h3>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="col-sm-offset-1 col-sm-5">
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-sm-3 control-label">name</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <input type="text" class="form-control" ng-change="editor.updateScore()"
+                           ng-class="mainProperty.name.length > 0 ? 'competeInput': ''" type="text"
+                           placeholder="Network Name" ng-model='mainProperty.name' required>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.name.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <div title="Name is required for public status">
+                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        </div>
+                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-5">
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-sm-3 control-label">version</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <input type="text" class="form-control" placeholder="1.0"
+                           ng-change="editor.updateScore()"
+                           ng-class="mainProperty.version.length > 0 ? 'competeInput': ''"
+                           ng-model='mainProperty.version' required>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="mainProperty.version.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.version.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+    <!------------------------------
+        DESCRIPTION and REFERENCES
+    -------------------------------->
+    <div class='row'>
+        <div class="col-sm-offset-1 col-sm-5">
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">description</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <text-angular
+                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
+                            id="descriptionTextBox"
+                            ta-toolbar-class="btn-toolbar"
+                            ta-toolbar-group-class="btn-group btn-group-xs"
+                            ta-toolbar-button-class="btn btn-default"
+                            ta-toolbar-button-active-class="active"
+                            ta-default-wrap="div"
+                            ng-change="editor.updateScore()"
+                            ng-model='mainProperty.description'>
+                    </text-angular>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="mainProperty.description.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.description.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+
+
+                        <div title="Description is required for public status">
+                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+                        </div>
+                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">reference</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <text-angular
+                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
+                            ta-toolbar-class="btn-toolbar"
+                            ta-toolbar-group-class="btn-group btn-group-xs"
+                            ta-toolbar-button-class="btn btn-default"
+                            ta-toolbar-button-active-class="active"
+                            ta-default-wrap="div"
+                            ng-change="editor.updateScore()"
+                            ng-model='mainProperty.reference'>
+                    </text-angular>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn" style="margin-top: 40px;">
+                        <i ng-if="mainProperty.reference.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.reference.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--
+    ===================
+    = Known Properties
+    ===================
+    -->
+    <div class='row'>
+        <div class="col-sm-offset-1 col-sm-5">
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-sm-3 control-label">rights</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <input
+                            class="form-control input-sm" ng-change="editor.updateScore()" type="text"
+                            ng-model="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value" id="doiinputrights"
+                            ng-class="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length > 0 ? 'competeInput': ''"
+                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-sm-3 control-label">rightsHolder</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <input
+                            class="form-control input-sm" ng-change="editor.updateScore()" type="text"
+                            ng-model="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value" id="doiinputrightsHolder"
+                            ng-class="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length > 0 ? 'competeInput': ''"
+                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rightsHolder.predicateString)' required>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class='row'>
+        <div class="col-sm-offset-1 col-sm-5">
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-sm-3 control-label">author</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <input
+                            class="form-control input-sm" ng-change="editor.updateScore()" type="text"
+                            ng-model="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value" id="doiinputauthor"
+                            ng-class="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length > 0 ? 'competeInput': ''"
+                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.author.predicateString)' required>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class='col-sm-5'>
+<!--            <div class="form-group rowWithOneLineTopPad">-->
+                <div class="well" style="margin-bottom: 0px;">
+                    <div class="row">
+                        <label class="col-sm-3 control-label">Contact Email</label>
+                        <div class="col-sm-8">
+                            <input
+                                    class="form-control input-sm" ng-change="editor.updateScore()"
+                                    ng-model="editor.doiInfo.user.email" id="doiinputemail" name="doiinputemail" type="email"
+                                    ng-class="editor.doiInfo.user.email.length > 0 ? 'competeInput': ''" required>
+<!--                            <br/>
+                            <span class="error" ng-show="doiform.doiinputemail.$error.required">Required!</span>
+                            <span class="error" ng-show="doiform.doiinputemail.$error.email">Not valid email!</span>
+                            -->
+                        </div>
+                        <div class="col-sm-1">
+                            <div class="input-group-btn">
+                                <i ng-if="!doiform.doiinputemail.$error.required && !doiform.doiinputemail.$error.email" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                                <i ng-if="doiform.doiinputemail.$error.required || doiform.doiinputemail.$error.email" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<!--            </div>-->
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="col-sm-offset-1 col-sm-5">
+            &nbsp;
+        </div>
+        <div class='col-sm-5'>
+            <div class="form-group rowWithOneLineTopPad" ng-show="editor.isAdmin || editor.canEdit">
+                <div class="pull-right" ng-show="editor.isAdmin || editor.canEdit" style="margin-right: 30px;">
+                    <button type="button" class="btn btn-sm btn-danger" ng-click='editor.cancel()'>Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save and Request DOI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-show='editor.isAdmin || editor.canEdit'>
+        <div class='col-sm-offset-1 col-sm-10'>
+            <hr>
+        </div>
+    </div>
+<!--    <div class="row" ng-show='editor.isAdmin || editor.canEdit'>
+        <div class='col-sm-offset-1 col-sm-10'>
+            <div class="pull-right">
+                <button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
+                <button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save and Request DOI</button>
+            </div>
+        </div>
+    </div>
+-->
+</form>
