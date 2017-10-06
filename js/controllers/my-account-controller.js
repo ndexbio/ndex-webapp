@@ -1006,48 +1006,245 @@ ndexApp.controller('myAccountController',
                 return task.attributes.downloadFileName;
             };
 
-            myAccountController.checkAndDeleteSelectedNetworks = function() {
-                var checkWritePrivilege = false;
-                var networksDeleteable =
-                    myAccountController.checkIfSelectedNetworksCanBeDeletedOrChanged(checkWritePrivilege);
 
-                if (networksDeleteable) {
-                    myAccountController.confirmDeleteSelectedNetworks(
-                        function() {
-                            // all selected networks have been deleted ...
-                            // update available storage indication
+            var deleteSelectedNetworks = function(
+                numberOfSelectedNetworks, numberOfReadOnly, numberOfNonAdminNetworks, networksToDelete) {
 
-                            ndexService.getUserByUUIDV2(myAccountController.identifier)
-                                .success(
-                                    function (user) {
-                                        //$scope.diskSpaceInfo = uiMisc.showAvailableDiskSpace(user);
+                var numberOfNetworksToDel = networksToDelete.length;
+/*
+                if ((numberOfNetworksToDel == 0) && (numberOfSelectedNetworks > 0)) {
+                    var title = (numberOfSelectedNetworks == 1) ? "Cannot Delete Selected Network" :
+                        "Cannot Delete Selected Networks";
 
-                                        myAccountController.getNoOfNetworksAndSets(
-                                            function() {
-                                                myAccountController.loadNetworks();
-                                            },
-                                            function() {
-                                                console.log("unable to get No of Networks and Sets for this account");
-                                            }
-                                        );
-                                    });
-                        },
-                        function() {
-                            ; // canceled, nothing to do here
-                        }
-                    );
-                } else {
-                    var title = "Cannot Delete Selected Networks";
-                    var message =
-                        "Some selected networks could not be deleted because they are either marked READ-ONLY" +
-                        " or you do not have ADMIN privileges. Please uncheck the READ-ONLY box in each network " +
-                        " page, make sure you have ADMIN access to all selected networks, and try again.";
+                    if (numberOfSelectedNetworks == 1) {
+                        var message = "The selected network cannot be deleted";
+
+                        if ((1 == numberOfReadOnly) && (1 == numberOfNonAdminNetworks)) {
+                            message += " since you are not an owner and it is read-only.";
+                        } else if (1 == numberOfReadOnly) {
+                            message += " since it is read-only.";
+                        } else if (1 == numberOfNonAdminNetworks) {
+                            message += " since you are not an owner.";
+                        } else {
+                            // this should never execute though
+                            message += ".";
+                        };
+                    } else {
+                        message = "The selected " + numberOfSelectedNetworks + " networks cannot be deleted: "
+
+                        if ((0 == numberOfReadOnly) && (numberOfNonAdminNetworks > 1)) {
+                            message += " you are not an owner.";
+                        } else if ((numberOfReadOnly > 1) && (0 == numberOfNonAdminNetworks)) {
+                            message += " they are read-only.";
+                        } else {
+                            if (1 == numberOfNonAdminNetworks) {
+                                message += " you do not own 1 network";
+                            } else {
+                                message += " you do not own " + numberOfNonAdminNetworks + " networks";
+                            };
+
+                            if (1 == numberOfReadOnly) {
+                                message += " and 1 network is read-only.";
+                            } else {
+                                message += " and " + numberOfReadOnly + " networks are read-only.";
+                            };
+                        };
+                    };
 
                     myAccountController.genericInfoModal(title, message);
-                }
+                    return;
+                };
+*/
+
+                if ((numberOfReadOnly > 0) || (numberOfNonAdminNetworks > 0)) {
+                    var title = (numberOfSelectedNetworks == 1) ? "Cannot Delete Selected Network" :
+                        "Cannot Delete Selected Networks";
+
+                    if (numberOfSelectedNetworks == 1) {
+                        var message = "The selected network cannot be deleted: ";
+
+                        if ((1 == numberOfReadOnly) && (1 == numberOfNonAdminNetworks)) {
+                            message += " you are not an owner and it is read-only.";
+                        } else if (1 == numberOfReadOnly) {
+                            message += " it is read-only.";
+                        } else if (1 == numberOfNonAdminNetworks) {
+                            message += " you are not an owner.";
+                        } else {
+                            // this should never execute though
+                            message += ".";
+                        };
+                    } else {
+                        message = "The selected " + numberOfSelectedNetworks + " networks cannot be deleted: ";
+
+                        if (0 == numberOfReadOnly) {
+                            if (numberOfNonAdminNetworks == numberOfSelectedNetworks) {
+                                message += " you are not an owner.";
+                            } else {
+
+                                if (1 == numberOfNonAdminNetworks) {
+                                    message += " you are not an owner of " + numberOfNonAdminNetworks + " network.";
+                                } else {
+                                    message += " you are not an owner of " + numberOfNonAdminNetworks + " networks.";
+                                };
+                            };
+                        } else if (0 == numberOfNonAdminNetworks) {
+                            if (numberOfReadOnly == numberOfSelectedNetworks) {
+                                message += " they are read-only.";
+                            } else {
+                                if (1 == numberOfReadOnly) {
+                                    message += numberOfReadOnly + " network is read-only.";
+                                } else {
+                                    message += numberOfReadOnly + " networks are read-only.";
+                                };
+                            };
+                        } else {
+                            if (1 == numberOfNonAdminNetworks) {
+                                message += " you do not own 1 network";
+                            } else {
+                                message += " you do not own " + numberOfNonAdminNetworks + " networks";
+                            };
+
+                            if (1 == numberOfReadOnly) {
+                                message += " and 1 network is read-only.";
+                            } else {
+                                message += " and " + numberOfReadOnly + " networks are read-only.";
+                            };
+                        };
+                    };
+
+                    myAccountController.genericInfoModal(title, message);
+                    return;
+                };
+
+                var dismissModal = false;
+
+                $rootScope.progress  = null;
+                $rootScope.progress2 = null;
+                $rootScope.errors    = null;
+                $rootScope.confirmButtonDisabled = false;
+
+                var deletedCount = 0;
+
+                var cancelHit = false;
+                var errorFromServer = false;
+
+                title = (numberOfNetworksToDel > 1) ? "Delete Selected Networks" : "Delete Selected Network";
+                message = (numberOfNetworksToDel > 1) ?
+                    "The selected " + numberOfNetworksToDel + " networks " : "The selected network ";
+
+                message +=  "will be permanently deleted from NDEx. Are you sure you want to proceed?";
+
+                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel", dismissModal,
+                    function ($modalInstance) {
+                        $scope.isProcessing = true;
+                        $rootScope.confirmButtonDisabled = true;
+
+                        sequence(networksToDelete, function (network) {
+                            if (cancelHit|| errorFromServer) {
+                                return;
+                            };
+
+                            return deleteNetwork(network).then(function (info) {
+                                deletedCount++;
+
+                                if (myAccountController.networkTableRowsSelected > 0) {
+                                    myAccountController.networkTableRowsSelected--;
+                                };
+                                delete $scope.selectedRowsNetworkExternalIds[network.externalId];
+                                if ( $scope.networkGridApi.grid.selection.selectedCount > 0) {
+                                    $scope.networkGridApi.grid.selection.selectedCount--;
+                                };
+
+                                $rootScope.progress  = "Deleted: " + deletedCount + " of " + numberOfNetworksToDel + " selected networks";
+                                $rootScope.progress2 = "Deleted: " + network.name;
+
+                                if ((deletedCount == numberOfNetworksToDel) || !$scope.isProcessing) {
+                                    myAccountController.loadNetworks();
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+                                        delete $rootScope.confirmButtonDisabled;
+
+                                        $scope.isProcessing = false;
+                                        $modalInstance.dismiss();
+                                    }, 2000);
+                                };
+                            });
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to delete';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ": " +  reason.data.message : ".";
+
+                            myAccountController.loadNetworks();
+                        });
+                    },
+                    function ($modalInstance) {
+                        $scope.isProcessing = false;
+
+                        if (deletedCount == 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+                            delete $rootScope.confirmButtonDisabled;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+
+                                $modalInstance.dismiss();
+                            }, 2000);
+                        };
+                    });
+
                 return;
             };
 
+            myAccountController.checkAndDeleteSelectedNetworks = function() {
+                var networkUUIDs = myAccountController.getIDsOfSelectedNetworks();
+                var numberOfSelectedNetworks = networkUUIDs.length;
+
+                var numberOfReadOnly = 0;
+                var numberOfNonAdminNetworks = 0;
+
+                var accesskey = null;
+                ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, accesskey,
+                    function (networkSummaries) {
+
+                        var networksToDelete = _.map(networkSummaries,
+                            function (network) {
+                                if (network.isReadOnly) {
+                                    numberOfReadOnly++;
+                                };
+                                if (network.ownerUUID != myAccountController.identifier) {
+                                    numberOfNonAdminNetworks++;
+                                };
+                                return ((network.ownerUUID == myAccountController.identifier) && (!network.isReadOnly)) ?
+                                    {'externalId': network.externalId, 'name': network.name} : null;
+                            });
+
+                        deleteSelectedNetworks(
+                            numberOfSelectedNetworks, numberOfReadOnly, numberOfNonAdminNetworks, networksToDelete);
+                    },
+                    function (error) {
+                        if (error) {
+                            displayErrorMessage(error);
+                        };
+                    }
+                );
+
+                return;
+            };
 
             myAccountController.checkAndMarkAsRead = function() {
 
@@ -1129,8 +1326,6 @@ ndexApp.controller('myAccountController',
 
                             return markTask(task).then(function (info) {
                                 markedCount++;
-
-                                var taskId = task.id;
 
                                 $rootScope.progress = "Marked: " + markedCount + " of " + numberOfTasksToMark + " selected tasks";
 
@@ -1376,6 +1571,10 @@ ndexApp.controller('myAccountController',
                 };
             };
 
+            function deleteNetwork(network) {
+                return ndexService.deleteNetworkNoHandlersV2(network.externalId);
+            };
+
 
             function manageRequest(request, acceptRequests, message) {
 
@@ -1492,7 +1691,6 @@ ndexApp.controller('myAccountController',
 
                             myAccountController.checkAndRefreshMyTaskAndNotification();
                         });
-
                     },
 
                     function ($modalInstance) {
@@ -1533,33 +1731,6 @@ ndexApp.controller('myAccountController',
 
                         $scope.close = function() {
                             $modalInstance.dismiss();
-                        };
-                    }
-                });
-            };
-
-            myAccountController.confirmDeleteSelectedNetworks = function(deletedHandler, canceledHandler)
-            {
-                var   modalInstance = $modal.open({
-                    templateUrl: 'pages/directives/confirmationModal.html',
-                    scope: $scope,
-
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.title = 'Delete Selected Networks';
-                        $scope.message =
-                            'The selected networks will be permanently deleted from NDEx. Are you sure you want to proceed?';
-
-                        $scope.cancel = function() {
-                            $modalInstance.dismiss();
-                            $scope.isProcessing = false;
-                            canceledHandler();
-                        };
-
-                        $scope.confirm = function() {
-                            $scope.isProcessing = true;
-                            myAccountController.deleteSelectedNetworks($scope, $modalInstance, deletedHandler);
-                            $scope.isProcessing = false;
                         };
                     }
                 });
@@ -1623,16 +1794,7 @@ ndexApp.controller('myAccountController',
 
             myAccountController.getIDsOfSelectedNetworks = function ()
             {
-                var selectedIds = [];
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                _.forEach(selectedNetworksRows, function(row) {
-                    if (row.Format.toLowerCase() != "set") {
-                        selectedIds.push(row['externalId']);
-                    };
-                });
-
-                return selectedIds;
+                return Object.keys($scope.selectedRowsNetworkExternalIds);
             };
 
             myAccountController.getVisibilityAndShowcaseOfSelectedNetworks = function ()
@@ -1901,76 +2063,6 @@ ndexApp.controller('myAccountController',
                         myAccountController.networkSearchResults.splice(i, 1);
                     };
                 };
-            };
-
-            myAccountController.deleteSelectedNetworks = function ($scope, $modalInstance, deletedHandler)
-            {
-                var selectedIds = [];
-                var successfullyDeletedNetworkIDs = {};
-
-                var deletedNetworksCounter = 0;
-                var selectedNetworkCount = $scope.networkGridApi.selection.getSelectedRows().length;
-
-                $scope.progress  = "Deleted: " + deletedNetworksCounter + " of " + selectedNetworkCount + " selected networks";
-
-                _.forEach($scope.networkGridApi.selection.getSelectedRows(), function(row) {
-
-                    if (row.Status && row.Status.toLowerCase() == 'set') {
-                        // this should never happen since we do not allow selecting sets,
-                        // but just in case ...
-                        deletedNetworksCounter = deletedNetworksCounter + 1;
-                        return;
-                    };
-
-                    var networkId   = row.externalId;
-                    var networkName = row.name;
-
-                    ndexService.deleteNetworkV2(networkId,
-                        function (data)
-                        {
-                            deletedNetworksCounter = deletedNetworksCounter + 1;
-                            successfullyDeletedNetworkIDs[networkId] = "";
-
-                            $scope.progress  = "Deleted: " + deletedNetworksCounter + " of " + selectedNetworkCount + " selected networks";
-                            $scope.progress2 = "Deleted: " + networkName;
-
-                            if (deletedNetworksCounter == selectedNetworkCount) {
-
-                                removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
-
-                                setTimeout(function() {
-                                    delete $scope.progress;
-                                    delete $scope.progress2;
-                                    delete $scope.errors;
-                                    $scope.isProcessing = false;
-                                    $modalInstance.dismiss();
-                                }, 1000);
-
-                                deletedHandler();
-                            };
-                        },
-                        function (error)
-                        {
-                            deletedNetworksCounter = deletedNetworksCounter + 1;
-
-                            $scope.error = "Unable to delete network " + networkName;
-
-                            if (deletedNetworksCounter == selectedNetworkCount) {
-
-                                removeDeletedNetworksFromSearchAndNetworksTable($scope, successfullyDeletedNetworkIDs);
-
-                                setTimeout(function() {
-                                    delete $scope.progress;
-                                    delete $scope.progress2;
-                                    delete $scope.errors;
-                                    $scope.isProcessing = false;
-                                    $modalInstance.dismiss();
-                                }, 1000);
-
-                                deletedHandler();
-                            };
-                        });
-                });
             };
 
             /*

@@ -884,6 +884,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.deleteNetworkNoHandlersV2 = function(networkId) {
+                // Server API: Delete a Network
+                // DELETE /network/{networkId}
+
+                var url = "/network/" + networkId;
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+
+                return $http(config);
+            };
+
             factory.getNetworkSummaryV2 = function (networkId, accesskey) {
                 // Server API: Get Network Summary
                 // GET /network/{networkid}/summary?accesskey={accessKey}

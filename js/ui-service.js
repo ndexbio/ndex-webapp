@@ -291,7 +291,7 @@
                     $scope.networkSet = {};
                     $scope.networkSet['properties'] = {};
                     $scope.networkSet['properties']['reference'] = "";
-                    $scope.title = 'Create Network Set';
+                    $scope.title = 'Select Existing Network Sets Or Create A New Set';
 
                     modalInstance = $modal.open({
                         templateUrl: 'pages/directives/createNetworkSetModal.html',
@@ -699,6 +699,7 @@
     uiServiceApp.directive('showNetworkSetsModal', function() {
         return {
             scope: {
+                controllerName: '@controllerName',
                 myAccountController: '=',
                 myClass: '@'
             },
@@ -710,6 +711,7 @@
                 $scope.errors = null;
 
                 $scope.loadTheseSets = [];
+                $scope.networkSets   = [];
 
                 $scope.openMe = function() {
 
@@ -722,10 +724,36 @@
                 };
 
                 var initializeListOfCollections = function() {
-                    var networkSets = $scope.myAccountController.networkSets;
+                    var controllerName = $scope.controllerName;
+                    $scope.networkSets = [];
+
+                    if ('myAccountController' == controllerName) {
+                        //var networkSets = $scope.myAccountController.networkSets;
+
+                        $scope.myAccountController.getAllNetworkSetsOwnedByUser(
+                            // success handler
+                            function(data) {
+                                $scope.networkSets = $scope.myAccountController.networkSets;
+                                loadNetworkSets();
+                            },
+                            function(data, status) {
+                                //$scope.main.serverIsDown = true;
+                                $scope.networkSets = $scope.myAccountController.networkSets;
+                                loadNetworkSets();
+                            }
+                        );
+
+                    } else {
+
+                        $scope.networkSets = $scope.myAccountController.networkSets;
+                        loadNetworkSets();
+                    };
+                };
+
+                var loadNetworkSets = function() {
                     $scope.loadTheseSets = [];
 
-                    _.forEach(networkSets, function(networkSetObj) {
+                    _.forEach($scope.networkSets, function(networkSetObj) {
                         var networkSet = {
                             "id"   : networkSetObj.externalId,
                             "name" :  networkSetObj.name,
