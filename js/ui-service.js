@@ -2822,14 +2822,25 @@
                 //$scope.group = {};
                 $scope.text = $attrs.bulkNetworkAccessModal;
                 $scope.accessType = {};
+                $scope.cancelHit = false;
+                var updatedCount = 0;
+                $scope.isProcessing = false;
+
+                var bulkNetworkManager = $scope.ndexData;
 
                 $scope.openMe = function() {
+                    $scope.cancelHit = false;
                     $scope.accessType.permission = '';
+                    $scope.isProcessing = false;
+
+                    bulkNetworkManager = $scope.ndexData;
 
                     delete $scope.errors;
                     delete $scope.progress;
                     $scope.summary = "";
                     $scope.IDsOfNetworksToUpdate = [];
+
+                    updatedCount = 0;
 
                     modalInstance = $modal.open({
                         templateUrl: 'modal.html',
@@ -2838,64 +2849,82 @@
                 };
 
                 $scope.cancel = function() {
-                    modalInstance.dismiss();
-                    delete $scope.errors;
-                    delete $scope.progress;
-                    delete $scope.summary;
-                    $scope.IDsOfNetworksToUpdate = [];
+                    if (0 == updatedCount) {
+                        modalInstance.dismiss();
+                        delete $scope.errors;
+                        delete $scope.progress;
+                        delete $scope.summary;
+                        $scope.IDsOfNetworksToUpdate = [];
+                    } else {
+                        $scope.cancelHit = true;
 
+                        setTimeout(function() {
+                            $scope.close();
+                            $scope.isProcessing = false;
+                            $location.path("/user/" + bulkNetworkManager.currentUserId);
+                        }, 2000);
+                    }
                 };
 
                 $scope.close = function() {
                     modalInstance.dismiss();
                     delete $scope.errors;
                     delete $scope.progress;
-                    delete $scope.summary;
                     $scope.IDsOfNetworksToUpdate = [];
+                    $scope.isProcessing = false;
                 };
-                //$scope.$watch("group.groupName", function() {
-                //    delete $scope.errors;
-                //});
 
-                $scope.isProcessing = false;
 
+                var sequence = function(array, callback) {
+                    return array.reduce(function chain(promise, item) {
+                        return promise.then(function () {
+                            return callback(item);
+                        });
+                    }, Promise.resolve());
+                };
 
                 $scope.updateMembershipsOnServer = function(membershipsForSending) {
 
-                    if (typeof(membershipsForSending) === 'undefined') {
-                        return;
-                    }
-                    if (membershipsForSending.length == 0) {
-                        var bulkNetworkManager = $scope.ndexData;
-                        bulkNetworkManager.getNetworkPermissions($scope.IDsOfNetworksToUpdate);
-                        $scope.progress = "Done";
-                        $scope.close();
-                        $scope.isProcessing = false;
-                        $location.path("/user/" + bulkNetworkManager.currentUserId);
-                        return;
-                    }
+                    var errorFromServer = false;
+                    var numberOfMembershipsTopdate = _.size(membershipsForSending);
 
-                    // remove membership object from the list of memberships to send
-                    membershipToSend = membershipsForSending.shift();
+                    sequence(membershipsForSending, function (membership) {
+                        if ($scope.cancelHit || errorFromServer) {
+                            return;
+                        };
 
-                    $scope.progress = "Granting " + membershipToSend.permissions +
-                        " access to " + membershipToSend.memberAccountName +
-                            " for network " + membershipToSend.resourceName;
-                    
-                    ndexService.updateNetworkPermissionV2(
-                        membershipToSend.resourceUUID,
-                        membershipToSend.accountType,
-                        membershipToSend.memberUUID,
-                        membershipToSend.permissions,
-                        function(success){
-                            $scope.summary = $scope.summary +
-                                $scope.progress.replace("Granting", "Granted") + "\n";
-                            $scope.updateMembershipsOnServer(membershipsForSending);
-                        },
-                        function(error){
-                            $scope.updateMembershipsOnServer(membershipsForSending);
-                        })
-                }
+                        return updateNetworkPermission(membership).then(function (info) {
+                            updatedCount++;
+
+                            $scope.progress = "Granted " + membership.permissions +
+                                " access to " + membership.memberAccountName +
+                                " for network " + membership.resourceName;
+
+                            if (updatedCount == numberOfMembershipsTopdate) {
+
+                                setTimeout(function() {
+                                    $scope.close();
+                                    $location.path("/user/" + bulkNetworkManager.currentUserId);
+                                }, 2000);
+                            };
+
+                        });
+                    }).catch(function (reason) {
+
+                        errorFromServer = true;
+                        var errorMessage = 'Unable to share';
+
+                        $scope.errors = (reason.data && reason.data.message) ?
+                            errorMessage + ": " +  reason.data.message : ".";
+
+                    });
+                };
+
+                var updateNetworkPermission = function(membership) {
+                    return ndexService.updateNetworkPermissionNoHandlersV2(membership.resourceUUID,
+                        membership.accountType, membership.memberUUID, membership.permissions);
+                };
+
 
                 $scope.submit = function() {
                     if( $scope.isProcessing )
@@ -2905,8 +2934,6 @@
                     var accessTypeSelected =
                         ($scope.accessType.permission.toUpperCase()==="EDIT") ? "WRITE" :
                         $scope.accessType.permission.toUpperCase();
-
-                    var bulkNetworkManager = $scope.ndexData;
 
                     var updateAccessRequestsSent = 0;
                     var updateAccessRequestsResponsesReceived = 0;
@@ -2920,6 +2947,7 @@
 
                         var networkId = IDsOfSelectedNetworks[i];
                         var networkPermissionsObjs = bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions[networkId];
+                        var networkName = bulkNetworkManager.selectedIDsAndNetworks[networkId];
 
                         // loop through the list of accounts whose access for the networks we modify
                         for (var j = 0;
@@ -2935,9 +2963,9 @@
                             if (updateNetworkAccessPermissions) {
 
                                 var updatedMembership = {
-                                    //memberAccountName: accountForUpdating.memberAccountName,
+                                    memberAccountName: accountForUpdating.memberAccountName,
                                     memberUUID: accountForUpdating.memberUUID,
-                                    //resourceName: networkPermissionsObjs[0].resourceName,
+                                    resourceName: networkName,
                                     resourceUUID: networkId,
                                     permissions: accessTypeSelected,
                                     accountType: accountForUpdating.accountType.toLowerCase()
@@ -2960,9 +2988,12 @@
 
                     if (membershipToUpdateReadyForSending.length == 0) {
                         $scope.progress = "No need to update.";
-                        $scope.close();
-                        $scope.isProcessing = false;
-                        $location.path("/user/" + bulkNetworkManager.currentUserId);
+
+                        setTimeout(function() {
+                            $scope.close();
+                            $scope.isProcessing = false;
+                            $location.path("/user/" + bulkNetworkManager.currentUserId);
+                        }, 2000);
                     } else {
                         $scope.updateMembershipsOnServer(membershipToUpdateReadyForSending);
                     }

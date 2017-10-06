@@ -217,12 +217,12 @@ ndexApp.controller('myAccountController',
                         };
 
                         if (row.isSelected) {
-                            $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = '';
+                            $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = row.entity.name;
                         } else {
                             delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
                         };
 
-                        myAccountController.networkTableRowsSelected = _.size( $scope.selectedRowsNetworkExternalIds);
+                        myAccountController.networkTableRowsSelected = _.size($scope.selectedRowsNetworkExternalIds);
 
                         changeNetworkBulkActionsButtonsLabels();
 
@@ -246,7 +246,7 @@ ndexApp.controller('myAccountController',
                                 };
                             } else {
                                 if (row.isSelected) {
-                                    $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = '';
+                                    $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = row.entity.name;
                                 } else {
                                     delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
                                 };
@@ -1112,7 +1112,7 @@ ndexApp.controller('myAccountController',
                         };
                     };
 
-                    myAccountController.genericInfoModal(title, message);
+                    ndexNavigation.genericInfoModal(title, message);
                     return;
                 };
 
@@ -1151,15 +1151,13 @@ ndexApp.controller('myAccountController',
                                     myAccountController.networkTableRowsSelected--;
                                 };
                                 delete $scope.selectedRowsNetworkExternalIds[network.externalId];
-                                if ( $scope.networkGridApi.grid.selection.selectedCount > 0) {
-                                    $scope.networkGridApi.grid.selection.selectedCount--;
-                                };
 
                                 $rootScope.progress  = "Deleted: " + deletedCount + " of " + numberOfNetworksToDel + " selected networks";
                                 $rootScope.progress2 = "Deleted: " + network.name;
 
                                 if ((deletedCount == numberOfNetworksToDel) || !$scope.isProcessing) {
-                                    myAccountController.loadNetworks();
+                                    $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
+                                    myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
 
                                     setTimeout(function() {
                                         delete $rootScope.progress;
@@ -1180,7 +1178,9 @@ ndexApp.controller('myAccountController',
                             $rootScope.errors = (reason.data && reason.data.message) ?
                                 errorMessage + ": " +  reason.data.message : ".";
 
-                            myAccountController.loadNetworks();
+                            $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
+                            myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
+
                         });
                     },
                     function ($modalInstance) {
@@ -1246,6 +1246,7 @@ ndexApp.controller('myAccountController',
                 return;
             };
 
+
             myAccountController.checkAndMarkAsRead = function() {
 
                 var tasksToMark =
@@ -1253,9 +1254,9 @@ ndexApp.controller('myAccountController',
                         function(task)
                         {
                             var taskNotToMark =
-                                task.newReceived || (!task.newTask && !task.newSent) ||
-                                task.Status == 'queued' || task.Status == 'processing' ||
-                                (task.newSent && (task.Status == 'processing'));
+                                ((task.whatType == 'sent') && (task.newSent) &&
+                                (task.Status != 'accepted') && (task.Status != 'declined') ||
+                                (!task.newTask && !task.newSent));
 
                             return taskNotToMark ? null :
                                 {
@@ -1278,7 +1279,7 @@ ndexApp.controller('myAccountController',
                         "The selected task cannot be marked as read." :
                         "The selected " + selectedTasks + " tasks can not be marked as read.";
 
-                    myAccountController.genericInfoModal(title, message);
+                    ndexNavigation.genericInfoModal(title, message);
                     return;
                 };
 
@@ -1397,7 +1398,7 @@ ndexApp.controller('myAccountController',
                         "The selected task is received and cannot be deleted." :
                         "All of " + countTasksThatCannotBeDeleted + " selected tasks are received and cannot be deleted.";
 
-                    myAccountController.genericInfoModal(title, message);
+                    ndexNavigation.genericInfoModal(title, message);
                     return;
                 };
 
@@ -1774,8 +1775,8 @@ ndexApp.controller('myAccountController',
 
             myAccountController.manageBulkAccess = function(path, currentUserId)
             {
-                var selectedIDs = myAccountController.getIDsOfSelectedNetworks();
-                sharedProperties.setSelectedNetworkIDs(selectedIDs);
+                //var selectedIDs = myAccountController.getIDsOfSelectedNetworks();
+                sharedProperties.setSelectedNetworkIDs($scope.selectedRowsNetworkExternalIds);
                 sharedProperties.setCurrentUserId(currentUserId);
                 $location.path(path);
             };
