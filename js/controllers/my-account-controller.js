@@ -424,7 +424,8 @@ ndexApp.controller('myAccountController',
                     { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
                     //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
-                    { field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
+                    //{ field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
+                    { field: 'Visibility', enableFiltering: true, width: 80, cellTemplate: 'pages/gridTemplates/visibility.html'},
                     { field: 'Owner', enableFiltering: true, width:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120,
                         cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 5}
@@ -723,6 +724,7 @@ ndexApp.controller('myAccountController',
                     //var nodes = network['nodeCount'];
                     var edges = network['edgeCount'];
                     var owner = network['owner'];
+                    var indexed = network['indexed'];
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
                     var showcase = network['isShowcase'];
@@ -766,7 +768,8 @@ ndexApp.controller('myAccountController',
                         "errorMessage"  :   errorMessage,
                         "subnetworks"   :   noOfSubNetworks,
                         "networks"      :   networks,
-                        "isReadOnly"    :   isReadOnly
+                        "isReadOnly"    :   isReadOnly,
+                        "indexed"       :   indexed
                     };
                     $scope.networkGridOptions.data.push(row);
                 };

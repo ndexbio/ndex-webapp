@@ -190,34 +190,59 @@
             </div>
         </div>
         <div class='col-sm-5'>
-<!--            <div class="form-group rowWithOneLineTopPad">-->
-                <div class="well" style="margin-bottom: 0px;">
-                    <div class="row">
-                        <label class="col-sm-3 control-label">Contact Email</label>
-                        <div class="col-sm-8">
-                            <input
-                                    class="form-control input-sm" ng-change="editor.updateScore()"
-                                    ng-model="editor.doiInfo.user.email" id="doiinputemail" name="doiinputemail" type="email"
-                                    ng-class="editor.doiInfo.user.email.length > 0 ? 'competeInput': ''" required>
-<!--                            <br/>
-                            <span class="error" ng-show="doiform.doiinputemail.$error.required">Required!</span>
-                            <span class="error" ng-show="doiform.doiinputemail.$error.email">Not valid email!</span>
-                            -->
-                        </div>
-                        <div class="col-sm-1">
-                            <div class="input-group-btn">
-                                <i ng-if="!doiform.doiinputemail.$error.required && !doiform.doiinputemail.$error.email" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                                <i ng-if="doiform.doiinputemail.$error.required || doiform.doiinputemail.$error.email" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                            </div>
+
+
+
+            <div class="well" style="margin-bottom: 0px;">
+                <div class="row">
+                    <label class="col-sm-3 control-label">Publish Date</label>
+                    <div class="col-sm-8">
+                        <!--------------------------------------------
+                        --- THIS NON-ANGULAR CONTROL CAN BE REPLACED
+                        --- IF A GOOD, COMPATIBLE CONTROL IS FOUND
+                        ---------------------------------------------->
+                        <input type='text' class="form-control input-sm" id='doiDTPicker' />
+                        <script type="text/javascript">
+                            $(function () {
+                                $('#doiDTPicker').datetimepicker({
+                                    viewMode: 'days',
+                                    format: 'MM/DD/YYYY'
+                                });
+                            });
+                        </script>
+
+                    </div>
+                    <div class="col-sm-1">
+                    </div>
+                </div>
+                <div class="row rowWithOneLineTopPad">
+                    <label class="col-sm-3 control-label">Contact Email</label>
+                    <div class="col-sm-8">
+                        <input
+                                class="form-control input-sm" ng-change="editor.updateScore()"
+                                ng-model="editor.doiInfo.user.email" id="doiinputemail" name="doiinputemail" type="email"
+                                ng-class="editor.doiInfo.user.email.length > 0 ? 'competeInput': ''" required>
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="input-group-btn">
+                            <i ng-if="!doiform.doiinputemail.$error.required && !doiform.doiinputemail.$error.email" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="doiform.doiinputemail.$error.required || doiform.doiinputemail.$error.email" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                         </div>
                     </div>
                 </div>
-<!--            </div>-->
+            </div>
+
+
+
         </div>
     </div>
 
+
+
+
+
     <div class='row'>
-        <div class="col-sm-offset-1 col-sm-5">
+        <div class="col-sm-offset-1 col-sm-5" style="max-height: 47px;">
             &nbsp;
         </div>
         <div class='col-sm-5'>
@@ -245,3 +270,5 @@
     </div>
 -->
 </form>
+<button class="btn btn-success" ng-click="updatecalendar()">push</button>
+

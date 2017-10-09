@@ -2488,7 +2488,27 @@
 
                 var modalInstance;
                 $scope.errors = null;
-                $scope.network = {};
+                $scope.network = {
+                    'visibilityIndex': ""
+                };
+
+                // USE network.visibilityIndex to set "visibility" and "indexed"
+                $scope.$watch('network.visibilityIndex', function() {
+                    if($scope.network.visibilityIndex === "PUBLIC"){
+                        $scope.network.visibility = "PUBLIC";
+                        $scope.network.indexed = true;
+                    } else if($scope.network.visibilityIndex === "PUBLIC_NOT_INDEXED"){
+                        $scope.network.visibility = "PUBLIC";
+                        $scope.network.indexed = false;
+                    } else if($scope.network.visibilityIndex === "PRIVATE"){
+                        $scope.network.visibility = "PRIVATE";
+                        $scope.network.indexed = true;
+                    } else if($scope.network.visibilityIndex === "PRIVATE_NOT_INDEXED"){
+                        $scope.network.visibility = "PRIVATE";
+                        $scope.network.indexed = false;
+                    }
+                });
+
 
                 var successfullyChangedNetworkIDs = {};
                 var operation = null;
@@ -2713,7 +2733,7 @@
 
                         _.forOwn(systemPropertiesOfSelectedNetworks, function(systemPropertiesObj, networkId) {
 
-                            if (visibility == systemPropertiesObj['visibility']) {
+                            if (visibility == systemPropertiesObj['visibility'] && $scope.network.indexed == systemPropertiesObj['indexed']) {
 
                                 successfullyChangedNetworkIDs[networkId] = "";
 
@@ -2725,23 +2745,52 @@
                                 return continueLoop;
                             };
 
-                            ndexService.setNetworkSystemPropertiesV2(networkId, "visibility", visibility,
-                                function (data, networkId, property, value) {
+                            if (visibility != systemPropertiesObj['visibility']){
+                                ndexService.setNetworkSystemPropertiesV2(networkId, "visibility", visibility,
+                                    function (data, networkId, property, value) {
 
-                                    successfullyChangedNetworkIDs[networkId] = "";
+                                        successfullyChangedNetworkIDs[networkId] = "";
 
-                                    incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
-                                        systemPropertiesOfSelectedNetworks[networkId]['networkName'],
-                                        visibility, showCase);
-                                },
-                                function (error, networkId, property, value) {
+                                        incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
+                                            systemPropertiesOfSelectedNetworks[networkId]['networkName'],
+                                            visibility, showCase);
+                                    },
+                                    function (error, networkId, property, value) {
 
-                                    incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
-                                        systemPropertiesOfSelectedNetworks[networkId]['networkName'],
-                                        visibility, showCase);
+                                        incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
+                                            systemPropertiesOfSelectedNetworks[networkId]['networkName'],
+                                            visibility, showCase);
 
-                                    console.log("unable to update Network Visibility for Network with Id " + networkId);
-                                });
+                                        console.log("unable to update Network Visibility for Network with Id " + networkId);
+                                    });
+                            }
+
+                            if ($scope.network.indexed != systemPropertiesObj['indexed']){
+                                ndexService.setNetworkSystemPropertiesV2(networkId, "index", $scope.network.indexed,
+                                    function (data, networkId, property, value) {
+
+                                        successfullyChangedNetworkIDs[networkId] = "";
+
+                                        // ONLY INCREMENT IF VISIBILITY WASN'T UPDATED
+                                        if (visibility == systemPropertiesObj['visibility']){
+                                            incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
+                                                systemPropertiesOfSelectedNetworks[networkId]['networkName'],
+                                                visibility, showCase);
+                                        }
+                                    },
+                                    function (error, networkId, property, value) {
+
+                                        // ONLY INCREMENT IF VISIBILITY WASN'T UPDATED
+                                        if (visibility == systemPropertiesObj['visibility']) {
+                                            incrementUpdatedNetworksCounter(networkId, numOfSelectedNetworks,
+                                                systemPropertiesOfSelectedNetworks[networkId]['networkName'],
+                                                visibility, showCase);
+                                        }
+
+                                        console.log("unable to update Network Visibility for Network with Id " + networkId);
+                                    });
+                            }
+
                         });
                         
                     } else if (operation == "readOnly") {
