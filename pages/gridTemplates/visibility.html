@@ -1,0 +1,7 @@
+<div id="visibilityNetworkTemplate" class="ui-grid-cell-contents">
+    <span ng-if="(row.entity.Status != 'Set')"
+          title="{{COL_FIELD}}">
+            {{row.entity.Visibility}}&nbsp;&nbsp;
+            <i class="fa fa-search" aria-hidden="true" ng-if="row.entity.indexed"></i>
+    </span>
+</div>

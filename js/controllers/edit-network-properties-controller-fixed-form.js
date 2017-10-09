@@ -1,6 +1,6 @@
 ndexApp.controller('editNetworkPropertiesFixedFormController',
 	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout', 'uiMisc', 'ndexNavigation', 'ndexUtility',
-		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc, ndexNavigation, ndexUtility){
+		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc, ndexNavigation, ndexUtility, datepicker){
 	 //testing
 
 	//              Process the URL to get application state
@@ -21,6 +21,23 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.canRead = false;
     editor.showcased = {"state": true};
     editor.subNetworkId = subNetworkId;
+    editor.visibilityIndex = "PRIVATE_NOT_INDEXED";
+    editor.idexed = false;
+    $scope.$watch('editor.visibilityIndex', function() {
+        if(editor.visibilityIndex === "PUBLIC"){
+            $scope.mainProperty.visibility = "PUBLIC";
+            $scope.mainProperty.indexed = true;
+        } else if(editor.visibilityIndex === "PUBLIC_NOT_INDEXED"){
+            $scope.mainProperty.visibility = "PUBLIC";
+            $scope.mainProperty.indexed = false;
+        } else if(editor.visibilityIndex === "PRIVATE"){
+            $scope.mainProperty.visibility = "PRIVATE";
+            $scope.mainProperty.indexed = true;
+        } else if(editor.visibilityIndex === "PRIVATE_NOT_INDEXED"){
+            $scope.mainProperty.visibility = "PRIVATE";
+            $scope.mainProperty.indexed = false;
+        }
+    });
 
     editor.reference = null;
 
@@ -70,7 +87,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "description": "",
         "reference": "",
         "version": "",
-        "visibility": "PRIVATE"
+        "visibility": "PRIVATE",
+        "indexed": true
     };
 
     editor.doiRequired = {
@@ -86,9 +104,43 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     var loggedInUserName = (loggedInUser && loggedInUser['userName']) ? loggedInUser['userName'] : null;
 
     editor.doiInfo = {
-        "user": {"username": loggedInUserName}
+        "user": {"username": loggedInUserName},
+        "visibility": "PUBLIC",
+        "pubDate": ""
     }
 
+
+    $scope.updatecalendar = function(){
+        editor.doiInfo.pubDate = $('#doiDTPicker').val();
+    };
+
+    // grab today and inject into field
+    $scope.today = function() {
+        $scope.dt = new Date();
+    };
+
+    // run today() function
+    $scope.today();
+
+    // setup clear
+    $scope.clear = function () {
+        $scope.dt = null;
+    };
+
+    // handle formats
+    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+
+    // assign custom format
+    $scope.format = $scope.formats[0];
+
+
+    // open min-cal
+    $scope.open = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.opened = true;
+    };
     uiMisc.hideSearchMenuItem();
     $scope.$parent.showSearchMenu = true;
 
@@ -439,8 +491,25 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         if(editor.errors.length < 1){
             if(editor.checkDOIRequirements()){
                 editor.save();
+                var saveTheseProperties = {
+                    "name": $scope.mainProperty.name,
+                    "description": $scope.mainProperty.description,
+                    "version": $scope.mainProperty.version,
+                    "author": editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value,
+                    "rights": editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value,
+                    "rightsHolder": editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value,
+                    "reference": $scope.mainProperty.reference,
+                    "contactEmail": editor.doiInfo.user.email,
+                    "pubDate": $('#doiDTPicker').val()
+                };
 
-                ndexService.requestDoi(editor.networkExternalId,
+                console.log(saveTheseProperties);
+
+
+
+
+
+                ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
                     function() {
                         console.log("request created successfully!");
                     },
@@ -523,7 +592,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 'name': $scope.mainProperty.name,
                 'description': $scope.mainProperty.description,
                 'version': $scope.mainProperty.version,
-                'visibility': $scope.mainProperty.visibility
+                'visibility': $scope.mainProperty.visibility,
+                'index': $scope.mainProperty.indexed
             }
 
             ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
@@ -543,6 +613,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                                 console.log("unable to change showcase for Network with Id " + networkId);
                             });
                     }
+
                 },
                 function(error) {
 
@@ -554,6 +625,14 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     }
 
                     $scope.isProcessing = false;
+                });
+
+            ndexService.setNetworkSystemPropertiesV2(networkId, "index", $scope.mainProperty.indexed,
+                function (data, networkId, property, value) {
+                    console.log("index set to " + $scope.mainProperty.indexed);
+                },
+                function (error, networkId, property, value) {
+                    console.log("unable to change indexed for Network with Id " + networkId);
                 });
 
 
@@ -751,6 +830,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.propertyValuePairs = [];
                 editor.hiddenValuePairs = [];
                 $scope.mainProperty.name = network.name;
+                $scope.mainProperty.indexed = network.indexed;
                 if(!$scope.mainProperty.name){
                     $scope.mainProperty.name = "";
                 }
@@ -777,8 +857,18 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 }
                 $scope.mainProperty.visibility = network.visibility;
                 if($scope.mainProperty.visibility === "PRIVATE"){
+                    if($scope.mainProperty.indexed){
+                        editor.visibilityIndex = "PRIVATE";
+                    } else {
+                        editor.visibilityIndex = "PRIVATE_NOT_INDEXED";
+                    }
                     editor.showcased.state = true;
                 } else {
+                    if($scope.mainProperty.indexed){
+                        editor.visibilityIndex = "PUBLIC";
+                    } else {
+                        editor.visibilityIndex = "PUBLIC_NOT_INDEXED";
+                    }
                     editor.showcased.state = network.isShowcase;
                 }
 

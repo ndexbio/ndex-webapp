@@ -1403,13 +1403,11 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.requestDoi = function (networkId, successHandler, errorHandler) {
-                // Server API: Search Networks by Gene/Protein
-                // POST /search/network/genes?start={number}&size={number}
-
+            factory.requestDoi = function (networkId, properties, successHandler, errorHandler) {
                 requestData = {
                     "type": "DOI",
-                    "networkId": networkId
+                    "networkId": networkId,
+                    "properties": properties
                 }
 
                 var url = "/admin/request";

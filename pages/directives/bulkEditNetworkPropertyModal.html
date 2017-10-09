@@ -54,15 +54,18 @@
                 <div class="row">
                     <label class="col-sm-3 control-label">Visibility</label>
                     <div class="col-sm-5">
-                        <select class="form-control input-sm" ng-model="network.visibility">
-                            <option>[Select Network Visibility]</option>
-                            <option value="PUBLIC">Public</option>
-                            <option value="PRIVATE">Private</option>
+                        <!--<select class="form-control input-sm" ng-model="network.visibility">-->
+                        <select class="form-control input-sm" ng-model="network.visibilityIndex">
+                            <option value=''>[Select Network Visibility] </option>
+                            <option value='PUBLIC'>Public </option>
+                            <option value='PUBLIC_NOT_INDEXED'>Public (not searchable)</option>
+                            <option value='PRIVATE'>Private </option>
+                            <option value='PRIVATE_NOT_INDEXED'>Private (not searchable)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="row rowWithOneLineTopPad" ng-if="network.visibility == 'PUBLIC'">
+                <div class="row rowWithOneLineTopPad" ng-if="network.visibility == 'PUBLIC' || network.visibility == 'PUBLIC_NOT_INDEXED'">
 
                     <div class="col-sm-3"></div>
 

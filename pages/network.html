@@ -841,7 +841,7 @@
             </span>
 
             <span ng-show='networkController.isLoggedInUser &&
-                        ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
+                        (networkController.isNetworkOwner && !networkController.readOnlyChecked)'>
                 <span>
                     <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()"
                        ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
