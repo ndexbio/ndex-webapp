@@ -112,25 +112,25 @@
         </div>
 
         <div class="modal-footer">
-            <a class="btn btn-default" type='button' ng-disabled="isProcessing" ng-click='cancel()'>Cancel</a>
+            <a class="btn btn-default" type='button' ng-click='cancel()'>Cancel</a>
 
             <button class="btn btn-primary"
                     type='submit'
-                    ng-disabled='isProcessing'
+                    ng-disabled='isProcessing || errorFromServer'
                     ng-show="action=='version' || action=='reference' || action=='description'">
                 {{network.submitButtonLabel}}
             </button>
 
             <button class="btn btn-primary"
                     type='submit'
-                    ng-disabled="isProcessing || network.visibility=='[Select Network Visibility]'"
+                    ng-disabled="isProcessing || network.visibility=='[Select Network Visibility]' || errorFromServer"
                     ng-show="action=='visibility'">
                 {{network.submitButtonLabel}}
             </button>
 
             <button class="btn btn-primary"
                     type='submit'
-                    ng-disabled="network.readOnly=='[Select Network Read-Only Flag]'"
+                    ng-disabled="isProcessing || network.readOnly=='[Select Network Read-Only Flag]' || errorFromServer"
                     ng-show="action=='readOnly'">
                 {{network.submitButtonLabel}}
             </button>

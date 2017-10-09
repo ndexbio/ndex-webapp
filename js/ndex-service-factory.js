@@ -1068,6 +1068,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.setNetworkPropertiesNoHandlersV2 = function(networkId, properties, successHandler, errorHandler) {
+                // Server API: Set Network Properties
+                // PUT /network/{networkId}/properties
+
+                var url = "/network/" + networkId + "/properties";
+                var config = ndexConfigs.getPutConfigV2(url, properties);
+
+                return $http(config);
+            };
+
             factory.setNetworkSummaryV2 = function(networkId, summaryProperties, successHandler, errorHandler) {
                 // Server API: Set Network Properties
                 // PUT /network/{networkId}/properties
@@ -1087,7 +1097,17 @@ ndexServiceApp.factory('ndexService',
 
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
-            
+
+            factory.updateNetworkProfileNoHandlersV2 = function (networkId, profile) {
+                // Server API: Update Network Profile
+                // PUT /network/{networkId}/profile
+
+                var url = "/network/" + networkId + "/profile";
+                var config = ndexConfigs.getPutConfigV2(url, profile);
+
+                return $http(config);
+            };
+
             factory.getNetworkProvenanceV2 = function (networkId, successHandler, errorHandler) {
                 // Server API: Get Network Provenance
                 // GET /network/{networkId}/provenance

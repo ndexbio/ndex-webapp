@@ -567,5 +567,54 @@ angular.module('ndexServiceApp')
             return str;
         };
 
+
+        //
+        self.findWhatSelectedNetworksCanBeModified = function(controller, successHandler, errorHandler) {
+
+            var networkUUIDs = controller.getIDsOfSelectedNetworks();
+            var numberOfSelectedNetworks = networkUUIDs.length;
+
+            var numberOfReadOnly = 0;
+            var numberOfNonAdminNetworks = 0;
+
+            var networkInfo = {
+                'selected': numberOfSelectedNetworks,
+                'readOnly': 0,
+                'nonAdmin': 0,
+                'networks': []
+            };
+
+            var accesskey = null;
+
+            // the selected networks can span multiple pages, so we we use the bulk getNetworkSummariesByUUIDsV2 API
+            ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, accesskey,
+                function (networkSummaries) {
+
+                    var networksToDelete = _.map(networkSummaries,
+                        function (network) {
+                            if (network.isReadOnly) {
+                                numberOfReadOnly++;
+                            };
+                            if (network.ownerUUID != controller.identifier) {
+                                numberOfNonAdminNetworks++;
+                            };
+                            return ((network.ownerUUID == controller.identifier) && (!network.isReadOnly)) ?
+                                {'externalId': network.externalId, 'name': network.name} : null;
+                        });
+
+                    networkInfo['readOnly'] = numberOfReadOnly;
+                    networkInfo['nonAdmin'] = numberOfNonAdminNetworks;
+                    networkInfo['networks'] = networksToDelete;
+
+                    successHandler(networkInfo);
+
+                },
+                function (error) {
+                    errorHandler(error);
+                }
+            );
+            return;
+        };
+
     }
 ]);

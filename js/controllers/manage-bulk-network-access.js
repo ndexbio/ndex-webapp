@@ -56,7 +56,7 @@ ndexApp.controller('manageBulkNetworkAccessController',
                             accountType: "user"
                         };
                         userMembershipsForNetwork.push(membership);
-                    }
+                    };
 
                     bulkNetworkManager.selectedNetworksForUpdatingAccessPermissions[networkUUID] =
                         userMembershipsForNetwork;

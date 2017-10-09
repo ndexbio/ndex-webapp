@@ -1,4 +1,3 @@
-
 <div class ='row'>
 	<div class='col-sm-offset-2 col-sm-8'>
 		<p class="alert alert-danger" ng-repeat='error in bulkNetworkManager.errors'>
@@ -59,20 +58,9 @@
 			</div>
 
 			<div class='pull-right'>
-				<!--
-				<button type="button" class="btn btn-sm btn-danger" ng-click='bulkNetworkManager.discardChanges()'>
-					Discard Changes
-				</button>
-				-->
-				<span>
-					<a class="btn btn-sm btn-success"
-					   bulk-network-access-modal="Next"
-					   ndex-data="bulkNetworkManager"
-					   ng-disabled="isProcessing ||
-					       bulkNetworkManager.selectedAccountsForUpdatingAccessPermissions.length==0">
-						Next
-					</a>
-				</span>
+				<bulk-network-access-modal
+						ndex-data="bulkNetworkManager">
+				</bulk-network-access-modal>
 
 			</div>
 		</div>
