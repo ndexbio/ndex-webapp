@@ -44,6 +44,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             } else {
                 gapi.auth2.getAuthInstance().signOut();
             }
+	    window.currentNdexUser = null;
+            window.currentSignInType = null;
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
             $scope.main.showSignIn = true;

@@ -358,7 +358,7 @@ ndexApp.controller('userController',
                     $scope.networkGridOptions.data.push(row);
                 }
             };
-
+/*
             userController.deleteSelectedNetworks = function ()
             {
                 var selectedIds = [];
@@ -396,7 +396,7 @@ ndexApp.controller('userController',
                 refreshNetworkTable();
                 userController.networkTableRowsSelected = 0;
             };
-
+*/
             userController.getUserGroupMemberships = function (member)
             {
                 /*

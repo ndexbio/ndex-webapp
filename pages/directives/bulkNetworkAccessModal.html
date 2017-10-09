@@ -38,14 +38,14 @@
 		            </span>
                 </strong></h5>
 
-                <div class='text-success'>
-                    <strong>{{progress}}</strong>
+                <div ng-if="progress">
+                    <br>
+                    <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress"></span></strong>
                 </div>
 
-                <div class='text-danger'>
-                    <strong>
-                        {{errors}}
-                    </strong>
+                <div ng-if="errors" class='text-danger'>
+                    <br>
+                    <strong>{{errors}}</strong>
                 </div>
             </div>
 
@@ -60,6 +60,7 @@
                         ng-disabled="accessType.permission=='' || isProcessing">
                     Grant Access
                 </button>
+
 
             </div>
         </form>
