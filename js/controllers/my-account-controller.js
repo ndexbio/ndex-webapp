@@ -281,6 +281,9 @@ ndexApp.controller('myAccountController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
+                        // Call core.handleWindowResize in 0.1 sec after gridApi.core.on.rowsRendered has fired to make
+                        // sure the table resizes.  It is a known issue with UI Grid that sometimes core.handleWindowResize
+                        // doesn't have effect if it is called immediately, thus we delay its' execution.
                         setTimeout($scope.taskGridApi.core.handleWindowResize, 100);
                         $scope.refreshTasksButtonDisabled = false;
 
