@@ -281,7 +281,7 @@ ndexApp.controller('myAccountController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        $scope.taskGridApi.core.handleWindowResize();
+                        setTimeout($scope.taskGridApi.core.handleWindowResize, 100);
                         $scope.refreshTasksButtonDisabled = false;
 
                         if (myAccountController.taskTableRowsSelected > 0) {
