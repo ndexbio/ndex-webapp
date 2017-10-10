@@ -200,7 +200,8 @@
                             <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
                                 <input type="checkbox"
                                     ng-model="networkController.readOnlyChecked"
-                                    ng-change="readOnlyChanged()"> Read Only
+                                    ng-change="readOnlyChanged()"
+                                ng-disabled="networkController.currentNetwork.isReadOnly"> Read Only
                             </span>
                             <span class="networkPropertyName" ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()">
                                 <input type="checkbox"  disabled readonly
@@ -224,6 +225,11 @@
                                         ng-click="networkController.showURLInClipboardMessage()"
                                         class="btn btn-success btn-xs">Copy URL
                                 </button>
+                                <button type="button" ng-hide="!networkController.currentNetwork.doi"
+                                        ngclipboard data-clipboard-text="{{networkController.networkShareURL}}"
+                                        ng-click=""
+                                        class="btn btn-success btn-xs">Copy DOI
+                                </button>
                             </span>
 
                             <span ng-if="networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC'">
@@ -231,6 +237,11 @@
                                         ngclipboard data-clipboard-text="{{networkController.networkURL}}"
                                         ng-click="networkController.showURLInClipboardMessage()"
                                         class="btn btn-primary btn-xs">Copy URL
+                                </button>
+                                <button type="button" ng-hide="!networkController.currentNetwork.doi"
+                                        ngclipboard data-clipboard-text="{{networkController.networkShareURL}}"
+                                        ng-click=""
+                                        class="btn btn-success btn-xs">Copy DOI
                                 </button>
                             </span>
 
