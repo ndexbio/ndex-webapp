@@ -201,7 +201,9 @@
         <div class='col-sm-offset-1 col-sm-5'>
             <div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
                 <div ng-if="$index <= 5 && property.predicateString != 'custom...'">
-                    <label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}">{{property.predicateString}}</label>
+                    <label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}">{{property.predicateString}}
+                        <span ng-if="property.predicateString == 'rights'">&nbsp;<a href="http://home.ndexbio.org/publishing-in-ndex/" style="text-decoration: none;" target="_blank"><i class="fa fa-info-circle"></i></a></span>
+                    </label>
                     <div ng-if="property.predicateString.length > 0" class="input-group col-sm-9" style="margin-bottom: 15px;">
                         <input ng-if="property.predicateString != 'rights'"
                                 class="form-control input-sm" ng-change="editor.updateScore()"

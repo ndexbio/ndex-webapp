@@ -536,7 +536,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     function(error){
                         editor.errors.push(error)
                     });
-                
+
 
             } else {
                 editor.errors.push("Missing value")
