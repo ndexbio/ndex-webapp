@@ -281,7 +281,10 @@ ndexApp.controller('myAccountController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        $scope.taskGridApi.core.handleWindowResize();
+                        // Call core.handleWindowResize in 0.1 sec after gridApi.core.on.rowsRendered has fired to make
+                        // sure the table resizes.  It is a known issue with UI Grid that sometimes core.handleWindowResize
+                        // doesn't have effect if it is called immediately, thus we delay its' execution.
+                        setTimeout($scope.taskGridApi.core.handleWindowResize, 100);
                         $scope.refreshTasksButtonDisabled = false;
 
                         if (myAccountController.taskTableRowsSelected > 0) {
@@ -957,6 +960,13 @@ ndexApp.controller('myAccountController',
                 myAccountController.numberOfNewTasksAndRequests = newTasksAndNotifications;
             };
 
+            myAccountController.getNoOfSelectedNetworksOnCurrentPage = function() {
+                if ($scope.networkGridApi && $scope.networkGridApi.selection) {
+                    return $scope.networkGridApi.selection.getSelectedRows().length;
+                };
+                return 0;
+            };
+
             myAccountController.tasksNotificationsTabDisabled = function() {
 
                 if ( (myAccountController.tasks.length > 0) ||
@@ -1010,8 +1020,12 @@ ndexApp.controller('myAccountController',
             };
 
 
-            var deleteSelectedNetworks = function(
-                numberOfSelectedNetworks, numberOfReadOnly, numberOfNonAdminNetworks, networksToDelete) {
+            var deleteSelectedNetworks = function(networksInfo) {
+
+                var numberOfSelectedNetworks    = networksInfo.selected;
+                var numberOfReadOnly            = networksInfo.readOnly;
+                var numberOfNonAdminNetworks    = networksInfo.nonAdmin;
+                var networksToDelete            = networksInfo.networks;
 
                 var numberOfNetworksToDel = networksToDelete.length;
 /*
@@ -1214,37 +1228,17 @@ ndexApp.controller('myAccountController',
             };
 
             myAccountController.checkAndDeleteSelectedNetworks = function() {
-                var networkUUIDs = myAccountController.getIDsOfSelectedNetworks();
-                var numberOfSelectedNetworks = networkUUIDs.length;
 
-                var numberOfReadOnly = 0;
-                var numberOfNonAdminNetworks = 0;
+                uiMisc.findWhatSelectedNetworksCanBeModified(myAccountController,
+                    function(networkInfo) {
 
-                var accesskey = null;
-                ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, accesskey,
-                    function (networkSummaries) {
-
-                        var networksToDelete = _.map(networkSummaries,
-                            function (network) {
-                                if (network.isReadOnly) {
-                                    numberOfReadOnly++;
-                                };
-                                if (network.ownerUUID != myAccountController.identifier) {
-                                    numberOfNonAdminNetworks++;
-                                };
-                                return ((network.ownerUUID == myAccountController.identifier) && (!network.isReadOnly)) ?
-                                    {'externalId': network.externalId, 'name': network.name} : null;
-                            });
-
-                        deleteSelectedNetworks(
-                            numberOfSelectedNetworks, numberOfReadOnly, numberOfNonAdminNetworks, networksToDelete);
+                        deleteSelectedNetworks(networkInfo);
                     },
-                    function (error) {
+                    function(error) {
                         if (error) {
                             displayErrorMessage(error);
                         };
-                    }
-                );
+                    });
 
                 return;
             };
