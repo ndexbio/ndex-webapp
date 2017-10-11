@@ -201,13 +201,64 @@
         <div class='col-sm-offset-1 col-sm-5'>
             <div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
                 <div ng-if="$index <= 5 && property.predicateString != 'custom...'">
-                    <label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}">{{property.predicateString}}</label>
+                    <label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}">{{property.predicateString}}
+                        <span ng-if="property.predicateString == 'rights'">&nbsp;<a href="http://home.ndexbio.org/publishing-in-ndex/" style="text-decoration: none;" target="_blank"><i class="fa fa-info-circle"></i></a></span>
+                    </label>
                     <div ng-if="property.predicateString.length > 0" class="input-group col-sm-9" style="margin-bottom: 15px;">
-                        <input
+                        <input ng-if="property.predicateString != 'rights'"
                                 class="form-control input-sm" ng-change="editor.updateScore()"
                                 ng-model='property.value' id="input{{property.predicateString}}"
                                 ng-class="property.value.length > 0 ? 'competeInput': ''"
                                 ng-readonly='!(editor.isAdmin || editor.canEdit) || !(property.predicateString)'>
+
+<!--
+                        <select ng-if="property.predicateString == 'rights'" class="form-control input-sm" ng-model="property.value"
+                                ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                                ng-options="item for item in editor.rights" ng-change="editor.updateScore()">
+                        </select>
+-->
+
+                        <span ng-if="property.predicateString == 'rights'">
+                            <div class="col-sm-12" style="margin-bottom: 15px; padding: 0px;" ng-if="property.value != 'Other'">
+
+                                <select class="form-control input-sm" ng-model="property.value"
+                                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                                        ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-4" style="margin-bottom: 15px; padding-left: 0px;" ng-if="property.value == 'Other'">
+                                <select class="form-control input-sm" ng-model="property.value"
+                                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                                        ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                                </select>
+                            </div>
+                            <div class="col-sm-8" style="margin-bottom: 15px;" ng-if="property.value == 'Other'">
+
+                                <input class="form-control input-sm" type="text"  placeholder="license title"
+                                       ng-model="property.rightsOther" id="doiinputrightsOther1"
+                                       ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+
+                                <input class="form-control input-sm" type="text" placeholder="license URL"
+                                       ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
+                                       ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+                            </div>
+
+                        </span>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         <div class="input-group-btn">
                             <i ng-if="property.value.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                             <i ng-if="property.value.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;

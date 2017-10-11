@@ -1,5 +1,4 @@
 <form role="form" ng-submit='editor.saveAndSubmitDOI()' name="doiform">
-
     <!--
     ==========================
     = Main profile properties
@@ -114,7 +113,7 @@
                     </text-angular>
                 </div>
                 <div class="col-sm-1">
-                    <div class="input-group-btn" style="margin-top: 40px;">
+                    <div class="input-group-btn" style="margin-top: 40px;">{{mainProperty.reference.length}}<br />
                         <i ng-if="mainProperty.reference.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                         <i ng-if="mainProperty.reference.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                     </div>
@@ -130,37 +129,55 @@
     -->
     <div class='row'>
         <div class="col-sm-offset-1 col-sm-5">
-            <div class="form-group rowWithOneLineTopPad">
-                <label class="col-sm-3 control-label">rights</label>
-                <div class="col-sm-8" style="margin-bottom: 15px;">
-                    <input
-                            class="form-control input-sm" ng-change="editor.updateScore()" type="text"
-                            ng-model="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value" id="doiinputrights"
-                            ng-class="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length > 0 ? 'competeInput': ''"
+            <div class="form-group rowWithOneLineTopPad" ng-repeat="property in editor.propertyValuePairs" ng-if="property.predicateString == 'rights'">
+                <label class="col-sm-3 control-label">rights &nbsp;<a href="http://home.ndexbio.org/publishing-in-ndex/"
+                                                                      style="text-decoration: none;" target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                <div class="col-sm-8" style="margin-bottom: 15px;"  ng-if="property.value != 'Other'">
+
+                    <select class="form-control input-sm" ng-model="property.value"
+                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                            ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                    </select>
+                </div>
+
+                <div class="col-sm-3" style="margin-bottom: 15px;" ng-if="property.value == 'Other'">
+                    <select class="form-control input-sm" ng-model="property.value"
+                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                        ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                    </select>
+                </div>
+                <div class="col-sm-5" style="margin-bottom: 15px;" ng-if="property.value == 'Other'">
+
+                    <input class="form-control input-sm" type="text"  placeholder="license title"
+                            ng-model="property.rightsOther" id="doiinputrightsOther1"
                             ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+
+                    <input class="form-control input-sm" type="text" placeholder="license URL"
+                           ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
+                           ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-sm-5">
-            <div class="form-group rowWithOneLineTopPad">
-                <label class="col-sm-3 control-label">rightsHolder</label>
+            <div class="form-group rowWithOneLineTopPad" ng-repeat="property in editor.propertyValuePairs | filter: {predicateString: 'rightsHolder'}">
+                <label class="col-sm-3 control-label">rights holder</label>
                 <div class="col-sm-8" style="margin-bottom: 15px;">
                     <input
                             class="form-control input-sm" ng-change="editor.updateScore()" type="text"
-                            ng-model="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value" id="doiinputrightsHolder"
-                            ng-class="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length > 0 ? 'competeInput': ''"
+                            ng-model="property.value" id="doiinputrightsHolder"
+                            ng-class="property.value.length > 0 ? 'competeInput': ''"
                             ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rightsHolder.predicateString)' required>
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -172,19 +189,19 @@
 
     <div class='row'>
         <div class="col-sm-offset-1 col-sm-5">
-            <div class="form-group rowWithOneLineTopPad">
+            <div class="form-group rowWithOneLineTopPad" ng-repeat="property in editor.propertyValuePairs | filter: {predicateString: 'author'}">
                 <label class="col-sm-3 control-label">author</label>
                 <div class="col-sm-8" style="margin-bottom: 15px;">
                     <input
                             class="form-control input-sm" ng-change="editor.updateScore()" type="text"
-                            ng-model="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value" id="doiinputauthor"
-                            ng-class="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length > 0 ? 'competeInput': ''"
+                            ng-model="property.value" id="doiinputauthor"
+                            ng-class="property.value.length > 0 ? 'competeInput': ''"
                             ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.author.predicateString)' required>
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -270,5 +287,4 @@
     </div>
 -->
 </form>
-<button class="btn btn-success" ng-click="updatecalendar()">push</button>
 

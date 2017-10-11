@@ -63,6 +63,29 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         'tissue': {predicateString: "tissue", value: "", isReadOnlyLabel: false, dataType: "string", subNetworkId: subNetworkId}
     };
 
+    editor.rights = [
+        "",
+        "Attribution 4.0 International (CC BY 4.0)",
+        "Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)",
+        "Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)",
+        "Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+        "Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
+        "Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)",
+        "Waiver-No rights reserved (CC0)",
+        "Apache License 2.0 (Apache-2.0)",
+        "3-clause BSD license (BSD-3-Clause)",
+        "2-clause BSD license (BSD-2-Clause)",
+        "GNU General Public License (GPL)",
+        "GNU Lesser General Public License (LGPL)",
+        "MIT license (MIT)",
+        "Mozilla Public License 2.0 (MPL-2.0)",
+        "Common Development and Distribution License (CDDL-1.0)",
+        "Eclipse Public License (EPL-1.0)",
+        "Other"
+    ];
+
+    editor.rightsOther = "";
+
     editor.scoringLookup = {
         'author': 10,
         'disease': 10,
@@ -506,9 +529,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 console.log(saveTheseProperties);
 
 
-
-
-
                 ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
                     function() {
                         console.log("request created successfully!");
@@ -517,8 +537,9 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         editor.errors.push(error)
                     });
 
+
             } else {
-                alert("ERROR");
+                editor.errors.push("Missing value")
             }
         }
     };
@@ -560,6 +581,9 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                 if(pair.predicateString === 'custom...')
                     pair.predicateString = pair.predicateStringCustom;
+
+                if(pair.predicateString === 'rights' && pair.value == "Other")
+                    pair.value = pair.rightsOther + " (" + pair.rightsOtherURL + ")";
 
                 delete pair.isReadOnlyLabel;
                 delete pair.labelValue;
@@ -682,7 +706,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         return true;
     };
 
-
     editor.checkDOIRequirements = function(){
         if (!$scope.mainProperty.name ||
             !$scope.mainProperty.description ||
@@ -690,14 +713,12 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             !editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value ||
             !editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value ||
             !editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value ||
-            !$scope.mainProperty.reference ||
             $scope.mainProperty.name.length < 1 ||
             $scope.mainProperty.description.length < 1 ||
             $scope.mainProperty.version.length < 1 ||
             editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length < 1 ||
             editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length < 1 ||
-            editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length < 1 ||
-            $scope.mainProperty.reference.length < 1)
+            editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length < 1)
         {
             return false;
         } else {
@@ -909,6 +930,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         $scope.namesForSolrIndexing.splice(dropdownIndex, 1);
                     }
                     i = i + 1;
+
+                    //==============================================================
+                    // CHECK IF RIGHTS PROPERTY IS IN THE DROPDOWN.  IF NOT ADD IT
+                    //==============================================================
+                    if(editor.propertyValuePairs[i] && editor.propertyValuePairs[i].predicateString == "rights"){
+                        if(editor.rights.indexOf(editor.propertyValuePairs[i].value) < 0){
+                            editor.rights.push(editor.propertyValuePairs[i].value);
+                        }
+                    }
                 }
 
 
