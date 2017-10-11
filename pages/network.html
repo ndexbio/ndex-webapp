@@ -240,7 +240,7 @@
                                 <span style="font-weight: bold;">DOI:</span> {{networkController.currentNetwork.doi}}
                                 <button type="button"
                                         ngclipboard data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
-                                        ng-click=""
+                                        ng-click="networkController.showURLInClipboardMessage()"
                                         class="btn btn-primary btn-xs">Copy DOI
                                 </button>
                             </span>
