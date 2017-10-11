@@ -606,9 +606,9 @@ angular.module('ndexServiceApp')
                                 numberOfAdminNetworks++;
                             };
                             return (network.ownerUUID == controller.identifier) ?
-                                {'externalId': network.externalId,      'name': network.name,
-                                 'visibility': network.visibility,  'showCase': network.isShowcase,
-                                    'indexed': network.indexed,   'isReadOnly': network.isReadOnly
+                                {'externalId': network.externalId,        'name': network.name,
+                                 'visibility': network.visibility,  'isShowcase': network.isShowcase,
+                                    'indexed': network.indexed,     'isReadOnly': network.isReadOnly
                                 } : null;
                         });
 
@@ -645,9 +645,9 @@ angular.module('ndexServiceApp')
                                     var writeNetworks = _.map(networkSummaries,
                                         function (network) {
                                             return (invertedMapsPermissions['WRITE'].indexOf(network.externalId) > -1) ?
-                                                {'externalId': network.externalId,      'name': network.name,
-                                                    'visibility': network.visibility,  'showCase': network.isShowcase,
-                                                    'indexed': network.indexed,   'isReadOnly': network.isReadOnly
+                                                {'externalId': network.externalId,           'name': network.name,
+                                                    'visibility': network.visibility,  'isShowcase': network.isShowcase,
+                                                    'indexed': network.indexed,        'isReadOnly': network.isReadOnly
                                                 } : null;
                                         });
                                     networkInfo['writeNetworks'] = _.without(writeNetworks, null);
@@ -659,9 +659,9 @@ angular.module('ndexServiceApp')
                                     var readNetworks = _.map(networkSummaries,
                                         function (network) {
                                             return (invertedMapsPermissions['READ'].indexOf(network.externalId) > -1) ?
-                                                {'externalId': network.externalId,      'name': network.name,
-                                                    'visibility': network.visibility,  'showcase': network.isShowcase,
-                                                    'indexed': network.indexed,   'isReadOnly': network.isReadOnly
+                                                {'externalId': network.externalId,           'name': network.name,
+                                                    'visibility': network.visibility,  'isShowcase': network.isShowcase,
+                                                    'indexed': network.indexed,        'isReadOnly': network.isReadOnly
                                                 } : null;
                                         });
                                     networkInfo['readNetworks'] = _.without(readNetworks, null);

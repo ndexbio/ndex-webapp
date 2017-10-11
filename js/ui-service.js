@@ -2727,9 +2727,9 @@
                         properties['visibility'] = visibility;
                     };
                     if (network['indexed'] != $scope.network.indexed) {
-                        properties['indexed'] = $scope.network.indexed;
+                        properties['index'] = $scope.network.indexed;
                     };
-                    if (network['showcase'] != showcase) {
+                    if (network['isShowcase'] != showcase) {
                         properties['showcase'] = showcase;
                     };
 
@@ -2810,7 +2810,7 @@
                         var networksToUpdate = _.map(networksToModifyInfo.networks,
                             function (network) {
                                 if ((network.visibility != visibility) || (network.indexed != $scope.network.indexed)
-                                 || (network.showCase != showCase)) {
+                                 || (network.isShowcase != showCase)) {
                                     return network;
                                 };
                                 return null;
