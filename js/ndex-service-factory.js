@@ -965,6 +965,16 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+            factory.setNetworkSystemPropertiesNoHandlersV2 = function(networkId, mapOfProperties) {
+                // Server API: Set Network System Properties
+                // PUT /network/{networkId}/systemproperty
+
+                var url = "/network/" + networkId + "/systemproperty";
+                var config = ndexConfigs.getPutConfigV2(url, mapOfProperties);
+
+                return $http(config);
+            };
+
             factory.getAllPermissionsOnNetworkV2 = function(networkId, type, permission, startPage, size, successHandler, errorHandler) {
                 // calls NetworkServiceV2.getNetworkUserMemberships server API at
                 // /network/{networkID}/permission?type={user|group}&start={startPage}&size={size}

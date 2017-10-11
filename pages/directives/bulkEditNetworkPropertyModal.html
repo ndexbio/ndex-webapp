@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                <div class="row rowWithOneLineTopPad" ng-if="network.visibility == 'PUBLIC' || network.visibility == 'PUBLIC_NOT_INDEXED'">
+                <div class="row rowWithOneLineTopPad" ng-if="network.visibilityIndex == 'PUBLIC' || network.visibilityIndex == 'PUBLIC_NOT_INDEXED'">
 
                     <div class="col-sm-3"></div>
 
@@ -107,9 +107,9 @@
                 <strong><span style="color: green; font-size: 1.1em" ng-bind-html="progress2"></span></strong>
             </div>
 
-            <div ng-if="errors" class='text-danger'>
+            <div ng-show="errors" class='text-danger'>
                 <br>
-                <strong>{{errors}}</strong>
+                <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
             </div>
 
         </div>
@@ -126,7 +126,7 @@
 
             <button class="btn btn-primary"
                     type='submit'
-                    ng-disabled="isProcessing || network.visibility=='[Select Network Visibility]' || errorFromServer"
+                    ng-disabled="isProcessing || !network.visibilityIndex || network.visibilityIndex=='[Select Network Visibility]' || errorFromServer"
                     ng-show="action=='visibility'">
                 {{network.submitButtonLabel}}
             </button>
