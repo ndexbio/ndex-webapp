@@ -2160,7 +2160,7 @@ ndexApp.controller('networkController',
                 networkController.queryWarnings = [];
                 networkController.queryErrors = [];
 
-                var networkQueryLimit = config.networkQueryLimit;
+                var networkQueryLimit = ndexSettings.networkQueryLimit;
 
                 ndexSpinner.startSpinner(spinnerNetworkPageId);
 
@@ -2246,7 +2246,7 @@ ndexApp.controller('networkController',
                             if (error.status != 0) {
                                 if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
                                 {
-                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + config.networkQueryLimit);
+                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + ndexSettings.networkQueryLimit);
                                 }
                                 else
                                 {
