@@ -237,11 +237,11 @@
                             </span>
 
                             <span ng-if="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'">
-                                {{networkController.currentNetwork.doi}}
+                                <span style="font-weight: bold;">DOI:</span> {{networkController.currentNetwork.doi}}
                                 <button type="button"
                                         ngclipboard data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
                                         ng-click=""
-                                        class="btn btn-success btn-xs">Copy DOI
+                                        class="btn btn-primary btn-xs">Copy DOI
                                 </button>
                             </span>
 
