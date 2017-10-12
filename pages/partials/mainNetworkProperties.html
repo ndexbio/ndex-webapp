@@ -54,7 +54,7 @@
 
             <div class="form-group" ng-init="eyeopened=false">
                 <label class="col-sm-3 control-label">visibility</label>
-                <div class="col-sm-4" style="margin-bottom: 15px;">
+                <div class="col-sm-7" style="margin-bottom: 15px;">
 <!--                    <div class="dropdown">
                         <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                             SELECT VISIBILITY
@@ -79,26 +79,26 @@
                             </a></li>
                         </ul>
                     </div>-->
-								<span ng-if="editor.isOwner">
-									<select class="form-control" ng-model='editor.visibilityIndex'>
-										<option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
-										<option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
-										<option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
-										<option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
-									</select>
-								</span>
+                    <span ng-if="editor.isOwner">
+                        <select class="form-control minwidth170" ng-model="editor.visibilityIndex">
+                            <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
+                            <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
+                            <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
+                            <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
+                        </select>
+                    </span>
                     <span ng-if="!editor.isOwner">
-									<select class="form-control" ng-model='editor.visibilityIndex'
-                                            title="Only network owners can change network Visibility" disabled>
-										<option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
-										<option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
-										<option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
-										<option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
-									</select>
-								</span>
+                        <select class="form-control minwidth170" ng-model='editor.visibilityIndex'
+                                title="Only network owners can change network Visibility" disabled>
+                            <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
+                            <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
+                            <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
+                            <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
+                        </select>
+                    </span>
 
                 </div>
-
+<!--
                 <div class="col-sm-1">
                     <div class="input-group-btn">
                         <div title="Name, Description and Version are required for public status">
@@ -107,8 +107,8 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-sm-4" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED') && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
+-->
+                <div class="col-sm-2" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED') && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
                     <a ng-click="editor.showcased.state = !editor.showcased.state" style="text-decoration: none; color: #656565;">
                         <div style="width: 95px;">
 										<span class="fa-stack" ng-show="!editor.showcased.state">
@@ -219,7 +219,7 @@
 -->
 
                         <span ng-if="property.predicateString == 'rights'">
-                            <div class="col-sm-12" style="margin-bottom: 15px; padding: 0px;" ng-if="property.value != 'Other'">
+                            <div class="col-sm-12" style="margin-bottom: 0px; padding: 0px;" ng-if="property.value != 'Other'">
 
                                 <select class="form-control input-sm" ng-model="property.value"
                                         ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
