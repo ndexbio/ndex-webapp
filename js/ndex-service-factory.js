@@ -1524,7 +1524,19 @@ ndexServiceApp.factory('ndexUtility', function () {
                     token: loggedInUser.token
                 };
                 return userData;
-            };
+            } else {
+                loggedInUser = window.currentNdexUser;
+                if(loggedInUser){
+                    var userData = {
+                        userName: loggedInUser.userName,
+                        externalId: loggedInUser.externalId,
+                        token: ""
+                    };
+                    return userData;
+                } else {
+                    return null;
+                }
+            }
         };
         return null;
     };
