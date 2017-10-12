@@ -662,25 +662,36 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         }
 
         factory.getPropertiesExcluding = function (subNetworkId, excludeList) {
+
             var result = [];
             var excludeSet = new Set();
             for ( var i = 0 ; i < excludeList.length ; i++ ) {
                 excludeSet.add(excludeList[i].toLowerCase());
             }
+
             var networkProperties = currentNetworkSummary.properties;
 
+            // do not include properties that start with "__" either - those are for internal use
+            _.forEach(networkProperties, function(property) {
 
-            for( i = 0; i < networkProperties.length; i++ ) {
-                if ( subNetworkId == networkProperties[i].subNetworkId &&
-                    !excludeSet.has(networkProperties[i].predicateString.toLowerCase()) &&
-                    !networkProperties[i].predicateString.startsWith("__"))
-                    // do not include properties that start with "__" either - those are for internal use
+                if ((subNetworkId == property.subNetworkId) && !excludeSet.has(property.predicateString.toLowerCase())
+                    && !property.predicateString.startsWith("__"))
                 {
-                    result.push(networkProperties[i]);
-                }
-            }
+                    if (property.value.startsWith('http://') || property.value.startsWith('https://'))  {
+                        var href = property.value;
+                        property.value = '<a target="_blank" href="' + href + '">External Link</a>';
+
+                    } else if (property.value.startsWith('www.')) {
+                        href = property.value;
+                        property.value = '<a target="_blank" href="http://' + href + '">External Link</a>';
+
+                    };
+                    result.push(property);
+                };
+            });
+
             return result;
-        }
+        };
         
         factory.setNetworkProperty = function ( propertyName, propertyValue, propertyValueType ) {
 
