@@ -90,9 +90,21 @@ section
 
 
 @media (max-width: 1350px) {
+    .hiddenMedium{
+        display: none;
+    }
+
+    .showMedium{
+    }
 }
 
 @media (min-width: 1351px) {
+    .hiddenMedium{
+
+    }
+    .showMedium{
+        display: none;
+    }
 }
 
 @media (min-height: 741px) {
@@ -1012,4 +1024,8 @@ span.glyphicon-refresh {
 
 .google-button button:hover {
     background: #e9e9e9;
+}
+
+.minwidth170 {
+    min-width: 170px;
 }
