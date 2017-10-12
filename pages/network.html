@@ -339,9 +339,7 @@
                                                </span>
                                                <span class="networkPropertiesValueFont"
                                                      ng-show='property.value.toString().length > 40'
-                                                     ng-bind-html="property.value.slice(0, 45 - property.predicateString.length)
-                                                    +'&shy'+
-                                                   property.value.slice(45 - property.predicateString.length, property.value.length)">
+                                                     ng-bind-html="property.value">
                                                </span>
                                                <br/>
                                             </span>

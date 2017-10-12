@@ -2201,7 +2201,8 @@
                     delete $scope.progress1;
                     delete $scope.progress2;
                     delete $scope.errors;
-                    delete $scope.confirmButtonDisabled;
+                    $scope.confirmButtonDisabled = false;
+                    updatedNetworksCounter = 0;
 
                     $scope.network = {};
 
@@ -2212,6 +2213,7 @@
                     $scope.network.description = "";
                     $scope.network.version = "";
                     $scope.network.reference = "";
+
 
                     var permission = 'edit';
 
@@ -2308,9 +2310,9 @@
 
                 $scope.cancel = function() {
                     cancelHit = true;
+                    $scope.isProcessing = false;
 
                     if (0 == updatedNetworksCounter) {
-                        $scope.isProcessing = false;
                         modalInstance.close();
                         modalInstance = null;
                         $scope.network = {};
@@ -2439,7 +2441,7 @@
                     $scope.progress1 = "Changed: " + updatedNetworksCounter + " of " + numberOfNetworksToChange + " selected networks";
 
                     sequence(networksToModify, function (network) {
-                        if (cancelHit|| errorFromServer) {
+                        if (cancelHit || errorFromServer || !$scope.isProcessing) {
                             return;
                         };
 
@@ -2475,7 +2477,7 @@
                             errorMessage + ": " +  reason.data.message : errorMessage + ".";
 
                         errorFromServer = true;
-                        $scope.isProcessing = false;
+                        //$scope.isProcessing = false;
                         $scope.confirmButtonDisabled = true;
                     });
                 };
@@ -2542,6 +2544,8 @@
                     delete $scope.progress2;
                     delete $scope.errors;
                     delete $scope.confirmButtonDisabled;
+
+                    updatedNetworksCounter = 0;
 
                     $scope.isProcessing = false;
                     $scope.network = {};
@@ -2654,10 +2658,31 @@
                     }, Promise.resolve());
                 };
 
+                /*
                 $scope.cancel = function() {
                     modalInstance.close();
                     modalInstance = null;
                 };
+                */
+
+
+                $scope.cancel = function() {
+                    cancelHit = true;
+                    $scope.isProcessing = false;
+
+                    if (0 == updatedNetworksCounter) {
+                        modalInstance.close();
+                        modalInstance = null;
+                    } else {
+                        if (myAccountController.getNoOfSelectedNetworksOnCurrentPage() > 0) {
+                            myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
+                        };
+                        setTimeout(function () {
+                            modalInstance.close();
+                        }, 1000);
+                    }
+                };
+
 
                 String.prototype.capitalize = function() {
                     return this.charAt(0).toUpperCase() + this.slice(1);
@@ -2702,7 +2727,7 @@
                     };
 
                     sequence(networksToModify, function (network) {
-                        if (cancelHit|| errorFromServer) {
+                        if (cancelHit || errorFromServer || !$scope.isProcessing) {
                             return;
                         };
 
