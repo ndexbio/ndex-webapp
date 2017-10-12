@@ -512,7 +512,8 @@
                 </tab>
 
 
-                <tab active="networkController.tabs[2].active" ng-click="build_provenance_view()" ng-show="!networkController.successfullyQueried">
+                <tab active="networkController.tabs[2].active" ng-click="build_provenance_view()"
+                     ng-hide="networkController.successfullyQueried || networkController.accesskey">
 
                     <tab-heading>
                         {{ networkController.tabs[2].heading }}
