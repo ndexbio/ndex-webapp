@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility','sharedProperties',
-                function (ndexNavigation, ndexService, ndexUtility, sharedProperties) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility','sharedProperties', '$routeParams',
+                function (ndexNavigation, ndexService, ndexUtility, sharedProperties, $routeParams) {
 
         var self = this;
 
@@ -267,14 +267,15 @@ angular.module('ndexServiceApp')
 
 
         self.downloadCXNetwork = function(networkId) {
+            var accesskey = $routeParams.accesskey;
 
             var anchor = document.createElement('a');
 
-            if ( window.currentSignInType=='google')
+            if ( window.currentSignInType=='google') {
                 anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" + networkId +
-                                "?download=true&id_token=" +
+                    "?download=true&id_token=" +
                     gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
-            else if (window.currentSignInType == 'basic') {
+            } else if (window.currentSignInType == 'basic') {
                 var link = ndexService.getNdexServerUri() + "/network/" + networkId +
                                 "?download=true";
 
@@ -285,9 +286,15 @@ angular.module('ndexServiceApp')
 
                 link = link.replace("http://", "http://" + userName + ":" + password + "@");
                 anchor.setAttribute('href', link);
-            } else
-                anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
-                                networkId + "?download=true");
+            } else {
+                if (accesskey) {
+                    anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
+                        networkId + "?download=true&accesskey=" + accesskey);
+                } else {
+                    anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
+                        networkId + "?download=true");
+                };
+            };
 
           // anchor.setAttribute('target', "_blank");
             anchor.setAttribute("type","hidden");
@@ -295,7 +302,7 @@ angular.module('ndexServiceApp')
             anchor.click();
             anchor.remove();
 
-        }
+        };
 
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
@@ -569,19 +576,26 @@ angular.module('ndexServiceApp')
 
 
         //
-        self.findWhatSelectedNetworksCanBeModified = function(controller, successHandler, errorHandler) {
+        self.findWhatSelectedNetworksCanBeModified = function(controller, permission, successHandler, errorHandler) {
 
             var networkUUIDs = controller.getIDsOfSelectedNetworks();
             var numberOfSelectedNetworks = networkUUIDs.length;
 
             var numberOfReadOnly = 0;
             var numberOfNonAdminNetworks = 0;
+            var numberOfAdminNetworks = 0;
+            var numberOfWriteNetworks = 0;
 
             var networkInfo = {
                 'selected': numberOfSelectedNetworks,
                 'readOnly': 0,
                 'nonAdmin': 0,
-                'networks': []
+                'admin'   : 0,
+                'write'   : 0,
+                'read'    : 0,
+                'networks': [],
+                'writeNetworks': [],
+                'readNetworks' : []
             };
 
             var accesskey = null;
@@ -590,24 +604,86 @@ angular.module('ndexServiceApp')
             ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, accesskey,
                 function (networkSummaries) {
 
-                    var networksToDelete = _.map(networkSummaries,
+                    var adminWriteableNetworks = _.map(networkSummaries,
                         function (network) {
                             if (network.isReadOnly) {
                                 numberOfReadOnly++;
                             };
                             if (network.ownerUUID != controller.identifier) {
                                 numberOfNonAdminNetworks++;
+                            } else {
+                                numberOfAdminNetworks++;
                             };
-                            return ((network.ownerUUID == controller.identifier) && (!network.isReadOnly)) ?
-                                {'externalId': network.externalId, 'name': network.name} : null;
+                            return (network.ownerUUID == controller.identifier) ?
+                                {'externalId': network.externalId,        'name': network.name,
+                                 'visibility': network.visibility,  'isShowcase': network.isShowcase,
+                                    'indexed': network.indexed,     'isReadOnly': network.isReadOnly
+                                } : null;
                         });
 
                     networkInfo['readOnly'] = numberOfReadOnly;
                     networkInfo['nonAdmin'] = numberOfNonAdminNetworks;
-                    networkInfo['networks'] = networksToDelete;
+                    networkInfo['admin']    = numberOfAdminNetworks;
+                    networkInfo['networks'] = _.without(adminWriteableNetworks, null);
 
-                    successHandler(networkInfo);
+                    if ('admin' == permission) {
+                        successHandler(networkInfo);
+                        return;
+                    };
 
+                    // get IDs of networks for which we are (the currently logged in user) is not an owner
+                    // to see what kind of access (READ or WRITE) we have for these networks
+                    if (numberOfNonAdminNetworks > 0) {
+                        var nonAdminNetworkIDs = _.map(networkSummaries,
+                            function (network) {
+                                return (network.ownerUUID != controller.identifier) ? network.externalId : null;
+                            });
+
+                        nonAdminNetworkIDs = _.without(nonAdminNetworkIDs, null);
+
+                        ndexService.getNetworkPermissionsByUUIDsV2(nonAdminNetworkIDs,
+                            function(networkPermissionsMap) {
+
+                                // build list of networks with ADMIN and WRITE permissions
+                                var invertedMapsPermissions = _.invertBy(networkPermissionsMap);
+                                var invertedMapsPermissionsKeys = Object.keys(invertedMapsPermissions);
+
+                                if ('WRITE' in invertedMapsPermissions) {
+                                    networkInfo['write']  = invertedMapsPermissions['WRITE'].length;
+
+                                    var writeNetworks = _.map(networkSummaries,
+                                        function (network) {
+                                            return (invertedMapsPermissions['WRITE'].indexOf(network.externalId) > -1) ?
+                                                {'externalId': network.externalId,           'name': network.name,
+                                                    'visibility': network.visibility,  'isShowcase': network.isShowcase,
+                                                    'indexed': network.indexed,        'isReadOnly': network.isReadOnly
+                                                } : null;
+                                        });
+                                    networkInfo['writeNetworks'] = _.without(writeNetworks, null);
+                                };
+
+                                if ('READ' in invertedMapsPermissions) {
+                                    networkInfo['read']  = invertedMapsPermissions['READ'].length;
+
+                                    var readNetworks = _.map(networkSummaries,
+                                        function (network) {
+                                            return (invertedMapsPermissions['READ'].indexOf(network.externalId) > -1) ?
+                                                {'externalId': network.externalId,           'name': network.name,
+                                                    'visibility': network.visibility,  'isShowcase': network.isShowcase,
+                                                    'indexed': network.indexed,        'isReadOnly': network.isReadOnly
+                                                } : null;
+                                        });
+                                    networkInfo['readNetworks'] = _.without(readNetworks, null);
+                                };
+                                successHandler(networkInfo);
+                            },
+                            function(error) {
+                                errorHandler(error);
+                            });
+
+                    } else {
+                        successHandler(networkInfo);
+                    };
                 },
                 function (error) {
                     errorHandler(error);

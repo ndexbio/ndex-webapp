@@ -21,15 +21,21 @@
 
         <div ng-if="errors" class='text-danger'>
             <br>
-            <strong>{{errors}}</strong>
+            <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
         </div>
+
+        <div id="confirmationSpinnerId"></div>
 
     </div>
 
     <div class="modal-footer">
-        <button class="btn btn-default" ng-click="cancel()">{{cancelLabel}}</button>
+        <button ng-class="cancelButtonDisabled ? 'btn btn-default disabled' : 'btn btn-default'" ng-click="cancel()">
+            {{cancelLabel}}
+        </button>
         <button ng-class="confirmButtonDisabled ? 'btn btn-primary disabled' : 'btn btn-primary' "
-                ng-click="confirm()">{{confirmLabel}}</button>
+                ng-click="confirm()">
+            {{confirmLabel}}
+        </button>
     </div>
 
 </div>

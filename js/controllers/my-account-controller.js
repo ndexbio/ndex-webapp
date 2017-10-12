@@ -1184,7 +1184,7 @@ ndexApp.controller('myAccountController',
 
                                         $scope.isProcessing = false;
                                         $modalInstance.dismiss();
-                                    }, 2000);
+                                    }, 1000);
                                 };
                             });
                         }).catch(function (reason) {
@@ -1220,7 +1220,7 @@ ndexApp.controller('myAccountController',
                                 delete $rootScope.confirmButtonDisabled;
 
                                 $modalInstance.dismiss();
-                            }, 2000);
+                            }, 1000);
                         };
                     });
 
@@ -1229,7 +1229,9 @@ ndexApp.controller('myAccountController',
 
             myAccountController.checkAndDeleteSelectedNetworks = function() {
 
-                uiMisc.findWhatSelectedNetworksCanBeModified(myAccountController,
+                var permission = 'admin';
+
+                uiMisc.findWhatSelectedNetworksCanBeModified(myAccountController, permission,
                     function(networkInfo) {
 
                         deleteSelectedNetworks(networkInfo);
@@ -1338,7 +1340,7 @@ ndexApp.controller('myAccountController',
 
                                         $scope.isProcessing = false;
                                         $modalInstance.dismiss();
-                                    }, 2000);
+                                    }, 1000);
                                 };
                             });
                         }).catch(function (reason) {
@@ -1372,7 +1374,7 @@ ndexApp.controller('myAccountController',
                                 delete $rootScope.confirmButtonDisabled;
 
                                 $modalInstance.dismiss();
-                            }, 2000);
+                            }, 1000);
                         };
                     });
 
@@ -1478,7 +1480,7 @@ ndexApp.controller('myAccountController',
 
                                         $scope.isProcessing = false;
                                         $modalInstance.dismiss();
-                                    }, 2000);
+                                    }, 1000);
                                 };
                             });
                         }).catch(function (reason) {
@@ -1514,7 +1516,7 @@ ndexApp.controller('myAccountController',
                                 delete $rootScope.confirmButtonDisabled;
 
                                 $modalInstance.dismiss();
-                            }, 2000);
+                            }, 1000);
                         };
                     });
                 return;
@@ -1675,7 +1677,7 @@ ndexApp.controller('myAccountController',
                                         delete $rootScope.errors;
 
                                         $modalInstance.dismiss();
-                                    }, 2000);
+                                    }, 1000);
                                 };
                             });
 
@@ -1708,7 +1710,7 @@ ndexApp.controller('myAccountController',
                                 delete $rootScope.errors;
 
                                 $modalInstance.dismiss();
-                            }, 2000);
+                            }, 1000);
                         };
                     });
 
@@ -1793,45 +1795,6 @@ ndexApp.controller('myAccountController',
             myAccountController.getIDsOfSelectedNetworks = function ()
             {
                 return Object.keys($scope.selectedRowsNetworkExternalIds);
-            };
-
-            myAccountController.getVisibilityAndShowcaseOfSelectedNetworks = function ()
-            {
-                var visibilityAndShowcase = {};
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                _.forEach(selectedNetworksRows, function(row) {
-                    if (row.Format.toLowerCase() != "set") {
-
-                        visibilityAndShowcase[row['externalId']] =
-                            {
-                                'visibility':  row['Visibility'] ? row['Visibility'] : 'PRIVATE',
-                                'showCase':    row['Show'] ? row['Show'] : false,
-                                'networkName': row['name']
-                            };
-                    };
-                });
-
-                return visibilityAndShowcase;
-            };
-
-            myAccountController.getReadOnlyOfSelectedNetworks = function ()
-            {
-                var readOnly = {};
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                _.forEach(selectedNetworksRows, function(row) {
-                    if (row.Format.toLowerCase() != "set") {
-
-                        readOnly[row['externalId']] =
-                            {
-                                'isReadOnly':  row['isReadOnly'] ? row['isReadOnly'] : false,
-                                'networkName': row['name']
-                            };
-                    };
-                });
-
-                return readOnly;
             };
 
             myAccountController.updateVisibilityOfNetworks = function (networkUUIDs, networkVisibility)
@@ -1950,70 +1913,6 @@ ndexApp.controller('myAccountController',
                 */
 
                 return;
-            };
-
-            /*
-             * This function is used by Bulk Network Delete and Bulk Network Edit Properties operations.
-             * It goes through the list of selected networks and checks if the networks
-             * can be deleted (or modified in case checkWriteAccess is set to true).
-             * It makes sure that in the list of selected networks
-             *
-             * 1) there are no read-only networks, and
-             * 2) that the current user can delete the selected networks (i.e., has Admin access to all of them).
-             *
-             * If either of the above conditions is false, than the list of networks cannot be deleted.
-             *
-             * If the function was called with (checkWriteAccess=true) then it also checks if user has
-             * WRITE access to the networks.
-             *
-             * The function returns true if all networks can be deleted or modified, and false otherwise (all or none).
-             */
-            myAccountController.checkIfSelectedNetworksCanBeDeletedOrChanged = function(checkWriteAccess) {
-
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-
-                // iterate through the list of selected networks
-                for (var i = 0; i < selectedNetworksRows.length; i++) {
-                    var externalId1 = selectedNetworksRows[i].externalId;
-
-                    // check if the selected network is read-only and can be deleted by the current account
-                    for (var j = 0; j < myAccountController.networkSearchResults.length; j++) {
-
-                        var externalId2 = myAccountController.networkSearchResults[j].externalId;
-
-                        // find the current network info in the list of networks this user has access to
-                        if (externalId1 !== externalId2) {
-                            continue;
-                        }
-
-                        // check if network is read-only
-                        if (myAccountController.networkSearchResults[j].isReadOnly) {
-                            // it is read-only; cannot delete or modify
-                            return false;
-                        }
-
-                        // check if you have admin privilege for this network
-                        if (myAccountController.networksWithAdminAccess.indexOf(externalId1) == -1) {
-                            // the current user is not admin for this network, therefore, (s)he cannot delete it
-
-                            // see if user has WRITE access in case this function was called to check whether
-                            // network can be modified
-                            if (checkWriteAccess) {
-
-                                if (myAccountController.networksWithWriteAccess.indexOf(externalId1) == -1) {
-                                    // no ADMIN or WRITE privilege for this network.  The current user cannot modify it.
-                                    return false;
-                                }
-                            } else {
-                                // we don't check if user has WRITE privilege here (since checkWriteAccess is false)
-                                // and user has no ADMIN access, which means the network cannot be deleted by the current user
-                                return false;
-                            }
-                        }
-                    }
-                }
-
-                return true;
             };
             
             /*
