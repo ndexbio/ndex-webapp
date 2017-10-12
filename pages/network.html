@@ -786,11 +786,11 @@
 
         </div>
 
-        <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried">
+        <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried || networkController.accesskey">
             <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
                     || networkController.isAdmin
                     || networkController.canEdit
-                    || networkController.canRead)'
+                    || networkController.canRead) || networkController.accesskey'
                   class="actionsLabel btn btn-primary download-btn"
                   ng-click="downloadNetwork()" >
 

@@ -586,7 +586,9 @@ angular.module('ndexServiceApp')
                 'admin'   : 0,
                 'write'   : 0,
                 'read'    : 0,
-                'networks': []
+                'networks': [],
+                'writeNetworks': [],
+                'readNetworks' : []
             };
 
             var accesskey = null;

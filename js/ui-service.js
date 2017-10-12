@@ -46,6 +46,7 @@
                         $scope.progress2 = $rootScope.progress2;
                         $scope.errors    = $rootScope.errors;
                         $scope.confirmButtonDisabled = $rootScope.confirmButtonDisabled;
+                        $scope.cancelButtonDisabled  = $rootScope.cancelButtonDisabled;
 
                         $scope.confirm = function(){
                             if (dismissModal) {
@@ -76,6 +77,9 @@
                         });
                         $rootScope.$watch('confirmButtonDisabled', function(newValue, oldValue) {
                             $scope.confirmButtonDisabled = newValue;
+                        });
+                        $rootScope.$watch('cancelButtonDisabled', function(newValue, oldValue) {
+                            $scope.cancelButtonDisabled = newValue;
                         });
                     };
 
@@ -2214,9 +2218,17 @@
                         function(networkInfo) {
 
                             var numberOfSelectedNetworks  = networkInfo.selected;
+
+                            // numberOfReadOnly - read-only networks we own
                             var numberOfReadOnly          = networkInfo.readOnly;
+
+                            // numberOfReadNetworks - networks we do not own; but have a READ access to
                             var numberOfReadNetworks      = networkInfo.read;
-                            networksToModify              = networkInfo.networks.concat(networkInfo.writeNetworks);
+                            networksToModify              = networkInfo.networks;
+
+                            if (_.size(networkInfo.writeNetworks) > 0) {
+                                networksToModify = networksToModify.concat(networkInfo.writeNetworks);
+                            };
 
                             if ((numberOfReadOnly > 0) || (numberOfReadNetworks > 0)) {
                                 var title = (numberOfSelectedNetworks == 1) ? "Cannot Modify Selected Network" :

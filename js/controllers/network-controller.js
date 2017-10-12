@@ -1,11 +1,11 @@
 ndexApp.controller('networkController',
     ['provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
-        'sharedProperties', '$scope', '$routeParams', '$modal', '$modalStack',
+        'sharedProperties', '$scope', '$rootScope', '$routeParams', '$modal', '$modalStack',
         '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', /*'$filter', '$location','$q',*/
         function ( provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
-                  sharedProperties, $scope, $routeParams, $modal, $modalStack,
+                  sharedProperties, $scope, $rootScope, $routeParams, $modal, $modalStack,
                   $route , $location, uiGridConstants, uiMisc, ndexSpinner /*, $filter /*, $location, $q */)
         {
             var self = this;
@@ -13,9 +13,9 @@ ndexApp.controller('networkController',
             var cy;
 
             var currentNetworkSummary;
-
             var networkExternalId = $routeParams.identifier;
-            var accesskey = $routeParams.accesskey;
+            var accesskey         = $routeParams.accesskey;
+
 
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
@@ -28,6 +28,7 @@ ndexApp.controller('networkController',
 
             networkController.privilegeLevel = "None";
             networkController.currentNetworkId = networkExternalId;
+            networkController.accesskey = accesskey;
 
             networkController.errors = []; // general page errors
             networkController.queryErrors = [];
@@ -64,11 +65,12 @@ ndexApp.controller('networkController',
             // for copying it to clipboard if this Network is PUBLIC
             networkController.networkURL = uiMisc.buildNetworkURL(null, networkExternalId);
 
+
             // close any modal if opened.
             // We need to close a modal in case we come to this page
             // if we cloned a network and followed a link to the newly cloned network
             // from the "Network Cloned" information modal.
-            $modalStack.dismissAll('close');
+            //$modalStack.dismissAll('close');
 
             networkController.tabs = [
                 {"heading": "Network Info", 'active':true},
@@ -2708,36 +2710,49 @@ ndexApp.controller('networkController',
                 var message = networkName +
                     'will be cloned to your account. <br><br> Are you sure you want to proceed?';
 
-                var dismissModal = true;
+                var dismissModal = false;
+
                 ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel", dismissModal,
-                    function () {
+                    function ($modalInstance) {
+
+                        $rootScope.errors = null;
+                        $rootScope.confirmButtonDisabled = true;
+                        $rootScope.cancelButtonDisabled = true;
+                        $rootScope.progress = "Cloning network in progress ...";
+
+                        var confirmationSpinnerId = "confirmationSpinnerId";
+                        ndexSpinner.startSpinner(confirmationSpinnerId);
+
                         ndexService.cloneNetworkV2(networkController.currentNetworkId,
                             function(data, status, headers, config, statusText) {
-
-                                var clonedNetworkUUID = data.split("/").pop();
-                                title = "Network Cloned";
-                                message  = networkName + " cloned to your account.<br><br>";
-                                message = message +
-                                    "Follow this <a href='#/network/" + clonedNetworkUUID + "'>link</a> " +
-                                    " to go the clone of <strong>" + networkController.currentNetwork.name +
-                                    "</strong>.";
-
-                                title = "Network Cloned";
-                                ndexNavigation.genericInfoModal(title, message);
+                                ndexSpinner.stopSpinner();
+                                $modalInstance.dismiss();
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+                                delete $rootScope.cancelButtonDisabled;
+                                delete $rootScope.progress;
                             },
                             function(error) {
+                                ndexSpinner.stopSpinner();
                                 title = "Unable to Clone Network";
                                 message  = networkName + " wasn't cloned to your account.";
 
                                 if (error.message) {
-                                    message = message + '<br><br>' + error.message;
+                                    message = message + '<br>' + error.message;
                                 };
+                                $rootScope.errors = message;
+                                delete $rootScope.progress;
+                                delete $rootScope.cancelButtonDisabled;
 
-                                ndexNavigation.genericInfoModal(title, message);
                             });
                     },
-                    function () {
+                    function ($modalInstance) {
                         // User selected Cancel; return
+                        $modalInstance.dismiss();
+                        delete $rootScope.errors;
+                        delete $rootScope.confirmButtonDisabled;
+                        delete $rootScope.cancelButtonDisabled;
+                        delete $rootScope.progress;
                         return;
                     });
 
