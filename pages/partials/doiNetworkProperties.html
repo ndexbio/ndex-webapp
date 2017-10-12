@@ -10,7 +10,7 @@
     <div class='row'>
         <div class="col-sm-12">
             <h3 class="text-center" style="font-weight: bold;"><i class="fa fa-certificate" aria-hidden="true" style="color: #406DC9;"></i> Required DOI Properties <br />
-                <small>Please fill out all the fields below and verify your contact email <br />address.  When you are ready click on the green request button.</small>
+                <small>Please fill out all the fields below and provide your preferred contact email <br />address.  When you are ready click on the green request button.</small>
             </h3>
         </div>
     </div>
@@ -113,7 +113,7 @@
                     </text-angular>
                 </div>
                 <div class="col-sm-1">
-                    <div class="input-group-btn" style="margin-top: 40px;">{{mainProperty.reference.length}}<br />
+                    <div class="input-group-btn" style="margin-top: 40px;"><br />
                         <i ng-if="mainProperty.reference.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                         <i ng-if="mainProperty.reference.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                     </div>
@@ -152,7 +152,7 @@
                             ng-model="property.rightsOther" id="doiinputrightsOther1"
                             ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
 
-                    <input class="form-control input-sm" type="text" placeholder="license URL"
+                    <input class="form-control input-sm" type="url" placeholder="license URL"
                            ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
                 </div>
@@ -185,6 +185,7 @@
         </div>
 
 
+
     </div>
 
     <div class='row'>
@@ -201,7 +202,9 @@
                 <div class="col-sm-1">
                     <div class="input-group-btn">
                         <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="!property.value || property.value.length <= 0" data-toggle="tooltip" title="Hooray!"
+                           id="authorTooltip" name="authorTooltip"
+                           class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -212,7 +215,7 @@
 
             <div class="well" style="margin-bottom: 0px;">
                 <div class="row">
-                    <label class="col-sm-3 control-label">Publish Date</label>
+                    <label class="col-sm-3 control-label">Publication Date</label>
                     <div class="col-sm-8">
                         <!--------------------------------------------
                         --- THIS NON-ANGULAR CONTROL CAN BE REPLACED
@@ -286,5 +289,9 @@
         </div>
     </div>
 -->
+
+    <script>
+        $('authorTooltip').tooltip();
+    </script>
 </form>
 

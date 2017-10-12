@@ -126,6 +126,10 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     var loggedInUser = ndexUtility.getUserCredentials();
     var loggedInUserName = (loggedInUser && loggedInUser['userName']) ? loggedInUser['userName'] : null;
 
+    if(!loggedInUserName){
+        loggedInUserName = window.currentNdexUser.userName;
+    }
+
     editor.doiInfo = {
         "user": {"username": loggedInUserName},
         "visibility": "PUBLIC",
