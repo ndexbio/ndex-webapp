@@ -668,11 +668,15 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 excludeSet.add(excludeList[i].toLowerCase());
             }
             var networkProperties = currentNetworkSummary.properties;
+
+
             for( i = 0; i < networkProperties.length; i++ ) {
                 if ( subNetworkId == networkProperties[i].subNetworkId &&
-                    !excludeSet.has(networkProperties[i].predicateString.toLowerCase())) {
+                    !excludeSet.has(networkProperties[i].predicateString.toLowerCase()) &&
+                    !networkProperties[i].predicateString.startsWith("__"))
+                    // do not include properties that start with "__" either - those are for internal use
+                {
                     result.push(networkProperties[i]);
-
                 }
             }
             return result;
