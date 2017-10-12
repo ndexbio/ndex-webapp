@@ -151,7 +151,8 @@
 
                     $modal.open({
                         templateUrl: 'pages/receivedBulkRequests.html',
-                        controller: ConfirmCtrl
+                        controller: ConfirmCtrl,
+                        backdrop: 'static'
                     });
                 };
 

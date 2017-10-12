@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility','sharedProperties',
-                function (ndexNavigation, ndexService, ndexUtility, sharedProperties) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility','sharedProperties', '$routeParams',
+                function (ndexNavigation, ndexService, ndexUtility, sharedProperties, $routeParams) {
 
         var self = this;
 
@@ -267,14 +267,15 @@ angular.module('ndexServiceApp')
 
 
         self.downloadCXNetwork = function(networkId) {
+            var accesskey = $routeParams.accesskey;
 
             var anchor = document.createElement('a');
 
-            if ( window.currentSignInType=='google')
+            if ( window.currentSignInType=='google') {
                 anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" + networkId +
-                                "?download=true&id_token=" +
+                    "?download=true&id_token=" +
                     gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
-            else if (window.currentSignInType == 'basic') {
+            } else if (window.currentSignInType == 'basic') {
                 var link = ndexService.getNdexServerUri() + "/network/" + networkId +
                                 "?download=true";
 
@@ -285,9 +286,15 @@ angular.module('ndexServiceApp')
 
                 link = link.replace("http://", "http://" + userName + ":" + password + "@");
                 anchor.setAttribute('href', link);
-            } else
-                anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
-                                networkId + "?download=true");
+            } else {
+                if (accesskey) {
+                    anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
+                        networkId + "?download=true&accesskey=" + accesskey);
+                } else {
+                    anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
+                        networkId + "?download=true");
+                };
+            };
 
           // anchor.setAttribute('target', "_blank");
             anchor.setAttribute("type","hidden");
@@ -295,7 +302,7 @@ angular.module('ndexServiceApp')
             anchor.click();
             anchor.remove();
 
-        }
+        };
 
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
