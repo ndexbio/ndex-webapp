@@ -94,7 +94,9 @@
         <div class="col-sm-5">
 
             <div class="form-group">
-                <label class="col-sm-3 control-label">reference</label>
+                <label class="col-sm-3 control-label">reference &nbsp;&nbsp;
+                    <a data-toggle="tooltip" title="Optional. Can be added later."
+                       style="text-decoration: none;"><i class="fa fa-info-circle"></i></a></label>
                 <div class="col-sm-8" style="margin-bottom: 15px;">
                     <text-angular
                             ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
@@ -125,8 +127,11 @@
     <div class='row'>
         <div class="col-sm-offset-1 col-sm-5">
             <div class="form-group rowWithOneLineTopPad" ng-repeat="property in editor.propertyValuePairs" ng-if="property.predicateString == 'rights'">
-                <label class="col-sm-3 control-label">rights &nbsp;<a href="http://home.ndexbio.org/publishing-in-ndex/"
-                                                                      style="text-decoration: none;" target="_blank"><i class="fa fa-info-circle"></i></a></label>
+                <label class="col-sm-3 control-label">rights &nbsp;
+                    <a href="http://home.ndexbio.org/publishing-in-ndex/"
+                       data-toggle="tooltip" title="Click for more information about specific licenses"
+                       style="text-decoration: none;" target="_blank" ng-init="setToolTips()"><i class="fa fa-info-circle"></i></a></label>
+
                 <div class="col-sm-8" style="margin-bottom: 15px;"  ng-if="property.value != 'Other'">
 
                     <select class="form-control input-sm" ng-model="property.value"
@@ -210,7 +215,11 @@
 
             <div class="well" style="margin-bottom: 0px;">
                 <div class="row">
-                    <label class="col-sm-3 control-label">Publication Date</label>
+                    <label class="col-sm-3 control-label">Publication Date &nbsp;&nbsp;
+                        <a data-toggle="tooltip" title="Optional"
+                           style="text-decoration: none;"><i class="fa fa-info-circle"></i></a></label>
+
+                    </label>
                     <div class="col-sm-8">
                         <!--------------------------------------------
                         --- THIS NON-ANGULAR CONTROL CAN BE REPLACED
