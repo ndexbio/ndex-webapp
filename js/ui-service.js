@@ -107,6 +107,28 @@
                     });
                 };
 
+                factory.genericInfoModalAutoClose = function(title, message, closeIntervalInMs)
+                {
+                    var InfoCtrl = function($scope, $modalInstance) {
+                        $scope.title = title;
+                        $scope.message = message;
+
+                        $scope.close = function() {
+                            $modalInstance.dismiss();
+                        };
+
+                        setTimeout(function() {
+                            $modalInstance.dismiss();
+                        }, closeIntervalInMs);
+                    };
+
+                    $modal.open({
+                        templateUrl: 'pages/generic-info-modal.html',
+                        controller: InfoCtrl,
+                        backdrop: 'static'
+                    });
+                };
+
                 factory.openManageBulkRequestsModal = function(title, message, acceptLabel, declineLabel, cancelLabel,
                                                          manageHandler, cancelHandler) {
                     var ConfirmCtrl = function($scope, $modalInstance, $rootScope, uiMisc) {
@@ -161,7 +183,7 @@
                     var modalInstance = $modal.open({
                         templateUrl: 'pages/networkInfoModal.html',
 
-                        controller: function($scope, $modalInstance) {
+                        controller: function($scope, $modalInstance, ndexNavigation) {
 
                             $scope.network = network;
 
@@ -171,9 +193,12 @@
 
                             $scope.showURLInClipboardMessage = function () {
 
-                                var message =
-                                    "The URL for this network was copied to the clipboard.";
-                                alert(message);
+                                var closeModalInterval = 1000; // ms
+
+                                var title    = "URL Copied To Clipboard";
+                                var message  = "The URL for this network was copied to the clipboard.";
+
+                                ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
                             };
                         }
                     });
@@ -184,7 +209,7 @@
                     var modalInstance = $modal.open({
                         templateUrl: 'pages/networkSetInfoModal.html',
 
-                        controller: function($scope, $modalInstance) {
+                        controller: function($scope, $modalInstance, ndexNavigation) {
 
                             $scope.set = set;
 
@@ -194,10 +219,12 @@
 
                             $scope.showURLInClipboardMessage = function() {
 
-                                var message =
-                                    "The URL for this network set was copied to the clipboard.";
+                                var closeModalInterval = 1000; // ms
 
-                                alert(message);
+                                var title    = "URL Copied To Clipboard";
+                                var message  = "The URL for this network set was copied to the clipboard.";
+
+                                ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
                             };
                         }
                     });
@@ -581,12 +608,18 @@
                         templateUrl: 'pages/directives/editUserModal.html',
                         scope: $scope,
 
+
                         controller: function ($scope, $modalInstance, $location, ndexService, $route) {
 
+                            $scope.user = {};
+                            for (var key in $scope.ndexData) {
+                                $scope.user[key] = $scope.ndexData[key];
+                            };
+
                             $scope.cancel = function () {
-                                for (var key in $scope.ndexData) {
-                                    $scope.user[key] = $scope.ndexData[key];
-                                }
+                                //for (var key in $scope.ndexData) {
+                                //    $scope.user[key] = $scope.ndexData[key];
+                                //}
                                 modalInstance.close();
                                 modalInstance = null;
                             };
@@ -594,7 +627,7 @@
                             $scope.submit = function () {
                                 if ($scope.isProcessing)
                                     return;
-                                $scope.isProcessing = true
+                                $scope.isProcessing = true;
                                 ndexService.updateUserV2($scope.user,
                                     function (userData) {
                                         $scope.isProcessing = false;
@@ -625,6 +658,8 @@
 
                             // ndexData is undefined at first pass. This seems to be a common problem
                             // most likey we aren't doing something the angular way, quick fix below
+
+                            /*
                             $scope.$watch('ndexData', function (value) {
                                 $scope.user = {};
                                 // Only want copy of object.
@@ -635,6 +670,9 @@
                                     $scope.user[key] = value[key];
                                 }
                             });
+                            */
+
+
                         }
                     })
                 }
