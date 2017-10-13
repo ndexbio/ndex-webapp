@@ -3594,8 +3594,17 @@
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
-                                        $scope.errors = error.data.message;
-                                        $scope.isProcessing = false;
+                                        var errorMessage = "Unable to delete account";
+
+                                        if (error.data && error.data.message) {
+                                            errorMessage = errorMessage + ": " + error.data.message;
+                                        } else if (error.message) {
+                                            errorMessage = errorMessage + ": " + error.message;
+                                        } else {
+                                            errorMessage += ".";
+                                        };
+
+                                        $scope.errors = errorMessage;
                                     });
                             };
                         }
