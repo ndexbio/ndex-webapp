@@ -625,12 +625,10 @@
                             };
 
                             $scope.submit = function () {
-                                if ($scope.isProcessing)
-                                    return;
-                                $scope.isProcessing = true;
+
                                 ndexService.updateUserV2($scope.user,
                                     function (userData) {
-                                        $scope.isProcessing = false;
+
                                         var userId = $scope.user.externalId;
                                         //$scope.ndexData.firstName = $scope.user.firstName;
                                         //$scope.ndexData.lastName = $scope.user.lastName;
@@ -655,6 +653,26 @@
                                         $scope.errors = errorMessage;
                                     });
                             };
+
+                            $scope.$watch("user.firstName", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("user.lastName", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("user.emailAddress", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("user.website", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("user.image", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("user.description", function() {
+                                delete $scope.errors;
+                            });
+
 
                             // ndexData is undefined at first pass. This seems to be a common problem
                             // most likey we aren't doing something the angular way, quick fix below
