@@ -333,12 +333,14 @@
                                             <span>
                                                <span class="networkPropertiesNameFont">{{property.predicateString}}:
                                                </span>
+                                                <!--
                                                <span class="networkPropertiesValueFont"
                                                      ng-hide='property.value.toString().length > 40'
                                                      ng-bind-html="property.value.toString()">
                                                </span>
+                                               -->
                                                <span class="networkPropertiesValueFont"
-                                                     ng-show='property.value.toString().length > 40'
+                                                     ng-show='property.value'
                                                      ng-bind-html="property.value">
                                                </span>
                                                <br/>
