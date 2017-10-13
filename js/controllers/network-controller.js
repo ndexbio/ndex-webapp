@@ -689,13 +689,18 @@ ndexApp.controller('networkController',
                 var attributeValue = attribute;
                 var attr = attribute.toLowerCase();
 
-                if (attr.startsWith('http://')
+                if ((attr.startsWith('http://') || attr.startsWith('https://'))
                     && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
                     && !attr.startsWith('http://purl') && !attr.startsWith('http://www.purl')) {
 
-                    attributeValue = '<a target="_blank" href="' + attribute + '">' + attribute + '</a>';
+                    attributeValue = '<a target="_blank" href="' + attribute + '">External Link</a>';
                     return attributeValue;
-                }
+
+                } else if (attr.startsWith('www.')) {
+                    attributeValue = '<a target="_blank" href="http://' + attribute + '">External Link</a>';
+                    return attributeValue;
+
+                };
 
                 var splitString = attribute.split(":");
                 if ((splitString.length != 2) && (splitString.length != 3)) {
