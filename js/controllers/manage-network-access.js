@@ -1016,9 +1016,12 @@ ndexApp.controller('manageNetworkAccessController',
 
 	$scope.showURLInClipboardMessage = function() {
 
-		var message =
-			"The URL for this network was copied to the clipboard.";
-		alert(message);
+        var closeModalInterval = 1000; // ms
+
+        var title    = "URL Copied To Clipboard";
+        var message  = "The URL for this network set was copied to the clipboard.";
+
+        ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
 	};
 
 

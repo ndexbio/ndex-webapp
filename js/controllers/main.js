@@ -1,8 +1,8 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', '$route',
-    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
+    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', 'ndexNavigation',
     function ( ndexService, ndexUtility, sharedProperties, $route,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, ndexNavigation) {
 
         $scope.$on('IdleStart', function() {
             if ( window.currentSignInType == 'basic')
@@ -500,10 +500,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
          ----------------------------------------------*/
 
         $scope.showNDExCitationInClipboardMessage = function() {
+            var closeModalInterval = 2000; // ms
 
-            var message =
-                "The NDEx citation information was copied to the clipboard. ";
-            alert(message);
+            var title   = "NDEx Citation Copied";
+            var message  = "The NDEx citation information was copied to the clipboard. ";
+
+            ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
         };
 
          $scope.showSearchBar = function() {

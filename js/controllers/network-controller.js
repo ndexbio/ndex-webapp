@@ -2265,11 +2265,12 @@ ndexApp.controller('networkController',
             };
 
             networkController.showURLInClipboardMessage = function() {
+                var closeModalInterval = 1000; // ms
 
-                var message =
-                    "The URL for this network was copied to the clipboard." ;
+                var title   = "URL Copied To Clipboard";
+                var message = "The URL for this network was copied to the clipboard. ";
 
-                alert(message);
+                ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
             };
 
             networkController.getStatusOfShareableURL = function() {

@@ -494,9 +494,12 @@ ndexApp.controller('networkSetController',
 
     networkSetController.showURLInClipboardMessage = function() {
 
-        var message =
-            "The URL for this network set was copied to the clipboard.";
-        alert(message);
+        var closeModalInterval = 1000; // ms
+
+        var title    = "URL Copied To Clipboard";
+        var message  = "The URL for this network set was copied to the clipboard.";
+
+        ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
     };
 
     networkSetController.getStatusOfShareableURL = function() {
