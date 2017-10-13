@@ -576,59 +576,68 @@
 
             controller: function($scope, $modal, $location, ndexService, $route) {
 
-                var modalInstance;
-                $scope.errors = null;
-
-                $scope.openMe = function() {
+                $scope.openMe = function () {
                     modalInstance = $modal.open({
                         templateUrl: 'pages/directives/editUserModal.html',
-                        scope: $scope
-                    });
-                };
+                        scope: $scope,
 
-                $scope.cancel = function() {
-                    for(var key in $scope.ndexData) {
-                        $scope.user[key] = $scope.ndexData[key];
-                    }
-                    modalInstance.close();
-                    modalInstance = null;
-                };
+                        controller: function ($scope, $modalInstance, $location, ndexService, $route) {
 
-                $scope.submit = function() {
-                    if( $scope.isProcessing )
-                        return;
-                    $scope.isProcessing = true
-                    ndexService.updateUserV2($scope.user,
-                        function(userData){
-                            $scope.isProcessing = false;
-                            var userId = $scope.user.externalId;
-                            //$scope.ndexData.firstName = $scope.user.firstName;
-                            //$scope.ndexData.lastName = $scope.user.lastName;
-                            //$scope.ndexData.website = $scope.user.website;
-                            //$scope.ndexData.description = $scope.user.description;
-                            //$scope.ndexData.image = $scope.user.image;
-                            $scope.user = {};
-                            modalInstance.close();
-                            $location.path('/user/' + userId);
-                        },
-                        function(error){
-                            $scope.isProcessing = false;
-                            $scope.errors = error;
-                        });
-                };
+                            $scope.cancel = function () {
+                                for (var key in $scope.ndexData) {
+                                    $scope.user[key] = $scope.ndexData[key];
+                                }
+                                modalInstance.close();
+                                modalInstance = null;
+                            };
 
-                // ndexData is undefined at first pass. This seems to be a common problem
-                // most likey we aren't doing something the angular way, quick fix below
-                $scope.$watch('ndexData', function(value) {
-                    $scope.user = {};
-                    // Only want copy of object.
-                    // Can acheive one way binding using '@' in the scope
-                    // but then we have to do JSON.parse(JSON.stringify(value)) on it. 
-                    // and use {{value}} in invoking html. 
-                    for(var key in value) {
-                        $scope.user[key] = value[key];
-                    }
-                });
+                            $scope.submit = function () {
+                                if ($scope.isProcessing)
+                                    return;
+                                $scope.isProcessing = true
+                                ndexService.updateUserV2($scope.user,
+                                    function (userData) {
+                                        $scope.isProcessing = false;
+                                        var userId = $scope.user.externalId;
+                                        //$scope.ndexData.firstName = $scope.user.firstName;
+                                        //$scope.ndexData.lastName = $scope.user.lastName;
+                                        //$scope.ndexData.website = $scope.user.website;
+                                        //$scope.ndexData.description = $scope.user.description;
+                                        //$scope.ndexData.image = $scope.user.image;
+                                        $scope.user = {};
+                                        modalInstance.close();
+                                        $location.path('/user/' + userId);
+                                    },
+                                    function (error) {
+                                        var errorMessage = "Unable to modify Personal Info";
+
+                                        if (error.data && error.data.message) {
+                                            errorMessage = errorMessage + ": " + error.data.message;
+                                        } else if (error.message) {
+                                            errorMessage = errorMessage + ": " + error.message;
+                                        } else {
+                                            errorMessage += ".";
+                                        };
+
+                                        $scope.errors = errorMessage;
+                                    });
+                            };
+
+                            // ndexData is undefined at first pass. This seems to be a common problem
+                            // most likey we aren't doing something the angular way, quick fix below
+                            $scope.$watch('ndexData', function (value) {
+                                $scope.user = {};
+                                // Only want copy of object.
+                                // Can acheive one way binding using '@' in the scope
+                                // but then we have to do JSON.parse(JSON.stringify(value)) on it.
+                                // and use {{value}} in invoking html.
+                                for (var key in value) {
+                                    $scope.user[key] = value[key];
+                                }
+                            });
+                        }
+                    })
+                }
             }
         }
     });
