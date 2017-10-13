@@ -201,7 +201,7 @@
                                 <input type="checkbox"
                                     ng-model="networkController.readOnlyChecked"
                                     ng-change="readOnlyChanged()"
-                                ng-disabled="networkController.currentNetwork.isReadOnly"> Read Only
+                                ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only 
                             </span>
                             <span class="networkPropertyName" ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()">
                                 <input type="checkbox"  disabled readonly
