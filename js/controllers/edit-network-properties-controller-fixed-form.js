@@ -528,7 +528,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                 console.log(saveTheseProperties);
 
-
                 ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
                     function() {
                         console.log("request created successfully!");
@@ -1048,5 +1047,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 */
 
     editor.showNameSpaces = (editor.namespaces.length > 0) ? true : false;
+
+    $scope.setToolTips = function(){
+        var myToolTips = $('[data-toggle="tooltip"]');
+
+        myToolTips.tooltip();
+    };
 
 }]);
