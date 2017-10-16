@@ -749,7 +749,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 config.documentationLink.showWarning = false;
             }
             if ((typeof config.refreshIntervalInSeconds === 'undefined') ||
-                (typeof config.refreshIntervalInSeconds != 'number')) {
+                (typeof config.refreshIntervalInSeconds != 'number') ||
+                config.refreshIntervalInSeconds < 0) {
                 // refresh interval defaults to 0 seconds (disabled) in case it is not explicitly defined or defined as non-number
                 config.refreshIntervalInSeconds = 0;
             };
