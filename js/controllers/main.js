@@ -750,8 +750,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
             if ((typeof config.refreshIntervalInSeconds === 'undefined') ||
                 (typeof config.refreshIntervalInSeconds != 'number')) {
-                // refresh interval defaults to 30 seconds in case it is not explicitly defined or defined as non-number
-                config.refreshIntervalInSeconds = 30;
+                // refresh interval defaults to 0 seconds (disabled) in case it is not explicitly defined or defined as non-number
+                config.refreshIntervalInSeconds = 0;
             };
 
 
