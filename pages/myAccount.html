@@ -58,7 +58,7 @@
                            </button>
 
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
-                               <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
+                               <li style="margin: 3px 0" ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
                                    <bulk-change-network-property
                                            ndex-data='myAccountController'
                                            directive-title="Change Description of Selected Networks"
@@ -70,7 +70,7 @@
                                            directive-label="Change Description">
                                     </bulk-change-network-property>
                                </li>
-                               <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
+                               <li style="margin: 3px 0" ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
                                    <bulk-change-network-property
                                            ndex-data='myAccountController'
                                            directive-title="Change Reference of Selected Networks"
@@ -83,7 +83,7 @@
                                    </bulk-change-network-property>
 
                                </li>
-                               <li ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
+                               <li style="margin: 3px 0" ng-class="enableEditPropertiesBulkButton ? '' : 'disabled'">
                                    <bulk-change-network-property
                                            ndex-data='myAccountController'
                                            directive-title="Change Version of Selected Networks"
@@ -95,7 +95,7 @@
                                            directive-label="Change Version">
                                    </bulk-change-network-property>
                                </li>
-                               <li>
+                               <li style="margin: 3px 0">
                                    <bulk-change-network-system-property
                                            ndex-data='myAccountController'
                                            directive-title="Change Visibility of Selected Networks"
@@ -105,14 +105,14 @@
                                            directive-label="Change Visibility">
                                    </bulk-change-network-system-property>
                                </li>
-                               <li>
+                               <li style="margin: 3px 0">
                                    <bulk-change-network-system-property
                                            ndex-data='myAccountController'
                                            directive-title="Change Read-Only Flag of Selected Networks"
                                            directive-action="readOnly"
                                            directive-description="Change Read-Only flag of the selected networks to the one below:"
                                            title="Set/Unset Read-Only Flag of the selected networks"
-                                           directive-label="Set/Unset Read-Only Flag">
+                                           directive-label="Set Read-Only">
                                    </bulk-change-network-system-property>
                                </li>
                            </ul>
@@ -213,14 +213,14 @@
                            </button>
 
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editAccountButton">
-                               <li>
+                               <li style="margin: 3px 0">
                                    <edit-user-modal ndex-data='myAccountController.displayedUser'></edit-user-modal>
                                </li>
-                               <li>
+                               <li style="margin: 3px 0">
                                    <change-password-modal></change-password-modal>
                                </li>
-                               <li class="disabled"><a href="#">Notification Settings</a></li>
-                               <li>
+                               <li class="disabled" style="margin: 3px 0"><a href="#">Notification Settings</a></li>
+                               <li style="margin: 3px 0">
                                    <delete-user></delete-user>
                                </li>
                            </ul>
