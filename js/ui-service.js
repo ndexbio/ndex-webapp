@@ -2244,7 +2244,8 @@
             },
 
             restrict: 'E',
-            template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</span>',
+            template: '<button class="dropdown-btn" ng-click="openMe()">' +
+                '<span style="white-space: nowrap; margin-right:20px">{{label}}</span></button>',
             transclude: true,
 
             controller: function($scope, $modal, ndexService, uiMisc, ndexNavigation) {
@@ -2562,7 +2563,7 @@
             },
 
             restrict: 'E',
-            template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</span>',
+            template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</button>',
 
             //transclude: true,
             controller: function($scope, $modal, ndexService, ndexNavigation, uiMisc) {
