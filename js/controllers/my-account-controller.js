@@ -56,6 +56,13 @@ ndexApp.controller('myAccountController',
             // we only put networks with number of subnetwroks greater than 1
             myAccountController.networksWithMultipleSubNetworks = {};
 
+            var spinnerMyAccountPageId = "spinnerMyAccountPageId";
+            var refreshIntervalInSeconds = ndexSettings.refreshIntervalInSeconds;
+            var timerVariable = undefined;
+            var myNetworksNewHash = 0;
+            var myNetworksOldHash = 0;
+            var tasksAndNotificationsOldHash = 0;
+            var tasksAndNotificationsNewHash = 0;
 
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
@@ -87,10 +94,6 @@ ndexApp.controller('myAccountController',
 
             $scope.refreshNetworksButtonDisabled = true;
             $scope.refreshTasksButtonDisabled    = true;
-
-            var spinnerMyAccountPageId = "spinnerMyAccountPageId";
-            var refreshIntervalInSeconds = ndexSettings.refreshIntervalInSeconds;
-            var timerVariable = undefined;
 
             var networkTableDefined               = false;
             var tasksAndNotificationsTableDefined = false;
@@ -2440,6 +2443,16 @@ ndexApp.controller('myAccountController',
                     });
             };
 
+            // this is one of hashing sugestions taken from
+            // https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
+            var stringHash = function(str) {
+                var hash = 0, i = 0, len = str.length;
+                while ( i < len ) {
+                    hash  = ((hash << 5) - hash + str.charCodeAt(i++)) << 0;
+                };
+                return hash;
+            };
+
             myAccountController.getUserAccountPageNetworks = function (successHandler, errorHandler)
             {
                 var noOfNetworkSetsOnPage = myAccountController.networkSets.length;
@@ -2465,6 +2478,19 @@ ndexApp.controller('myAccountController',
                     function(networkSummaries) {
 
                         myAccountController.networkSearchResults = networkSummaries;
+
+                        /*
+                        myNetworksOldHash = myNetworksNewHash;
+                        myNetworksNewHash = stringHash(angular.toJson(networkSummaries));
+
+                        if ((myNetworksOldHash != myNetworksNewHash) || (0 == refreshIntervalInSeconds)) {
+                            ndexSpinner.startSpinner(spinnerMyAccountPageId);
+                        };
+                        */
+
+                        if (_.size(networkSummaries) == 0) {
+                            successHandler();
+                        };
 
                         var networkUUIDs = _.map(networkSummaries, 'externalId');
 
@@ -2519,7 +2545,13 @@ ndexApp.controller('myAccountController',
                             defineNetworkTable();
                         };
 
+                        //if (myNetworksNewHash != myNetworksOldHash) {
+                        //    populateNetworkTable();
+                        //};
+
                         populateNetworkTable();
+
+                        //ndexSpinner.stopSpinner();
 
                         if (successHandler) {
                             successHandler();
