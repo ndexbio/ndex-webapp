@@ -431,7 +431,7 @@ ndexApp.controller('myAccountController',
                     //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
                     { field: 'Edges', enableFiltering: false, maxWidth:70 },
                     //{ field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
-                    { field: 'Visibility', enableFiltering: true, width: 80, cellTemplate: 'pages/gridTemplates/visibility.html'},
+                    { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'pages/gridTemplates/visibility.html'},
                     { field: 'Owner', enableFiltering: true, width:80, cellTemplate: 'pages/gridTemplates/ownedBy.html' },
                     { field: 'Last Modified', enableFiltering: false, maxWidth:120,
                         cellFilter: "date:'short'",  sort: {direction: 'desc', priority: 5}
