@@ -609,7 +609,7 @@
                         scope: $scope,
 
 
-                        controller: function ($scope, $modalInstance, $location, ndexService, $route) {
+                        controller: function ($scope, $modalInstance, $location, ndexService, $rootScope) {
 
                             $scope.user = {};
                             for (var key in $scope.ndexData) {
@@ -629,15 +629,25 @@
                                 ndexService.updateUserV2($scope.user,
                                     function (userData) {
 
-                                        var userId = $scope.user.externalId;
-                                        //$scope.ndexData.firstName = $scope.user.firstName;
-                                        //$scope.ndexData.lastName = $scope.user.lastName;
-                                        //$scope.ndexData.website = $scope.user.website;
-                                        //$scope.ndexData.description = $scope.user.description;
-                                        //$scope.ndexData.image = $scope.user.image;
+                                        $scope.ndexData.firstName = $scope.user.firstName;
+                                        $scope.ndexData.lastName = $scope.user.lastName;
+                                        $scope.ndexData.website = $scope.user.website;
+                                        $scope.ndexData.description = $scope.user.description;
+                                        $scope.ndexData.image = $scope.user.image;
+
+                                        if (window && window.currentNdexUser) {
+                                            window.currentNdexUser.firstName = $scope.user.firstName;
+                                            window.currentNdexUser.lastName  = $scope.user.lastName;
+                                            window.currentNdexUser.emailAddress =   $scope.user.emailAddress;
+                                            window.currentNdexUser.website   = $scope.user.website;
+                                            window.currentNdexUser.image     = $scope.user.image;
+                                            window.currentNdexUser.description = $scope.user.description;
+                                        };
+
                                         $scope.user = {};
+
                                         modalInstance.close();
-                                        $location.path('/user/' + userId);
+                                        $rootScope.$emit('SHOW_NEW_USER');
                                     },
                                     function (error) {
                                         var errorMessage = "Unable to modify Personal Info";

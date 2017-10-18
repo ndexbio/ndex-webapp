@@ -24,14 +24,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $scope.main.showSignIn = false;
             $scope.main.userName = sharedProperties.getCurrentUserAccountName();
 
-            var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
-            $scope.main.userFirstAndLastNames = userFirstAndLastNames ? "Hi, " + userFirstAndLastNames : "MyAccount";
+            showUserGreeting();
 
             if ($rootScope.reloadRoute) {
                 delete $rootScope.reloadRoute;
                 $route.reload();
             };
-        }
+        };
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
@@ -43,8 +42,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 delete $http.defaults.headers.common['Authorization'];
             } else {
                 gapi.auth2.getAuthInstance().signOut();
-            }
-	    window.currentNdexUser = null;
+            };
+	        window.currentNdexUser = null;
             window.currentSignInType = null;
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
@@ -52,6 +51,15 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         }
 
         $scope.$on('LOGGED_OUT', signOutHandler);
+
+
+        var showUserGreeting = function() {
+            var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
+            $scope.main.userFirstAndLastNames = userFirstAndLastNames ? "Hi, " + userFirstAndLastNames : "MyAccount";
+        };
+
+        $rootScope.$on('SHOW_NEW_USER', showUserGreeting);
+
 
         $scope.main.searchString = '';
         $scope.strLength = 0;
