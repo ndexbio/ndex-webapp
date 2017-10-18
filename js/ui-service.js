@@ -245,62 +245,55 @@
 
             template: '<button class="btn btn-primary customButtonWidth" ng-click="openMe()">Create Group</button>',
 
-            controller: function($scope, $attrs, $modal, $location, ndexService) {
-                var modalInstance;
-                $scope.group = {};
-                $scope.text = $attrs.triggerCreateGroupModal;
+            controller: function ($scope, $modal, $location, ndexService) {
 
-                $scope.openMe = function() {
+                $scope.openMe = function () {
+
                     modalInstance = $modal.open({
                         templateUrl: 'pages/directives/createGroupModal.html',
-                        scope: $scope
-                    });
-                };
+                        scope: $scope,
 
-                $scope.cancel = function() {
-                    modalInstance.dismiss();
-                    delete $scope.errors;
-                    $scope.group = {};
-                };
+                        controller: function ($scope, $modal, $location, ndexService, uiMisc) {
+                            $scope.group = {};
 
-                $scope.$watch("group.groupName", function() {
-                    delete $scope.errors;
-                });
-
-                $scope.isProcessing = false;
-
-                $scope.submit = function() {
-                    if( $scope.isProcessing )
-                        return;
-                    $scope.isProcessing = true;
-
-                    // when creating a new account, user enters Group name;
-                    // but we also need to supply account name to the Server API --
-                    // so we create account name by removing all blanks from  Group name.
-                    var accountName = $scope.group.groupName.replace(/\s+/g,"");
-                    $scope.group.userName = accountName;
-
-                    ndexService.createGroupV2($scope.group,
-                        function(url){
-                            if (url) {
-                                var groupId = url.split('/').pop();
+                            $scope.cancel = function () {
                                 modalInstance.close();
-                                ////console.log(groupData);
+                                modalInstance = null;
+                                delete $scope.errors;
+                                $scope.group = {};
+                            };
 
-                                $location.path('/group/' + groupId);
-                                $scope.isProcessing = false;
-                            }
-                        },
-                        function(error){
-                            if (error.data.errorCode == "NDEx_Duplicate_Object_Exception") {
-                                $scope.errors = "Group with name " + $scope.group.groupName + " already exists.";
-                            } else {
-                                $scope.errors = error.data.message;
-                            }
-                            $scope.isProcessing = false;
-                        });
+                            $scope.$watch("group.groupName", function () {
+                                delete $scope.errors;
+                            });
 
-                };
+                            $scope.submit = function () {
+
+                                // when creating a new account, user enters Group name;
+                                // but we also need to supply account name to the Server API --
+                                // so we create account name by removing all blanks from  Group name.
+                                var accountName = $scope.group.groupName.replace(/\s+/g, "");
+                                $scope.group.userName = accountName;
+
+                                ndexService.createGroupV2($scope.group,
+                                    function (url) {
+                                        if (url) {
+                                            var groupId = url.split('/').pop();
+                                            modalInstance.close();
+
+                                            $location.path('/group/' + groupId);
+                                        };
+                                    },
+                                    function (error) {
+                                        var errorMessage = "Unable to create group";
+                                        $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
+                                    }
+                                );
+
+                            };
+                        }
+                    });
+                }
             }
         }
     });
@@ -609,7 +602,7 @@
                         scope: $scope,
 
 
-                        controller: function ($scope, $modalInstance, $location, ndexService, $rootScope) {
+                        controller: function ($scope, $modalInstance, $location, ndexService, $rootScope, uiMisc) {
 
                             $scope.user = {};
                             for (var key in $scope.ndexData) {
@@ -629,38 +622,31 @@
                                 ndexService.updateUserV2($scope.user,
                                     function (userData) {
 
-                                        $scope.ndexData.firstName = $scope.user.firstName;
-                                        $scope.ndexData.lastName = $scope.user.lastName;
-                                        $scope.ndexData.website = $scope.user.website;
-                                        $scope.ndexData.description = $scope.user.description;
-                                        $scope.ndexData.image = $scope.user.image;
+                                        $scope.ndexData.firstName    = $scope.user.firstName;
+                                        $scope.ndexData.lastName     = $scope.user.lastName;
+                                        $scope.ndexData.emailAddress = $scope.user.emailAddress;
+                                        $scope.ndexData.website      = $scope.user.website;
+                                        $scope.ndexData.image        = $scope.user.image;
+                                        $scope.ndexData.description  = $scope.user.description;
+
 
                                         if (window && window.currentNdexUser) {
-                                            window.currentNdexUser.firstName = $scope.user.firstName;
-                                            window.currentNdexUser.lastName  = $scope.user.lastName;
-                                            window.currentNdexUser.emailAddress =   $scope.user.emailAddress;
-                                            window.currentNdexUser.website   = $scope.user.website;
-                                            window.currentNdexUser.image     = $scope.user.image;
-                                            window.currentNdexUser.description = $scope.user.description;
+                                            window.currentNdexUser.firstName    = $scope.user.firstName;
+                                            window.currentNdexUser.lastName     = $scope.user.lastName;
+                                            window.currentNdexUser.emailAddress = $scope.user.emailAddress;
+                                            window.currentNdexUser.website      = $scope.user.website;
+                                            window.currentNdexUser.image        = $scope.user.image;
+                                            window.currentNdexUser.description  = $scope.user.description;
                                         };
 
                                         $scope.user = {};
 
                                         modalInstance.close();
-                                        $rootScope.$emit('SHOW_NEW_USER');
+                                        $rootScope.$emit('SHOW_UPDATED_USER_NAME');
                                     },
                                     function (error) {
                                         var errorMessage = "Unable to modify Personal Info";
-
-                                        if (error.data && error.data.message) {
-                                            errorMessage = errorMessage + ": " + error.data.message;
-                                        } else if (error.message) {
-                                            errorMessage = errorMessage + ": " + error.message;
-                                        } else {
-                                            errorMessage += ".";
-                                        };
-
-                                        $scope.errors = errorMessage;
+                                        $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
                                     });
                             };
 
@@ -708,7 +694,7 @@
         }
     });
 
-    // edit group profiel modal
+    // edit group profile modal
     //      - ndexData takes a group object as a param
     //      - redirects to group page
     uiServiceApp.directive('editGroupModal', function() {
@@ -3586,7 +3572,7 @@
     uiServiceApp.directive('deleteGroup', function(){
         return {
             scope: {
-                ndexData: '='
+                groupIdToDel: '='
             },
             restrict: 'E',
 
@@ -3598,7 +3584,7 @@
                     modalInstance = $modal.open({
                         templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
-                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility) {
+                        controller: function($scope, $modalInstance, $route, ndexService, ndexUtility, uiMisc) {
                             $scope.title = 'Delete this Group'
                             $scope.message = 'This group will be permanently deleted from NDEx. Are you sure you want to delete?';
 
@@ -3610,15 +3596,16 @@
                                 if( $scope.isProcessing )
                                     return;
                                 $scope.isProcessing = true;
-                                ndexService.deleteGroupV2($scope.externalId,
+                                ndexService.deleteGroupV2($scope.groupIdToDel,
                                     function(data) {
                                         $modalInstance.close();
-                                        $location.path('/user/'+sharedProperties.getCurrentUserId());
+                                        $location.path('/myAccount');
+                                        //$scope.ndexData.setTabActive(1);
                                         $scope.isProcessing = false;
                                     },
                                     function(error) {
-                                        $scope.errors = error.data;
-                                        $scope.isProcessing = false;
+                                        var errorMessage = "Unable to delete group";
+                                        $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
                                     });
                             };
                         }
@@ -3648,7 +3635,7 @@
                     modalInstance = $modal.open({
                         templateUrl: 'pages/directives/confirmationModal.html',
                         scope: $scope,
-                        controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility) {
+                        controller: function($scope, $modalInstance, $location, $route, ndexService, ndexUtility, uiMisc) {
                             $scope.title = 'Delete Your Account'
                             $scope.message = 'Your account will be permanently deleted from NDEx. Are you sure you want to delete?';
 
@@ -3671,16 +3658,7 @@
                                     },
                                     function(error) {
                                         var errorMessage = "Unable to delete account";
-
-                                        if (error.data && error.data.message) {
-                                            errorMessage = errorMessage + ": " + error.data.message;
-                                        } else if (error.message) {
-                                            errorMessage = errorMessage + ": " + error.message;
-                                        } else {
-                                            errorMessage += ".";
-                                        };
-
-                                        $scope.errors = errorMessage;
+                                        $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
                                     });
                             };
                         }

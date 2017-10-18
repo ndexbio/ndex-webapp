@@ -58,7 +58,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $scope.main.userFirstAndLastNames = userFirstAndLastNames ? "Hi, " + userFirstAndLastNames : "MyAccount";
         };
 
-        $rootScope.$on('SHOW_NEW_USER', showUserGreeting);
+        $rootScope.$on('SHOW_UPDATED_USER_NAME', showUserGreeting);
 
 
         $scope.main.searchString = '';
