@@ -448,7 +448,12 @@ ndexApp.controller('myAccountController',
                     { field: 'description', enableFiltering: false,  visible: false},
                     { field: 'externalId',  enableFiltering: false,  visible: false},
                     { field: 'ownerUUID',   enableFiltering: false,  visible: false},
-                    { field: 'name',        enableFiltering: false,  visible: false}
+                    { field: 'name',        enableFiltering: false,  visible: false},
+
+                    { field: 'errorMessage', enableFiltering: false,  visible: false},
+                    { field: 'subnetworks',  enableFiltering: false,  visible: false},
+                    { field: 'isReadOnly',   enableFiltering: false,  visible: false},
+                    { field: 'indexed',      enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
             };
@@ -742,10 +747,10 @@ ndexApp.controller('myAccountController',
                     var disease   = uiMisc.getDisease(network);
                     var tissue    = uiMisc.getTissue(network);
 
-                    var errorMessage = network.errorMessage;
+                    var errorMessage = network.errorMessage ? network.errorMessage : "";
 
-                    var networks = 0;
-                    var isReadOnly = network['isReadOnly'] ? network['isReadOnly'] : false;
+                    //var networks = 0;
+                    //var isReadOnly = network['isReadOnly'] ? network['isReadOnly'] : false;
 
                     /*
                     if (networkStatus == "collection") {
@@ -756,9 +761,9 @@ ndexApp.controller('myAccountController',
                     var row =   {
                         "Status"        :   networkStatus,
                         "Network Name"  :   networkName,
-                        " "             :   download,
+                        "Download"      :   download,
                         "Format"        :   format,
-                        "Reference"     :   reference,
+                        "Ref."          :   reference,
                         "Disease"       :   disease,
                         "Tissue"        :   tissue,
                         //"Nodes"         :   nodes,
@@ -773,8 +778,7 @@ ndexApp.controller('myAccountController',
                         "name"          :   networkName,
                         "errorMessage"  :   errorMessage,
                         "subnetworks"   :   noOfSubNetworks,
-                        "networks"      :   networks,
-                        "isReadOnly"    :   isReadOnly,
+                        "isReadOnly"    :   network['isReadOnly'],
                         "indexed"       :   indexed
                     };
                     $scope.networkGridOptions.data.push(row);

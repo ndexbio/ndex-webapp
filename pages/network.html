@@ -194,7 +194,10 @@
                         </div>
 
                         <div ng-show = "!networkController.successfullyQueried">
-                            <span class="networkVisibilityValue">{{networkController.currentNetwork.visibility}} </span>
+                            <span class="networkVisibilityValue">
+                                <strong>{{networkController.currentNetwork.visibility}}</strong>
+                                <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexed"></i>
+                            </span>
                             &nbsp;&nbsp;
 
                             <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
