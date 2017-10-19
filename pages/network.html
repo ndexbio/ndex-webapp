@@ -194,11 +194,13 @@
                         </div>
 
                         <div ng-show = "!networkController.successfullyQueried">
-                            <span class="networkVisibilityValue">
+                            <span>
                                 <strong>{{networkController.currentNetwork.visibility}}</strong>
+                                &nbsp;
                                 <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexed"></i>
                             </span>
                             &nbsp;&nbsp;
+
 
                             <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
                                 <input type="checkbox"

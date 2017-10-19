@@ -240,10 +240,11 @@ ndexApp.controller('groupController',
             { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
             { field: 'Nodes', enableFiltering: false, maxWidth: 70 },
             { field: 'Edges', enableFiltering: false, maxWidth: 70 },
-            { field: 'Visibility', enableFiltering: true, width: 90 },
+            { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'pages/gridTemplates/visibility.html'},
             { field: 'Owner', enableFiltering: true, width:80,
                 cellTemplate: 'pages/gridTemplates/ownedBy.html'},
-            { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" }
+            { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" },
+            { field: 'indexed', enableFiltering: false,  visible: false}
         ];
         $scope.networkGridApi.grid.options.columnDefs = columnDefs;
         refreshNetworkTable();
@@ -324,6 +325,7 @@ ndexApp.controller('groupController',
             var nodes = network['nodeCount'];
             var edges = network['edgeCount'];
             var owner = network['owner'];
+            var indexed = network['indexed'];
             var visibility = network['visibility'];
             var modified = new Date( network['modificationTime'] );
 
@@ -353,7 +355,8 @@ ndexApp.controller('groupController',
                 "ownerUUID"     :   network['ownerUUID'],
                 "name"          :   networkName,
                 "errorMessage"  :   errorMessage,
-                "subnetworks"   :   noOfSubNetworks
+                "subnetworks"   :   noOfSubNetworks,
+                "indexed"       :   indexed
             };
             $scope.networkGridOptions.data.push(row);
         }

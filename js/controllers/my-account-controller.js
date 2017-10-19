@@ -78,6 +78,8 @@ ndexApp.controller('myAccountController',
 
             $scope.diskSpaceInfo = {};
 
+            myAccountController.showNetworkTable = false;
+
             uiMisc.hideSearchMenuItem();
             $scope.$parent.showSearchMenu = true;
 
@@ -373,10 +375,6 @@ ndexApp.controller('myAccountController',
 
             myAccountController.tasksAndRequestsGridOptions = $scope.tasksAndRequestsGridOptions;
 
-            $scope.showNetworkTable = function() {
-                return myAccountController.networkSearchResults.length > 0
-                    || myAccountController.networkSets.length > 0;
-            };
 
             $scope.showTasksAndRequestsTable = function() {
                 var retValue =
@@ -783,6 +781,8 @@ ndexApp.controller('myAccountController',
                     };
                     $scope.networkGridOptions.data.push(row);
                 };
+
+                myAccountController.showNetworkTable = (_.size($scope.networkGridOptions.data) > 0);
             };
 
 
