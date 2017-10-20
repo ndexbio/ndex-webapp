@@ -514,20 +514,22 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         if(editor.errors.length < 1){
             if(editor.checkDOIRequirements()){
                 editor.save();
+
+
                 var saveTheseProperties = {
                     "name": $scope.mainProperty.name,
                     "description": $scope.mainProperty.description,
                     "version": $scope.mainProperty.version,
-                    "author": editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value,
-                    "rights": editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value,
-                    "rightsHolder": editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value,
+                    "author": editor.getPropertyValue('author'),
+                    "rights": editor.getPropertyValue('rights'),
+                    "rightsHolder": editor.getPropertyValue('rightsHolder'),
                     "reference": $scope.mainProperty.reference,
                     "contactEmail": editor.doiInfo.user.email,
                     "pubDate": $('#doiDTPicker').val()
                 };
 
                 console.log(saveTheseProperties);
-
+/*
                 ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
                     function() {
                         console.log("request created successfully!");
@@ -535,7 +537,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     function(error){
                         editor.errors.push(error)
                     });
-
+*/
 
             } else {
                 editor.errors.push("Missing value")
@@ -709,15 +711,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         if (!$scope.mainProperty.name ||
             !$scope.mainProperty.description ||
             !$scope.mainProperty.version ||
-            !editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value ||
-            !editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value ||
-            !editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value ||
+            !editor.getPropertyValue('rights') ||
+            !editor.getPropertyValue('rightsHolder') ||
+            !editor.getPropertyValue('author') ||
             $scope.mainProperty.name.length < 1 ||
             $scope.mainProperty.description.length < 1 ||
             $scope.mainProperty.version.length < 1 ||
-            editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value.length < 1 ||
-            editor.propertyValuePairs[editor.propertyValuePairsIndex['rightsHolder']].value.length < 1 ||
-            editor.propertyValuePairs[editor.propertyValuePairsIndex['author']].value.length < 1)
+            editor.getPropertyValue('rights').length < 1 ||
+            editor.getPropertyValue('rightsHolder').length < 1 ||
+            editor.getPropertyValue('author').length < 1)
         {
             return false;
         } else {
@@ -1053,5 +1055,17 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
         myToolTips.tooltip();
     };
+
+    editor.getPropertyValue = function(propName){
+        //editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value
+
+        for(var i=0; i<editor.propertyValuePairs.length; i++){
+            if(editor.propertyValuePairs[i].predicateString === propName){
+                return editor.propertyValuePairs[i].value;
+            }
+        }
+
+        return null;
+    }
 
 }]);

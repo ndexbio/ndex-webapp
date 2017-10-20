@@ -95,7 +95,7 @@
 
             <div class="form-group">
                 <label class="col-sm-3 control-label">reference &nbsp;&nbsp;
-                    <a data-toggle="tooltip" title="Optional. Can be added later."
+                    <a data-toggle="tooltip" title="**Optional. Can be added later."
                        style="text-decoration: none;"><i class="fa fa-info-circle"></i></a></label>
                 <div class="col-sm-8" style="margin-bottom: 15px;">
                     <text-angular
@@ -111,8 +111,10 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn" style="margin-top: 40px;"><br />
+                        <!--
                         <i ng-if="mainProperty.reference.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                         <i ng-if="mainProperty.reference.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        -->
                     </div>
                 </div>
             </div>
@@ -152,7 +154,7 @@
                             ng-model="property.rightsOther" id="doiinputrightsOther1"
                             ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
 
-                    <input class="form-control input-sm" type="url" placeholder="license URL"
+                    <input class="form-control input-sm" type="url" placeholder="URL (http://www.mylicense.com)"
                            ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
                 </div>
@@ -216,7 +218,7 @@
             <div class="well" style="margin-bottom: 0px;">
                 <div class="row">
                     <label class="col-sm-3 control-label">Publication Date &nbsp;&nbsp;
-                        <a data-toggle="tooltip" title="Optional"
+                        <a data-toggle="tooltip" title="**Optional"
                            style="text-decoration: none;"><i class="fa fa-info-circle"></i></a></label>
 
                     </label>

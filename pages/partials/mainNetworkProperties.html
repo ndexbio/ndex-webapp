@@ -221,13 +221,6 @@
                                 ng-class="property.value.length > 0 ? 'competeInput': ''"
                                 ng-readonly='!(editor.isAdmin || editor.canEdit) || !(property.predicateString)'>
 
-<!--
-                        <select ng-if="property.predicateString == 'rights'" class="form-control input-sm" ng-model="property.value"
-                                ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
-                                ng-options="item for item in editor.rights" ng-change="editor.updateScore()">
-                        </select>
--->
-
                         <span ng-if="property.predicateString == 'rights'">
                             <div class="col-sm-12" style="margin-bottom: 0px; padding: 0px;" ng-if="property.value != 'Other'">
 
@@ -249,25 +242,12 @@
                                        ng-model="property.rightsOther" id="doiinputrightsOther1"
                                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
 
-                                <input class="form-control input-sm" type="text" placeholder="license URL"
+                                <input class="form-control input-sm" type="url" placeholder="license URL"
                                        ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
                                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
                             </div>
 
                         </span>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                         <div class="input-group-btn">
                             <i ng-if="property.value.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
