@@ -529,7 +529,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 };
 
                 console.log(saveTheseProperties);
-/*
+
                 ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
                     function() {
                         console.log("request created successfully!");
@@ -537,7 +537,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     function(error){
                         editor.errors.push(error)
                     });
-*/
+
 
             } else {
                 editor.errors.push("Missing value")
