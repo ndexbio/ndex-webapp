@@ -3275,7 +3275,11 @@
             },
             restrict: 'AE',
 
-            template: '<button class="btn btn-primary actionsLabel" ng-click="openMe()">Delete</button>',
+            //template: '<button class="btn btn-primary actionsLabel" ng-click="openMe()">Delete</button>',
+
+            template: '<button class="dropdown-btn" ng-click="openMe()">Delete</button>',
+            //template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</button>',
+
             controller: function($scope, $modal, $location) {
 
                 $scope.openMe = function() {

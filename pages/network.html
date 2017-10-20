@@ -799,11 +799,7 @@
                     || networkController.canRead) || networkController.accesskey'
                   class="actionsLabel btn btn-primary download-btn"
                   ng-click="downloadNetwork()" >
-
-               <!--     <a ng-href={{getNetworkDownloadLink(networkController.currentNetwork)}}
-                       class="actionsLabel btn btn-primary download-btn">  -->
-                        Download
-                  <!--  </a>  -->
+                Download
             </span>
 
             <span>
@@ -820,25 +816,11 @@
                 </a>
             </span>
 
-            <!--
-            <span ng-show='networkController.isLoggedInUser &&
-                        ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
-                <span>
-                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()">
-                        <edit-network-summary-modal
-                                ndex-data='networkController.currentNetwork'
-                                sub-network-id="networkController.subNetworkId">
-                            Edit Profile
-                        </edit-network-summary-modal>
-                    </a>
-                    <a class="actionsLabelDisabled-btn btn btn-primary"
-                       ng-show="networkController.hasMultipleSubNetworks()"
-                       title="This network is part of a Cytoscape collection with {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
-                            Edit Profile
-                    </a>
-                </span>
+            <span ng-show='networkController.isLoggedInUser'>
+                <a class="actionsLabel btn btn-primary"
+                   ng-click="networkController.cloneNetwork()">Clone
+                </a>
             </span>
-            -->
 
             <span ng-show='networkController.isLoggedInUser &&
                         ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
@@ -846,126 +828,116 @@
                     <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()"
                        ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
                        ng-click="setReturnView('network/')">
-                        Edit Properties
+                        Edit
 
                     </a>
                     <a class="actionsLabelDisabled-btn btn btn-primary" ng-show="networkController.hasMultipleSubNetworks()"
                        title="{{networkController.title}}">
-                            Edit Properties
+                        Edit
                     </a>
                 </span>
             </span>
 
-            <span ng-show='networkController.isLoggedInUser &&
-                        (networkController.isNetworkOwner && !networkController.readOnlyChecked)'>
+
+            <span ng-show='networkController.isLoggedInUser'>
+
                 <span>
-                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()"
-                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
-                       ng-click="setReturnView('network/')">
-                        Request DOI
+                    <div class="btn-group dropup">
 
-                    </a>
-                    <a class="actionsLabelDisabled-btn btn btn-primary" ng-show="networkController.hasMultipleSubNetworks()"
-                       title="{{networkController.title}}">
-                        Request DOI
-                    </a>
+                   <button id="moreNetworkButton" type="button" data-toggle="dropdown"
+                           class="actionsLabel btn btn-primary dropdown-toggle">
+                       More
+                       <span class="caret"></span>
+                   </button>
+
+                    <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="moreNetworkButton" >
+
+
+                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
+                                    (networkController.isNetworkOwner && !networkController.readOnlyChecked)'>
+
+                            <a class="dropdown-btn" ng-show="!networkController.hasMultipleSubNetworks()"
+                               ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
+                               ng-click="setReturnView('network/')">
+                                Request DOI
+
+                            </a>
+                            <a class="dropdown-btn" ng-show="networkController.hasMultipleSubNetworks()"
+                               title="{{networkController.title}}">
+                                Request DOI
+                            </a>
+                        </li>
+
+                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser
+                            && ((networkController.currentNetwork.visibility == "PUBLIC")
+                                || networkController.isAdmin
+                                || networkController.canEdit
+                                || networkController.canRead)'>
+
+                            <export-network
+                                    ndex-data='networkController.currentNetwork'
+                                    my-class="{{networkController.hasMultipleSubNetworks() ?
+                                        'actionsLabel disabled dropdown-btn' : 'actionsLabel dropdown-btn'}}"
+                                    title="{{networkController.hasMultipleSubNetworks() ? networkController.title : ''}}">
+                            </export-network>
+
+                        </li>
+
+                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser'>
+                            <show-network-sets-modal
+                                    my-account-controller='networkController'
+                                    my-class="actionsLabel dropdown-btn">
+                            </show-network-sets-modal>
+                        </li>
+
+                        <li style="margin: 3px 0"
+                            ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit'>
+
+                            <create-request-network
+                                privileges='networkController.privilegeLevel'
+                                ndex-data='networkController.currentNetwork'
+                                my-class="{{networkController.hasMultipleSubNetworks() ?
+                                        'actionsLabel disabled dropdown-btn' : 'actionsLabeldropdown-btn'}}"
+                                title="{{networkController.hasMultipleSubNetworks() ? networkController.title : 'Request Read, Edit or Admin privilege'}}">
+                            </create-request-network>
+
+                        </li>
+
+                        <li
+                              ng-show='networkController.isLoggedInUser && networkController.isAdmin'
+                              title="Request Read, Edit or Admin privilege">
+                                <a class="dropdown-btn"
+                                   ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
+                                        Share
+                                </a>
+                        </li>
+
+<!--
+                        <li style="margin: 3px 0"
+                            ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
+                            networkController.numberOfBelNetworkNamespacesAsInt > 0'>
+                            <a class="actionsLabel btn btn-primary customButtonWidth">
+                                <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
+                                                        ndex-network-name='networkController.currentNetwork.name'>
+                                    Download Namespace
+                                </download-bel-namespace>
+                            </a>
+                        </li>
+-->
+
+                        <li style="margin: 3px 0"
+                            ng-if='networkController.isLoggedInUser && networkController.isAdmin &&
+                                  !networkController.readOnlyChecked'>
+                            <delete-network
+                                    ndex-data='networkController.currentNetwork.externalId'>
+                            </delete-network>
+                        </li>
+
+                    </ul>
+
+                </div>
                 </span>
-            </span>
 
-            <span ng-show='networkController.isLoggedInUser'>
-                <a class="actionsLabel btn btn-primary"
-                   ng-click="networkController.cloneNetwork()">Clone
-                </a>
-            </span>
-
-            <span ng-show='networkController.isLoggedInUser
-                && ((networkController.currentNetwork.visibility == "PUBLIC")
-                    || networkController.isAdmin
-                    || networkController.canEdit
-                    || networkController.canRead)'>
-
-                <export-network
-                        ndex-data='networkController.currentNetwork'
-                        my-class="{{networkController.hasMultipleSubNetworks() ?
-                            'actionsLabelDisabled-btn btn btn-primary' : 'actionsLabel btn btn-primary'}}"
-                        title="{{networkController.hasMultipleSubNetworks() ? networkController.title : ''}}">
-                </export-network>
-
-            </span>
-
-            <span ng-show='networkController.isLoggedInUser'>
-                <show-network-sets-modal
-                        my-account-controller='networkController'
-                        my-class="btn btn-primary">
-                </show-network-sets-modal>
-            </span>
-
-
-            <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit'>
-
-                <create-request-network
-                    privileges='networkController.privilegeLevel'
-                    ndex-data='networkController.currentNetwork'
-                    my-class="{{networkController.hasMultipleSubNetworks() ?
-                            'actionsLabelDisabled-btn btn btn-primary' : 'actionsLabel btn btn-primary'}}"
-                    title="{{networkController.hasMultipleSubNetworks() ? networkController.title : 'Request Read, Edit or Admin privilege'}}">
-                </create-request-network>
-
-            </span>
-
-            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin' title="Request Read, Edit or Admin privilege">
-                <a class="actionsLabel btn btn-primary"
-                   ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
-                        Share
-                </a>
-            </span>
-
-            <!--
-            <span ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
-                           networkController.numberOfBelNetworkNamespacesAsInt == 0'>
-                <a class="btn btn-primary customButtonWidth">
-                    <archive-bel-namespaces ndex-data='networkController.currentNetwork.externalId'>
-                        Archive BEL Namespaces
-                    </archive-bel-namespaces>
-                </a>
-            </span>
-            -->
-
-            <span ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
-                networkController.numberOfBelNetworkNamespacesAsInt > 0'>
-                <a class="actionsLabel btn btn-primary customButtonWidth">
-                    <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
-                                            ndex-network-name='networkController.currentNetwork.name'>
-                        Download Namespace
-                    </download-bel-namespace>
-                </a>
-            </span>
-
-            <span class="divider" ng-show='networkController.isAdmin &&
-                      !networkController.readOnlyChecked
-                    || networkController.directIsAdmin
-                    || networkController.directCanEdit
-                    || networkController.directCanRead'>
-            </span>
-
-            <!--
-            <span ng-show='networkController.directIsAdmin
-                    || networkController.directCanEdit
-                    || networkController.directCanRead'>
-
-                <a class="btn btn-primary customButtonWidth">
-                    <leave-network
-                            ndex-data='networkController.currentNetwork.externalId'>
-                        Disaffiliate this Network
-                    </leave-network>
-                </a>
-            </span>
-            -->
-
-            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin &&
-                          !networkController.readOnlyChecked'>
-                <delete-network ndex-data='networkController.currentNetwork.externalId'>
-                </delete-network>
             </span>
 
             <span ng-show='!networkController.isLoggedInUser'>
