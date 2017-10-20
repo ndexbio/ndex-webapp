@@ -56,6 +56,8 @@ ndexApp.controller('searchController',
 
             searchController.loggedInUserId = sharedProperties.getCurrentUserId();
 
+            searchController.showNetworkTable = false;
+
 
             $(document).ready(function() {
                 if (!searchController.loggedInUserId) {
@@ -180,7 +182,10 @@ ndexApp.controller('searchController',
                         var selectedRows = gridApi.selection.getSelectedRows();
                         searchController.networkTableRowsSelected = selectedRows.length;
                     });
-
+                    gridApi.core.on.rowsRendered($scope, function() {
+                        // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
+                        setTimeout($scope.networkGridApi.core.handleWindowResize, 100);
+                    });
                 }
             };
             
@@ -194,15 +199,18 @@ ndexApp.controller('searchController',
                 { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'pages/gridTemplates/tissue.html'},
                 { field: 'Nodes', enableFiltering: false, maxWidth:70 },
                 { field: 'Edges', enableFiltering: false, maxWidth:70 },
-                { field: 'Visibility', enableFiltering: true, maxWidth:70 },
+                { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'pages/gridTemplates/visibility.html'},
                 { field: 'Owner', enableFiltering: true, width:80,
                     cellTemplate: 'pages/gridTemplates/ownedBy.html'},
                 { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" },
 
-                { field: 'description', enableFiltering: false,  visible: false},
-                { field: 'externalId',  enableFiltering: false,  visible: false},
-                { field: 'ownerUUID',   enableFiltering: false,  visible: false},
-                { field: 'name',        enableFiltering: false,  visible: false}
+                { field: 'description',  enableFiltering: false,  visible: false},
+                { field: 'externalId',   enableFiltering: false,  visible: false},
+                { field: 'ownerUUID',    enableFiltering: false,  visible: false},
+                { field: 'name',         enableFiltering: false,  visible: false},
+                { field: 'errorMessage', enableFiltering: false,  visible: false},
+                { field: 'subnetworks',  enableFiltering: false,  visible: false},
+                { field: 'indexed',      enableFiltering: false,  visible: false}
             ];
 
             var populateNetworkTable = function()
@@ -246,6 +254,7 @@ ndexApp.controller('searchController',
                     var nodes = network['nodeCount'];
                     var edges = network['edgeCount'];
                     var owner = network['owner'];
+                    var indexed = network['indexed'];
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
 
@@ -275,11 +284,14 @@ ndexApp.controller('searchController',
                         "ownerUUID"     :   network['ownerUUID'],
                         "name"          :   networkName,
                         "errorMessage"  :   errorMessage,
-                        "subnetworks"   :   noOfSubNetworks
+                        "subnetworks"   :   noOfSubNetworks,
+                        "indexed"       :   indexed
                     };
 
                     $scope.networkSearchGridOptions.data.push(row);
-                }
+                };
+
+                searchController.showNetworkTable = (_.size($scope.networkSearchGridOptions.data) > 0);
             };
 
             searchController.setAndDisplayCurrentNetwork = function (networkId) {

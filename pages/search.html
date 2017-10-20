@@ -38,7 +38,7 @@
                     active="activeTab.Networks">
                 <div ng-show='searcher.networkSearchInProgress'><i>Finding Networks...</i></div>
                 <div ng-show='searcher.networkSearchNoResults'><i>No Networks Found.</i></div>
-                <div ng-show='searcher.networkSearchResults' ui-grid-selection ui-grid="networkSearchGridOptions"
+                <div ng-show='searcher.showNetworkTable' ui-grid-selection ui-grid="networkSearchGridOptions"
                      ui-grid-resize-columns style="height:540px;"></div>
 
             </tab>

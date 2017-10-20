@@ -692,5 +692,19 @@ angular.module('ndexServiceApp')
             return;
         };
 
+        self.formatErrorMessage = function(ourMessage, error) {
+            var errorMessage = ourMessage;
+
+            if (error.data && error.data.message) {
+                errorMessage = errorMessage + ": " + error.data.message;
+            } else if (error.message) {
+                errorMessage = errorMessage + ": " + error.message;
+            } else {
+                errorMessage += ".";
+            };
+
+            return errorMessage;
+        };
+
     }
 ]);

@@ -774,9 +774,6 @@ ul.ndex-nav-pills > li > a:hover {
     margin-left: 1em;
 }
 
-.networkVisibilityValue {
-    color: forestgreen;
-}
 
 .cytoscapeCanvas {
     color: #777;
@@ -868,15 +865,21 @@ ul.ndex-nav-pills > li > a:hover {
 }
 
 .download-btn {
-    background-color: #93b236 !important;
-    border-color:  #93b236;
+    background-color: #18AD31 !important;
+    border-color:  #18AD31;
+    border: 5px double white;
+}
+.download-btn:hover, .download-btn:focus, .download-btn:active {
+    background-color: #1c8c2e !important;
+    border-color: #1c8c2e;
     border: 5px double white;
 }
 
-.download-btn:hover, .download-btn:focus, .download-btn:active {
-    background-color: #71892a !important;
-    border-color: #71892a;
-    border: 5px double white;
+.download-icon {
+    color: #18AD31 !important;
+}
+.download-icon:hover, .download-icon:focus, .download-icon:active {
+    color: #1c8c2e !important;
 }
 
 
