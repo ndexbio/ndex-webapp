@@ -183,7 +183,7 @@ ndexApp.controller('myAccountController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        $scope.networkGridApi.core.handleWindowResize();
+                        setTimeout($scope.networkGridApi.core.handleWindowResize, 100);
 
                         if (myAccountController.networkTableRowsSelected > 0) {
                             for (var i = 0; i < $scope.networkGridApi.grid.rows.length; i++) {
