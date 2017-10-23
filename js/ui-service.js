@@ -767,10 +767,13 @@
             scope: {
                 controllerName: '@controllerName',
                 myAccountController: '=',
-                myClass: '@'
+                myClass: '@',
+                myStyle: '@'
             },
             restrict: 'AE',
-            template: "<button class='{{myClass}}' ng-click='openMe()'>Add To My Sets</button>",
+            //template: "<button class='{{myClass}}' style='line-height: 1.428571429;' ng-click='openMe()'>Add To My Sets</button>",
+
+            template: "<button style='{{myStyle}}' class='{{myClass}}' ng-click='openMe()'>Add To My Sets</button>",
 
             controller: function($scope, $attrs, $modal, $location, ndexService, $route, $rootScope) {
                 var modalInstance;
@@ -1388,11 +1391,12 @@
             scope: {
                 ndexData: '=',
                 privileges: '=',
-                myClass: '@'
+                myClass: '@',
+                myStyle: '@'
             },
             restrict: 'E',
 
-            template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
+            template: '<button style="{{myStyle}}" class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
 
             controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties, uiMisc) {
                 var modalInstance;
@@ -1795,11 +1799,14 @@
         return {
             scope: {
                 ndexData: '=',
-                myClass: '@'
+                myClass: '@',
+                myStyle: '@'
             },
             restrict: 'E',
 
-            template: '<button class="{{myClass}}" ng-click="openMe()">Export</button>',
+            //template: '<button style="line-height: 1.428571429;" class="{{myClass}}" ng-click="openMe()">Export</button>',
+
+            template: '<button style="{{myStyle}}" class="{{myClass}}" ng-click="openMe()">Export</button>',
 
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
@@ -3271,14 +3278,17 @@
     uiServiceApp.directive('deleteNetwork', function(){
         return {
             scope: {
-                ndexData: '='
+                ndexData: '=',
+                myClass: '@',
+                myStyle: '@'
             },
             restrict: 'AE',
 
             //template: '<button class="btn btn-primary actionsLabel" ng-click="openMe()">Delete</button>',
 
-            template: '<button class="dropdown-btn" ng-click="openMe()">Delete</button>',
-            //template: '<button class="dropdown-btn" ng-click="openMe()">{{label}}</button>',
+            //template: '<button class="dropdown-btn" style="line-height: 1.428571429;" ng-click="openMe()">Delete</button>',
+
+            template: '<button style="{{myStyle}}" class="{{myClass}}" ng-click="openMe()">Delete</button>',
 
             controller: function($scope, $modal, $location) {
 

@@ -809,7 +809,7 @@
                     {{buttonLabel}}
                 </button>
 
-                <a class="actionsLabelDisabled-btn btn btn-primary" style="border: 5px double white;"
+                <a class="actionsLabelDisabled-btn btn btn-primary"
                    ng-show="networkController.hasMultipleSubNetworks()"
                    title="{{networkController.title}}">
                         {{buttonLabel}}
@@ -828,12 +828,12 @@
                     <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()"
                        ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
                        ng-click="setReturnView('network/')">
-                        Edit
+                        Edit Properties
 
                     </a>
                     <a class="actionsLabelDisabled-btn btn btn-primary" ng-show="networkController.hasMultipleSubNetworks()"
                        title="{{networkController.title}}">
-                        Edit
+                        Edit Properties
                     </a>
                 </span>
             </span>
@@ -841,8 +841,8 @@
 
             <span ng-show='networkController.isLoggedInUser'>
 
-                <span>
-                    <div class="btn-group dropup">
+
+                <div class="btn-group dropup">
 
                    <button id="moreNetworkButton" type="button" data-toggle="dropdown"
                            class="actionsLabel btn btn-primary dropdown-toggle">
@@ -852,65 +852,65 @@
 
                     <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="moreNetworkButton" >
 
+                        <li style="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser &&
+                                    (networkController.isNetworkOwner && !networkController.readOnlyChecked) &&
+                                    !networkController.hasMultipleSubNetworks()'>
 
-                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
-                                    (networkController.isNetworkOwner && !networkController.readOnlyChecked)'>
-
-                            <a class="dropdown-btn" ng-show="!networkController.hasMultipleSubNetworks()"
+                            <a style="line-height: 1.2em" class="dropdown-btn"
                                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
                                ng-click="setReturnView('network/')">
                                 Request DOI
-
-                            </a>
-                            <a class="dropdown-btn" ng-show="networkController.hasMultipleSubNetworks()"
-                               title="{{networkController.title}}">
-                                Request DOI
                             </a>
                         </li>
 
-                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser
+
+                        <li style="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser
                             && ((networkController.currentNetwork.visibility == "PUBLIC")
                                 || networkController.isAdmin
                                 || networkController.canEdit
-                                || networkController.canRead)'>
+                                || networkController.canRead) && !networkController.hasMultipleSubNetworks()'>
 
                             <export-network
                                     ndex-data='networkController.currentNetwork'
-                                    my-class="{{networkController.hasMultipleSubNetworks() ?
-                                        'actionsLabel disabled dropdown-btn' : 'actionsLabel dropdown-btn'}}"
-                                    title="{{networkController.hasMultipleSubNetworks() ? networkController.title : ''}}">
+                                    my-class="dropdown-btn"
+                                    title="networkController.title"
+                                    my-style="line-height: 1.2em">
                             </export-network>
-
                         </li>
 
-                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser'>
+                        <li sstyle="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser'>
+
                             <show-network-sets-modal
                                     my-account-controller='networkController'
-                                    my-class="actionsLabel dropdown-btn">
+                                    my-class="dropdown-btn"
+                                    my-style="line-height: 1.2em">
                             </show-network-sets-modal>
+
                         </li>
 
-                        <li style="margin: 3px 0"
+                        <li style="margin: 3px 0; line-height: 1.6em"
                             ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit'>
 
                             <create-request-network
                                 privileges='networkController.privilegeLevel'
                                 ndex-data='networkController.currentNetwork'
                                 my-class="{{networkController.hasMultipleSubNetworks() ?
-                                        'actionsLabel disabled dropdown-btn' : 'actionsLabeldropdown-btn'}}"
+                                        'disabled dropdown-btn' : 'dropdown-btn'}}"
+                                my-style="line-height: 1.2em"
                                 title="{{networkController.hasMultipleSubNetworks() ? networkController.title : 'Request Read, Edit or Admin privilege'}}">
                             </create-request-network>
 
                         </li>
 
-                        <li
+                        <li style="margin: 3px 0; line-height: 1.6em"
                               ng-show='networkController.isLoggedInUser && networkController.isAdmin'
                               title="Request Read, Edit or Admin privilege">
-                                <a class="dropdown-btn"
+                                <a style="line-height: 1.2em" class="dropdown-btn"
                                    ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                                         Share
                                 </a>
                         </li>
+
 
 <!--
                         <li style="margin: 3px 0"
@@ -925,18 +925,22 @@
                         </li>
 -->
 
-                        <li style="margin: 3px 0"
+                        <li style="margin: 3px 0; line-height: 1.6em"
                             ng-if='networkController.isLoggedInUser && networkController.isAdmin &&
                                   !networkController.readOnlyChecked'>
+
                             <delete-network
-                                    ndex-data='networkController.currentNetwork.externalId'>
+                                ndex-data='networkController.currentNetwork.externalId'
+                                my-class="dropdown-btn"
+                                my-style="line-height: 1.2em">
                             </delete-network>
+
                         </li>
 
                     </ul>
 
                 </div>
-                </span>
+
 
             </span>
 
