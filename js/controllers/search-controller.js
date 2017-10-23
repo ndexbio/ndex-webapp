@@ -184,7 +184,7 @@ ndexApp.controller('searchController',
                     });
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        setTimeout($scope.networkGridApi.core.handleWindowResize, 100);
+                        setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
                     });
                 }
             };

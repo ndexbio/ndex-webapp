@@ -183,7 +183,7 @@ ndexApp.controller('myAccountController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        setTimeout($scope.networkGridApi.core.handleWindowResize, 100);
+                        setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
 
                         if (myAccountController.networkTableRowsSelected > 0) {
                             for (var i = 0; i < $scope.networkGridApi.grid.rows.length; i++) {
@@ -289,7 +289,7 @@ ndexApp.controller('myAccountController',
                         // Call core.handleWindowResize in 0.1 sec after gridApi.core.on.rowsRendered has fired to make
                         // sure the table resizes.  It is a known issue with UI Grid that sometimes core.handleWindowResize
                         // doesn't have effect if it is called immediately, thus we delay its' execution.
-                        setTimeout($scope.taskGridApi.core.handleWindowResize, 100);
+                        setTimeout($scope.taskGridApi.core.handleWindowResize, 250);
                         $scope.refreshTasksButtonDisabled = false;
 
                         if (myAccountController.taskTableRowsSelected > 0) {
