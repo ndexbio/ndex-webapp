@@ -1,6 +1,8 @@
 ndexApp.controller('searchController',
-    [ 'ndexService', 'sharedProperties', '$scope', '$rootScope', '$location', '$modal', 'ndexNavigation', 'uiMisc', 'ndexUtility',
-        function (ndexService, sharedProperties, $scope, $rootScope, $location, $modal, ndexNavigation, uiMisc, ndexUtility) {
+    [ 'ndexService', 'sharedProperties', '$scope', '$rootScope', 'ndexSpinner',
+        '$location', '$modal', 'ndexNavigation', 'uiMisc', 'ndexUtility',
+        function (ndexService, sharedProperties, $scope, $rootScope, ndexSpinner,
+                  $location, $modal, ndexNavigation, uiMisc, ndexUtility) {
 
 
             //              Controller Declarations/Initializations
@@ -57,6 +59,7 @@ ndexApp.controller('searchController',
             searchController.loggedInUserId = sharedProperties.getCurrentUserId();
 
             searchController.showNetworkTable = false;
+            var spinnerSearchPageId = "spinnerSearchPageId";
 
 
             $(document).ready(function() {
@@ -65,6 +68,12 @@ ndexApp.controller('searchController',
                 };
             });
 
+
+            // this function gets called when user navigates away from the current page.
+            // (can also use "$locationChangeStart" instead of "$destroy"
+            $scope.$on("$destroy", function(){
+               ndexSpinner.stopSpinner();
+            });
 
             $scope.showNetworkInfo = function(rowEntity) {
 
@@ -184,7 +193,10 @@ ndexApp.controller('searchController',
                     });
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
+                        setTimeout(function () {
+                            $scope.networkGridApi.core.handleWindowResize();
+                            ndexSpinner.stopSpinner();
+                        }, 250);
                     });
                 }
             };
@@ -337,9 +349,11 @@ ndexApp.controller('searchController',
                             searchController.networkSearchNoResults = true;
                             searchController.networkSearchInProgress = false;
                         };
+                        //ndexSpinner.stopSpinner();
                     },
                     function (error)
                     {
+                        //ndexSpinner.stopSpinner();
                         if (error) {
                             searchController.networkSearchResults = [];
                             searchController.errors.push(error.message);
@@ -385,9 +399,11 @@ ndexApp.controller('searchController',
                             searchController.networkSearchNoResults = true;
                             searchController.networkSearchInProgress = false;
                         };
+                        //ndexSpinner.stopSpinner();
                     },
                     function (error)
                     {
+                        //ndexSpinner.stopSpinner();
                         if (error) {
                             searchController.networkSearchResults = [];
                             searchController.errors.push(error.message);
@@ -543,8 +559,10 @@ ndexApp.controller('searchController',
                             searchController.userSearchNoResults = true;
                         }
                         searchController.userSearchInProgress = false;
+                        //ndexSpinner.stopSpinner();
                     },
                     function (error) {
+                        //ndexSpinner.stopSpinner();
                         searchController.errors.push(error.data);
                         searchController.userSearchInProgress = false;
                     });
@@ -667,8 +685,10 @@ ndexApp.controller('searchController',
                             searchController.groupSearchNoResults = true;
                         }
                         searchController.groupSearchInProgress = false;
+                        //ndexSpinner.stopSpinner();
                     },
                     function (error) {
+                        //ndexSpinner.stopSpinner();
                         searchController.errors.push(error.data);
                         searchController.groupSearchInProgress = false;
                         searchController.groupSearchNoResults = true;
@@ -715,6 +735,8 @@ ndexApp.controller('searchController',
             searchController.groupSearchNoResults = true;
             searchController.userSearchNoResults = true;
             searchController.networkSearchNoResults = true;
+
+            ndexSpinner.startSpinner(spinnerSearchPageId);
 
              if (searchController.searchType === 'All'){
                  if (searchController.searchTermExpansionSelected) {
