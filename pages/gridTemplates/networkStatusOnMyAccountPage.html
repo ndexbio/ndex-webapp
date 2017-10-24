@@ -25,7 +25,7 @@
     <span ng-if="row.entity.Status == 'collection'">
         <a ng-href="{{$location.path()}}"
            ng-click="grid.appScope.showWarningsOrErrors(row.entity)"
-           title="This network is part of a Cytoscape collection with {{row.entity.subnetworks}} subnetworks and cannot be edited in NDEx.">
+           title="This network is part of a Cytoscape collection and cannot be edited in NDEx.">
             <img src="img/cytoscape.png" width="20px" height="20px" align="center">
         </a>
     </span>

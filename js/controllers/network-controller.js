@@ -117,8 +117,7 @@ ndexApp.controller('networkController',
                 var retValue = false;
                 if (networkController.noOfSubNetworks > 1) {
                     networkController.title =
-                        "This network is part of a Cytoscape collection with " +
-                        networkController.noOfSubNetworks + " subnetworks and cannot be edited in NDEx.";
+                        "This network is part of a Cytoscape collection and cannot be edited in NDEx.";
                     retValue = true;
                 };
                 return retValue;
