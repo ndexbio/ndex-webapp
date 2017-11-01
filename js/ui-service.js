@@ -2809,6 +2809,8 @@
 
                             if ((updatedNetworksCounter == numberOfNetworksToChange) || !$scope.isProcessing) {
 
+                                myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
+
                                 setTimeout(function() {
                                     modalInstance.dismiss();
                                 }, 1000);

@@ -72,7 +72,7 @@
                     <div class="form-group">
                         <input class="form-control" type="search" ng-model="networkController.searchString"
                                placeholder="Network Terms" style="width:300px"
-                               title="{{networkController.title}}"
+                               title="{{editPropertiesButtonTitle}}"
                                ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
                                ng-disabled="true">
 
@@ -104,7 +104,7 @@
 
                     <a class="actionsLabelDisabled-btn btn btn-primary"
                        ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
-                       title="{{networkController.title}}">
+                       title="{{editPropertiesButtonTitle}}">
                         Run Query
                     </a>
 
@@ -123,7 +123,7 @@
                 <span class="pull-left" style="margin-top:0.5em"
                       ng-show="!hideAdvancedSearchLink"
                       ng-if="networkController.hasMultipleSubNetworks() || disableQuery"
-                      title="{{networkController.title}}">
+                      title="{{editPropertiesButtonTitle}}">
                     <span  style="color:#999999; cursor:not-allowed">
                         <u>Advanced Query</u>
                     </span>
@@ -213,7 +213,7 @@
                                        ng-model="networkController.readOnlyChecked"
                                        title=
                                        "{{networkController.hasMultipleSubNetworks() ?
-                                       networkController.title :
+                                       editPropertiesButtonTitle :
                                        'Only network owners can set/unset Read Only flag'}}"> Read Only
                             </span>
 
@@ -222,13 +222,13 @@
                             <span ng-if="!networkController.currentNetwork.doi || networkController.currentNetwork.doi == 'Pending'">
                                 <span ng-if="networkController.isNetworkOwner && (networkController.currentNetwork.visibility.toUpperCase() == 'PRIVATE')">
                                     <strong>Share URL: </strong>
-                                    <span ng-style="networkController.networkShareURL ? {color:'green'} : {color:'black'}">
+                                    <span ng-style="networkController.networkShareURL ? {color:'#18AD31'} : {color:'black'}">
                                         {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
                                     </span>
                                     <button type="button" ng-hide="!networkController.networkShareURL"
                                             ngclipboard data-clipboard-text="{{networkController.networkShareURL}}"
                                             ng-click="networkController.showURLInClipboardMessage()"
-                                            class="btn btn-success btn-xs">Copy URL
+                                            class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
                                     </button>
                                 </span>
 
@@ -236,7 +236,7 @@
                                     <button type="button" ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
                                             ngclipboard data-clipboard-text="{{networkController.networkURL}}"
                                             ng-click="networkController.showURLInClipboardMessage()"
-                                            class="btn btn-primary btn-xs">Copy URL
+                                            class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
                                     </button>
                                 </span>
                             </span>
@@ -288,7 +288,7 @@
 
                             <span ng-show="networkController.hasMultipleSubNetworks()" style="color:red">
                                 <span class="networkPropertyName">Warning: </span>
-                                This network is part of a Cytoscape collection and cannot be edited in NDEx.<br/>
+                                This network is part of a Cytoscape collection and cannot be edited in NDEx<br/>
                             </span>
 
                             <div class='wrapLongLine rowWithOneLineTopPad'
@@ -335,7 +335,8 @@
 
                                         <span class='' ng-repeat='property in networkController.otherProperties'>
                                             <span>
-                                               <span class="networkPropertiesNameFont">{{property.predicateString}}:
+                                               <span class="networkPropertiesNameFont"
+                                                     ng-bind-html="property.predicateString">
                                                </span>
                                                 <!--
                                                <span class="networkPropertiesValueFont"
@@ -810,7 +811,7 @@
 
                 <a class="actionsLabelDisabled-btn btn btn-primary"
                    ng-show="networkController.hasMultipleSubNetworks()"
-                   title="{{networkController.title}}">
+                   title="{{editPropertiesButtonTitle}}">
                         {{buttonLabel}}
                 </a>
             </span>
@@ -821,17 +822,20 @@
                 </a>
             </span>
 
-            <span ng-show='networkController.isLoggedInUser &&
-                        ((networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked)'>
+            <span ng-show='networkController.isLoggedInUser'>
                 <span>
-                    <a class="actionsLabel btn btn-primary" ng-show="!networkController.hasMultipleSubNetworks()"
+                    <a class="actionsLabel btn btn-primary"
+                       ng-show="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
+                                && !networkController.hasMultipleSubNetworks()"
                        ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
                        ng-click="setReturnView('network/')">
                         Edit Properties
 
                     </a>
-                    <a class="actionsLabelDisabled-btn btn btn-primary" ng-show="networkController.hasMultipleSubNetworks()"
-                       title="{{networkController.title}}">
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-show="!(networkController.isAdmin || networkController.canEdit) ||
+                                networkController.hasMultipleSubNetworks() || networkController.readOnlyChecked"
+                       title="{{editPropertiesButtonTitle}}">
                         Edit Properties
                     </a>
                 </span>
@@ -851,9 +855,19 @@
 
                     <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="moreNetworkButton" >
 
+
+                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled" ng-show='networkController.isLoggedInUser &&
+                                    (!networkController.isNetworkOwner || networkController.readOnlyChecked ||
+                                    networkController.hasMultipleSubNetworks())'
+                                title="{{requestDOITitle}}">
+
+                            <a style="line-height: 1.2em">
+                                Request DOI
+                            </a>
+                        </li>
                         <li style="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser &&
-                                    (networkController.isNetworkOwner && !networkController.readOnlyChecked) &&
-                                    !networkController.hasMultipleSubNetworks()'>
+                                    (networkController.isNetworkOwner && !networkController.readOnlyChecked &&
+                                    !networkController.hasMultipleSubNetworks())'>
 
                             <a style="line-height: 1.2em" class="dropdown-btn"
                                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
@@ -863,21 +877,26 @@
                         </li>
 
 
-                        <li style="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser
-                            && ((networkController.currentNetwork.visibility == "PUBLIC")
-                                || networkController.isAdmin
-                                || networkController.canEdit
-                                || networkController.canRead) && !networkController.hasMultipleSubNetworks()'>
+                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                                ng-show='networkController.isLoggedInUser && networkController.hasMultipleSubNetworks()'
+                            title="{{exportTitle}}">
+                            <a style="line-height: 1.2em">
+                                Export
+                            </a>
+                        </li>
+                        <li style="margin: 3px 0; line-height: 1.6em"
+                                ng-show='networkController.isLoggedInUser && !networkController.hasMultipleSubNetworks()'>
 
                             <export-network
                                     ndex-data='networkController.currentNetwork'
                                     my-class="dropdown-btn"
-                                    title="networkController.title"
+                                    title="editPropertiesButtonTitle"
                                     my-style="line-height: 1.2em">
                             </export-network>
                         </li>
 
-                        <li sstyle="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser'>
+                        <li style="margin: 3px 0; line-height: 1.6em"
+                                ng-show='networkController.isLoggedInUser'>
 
                             <show-network-sets-modal
                                     my-account-controller='networkController'
@@ -887,23 +906,38 @@
 
                         </li>
 
+                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                            ng-show='networkController.isLoggedInUser &&
+                                (networkController.isAdmin || networkController.canEdit || networkController.hasMultipleSubNetworks())'
+                            title="{{upgradePermissionTitle}}">
+                            <a style="line-height: 1.2em">
+                                Upgrade Permission
+                            </a>
+                        </li>
                         <li style="margin: 3px 0; line-height: 1.6em"
-                            ng-show='networkController.isLoggedInUser && !networkController.isAdmin && !networkController.canEdit'>
+                            ng-show='networkController.isLoggedInUser && !networkController.isAdmin
+                                && !networkController.canEdit && !networkController.hasMultipleSubNetworks()'>
 
                             <create-request-network
                                 privileges='networkController.privilegeLevel'
                                 ndex-data='networkController.currentNetwork'
-                                my-class="{{networkController.hasMultipleSubNetworks() ?
-                                        'disabled dropdown-btn' : 'dropdown-btn'}}"
+                                my-class="dropdown-btn"
                                 my-style="line-height: 1.2em"
-                                title="{{networkController.hasMultipleSubNetworks() ? networkController.title : 'Request Read, Edit or Admin privilege'}}">
+                                title="editPropertiesButtonTitle">
                             </create-request-network>
 
                         </li>
 
+                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                                ng-show='networkController.isLoggedInUser && !networkController.isAdmin'
+                                title="{{shareTitle}}">
+                            <a style="line-height: 1.2em">
+                                Share
+                            </a>
+                        </li>
                         <li style="margin: 3px 0; line-height: 1.6em"
                               ng-show='networkController.isLoggedInUser && networkController.isAdmin'
-                              title="Request Read, Edit or Admin privilege">
+>
                                 <a style="line-height: 1.2em" class="dropdown-btn"
                                    ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                                         Share
@@ -924,8 +958,16 @@
                         </li>
 -->
 
+                         <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                             ng-show='networkController.isLoggedInUser && !(networkController.isAdmin &&
+                                  !networkController.readOnlyChecked)'
+                                  title="{{deleteTitle}}">
+                            <a style="line-height: 1.2em">
+                                Delete
+                            </a>
+                        </li>
                         <li style="margin: 3px 0; line-height: 1.6em"
-                            ng-if='networkController.isLoggedInUser && networkController.isAdmin &&
+                            ng-show='networkController.isLoggedInUser && networkController.isAdmin &&
                                   !networkController.readOnlyChecked'>
 
                             <delete-network

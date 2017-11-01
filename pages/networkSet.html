@@ -47,14 +47,14 @@
 
             <div class="wrapLongLine" ng-if="networkSetController.isSetOwner &&  networkSetController.networkSetShareableURLLabel">
                 <strong>Share URL: </strong>
-                <span ng-style="networkSetController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
+                <span ng-style="networkSetController.networkSetShareableURL ? {color:'#18AD31'} : {color:'black'}">
                     &nbsp;{{networkSetController.networkSetShareableURL ? 'Enabled' :  'Disabled'}}
                 </span>
                 &nbsp;&nbsp;
                 <button type="button" ng-hide="!networkSetController.networkSetShareableURL"
                         ngclipboard data-clipboard-text="{{networkSetController.networkSetShareableURL}}"
                         ng-click="networkSetController.showURLInClipboardMessage()"
-                        class="btn btn-success btn-xs">Copy URL
+                        class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
                 </button>
             </div>
 

@@ -191,11 +191,12 @@ ndexApp.controller('searchController',
                         var selectedRows = gridApi.selection.getSelectedRows();
                         searchController.networkTableRowsSelected = selectedRows.length;
                     });
+
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
                         setTimeout(function () {
                             $scope.networkGridApi.core.handleWindowResize();
-                            ndexSpinner.stopSpinner();
+                            //ndexSpinner.stopSpinner();
                         }, 250);
                     });
                 }
@@ -349,12 +350,13 @@ ndexApp.controller('searchController',
                             searchController.networkSearchNoResults = true;
                             searchController.networkSearchInProgress = false;
                         };
-                        //ndexSpinner.stopSpinner();
+                        ndexSpinner.stopSpinner();
                     },
                     function (error)
                     {
-                        //ndexSpinner.stopSpinner();
+                        ndexSpinner.stopSpinner();
                         if (error) {
+
                             searchController.networkSearchResults = [];
                             searchController.errors.push(error.message);
                             searchController.networkSearchInProgress = false;
@@ -399,11 +401,11 @@ ndexApp.controller('searchController',
                             searchController.networkSearchNoResults = true;
                             searchController.networkSearchInProgress = false;
                         };
-                        //ndexSpinner.stopSpinner();
+                        ndexSpinner.stopSpinner();
                     },
                     function (error)
                     {
-                        //ndexSpinner.stopSpinner();
+                        ndexSpinner.stopSpinner();
                         if (error) {
                             searchController.networkSearchResults = [];
                             searchController.errors.push(error.message);
@@ -557,12 +559,17 @@ ndexApp.controller('searchController',
                             populateUserTable();
                         } else {
                             searchController.userSearchNoResults = true;
-                        }
+                        };
                         searchController.userSearchInProgress = false;
-                        //ndexSpinner.stopSpinner();
+                        if (searchController.searchType.toLowerCase() != "all") {
+                            ndexSpinner.stopSpinner();
+                        };
+
                     },
                     function (error) {
-                        //ndexSpinner.stopSpinner();
+                        if (searchController.searchType.toLowerCase() != "all") {
+                            ndexSpinner.stopSpinner();
+                        };
                         searchController.errors.push(error.data);
                         searchController.userSearchInProgress = false;
                     });
@@ -685,10 +692,14 @@ ndexApp.controller('searchController',
                             searchController.groupSearchNoResults = true;
                         }
                         searchController.groupSearchInProgress = false;
-                        //ndexSpinner.stopSpinner();
+                        if (searchController.searchType.toLowerCase() != "all") {
+                            ndexSpinner.stopSpinner();
+                        };
                     },
                     function (error) {
-                        //ndexSpinner.stopSpinner();
+                        if (searchController.searchType.toLowerCase() != "all") {
+                            ndexSpinner.stopSpinner();
+                        };
                         searchController.errors.push(error.data);
                         searchController.groupSearchInProgress = false;
                         searchController.groupSearchNoResults = true;

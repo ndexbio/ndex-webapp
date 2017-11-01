@@ -90,6 +90,16 @@ ndexApp.controller('networkController',
 
             networkController.otherProperties = [];
 
+
+            $scope.editPropertiesTitle       = "";
+            $scope.requestDOITitle           = "";
+            $scope.exportTitle               = "";
+            $scope.upgradePermissionTitle    = "";
+            $scope.shareTitle                = "";
+            $scope.deleteTitle               = "";
+
+
+
             $scope.disableQuery = false;
             $scope.warningQuery = false;
             $scope.egeCountForDisablingQuery = 500000;
@@ -116,8 +126,8 @@ ndexApp.controller('networkController',
             networkController.hasMultipleSubNetworks = function() {
                 var retValue = false;
                 if (networkController.noOfSubNetworks > 1) {
-                    networkController.title =
-                        "This network is part of a Cytoscape collection and cannot be edited in NDEx.";
+                    $scope.editPropertiesButtonTitle =
+                        "This network is part of a Cytoscape collection and cannot be edited in NDEx";
                     retValue = true;
                 };
                 return retValue;
@@ -2325,7 +2335,7 @@ ndexApp.controller('networkController',
                             networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
 
                             if ($scope.disableQuery && networkController.noOfSubNetworks < 2) {
-                                networkController.title = $scope.disabledQueryTooltip;
+                                $scope.editPropertiesButtonTitle = $scope.disabledQueryTooltip;
                             };
 
                             if (networkController.subNetworkId != null) {
@@ -2379,6 +2389,14 @@ ndexApp.controller('networkController',
                                 networkController.getStatusOfShareableURL();
                             };
 
+                            if (networkController.hasMultipleSubNetworks()) {
+                                setTitlesForCytoscapeCollection();
+                            } else {
+                                setDOITitle();
+                                setShareTitle();
+                            };
+                            setEditPropertiesTitle();
+                            setDeleteTitle();
                         }
                     )
                     .error(
@@ -2386,8 +2404,74 @@ ndexApp.controller('networkController',
                             displayErrorMessage(error);
                         }
                     );
-
             };
+
+            var setTitlesForCytoscapeCollection = function() {
+                $scope.requestDOITitle = "This network is a Cytoscape collection. Cannot request DOI";
+                $scope.exportTitle     = "This network is a Cytoscape collection and cannot be exported";
+                $scope.upgradePermissionTitle =
+                    "This network is a Cytoscape collection and cannot be edited in NDEx";
+                $scope.editPropertiesButtonTitle = "This network is a Cytoscape collection and cannot be edited in NDEx";
+
+                if (!networkController.isNetworkOwner) {
+                    $scope.shareTitle  = "Unable to share this network: you do not own it";
+                    $scope.deleteTitle = "Unable to delete this network: you do not own it";
+                };
+            };
+
+            var setDOITitle = function() {
+                // we set DOI title only if Request DOI option of More menu is disabled:
+                //      !networkController.isNetworkOwner || networkController.readOnlyChecked ||
+                //          networkController.hasMultipleSubNetworks())'
+                if (!networkController.isNetworkOwner) {
+                    $scope.requestDOITitle = "Unable to request DOI for this network: you do not own it ";
+                } else if (networkController.readOnlyChecked) {
+                    $scope.requestDOITitle = "Unable to request DOI for this network: it is read-only ";
+                };
+            };
+
+            var setUpgradePermissionTitle = function() {
+                // we set Upgrade Permission title only if Upgrade Permission option of More menu is disabled:
+                // networkController.isAdmin || networkController.canEdit || networkController.hasMultipleSubNetworks()
+                if (networkController.hasMultipleSubNetworks()) {
+                    $scope.upgradePermissionTitle =
+                        "This network is a Cytoscape collection and cannot be edited in NDEx";
+                } else if (networkController.isNetworkOwner) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: you already own it ";
+                } else if (networkController.privilegeLevel.toLowerCase() == 'edit' ) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: you already have Edit privilege ";
+                };
+            };
+
+            var setShareTitle = function() {
+                // we set Share title only if Share option of More menu is disabled:
+                // !networkController.isAdmin
+                if (!networkController.isNetworkOwner) {
+                    $scope.shareTitle = "Unable to Share this network: you do not own it ";
+                };
+            };
+
+            var setDeleteTitle = function() {
+                // we set Share title only if Share option of More menu is disabled:
+                // !(networkController.isAdmin && !networkController.readOnlyChecked)
+                if (!networkController.isNetworkOwner) {
+                    $scope.deleteTitle = "Unable to Delete this network: you do not own it ";
+                } else if (networkController.readOnlyChecked) {
+                    $scope.deleteTitle = "Unable to Delete this network: it is read-only ";
+                };
+            };
+
+            var setEditPropertiesTitle = function() {
+                // !networkController.isAdmin || networkController.hasMultipleSubNetworks()
+                if (networkController.hasMultipleSubNetworks()) {
+                    $scope.editPropertiesButtonTitle = "This network is a Cytoscape collection and cannot be edited in NDEx";
+                } else if (!networkController.isNetworkOwner) {
+                    $scope.editPropertiesButtonTitle = "Unable to edit this network: you do not have privilege to modify it ";
+                } else if (networkController.readOnlyChecked) {
+                    $scope.editPropertiesButtonTitle = "Unable to edit this network: it is read-only ";
+                };
+            };
+
 
             var getNumberOfBelNetworkNamespaces = function()
             {
@@ -2433,15 +2517,17 @@ ndexApp.controller('networkController',
                                 if (myMembership == 'ADMIN') {
                                     networkController.isAdmin = true;
                                     networkController.privilegeLevel = "Admin";
-                                }
+                                };
                                 if (myMembership == 'WRITE') {
                                     networkController.canEdit = true;
                                     networkController.privilegeLevel = "Edit";
-                                }
+                                };
                                 if (myMembership == 'READ') {
                                     networkController.canRead = true;
                                     networkController.privilegeLevel = "Read";
-                                }
+                                };
+                                setEditPropertiesTitle();
+                                setUpgradePermissionTitle();
                             }
                             callback();
                         },
@@ -2456,7 +2542,9 @@ ndexApp.controller('networkController',
                 ndexService.setNetworkSystemPropertiesV2(networkController.currentNetworkId,
                     "readOnly", networkController.readOnlyChecked,
                     function(data, networkId, property, value) {
-                        // success, do nothing
+                        setDOITitle();
+                        setDeleteTitle();
+                        setEditPropertiesTitle();
                     },
                     function(error, networkId, property, value) {
                         console.log("unable to make network Read-Only");

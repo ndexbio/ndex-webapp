@@ -882,6 +882,16 @@ ul.ndex-nav-pills > li > a:hover {
     color: #1c8c2e !important;
 }
 
+.copy-url-button {
+    background-color: #18AD31 !important;
+    border-color:  #18AD31;
+
+}
+.copy-url-button:hover, .copy-url-button:focus, .copy-url-button:active {
+    background-color: #1c8c2e !important;
+    border-color: #1c8c2e;
+}
+
 
 .dropdown-btn {
     background-color: white  !important;
