@@ -49,21 +49,21 @@
 
                         <div class="btn-group dropdown">
 
-                            <!--
-                           <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
-                                   class="btn btn-primary dropdown-toggle customButtonWidth"
-                                   ng-class="enableEditAndExportBulkButtons ? 'btn btn-primary customButtonWidth' :
-                                        'btn btn-primary customButtonWidth disabled'">
-                               {{myAccountController.editProfilesLabel}}
-                               <span class="caret"></span>
-                           </button>
-                           -->
+
 
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
+                                   ng-show="!isEditProfileDropDownButtonDisabled()"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
                                {{myAccountController.editProfilesLabel}}
                                <span class="caret"></span>
                            </button>
+
+                            <span title="{{editProfileDropDownBulkButtonTitle}}" ng-show="isEditProfileDropDownButtonDisabled()">
+                                <a class="btn btn-primary customButtonWidth disabled">
+                                    {{myAccountController.editProfilesLabel}}
+                                    <span class="caret"></span>
+                                </a>
+                            </span>
 
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
 

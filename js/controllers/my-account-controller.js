@@ -87,6 +87,7 @@ ndexApp.controller('myAccountController',
             $scope.$parent.showSearchMenu = true;
 
 
+            $scope.editProfileDropDownBulkButtonTitle = "";
             $scope.enableEditPropertiesBulkButton = false;
             $scope.changeDescriptionButtonTitle   = "";
             $scope.changeReferenceButtonTitle     = "";
@@ -3379,6 +3380,21 @@ ndexApp.controller('myAccountController',
                         function (error) {
                             ;
                         });
+            };
+
+            $scope.isEditProfileDropDownButtonDisabled = function() {
+                var isDisabled = (!$scope.enableEditPropertiesBulkButton
+                    && !$scope.enableChangeVisibilityBulkButton && !$scope.enableSetReadOnlyBulkButton);
+
+                if (isDisabled) {
+                    $scope.editProfileDropDownBulkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        "No editing options are available for the selected networks" :
+                        "No editing options are available for the selected network";
+                } else {
+                    $scope.editProfileDropDownBulkButtonTitle = "";
+                };
+
+                return isDisabled;
             };
 
 
