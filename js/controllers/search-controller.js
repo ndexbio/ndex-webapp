@@ -715,7 +715,7 @@ ndexApp.controller('searchController',
 
                 if (rowEntity.subnetworks && (rowEntity.subnetworks > 1)) {
                     var title = "Warning";
-                    var message = "This network is part of a Cytoscape collection and cannot be edited in NDEx.";
+                    var message = "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx.";
                     ndexNavigation.genericInfoModal(title, message);
                 } else {
                     uiMisc.showNetworkWarningsOrErrors(rowEntity, searchController.networkSearchResults);

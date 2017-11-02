@@ -288,7 +288,7 @@
 
                             <span ng-show="networkController.hasMultipleSubNetworks()" style="color:red">
                                 <span class="networkPropertyName">Warning: </span>
-                                This network is part of a Cytoscape collection and cannot be edited in NDEx<br/>
+                                This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx<br/>
                             </span>
 
                             <div class='wrapLongLine rowWithOneLineTopPad'
@@ -352,27 +352,6 @@
                                             </span>
                                         </span>
                                 </div>
-
-                                <!--
-                                <h5 ng-show='!networkController.readOnlyChecked && (networkController.isAdmin || networkController.canEdit)'>
-
-                                    <span ng-if="!networkController.hasMultipleSubNetworks()">
-                                        <a class='btn-link'
-                                           ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
-                                           ng-click="setReturnView('network/')">
-                                            Add / Edit Properties
-                                        </a>
-                                    </span>
-
-                                    <span ng-if="networkController.hasMultipleSubNetworks()">
-                                        <span  style="color:#999999; cursor:not-allowed"
-                                               title="This network is part of a Cytoscape collection with  {{networkController.noOfSubNetworks}} subnetworks and cannot be edited in NDEx.">
-                                            Add / Edit Properties
-                                        </span>
-                                    </span>
-                                </h5>
-                                -->
-
                             </div>
                         </div>
                     </div>
@@ -856,20 +835,19 @@
                     <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="moreNetworkButton" >
 
 
-                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled" ng-show='networkController.isLoggedInUser &&
+                        <li style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
                                     (!networkController.isNetworkOwner || networkController.readOnlyChecked ||
                                     networkController.hasMultipleSubNetworks())'
                                 title="{{requestDOITitle}}">
-
-                            <a style="line-height: 1.2em">
+                            <a>
                                 Request DOI
                             </a>
                         </li>
-                        <li style="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser &&
+                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
                                     (networkController.isNetworkOwner && !networkController.readOnlyChecked &&
                                     !networkController.hasMultipleSubNetworks())'>
 
-                            <a style="line-height: 1.2em" class="dropdown-btn"
+                            <a class="dropdown-btn"
                                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
                                ng-click="setReturnView('network/')">
                                 Request DOI
@@ -877,14 +855,12 @@
                         </li>
 
 
-                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                        <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
                                 ng-show='networkController.isLoggedInUser && networkController.hasMultipleSubNetworks()'
                             title="{{exportTitle}}">
-                            <a style="line-height: 1.2em">
-                                Export
-                            </a>
+                            <a>Export</a>
                         </li>
-                        <li style="margin: 3px 0; line-height: 1.6em"
+                        <li style="margin: 3px 0; line-height: 1.2em"
                                 ng-show='networkController.isLoggedInUser && !networkController.hasMultipleSubNetworks()'>
 
                             <export-network
@@ -894,7 +870,7 @@
                             </export-network>
                         </li>
 
-                        <li style="margin: 3px 0; line-height: 1.6em" ng-show='networkController.isLoggedInUser'>
+                        <li style="margin: 3px 0; line-height: 1.2em" ng-show='networkController.isLoggedInUser'>
                             <show-network-sets-modal
                                     my-account-controller='networkController'
                                     my-class="dropdown-btn"
@@ -903,15 +879,13 @@
 
                         </li>
 
-                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                        <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
                             ng-show='networkController.isLoggedInUser &&
                                 (networkController.isAdmin || networkController.canEdit || networkController.hasMultipleSubNetworks())'
                             title="{{upgradePermissionTitle}}">
-                            <a style="line-height: 1.2em">
-                                Upgrade Permission
-                            </a>
+                            <a>Upgrade Permission</a>
                         </li>
-                        <li style="margin: 3px 0; line-height: 1.6em"
+                        <li style="margin: 3px 0; line-height: 1.2em"
                             ng-show='networkController.isLoggedInUser && !networkController.isAdmin
                                 && !networkController.canEdit && !networkController.hasMultipleSubNetworks()'>
 
@@ -925,22 +899,19 @@
 
                         </li>
 
-                        <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                        <li style="margin: 3px 0;" class="disabled"
                                 ng-show='networkController.isLoggedInUser && !networkController.isAdmin'
                                 title="{{shareTitle}}">
-                            <a style="line-height: 1.2em">
-                                Share
-                            </a>
+                            <a>Share</a>
                         </li>
-                        <li style="margin: 3px 0; line-height: 1.6em"
+                        <li style="margin: 3px 0;"
                               ng-show='networkController.isLoggedInUser && networkController.isAdmin'
 >
-                                <a style="line-height: 1.2em" class="dropdown-btn"
+                                <a  class="dropdown-btn"
                                    ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                                         Share
                                 </a>
                         </li>
-
 
 <!--
                         <li style="margin: 3px 0"
@@ -955,15 +926,13 @@
                         </li>
 -->
 
-                         <li style="margin: 3px 0; line-height: 1.6em" class="disabled"
+                         <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
                              ng-show='networkController.isLoggedInUser && !(networkController.isAdmin &&
                                   !networkController.readOnlyChecked)'
                                   title="{{deleteTitle}}">
-                            <a style="line-height: 1.2em">
-                                Delete
-                            </a>
+                            <a>Delete</a>
                         </li>
-                        <li style="margin: 3px 0; line-height: 1.6em"
+                        <li style="margin: 3px 0; line-height: 1.2em"
                             ng-show='networkController.isLoggedInUser && networkController.isAdmin &&
                                   !networkController.readOnlyChecked'>
 

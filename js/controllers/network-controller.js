@@ -127,7 +127,7 @@ ndexApp.controller('networkController',
                 var retValue = false;
                 if (networkController.noOfSubNetworks > 1) {
                     $scope.editPropertiesButtonTitle =
-                        "This network is part of a Cytoscape collection and cannot be edited in NDEx";
+                        "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx";
                     retValue = true;
                 };
                 return retValue;
