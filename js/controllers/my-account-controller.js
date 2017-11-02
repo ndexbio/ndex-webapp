@@ -106,6 +106,9 @@ ndexApp.controller('myAccountController',
             $scope.enableExportBulkButton   = false;
             $scope.exportNetworkButtonTitle = "";
 
+            $scope.enableAddToMySetsBulkButton = false;
+            $scope.addToMySetsButtonTitle      = "";
+
             $scope.enableDeleteBulkButton   = false;
             $scope.deleteNetworkButtonTitle = "";
 
@@ -227,6 +230,7 @@ ndexApp.controller('myAccountController',
 
                         enableOrDisableExportBulkButton();
                         enableOrDisableShareBulkButton();
+                        enableOrDisableAddToMySetsBulkButton();
                         enableOrDisableDeleteBulkButton();
                     });
 
@@ -265,6 +269,7 @@ ndexApp.controller('myAccountController',
 
                         enableOrDisableExportBulkButton();
                         enableOrDisableShareBulkButton();
+                        enableOrDisableAddToMySetsBulkButton();
                         enableOrDisableDeleteBulkButton();
                     });
 
@@ -300,6 +305,7 @@ ndexApp.controller('myAccountController',
 
                         enableOrDisableExportBulkButton();
                         enableOrDisableShareBulkButton();
+                        enableOrDisableAddToMySetsBulkButton();
                         enableOrDisableDeleteBulkButton();
                     });
                 }
@@ -1287,6 +1293,53 @@ ndexApp.controller('myAccountController',
                             $scope.exportNetworkButtonTitle += ": it is processing ";
                         } else if (unexportableNetworkStates['collection'] > 0) {
                             $scope.exportNetworkButtonTitle += ": it is a Cytoscape collection ";
+                        };
+                    };
+                };
+
+                return;
+            };
+
+            var enableOrDisableAddToMySetsBulkButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableAddToMySetsBulkButton = true;
+
+                var invalidNetworkStates = {"failed" : 0};
+                var statesForWhichToDisable = Object.keys(invalidNetworkStates);
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    var status = row.Status;
+
+                    var disableAddToMySetsBulkButton =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
+
+                    if (disableAddToMySetsBulkButton) {
+                        $scope.enableAddToMySetsBulkButton = false;
+                        invalidNetworkStates[status.toLowerCase()] += 1;
+                    };
+                });
+
+                if ($scope.enableAddToMySetsBulkButton) {
+                    $scope.addToMySetsButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        "Add selected networks to my set(s)" : "Add selected network to my set(s)"
+                } else {
+                    $scope.addToMySetsButtonTitle = "Unable to add selected ";
+
+                    if (myAccountController.networkTableRowsSelected > 1) {
+                        $scope.addToMySetsButtonTitle += "networks to my sets: ";
+
+                        if (invalidNetworkStates['failed'] > 1) {
+                            $scope.addToMySetsButtonTitle += invalidNetworkStates['failed'] + " networks failed";
+                        } else if (invalidNetworkStates['failed'] == 1) {
+                            $scope.addToMySetsButtonTitle += invalidNetworkStates['failed'] + " network failed";
+                        };
+
+                    } else {
+                        $scope.addToMySetsButtonTitle += "network to my sets";
+
+                        if (invalidNetworkStates['failed'] > 0) {
+                            $scope.addToMySetsButtonTitle += ": it is failed ";
                         };
                     };
                 };

@@ -49,8 +49,6 @@
 
                         <div class="btn-group dropdown">
 
-
-
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
                                    ng-show="!isEditProfileDropDownButtonDisabled()"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
@@ -169,11 +167,21 @@
                         </span>
 
 
-                        <show-network-sets-modal
-                                controller-name='myAccountController'
-                                my-account-controller='myAccountController'
-                                my-class="btn btn-primary customButtonWidth">
-                        </show-network-sets-modal>
+
+
+
+                        <span title="{{addToMySetsButtonTitle}}" ng-show="!enableAddToMySetsBulkButton">
+                            <a class="btn btn-primary customButtonWidth disabled">
+                                Add To My Sets
+                            </a>
+                        </span>
+                        <spn ng-show="enableAddToMySetsBulkButton">
+                            <show-network-sets-modal
+                                    controller-name='myAccountController'
+                                    my-account-controller='myAccountController'
+                                    my-class="btn btn-primary customButtonWidth">
+                            </show-network-sets-modal>
+                        </spn>
 
 
                         <!-- NB: title directive should be in the span element below; if it is moved to a element,
