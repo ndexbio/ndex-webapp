@@ -1462,10 +1462,15 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.requestDoi = function (networkId, properties, successHandler, errorHandler) {
+                var isCert = false;
+                if(properties.hasOwnProperty("isCertified")){
+                    isCert = properties["isCertified"];
+                }
                 requestData = {
                     "type": "DOI",
                     "networkId": networkId,
-                    "properties": properties
+                    "properties": properties,
+                    "isCertified": isCert
                 }
 
                 var url = "/admin/request";
