@@ -404,6 +404,7 @@ angular.module('ndexServiceApp')
             var subNetworkId = self.getSubNetworkId(network);
             var referenceObj = self.getNetworkReferenceObj(subNetworkId, network);
 
+            /*
             if (referenceObj && (referenceObj.referenceText.length > 0)) {
                 if ((referenceObj.url && referenceObj.url.length > 0) && (referenceObj.urlCount == 1)) {
                     network['reference'] =
@@ -411,6 +412,19 @@ angular.module('ndexServiceApp')
                 }
                 else if (referenceObj.urlCount != 1) {
                     network['reference'] =  referenceObj.referenceHTML;
+                };
+            };
+            */
+            if (referenceObj) {
+                if (referenceObj.referenceHTML) {
+                    network['reference'] =  referenceObj.referenceHTML;
+
+                } else if (referenceObj.referenceText) {
+                    network['reference'] =  referenceObj.referenceText;
+
+                } else if (referenceObj.url) {
+                    network['reference'] =  referenceObj.url;
+
                 };
             };
 
