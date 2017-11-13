@@ -760,10 +760,10 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
             ndexService.setNetworkSystemPropertiesV2(networkId, "index", $scope.mainProperty.indexed,
                 function (data, networkId, property, value) {
-                    console.log("index set to " + $scope.mainProperty.indexed);
+                    ; //console.log("index set to " + $scope.mainProperty.indexed);
                 },
                 function (error, networkId, property, value) {
-                    console.log("unable to change indexed for Network with Id " + networkId);
+                    ; //console.log("unable to change indexed for Network with Id " + networkId);
                 });
 
 

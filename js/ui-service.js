@@ -316,7 +316,7 @@
                     $scope.networkSet = {};
                     $scope.networkSet['properties'] = {};
                     $scope.networkSet['properties']['reference'] = "";
-                    $scope.title = 'Select Existing Network Sets Or Create A New Set';
+                    $scope.title = 'Create New Network Set';
 
                     modalInstance = $modal.open({
                         templateUrl: 'pages/directives/createNetworkSetModal.html',
@@ -1793,6 +1793,182 @@
         }
     });
 
+    // modal to show reference for certification
+    uiServiceApp.directive('referenceForCertification', function() {
+        return {
+
+            scope: {
+                networkController: '=',
+                myClass: '@'
+            },
+
+            restrict: 'AE',
+            template: '<button class="{{myClass}}" ng-click="openMe()">Add Reference</button>',
+
+            controller: function($scope, $modal, $location, ndexService, $route) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'pages/directives/editReferenceForCertificationModal.html',
+                        scope: $scope,
+
+                        controller: function ($scope, $modalInstance, $location, ndexService, $rootScope, uiMisc) {
+
+                            $scope.reference = {};
+
+                            $scope.cancel = function () {
+                                modalInstance.close();
+                                modalInstance = null;
+                            };
+
+                            $scope.submit = function () {
+
+                                var reference =
+                                    $scope.reference.authors + '<br>' +
+                                        '<strong>' + $scope.reference.title + '</strong>' + '<br>' +
+                                        '<i>' + $scope.reference.issue + '</i>' + ', ' +  $scope.reference.year + '<br>' +
+                                        '<a href="http://doi.org/'+ $scope.reference['doi'] + '" ' + ' target="_blank">' +
+                                        $scope.reference['doi'] + '</a>';
+
+                                var referenceObj = { 'reference': reference };
+
+                                ndexService.updateReferenceForAPrecertifiedNetworkV2($scope.networkController.currentNetworkId, referenceObj,
+                                    function(data) {
+                                        $scope.networkController.currentNetwork.reference = reference;
+                                        $scope.networkController.currentNetwork.isCertified = true;
+                                        $scope.cancel();
+
+                                    },
+                                    function(error) {
+                                        var errorMessage = "Unable to add Reference ";
+                                        $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
+                                    });
+                            };
+
+                            $scope.$watch("reference.authors", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.title", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.issue", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.year", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.doi", function() {
+                                delete $scope.errors;
+                            });
+                        }
+                    })
+                }
+            }
+        }
+    });
+
+    /*
+    uiServiceApp.directive('referenceForCertification', function() {
+        return {
+
+            scope: {
+                networkController: '=',
+                myClass: '@'
+            },
+
+            restrict: 'AE',
+            template: '<button class="{{myClass}}" ng-click="openMe()">Add Reference</button>',
+
+            controller: function($scope, $modal, $location, ndexService, $route) {
+
+                $scope.openMe = function() {
+                    modalInstance = $modal.open({
+                        templateUrl: 'pages/directives/editReferenceForCertificationModal.html',
+                        scope: $scope,
+
+                        controller: function ($scope, $modalInstance, $location, ndexService, $rootScope, uiMisc) {
+
+                            $scope.reference = {};
+
+                            $scope.reference['authors'] = 'Pratt D1, Chen J1, Welker D1, Rivas R1, Pillich R1, Rynkov V1, Ono K1, Miello C2, Hicks L3, Szalma S4, Stojmirovic A5, Dobrin R5, Braxenthaler M6, Kuentzer J7, Demchak B1, Ideker T8.';
+                            $scope.reference['title']   = 'NDEx, the Network Data Exchange.';
+                            $scope.reference['issue']   = 'Cell Syst. 2015 Oct 28;1(4):302-305.';
+                            $scope.reference['year']    = '2015';
+                            $scope.reference['doi']     = '10.1016/j.cels.2015.10.001';
+
+
+                            $scope.cancel = function () {
+                                modalInstance.close();
+                                modalInstance = null;
+                            };
+
+                            $scope.submit = function () {
+
+                                var reference =
+                                    $scope.reference.authors + '<br>' +
+                                    '<strong>' + $scope.reference.title + '</strong>' + '<br>' +
+                                    '<i>' + $scope.reference.issue + '</i>' + ', ' +  $scope.reference.year + '<br>' +
+                                    '<a href="http://doi.org/'+ $scope.reference['doi'] + '" ' + ' target="_blank">' +
+                                    $scope.reference['doi'] + '</a>';
+
+
+                                var networkProperties = [];
+
+                                networkProperties.push(
+                                    {
+                                        "dataType": "string",
+                                        "predicateString": "reference",
+                                        "subNetworkId": parseInt($scope.networkController.subNetworkId),
+                                        "value": reference
+                                    }
+                                );
+
+                                var networkSummaryProperties = {
+                                    'properties': networkProperties,
+                                    'name': $scope.networkController.currentNetwork.name,
+                                    'description': $scope.networkController.currentNetwork.description,
+                                    'version': $scope.networkController.currentNetwork.version,
+                                    'visibility': $scope.networkController.currentNetwork.visibility,
+                                    'index': $scope.networkController.currentNetwork.indexed
+                                };
+
+                                ndexService.setNetworkSummaryV2($scope.networkController.currentNetworkId, networkSummaryProperties,
+                                    function(data) {
+
+                                        $scope.networkController.currentNetwork.reference = reference;
+                                        $scope.cancel();
+
+
+                                    },
+                                    function(error) {
+                                        var errorMessage = "Unable to add Reference ";
+                                        $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
+                                    });
+                            };
+
+
+                            $scope.$watch("reference.authors", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.title", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.issue", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.year", function() {
+                                delete $scope.errors;
+                            });
+                            $scope.$watch("reference.doi", function() {
+                                delete $scope.errors;
+                            });
+                        }
+                    })
+                }
+            }
+        }
+    });
+    */
 
     // modal to export network
     uiServiceApp.directive('exportNetwork', function() {

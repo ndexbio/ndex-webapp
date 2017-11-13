@@ -158,6 +158,20 @@
                             {{networkController.currentNetwork.name}}  <br/>
                         </div>
 
+                        <div ng-if="networkController.currentNetwork.doi">
+                            <button type="button"
+                                    ng-if="isDOIPending()"
+                                    class="btn btn-primary btn-sm disabled"><strong>&nbsp;DOI:</strong> Pending &nbsp;
+                            </button>
+                            <button type="button"
+                                    ng-if="!isDOIPending()"
+                                    ngclipboard data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
+                                    ng-click="networkController.showURLInClipboardMessage()"
+                                    class="btn btn-primary btn-sm"><strong>&nbsp;DOI:</strong> {{networkController.currentNetwork.doi}}&nbsp;
+                            </button>
+                            <br><br>
+                        </div>
+
                         <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
                         &nbsp;&nbsp;
                         <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
@@ -241,6 +255,8 @@
                                 </span>
                             </span>
 
+     <!--
+
                             <span ng-if="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'">
                                 <span style="font-weight: bold;">DOI:</span> {{networkController.currentNetwork.doi}}
                                 <button type="button"
@@ -249,6 +265,8 @@
                                         class="btn btn-primary btn-xs">Copy DOI
                                 </button>
                             </span>
+     -->
+
 
                             <br /><br />
 
@@ -802,7 +820,7 @@
             </span>
 
             <span ng-show='networkController.isLoggedInUser'>
-                <span>
+                <span ng-if="(networkController.currentNetwork.doi == null) || isNetworkCertified()">
                     <a class="actionsLabel btn btn-primary"
                        ng-show="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
                                 && !networkController.hasMultipleSubNetworks()"
@@ -818,6 +836,17 @@
                         Edit Properties
                     </a>
                 </span>
+
+
+                <span ng-if="(isDOIPending() || isDOIAssigned()) && !isNetworkCertified()">
+
+                    <reference-for-certification
+                        network-controller='networkController'
+                        my-class="actionsLabel btn btn-primary" >
+                    </reference-for-certification>
+
+                </span>
+
             </span>
 
 

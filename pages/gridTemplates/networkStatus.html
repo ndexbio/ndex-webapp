@@ -1,5 +1,13 @@
 <div id="networkStatusTemplate" class="ui-grid-cell-contents">
 
+    <span ng-if="row.entity.Status == 'certified'" >
+        <a ng-href="{{$location.path()}}"
+               ng-click="grid.appScope.showNetworkInfo(row.entity)"
+               title="Click to view information about this network">
+            <img src="img/certifiedNetwork.png" width="20px" height="20px" align="center">
+        </a>
+    </span>
+
     <span ng-if="(row.entity.Status == 'success') || (row.entity.Status == 'warning')" >
         <a ng-href="{{$location.path()}}"
            ng-click="grid.appScope.showNetworkInfo(row.entity)"

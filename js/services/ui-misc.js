@@ -801,5 +801,24 @@ angular.module('ndexServiceApp')
             return errorMessage;
         };
 
+        // returns true if DOI for network is Pending; false otherwise
+        self.isDOIPending = function(networkSummary) {
+            return (networkSummary &&
+                    (networkSummary.doi != 'undefined') &&
+                    (networkSummary.doi != null) &&
+                    (networkSummary.doi.toLowerCase() == 'pending'));
+        };
+        // returns true if DOI for network has been assigned, false otherwise
+        self.isDOIAssigned = function(networkSummary) {
+            return (networkSummary &&
+            (networkSummary.doi != 'undefined') &&
+            (networkSummary.doi != null) &&
+            (networkSummary.doi.toLowerCase() != 'pending'));
+        };
+        // returns true if network is certified, false otherwise
+        self.isNetworkCertified = function(networkSummary) {
+            return (networkSummary && (networkSummary.isCertified != 'undefined') && networkSummary.isCertified);
+        };
+
     }
 ]);

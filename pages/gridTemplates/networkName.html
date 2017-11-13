@@ -1,4 +1,4 @@
-<div ng-if="row.entity.Status == 'success'"
+<div ng-if="row.entity.Status == 'success' || row.entity.Status == 'certified'"
      class="ui-grid-cell-contents" title="{{row.entity.name}} &#x0D;&#x0D; {{row.entity.description}}">
     <!--<a href="#/network/{{row.entity.externalId}}">{{COL_FIELD}} </a>-->
     <a ng-href="{{grid.appScope.getNetworkURL(row.entity.externalId)}}">{{COL_FIELD}} </a>
