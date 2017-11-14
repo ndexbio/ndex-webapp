@@ -2431,14 +2431,26 @@ ndexApp.controller('networkController',
                 //          networkController.hasMultipleSubNetworks())'
                 if (!networkController.isNetworkOwner) {
                     $scope.requestDOITitle = "Unable to request DOI for this network: you do not own it ";
+
+
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: it is certified";
+
+                    if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
+                        $scope.requestDOITitle = "Unable to request DOI for this network: it is certified and a DOI has been assigned";
+
+                    } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                        $scope.requestDOITitle = "Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment";
+
+                    };
+
                 } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: DOI is already requested";
+                    $scope.requestDOITitle = "Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment";
+
                 } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: it already has DOI";
+                    $scope.requestDOITitle = "Unable to request DOI for this network: a DOI has already been assigned";
+
                 } else if (networkController.readOnlyChecked) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: it is read-only";
+                    $scope.requestDOITitle = "Unable to request DOI for this network: please uncheck the Read Only box and try again";
                 };
             };
 

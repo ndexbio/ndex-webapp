@@ -865,16 +865,16 @@
 
 
                         <li style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
-                                    (!networkController.isNetworkOwner || networkController.readOnlyChecked ||
-                                    networkController.hasMultipleSubNetworks())'
+                                    (!networkController.isNetworkOwner || hasMultipleSubNetworks() || isNetworkCertified()
+                                    || isDOIAssigned() || isDOIPending() || networkController.readOnlyChecked)'
                                 title="{{requestDOITitle}}">
                             <a>
                                 Request DOI
                             </a>
                         </li>
                         <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
-                                    (networkController.isNetworkOwner && !networkController.readOnlyChecked &&
-                                    !networkController.hasMultipleSubNetworks())'>
+                                    (networkController.isNetworkOwner && !hasMultipleSubNetworks() && !isNetworkCertified() &&
+                                     !isDOIAssigned() && !isDOIPending() && !networkController.readOnlyChecked)'>
 
                             <a class="dropdown-btn"
                                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
