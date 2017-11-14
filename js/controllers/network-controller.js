@@ -2448,6 +2448,12 @@ ndexApp.controller('networkController',
                 if (networkController.hasMultipleSubNetworks()) {
                     $scope.upgradePermissionTitle =
                         "This network is a Cytoscape collection and cannot be edited in NDEx";
+                } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: it is certified ";
+                } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: DOI is pending ";
+                } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: it has DOI assigned to it ";
                 } else if (networkController.isNetworkOwner) {
                     $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: you already own it ";
                 } else if (networkController.privilegeLevel.toLowerCase() == 'edit' ) {

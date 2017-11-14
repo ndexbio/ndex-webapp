@@ -1,6 +1,6 @@
 <div id="showCaseTemplate" class="ui-grid-cell-contents" >
 
-    <span ng-if="row.entity.Show && ((row.entity.Status == 'success')  ||
+    <span ng-if="row.entity.Show && ((row.entity.Status == 'success')  || (row.entity.Status == 'certified') ||
         (row.entity.Status == 'warning') || (row.entity.Status == 'collection') || (row.entity.Status == 'Set')) && (row.entity.Visibility == 'PUBLIC')">
         <a ng-href="{{$location.path()}}"
            ng-click="grid.appScope.switchShowcase(row)" title="Click to turn off">
@@ -8,7 +8,7 @@
         </a>
     </span>
 
-    <span ng-if="!row.entity.Show && ((row.entity.Status == 'success') || (row.entity.Status == 'warning') ||
+    <span ng-if="!row.entity.Show && ((row.entity.Status == 'success') || (row.entity.Status == 'warning') || (row.entity.Status == 'certified') ||
         (row.entity.Status == 'collection') || (row.entity.Status == 'Set')) && (row.entity.Visibility == 'PUBLIC')">
         <a ng-href="{{$location.path()}}"
            ng-click="grid.appScope.switchShowcase(row)" title="Click to turn on">

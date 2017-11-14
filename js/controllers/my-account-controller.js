@@ -3422,7 +3422,11 @@ ndexApp.controller('myAccountController',
                                 row.entity.Show = !row.entity.Show; // success
                             },
                             function (error, networkId, property, value) {
-                                console.log("unable to update showcase for Network with Id " + networkId);
+                                var errorMessage = uiMisc.formatErrorMessage("Unable to change showcase for network " +
+                                    "<strong>" + row.entity.name + "</strong>", error);
+                                var title = "Unable to Change Showcase";
+
+                                ndexNavigation.genericInfoModal(title, errorMessage);
                             });
                     };
                 };

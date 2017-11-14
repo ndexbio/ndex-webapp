@@ -910,13 +910,15 @@
 
                         <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
                             ng-show='networkController.isLoggedInUser &&
-                                (networkController.isAdmin || networkController.canEdit || networkController.hasMultipleSubNetworks())'
+                                (networkController.isAdmin || networkController.canEdit ||
+                                networkController.hasMultipleSubNetworks() || isDOIPending() || isDOIAssigned() || isNetworkCertified())'
                             title="{{upgradePermissionTitle}}">
                             <a>Upgrade Permission</a>
                         </li>
                         <li style="margin: 3px 0; line-height: 1.2em"
                             ng-show='networkController.isLoggedInUser && !networkController.isAdmin
-                                && !networkController.canEdit && !networkController.hasMultipleSubNetworks()'>
+                                && !networkController.canEdit && !networkController.hasMultipleSubNetworks()
+                                && !isDOIPending() && !isDOIAssigned() && !isNetworkCertified()'>
 
                             <create-request-network
                                 privileges='networkController.privilegeLevel'

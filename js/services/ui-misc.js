@@ -804,9 +804,9 @@ angular.module('ndexServiceApp')
         self.formatErrorMessage = function(ourMessage, error) {
             var errorMessage = ourMessage;
 
-            if (error.data && error.data.message) {
+            if (error && error.data && error.data.message) {
                 errorMessage = errorMessage + ": " + error.data.message;
-            } else if (error.message) {
+            } else if (error && error.message) {
                 errorMessage = errorMessage + ": " + error.message;
             } else {
                 errorMessage += ".";
