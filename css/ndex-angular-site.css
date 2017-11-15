@@ -922,6 +922,21 @@ ul.ndex-nav-pills > li > a:hover {
     cursor: not-allowed;
 }
 
+
+.actionsLabelDisabled-default-btn {
+    opacity: .65;
+    border-color: #CCC;
+    background-color: #FFF;
+    cursor: not-allowed;
+}
+.actionsLabelDisabled-default-btn:hover, .actionsLabelDisabled-default-btn:focus, .actionsLabelDisabled-default-btn:active {
+    opacity: .65;
+    background-color: #FFF;
+    border-color: #CCC;
+    cursor: not-allowed;
+}
+
+
 /* we need this to prevent Chrome issue where, when you scroll down through a long list of networks,
  * it continues to insanely scrolll automatically all the way to the end of the list without user being able to stop
  * the scrolling. */

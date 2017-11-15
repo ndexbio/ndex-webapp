@@ -32,9 +32,13 @@
 					<strong>Share URL Status:</strong>&nbsp;Disabled
 				</h5>
 
-				<button type="button" class="btn btn-default" ng-click='networkManager.switchShareableURL()'>
+				<button type="button" ng-if="showChangeShareURLButton" class="btn btn-default" ng-click='networkManager.switchShareableURL()'>
 					{{networkManager.networkShareableURLLabel}}
 				</button>
+
+				<a ng-if="!showChangeShareURLButton" title="{{showChangeShareURLButtonTitle}}" class="btn btn-default actionsLabelDisabled-default-btn">
+					{{networkManager.networkShareableURLLabel}}
+				</a>
 
 				<button id="copyButtonId" ng-hide="!networkManager.networkShareableURL" type="button" class="btn btn-default"
 				   ng-click="showURLInClipboardMessage()"

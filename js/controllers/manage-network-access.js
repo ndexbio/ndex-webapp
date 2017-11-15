@@ -43,6 +43,8 @@ ndexApp.controller('manageNetworkAccessController',
 	// turn on (show) Search menu item on the Nav Bar
 	$scope.$parent.showSearchMenu = true;
 
+	$scope.showChangeShareURLButton = false;
+	$scope.showChangeShareURLButtonTitle = "";
 
 	// this function gets called when user navigates away from the current view.
 	// (can also use "$locationChangeStart" instead of "$destroy"
@@ -53,6 +55,40 @@ ndexApp.controller('manageNetworkAccessController',
 
 		uiMisc.showSearchMenuItem();
 	});
+
+	$scope.isDOIPending = function() {
+		return uiMisc.isDOIPending(networkManager.network);
+	};
+	$scope.isDOIAssigned = function() {
+        return uiMisc.isDOIAssigned(networkManager.network);
+	};
+	$scope.isNetworkCertified = function() {
+        return uiMisc.isNetworkCertified(networkManager.network);
+	};
+	$scope.showChangeShareURLButton = function() {
+		var isDOIAssignedOrPendingOrNetworkCertified =
+            $scope.isDOIPending() || $scope.isDOIAssigned() || $scope.isNetworkCertified();
+
+        $scope.showChangeShareURLButton = !isDOIAssignedOrPendingOrNetworkCertified;
+
+        if (uiMisc.isNetworkCertified(networkManager.network)) {
+
+            if (uiMisc.isDOIAssigned(networkManager.network)) {
+                $scope.showChangeShareURLButtonTitle = "Unable to Disable Share URL for this network: it is certified and a DOI has been assigned";
+
+            } else if (uiMisc.isDOIPending(networkManager.network)) {
+                $scope.showChangeShareURLButtonTitle = "Unable to Disable Share URL for this network: a request has been submitted and the DOI is pending assignment";
+
+            };
+
+        } else if (uiMisc.isDOIPending(networkManager.network)) {
+            $scope.showChangeShareURLButtonTitle = "Unable to Disable Share URL for this network: a request has been submitted and the DOI is pending assignment";
+
+        } else if (uiMisc.isDOIAssigned(networkManager.network)) {
+            $scope.showChangeShareURLButtonTitle = "Unable to Disable Share URL for this network: a DOI been assigned";
+        };
+
+	};
 
 	networkManager.accessWasRemoved = function(accessObj) {
 
@@ -1063,6 +1099,8 @@ ndexApp.controller('manageNetworkAccessController',
     	.success(
     	function(network){
     		networkManager.network = network;
+
+            $scope.showChangeShareURLButton();
 
     		if (network.visibility && (network.visibility.toUpperCase() == 'PRIVATE')) {
                 networkManager.showShareURLControl = true;

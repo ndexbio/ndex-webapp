@@ -2432,7 +2432,6 @@ ndexApp.controller('networkController',
                 if (!networkController.isNetworkOwner) {
                     $scope.requestDOITitle = "Unable to request DOI for this network: you do not own it ";
 
-
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
 
                     if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
