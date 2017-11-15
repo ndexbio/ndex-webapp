@@ -524,8 +524,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 var dismissModal = true;
                 ndexNavigation.openConfirmationModal(title, message, "Submit DOI Request", "Go Back", dismissModal,
                     function () {
-
-                        var saveTheseProperties = {
+                        var showThesePropertiesInEmail = {
                             "name": $scope.mainProperty.name,
                             "description": $scope.mainProperty.description,
                             "version": $scope.mainProperty.version,
@@ -539,42 +538,33 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         };
 
 
-                        if (!$scope.mainProperty.readonly) {
-                            editor.save();
+                        // network is read-only; first, make it read-write, and then request a DOI
 
-                            ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
-                                function() {
-                                    ;
-                                },
-                                function(error){
-                                    editor.errors.push(error)
-                                });
+                        ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, "readOnly", false,
 
-                        } else {
-                            // network is read-only; first, make it read-write, and then request a DOI
+                            function(data, networkId, property, value) {
+                                editor.save();
 
-                            ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, "readOnly", false,
+                                ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
+                                    function () {
+                                        console.log("DOI created successfully");
+                                        /*
+                                        if ($scope.mainProperty.readonly) {
+                                            var networkViewPage = sharedProperties.getNetworkViewPage();
+                                            var networkID = editor.networkExternalId;
+                                            $location.path(networkViewPage + networkID);
+                                            $scope.isProcessing = false;
+                                        };
+                                        */
+                                    },
+                                    function (error) {
+                                        editor.errors.push(error)
+                                    });
+                            },
 
-                                function(data, networkId, property, value) {
-
-                                    ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
-                                        function () {
-                                            if ($scope.mainProperty.readonly) {
-                                                var networkViewPage = sharedProperties.getNetworkViewPage();
-                                                var networkID = editor.networkExternalId;
-                                                $location.path(networkViewPage + networkID);
-                                                $scope.isProcessing = false;
-                                            };
-                                        },
-                                        function (error) {
-                                            editor.errors.push(error)
-                                        });
-                                },
-
-                            function(error, networkId, property, value) {
-                                console.log("unable to unset the Read Only flag on the network");
-                            });
-                        };
+                        function(error, networkId, property, value) {
+                            console.log("unable to unset the Read Only flag on the network");
+                        });
                     },
                     function () {
                         // user canceled - do nothing
