@@ -866,7 +866,7 @@
 
                         <li style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
                                     (!networkController.isNetworkOwner || hasMultipleSubNetworks() || isNetworkCertified()
-                                    || isDOIAssigned() || isDOIPending() || networkController.readOnlyChecked)'
+                                    || isDOIAssigned() || isDOIPending())'
                                 title="{{requestDOITitle}}">
                             <a>
                                 Request DOI
@@ -874,7 +874,7 @@
                         </li>
                         <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
                                     (networkController.isNetworkOwner && !hasMultipleSubNetworks() && !isNetworkCertified() &&
-                                     !isDOIAssigned() && !isDOIPending() && !networkController.readOnlyChecked)'>
+                                     !isDOIAssigned() && !isDOIPending())'>
 
                             <a class="dropdown-btn"
                                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
@@ -998,7 +998,7 @@
             <div class="modal-header">
                 <h3>Citations</h3>
             </div>
-            <span class="modal-body">
+            <div class="modal-body" style="max-height:520px; overflow:auto">
                 <span ng-repeat="citation in citations">
                     <dl class="dl-horizontal">
                         <!--
@@ -1055,7 +1055,7 @@
                         </dd>
                     </dl>
                 </span>
-            </span>
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" ng-enter="ok()" ng-click="ok()">OK</button>
             </div>

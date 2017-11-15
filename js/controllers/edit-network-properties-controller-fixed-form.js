@@ -113,7 +113,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "reference": "",
         "version": "",
         "visibility": "PRIVATE",
-        "indexed": true
+        "indexed": true,
+        "readonly": false
     };
 
     editor.doiRequired = {
@@ -523,7 +524,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 var dismissModal = true;
                 ndexNavigation.openConfirmationModal(title, message, "Submit DOI Request", "Go Back", dismissModal,
                     function () {
-                        editor.save();
 
                         var saveTheseProperties = {
                             "name": $scope.mainProperty.name,
@@ -538,17 +538,43 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                             "isCertified": !editor.isCertified
                         };
 
-                        console.log(saveTheseProperties);
 
+                        if (!$scope.mainProperty.readonly) {
+                            editor.save();
 
-                        ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
-                            function() {
-                                console.log("request created successfully!");
-                            },
-                            function(error){
-                                editor.errors.push(error)
+                            ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
+                                function() {
+                                    ;
+                                },
+                                function(error){
+                                    editor.errors.push(error)
+                                });
+
+                        } else {
+                            // network is read-only; first, make it read-write, and then request a DOI
+
+                            ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, "readOnly", false,
+
+                                function(data, networkId, property, value) {
+
+                                    ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
+                                        function () {
+                                            if ($scope.mainProperty.readonly) {
+                                                var networkViewPage = sharedProperties.getNetworkViewPage();
+                                                var networkID = editor.networkExternalId;
+                                                $location.path(networkViewPage + networkID);
+                                                $scope.isProcessing = false;
+                                            };
+                                        },
+                                        function (error) {
+                                            editor.errors.push(error)
+                                        });
+                                },
+
+                            function(error, networkId, property, value) {
+                                console.log("unable to unset the Read Only flag on the network");
                             });
-
+                        };
                     },
                     function () {
                         // user canceled - do nothing
@@ -959,6 +985,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.hiddenValuePairs = [];
                 $scope.mainProperty.name = network.name;
                 $scope.mainProperty.indexed = network.indexed;
+                $scope.mainProperty.readonly = network.isReadOnly;
                 if(!$scope.mainProperty.name){
                     $scope.mainProperty.name = "";
                 }
