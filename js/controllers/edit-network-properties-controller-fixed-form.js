@@ -538,7 +538,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         };
 
 
-                        // network is read-only; first, make it read-write, and then request a DOI
+                        // ensure the network is read-write, and then request a DOI
 
                         ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, "readOnly", false,
 
@@ -548,14 +548,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                                 ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
                                     function () {
                                         console.log("DOI created successfully");
-                                        /*
-                                        if ($scope.mainProperty.readonly) {
-                                            var networkViewPage = sharedProperties.getNetworkViewPage();
-                                            var networkID = editor.networkExternalId;
-                                            $location.path(networkViewPage + networkID);
-                                            $scope.isProcessing = false;
-                                        };
-                                        */
                                     },
                                     function (error) {
                                         editor.errors.push(error)

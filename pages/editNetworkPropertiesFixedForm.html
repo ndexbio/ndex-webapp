@@ -77,7 +77,7 @@ input[type='radio']:checked:after {
 
 			<a ng-if="mainProperty.readonly"
 					type="button" title="Uanble to edit this network: it is read-only"
-			   		class="btn btn-default actionsLabelDisabled-default-btn"
+			   		class="btn btn-disabled actionsLabelDisabled-default-btn" style="cursor: not-allowed;"
 					ng-class="editor.viewfilter.state == 'DOI' ? 'btn-default': 'btn-primary'">All
 			</a>
 
