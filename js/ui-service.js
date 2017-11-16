@@ -1826,7 +1826,7 @@
                                 var reference =
                                     $scope.reference.authors + '<br>' +
                                         '<strong>' + $scope.reference.title + '</strong>' + '<br>' +
-                                        '<i>' + $scope.reference.issue + '</i>' + ', ' +  $scope.reference.year + '<br>' +
+                                        '<i>' + $scope.reference.issue + '</i>' + ', (' +  $scope.reference.year + ')<br>' +
                                         '<a href="http://doi.org/'+ $scope.reference['doi'] + '" ' + ' target="_blank">' +
                                         $scope.reference['doi'] + '</a>';
 
