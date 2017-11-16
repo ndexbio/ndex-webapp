@@ -517,9 +517,26 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         if(editor.errors.length < 1){
             if(editor.checkDOIRequirements()){
                 var title = "Subimt DOI Request";
-                var message = "Please be aware that requesting a DOI will permantly lock this network and no further editing will be possible. " +
-                    " Please make sure all information is correct before proceeding. "
-                    " You will still have a one-time opportunity to add a reference or update it later. <br><br>";
+                var message = "";
+                if(editor.isCertified){
+                    message = "Requesting a DOI for this network will have the following effects:<br /><br />"
+                        + "<ul>"
+                        + "<li>The network will be <span style='font-weight: bold;'>&quot;pre-Certified&quot;</span> and locked.</li>"
+                        + "<li>You will have a one-time chance to add/modify the reference info later</li>"
+                        + "<li>The current network's visibility will be preserved</li>"
+                        + "</ul>"
+                        + "<span style='font-weight: bold;'>Please make sure all information is correct before proceeding</span>";
+                } else {
+                    message = "Requesting a DOI for this network will have the following effects:<br /><br />"
+                        + "<ul>"
+                        + "<li>The network will be <span style='font-weight: bold;'>&quot;Certified&quot;</span> and permanently locked.</li>"
+                        + "<li>No further changes will be possible</li>"
+                        + "<li>The network's visibility will be set to PUBLIC</li>"
+                        + "<li>The network will be indexed for search</li>"
+                        + "</ul>"
+                        + "<span style='font-weight: bold;'>Please make sure all information is correct before proceeding</span>";
+
+                }
 
                 var dismissModal = true;
                 ndexNavigation.openConfirmationModal(title, message, "Submit DOI Request", "Go Back", dismissModal,
@@ -1109,7 +1126,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     //Please be aware that requesting a DOI will permantly lock this network and no further editing will be possible. " +
                     //" Please make sure all information is correct before proceeding.
 
-                    editor.genericInfoModalAutoClose(title, message, closeModalInterval);
+                    // Disable the modal on start up.  This may change in the future --
+                    // editor.genericInfoModalAutoClose(title, message, closeModalInterval);
                 } else {
                     editor.viewfilter.state = "MAIN"
                 }
