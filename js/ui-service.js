@@ -2370,45 +2370,44 @@
     });
 */
 
+
     // modal to show network reference
     uiServiceApp.directive('showNetworkReference', function() {
         return {
+
             scope: {
                 reference: '=',
-                action: '@directiveAction',
-                title:  '@directiveTitle',
-                text:   '@directiveDescription'
+                title:  '@directiveTitle'
             },
-            restrict: 'E',
-            templateUrl: 'pages/directives/showNetworkReferenceModal.html',
-            transclude: true,
-            
-            controller: function($scope, $modal) {
 
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'pages/directives/showNetworkReferenceModal.html',
+
+            controller: function($scope, $modal, uiMisc) {
                 var modalInstance;
                 $scope.errors = null;
-                $scope.network = {};
 
                 $scope.openMe = function() {
-
                     $scope.network = {};
                     $scope.network.reference = $scope.reference;
+                    $scope.network.title     = $scope.title;
 
                     modalInstance = $modal.open({
                         templateUrl: 'show-network-reference-modal.html',
-                        scope: $scope
+                        scope: $scope,
+                        backdrop: 'static'
                     });
                 };
 
                 $scope.close = function() {
                     modalInstance.close();
-                    modalInstance = null;
-                    $scope.network = {};
+                    delete $scope.request.error;
                 };
-
             }
         }
     });
+
 
 
     // modal for modifying in bulk Network Property (Description, Reference or Version)

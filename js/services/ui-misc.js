@@ -44,7 +44,7 @@ angular.module('ndexServiceApp')
              ndexNavigation.genericInfoModal(title, message);
         };
 
-
+/*
         self.constructReferenceObj = function(referenceStr) {
             var referenceInPlainText;
 
@@ -74,9 +74,9 @@ angular.module('ndexServiceApp')
                 urlCount: countURLs
             };
         };
-
+*/
         self.getNetworkReferenceObj = function(subNetworkId, network) {
-            var reference = "";
+            var reference = null;
 
             if (!network || !network.properties) {
                 return reference;
@@ -87,12 +87,12 @@ angular.module('ndexServiceApp')
                 if (property.predicateString && (property.predicateString.toLowerCase() == "reference") &&
                     property.subNetworkId == subNetworkId)
                 {
-                    reference = (property.value) ? property.value : "";
+                    reference = (property.value) ? property.value : null;
                     break;
                 }
             }
 
-            return self.constructReferenceObj(reference);
+            return reference; //self.constructReferenceObj(reference);
         };
 
         self.getSetReferenceObj = function(networkSet) {
@@ -402,7 +402,7 @@ angular.module('ndexServiceApp')
         self.showNetworkInfo = function(network) {
             // add reference field to network
             var subNetworkId = self.getSubNetworkId(network);
-            var referenceObj = self.getNetworkReferenceObj(subNetworkId, network);
+            var reference = self.getNetworkReferenceObj(subNetworkId, network);
 
             /*
             if (referenceObj && (referenceObj.referenceText.length > 0)) {
@@ -414,7 +414,7 @@ angular.module('ndexServiceApp')
                     network['reference'] =  referenceObj.referenceHTML;
                 };
             };
-            */
+
             if (referenceObj) {
                 if (referenceObj.referenceHTML) {
                     network['reference'] =  referenceObj.referenceHTML;
@@ -426,7 +426,9 @@ angular.module('ndexServiceApp')
                     network['reference'] =  referenceObj.url;
 
                 };
-            };
+            }
+            */
+            network['reference'] = reference;
 
             var desc = (network['description']) ? network['description'].trim() : "";
             if (!desc) {

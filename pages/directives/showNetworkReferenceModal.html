@@ -1,40 +1,20 @@
-<span ng-click="openMe()" ng-transclude></span>
+<span style='cursor: pointer' ng-click="openMe()" ng-transclude></span>
 
 <script type="text/ng-template" id="show-network-reference-modal.html">
-
     <div class='modal-content'>
 
         <form class="form-horizontal" role="form" ng-submit='submit()'>
 
             <div class="modal-header">
-                <h4 class="modal-title">{{title}}</h4>
+                <h4 class="modal-title" ng-bind-html="network.title"></h4>
             </div>
 
-            <div class="modal-body">
-
-                <div class="rowWithOneLineTopPad">
-                    {{text}}
-                </div>
-
-                <div class="form-group rowWithTwoLinesTopPad">
-                    <label class="col-sm-3 control-label">Reference</label>
-                    <div class="col-sm-8">
-                        <text-angular
-                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
-                            ta-toolbar-class="btn-toolbar"
-                            ta-toolbar-group-class="btn-group btn-group-xs"
-                            ta-toolbar-button-class="btn btn-default"
-                            ta-toolbar-button-active-class="active"
-                            ta-default-wrap="div"
-                            ta-disabled="true"
-                            ng-readonly="true"
-                            ng-model='network.reference'>
-                        </text-angular>
-                    </div>
-                </div>
-
-                <div class='text-danger'>
-                    <strong>{{errors}}</strong>
+            <div class="modal-body" style="max-height:520px; overflow:auto;">
+                <div class="form-group">
+                    <label for="referenceId" class="col-sm-3 control-label">Reference:</label>
+                    <span class="col-sm-8">
+                        <p class="form-control-static" id="referenceId" ng-bind-html="network.reference"></p>
+                    </span>
                 </div>
             </div>
 
@@ -45,5 +25,4 @@
         </form>
 
     </div>
-
 </script>
