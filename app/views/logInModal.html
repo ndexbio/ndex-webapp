@@ -1,0 +1,63 @@
+<div class="modal-content">
+
+    <div class="modal-header">
+        <h4 class="modal-title"><strong>Network not Public. Sign in to Your NDEx Account.</strong></h4>
+    </div>
+
+    <div class="modal-body wrapLongLine" style="max-height:520px; overflow:auto">
+
+
+        <div class="form-group">
+            <h5 class="modal-title" style="font-weight: bold" ng-bind-html="message"></h5>
+        </div>
+
+
+        <div class="form-group">
+            <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
+                   required autofocus ng-model="credentials.user">
+        </div>
+
+        <div class="form-group">
+            <input name="password" type="password" class="form-control" placeholder="Password" required
+                   ng-model="credentials.password">
+        </div>
+
+        <span class="text-danger" ng-show="credentials.errorMessage">
+            <strong>{{credentials.errorMessage}}</strong>
+        </span>
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="AlignCenter">
+        <button class="btn btn-danger" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-primary" ng-click="signIn()"
+                ng-disabled="!credentials.user || !credentials.password">
+            Sign In
+        </button>
+            <br><br>
+            <div ng-show="isNotSafari">
+                <div >OR</div>
+                <br>
+                <div class="google-button">
+                    <button class="google-sign-in-button" type="button" ng-click="signInWithGoogle()">
+                        <span class="google-sign-in-button-span">
+                            <img src="images/google-logo.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
+                            <span>Sign in with Google</span>
+                        </span>
+                    </button>
+                </div>
+                <br>
+            </div>
+            <div ng-show="!isNotSafari">
+                Single Sign on is not supported in this browser. Please use Chrome or Firefox if you want to use this feature.
+                <br>
+            </div>
+        </div>
+   <!--     <button class="btn btn-primary" ng-click="signInWithGoogle()">
+            Sign In With Google
+        </button> -->
+
+    </div>
+
+</div>

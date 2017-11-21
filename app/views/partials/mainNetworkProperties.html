@@ -1,0 +1,333 @@
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+<form role="form" ng-submit='editor.save()'>
+
+    <!--
+    ==========================
+    = Main profile properties
+    ==========================
+    -->
+    <div class='row'>
+        <div class='col-sm-offset-1 col-sm-5'>
+
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-sm-3 control-label">name</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <input type="text" class="form-control" ng-change="editor.updateScore()"
+                           ng-class="mainProperty.name.length > 0 ? 'competeInput': ''"
+                           placeholder="Network Name" ng-model='mainProperty.name'>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <div title="Name is required for public status">
+                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        </div>
+                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">description</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <text-angular
+                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
+                            id="descriptionTextBox"
+                            ta-toolbar-class="btn-toolbar"
+                            ta-toolbar-group-class="btn-group btn-group-xs"
+                            ta-toolbar-button-class="btn btn-default"
+                            ta-toolbar-button-active-class="active"
+                            ta-default-wrap="div"
+                            ng-change="editor.updateScore()"
+                            ng-model='mainProperty.description'>
+                    </text-angular>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <i ng-if="mainProperty.description.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+                        <div title="Description is required for public status">
+                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+                        </div>
+                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-init="eyeopened=false">
+                <label class="col-sm-3 control-label">visibility</label>
+                <div class="col-sm-7" style="margin-bottom: 15px;">
+<!--                    <div class="dropdown">
+                        <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            SELECT VISIBILITY
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a ng-click="mainProperty.visibility = 'PUBLIC'">Public
+                            </a></li>
+                            <li><a ng-click="mainProperty.visibility = 'PUBLIC_NOT_INDEXED'">Public &nbsp;&nbsp;&nbsp;
+                                <span class="fa-stack">
+                                    <i class="fa fa-ban fa-stack-2x" aria-hidden="true" style="color: red;"></i>
+                                    <i class="fa fa-search fa-stack-1x"></i>
+                                </span>
+                            </a></li>
+                            <li><a ng-click="mainProperty.visibility = 'PRIVATE'">Private
+                            </a></li>
+                            <li><a ng-click="mainProperty.visibility = 'PRIVATE_NOT_INDEXED'">Private &nbsp;&nbsp;
+                                <span class="fa-stack">
+                                    <i class="fa fa-ban fa-stack-2x" aria-hidden="true" style="color: red;"></i>
+                                    <i class="fa fa-search fa-stack-1x"></i>
+                                </span>
+                            </a></li>
+                        </ul>
+                    </div>-->
+                    <span ng-if="editor.isOwner">
+                        <select class="form-control minwidth170" ng-model="editor.visibilityIndex">
+                            <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
+                            <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
+                            <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
+                            <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
+                        </select>
+                    </span>
+                    <span ng-if="!editor.isOwner">
+                        <select class="form-control minwidth170" ng-model='editor.visibilityIndex'
+                                title="Only network owners can change network Visibility" disabled>
+                            <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
+                            <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
+                            <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
+                            <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
+                        </select>
+                    </span>
+
+                </div>
+<!--
+                <div class="col-sm-1">
+                    <div class="input-group-btn">
+                        <div title="Name, Description and Version are required for public status">
+                            <i ng-if="(mainProperty.description.length < 1 || mainProperty.name.length < 1 || mainProperty.version.length < 1) && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
+-->
+                <div class="col-sm-2" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED') && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
+                    <a ng-click="editor.showcased.state = !editor.showcased.state" style="text-decoration: none; color: #656565;">
+                        <div style="width: 95px;">
+										<span class="fa-stack" ng-show="!editor.showcased.state">
+											<i class="fa fa-square-o fa-stack-2x"></i>
+										</span>
+
+                            <span class="fa-stack" ng-show="editor.showcased.state">
+											<i class="fa fa-square-o fa-stack-2x"></i>
+											<i class="fa fa-check fa-stack-1x"></i>
+										</span>
+                            <div class="pull-right" style="font-size: 15px; margin-top: 3px;">Showcase</div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <div class='col-sm-5'>
+
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-sm-3 control-label">version</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <input type="text" class="form-control" placeholder="1.0"
+                           ng-change="editor.updateScore()"
+                           ng-class="mainProperty.version.length > 0 ? 'competeInput': ''"
+                           ng-model='mainProperty.version'>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn" style="margin-top: 40px;">
+                        <i ng-if="mainProperty.version.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <div title="Version is required for public status">
+                            <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        </div>
+                        <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">reference</label>
+                <div class="col-sm-8" style="margin-bottom: 15px;">
+                    <text-angular
+                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
+                            ta-toolbar-class="btn-toolbar"
+                            ta-toolbar-group-class="btn-group btn-group-xs"
+                            ta-toolbar-button-class="btn btn-default"
+                            ta-toolbar-button-active-class="active"
+                            ta-default-wrap="div"
+                            ng-change="editor.updateScore()"
+                            ng-model='mainProperty.reference'>
+                    </text-angular>
+                </div>
+                <div class="col-sm-1">
+                    <div class="input-group-btn" style="margin-top: 40px;">
+                        <i ng-if="mainProperty.reference.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.reference.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="form-group" ng-show='editor.isAdmin || editor.canEdit'>
+                <div class="pull-right">
+                    <button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
+                    <button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save Changes</button>
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="row">
+        <div class='col-sm-offset-1 col-sm-10'>
+            <hr style="margin-top:5px; margin-bottom:15px;">
+        </div>
+    </div>
+
+    <!--
+    ===================
+    = Known Properties
+    ===================
+    -->
+    <div class='row'>
+        <div class='col-sm-offset-1 col-sm-5'>
+            <div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
+                <div ng-if="$index <= 5 && property.predicateString != 'custom...'">
+                    <label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}">{{property.predicateString}}
+                        <span ng-if="property.predicateString == 'rights'">&nbsp;
+                            <a href="http://home.ndexbio.org/publishing-in-ndex/"
+                               data-toggle="tooltip" title="Click for more information about specific licenses"
+                               style="text-decoration: none;" target="_blank" ng-init="setToolTips()">
+                                    <i class="fa fa-info-circle"></i>
+                            </a></span>
+                    </label>
+                    <div ng-if="property.predicateString.length > 0" class="input-group col-sm-9" style="margin-bottom: 15px;">
+                        <input ng-if="property.predicateString != 'rights'"
+                                class="form-control input-sm" ng-change="editor.updateScore()"
+                                ng-model='property.value' id="input{{property.predicateString}}"
+                                ng-class="property.value.length > 0 ? 'competeInput': ''"
+                                ng-readonly='!(editor.isAdmin || editor.canEdit) || !(property.predicateString)'>
+
+                        <span ng-if="property.predicateString == 'rights'">
+                            <div class="col-sm-12" style="margin-bottom: 0px; padding: 0px;" ng-if="property.value != 'Other'">
+
+                                <select class="form-control input-sm" ng-model="property.value"
+                                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                                        ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-4" style="margin-bottom: 15px; padding-left: 0px;" ng-if="property.value == 'Other'">
+                                <select class="form-control input-sm" ng-model="property.value"
+                                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                                        ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                                </select>
+                            </div>
+                            <div class="col-sm-8" style="margin-bottom: 15px;" ng-if="property.value == 'Other'">
+
+                                <input class="form-control input-sm" type="text"  placeholder="license title"
+                                       ng-model="property.rightsOther" id="doiinputrightsOther1"
+                                       ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+
+                                <input class="form-control input-sm" type="url" placeholder="license URL"
+                                       ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
+                                       ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+                            </div>
+
+                        </span>
+
+                        <div class="input-group-btn">
+                            <i ng-if="property.value.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="property.value.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class='col-sm-5'>
+            <div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString":true'>
+                <div ng-if="$index > 5 && property.predicateString != 'custom...'">
+                    <label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input2{{property.predicateString}}">{{property.predicateString}}</label>
+                    <div ng-if="property.predicateString.length > 0" class="input-group col-sm-9" style="margin-bottom: 15px;">
+                        <input
+                                class="form-control input-sm" ng-change="editor.updateScore()"
+                                ng-model='property.value' id="input2{{property.predicateString}}"
+                                ng-class="property.value.length > 0 ? 'competeInput': ''"
+                                ng-readonly='!(editor.isAdmin || editor.canEdit) || !(property.predicateString)'>
+                        <div class="input-group-btn">
+                            <i ng-if="property.value.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="property.value.length < 1" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--
+    ===================
+    = Custom Properties
+    ===================
+    -->
+    <div class='row'>
+        <div class='col-sm-offset-1 col-sm-5'>
+
+            <div class="form-group" ng-repeat='property in editor.propertyValuePairs | orderBy: "predicateString"'>
+                <div class="row" ng-if="property.predicateString == 'custom...'">
+                    <div>
+                        <div class="col-sm-3">
+                            <input class="form-control input-sm" ng-show="property.predicateString == 'custom...'"
+                                   type="text"
+                                   placeholder="Type label..."
+                                   ng-model='property.predicateStringCustom'
+                                   ng-change='editor.changed($index, property.predicateStringCustom, property)'
+                                   ng-readonly='!(editor.isAdmin || editor.canEdit)'>
+                        </div>
+                        <div ng-if="property.predicateString == 'custom...'" class="input-group col-sm-9" style="margin-bottom: 15px;">
+                            <input
+                                    class="form-control input-sm" ng-change="editor.updateScore()"
+                                    ng-model='property.value' id="input4{{property.predicateString}}"
+                                    ng-class="property.value.length > 0 ? 'competeInput': ''">
+                            <div class="input-group-btn">
+                                <i class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-success" ng-if="property.predicateString.length == 0" ng-click="property.predicateString = 'custom...'; editor.changed($index, property.predicateString, property); editor.propertyValuePairs.push({'dataType':'string','predicateString':'','value':'','subNetworkId':null})">
+                    <i class="fa fa-plus" aria-hidden="true"></i> Add
+                </button>
+            </div>
+
+        </div>
+
+        <div class='col-sm-5'>
+            <div class="pull-right" ng-show="editor.isAdmin || editor.canEdit">
+                <button type="button" class="btn btn-sm btn-danger" ng-click='editor.refresh()'>Discard Changes</button>
+                <button type="submit" class="btn btn-sm btn-success" ng-disabled='editor.disableSaveChangesButton'>Save Changes</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row" ng-show='editor.isAdmin || editor.canEdit'>
+        <div class='col-sm-offset-1 col-sm-10'>
+            <hr>
+        </div>
+    </div>
+
+</form>

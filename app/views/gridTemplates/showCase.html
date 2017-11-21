@@ -1,0 +1,19 @@
+<div id="showCaseTemplate" class="ui-grid-cell-contents" >
+
+    <span ng-if="row.entity.Show && ((row.entity.Status == 'success')  || (row.entity.Status == 'certified') ||
+        (row.entity.Status == 'warning') || (row.entity.Status == 'collection') || (row.entity.Status == 'Set')) && (row.entity.Visibility == 'PUBLIC')">
+        <a ng-href="{{$location.path()}}"
+           ng-click="grid.appScope.switchShowcase(row)" title="Click to turn off">
+            <img src="images/openedeye.png" width="25px" height="25px" style="margin-top:-0.26em;">
+        </a>
+    </span>
+
+    <span ng-if="!row.entity.Show && ((row.entity.Status == 'success') || (row.entity.Status == 'warning') || (row.entity.Status == 'certified') ||
+        (row.entity.Status == 'collection') || (row.entity.Status == 'Set')) && (row.entity.Visibility == 'PUBLIC')">
+        <a ng-href="{{$location.path()}}"
+           ng-click="grid.appScope.switchShowcase(row)" title="Click to turn on">
+            <img src="images/closedeye.png" width="25px" height="25px" style="margin-top:-0.26em">
+        </a>
+    </span>
+
+</div>
