@@ -817,7 +817,7 @@ angular.module('ndexServiceApp')
             return errorMessage;
         };
 
-       // returns true if DOI for network is Pending; false otherwise
+        // returns true if DOI for network is Pending; false otherwise
         self.isDOIPending = function(networkSummary) {
             return (networkSummary &&
                     (networkSummary.doi != 'undefined') &&
