@@ -806,15 +806,9 @@ angular.module('ndexServiceApp')
         self.formatErrorMessage = function(ourMessage, error) {
             var errorMessage = ourMessage;
 
-<<<<<<< HEAD:js/services/ui-misc.js
             if (error && error.data && error.data.message) {
                 errorMessage = errorMessage + ": " + error.data.message;
             } else if (error && error.message) {
-=======
-            if (error.data && error.data.message) {
-                errorMessage = errorMessage + ": " + error.data.message;
-            } else if (error.message) {
->>>>>>> origin/bower-ize:app/scripts/services/ui-misc.js
                 errorMessage = errorMessage + ": " + error.message;
             } else {
                 errorMessage += ".";
@@ -823,8 +817,7 @@ angular.module('ndexServiceApp')
             return errorMessage;
         };
 
-<<<<<<< HEAD:js/services/ui-misc.js
-        // returns true if DOI for network is Pending; false otherwise
+       // returns true if DOI for network is Pending; false otherwise
         self.isDOIPending = function(networkSummary) {
             return (networkSummary &&
                     (networkSummary.doi != 'undefined') &&
@@ -843,7 +836,5 @@ angular.module('ndexServiceApp')
             return (networkSummary && (networkSummary.isCertified != 'undefined') && networkSummary.isCertified);
         };
 
-=======
->>>>>>> origin/bower-ize:app/scripts/services/ui-misc.js
     }
 ]);
