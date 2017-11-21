@@ -1,5 +1,9 @@
 <div id="networkStatusTemplate" class="ui-grid-cell-contents">
 
+    <span ng-if="row.entity.Status == 'certified'" >
+        <img src="images/certifiedNetwork.png" width="20px" height="20px" align="center">
+    </span>
+
     <span ng-if="row.entity.Status == 'success'" >
         <img src="images/success.png" width="20px" height="20px" align="center">
     </span>
