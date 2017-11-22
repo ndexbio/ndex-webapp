@@ -3,7 +3,7 @@
 - git clone https://github.com/ndexbio/ndex-webapp.git
 - cd ndex-webapp
 
-## Build debug NDEx Web App:
+## Building a debug NDEx Web App:
 
 - bower install
 - type 3 when prompted
@@ -21,7 +21,7 @@ Prefix the choice with ! to persist it to bower.json
 ? Answer --> 3
 
 
-## Build a Distribution version:
+## Building a Distribution version:
 - npm install
 - grunt build
 
