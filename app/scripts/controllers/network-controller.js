@@ -91,7 +91,6 @@ ndexApp.controller('networkController',
             networkController.otherProperties = [];
 
 
-            $scope.editPropertiesTitle       = "";
             $scope.requestDOITitle           = "";
             $scope.exportTitle               = "";
             $scope.upgradePermissionTitle    = "";
@@ -132,6 +131,17 @@ ndexApp.controller('networkController',
                 };
                 return retValue;
             };
+
+            $scope.isDOIPending = function() {
+                return uiMisc.isDOIPending(networkController.currentNetwork);
+            };
+            $scope.isDOIAssigned = function() {
+                return uiMisc.isDOIAssigned(networkController.currentNetwork);
+            };
+            $scope.isNetworkCertified = function() {
+                return uiMisc.isNetworkCertified(networkController.currentNetwork);
+            };
+
 
             $scope.showEdgeCitations = function(edgeKey)
             {
@@ -2321,13 +2331,9 @@ ndexApp.controller('networkController',
                                 networkController.currentNetwork.name = "Untitled";
                             };
 
-
                             $scope.disableQuery = (network.edgeCount > $scope.egeCountForDisablingQuery);
                             $scope.warningQuery = ((network.edgeCount > $scope.egeCountForQueryWarning)
                                 && (network.edgeCount <= $scope.egeCountForDisablingQuery));
-
-
-
 
                             // subNetworkId is the current subNetwork we are displaying
                             networkController.subNetworkId = uiMisc.getSubNetworkId(network);
@@ -2425,8 +2431,25 @@ ndexApp.controller('networkController',
                 //          networkController.hasMultipleSubNetworks())'
                 if (!networkController.isNetworkOwner) {
                     $scope.requestDOITitle = "Unable to request DOI for this network: you do not own it ";
+
+                } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
+
+                    if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
+                        $scope.requestDOITitle = "Unable to request DOI for this network: it is certified and a DOI has been assigned";
+
+                    } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                        $scope.requestDOITitle = "Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment";
+
+                    };
+
+                } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                    $scope.requestDOITitle = "Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment";
+
+                } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
+                    $scope.requestDOITitle = "Unable to request DOI for this network: a DOI has already been assigned";
+
                 } else if (networkController.readOnlyChecked) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: it is read-only ";
+                    $scope.requestDOITitle = "Unable to request DOI for this network: please uncheck the Read Only box and try again";
                 };
             };
 
@@ -2436,6 +2459,12 @@ ndexApp.controller('networkController',
                 if (networkController.hasMultipleSubNetworks()) {
                     $scope.upgradePermissionTitle =
                         "This network is a Cytoscape collection and cannot be edited in NDEx";
+                } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: it is certified ";
+                } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: DOI is pending ";
+                } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
+                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: it has DOI assigned to it ";
                 } else if (networkController.isNetworkOwner) {
                     $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: you already own it ";
                 } else if (networkController.privilegeLevel.toLowerCase() == 'edit' ) {
@@ -2456,7 +2485,13 @@ ndexApp.controller('networkController',
                 // !(networkController.isAdmin && !networkController.readOnlyChecked)
                 if (!networkController.isNetworkOwner) {
                     $scope.deleteTitle = "Unable to Delete this network: you do not own it ";
-                } else if (networkController.readOnlyChecked) {
+                } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
+                    $scope.deleteTitle = "This network is certified and cannot be deleted";
+                } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                    $scope.deleteTitle = "This network has a DOI pending and cannot be deleted ";
+                } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
+                    $scope.deleteTitle = "This network has been assigned a DOI and cannot be deleted ";
+                }  else if (networkController.readOnlyChecked) {
                     $scope.deleteTitle = "Unable to Delete this network: it is read-only ";
                 };
             };
@@ -2466,9 +2501,16 @@ ndexApp.controller('networkController',
                 if (networkController.hasMultipleSubNetworks()) {
                     $scope.editPropertiesButtonTitle = "This network is a Cytoscape collection and cannot be edited in NDEx";
                 } else if (!networkController.isNetworkOwner) {
-                    $scope.editPropertiesButtonTitle = "Unable to edit this network: you do not have privilege to modify it ";
-                } else if (networkController.readOnlyChecked) {
-                    $scope.editPropertiesButtonTitle = "Unable to edit this network: it is read-only ";
+                    $scope.editPropertiesButtonTitle = "Unable to edit this network: you do not have privilege to modify it";
+                } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
+                    $scope.editPropertiesButtonTitle = "This network is certified and cannot be modified further";
+                } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                    $scope.editPropertiesButtonTitle = "Unable to edit this network: DOI is pending";
+                } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
+                    $scope.editPropertiesButtonTitle = "This network has been assigned a DOI and cannot be modified further. ";
+                    $scope.editPropertiesButtonTitle += "If you need to update this network please clone it."
+                }  else if (networkController.readOnlyChecked) {
+                    $scope.editPropertiesButtonTitle = "Unable to edit this network: it is read-only";
                 };
             };
 

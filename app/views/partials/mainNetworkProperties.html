@@ -212,7 +212,15 @@
                                data-toggle="tooltip" title="Click for more information about specific licenses"
                                style="text-decoration: none;" target="_blank" ng-init="setToolTips()">
                                     <i class="fa fa-info-circle"></i>
-                            </a></span>
+                            </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a ng-show="property.value == editor.rightsCustom && !editor.editCustomRights" ng-click="editor.editCustomRights = !editor.editCustomRights" data-toggle="tooltip" title="Click to edit custom rights"
+                       style="text-decoration: none;" target="_blank"><i class="fa fa-edit fa-lg"></i></a>
+                    <a ng-show="editor.editCustomRights" ng-click="editor.editCustomRights = !editor.editCustomRights; property.value = editor.rightsCustom;" data-toggle="tooltip" title="Click to edit custom rights"
+                       style="text-decoration: none;" target="_blank">Undo</a>
+
+
+                        </span>
                     </label>
                     <div ng-if="property.predicateString.length > 0" class="input-group col-sm-9" style="margin-bottom: 15px;">
                         <input ng-if="property.predicateString != 'rights'"
@@ -223,8 +231,10 @@
 
                         <span ng-if="property.predicateString == 'rights'">
                             <div class="col-sm-12" style="margin-bottom: 0px; padding: 0px;" ng-if="property.value != 'Other'">
-
-                                <select class="form-control input-sm" ng-model="property.value"
+                                <div ng-show="editor.editCustomRights">
+                                    <input class="form-control input-sm" style="background-color: #f9f9f9;" type="text" ng-model="property.value">
+                                </div>
+                                <select ng-show="!editor.editCustomRights" class="form-control input-sm" ng-model="property.value"
                                         ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
                                         ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
                                 </select>
@@ -242,9 +252,9 @@
                                        ng-model="property.rightsOther" id="doiinputrightsOther1"
                                        ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
 
-                                <input class="form-control input-sm" type="url" placeholder="license URL"
+                                <input class="form-control input-sm" type="test" placeholder="license URL"
                                        ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
-                                       ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+                                       ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'>
                             </div>
 
                         </span>

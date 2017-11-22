@@ -653,7 +653,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 config.messages = {};
             }
             if (typeof config.messages.serverDown === 'undefined') {
-                config.messages.serverDown = "<images src='images/maintenance.png'>";
+                config.messages.serverDown = "<img src='images/maintenance.png'>";
             }
 
             //if (typeof config.contactUs === 'undefined') {

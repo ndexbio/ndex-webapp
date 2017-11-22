@@ -307,6 +307,8 @@ ndexApp.controller('groupController',
                 networkStatus = "failed";
             } else if (!network.isValid) {
                 networkStatus = "processing";
+            } else if (network.isCertified) {
+                networkStatus = "certified";
             };
 
             if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {

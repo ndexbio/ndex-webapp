@@ -158,6 +158,20 @@
                             {{networkController.currentNetwork.name}}  <br/>
                         </div>
 
+                        <div ng-if="networkController.currentNetwork.doi">
+                            <button type="button"
+                                    ng-if="isDOIPending()"
+                                    class="btn btn-primary btn-sm disabled"><strong>&nbsp;DOI:</strong> Pending &nbsp;
+                            </button>
+                            <button type="button"
+                                    ng-if="!isDOIPending()"
+                                    ngclipboard data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
+                                    ng-click="networkController.showURLInClipboardMessage()"
+                                    class="btn btn-primary btn-sm"><strong>&nbsp;DOI:</strong> {{networkController.currentNetwork.doi}}&nbsp;
+                            </button>
+                            <br><br>
+                        </div>
+
                         <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
                         &nbsp;&nbsp;
                         <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
@@ -241,6 +255,8 @@
                                 </span>
                             </span>
 
+     <!--
+
                             <span ng-if="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'">
                                 <span style="font-weight: bold;">DOI:</span> {{networkController.currentNetwork.doi}}
                                 <button type="button"
@@ -249,6 +265,8 @@
                                         class="btn btn-primary btn-xs">Copy DOI
                                 </button>
                             </span>
+     -->
+
 
                             <br /><br />
 
@@ -314,8 +332,8 @@
                             <div class='wrapLongLine rowWithOneLineTopPad'
                                  ng-show="networkController.currentNetwork.reference"
                                  style="margin-right: 1px;">
-                                <span class="networkPropertyName">Reference: </span>
-                                <span ng-bind-html="networkController.currentNetwork.reference"></span>
+                                <div class="networkPropertyName">Reference: </div>
+                                <div ng-bind-html="networkController.currentNetwork.reference"></div>
                             </div>
 
                             <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
@@ -802,7 +820,7 @@
             </span>
 
             <span ng-show='networkController.isLoggedInUser'>
-                <span>
+                <span ng-if="(networkController.currentNetwork.doi == null) || isNetworkCertified()">
                     <a class="actionsLabel btn btn-primary"
                        ng-show="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
                                 && !networkController.hasMultipleSubNetworks()"
@@ -818,6 +836,17 @@
                         Edit Properties
                     </a>
                 </span>
+
+
+                <span ng-if="(isDOIPending() || isDOIAssigned()) && !isNetworkCertified()">
+
+                    <reference-for-certification
+                        network-controller='networkController'
+                        my-class="actionsLabel btn btn-primary" >
+                    </reference-for-certification>
+
+                </span>
+
             </span>
 
 
@@ -836,16 +865,16 @@
 
 
                         <li style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
-                                    (!networkController.isNetworkOwner || networkController.readOnlyChecked ||
-                                    networkController.hasMultipleSubNetworks())'
+                                    (!networkController.isNetworkOwner || hasMultipleSubNetworks() || isNetworkCertified()
+                                    || isDOIAssigned() || isDOIPending())'
                                 title="{{requestDOITitle}}">
                             <a>
                                 Request DOI
                             </a>
                         </li>
                         <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
-                                    (networkController.isNetworkOwner && !networkController.readOnlyChecked &&
-                                    !networkController.hasMultipleSubNetworks())'>
+                                    (networkController.isNetworkOwner && !hasMultipleSubNetworks() && !isNetworkCertified() &&
+                                     !isDOIAssigned() && !isDOIPending())'>
 
                             <a class="dropdown-btn"
                                ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
@@ -881,13 +910,15 @@
 
                         <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
                             ng-show='networkController.isLoggedInUser &&
-                                (networkController.isAdmin || networkController.canEdit || networkController.hasMultipleSubNetworks())'
+                                (networkController.isAdmin || networkController.canEdit ||
+                                networkController.hasMultipleSubNetworks() || isDOIPending() || isDOIAssigned() || isNetworkCertified())'
                             title="{{upgradePermissionTitle}}">
                             <a>Upgrade Permission</a>
                         </li>
                         <li style="margin: 3px 0; line-height: 1.2em"
                             ng-show='networkController.isLoggedInUser && !networkController.isAdmin
-                                && !networkController.canEdit && !networkController.hasMultipleSubNetworks()'>
+                                && !networkController.canEdit && !networkController.hasMultipleSubNetworks()
+                                && !isDOIPending() && !isDOIAssigned() && !isNetworkCertified()'>
 
                             <create-request-network
                                 privileges='networkController.privilegeLevel'
@@ -967,7 +998,7 @@
             <div class="modal-header">
                 <h3>Citations</h3>
             </div>
-            <span class="modal-body">
+            <div class="modal-body" style="max-height:520px; overflow:auto">
                 <span ng-repeat="citation in citations">
                     <dl class="dl-horizontal">
                         <!--
@@ -1006,7 +1037,7 @@
                             Contributor
                         </dt>
                         <dd ng-show="citation.contributor">
-                            {{citation.contributors}}
+                            {{citation.contributor}}
                         </dd>
 
                         <dt ng-show="citation.attributes">
@@ -1024,7 +1055,7 @@
                         </dd>
                     </dl>
                 </span>
-            </span>
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" ng-enter="ok()" ng-click="ok()">OK</button>
             </div>

@@ -68,7 +68,21 @@ input[type='radio']:checked:after {
         <div class="btn-group btn-group-xs" role="group" aria-label="...">
             <button type="button" class="btn btn-default disabled"><i class="fa fa-filter" aria-hidden="true"></i></button>
 
-            <button type="button" class="btn" ng-click="updateFieldFilters('MAIN')" ng-class="editor.viewfilter.state == 'DOI' ? 'btn-default': 'btn-primary'">All</button>
+
+            <button ng-if="!mainProperty.readonly"
+					type="button" class="btn" ng-click="updateFieldFilters('MAIN')"
+					ng-class="editor.viewfilter.state == 'DOI' ? 'btn-default': 'btn-primary'">All
+			</button>
+
+
+			<a ng-if="mainProperty.readonly"
+					type="button" title="Uanble to edit this network: it is read-only"
+			   		class="btn btn-disabled actionsLabelDisabled-default-btn" style="cursor: not-allowed;"
+					ng-class="editor.viewfilter.state == 'DOI' ? 'btn-default': 'btn-primary'">All
+			</a>
+
+
+
             <button type="button" class="btn" ng-click="updateFieldFilters('DOI')" ng-class="editor.viewfilter.state == 'DOI' ? 'btn-primary': 'btn-default'">DOI</button>
         </div>
     </div>

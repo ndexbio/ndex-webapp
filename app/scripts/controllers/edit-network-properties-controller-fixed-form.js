@@ -84,8 +84,10 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "Other"
     ];
 
+    editor.rightsCustom = "";
     editor.rightsOther = "";
-
+    editor.editCustomRights = false;
+    editor.isCertified = false;
     editor.scoringLookup = {
         'author': 10,
         'disease': 10,
@@ -111,7 +113,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "reference": "",
         "version": "",
         "visibility": "PRIVATE",
-        "indexed": true
+        "indexed": true,
+        "readonly": false
     };
 
     editor.doiRequired = {
@@ -513,36 +516,156 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.saveAndSubmitDOI = function(){
         if(editor.errors.length < 1){
             if(editor.checkDOIRequirements()){
-                editor.save();
+                var title = "Subimt DOI Request";
+                var message = "";
+                if(editor.isCertified){
+                    message = "Requesting a DOI for this network will have the following effects:<br /><br />"
+                        + "<ul>"
+                        + "<li>The network will be <span style='font-weight: bold;'>&quot;pre-Certified&quot;</span> and locked.</li>"
+                        + "<li>You will have a one-time chance to add/modify the reference info later</li>"
+                        + "<li>The current network's visibility will be preserved</li>"
+                        + "</ul>"
+                        + "<span style='font-weight: bold;'>Please make sure all information is correct before proceeding</span>";
+                } else {
+                    message = "Requesting a DOI for this network will have the following effects:<br /><br />"
+                        + "<ul>"
+                        + "<li>The network will be <span style='font-weight: bold;'>&quot;Certified&quot;</span> and permanently locked.</li>"
+                        + "<li>No further changes will be possible</li>"
+                        + "<li>The network's visibility will be set to PUBLIC</li>"
+                        + "<li>The network will be indexed for search</li>"
+                        + "</ul>"
+                        + "<span style='font-weight: bold;'>Please make sure all information is correct before proceeding</span>";
+
+                }
+
+                var dismissModal = true;
+                ndexNavigation.openConfirmationModal(title, message, "Submit DOI Request", "Go Back", dismissModal,
+                    function () {
+                        var showThesePropertiesInEmail = {
+                            "name": $scope.mainProperty.name,
+                            "description": $scope.mainProperty.description,
+                            "version": $scope.mainProperty.version,
+                            "author": editor.getPropertyValue('author'),
+                            "rights": editor.getPropertyValue('rights'),
+                            "rightsHolder": editor.getPropertyValue('rightsHolder'),
+                            "reference": $scope.mainProperty.reference,
+                            "contactEmail": editor.doiInfo.user.email,
+                            "pubDate": $('#doiDTPicker').val(),
+                            "isCertified": !editor.isCertified
+                        };
 
 
-                var saveTheseProperties = {
-                    "name": $scope.mainProperty.name,
-                    "description": $scope.mainProperty.description,
-                    "version": $scope.mainProperty.version,
-                    "author": editor.getPropertyValue('author'),
-                    "rights": editor.getPropertyValue('rights'),
-                    "rightsHolder": editor.getPropertyValue('rightsHolder'),
-                    "reference": $scope.mainProperty.reference,
-                    "contactEmail": editor.doiInfo.user.email,
-                    "pubDate": $('#doiDTPicker').val()
-                };
+                        // ensure the network is read-write, and then request a DOI
 
-                console.log(saveTheseProperties);
+                        ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, "readOnly", false,
 
-                ndexService.requestDoi(editor.networkExternalId, saveTheseProperties,
-                    function() {
-                        console.log("request created successfully!");
+                            function(data, networkId, property, value) {
+                                editor.save();
+
+                                ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
+                                    function () {
+                                        console.log("DOI created successfully");
+                                    },
+                                    function (error) {
+                                        editor.errors.push(error)
+                                    });
+                            },
+
+                        function(error, networkId, property, value) {
+                            console.log("unable to unset the Read Only flag on the network");
+                        });
                     },
-                    function(error){
-                        editor.errors.push(error)
+                    function () {
+                        // user canceled - do nothing
                     });
-
 
             } else {
                 editor.errors.push("Missing value")
             }
         }
+    };
+
+
+    editor.genericInfoModalAutoClose = function(title, message, closeIntervalInMs)
+    {
+        var InfoCtrl = function($scope, $modalInstance) {
+            $scope.title = title;
+            $scope.message = message;
+
+            $scope.close = function() {
+                $modalInstance.dismiss();
+            };
+
+            setTimeout(function() {
+                $modalInstance.dismiss();
+            }, closeIntervalInMs);
+        };
+
+        $modal.open({
+            templateUrl: 'pages/generic-info-modal.html',
+            controller: InfoCtrl,
+            backdrop: 'static'
+        });
+    };
+
+
+    editor.openConfirmationModal = function(title, message, confirmLabel, cancelLabel,
+                                         dismissModal, confirmHandler, cancelHandler){
+
+        ////console.log("attempting to open confirmationModal");
+
+        var ConfirmCtrl = function($scope, $modalInstance, $rootScope) {
+
+            $scope.title = title;
+            $scope.message = message;
+            $scope.cancelLabel = cancelLabel ? cancelLabel : "Cancel";
+            $scope.confirmLabel = confirmLabel ? confirmLabel : "Delete";
+
+            $scope.progress  = $rootScope.progress;
+            $scope.progress2 = $rootScope.progress2;
+            $scope.errors    = $rootScope.errors;
+            $scope.confirmButtonDisabled = $rootScope.confirmButtonDisabled;
+            $scope.cancelButtonDisabled  = $rootScope.cancelButtonDisabled;
+
+            $scope.confirm = function(){
+                if (dismissModal) {
+                    $modalInstance.dismiss();
+                    confirmHandler();
+                } else {
+                    confirmHandler($modalInstance);
+                };
+            };
+
+            $scope.cancel = function(){
+                if (dismissModal) {
+                    $modalInstance.dismiss();
+                    cancelHandler();
+                } else {
+                    cancelHandler($modalInstance);
+                };
+            };
+
+            $rootScope.$watch('progress', function(newValue, oldValue) {
+                $scope.progress = newValue;
+            });
+            $rootScope.$watch('progress2', function(newValue, oldValue) {
+                $scope.progress2 = newValue;
+            });
+            $rootScope.$watch('errors', function(newValue, oldValue) {
+                $scope.errors = newValue;
+            });
+            $rootScope.$watch('confirmButtonDisabled', function(newValue, oldValue) {
+                $scope.confirmButtonDisabled = newValue;
+            });
+            $rootScope.$watch('cancelButtonDisabled', function(newValue, oldValue) {
+                $scope.cancelButtonDisabled = newValue;
+            });
+        };
+
+        $modal.open({
+            templateUrl: 'pages/confirmationModal.html',
+            controller: ConfirmCtrl
+        });
     };
 
     editor.save = function() {
@@ -584,7 +707,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     pair.predicateString = pair.predicateStringCustom;
 
                 if(pair.predicateString === 'rights' && pair.value == "Other")
-                    pair.value = pair.rightsOther + " (" + pair.rightsOtherURL + ")";
+                    if (typeof pair.rightsOtherURL !== 'undefined' && pair.rightsOtherURL.length > 0){
+                        if(pair.rightsOtherURL.indexOf("http://") < 0){
+                            pair.rightsOtherURL = "http://" + pair.rightsOtherURL;
+                        }
+                        pair.value = pair.rightsOther + " (<a href='" + pair.rightsOtherURL + "'>" + pair.rightsOtherURL + "</a>)";
+
+                    }
+                    else
+                        pair.value = pair.rightsOther;
 
                 delete pair.isReadOnlyLabel;
                 delete pair.labelValue;
@@ -654,10 +785,10 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
             ndexService.setNetworkSystemPropertiesV2(networkId, "index", $scope.mainProperty.indexed,
                 function (data, networkId, property, value) {
-                    console.log("index set to " + $scope.mainProperty.indexed);
+                    ; //console.log("index set to " + $scope.mainProperty.indexed);
                 },
                 function (error, networkId, property, value) {
-                    console.log("unable to change indexed for Network with Id " + networkId);
+                    ; //console.log("unable to change indexed for Network with Id " + networkId);
                 });
 
 
@@ -853,6 +984,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.hiddenValuePairs = [];
                 $scope.mainProperty.name = network.name;
                 $scope.mainProperty.indexed = network.indexed;
+                $scope.mainProperty.readonly = network.isReadOnly;
                 if(!$scope.mainProperty.name){
                     $scope.mainProperty.name = "";
                 }
@@ -893,6 +1025,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     }
                     editor.showcased.state = network.isShowcase;
                 }
+
+                editor.isCertified = network.isCertified;
 
                 // break network properties into two sets: one set is "hidden", it contains
                 // "reserved property names" that every network has (these names are listed in $scope.reservedNames).
@@ -938,6 +1072,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     if(editor.propertyValuePairs[i] && editor.propertyValuePairs[i].predicateString == "rights"){
                         if(editor.rights.indexOf(editor.propertyValuePairs[i].value) < 0){
                             editor.rights.push(editor.propertyValuePairs[i].value);
+                            editor.rightsCustom = editor.propertyValuePairs[i].value;
                         }
                     }
                 }
@@ -981,6 +1116,18 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                 if($routeParams.doi){
                     editor.viewfilter.state = "DOI"
+
+                    var closeModalInterval = 15000; // ms
+
+                    var title    = "Important information";
+                    var message  = "Please be aware that requesting a DOI will permantly lock this network and no further editing will be possible. " +
+                        "You will still have a one-time opportunity to add a reference or update it later if you select the corresponding checkbox.";
+
+                    //Please be aware that requesting a DOI will permantly lock this network and no further editing will be possible. " +
+                    //" Please make sure all information is correct before proceeding.
+
+                    // Disable the modal on start up.  This may change in the future --
+                    // editor.genericInfoModalAutoClose(title, message, closeModalInterval);
                 } else {
                     editor.viewfilter.state = "MAIN"
                 }

@@ -664,7 +664,7 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableEditPropertiesBulkButton = true;
 
-                var unchangeableNetworkStates = {"read" : 0, "failed" : 0,
+                var unchangeableNetworkStates = {"read" : 0, "certified" : 0, "failed" : 0,
                     "processing" : 0, "collection" : 0, "readonly": 0};
 
                 var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
@@ -673,20 +673,18 @@ ndexApp.controller('myAccountController',
 
                     var status = row.Status;
 
-                    if (row.isReadOnly) {
-                        unchangeableNetworkStates["readonly"] += 1;
-                        $scope.enableEditPropertiesBulkButton = false;
-                        return true; // return true means "continue" in lodash's _.forEach loop
-                    };
-
                     var disableEditBulkButton =
                         (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
 
                     if (disableEditBulkButton) {
                         $scope.enableEditPropertiesBulkButton = false;
                         unchangeableNetworkStates[status.toLowerCase()] += 1;
-                    };
-                    if (row.externalId in myAccountController.networksWithReadAccess) {
+
+                    } else if (row.isReadOnly) {
+                        $scope.enableEditPropertiesBulkButton = false;
+                        unchangeableNetworkStates["readonly"] += 1;
+
+                    } else if (row.externalId in myAccountController.networksWithReadAccess) {
                         $scope.enableEditPropertiesBulkButton = false;
                         unchangeableNetworkStates['read'] += 1;
                     };
@@ -732,14 +730,43 @@ ndexApp.controller('myAccountController',
                         };
 
                         if ((unchangeableNetworkStates['read'] > 0) &&
-                            ((unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0)
-                            || (unchangeableNetworkStates['collection'] > 0) || (unchangeableNetworkStates['readonly'] > 0))) {
+                            ((unchangeableNetworkStates['certified'] > 0) || (unchangeableNetworkStates['failed'] > 0) ||
+                            (unchangeableNetworkStates['processing'] > 0) || (unchangeableNetworkStates['collection'] > 0)
+                            || (unchangeableNetworkStates['readonly'] > 0))) {
                             $scope.changeDescriptionButtonTitle += ", ";
                             $scope.changeReferenceButtonTitle   += ", ";
                             $scope.changeVersionButtonTitle     += ", ";
-
                         };
 
+                        if (unchangeableNetworkStates['certified'] > 1) {
+                            $scope.changeDescriptionButtonTitle +=
+                                unchangeableNetworkStates['certified'] + " networks are certified";
+
+                            $scope.changeReferenceButtonTitle +=
+                                unchangeableNetworkStates['certified'] + " networks are certified";
+
+                            $scope.changeVersionButtonTitle +=
+                                unchangeableNetworkStates['certified'] + " networks are certified";
+
+                        } else if (unchangeableNetworkStates['certified'] == 1) {
+                            $scope.changeDescriptionButtonTitle +=
+                                unchangeableNetworkStates['certified'] + " network is certified";
+
+                            $scope.changeReferenceButtonTitle +=
+                                unchangeableNetworkStates['certified'] + " network is certified";
+
+                            $scope.changeVersionButtonTitle +=
+                                unchangeableNetworkStates['certified'] + " network is certified";
+                        };
+
+                        if ((unchangeableNetworkStates['certified'] > 0) &&
+                            ((unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0)
+                            || (unchangeableNetworkStates['collection'] > 0)
+                            || (unchangeableNetworkStates['readonly'] > 0))) {
+                            $scope.changeDescriptionButtonTitle += ", ";
+                            $scope.changeReferenceButtonTitle   += ", ";
+                            $scope.changeVersionButtonTitle     += ", ";
+                        };
 
                         if (unchangeableNetworkStates['failed'] > 1) {
                             $scope.changeDescriptionButtonTitle += unchangeableNetworkStates['failed'] + " networks failed";
@@ -819,6 +846,11 @@ ndexApp.controller('myAccountController',
                             $scope.changeReferenceButtonTitle   += ": you do not have privilege to modify it ";
                             $scope.changeVersionButtonTitle     += ": you do not have privilege to modify it ";
 
+                        } else if (unchangeableNetworkStates['certified'] > 0) {
+                            $scope.changeDescriptionButtonTitle += ": it is certified ";
+                            $scope.changeReferenceButtonTitle   += ": it is certified ";
+                            $scope.changeVersionButtonTitle     += ": it is certified ";
+
                         } else if (unchangeableNetworkStates['failed'] > 0) {
                             $scope.changeDescriptionButtonTitle += ": it is failed ";
                             $scope.changeReferenceButtonTitle   += ": it is failed ";
@@ -849,7 +881,7 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableChangeVisibilityBulkButton = true;
 
-                var unchangeableNetworkStates = {"nonadmin" : 0, "failed" : 0,
+                var unchangeableNetworkStates = {"nonadmin" : 0, "certified" : 0, "failed" : 0,
                     "processing" : 0, "collection" : 0, "readonly": 0};
 
                 var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
@@ -864,18 +896,17 @@ ndexApp.controller('myAccountController',
 
                     var status = row.Status;
 
-                    if (row.isReadOnly) {
-                        unchangeableNetworkStates["readonly"] += 1;
-                        $scope.enableChangeVisibilityBulkButton = false;
-                        return true; // return true means "continue" in lodash's _.forEach loop
-                    };
-
-                    var disableShareBulkButton =
+                    var disableChangeVisibilityBulkMenu =
                         (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
 
-                    if (disableShareBulkButton) {
+                    if (disableChangeVisibilityBulkMenu) {
                         $scope.enableChangeVisibilityBulkButton = false;
                         unchangeableNetworkStates[status.toLowerCase()] += 1;
+
+                    } else if (row.isReadOnly) {
+                        $scope.enableChangeVisibilityBulkButton = false;
+                        unchangeableNetworkStates["readonly"] += 1;
+
                     };
                 });
 
@@ -897,6 +928,19 @@ ndexApp.controller('myAccountController',
                         };
 
                         if ((unchangeableNetworkStates['nonadmin'] > 0) &&
+                            ((unchangeableNetworkStates['certified'] > 0) || (unchangeableNetworkStates['failed'] > 0)
+                            || (unchangeableNetworkStates['processing'] > 0) || (unchangeableNetworkStates['collection'] > 0)
+                            || (unchangeableNetworkStates['readonly'] > 0))) {
+                            $scope.changeVisibilityButtonTitle += ", ";
+                        };
+
+                        if (unchangeableNetworkStates['certified'] > 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates['certified'] + " networks are certified";
+                        } else if (unchangeableNetworkStates['certified'] == 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates['certified'] + " network is certified";
+                        };
+
+                        if ((unchangeableNetworkStates['certified'] > 0) &&
                             ((unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0)
                             || (unchangeableNetworkStates['collection'] > 0) || (unchangeableNetworkStates['readonly'] > 0))) {
                             $scope.changeVisibilityButtonTitle += ", ";
@@ -948,6 +992,8 @@ ndexApp.controller('myAccountController',
 
                         if (unchangeableNetworkStates['nonadmin'] > 0) {
                             $scope.changeVisibilityButtonTitle += ": you do not own it ";
+                        } else if (unchangeableNetworkStates['certified'] > 0) {
+                            $scope.changeVisibilityButtonTitle += ": it is certified ";
                         } else if (unchangeableNetworkStates['failed'] > 0) {
                             $scope.changeVisibilityButtonTitle += ": it is failed ";
                         } else if (unchangeableNetworkStates['processing'] > 0) {
@@ -967,7 +1013,7 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableSetReadOnlyBulkButton = true;
 
-                var unchangeableNetworkStates = {"nonadmin" : 0, "failed" : 0, "processing" : 0, "collection" : 0};
+                var unchangeableNetworkStates = {"nonadmin" : 0, "certified" : 0, "failed" : 0, "processing" : 0, "collection" : 0};
                 var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
 
                 _.forEach (selectedNetworksRows, function(row) {
@@ -980,10 +1026,10 @@ ndexApp.controller('myAccountController',
 
                     var status = row.Status;
 
-                    var disableShareBulkButton =
+                    var disableSetReadOnlyBulkMenu  =
                         (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
 
-                    if (disableShareBulkButton) {
+                    if (disableSetReadOnlyBulkMenu) {
                         $scope.enableSetReadOnlyBulkButton = false;
                         unchangeableNetworkStates[status.toLowerCase()] += 1;
                     };
@@ -1007,11 +1053,22 @@ ndexApp.controller('myAccountController',
                         };
 
                         if ((unchangeableNetworkStates['nonadmin'] > 0) &&
-                            ((unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0)
+                            ((unchangeableNetworkStates['certified'] > 0) || (unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0)
                             || (unchangeableNetworkStates['collection'] > 0))) {
                             $scope.setReadOnlNetworkButtonTitle += ", ";
                         };
 
+
+                        if (unchangeableNetworkStates['certified'] > 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['certified'] + " networks are certified";
+                        } else if (unchangeableNetworkStates['certified'] == 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['certified'] + " network is certified";
+                        };
+
+                        if ((unchangeableNetworkStates['certified'] > 0) &&
+                            ((unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0) || (unchangeableNetworkStates['collection'] > 0))) {
+                            $scope.setReadOnlNetworkButtonTitle += ", "
+                        };
 
                         if (unchangeableNetworkStates['failed'] > 1) {
                             $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['failed'] + " networks failed";
@@ -1046,6 +1103,8 @@ ndexApp.controller('myAccountController',
 
                         if (unchangeableNetworkStates['nonadmin'] > 0) {
                             $scope.setReadOnlNetworkButtonTitle += ": you do not own it ";
+                        } else if (unchangeableNetworkStates['certified'] > 0) {
+                            $scope.setReadOnlNetworkButtonTitle += ": it is certified ";
                         } else if (unchangeableNetworkStates['failed'] > 0) {
                             $scope.setReadOnlNetworkButtonTitle += ": it is failed ";
                         } else if (unchangeableNetworkStates['processing'] > 0) {
@@ -1063,19 +1122,13 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableDeleteBulkButton = true;
 
-                var undeleteableNetworkStates = {"nonadmin" : 0, "readonly" : 0, "processing" : 0};
+                var undeleteableNetworkStates = {"nonadmin" : 0, "certified" : 0, "readonly" : 0, "processing" : 0};
                 var statesForWhichToDisable = Object.keys(undeleteableNetworkStates);
 
                 _.forEach (selectedNetworksRows, function(row) {
 
                     if (row.ownerUUID != myAccountController.loggedInIdentifier) {
                         undeleteableNetworkStates["nonadmin"] += 1;
-                        $scope.enableDeleteBulkButton = false;
-                        return true; // return true means "continue" in lodash's _.forEach loop
-                    };
-
-                    if (row.isReadOnly) {
-                        undeleteableNetworkStates["readonly"] += 1;
                         $scope.enableDeleteBulkButton = false;
                         return true; // return true means "continue" in lodash's _.forEach loop
                     };
@@ -1088,6 +1141,11 @@ ndexApp.controller('myAccountController',
                     if (disableDeleteBulkButton) {
                         $scope.enableDeleteBulkButton = false;
                         undeleteableNetworkStates[status.toLowerCase()] += 1;
+
+                    } else if (row.isReadOnly) {
+                        $scope.enableDeleteBulkButton = false;
+                        undeleteableNetworkStates["readonly"] += 1;
+
                     };
                 });
 
@@ -1109,6 +1167,18 @@ ndexApp.controller('myAccountController',
                         };
 
                         if ((undeleteableNetworkStates['nonadmin'] > 0) &&
+                            (((undeleteableNetworkStates['certified'] > 0) || undeleteableNetworkStates['readonly'] > 0) || (undeleteableNetworkStates['processing'] > 0))) {
+                            $scope.deleteNetworkButtonTitle += ", ";
+                        };
+
+
+                        if (undeleteableNetworkStates['certified'] > 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['certified'] + " networks are certified";
+                        } else if (undeleteableNetworkStates['certified'] == 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['certified'] + " network is certified";
+                        };
+
+                        if ((undeleteableNetworkStates['certified'] > 0) &&
                             ((undeleteableNetworkStates['readonly'] > 0) || (undeleteableNetworkStates['processing'] > 0))) {
                             $scope.deleteNetworkButtonTitle += ", ";
                         };
@@ -1135,6 +1205,8 @@ ndexApp.controller('myAccountController',
 
                         if (undeleteableNetworkStates['nonadmin'] > 0) {
                             $scope.deleteNetworkButtonTitle += ": you do not own it ";
+                        } else if (undeleteableNetworkStates['certified'] > 0) {
+                            $scope.deleteNetworkButtonTitle += ": it is certified ";
                         } else if (undeleteableNetworkStates['readonly'] > 0) {
                             $scope.deleteNetworkButtonTitle += ": it is read-only ";
                         } else if (undeleteableNetworkStates['processing'] > 0) {
@@ -1370,6 +1442,8 @@ ndexApp.controller('myAccountController',
                         networkStatus = "failed";
                     } else if (!network.isValid) {
                         networkStatus = "processing";
+                    } else if (network.isCertified) {
+                        networkStatus = "certified";
                     };
                     
                     if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
@@ -1416,7 +1490,7 @@ ndexApp.controller('myAccountController',
                         "Network Name"  :   networkName,
                         "Download"      :   download,
                         "Format"        :   format,
-                        "Ref."          :   reference,
+                        "Reference"     :   reference,
                         "Disease"       :   disease,
                         "Tissue"        :   tissue,
                         //"Nodes"         :   nodes,
@@ -3348,7 +3422,11 @@ ndexApp.controller('myAccountController',
                                 row.entity.Show = !row.entity.Show; // success
                             },
                             function (error, networkId, property, value) {
-                                console.log("unable to update showcase for Network with Id " + networkId);
+                                var errorMessage = uiMisc.formatErrorMessage("Unable to change showcase for network " +
+                                    "<strong>" + row.entity.name + "</strong>", error);
+                                var title = "Unable to Change Showcase";
+
+                                ndexNavigation.genericInfoModal(title, errorMessage);
                             });
                     };
                 };

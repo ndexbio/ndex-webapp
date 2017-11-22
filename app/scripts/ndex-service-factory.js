@@ -1176,6 +1176,14 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.updateReferenceForAPrecertifiedNetworkV2 = function(networkId, reference, successHandler, errorHandler) {
+                // Server API: Update Reference for a Precertified Network
+                // PUT /network/{networkid}/reference
+                var url = "/network/" + networkId + "/reference";
+                var config = ndexConfigs.getPutConfigV2(url, reference);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
 
             /*---------------------------------------------------------------------*
              * Network Sets
@@ -1462,10 +1470,15 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.requestDoi = function (networkId, properties, successHandler, errorHandler) {
+                var isCert = false;
+                if(properties.hasOwnProperty("isCertified")){
+                    isCert = properties["isCertified"];
+                }
                 requestData = {
                     "type": "DOI",
                     "networkId": networkId,
-                    "properties": properties
+                    "properties": properties,
+                    "isCertified": isCert
                 }
 
                 var url = "/admin/request";
@@ -1740,7 +1753,6 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', 'sharedProperties', "$win
         var config = {
             method: 'PUT',
             url: ndexServerURI + url,
-            //data: angular.toJson(putData),
             headers: {}
         };
         setAuthorizationHeader(config);
@@ -1751,7 +1763,7 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', 'sharedProperties', "$win
             } else {
                 config.data = JSON.stringify(putData);
             };
-        }
+        };
         return config;
     };
     
