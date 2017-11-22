@@ -1,9 +1,9 @@
-# Cloning NDEx Web App:
+## Cloning NDEx Web App:
 
 - git clone https://github.com/ndexbio/ndex-webapp.git
 - cd ndex-webapp
 
-# Build debug NDEx Web App:
+## Build debug NDEx Web App:
 
 - bower install
 - type 3 when prompted
@@ -21,7 +21,7 @@ Prefix the choice with ! to persist it to bower.json
 ? Answer --> 3
 
 
-# Build a Distribution version:
+## Build a Distribution version:
 - npm install
 - grunt build
 
