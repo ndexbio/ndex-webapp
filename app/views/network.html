@@ -163,12 +163,20 @@
                                     ng-if="isDOIPending()"
                                     class="btn btn-primary btn-sm disabled"><strong>&nbsp;DOI:</strong> Pending &nbsp;
                             </button>
-                            <button type="button"
-                                    ng-if="!isDOIPending()"
-                                    ngclipboard data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
-                                    ng-click="networkController.showURLInClipboardMessage()"
-                                    class="btn btn-primary btn-sm"><strong>&nbsp;DOI:</strong> {{networkController.currentNetwork.doi}}&nbsp;
-                            </button>
+
+
+                            <a id="copyNetworkShareURLToClipboardId3"
+                               ng-if="!isDOIPending()"
+                               ng-init="setToolTips()"
+                               data-toggle="tooltip"
+                               data-placement="bottom"
+                               ng-mouseover="changeTitle3(this)"
+                               ngclipboard
+                               data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
+                               class="actionsLabel btn btn-primary btn-sm">
+                                    <strong>&nbsp;DOI:</strong> {{networkController.currentNetwork.doi}}&nbsp;
+                            </a>
+
                             <br><br>
                         </div>
 
@@ -239,34 +247,36 @@
                                     <span ng-style="networkController.networkShareURL ? {color:'#18AD31'} : {color:'black'}">
                                         {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
                                     </span>
-                                    <button type="button" ng-hide="!networkController.networkShareURL"
-                                            ngclipboard data-clipboard-text="{{networkController.networkShareURL}}"
-                                            ng-click="networkController.showURLInClipboardMessage()"
-                                            class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
-                                    </button>
+
+                                    <a id="copyNetworkShareURLToClipboardId1"
+                                       ng-hide="!networkController.networkShareURL"
+                                       ng-init="setToolTips()"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       ng-mouseover="changeTitle(this)"
+                                       ngclipboard
+                                       data-clipboard-text="{{networkController.networkShareURL}}"
+                                       class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
+                                    </a>
+
                                 </span>
 
                                 <span ng-if="networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC'">
-                                    <button type="button" ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
-                                            ngclipboard data-clipboard-text="{{networkController.networkURL}}"
-                                            ng-click="networkController.showURLInClipboardMessage()"
-                                            class="actionsLabel btn btn-primary btn-xs">Copy URL
-                                    </button>
+
+                                    <a id="copyNetworkShareURLToClipboardId2"
+                                       ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
+                                       ng-init="setToolTips()"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       ng-mouseover="changeTitle2(this)"
+                                       ngclipboard
+                                       data-clipboard-text="{{networkController.networkURL}}"
+                                       class="actionsLabel btn btn-primary btn-xs">Copy URL
+                                    </a>
+
+
                                 </span>
                             </span>
-
-     <!--
-
-                            <span ng-if="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'">
-                                <span style="font-weight: bold;">DOI:</span> {{networkController.currentNetwork.doi}}
-                                <button type="button"
-                                        ngclipboard data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
-                                        ng-click="networkController.showURLInClipboardMessage()"
-                                        class="btn btn-primary btn-xs">Copy DOI
-                                </button>
-                            </span>
-     -->
-
 
                             <br /><br />
 
@@ -290,19 +300,6 @@
                                 {{networkController.privilegeLevel}}<br/>
                             </span>
 
-                            <!--
-                            <div class="wrapLongLine" ng-if="networkController.isNetworkOwner">
-                                <strong>Share URL: </strong>
-                                <span ng-style="networkController.networkShareURL ? {color:'green'} : {color:'black'}">
-                                    {{networkController.networkShareURL ? 'Active' : 'Inactive'}}
-                                </span>
-                                <button type="button" ng-hide="!networkController.networkShareURL"
-                                        ngclipboard data-clipboard-text="{{networkController.networkShareURL}}"
-                                        ng-click="networkController.showURLInClipboardMessage()"
-                                        class="btn btn-success btn-xs">Copy URL
-                                </button>
-                            </div>
-                            -->
 
                             <span ng-show="networkController.hasMultipleSubNetworks()" style="color:red">
                                 <span class="networkPropertyName">Warning: </span>

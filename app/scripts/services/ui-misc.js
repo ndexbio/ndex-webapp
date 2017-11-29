@@ -88,6 +88,11 @@ angular.module('ndexServiceApp')
                     property.subNetworkId == subNetworkId)
                 {
                     reference = (property.value) ? property.value : null;
+
+                    // if reference only has white spaces (i.e., "\n      "), then we treat it as null
+                    if (reference && !(/\S/.test(reference))) {
+                        reference = null;
+                    }
                     break;
                 }
             }

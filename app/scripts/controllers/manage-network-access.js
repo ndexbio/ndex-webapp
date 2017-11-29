@@ -56,6 +56,29 @@ ndexApp.controller('manageNetworkAccessController',
 		uiMisc.showSearchMenuItem();
 	});
 
+	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+	$scope.changeTitle = function(obj) {
+		setTooltip("Copy network share URL to clipboard");
+	};
+
+	var clipboard = new Clipboard('#copyShareURLButtonFromSharePageId');
+
+	function setTooltip(message) {
+		$('#copyShareURLButtonFromSharePageId').tooltip('hide')
+			.attr('data-original-title', message)
+			.tooltip('show');
+	}
+	clipboard.on('success', function(e) {
+		setTooltip('Copied');
+	});
+    $scope.setToolTips = function(){
+        var myToolTips = $('[data-toggle="tooltip"]');
+        myToolTips.tooltip();
+    };
+
+
 	$scope.isDOIPending = function() {
 		return uiMisc.isDOIPending(networkManager.network);
 	};
@@ -1048,16 +1071,6 @@ ndexApp.controller('manageNetworkAccessController',
             function(error) {
                 console.log("unable to get access key for network " + networkManager.externalId);
             });
-	};
-
-	$scope.showURLInClipboardMessage = function() {
-
-        var closeModalInterval = 1000; // ms
-
-        var title    = "URL Copied To Clipboard";
-        var message  = "The URL for this network set was copied to the clipboard.";
-
-        ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
 	};
 
 

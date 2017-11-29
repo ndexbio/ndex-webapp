@@ -39,6 +39,28 @@ ndexApp.controller('networkSetController',
     var activateURLLabel   = "Enable Share URL";
     var deActivateURLLabel = "Disable Share URL";
 
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+    $scope.changeTitle = function(obj) {
+        setTooltip("Copy network set share URL to clipboard");
+    };
+
+    var clipboard = new Clipboard('#copyNetworkSetURLToClipboardId');
+
+    function setTooltip(message) {
+        $('#copyNetworkSetURLToClipboardId').tooltip('hide')
+            .attr('data-original-title', message)
+            .tooltip('show');
+    };
+    clipboard.on('success', function(e) {
+        setTooltip('Copied');
+    });
+    $scope.setToolTips = function(){
+        var myToolTips = $('[data-toggle="tooltip"]');
+        myToolTips.tooltip();
+    };
+
 
     $scope.$on("$destroy", function(){
         // hide the Search menu item in Nav Bar
@@ -495,16 +517,6 @@ ndexApp.controller('networkSetController',
 
                 ndexNavigation.genericInfoModal(title, message);
             });
-    };
-
-    networkSetController.showURLInClipboardMessage = function() {
-
-        var closeModalInterval = 1000; // ms
-
-        var title    = "URL Copied To Clipboard";
-        var message  = "The URL for this network set was copied to the clipboard.";
-
-        ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
     };
 
     networkSetController.getStatusOfShareableURL = function() {

@@ -602,7 +602,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         };
 
         $modal.open({
-            templateUrl: 'pages/generic-info-modal.html',
+            templateUrl: 'views/generic-info-modal.html',
             controller: InfoCtrl,
             backdrop: 'static'
         });

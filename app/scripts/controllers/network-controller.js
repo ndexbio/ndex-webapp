@@ -72,6 +72,53 @@ ndexApp.controller('networkController',
             // from the "Network Cloned" information modal.
             //$modalStack.dismissAll('close');
 
+
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+            $scope.changeTitle = function(obj) {
+                setTooltip("Copy network share URL to clipboard");
+            };
+            $scope.changeTitle2 = function(obj) {
+                setTooltip2("Copy network URL to clipboard");
+            };
+            $scope.changeTitle3 = function(obj) {
+                setTooltip3("Copy network DOI to clipboard");
+            };
+
+            var clipboard  = new Clipboard('#copyNetworkShareURLToClipboardId1');
+            var clipboard2 = new Clipboard('#copyNetworkShareURLToClipboardId2');
+            var clipboard3 = new Clipboard('#copyNetworkShareURLToClipboardId3');
+
+            function setTooltip(message) {
+                $('#copyNetworkShareURLToClipboardId1').tooltip('hide')
+                    .attr('data-original-title', message)
+                    .tooltip('show');
+            }
+            function setTooltip2(message) {
+                $('#copyNetworkShareURLToClipboardId2').tooltip('hide')
+                    .attr('data-original-title', message)
+                    .tooltip('show');
+            }
+            function setTooltip3(message) {
+                $('#copyNetworkShareURLToClipboardId3').tooltip('hide')
+                    .attr('data-original-title', message)
+                    .tooltip('show');
+            }
+            clipboard.on('success', function(e) {
+                setTooltip('Copied');
+            });
+            clipboard2.on('success', function(e) {
+                setTooltip2('Copied');
+            });
+            clipboard3.on('success', function(e) {
+                setTooltip3('Copied');
+            });
+            $scope.setToolTips = function(){
+                var myToolTips = $('[data-toggle="tooltip"]');
+                myToolTips.tooltip();
+            };
+
             networkController.tabs = [
                 {"heading": "Network Info", 'active':true},
                 {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
@@ -2281,15 +2328,6 @@ ndexApp.controller('networkController',
                             };
                         }
                     );
-            };
-
-            networkController.showURLInClipboardMessage = function() {
-                var closeModalInterval = 1000; // ms
-
-                var title   = "URL Copied To Clipboard";
-                var message = "The URL for this network was copied to the clipboard. ";
-
-                ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
             };
 
             networkController.getStatusOfShareableURL = function() {

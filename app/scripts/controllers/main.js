@@ -9,6 +9,37 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 $scope.main.signout();
         });
 
+
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $scope.changeTitle = function(obj) {
+            setTooltip("Copy the NDEx citation information to the clipboard");
+        };
+
+        var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
+
+        function setTooltip(message) {
+            $('#copyNDExCitationToClipboardId').tooltip('hide')
+                .attr('data-original-title', message)
+                .tooltip('show');
+        };
+        /*
+        function hideTooltip() {
+            setTimeout(function() {
+                $('#copyNDExCitationToClipboardId').tooltip('hide');
+            }, 1000);
+        };
+        */
+        clipboard.on('success', function(e) {
+            setTooltip('Copied');
+        });
+        $scope.setToolTips = function(){
+            var myToolTips = $('[data-toggle="tooltip"]');
+            myToolTips.tooltip();
+        };
+
+
         $scope.showFooter = true;
 
         $scope.main = {};
@@ -495,26 +526,17 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             win.focus();
         };
 
-        /*----------------------------------------------
-         * This function closes/collapses the opened hamburger menu after user selected (clicked) an item from this menu.
-         ----------------------------------------------*/
+
         $scope.collapseHamburgerMenu = function() {
             $(".navbar-collapse.in").collapse('hide');
         };
-
-
-        /*----------------------------------------------
-         * Use an alert to let the user know that the citation has been copied to the clipboard
-         ----------------------------------------------*/
-
-        $scope.showNDExCitationInClipboardMessage = function() {
-            var closeModalInterval = 2000; // ms
-
-            var title   = "NDEx Citation Copied";
-            var message  = "The NDEx citation information was copied to the clipboard. ";
-
-            ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
+        $scope.collapseHamburgerMenuAfterMs = function(timeInMs) {
+            setTimeout(function() {
+                $scope.collapseHamburgerMenu();
+            }, timeInMs);
         };
+
+
 
          $scope.showSearchBar = function() {
 

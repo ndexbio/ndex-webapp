@@ -185,20 +185,11 @@
 
                         controller: function($scope, $modalInstance, ndexNavigation) {
 
+
                             $scope.network = network;
 
                             $scope.close = function () {
                                 $modalInstance.dismiss();
-                            };
-
-                            $scope.showURLInClipboardMessage = function () {
-
-                                var closeModalInterval = 1000; // ms
-
-                                var title    = "URL Copied To Clipboard";
-                                var message  = "The URL for this network was copied to the clipboard.";
-
-                                ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
                             };
                         }
                     });
@@ -213,19 +204,32 @@
 
                             $scope.set = set;
 
+                            $(document).ready(function(){
+                                $('[data-toggle="tooltip"]').tooltip();
+                            });
+                            $scope.changeTitle = function(obj) {
+                                setTooltip("Copy network set share URL to clipboard");
+                            };
+
+                            var clipboard = new Clipboard('#copyNetworkSetURLToClipboardId1');
+
+                            function setTooltip(message) {
+                                $('#copyNetworkSetURLToClipboardId1').tooltip('hide')
+                                    .attr('data-original-title', message)
+                                    .tooltip('show');
+                            }
+                            clipboard.on('success', function(e) {
+                                setTooltip('Copied');
+                            });
+                            $scope.setToolTips = function(){
+                                var myToolTips = $('[data-toggle="tooltip"]');
+                                myToolTips.tooltip();
+                            };
+
                             $scope.close = function() {
                                 $modalInstance.dismiss();
                             };
 
-                            $scope.showURLInClipboardMessage = function() {
-
-                                var closeModalInterval = 1000; // ms
-
-                                var title    = "URL Copied To Clipboard";
-                                var message  = "The URL for this network set was copied to the clipboard.";
-
-                                ndexNavigation.genericInfoModalAutoClose(title, message, closeModalInterval);
-                            };
                         }
                     });
                 };

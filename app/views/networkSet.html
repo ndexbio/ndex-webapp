@@ -51,11 +51,17 @@
                     &nbsp;{{networkSetController.networkSetShareableURL ? 'Enabled' :  'Disabled'}}
                 </span>
                 &nbsp;&nbsp;
-                <button type="button" ng-hide="!networkSetController.networkSetShareableURL"
-                        ngclipboard data-clipboard-text="{{networkSetController.networkSetShareableURL}}"
-                        ng-click="networkSetController.showURLInClipboardMessage()"
+                <a id="copyNetworkSetURLToClipboardId"
+                        ng-hide="!networkSetController.networkSetShareableURL"
+                        ng-init="setToolTips()"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        ng-mouseover="changeTitle(this)"
+                        ngclipboard
+                        data-clipboard-text="{{networkSetController.networkSetShareableURL}}"
                         class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
-                </button>
+                </a>
+
             </div>
 
             <div class="btn-group btn-group-vertical buttonWithMarginBottom" ng-if="networkSetController.isLoggedInUser">

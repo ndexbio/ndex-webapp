@@ -64,8 +64,8 @@
     <script src="bower_components/angular-ui-grid/ui-grid.js"></script>
     <script src="bower_components/spin.js/spin.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="bower_components/clipboard/dist/clipboard.js"></script>
-    <script src="bower_components/ngclipboard/dist/ngclipboard.js"></script>
+    <script src="bower_components/clipboard/dist/clipboard.min.js"></script>
+    <script src="bower_components/ngclipboard/dist/ngclipboard.min.js"></script>
     <script src="bower_components/to-markdown/dist/to-markdown.js"></script>
     <script src="bower_components/vis/dist/vis.min.js"></script>
     <!-- endbower -->
@@ -346,8 +346,14 @@
                     </a>
                 </li>
                 <li>
-                    <a ng-click="collapseHamburgerMenu(); showNDExCitationInClipboardMessage()"
-                       ngclipboard data-clipboard-text="{{NDEx.citation}}">
+                    <a id="copyNDExCitationToClipboardId"
+                       ng-click="collapseHamburgerMenuAfterMs(750);"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       ng-mouseover="changeTitle(this)"
+                       ng-init="setToolTips()"
+                       ngclipboard
+                       data-clipboard-text="{{NDEx.citation}}">
                         {{config.citeNDEx.label}}
                     </a>
                 </li>
