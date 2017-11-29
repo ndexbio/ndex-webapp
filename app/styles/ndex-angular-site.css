@@ -1057,9 +1057,10 @@ span.glyphicon-refresh {
     min-width: 170px;
 }
 
-// we need this to make sure that places where we use  <text-angular ... > are rendered nicely.
-// If we do not do that, then textareas in Create Network Set Modal, Create Group, Edit Personal Info
-// will be too big (300px high)
+/* we need this to make sure that places where we use  <text-angular ... > are rendered nicely.
+   If we do not do that, then textareas in Create Network Set Modal, Create Group, Edit Personal Info
+   will be too big (300px high)
+*/
 .ta-editor.ta-html {
     min-height: 150px;
     height: 150px;
