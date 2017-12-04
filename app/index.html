@@ -549,7 +549,12 @@
                           startWebApp(null,null);
                       })
               } else {
-                  angular.bootstrap(document, ['ndexApp']);
+                  try {
+                      angular.bootstrap(document, ['ndexApp']);
+                  } catch(e) {
+                      //already loaded; do not do anything here; we use the try .. catch block to silence up
+                      // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
+                  };
               }
           }
       });
@@ -561,9 +566,13 @@
       if ( signedInUser !=null ) {
           window.currentNdexUser = signedInUser;
           window.currentSignInType = type;
-      }
-      angular.bootstrap(document, ['ndexApp']);
-
+      };
+      try {
+          angular.bootstrap(document, ['ndexApp']);
+      } catch(e) {
+          //already loaded; do not do anything here; we use the try .. catch block to silence up
+          // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
+      };
   }
 
   window.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
