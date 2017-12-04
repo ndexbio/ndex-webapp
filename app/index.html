@@ -124,7 +124,17 @@
     <!-- endbuild -->
 
 
+    <noscript>
+        <!-- This will execute if JavaScript os disabled in the browser -->
+        <div class="cookiesOrJavascriptDisabledWarning">
+            JavaScript is not enabled in your browser. <br>
+            NDEx requires that JavaScript be enabled. <br>
+            Please turn JavaScript on and try again.
+        </div>
+    </noscript>
 
+    <!-- This element will be filled in and shown in case third-parties cookies are blocked by the browser -->
+    <div id="noThirdPartyhCookiesEnabledId"></div>
 
 </head>
 
@@ -275,6 +285,7 @@
 <nav class="navbar navbar-fixed-top">
     <div class="navbar-ndex navbar-ndex-top" style="padding-right: 20px;">
         <div class="navbar-header">
+
             <button type="button"
                     class="navbar-toggle"
                     data-toggle="collapse"
@@ -291,7 +302,8 @@
                ng-click="collapseHamburgerMenu(); redirectToCurrentServer()"
                style="max-height: 50px; padding-top: 0; padding-bottom: 0;">
 
-                <div style="
+                <div id="hiddenElementId" style="
+                    display: none;
                     background-image: url('images/NDEx-horizontal-transparent.png');
                     background-repeat: no-repeat;
                     background-position: 0px 10px;
@@ -306,7 +318,8 @@
 
         <div class="navbar-collapse collapse" id="myNavbar">
 
-            <ul class="nav navbar-nav navbar-left" ng-show="!main.serverIsDown">
+            <ul id="hiddenElementId1" class="nav navbar-nav navbar-left" style="display: none"
+                ng-show="(main.serverIsDown != null) && !main.serverIsDown">
                 <li>
                     <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.newsLink)">{{config.newsLink.label}}
@@ -333,6 +346,7 @@
                     </a>
                 </li>
                 -->
+
                 <li>
                     <a ng-href="{{$location.path()}}"
                        ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.reportBugLink)">
@@ -360,7 +374,8 @@
 
             </ul>
 
-            <ul class="nav navbar-nav navbar-right">
+
+            <ul id="hiddenElementId2" class="nav navbar-nav navbar-right" style="display: none">
 
                 <li ng-show="showSearchMenu">
                     <a ng-click="collapseHamburgerMenu(); showSearchBar()">
@@ -432,25 +447,53 @@
 -->
 
 
-<div ng-show='showFooter'>
-    <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter"  >
-        <div class='footer-content' >
-            Copyright &copy; 2013-<script type="text/javascript">var d = new Date(); document.write(d.getFullYear());</script>,
-            The Regents of the University of California, The Cytoscape Consortium.
-            All rights reserved.
-            &nbsp;<a href="http://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
-        </div>
-    </nav>
-</div>
+
+    <div ng-show='showFooter' id="hiddenElementId3" style="display: none">
+        <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter"  >
+            <div class='footer-content' >
+                Copyright &copy; 2013-<script type="text/javascript">var d = new Date(); document.write(d.getFullYear());</script>,
+                The Regents of the University of California, The Cytoscape Consortium.
+                All rights reserved.
+                &nbsp;<a href="http://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
+            </div>
+        </nav>
+    </div>
+
 
 
 <script>
+
     $(window).resize(function() {
         $('#cytoscape-canvas').height($(window).height() - 200);
         $("#divNetworkTabs").height($(window).height() - 200);
     });
 
     $(window).trigger('resize');
+
+
+    // This code is a part of check if our browser has Third-party cookies enabled
+    // It is taken from (for more information
+    //       please visit)  https://github.com/mindmup/3rdpartycookiecheck
+    var receiveMessage = function (evt) {
+
+        if (evt.data === 'MM:3PCunsupported') {
+
+            document.getElementById("noThirdPartyhCookiesEnabledId").innerHTML =
+                '<div class="cookiesOrJavascriptDisabledWarning">' +
+                'Third-parties cookies are blocked by your browser. <br>' +
+                'NDEx requires that third-parties cookies be unblocked. <br>' +
+                'Please unblock the third-parties cookies and try again. </div>';
+
+        } else { // if (evt.data === 'MM:3PCsupported') {
+
+            if (typeof ndexSettings === 'undefined') {
+                alert("Update your ndex-webapp-config.js file");
+            } else {
+                gapi.load('client:auth2', initClient);
+            }
+        }
+    };
+    window.addEventListener("message", receiveMessage, false);
 
 
   function initClient() {
@@ -518,17 +561,15 @@
 
   }
 
-
   window.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
-
-    if (typeof ndexSettings === 'undefined') {
-        alert("Update your ndex-webapp-config.js file");
-    } else {
-        gapi.load('client:auth2', initClient);
-    }
 
 
 </script>
+
+<!-- NB: we need the iframe code below to check if our browser has Third-party cookies enabled -->
+<!-- This code is taken from (for more information
+<!--        please visit)  https://github.com/mindmup/3rdpartycookiecheck -->
+<iframe src="https://mindmup.github.io/3rdpartycookiecheck/start.html" style="display:none" />
 
 </body>
 

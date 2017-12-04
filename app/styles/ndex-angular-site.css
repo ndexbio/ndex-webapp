@@ -949,10 +949,6 @@ ul.ndex-nav-pills > li > a:hover {
     position:relative;
     margin-right: -2em;
     top: -1.5em;
-
-    //width: 1.5em;
-    //height: 1.5em;
-    //border-radius: 50%;
 }
 
 span.glyphicon-refresh {
@@ -1074,4 +1070,17 @@ span.glyphicon-refresh {
     overflow: auto;
     font-family: inherit;
     font-size: 100%;
+}
+
+.cookiesOrJavascriptDisabledWarning
+{
+    border: 5px solid red;
+    padding: 1em;
+    margin: 2em;
+    color:red;
+    font-size: 1.5em;
+    line-height: 1.7em;
+    border-radius: 10px;
+    width: 30em;
+    margin-top: -2em;
 }

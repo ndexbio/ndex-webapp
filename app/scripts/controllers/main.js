@@ -175,7 +175,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.config = window.ndexSettings;
 
         //Test whether the server is up or not.
-        $scope.main.serverIsDown = false;
+        $scope.main.serverIsDown = null;
+
+
         ndexService.getServerStatus('full',
             function(data, status, headers, config) {
                 // this callback will be called asynchronously
@@ -185,9 +187,19 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     $scope.$parent.ImporterExporters = JSON.parse(JSON.stringify(data.properties.ImporterExporters));
                 }
                 $scope.main.serverIsDown = false;
+
+                document.getElementById("hiddenElementId").style.display  = "";
+                document.getElementById("hiddenElementId1").style.display = "";
+                document.getElementById("hiddenElementId2").style.display = "";
+                document.getElementById("hiddenElementId3").style.display = "";
             },
             function(data, status, headers, config) {
                 $scope.main.serverIsDown = true;
+
+                document.getElementById("hiddenElementId").style.display  = "";
+                document.getElementById("hiddenElementId1").style.display = "";
+                document.getElementById("hiddenElementId2").style.display = "";
+                document.getElementById("hiddenElementId3").style.display = "";
             });
 
         $scope.main.startSignIn = function()
