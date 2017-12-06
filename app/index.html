@@ -29,7 +29,7 @@
     <!-- it is important to load angular *after* jQuery if you want angular to have access
          to full jQuery functionality instead of angular's internal 'lite' version -->
 
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" type="text/css">
 
     <!-- build:js(app) scripts/vendor.js -->
     <!-- bower:js -->
@@ -459,7 +459,7 @@
             Copyright &copy; 2013-<script type="text/javascript">var d = new Date(); document.write(d.getFullYear());</script>,
             The Regents of the University of California, The Cytoscape Consortium.
             All rights reserved.
-            &nbsp;<a href="http://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
+            &nbsp;<a href="https://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
         </div>
     </nav>
 </div>
@@ -482,6 +482,8 @@
     var receiveMessage = function (evt) {
 
         if (evt.data === 'MM:3PCunsupported') {
+
+            //angular.bootstrap(document, ['ndexApp']);
 
             document.getElementById("noThirdPartyhCookiesEnabledId").innerHTML =
                 '<div class="cookiesOrJavascriptDisabledWarning">' +
