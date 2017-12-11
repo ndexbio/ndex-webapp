@@ -4,6 +4,8 @@ ndexApp.controller('signInController', [ 'ndexService', 'ndexUtility', 'sharedPr
               $scope, $location, $modal, $route, $http, $interval, $rootScope) {
 
 
+        $scope.googleSSO = window.googleSSO;
+
         $scope.config = window.ndexSettings;
 
 //---------------------------------------------
@@ -15,6 +17,30 @@ ndexApp.controller('signInController', [ 'ndexService', 'ndexUtility', 'sharedPr
 
       //  var ff= navigator.userAgent;
         $scope.isNotSafari = !window.isSafari;
+
+
+        if (!$scope.googleSSO)
+        {
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+            var clipboard = new Clipboard('#googleSignInButtonId');
+
+            function setTooltip(message) {
+                $('#googleSignInButtonId').tooltip('hide').attr('data-original-title', message).tooltip('show');
+            };
+            $scope.setToolTips = function(){
+                var myToolTips = $('[data-toggle="tooltip"]');
+                myToolTips.tooltip();
+            };
+        }
+
+        $scope.doNothing = function() {
+            return false;
+        };
+
+
 
         $scope.signIn.submitSignIn = function () {
             ndexUtility.clearUserCredentials();

@@ -1003,6 +1003,7 @@ span.glyphicon-refresh {
     height: 40px ;
     line-height: 40px !important;
     width: 250px;
+
 }
 
 
@@ -1049,6 +1050,8 @@ span.glyphicon-refresh {
     background: #e9e9e9;
 }
 
+
+
 .minwidth170 {
     min-width: 170px;
 }
@@ -1072,7 +1075,7 @@ span.glyphicon-refresh {
     font-size: 100%;
 }
 
-.cookiesOrJavascriptDisabledWarning
+.jsOrCookiesDisabledWarning
 {
     border: 5px solid red;
     padding: 1em;
@@ -1081,6 +1084,6 @@ span.glyphicon-refresh {
     font-size: 1.5em;
     line-height: 1.7em;
     border-radius: 10px;
-    width: 30em;
+    width: 23em;
     margin-top: -2em;
 }

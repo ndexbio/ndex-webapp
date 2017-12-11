@@ -123,18 +123,17 @@
 
     <!-- endbuild -->
 
-
     <noscript>
         <!-- This will execute if JavaScript is disabled in the browser -->
-        <div class="cookiesOrJavascriptDisabledWarning">
+        <div class="jsOrCookiesDisabledWarning">
             JavaScript is not enabled in your browser. <br>
             NDEx requires that JavaScript be enabled. <br>
             Please turn JavaScript on and try again.
         </div>
     </noscript>
 
-    <!-- This element will be filled in and shown in case third-parties cookies are blocked by the browser -->
-    <div id="noThirdPartyhCookiesEnabledId"></div>
+    <!-- This element will be filled in and shown in case  cookies are blocked by the browser -->
+    <div id="noCookiesEnabledId"></div>
 
 </head>
 
@@ -476,32 +475,37 @@
     $(window).trigger('resize');
 
 
-    // This code is a part of check if our browser has Third-party cookies enabled
-    // It is taken from (for more information
-    //       please visit)  https://github.com/mindmup/3rdpartycookiecheck
-    var receiveMessage = function (evt) {
 
-        if (evt.data === 'MM:3PCunsupported') {
+    function logInUserWithBasicAuth() {
+        var initInjector = angular.injector(["ng"]);
+        var $http = initInjector.get("$http");
 
-            //angular.bootstrap(document, ['ndexApp']);
+        var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
-            document.getElementById("noThirdPartyhCookiesEnabledId").innerHTML =
-                '<div class="cookiesOrJavascriptDisabledWarning">' +
-                'Third-parties cookies are blocked by your browser. <br>' +
-                'NDEx requires that third-parties cookies be unblocked. <br>' +
-                'Please unblock the third-parties cookies and try again. </div>';
-
-        } else { // if (evt.data === 'MM:3PCsupported') {
-
-            if (typeof ndexSettings === 'undefined') {
-                alert("Update your ndex-webapp-config.js file");
-            } else {
-                gapi.load('client:auth2', initClient);
-            }
-        }
+        if (loggedInUser) {
+            $http({
+                    method: 'GET',
+                    url: ndexSettings.ndexServerUri + "/user?valid=true&setAuthHeader=false",
+                    headers: {
+                        Authorization: "Basic " + btoa(loggedInUser.userName + ":" + loggedInUser.token)
+                    }
+                }
+            )
+            .success(function(data, status, headers, config, statusText) {
+                startWebApp(data, 'basic');
+            })
+            .error(function(error, status, headers, config, statusText) {
+                startWebApp(null,null);
+            })
+        } else {
+            try {
+                angular.bootstrap(document, ['ndexApp']);
+            } catch(e) {
+                //already loaded; do not do anything here; we use the try .. catch block to silence up
+                // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
+            };
+        };
     };
-    window.addEventListener("message", receiveMessage, false);
-
 
   function initClient() {
       gapi.client.init({
@@ -525,40 +529,26 @@
                     }
                   }
               )
-                  .success(function(data, status, headers, config, statusText) {
-                      startWebApp(data, 'google');
-                  })
-                  .error(function(error, status, headers, config, statusText) {
-                      startWebApp(null,null);
-                  })
+              .success(function(data, status, headers, config, statusText) {
+                  startWebApp(data, 'google');
+              })
+              .error(function(error, status, headers, config, statusText) {
+                  startWebApp(null,null);
+              })
 
           } else {
-              var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
-              if (loggedInUser) {
-                  $http({
-                          method: 'GET',
-                          url: ndexSettings.ndexServerUri + "/user?valid=true&setAuthHeader=false",
-                          headers: {
-                              Authorization: "Basic " + btoa(loggedInUser.userName + ":" + loggedInUser.token)
-                          }
-                      }
-                  )
-                      .success(function(data, status, headers, config, statusText) {
-                          startWebApp(data, 'basic');
-                      })
-                      .error(function(error, status, headers, config, statusText) {
-                          startWebApp(null,null);
-                      })
-              } else {
-                  try {
-                      angular.bootstrap(document, ['ndexApp']);
-                  } catch(e) {
-                      //already loaded; do not do anything here; we use the try .. catch block to silence up
-                      // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
-                  };
-              }
-          }
+              logInUserWithBasicAuth();
+
+          };
+      }, function(error) {
+
+          // this is the case where 3rd parties cookies are blocked by the browser.
+          // Google SSO is therefore unavailable.  Log in with Basic Auth.
+
+          //localStorage.setItem('noGoogleSSO', 'true');
+          window.googleSSO = false;
+          logInUserWithBasicAuth();
       });
 
   }
@@ -577,15 +567,35 @@
       };
   }
 
-  window.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+
+
+    if (navigator.cookieEnabled) {
+
+        window.googleSSO = true;
+
+        window.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) {
+                return p.toString() === "[object SafariRemoteNotification]";
+            })(!window['safari'] || safari.pushNotification);
+
+        if (typeof ndexSettings === 'undefined') {
+            alert("Update your ndex-webapp-config.js file");
+        } else {
+            gapi.load('client:auth2', initClient);
+        };
+
+    } else {
+
+        // cookies are blocked by the browser - NDEx cannot run since localStorage is unavailable
+
+        document.getElementById("noCookiesEnabledId").innerHTML =
+            '<div class="jsOrCookiesDisabledWarning">' +
+            'Cookies are blocked by your browser. <br>' +
+            'NDEx requires that cookies be unblocked. <br>' +
+            'Please unblock cookies and try again. </div>';
+    };
 
 
 </script>
-
-<!-- NB: we need the iframe code below to check if our browser has Third-party cookies enabled -->
-<!-- This code is taken from (for more information
-<!--        please visit)  https://github.com/mindmup/3rdpartycookiecheck -->
-<iframe src="https://mindmup.github.io/3rdpartycookiecheck/start.html" style="display:none" />
 
 </body>
 

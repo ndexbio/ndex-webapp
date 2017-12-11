@@ -26,15 +26,54 @@
                     <br><br>
                     <div ng-show="isNotSafari">
                         <div class="AlignCenter">OR</div>
+
                         <br>
+
+
+                        <div class="AlignCenter google-button">
+                            <button id="googleSignInButtonId"
+                                    ng-show="!googleSSO"
+                                    class="google-sign-in-button"
+                                    style="color: #B6B6B6; background-color: #FFF; cursor: not-allowed"
+                                    data-toggle="tooltip"
+                                    title="Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser.
+                            To use the Google Sign In feature you can do one of two things:
+1. Add 'accounts.google.com' to the list of websites allowed to write/read THIRD-PARTY COOKIES, or
+2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings."
+                                    data-placement="bottom"
+                                    style="cursor: not-allowed">
+
+                                <span class="google-sign-in-button-span">
+                                    <img src="images/google-logo-disabled.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
+                                    <span>Sign in with Google</span>
+                                </span>
+                            </button>
+
+                            <button ng-show="googleSSO"
+                                    class="google-sign-in-button"
+                                    type="button"
+                                    style="cursor: pointer"
+                                    ng-click="signIn.SignInWithGoogle()">
+                                        <span class="google-sign-in-button-span">
+                                            <img src="images/google-logo.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
+                                            <span>Sign in with Google</span>
+                                        </span>
+                            </button>
+
+                        </div>
+
+                        <!--
                         <div class="AlignCenter google-button">
                             <button class="google-sign-in-button" type="button" ng-click="signIn.SignInWithGoogle()">
-                        <span class="google-sign-in-button-span">
-                            <img src="images/google-logo.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
-                            <span>Sign in with Google</span>
-                        </span>
+                                <span class="google-sign-in-button-span">
+                                    <img src="images/google-logo.svg" alt="" style="height: 20px; margin-right: 8px; vertical-align: middle; width: 20px;">
+                                    <span>Sign in with Google</span>
+                                </span>
                             </button>
                         </div>
+                        -->
+
+
                         <br>
                     </div>
                     <div ng-show="!isNotSafari">
