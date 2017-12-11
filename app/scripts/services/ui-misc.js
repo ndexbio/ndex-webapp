@@ -276,13 +276,16 @@ angular.module('ndexServiceApp')
 
             var anchor = document.createElement('a');
 
+            var link = ndexService.getNdexServerUri() + "/network/" + networkId + "?download=true";
+
+            if (accesskey) {
+                link = link + "&accesskey=" + accesskey;
+            };
+
             if ( window.currentSignInType=='google') {
-                anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" + networkId +
-                    "?download=true&id_token=" +
-                    gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+                link = link + "&id_token=" + gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+
             } else if (window.currentSignInType == 'basic') {
-                var link = ndexService.getNdexServerUri() + "/network/" + networkId +
-                                "?download=true";
 
                 var userCredentials = ndexUtility.getUserCredentials();
 
@@ -290,23 +293,14 @@ angular.module('ndexServiceApp')
                 var password = userCredentials['token'];
 
                 link = link.replace("http://", "http://" + userName + ":" + password + "@");
-                anchor.setAttribute('href', link);
-            } else {
-                if (accesskey) {
-                    anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
-                        networkId + "?download=true&accesskey=" + accesskey);
-                } else {
-                    anchor.setAttribute('href', ndexService.getNdexServerUri() + "/network/" +
-                        networkId + "?download=true");
-                };
             };
 
-          // anchor.setAttribute('target', "_blank");
+            anchor.setAttribute('href', link);
+
             anchor.setAttribute("type","hidden");
             document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
-
         };
 
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
