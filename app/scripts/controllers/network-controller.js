@@ -945,8 +945,28 @@ ndexApp.controller('networkController',
                 return node['_cydefaultLabel'];
             };
 
+
+            $scope.removeHiddenAttributes = function(attributeNames) {
+
+                var attributeNamesWithoutHiddenElements = [];
+
+                // remove all attributes that start with two undescores ("__") - these attributes are "hidden",
+                // i.e., they are for internal use and should not be shown to the user
+                _.forEach(attributeNames, function(attribute) {
+
+                    if (attribute && !attribute.startsWith("__")) {
+                        attributeNamesWithoutHiddenElements.push(attribute);
+                    };
+                });
+
+                return attributeNamesWithoutHiddenElements;
+            };
+
+
             $scope.getNodeAttributesNames = function(node) {
-                var attributeNames = Object.keys(node);
+
+                var nodeAttributeNames = _.keys(node);
+                var attributeNames =  $scope.removeHiddenAttributes(nodeAttributeNames);
 
                 var resultList = ['id'];
 
@@ -967,7 +987,6 @@ ndexApp.controller('networkController',
                         attributeNames.splice(index, 1);
                     }
                 };
-
 
                 // here, we want the last elements in resultList to be ndex:internalLink and ndex:externalLink (if
                 // they are present in attributeNames).  So we remove them from attributeNames, and then add them
@@ -996,7 +1015,9 @@ ndexApp.controller('networkController',
             };
 
             $scope.getEdgeAttributesNames = function(node) {
-                var attributeNames = _.keys(node);
+
+                var edgeAttributeNames = _.keys(node);
+                var attributeNames =  $scope.removeHiddenAttributes(edgeAttributeNames);
 
                 var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded'];
 
@@ -1006,7 +1027,7 @@ ndexApp.controller('networkController',
                     if (index > -1) {
                         attributeNames.splice(index, 1);
                     }
-                }
+                };
 
                 return attributeNames;
             };
@@ -1786,13 +1807,14 @@ ndexApp.controller('networkController',
 
                 if (edgeAttributes) {
 
-                    var edgeAttributesKeys = Object.keys(edgeAttributes);
+                    var edgeAttributesKeys = _.keys(edgeAttributes);
 
                     for (var i=0; i<edgeAttributesKeys.length; i++)
                     {
                         var edgeAttributeKey = edgeAttributesKeys[i];
 
-                        var edgeAttributePropertiesKeys = Object.keys(edgeAttributes[edgeAttributeKey]);
+                        var keys = _.keys(edgeAttributes[edgeAttributeKey]);
+                        var edgeAttributePropertiesKeys =  $scope.removeHiddenAttributes(keys);
 
                         for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
                             var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
@@ -1854,6 +1876,9 @@ ndexApp.controller('networkController',
 
                     if (edgeAttributes) {
                         for (var key in edgeAttributes[edgeKey]) {
+                            if (key.startsWith("__")) {
+                                continue;
+                            }
                             var attributeValue = edgeAttributes[edgeKey][key]['v'];
                             row[key] = (attributeValue) ? attributeValue : "";
                         }
@@ -1929,7 +1954,8 @@ ndexApp.controller('networkController',
                     {
                         var nodeAttributeKey = nodeAttributesKeys[i];
 
-                        var nodeAttributePropertiesKeys = Object.keys(nodeAttributes[nodeAttributeKey]);
+                        var keys = _.keys(nodeAttributes[nodeAttributeKey]);
+                        var nodeAttributePropertiesKeys = $scope.removeHiddenAttributes(keys);
 
                         var links = [];
                         var ndexInternalLink = 'ndex:internalLink';
@@ -2038,6 +2064,10 @@ ndexApp.controller('networkController',
                         for (var key1 in nodeAttrs) {
                             var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
                             var attributeObjName = attributeObj['n'];
+
+                            if (attributeObjName && attributeObjName.startsWith("__")) {
+                                continue;
+                            };
 
                             if (attributeObjName && ((attributeObjName == 'alias') || (attributeObjName == 'relatedTo')) ) {
                                 row[key1] = attributeObj;
