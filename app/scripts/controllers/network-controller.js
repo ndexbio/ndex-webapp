@@ -2408,23 +2408,9 @@ ndexApp.controller('networkController',
                             // this should not happen; something went wrong; access deactivated
                             networkController.networkShareURL = null;
                         };
-
-
-                        if ((networkController.currentNetwork.visibility == 'PUBLIC') || accesskey || networkController.networkShareURL) {
-                            getCytoscapeAndCyRESTVersions();
-                        } else {
-                            $scope.openInCytoscapeTitle = "Only public or shared private networks can be opened in Cytoscape.";
-                        };
-
                     },
                     function(error) {
                         console.log("unable to get access key for network " + networkExternalId);
-
-                        if ((networkController.currentNetwork.visibility == 'PUBLIC') || accesskey || networkController.networkShareURL) {
-                            getCytoscapeAndCyRESTVersions();
-                        } else {
-                            $scope.openInCytoscapeTitle = "Only public or shared private networks can be opened in Cytoscape.";
-                        };
                     });
             };
 
@@ -2518,6 +2504,12 @@ ndexApp.controller('networkController',
                             };
                             setEditPropertiesTitle();
                             setDeleteTitle();
+
+                            if ((networkController.currentNetwork.visibility == 'PUBLIC') || accesskey || networkController.networkShareURL) {
+                                getCytoscapeAndCyRESTVersions();
+                            } else {
+                                $scope.openInCytoscapeTitle = "Only public or shared private networks can be opened in Cytoscape.";
+                            };
 
                         }
                     )
