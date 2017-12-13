@@ -2,11 +2,11 @@ ndexApp.controller('networkController',
     ['provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$rootScope', '$routeParams', '$modal', '$modalStack',
-        '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', /*'$filter', '$location','$q',*/
+        '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', 'cyREST', /*'$filter', '$location','$q',*/
         function ( provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $rootScope, $routeParams, $modal, $modalStack,
-                  $route , $location, uiGridConstants, uiMisc, ndexSpinner /*, $filter /*, $location, $q */)
+                  $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST /*, $filter /*, $location, $q */)
         {
             var self = this;
 
@@ -143,6 +143,7 @@ ndexApp.controller('networkController',
             $scope.upgradePermissionTitle    = "";
             $scope.shareTitle                = "";
             $scope.deleteTitle               = "";
+            $scope.openInCytoscapeTitle      = "";
 
 
 
@@ -404,6 +405,38 @@ ndexApp.controller('networkController',
                     setTimeout(checkIfCanvasIsVisibleAndDrawNetwork, 50);
                 };
             };
+
+
+            $scope.networkToCytoscape = function() {
+
+                var visibility = networkController.currentNetwork.visibility;
+
+                var serverURL  = ndexService.getNdexServerUri();
+
+                var postData = {
+                    'serverUrl': serverURL,
+                    'uuid': networkExternalId
+                };
+
+                if (accesskey) {
+                    postData.accesKey = accesskey;
+
+                } else if ((visibility.toLowerCase() == 'private') && networkController.networkShareURL) {
+                    var splitURLArray = networkController.networkShareURL.split("accesskey=");
+                    if (splitURLArray.length == 2) {
+                        postData.accesKey = splitURLArray[1];
+                    };
+                };
+
+                cyREST.exportNetworkToCytoscape(postData,
+                    function(data, status, headers, config, statusText) {
+                        ; // console.log('success');
+                    },
+                    function(data, status, headers, config, statusText) {
+                        console.log('unable to open network in Cytoscape error');
+                    });
+            };
+
 
             $scope.setReturnView = function(view) {
                 sharedProperties.setNetworkViewPage(view);
@@ -2375,9 +2408,23 @@ ndexApp.controller('networkController',
                             // this should not happen; something went wrong; access deactivated
                             networkController.networkShareURL = null;
                         };
+
+
+                        if ((networkController.currentNetwork.visibility == 'PUBLIC') || accesskey || networkController.networkShareURL) {
+                            getCytoscapeAndCyRESTVersions();
+                        } else {
+                            $scope.openInCytoscapeTitle = "Only public or shared private networks can be opened in Cytoscape.";
+                        };
+
                     },
                     function(error) {
                         console.log("unable to get access key for network " + networkExternalId);
+
+                        if ((networkController.currentNetwork.visibility == 'PUBLIC') || accesskey || networkController.networkShareURL) {
+                            getCytoscapeAndCyRESTVersions();
+                        } else {
+                            $scope.openInCytoscapeTitle = "Only public or shared private networks can be opened in Cytoscape.";
+                        };
                     });
             };
 
@@ -2471,6 +2518,7 @@ ndexApp.controller('networkController',
                             };
                             setEditPropertiesTitle();
                             setDeleteTitle();
+
                         }
                     )
                     .error(
@@ -2962,6 +3010,78 @@ ndexApp.controller('networkController',
                 return;
             };
 
+
+            var getCytoscapeAndCyRESTVersions = function() {
+
+                cyREST.getCytoscapeVersion(
+                    function(data) {
+
+                        if (data && data['cytoscapeVersion']) {
+
+                            var minAcceptableCSVersion = 360;
+
+                            var cytoscapeVersionStr = data['cytoscapeVersion'];
+                            cytoscapeVersionStr = cytoscapeVersionStr.replace(/\./g,'');
+
+                            var currentCytoscapeVersion = parseInt(cytoscapeVersionStr);
+
+                            if (currentCytoscapeVersion < minAcceptableCSVersion) {
+
+                                $scope.openInCytoscapeTitle  =
+                                    "You need Cytoscape version 3.6.0 or later to use this feature.\n";
+                                $scope.openInCytoscapeTitle +=
+                                    "Your version of Cytoscape is " + data['cytoscapeVersion'] + ".";
+
+                            } else {
+
+                                // get CyNDEX version
+
+                                cyREST.getCyNDEXVersion(
+                                    function (data) {
+
+                                        if (data && data['data'] && data['data']['appVersion']) {
+
+                                            var minAcceptableCyNDEXVersion = 220;
+
+                                            var cyNDEXVersionStr = data['data']['appVersion'];
+                                            cyNDEXVersionStr = cyNDEXVersionStr.replace(/\./g,'');
+
+                                            var currentCyNDEXVersion = parseInt(cyNDEXVersionStr);
+
+                                            if (currentCyNDEXVersion < minAcceptableCyNDEXVersion) {
+
+                                                $scope.openInCytoscapeTitle =
+                                                    "You need CyNDEx version 2.2.0 or later to use this feature.\n";
+                                                $scope.openInCytoscapeTitle +=
+                                                    "Your version of CyNDEx is " + data['data']['appVersion'] + ".";
+
+                                            } else {
+                                                // everythtong is fine: both Cytoscape and CyNDEx are recent enough to
+                                                // support the Open in Cytoscape feature.  Enable this menu item.
+                                                $scope.openInCytoscapeTitle = "";
+                                            };
+
+                                        } else {
+                                            $scope.openInCytoscapeTitle = "You need CyNDEx version 2.2.0 or later to use this feature.\n";
+                                            $scope.openInCytoscapeTitle += "Your version of CyNDEx is too old.";
+                                        };
+
+                                    },
+                                    function (error) {
+                                        $scope.openInCytoscapeTitle = "You need Cytoscape version 3.6.0 or later to run on port 1234 to use this feature.";
+                                    }
+                                );
+                            };
+                        } else {
+                            $scope.openInCytoscapeTitle = "You need Cytoscape version 3.6.0 or later to use this feature.";
+                        };
+
+                    },
+                    function(err) {
+                        $scope.openInCytoscapeTitle = "It seems that Cytoscape is not running on port 1234, or your Cytoscape version is too old.\n";
+                        $scope.openInCytoscapeTitle += "You need Cytoscape version 3.6.0 or later to run on port 1234 to use this feature.";
+                    });
+            };
 
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS

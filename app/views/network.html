@@ -881,6 +881,22 @@
                         </li>
 
 
+
+                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser'>
+
+                            <a class="dropdown-btn"
+                               style="cursor: not-allowed; color: #B6B6B6" ng-show="openInCytoscapeTitle"
+                                ng-attr-title="{{openInCytoscapeTitle}}">
+                                    Open In Cytoscape
+                            </a>
+
+                            <a class="dropdown-btn" ng-click="networkToCytoscape()"
+                               ng-show="!openInCytoscapeTitle">
+                                Open In Cytoscape
+                            </a>
+                        </li>
+
+
                         <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
                                 ng-show='networkController.isLoggedInUser && networkController.hasMultipleSubNetworks()'
                             title="{{exportTitle}}">

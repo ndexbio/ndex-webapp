@@ -1670,6 +1670,82 @@ ndexServiceApp.factory('ndexUtility', function () {
     return factory;
 });
 
+
+/****************************************************************************
+ * A RESTful service for accessing Cytoscape.
+ ****************************************************************************/
+ndexServiceApp.factory('cyREST', ['ndexConfigs', 'ndexService', '$http',
+    function (ndexConfigs, ndexService, $http) {
+
+        var factory = {};
+
+        factory.getCyRESTUrl = function() {
+            return "http://localhost:1234";
+        };
+
+        factory.getCytoscapeVersion = function (successHandler, errorHandler) {
+            var cyRestURL = this.getCyRESTUrl() + '/v1/version';
+
+            var config = {
+                headers : {
+                    'Content-Type': 'application/json;charset=utf-8;'
+                }
+            };
+
+            $http.get(cyRestURL, config)
+                .success(function(data, status, headers, config, statusText) {
+                    successHandler(data, status, headers, config, statusText);
+                })
+                .error(function(error, status, headers, config, statusText) {
+                    errorHandler(error, status, headers, config, statusText);
+                });
+        };
+
+
+        factory.getCyNDEXVersion = function (successHandler, errorHandler) {
+            var cyRestURL = this.getCyRESTUrl() + '/cyndex2/v1';
+
+            var config = {
+                headers : {
+                    'Content-Type': 'application/json;charset=utf-8;'
+                }
+            };
+
+            $http.get(cyRestURL, config)
+                .success(function(data, status, headers, config, statusText) {
+                    successHandler(data, status, headers, config, statusText);
+                })
+                .error(function(error, status, headers, config, statusText) {
+                    errorHandler(error, status, headers, config, statusText);
+                });
+        };
+
+        factory.exportNetworkToCytoscape = function (postData, successHandler, errorHandler) {
+
+            var cyRestURL = this.getCyRESTUrl() + '/cyndex2/v1/networks';
+
+            var config = {
+                headers : {
+                    'Content-Type': 'application/json;charset=utf-8;'
+                }
+            };
+
+            $http.post(cyRestURL, JSON.stringify(postData), config)
+                .success(function(data, status, headers, config, statusText) {
+                    successHandler(data, status, headers, config, statusText);
+                })
+                .error(function(error, status, headers, config, statusText) {
+                    errorHandler(error, status, headers, config, statusText);
+                });
+        };
+
+        return factory;
+    }
+]);
+
+
+
+
 /****************************************************************************
  * $http configuration service
  ****************************************************************************/
