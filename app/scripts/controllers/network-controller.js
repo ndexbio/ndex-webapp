@@ -2505,12 +2505,7 @@ ndexApp.controller('networkController',
                             setEditPropertiesTitle();
                             setDeleteTitle();
 
-                            if ((networkController.currentNetwork.visibility == 'PUBLIC') || accesskey || networkController.networkShareURL) {
-                                getCytoscapeAndCyRESTVersions();
-                            } else {
-                                $scope.openInCytoscapeTitle = "Only public or shared private networks can be opened in Cytoscape.";
-                            };
-
+                            getCytoscapeAndCyRESTVersions();
                         }
                     )
                     .error(
