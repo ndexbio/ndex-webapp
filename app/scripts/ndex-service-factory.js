@@ -1683,60 +1683,68 @@ ndexServiceApp.factory('cyREST', ['ndexConfigs', 'ndexService', '$http',
             return "http://localhost:1234";
         };
 
-        factory.getCytoscapeVersion = function (successHandler, errorHandler) {
-            var cyRestURL = this.getCyRESTUrl() + '/v1/version';
+        factory.getNdexServerUriHTTP = function() {
+            var httpNdexServerURI = ndexService.getNdexServerUri();
 
-            var config = {
-                headers : {
-                    'Content-Type': 'application/json;charset=utf-8;'
-                }
+            if (httpNdexServerURI && httpNdexServerURI.startsWith("https:")) {
+                var httpTemp = httpNdexServerURI.replace("https:", "http:");
+                httpNdexServerURI = httpTemp;
             };
+            return httpNdexServerURI;
+        };
 
-            $http.get(cyRestURL, config)
+
+        factory.getCyRESTPostConfig = function (url, postData) {
+            var config = {
+                method: 'POST',
+                url: url,
+                data: angular.toJson(postData),
+                headers: {'Content-Type': 'application/json;charset=utf-8;'}
+            };
+            return config;
+        };
+
+        factory.getCyRESTGetConfig = function (url) {
+            var config = {
+                method: 'GET',
+                url: url,
+                headers: {'Content-Type': 'application/json;charset=utf-8;'}
+            };
+            return config;
+        };
+
+        factory.sendHTTPRequest = function(config, successHandler, errorHandler) {
+            $http(config)
                 .success(function(data, status, headers, config, statusText) {
                     successHandler(data, status, headers, config, statusText);
                 })
                 .error(function(error, status, headers, config, statusText) {
                     errorHandler(error, status, headers, config, statusText);
-                });
+                })
         };
 
+        factory.getCytoscapeVersion = function (successHandler, errorHandler) {
+            var cyRestURL = this.getCyRESTUrl() + '/v1/version';
+
+            var config = this.getCyRESTGetConfig(cyRestURL);
+
+            this.sendHTTPRequest(config, successHandler, errorHandler);
+        };
 
         factory.getCyNDEXVersion = function (successHandler, errorHandler) {
             var cyRestURL = this.getCyRESTUrl() + '/cyndex2/v1';
 
-            var config = {
-                headers : {
-                    'Content-Type': 'application/json;charset=utf-8;'
-                }
-            };
+            var config = this.getCyRESTGetConfig(cyRestURL);
 
-            $http.get(cyRestURL, config)
-                .success(function(data, status, headers, config, statusText) {
-                    successHandler(data, status, headers, config, statusText);
-                })
-                .error(function(error, status, headers, config, statusText) {
-                    errorHandler(error, status, headers, config, statusText);
-                });
+            this.sendHTTPRequest(config, successHandler, errorHandler);
         };
 
         factory.exportNetworkToCytoscape = function (postData, successHandler, errorHandler) {
-
             var cyRestURL = this.getCyRESTUrl() + '/cyndex2/v1/networks';
 
-            var config = {
-                headers : {
-                    'Content-Type': 'application/json;charset=utf-8;'
-                }
-            };
+            var config = this.getCyRESTPostConfig(cyRestURL, postData);
 
-            $http.post(cyRestURL, JSON.stringify(postData), config)
-                .success(function(data, status, headers, config, statusText) {
-                    successHandler(data, status, headers, config, statusText);
-                })
-                .error(function(error, status, headers, config, statusText) {
-                    errorHandler(error, status, headers, config, statusText);
-                });
+            this.sendHTTPRequest(config, successHandler, errorHandler);
         };
 
         return factory;

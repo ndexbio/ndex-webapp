@@ -60,6 +60,7 @@ ndexApp.controller('networkController',
             networkController.isAdmin = false;
 
             networkController.networkShareURL = null;
+            networkController.visibility      = "";
 
             // get URL of this network without network access key; this URL is used
             // for copying it to clipboard if this Network is PUBLIC
@@ -409,9 +410,7 @@ ndexApp.controller('networkController',
 
             $scope.networkToCytoscape = function() {
 
-                var visibility = networkController.currentNetwork.visibility;
-
-                var serverURL  = ndexService.getNdexServerUri();
+                var serverURL  = cyREST.getNdexServerUriHTTP();
 
                 var postData = {
                     'serverUrl': serverURL,
@@ -419,12 +418,12 @@ ndexApp.controller('networkController',
                 };
 
                 if (accesskey) {
-                    postData.accesKey = accesskey;
+                    postData.accessKey = accesskey;
 
-                } else if ((visibility.toLowerCase() == 'private') && networkController.networkShareURL) {
+                } else if ((networkController.visibility == 'private') && networkController.networkShareURL) {
                     var splitURLArray = networkController.networkShareURL.split("accesskey=");
                     if (splitURLArray.length == 2) {
-                        postData.accesKey = splitURLArray[1];
+                        postData.accessKey = splitURLArray[1];
                     };
                 };
 
@@ -2408,6 +2407,16 @@ ndexApp.controller('networkController',
                             // this should not happen; something went wrong; access deactivated
                             networkController.networkShareURL = null;
                         };
+
+                        if (networkController.networkShareURL) {
+                            // network Share URL is enabled; This network can be opened in Cytoscape.
+                            $scope.openInCytoscapeTitle = "";
+
+                        } else {
+                            // network Share URL is disabled; This network can not be opened in Cytoscape.
+                            $scope.openInCytoscapeTitle =
+                                "Only public or shared private networks can be opened in Cytoscape.";
+                        };
                     },
                     function(error) {
                         console.log("unable to get access key for network " + networkExternalId);
@@ -2427,6 +2436,10 @@ ndexApp.controller('networkController',
                         function (network) {
                             networkController.currentNetwork = network;
                             currentNetworkSummary = network;
+
+                            if (network && network.visibility) {
+                                networkController.visibility = network.visibility.toLowerCase();
+                            };
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
@@ -2452,7 +2465,7 @@ ndexApp.controller('networkController',
 
                             getMembership(function ()
                             {
-                                if (network.visibility == 'PUBLIC'
+                                if (networkController.visibility == 'public'
                                     || networkController.isAdmin
                                     || networkController.canEdit
                                     || networkController.canRead
@@ -2493,7 +2506,7 @@ ndexApp.controller('networkController',
 
                             if (networkController.isLoggedInUser && (network['ownerUUID'] == sharedProperties.getCurrentUserId()) ) {
                                 networkController.isNetworkOwner = true;
-                                networkController.getStatusOfShareableURL();
+                                //networkController.getStatusOfShareableURL();
                             };
 
                             if (networkController.hasMultipleSubNetworks()) {
@@ -2505,7 +2518,30 @@ ndexApp.controller('networkController',
                             setEditPropertiesTitle();
                             setDeleteTitle();
 
-                            getCytoscapeAndCyRESTVersions();
+
+                            // decide whether to enable the Open In Cytoscaope button
+                            if (networkController.visibility == 'public' || networkController.accesskey) {
+
+                                // Network is Public or (private and accessed through Share URL); enable the button
+                                // in case we have the right versions of Cytoscape and CyREST.
+                                getCytoscapeAndCyRESTVersions();
+
+                            } else if (networkController.isNetworkOwner) {
+
+                                // Network is private, access key is not set, we are the owner - check the status of
+                                // shareable URL.  If shareable URL is on, then enable the Open In Cytoscape button
+                                // if we have the right versions of Cytoscape and CyREST.
+
+                                networkController.getStatusOfShareableURL();
+
+                            } else {
+                                // Network is private, access key is not set, we are not the owner.
+                                // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
+
+                                $scope.openInCytoscapeTitle =
+                                    "Only public or shared private networks can be opened in Cytoscape.";
+                            };
+
                         }
                     )
                     .error(
@@ -2854,6 +2890,11 @@ ndexApp.controller('networkController',
                         function (network) {
                             networkController.currentNetwork = network;
                             currentNetworkSummary = network;
+
+                            if (network && network.visibility) {
+                                networkController.visibility = network.visibility.toLowerCase();
+                            };
+
                             $scope.disableQuery = (network.edgeCount > 250000);
 
                             if (!network.name) {
@@ -2872,7 +2913,7 @@ ndexApp.controller('networkController',
 
                             getMembership(function ()
                             {
-                                if (network.visibility == 'PUBLIC'
+                                if (networkController.visibility == 'public'
                                     || networkController.isAdmin
                                     || networkController.canEdit
                                     || networkController.canRead
@@ -3043,8 +3084,8 @@ ndexApp.controller('networkController',
                                                     "Your version of CyNDEx is " + data['data']['appVersion'] + ".";
 
                                             } else {
-                                                // everythtong is fine: both Cytoscape and CyNDEx are recent enough to
-                                                // support the Open in Cytoscape feature.  Enable this menu item.
+                                                // everything is fine: both Cytoscape and CyNDEx are recent enough to
+                                                // support the Open in Cytoscape feature.  Enable this button.
                                                 $scope.openInCytoscapeTitle = "";
                                             };
 
