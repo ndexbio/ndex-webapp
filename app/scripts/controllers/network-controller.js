@@ -2524,6 +2524,12 @@ ndexApp.controller('networkController',
 
                                 // Network is Public or (private and accessed through Share URL); enable the button
                                 // in case we have the right versions of Cytoscape and CyREST.
+
+                                if (networkController.visibility == 'private' && networkController.accesskey) {
+                                    networkController.networkShareURL =
+                                        uiMisc.buildNetworkURL(networkController.accesskey, networkExternalId);
+                                };
+
                                 getCytoscapeAndCyRESTVersions();
 
                             } else if (networkController.isNetworkOwner) {
