@@ -146,6 +146,8 @@ ndexApp.controller('networkController',
             $scope.deleteTitle               = "";
             $scope.openInCytoscapeTitle      = "";
 
+            $scope.disabledQueryTooltip      = "";
+
 
 
             $scope.disableQuery = false;
@@ -153,8 +155,6 @@ ndexApp.controller('networkController',
             $scope.egeCountForDisablingQuery = 500000;
             $scope.egeCountForQueryWarning   = 100000;
 
-            $scope.disabledQueryTooltip = "At this moment, the query service only supports networks with up to " +
-                $scope.egeCountForDisablingQuery + " edges";
 
             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
@@ -172,13 +172,7 @@ ndexApp.controller('networkController',
             var spinner = undefined;
 
             networkController.hasMultipleSubNetworks = function() {
-                var retValue = false;
-                if (networkController.noOfSubNetworks > 1) {
-                    $scope.editPropertiesButtonTitle =
-                        "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx";
-                    retValue = true;
-                };
-                return retValue;
+                return (networkController.noOfSubNetworks > 1);
             };
 
             $scope.isDOIPending = function() {
@@ -2455,7 +2449,12 @@ ndexApp.controller('networkController',
                             networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
 
                             if ($scope.disableQuery && networkController.noOfSubNetworks < 2) {
-                                $scope.editPropertiesButtonTitle = $scope.disabledQueryTooltip;
+                                $scope.disabledQueryTooltip =
+                                    "At this moment, the query service only supports networks with up to " +
+                                            $scope.egeCountForDisablingQuery + " edges";
+                            } else if (networkController.noOfSubNetworks > 1) {
+                                $scope.disabledQueryTooltip =
+                                    "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx";
                             };
 
                             if (networkController.subNetworkId != null) {
