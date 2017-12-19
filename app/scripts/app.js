@@ -136,11 +136,6 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'uploadController'
         })
 
-        // route to edit network custom properties
-        .when('/properties/network/old/:identifier/:subNetworkId', {
-            templateUrl: 'views/editNetworkProperties.html',
-            controller: 'editNetworkPropertiesController'
-        })
 
         // route to edit network custom properties
         .when('/properties/network/:identifier/:subNetworkId', {

@@ -2386,17 +2386,19 @@ ndexApp.controller('networkController',
                     );
             };
 
-            networkController.getStatusOfShareableURL = function() {
+            networkController.getStatusOfShareableURL = function(checkCytoscapeAndCyRESTVersions, doNothing) {
                 ndexService.getAccessKeyOfNetworkV2(networkExternalId,
                     function(data) {
 
                         if (!data) {
                             // empty string - access is deactivated
                             networkController.networkShareURL = null;
+
                         } else if (data['accessKey']) {
                             // received  data['accessKey'] - access is enabled
                             networkController.networkShareURL =
                                 uiMisc.buildNetworkURL(data['accessKey'], networkExternalId);
+
                         } else {
                             // this should not happen; something went wrong; access deactivated
                             networkController.networkShareURL = null;
@@ -2406,14 +2408,22 @@ ndexApp.controller('networkController',
                             // network Share URL is enabled; This network can be opened in Cytoscape.
                             $scope.openInCytoscapeTitle = "";
 
+                            // check if Cytoscape is running and if yes if it and CyNDEX have the right versions
+                            checkCytoscapeAndCyRESTVersions();
+
+
                         } else {
                             // network Share URL is disabled; This network can not be opened in Cytoscape.
                             $scope.openInCytoscapeTitle =
                                 "Only public or shared private networks can be opened in Cytoscape.";
+                            doNothing();
+
                         };
                     },
                     function(error) {
                         console.log("unable to get access key for network " + networkExternalId);
+                        $scope.openInCytoscapeTitle =
+                            "unable to get access key for network " + networkExternalId;
                     });
             };
 
@@ -2534,10 +2544,16 @@ ndexApp.controller('networkController',
                             } else if (networkController.isNetworkOwner) {
 
                                 // Network is private, access key is not set, we are the owner - check the status of
-                                // shareable URL.  If shareable URL is on, then enable the Open In Cytoscape button
-                                // if we have the right versions of Cytoscape and CyREST.
+                                // shareable URL.  If shareable URL is on, then check if Cytoscape is running and
+                                // its and CyNDEX's versions
 
-                                networkController.getStatusOfShareableURL();
+                                networkController.getStatusOfShareableURL(
+                                    function() {
+                                        getCytoscapeAndCyRESTVersions();
+                                    },
+                                    function() {
+                                        ; // do nothing here
+                                    });
 
                             } else {
                                 // Network is private, access key is not set, we are not the owner.

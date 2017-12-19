@@ -555,32 +555,32 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         };
 
 
-                        // ensure the network is read-write, and then request a DOI
+                        var requestDOI = true;
 
-                        ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, "readOnly", false,
+                        if ($scope.mainProperty.readonly) {
+                            // network is read-only; make it writeable and then savie properties and
+                            // request a DOI
+                            ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, "readOnly", false,
 
-                            function(data, networkId, property, value) {
-                                editor.save();
+                                function (data, networkId, property, value) {
+                                    editor.save(requestDOI, showThesePropertiesInEmail);
+                                },
 
-                                ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
-                                    function () {
-                                        console.log("DOI created successfully");
-                                    },
-                                    function (error) {
-                                        editor.errors.push(error)
-                                    });
-                            },
+                                function (error, networkId, property, value) {
+                                    console.log("unable to unset the Read Only flag on the network");
+                                });
+                        } else {
+                            // network is writable; save properties and request a DOI
+                            editor.save(requestDOI, showThesePropertiesInEmail);
+                        }
 
-                        function(error, networkId, property, value) {
-                            console.log("unable to unset the Read Only flag on the network");
-                        });
                     },
                     function () {
-                        // user canceled - do nothing
+                        ; // user canceled - do nothing
                     });
 
             } else {
-                editor.errors.push("Missing value")
+                editor.errors.push("Missing value");
             }
         }
     };
@@ -668,7 +668,13 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         });
     };
 
-    editor.save = function() {
+    var returnToNetworkViewPage = function() {
+        var networkViewPage = sharedProperties.getNetworkViewPage();
+        var networkID = editor.networkExternalId;
+        $location.path(networkViewPage + networkID);
+    };
+
+    editor.save = function(requestDOI, showThesePropertiesInEmail) {
         if(editor.checkPublicRequirements()){
 
             if( $scope.isProcessing )
@@ -754,20 +760,39 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
             ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
                 function(data) {
-                    //$route.reload();
-                    var networkViewPage = sharedProperties.getNetworkViewPage();
-                    var networkID = editor.networkExternalId;
-                    $location.path(networkViewPage + networkID);
+
                     $scope.isProcessing = false;
 
                     if($scope.mainProperty.visibility == "PUBLIC"){
                         ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", editor.showcased.state,
                             function (data, networkId, property, value) {
-                                ;
+                                if (requestDOI) {
+                                    ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
+                                        function () {
+                                            returnToNetworkViewPage();
+                                        },
+                                        function (error) {
+                                            editor.errors.push(error);
+                                        });
+                                } else {
+                                    returnToNetworkViewPage();
+                                }
                             },
                             function (error, networkId, property, value) {
                                 console.log("unable to change showcase for Network with Id " + networkId);
                             });
+                    } else {
+                        if (requestDOI) {
+                            ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
+                                function () {
+                                    returnToNetworkViewPage();
+                                },
+                                function (error) {
+                                    editor.errors.push(error);
+                                });
+                        } else {
+                            returnToNetworkViewPage();
+                        }
                     }
 
                 },
@@ -791,28 +816,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     ; //console.log("unable to change indexed for Network with Id " + networkId);
                 });
 
-
-    /*
-            ndexService.setNetworkPropertiesV2(networkExternalId, networkProperties,
-                function(data) {
-                    //$route.reload();
-                    var networkViewPage = sharedProperties.getNetworkViewPage();
-                    var networkID = editor.networkExternalId;
-                    $location.path(networkViewPage + networkID);
-                    $scope.isProcessing = false;
-                },
-                function(error) {
-
-                    if (error.data && error.data.message) {
-                        editor.errors.push(error.data.message);
-                    } else {
-                        editor.errors.push("Server returned HTTP error response code : " +
-                            error.status + ". Error message : " + error.statusText + ".");
-                    }
-
-                    $scope.isProcessing = false;
-                });
-    */
         } else {
             console.log("can't make public");
             var title = "Unable to Update Network Access";
