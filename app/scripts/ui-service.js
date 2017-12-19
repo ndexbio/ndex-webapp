@@ -1840,8 +1840,8 @@
                                     function(data) {
                                         $scope.networkController.currentNetwork.reference = reference;
                                         $scope.networkController.currentNetwork.isCertified = true;
+                                        $scope.networkController.currentNetwork.visibility = "PUBLIC";
                                         $scope.cancel();
-
                                     },
                                     function(error) {
                                         var errorMessage = "Unable to add Reference ";
