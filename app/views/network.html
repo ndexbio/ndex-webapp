@@ -876,7 +876,7 @@
 
 
                         <li style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
-                                    (!networkController.isNetworkOwner || hasMultipleSubNetworks() || isNetworkCertified()
+                                    (!networkController.isNetworkOwner || networkController.hasMultipleSubNetworks() || isNetworkCertified()
                                     || isDOIAssigned() || isDOIPending())'
                                 title="{{requestDOITitle}}">
                             <a>
@@ -884,7 +884,7 @@
                             </a>
                         </li>
                         <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
-                                    (networkController.isNetworkOwner && !hasMultipleSubNetworks() && !isNetworkCertified() &&
+                                    (networkController.isNetworkOwner && !networkController.hasMultipleSubNetworks() && !isNetworkCertified() &&
                                      !isDOIAssigned() && !isDOIPending())'>
 
                             <a class="dropdown-btn"

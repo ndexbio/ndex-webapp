@@ -2472,6 +2472,46 @@ ndexApp.controller('networkController',
                                 networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId,"version");
                             };
 
+                            if (networkController.isLoggedInUser && (network['ownerUUID'] == sharedProperties.getCurrentUserId()) ) {
+                                networkController.isNetworkOwner = true;
+                            };
+
+                            // decide whether to enable the Open In Cytoscape button
+                            if (networkController.visibility == 'public' || networkController.accesskey) {
+
+                                // Network is Public or (private and accessed through Share URL); enable the button
+                                // in case we have the right versions of Cytoscape and CyREST.
+
+                                if (networkController.visibility == 'private' && networkController.accesskey) {
+                                    networkController.networkShareURL =
+                                        uiMisc.buildNetworkURL(networkController.accesskey, networkExternalId);
+                                };
+
+                                getCytoscapeAndCyRESTVersions();
+
+                            } else if (networkController.isNetworkOwner) {
+
+                                // Network is private, access key is not set, we are the owner - check the status of
+                                // shareable URL.  If shareable URL is on, then check if Cytoscape is running and
+                                // its and CyNDEX's versions
+
+                                networkController.getStatusOfShareableURL(
+                                    function() {
+                                        getCytoscapeAndCyRESTVersions();
+                                    },
+                                    function() {
+                                        ; // do nothing here
+                                    });
+
+                            } else {
+                                // Network is private, access key is not set, we are not the owner.
+                                // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
+
+                                $scope.openInCytoscapeTitle =
+                                    "Only public or shared private networks can be opened in Cytoscape.";
+                            };
+
+
                             getMembership(function ()
                             {
                                 if (networkController.visibility == 'public'
@@ -2513,11 +2553,6 @@ ndexApp.controller('networkController',
                                     ;
                                 });
 
-                            if (networkController.isLoggedInUser && (network['ownerUUID'] == sharedProperties.getCurrentUserId()) ) {
-                                networkController.isNetworkOwner = true;
-                                //networkController.getStatusOfShareableURL();
-                            };
-
                             if (networkController.hasMultipleSubNetworks()) {
                                 setTitlesForCytoscapeCollection();
                             } else {
@@ -2526,43 +2561,6 @@ ndexApp.controller('networkController',
                             };
                             setEditPropertiesTitle();
                             setDeleteTitle();
-
-
-                            // decide whether to enable the Open In Cytoscaope button
-                            if (networkController.visibility == 'public' || networkController.accesskey) {
-
-                                // Network is Public or (private and accessed through Share URL); enable the button
-                                // in case we have the right versions of Cytoscape and CyREST.
-
-                                if (networkController.visibility == 'private' && networkController.accesskey) {
-                                    networkController.networkShareURL =
-                                        uiMisc.buildNetworkURL(networkController.accesskey, networkExternalId);
-                                };
-
-                                getCytoscapeAndCyRESTVersions();
-
-                            } else if (networkController.isNetworkOwner) {
-
-                                // Network is private, access key is not set, we are the owner - check the status of
-                                // shareable URL.  If shareable URL is on, then check if Cytoscape is running and
-                                // its and CyNDEX's versions
-
-                                networkController.getStatusOfShareableURL(
-                                    function() {
-                                        getCytoscapeAndCyRESTVersions();
-                                    },
-                                    function() {
-                                        ; // do nothing here
-                                    });
-
-                            } else {
-                                // Network is private, access key is not set, we are not the owner.
-                                // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
-
-                                $scope.openInCytoscapeTitle =
-                                    "Only public or shared private networks can be opened in Cytoscape.";
-                            };
-
                         }
                     )
                     .error(
