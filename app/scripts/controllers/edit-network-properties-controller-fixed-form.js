@@ -585,7 +585,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         }
     };
 
-
+/*
     editor.genericInfoModalAutoClose = function(title, message, closeIntervalInMs)
     {
         var InfoCtrl = function($scope, $modalInstance) {
@@ -607,8 +607,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             backdrop: 'static'
         });
     };
-
-
+*/
+/*
     editor.openConfirmationModal = function(title, message, confirmLabel, cancelLabel,
                                          dismissModal, confirmHandler, cancelHandler){
 
@@ -667,6 +667,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             controller: ConfirmCtrl
         });
     };
+*/
 
     var returnToNetworkViewPage = function() {
         var networkViewPage = sharedProperties.getNetworkViewPage();

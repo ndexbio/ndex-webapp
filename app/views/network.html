@@ -787,28 +787,34 @@
         </div>
 
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried || networkController.accesskey">
+
             <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
                     || networkController.isAdmin
                     || networkController.canEdit
                     || networkController.canRead) || networkController.accesskey'
-                  class="actionsLabel btn btn-primary download-btn"
-                  ng-click="downloadNetwork()" >
-                Download
+                  ng-click="downloadNetwork()"
+                  style="cursor:pointer;" title="Download this network">
+
+                      <button type="button" class="btn btn-primary download-btn">
+                        <i class="fa fa-download fa-2x"
+                           aria-hidden="true" style="vertical-align: middle; margin-bottom: -4px" >
+                        </i>
+                      </button>
+
             </span>
 
             <span>
-                <a class="actionsLabelDisabled-btn btn btn-primary"
-                   style="cursor: not-allowed" ng-show="openInCytoscapeTitle"
+                <button type="button" class="actionsLabelDisabled-btn btn btn-primary" style="cursor: not-allowed" ng-show="openInCytoscapeTitle"
                    ng-attr-title="{{openInCytoscapeTitle}}">
-                    Open In Cytoscape
-                </a>
+                    <img style="height: 19px" src="images/cytoscape_off.png">
+                </button>
 
-                <a class="actionsLabel btn btn-primary" ng-click="networkToCytoscape()"
-                   ng-show="!openInCytoscapeTitle">
-                    Open In Cytoscape
-                </a>
+                <button type="button" class="actionsLabel btn btn-primary" ng-click="networkToCytoscape()"
+                   title="Open this network in Cytoscape" ng-show="!openInCytoscapeTitle">
+                        <img style="height: 19px" src="images/cytoscape_on.png" >
+                </button>
+
             </span>
-
 
             <span>
                 <button type="button" class="actionsLabel btn btn-primary"

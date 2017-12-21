@@ -107,6 +107,7 @@
                     });
                 };
 
+                /*
                 factory.genericInfoModalAutoClose = function(title, message, closeIntervalInMs)
                 {
                     var InfoCtrl = function($scope, $modalInstance) {
@@ -128,6 +129,7 @@
                         backdrop: 'static'
                     });
                 };
+                */
 
                 factory.openManageBulkRequestsModal = function(title, message, acceptLabel, declineLabel, cancelLabel,
                                                          manageHandler, cancelHandler) {
