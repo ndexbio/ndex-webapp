@@ -166,7 +166,7 @@ ndexApp.controller('userController',
                     { field: 'externalId',  enableFiltering: false,  visible: false},
                     { field: 'ownerUUID',   enableFiltering: false,  visible: false},
                     { field: 'name',        enableFiltering: false,  visible: false},
-                    { field: 'indexed',     enableFiltering: false,  visible: false}
+                    { field: 'indexLevel',  enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
                 refreshNetworkTable();
@@ -327,7 +327,7 @@ ndexApp.controller('userController',
                     var nodes = network['nodeCount'];
                     var edges = network['edgeCount'];
                     var owner = network['owner'];
-                    var indexed = network['indexed'];
+                    var indexLevel = network['indexLevel'];
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
 
@@ -358,7 +358,7 @@ ndexApp.controller('userController',
                         "name"          :   networkName,
                         "errorMessage"  :   errorMessage,
                         "subnetworks"   :   noOfSubNetworks,
-                        "indexed"       :   indexed
+                        "indexLevel"    :   indexLevel
                      };
                     $scope.networkGridOptions.data.push(row);
                 }

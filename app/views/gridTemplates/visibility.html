@@ -1,12 +1,12 @@
 <div id="visibilityNetworkTemplate" class="ui-grid-cell-contents">
 
 
-    <span ng-if="(row.entity.Status != 'Set') && row.entity.indexed" title="{{COL_FIELD}}">
+    <span ng-if="(row.entity.Status != 'Set') && (row.entity.indexLevel != 'NONE')" title="{{COL_FIELD}}">
         {{row.entity.Visibility}}&nbsp;&nbsp;
         <i class="fa fa-search"></i>
     </span>
 
-    <span ng-if="(row.entity.Status != 'Set') && !row.entity.indexed" title="{{COL_FIELD}} (not searchable) ">
+    <span ng-if="(row.entity.Status != 'Set') && (row.entity.indexLevel == 'NONE')" title="{{COL_FIELD}} (not searchable) ">
         {{row.entity.Visibility}}&nbsp;&nbsp;
     </span>
 

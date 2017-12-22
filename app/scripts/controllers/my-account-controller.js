@@ -493,7 +493,7 @@ ndexApp.controller('myAccountController',
                     { field: 'errorMessage', enableFiltering: false,  visible: false},
                     { field: 'subnetworks',  enableFiltering: false,  visible: false},
                     { field: 'isReadOnly',   enableFiltering: false,  visible: false},
-                    { field: 'indexed',      enableFiltering: false,  visible: false}
+                    { field: 'indexLevel',   enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
             };
@@ -1462,7 +1462,7 @@ ndexApp.controller('myAccountController',
                     //var nodes = network['nodeCount'];
                     var edges = network['edgeCount'];
                     var owner = network['owner'];
-                    var indexed = network['indexed'];
+                    var indexLevel = network['indexLevel'];
                     var visibility = network['visibility'];
                     var modified = new Date( network['modificationTime'] );
                     var showcase = network['isShowcase'];
@@ -1506,7 +1506,7 @@ ndexApp.controller('myAccountController',
                         "errorMessage"  :   errorMessage,
                         "subnetworks"   :   noOfSubNetworks,
                         "isReadOnly"    :   network['isReadOnly'],
-                        "indexed"       :   indexed
+                        "indexLevel"    :   indexLevel
                     };
                     $scope.networkGridOptions.data.push(row);
                 };

@@ -20,22 +20,62 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.canEdit = false;
     editor.canRead = false;
     editor.showcased = {"state": true};
+    editor.fullIndexed = {"state": false};
     editor.subNetworkId = subNetworkId;
     editor.visibilityIndex = "PRIVATE_NOT_INDEXED";
-    editor.idexed = false;
+
+    $scope.originalIndexLevel = 'NONE';
+
     $scope.$watch('editor.visibilityIndex', function() {
         if(editor.visibilityIndex === "PUBLIC"){
+
             $scope.mainProperty.visibility = "PUBLIC";
-            $scope.mainProperty.indexed = true;
+            $scope.mainProperty.indexLevel = editor.fullIndexed.state ? 'ALL' : 'META';
+
         } else if(editor.visibilityIndex === "PUBLIC_NOT_INDEXED"){
-            $scope.mainProperty.visibility = "PUBLIC";
-            $scope.mainProperty.indexed = false;
+
+            $scope.mainProperty.visibility = "PUBLIC_NOT_INDEXED";
+            $scope.mainProperty.indexLevel = 'NONE';
+
         } else if(editor.visibilityIndex === "PRIVATE"){
+
             $scope.mainProperty.visibility = "PRIVATE";
-            $scope.mainProperty.indexed = true;
+            $scope.mainProperty.indexLevel = editor.fullIndexed.state ? 'ALL' : 'META';
+
         } else if(editor.visibilityIndex === "PRIVATE_NOT_INDEXED"){
-            $scope.mainProperty.visibility = "PRIVATE";
-            $scope.mainProperty.indexed = false;
+
+            $scope.mainProperty.visibility = "PRIVATE_NOT_INDEXED";
+            $scope.mainProperty.indexLevel = 'NONE';
+        }
+    });
+
+    $scope.$watch('editor.fullIndexed.state', function() {
+        if(editor.fullIndexed.state){
+
+            $scope.mainProperty.indexLevel = 'ALL';
+
+        } else {
+
+            if(editor.visibilityIndex === "PUBLIC"){
+
+                $scope.mainProperty.visibility = "PUBLIC";
+                $scope.mainProperty.indexLevel = 'META';
+
+            } else if(editor.visibilityIndex === "PUBLIC_NOT_INDEXED") {
+
+                $scope.mainProperty.visibility = "PUBLIC_NOT_INDEXED";
+                $scope.mainProperty.indexLevel = 'NONE';
+
+            } else if(editor.visibilityIndex === "PRIVATE"){
+
+                $scope.mainProperty.visibility = "PRIVATE";
+                $scope.mainProperty.indexLevel = 'META';
+
+            } else if(editor.visibilityIndex === "PRIVATE_NOT_INDEXED"){
+
+                $scope.mainProperty.visibility = "PRIVATE_NOT_INDEXED";
+                $scope.mainProperty.indexLevel = 'NONE';
+            }
         }
     });
 
@@ -202,7 +242,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 	editor.changed = function(index, value, property, action) {
 
         var attributeDictionary = editor.buildAttributeDictionary();
-        var nonEditableLabels = ["sourceformat", "name", "description", "version", "reference"]
+        var nonEditableLabels = ["sourceformat", "name", "description", "version", "reference"];
 
 		if((index == (editor.propertyValuePairs.length - 1)) && (value.trim().length > 0)) {
 
@@ -750,13 +790,23 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 }
             }
 
+
+            // initialize visibility to the current value of $scope.mainProperty.visibility
+            var visibility = $scope.mainProperty.visibility;
+
+            // server only accepts PUBLIC or PRIVATE for visiibility, so adjust it accordingly
+            if ($scope.mainProperty.visibility == 'PUBLIC_NOT_INDEXED') {
+                visibility = 'PUBLIC';
+            } else if ($scope.mainProperty.visibility == 'PRIVATE_NOT_INDEXED') {
+                visibility = 'PRIVATE';
+            };
+
             var networkSummaryProperties = {
                 'properties': networkProperties,
                 'name': $scope.mainProperty.name,
                 'description': $scope.mainProperty.description,
                 'version': $scope.mainProperty.version,
-                'visibility': $scope.mainProperty.visibility,
-                'index': $scope.mainProperty.indexed
+                'visibility': visibility
             }
 
             ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
@@ -764,7 +814,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                     $scope.isProcessing = false;
 
-                    if($scope.mainProperty.visibility == "PUBLIC"){
+                    if(visibility == "PUBLIC"){
                         ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", editor.showcased.state,
                             function (data, networkId, property, value) {
                                 if (requestDOI) {
@@ -799,8 +849,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 },
                 function(error) {
 
-                    if (error.data && error.data.message) {
-                        editor.errors.push(error.data.message);
+                    if (error && error.message) {
+                        editor.errors.push(error.message);
                     } else {
                         editor.errors.push("Server returned HTTP error response code : " +
                             error.status + ". Error message : " + error.statusText + ".");
@@ -809,13 +859,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     $scope.isProcessing = false;
                 });
 
-            ndexService.setNetworkSystemPropertiesV2(networkId, "index", $scope.mainProperty.indexed,
-                function (data, networkId, property, value) {
-                    ; //console.log("index set to " + $scope.mainProperty.indexed);
-                },
-                function (error, networkId, property, value) {
-                    ; //console.log("unable to change indexed for Network with Id " + networkId);
-                });
+            if ($scope.originalIndexLevel != $scope.mainProperty.indexLevel) {
+                ndexService.setNetworkSystemPropertiesV2(networkId, "index_level", $scope.mainProperty.indexLevel,
+                    function (data, networkId, property, value) {
+                        ; //console.log("index set to " + $scope.mainProperty.indexed);
+                    },
+                    function (error, networkId, property, value) {
+                        console.log("unable to change indexed for Network with Id " + networkId);
+                    });
+            }
 
         } else {
             console.log("can't make public");
@@ -828,7 +880,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 	};
 
 	editor.checkPublicRequirements = function(){
-        if($scope.mainProperty.visibility != "PRIVATE"){
+        if(($scope.mainProperty.visibility != "PRIVATE") && ($scope.mainProperty.visibility != "PRIVATE_NOT_INDEXED")){
             if (!$scope.mainProperty.name ||
                 !$scope.mainProperty.description ||
                 !$scope.mainProperty.version ||
@@ -987,8 +1039,12 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.propertyValuePairs = [];
                 editor.hiddenValuePairs = [];
                 $scope.mainProperty.name = network.name;
-                $scope.mainProperty.indexed = network.indexed;
+                //$scope.mainProperty.indexed = (network.indexLevel && network.indexLevel.toUpperCase() != 'NONE');
+                $scope.mainProperty.indexLevel = (network.indexLevel) ?  network.indexLevel.toUpperCase() : 'NONE';
+                $scope.originalIndexLevel = $scope.mainProperty.indexLevel;
+                editor.fullIndexed.state =  ($scope.originalIndexLevel == 'ALL');
                 $scope.mainProperty.readonly = network.isReadOnly;
+
                 if(!$scope.mainProperty.name){
                     $scope.mainProperty.name = "";
                 }
@@ -1013,22 +1069,31 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 if(!$scope.mainProperty.version) {
                     $scope.mainProperty.version = "";
                 }
+
+
                 $scope.mainProperty.visibility = network.visibility;
+
                 if($scope.mainProperty.visibility === "PRIVATE"){
-                    if($scope.mainProperty.indexed){
-                        editor.visibilityIndex = "PRIVATE";
-                    } else {
+
+                    if($scope.mainProperty.indexLevel == 'NONE'){
                         editor.visibilityIndex = "PRIVATE_NOT_INDEXED";
-                    }
-                    editor.showcased.state = true;
-                } else {
-                    if($scope.mainProperty.indexed){
-                        editor.visibilityIndex = "PUBLIC";
+                        $scope.mainProperty.visibility = "PRIVATE_NOT_INDEXED";
                     } else {
-                        editor.visibilityIndex = "PUBLIC_NOT_INDEXED";
+                        editor.visibilityIndex = "PRIVATE";
+                        $scope.mainProperty.visibility = "PRIVATE";
                     }
-                    editor.showcased.state = network.isShowcase;
+
+                } else {
+                    if($scope.mainProperty.indexLevel == 'NONE'){
+                        editor.visibilityIndex = "PUBLIC_NOT_INDEXED";
+                        $scope.mainProperty.visibility = "PUBLIC_NOT_INDEXED";
+                    } else {
+                        editor.visibilityIndex = "PUBLIC";
+                        $scope.mainProperty.visibility = "PUBLIC";
+                    }
                 }
+
+                editor.showcased.state = network.isShowcase;
 
                 editor.isCertified = network.isCertified;
 
@@ -1206,6 +1271,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
         myToolTips.tooltip();
     };
+
 
     editor.getPropertyValue = function(propName){
         //editor.propertyValuePairs[editor.propertyValuePairsIndex['rights']].value

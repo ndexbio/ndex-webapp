@@ -112,8 +112,11 @@
                         </div>
                     </div>
                 </div>
+
 -->
-                <div class="col-sm-2" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED') && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
+
+                <div class="col-sm-2" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED')
+                    && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
                     <a ng-click="editor.showcased.state = !editor.showcased.state" style="text-decoration: none; color: #656565;">
                         <div style="width: 95px;">
 										<span class="fa-stack" ng-show="!editor.showcased.state">
@@ -125,6 +128,34 @@
 											<i class="fa fa-check fa-stack-1x"></i>
 										</span>
                             <div class="pull-right" style="font-size: 15px; margin-top: 3px;">Showcase</div>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="col-sm-2" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
+                    && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
+                    <a ng-click="editor.fullIndexed.state = !editor.fullIndexed.state" style="text-decoration: none; color: #656565;">
+                        <div style="width: 106px;">
+
+                            <span class="fa-stack" ng-show="!editor.fullIndexed.state">
+                                <i class="fa fa-square-o fa-stack-2x"></i>
+                            </span>
+
+                            <span class="fa-stack" ng-show="editor.fullIndexed.state">
+											<i class="fa fa-square-o fa-stack-2x"></i>
+											<i class="fa fa-check fa-stack-1x"></i>
+                            </span>
+                            <div class="pull-right" style="font-size: 15px; margin-top: 3px;">Full Index
+                                    <i id="fullIndexingId"
+                                       ng-init="setToolTips()"
+                                       class="fa fa-info-circle"
+                                       style="font-size: 12px; color: #428bca"
+                                       data-toggle="tooltip"
+                                       ng-title="Description of full indexing here ...">
+
+                                    </i>
+                            </div>
                         </div>
                     </a>
                 </div>
