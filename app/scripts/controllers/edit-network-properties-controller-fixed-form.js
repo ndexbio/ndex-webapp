@@ -25,6 +25,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.visibilityIndex = "PRIVATE_NOT_INDEXED";
 
     $scope.originalIndexLevel = 'NONE';
+    $scope.originalShowCased  = false;
 
     $scope.$watch('editor.visibilityIndex', function() {
         if(editor.visibilityIndex === "PUBLIC"){
@@ -710,9 +711,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 */
 
     var returnToNetworkViewPage = function() {
-        var networkViewPage = sharedProperties.getNetworkViewPage();
-        var networkID = editor.networkExternalId;
-        $location.path(networkViewPage + networkID);
+        $location.path("/network/" + editor.networkExternalId);
     };
 
     editor.save = function(requestDOI, showThesePropertiesInEmail) {
@@ -814,7 +813,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                     $scope.isProcessing = false;
 
-                    if(visibility == "PUBLIC"){
+                    if ((visibility == "PUBLIC") && (editor.showcased.state != $scope.originalShowCased)) {
                         ndexService.setNetworkSystemPropertiesV2(networkId, "showcase", editor.showcased.state,
                             function (data, networkId, property, value) {
                                 if (requestDOI) {
@@ -1093,7 +1092,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                     }
                 }
 
-                editor.showcased.state = network.isShowcase;
+                editor.showcased.state   = network.isShowcase;
+                $scope.originalShowCased = network.isShowcase;
 
                 editor.isCertified = network.isCertified;
 
