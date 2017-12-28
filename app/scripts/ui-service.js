@@ -2861,7 +2861,6 @@
                                         } else {
                                             message += " networks are read-only.";
                                         };
-
                                     };
 
                                     title = "Cannot Modify Visibility";
@@ -2879,6 +2878,7 @@
 
                             $scope.network.submitButtonLabel = $scope.label;
                             $scope.network.showcase = true;
+                            $scope.network.fullIndex = false;
 
 
                             modalInstance = $modal.open({
@@ -3015,8 +3015,8 @@
                     if (network['visibility'] != visibility) {
                         properties['visibility'] = visibility;
                     };
-                    if (network['indexed'] != $scope.network.indexed) {
-                        properties['index'] = $scope.network.indexed;
+                    if (network['indexLevel'] != $scope.network.indexLevel) {
+                        properties['index_level'] = $scope.network.indexLevel;
                     };
                     if (network['isShowcase'] != showcase) {
                         properties['showcase'] = showcase;
@@ -3093,12 +3093,26 @@
                     operation = $scope.action;
 
                     if ('visibility' == operation) {
+
+                        // calculate the new indexLevel based
+                        // on the values of Full Indexed and Indexed fields
+                        if (($scope.network.visibilityIndex == 'PUBLIC_NOT_INDEXED') ||
+                            ($scope.network.visibilityIndex == 'PRIVATE_NOT_INDEXED')) {
+
+                            $scope.network.indexLevel = 'NONE';
+
+                        } else if (($scope.network.visibilityIndex == 'PUBLIC') ||
+                                    ($scope.network.visibilityIndex == 'PRIVATE')) {
+
+                            $scope.network.indexLevel = ($scope.network.fullIndex) ? 'ALL' : 'META';
+                        };
+
                         var visibility = $scope.network.visibility;
                         var showCase = ('PRIVATE' == visibility) ? false : $scope.network.showcase;
 
                         var networksToUpdate = _.map(networksToModifyInfo.networks,
                             function (network) {
-                                if ((network.visibility != visibility) || (network.indexed != $scope.network.indexed)
+                                if ((network.visibility != visibility) || (network.indexLevel != $scope.network.indexLevel)
                                  || (network.isShowcase != showCase)) {
                                     return network;
                                 };

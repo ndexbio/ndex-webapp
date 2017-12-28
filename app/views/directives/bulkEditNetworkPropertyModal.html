@@ -65,22 +65,35 @@
                     </div>
                 </div>
 
-                <div class="row rowWithOneLineTopPad" ng-if="network.visibilityIndex == 'PUBLIC' || network.visibilityIndex == 'PUBLIC_NOT_INDEXED'">
+                <div class="row rowWithOneLineTopPad"
+                     ng-show="(network.visibilityIndex == 'PUBLIC') || (network.visibilityIndex == 'PRIVATE') ||
+                            (network.visibilityIndex == 'PUBLIC_NOT_INDEXED')">
 
                     <div class="col-sm-3"></div>
 
                     <div class="col-sm-5">
-                        <a ng-click="network.showcase = !network.showcase" style="text-decoration: none; color: #656565;">
-                            <span class="fa-stack" ng-show="!network.showcase">
-                                <i class="fa fa-square-o fa-stack-2x"></i>
-                            </span>
+                        <a ng-show="(network.visibilityIndex == 'PUBLIC') || (network.visibilityIndex == 'PUBLIC_NOT_INDEXED')"
+                                ng-click="network.showcase = !network.showcase" style="text-decoration: none; color: #656565;">
 
-                            <span class="fa-stack" ng-show="network.showcase">
+                            <span class="fa-stack">
                                 <i class="fa fa-square-o fa-stack-2x"></i>
-                                <i class="fa fa-check fa-stack-1x"></i>
+                                <i ng-show="network.showcase" class="fa fa-check fa-stack-1x"></i>
                             </span>
                             <strong>Showcase</strong>
                         </a>
+
+
+                        <a ng-show="(network.visibilityIndex == 'PUBLIC') || (network.visibilityIndex == 'PRIVATE')"
+                            ng-click="network.fullIndex = !network.fullIndex" style="text-decoration: none; color: #656565;">
+                            <span ng-if="network.visibilityIndex == 'PUBLIC'"><br></span>
+                            <span class="fa-stack">
+                                <i class="fa fa-square-o fa-stack-2x"></i>
+                                <i ng-show="network.fullIndex" class="fa fa-check fa-stack-1x"></i>
+                            </span>
+
+                            <strong>Full Index</strong>
+                        </a>
+
                     </div>
                 </div>
 

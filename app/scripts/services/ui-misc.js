@@ -626,9 +626,9 @@ angular.module('ndexServiceApp')
                         numberOfAdminNetworks++;
                     };
                     return (network.ownerUUID == controller.identifier) ?
-                        {'externalId': network.externalId,        'name': network.name,
-                         'visibility': network.visibility,  'isShowcase': network.isShowcase,
-                            'indexed': network.indexed,     'isReadOnly': network.isReadOnly
+                        {'externalId': network.externalId,       'name': network.name,
+                         'visibility': network.visibility, 'isShowcase': network.isShowcase,
+                         'indexLevel': network.indexLevel, 'isReadOnly': network.isReadOnly
                         } : null;
                 });
 
@@ -657,7 +657,7 @@ angular.module('ndexServiceApp')
                         return (network.externalId in controller.networksWithWriteAccess) ?
                             {'externalId': network.externalId,       'name': network.name,
                              'visibility': network.visibility, 'isShowcase': network.isShowcase,
-                                'indexed': network.indexed,    'isReadOnly': network.isReadOnly
+                             'indexLevel': network.indexLevel, 'isReadOnly': network.isReadOnly
                             } : null;
                     });
 
@@ -670,7 +670,7 @@ angular.module('ndexServiceApp')
                         return (network.externalId in controller.networksWithReadAccess) ?
                             {'externalId': network.externalId,       'name': network.name,
                              'visibility': network.visibility, 'isShowcase': network.isShowcase,
-                                'indexed': network.indexed,    'isReadOnly': network.isReadOnly
+                             'indexLevel': network.indexLevel, 'isReadOnly': network.isReadOnly
                             } : null;
                     });
 

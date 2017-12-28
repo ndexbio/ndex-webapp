@@ -154,7 +154,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         "reference": "",
         "version": "",
         "visibility": "PRIVATE",
-        "indexed": true,
+        "indexLevel": 'NONE',
         "readonly": false
     };
 
@@ -864,7 +864,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         ; //console.log("index set to " + $scope.mainProperty.indexed);
                     },
                     function (error, networkId, property, value) {
-                        console.log("unable to change indexed for Network with Id " + networkId);
+                        console.log("unable to change index for Network with Id " + networkId);
                     });
             }
 
