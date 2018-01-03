@@ -328,19 +328,63 @@ angular.module('ndexServiceApp')
             return trans / 255.0;
         };
 
+
+        /*
+         * The code for this function is adjusted from commaDelimitedListStringToStringList2 method from
+         * https://github.com/ndexbio/ndex-cytoscape-app/blob/master/src/main/java/org/cytoscape/ndex/internal/cx_reader/StringParser.java
+         *
+         * The purpose is to correctly split a string of params into a list of tokens in case
+         * the string contains comma(s) as part of names or values. Two commas in a row (,,) are
+         * interpreted as a comma-escaped comma.
+         *
+         * For example, given the string
+         *      list = "COL=name,T=string,K=0=Node=1,V=0=#00FF99,K=1=Node,,2,V=1=#CC0099"
+         *
+         * this function correctly interprets the two commas as one comma escaped by another comma in
+         * the "K=1=Node,,2" and returns the following array of lists to the caller
+         *
+         *          result = Array[6]
+         *              0 = "COL=name"
+         *              1 = "T=string"
+         *              2 = "K=0=Node=1"
+         *              3 = "V=0=#00FF99"
+         *              4 = "K=1=Node,2"
+         *              5 = "V=1=#CC0099"
+         */
+        var commaDelimitedListStringToStringList2 = function(list) {
+
+            var mapping = {};
+            var def = {m: mapping};
+
+            var result = [];
+
+            var objs = list.match(/(?<=(^|,))([^,]|,,)*(?=(,|$))/g);
+
+            objs.forEach(function (entry) {
+                result.push(entry.replace(/,,/g, ","));
+            });
+
+            return result;
+        }
+
+
+
         // "COL=interaction,T=string,K=0=binds,V=0=#3300FF,K=1=isa,V=1=#FF0000"
         // "COL=interaction,T=string,K=0=binds,V=0=NONE,K=1=isa,V=1=ARROW"
         // "COL=weight,T=double,L=0=1.0,E=0=1.0,G=0=1.0,OV=0=0.0,L=1=8.0,E=1=8.0,G=1=1.0,OV=1=70.0"
         var parseMappingDefinition = function (definition) {
-            var items =  definition.split(',');
+            var items = commaDelimitedListStringToStringList2(definition); //definition.split(',');
             items = items || [];
             var mapping = {};
             var def = {m: mapping};
+
+            /*
             _.forEach(items, function (item) {
                 item = item.trim();
                 var vals = item.split('=');  //item.match(/('[^']+'|[^=]+)/g);
                 var v0 = vals[0];
                 var v1 = vals[1];
+
                 if (vals.length > 2) {
                     var v2 = vals[2];
                     var m = mapping[v1];
@@ -353,6 +397,56 @@ angular.module('ndexServiceApp')
                     def[v0] = v1;
                 }
             });
+            */
+
+
+            _.forEach(items, function (item) {
+                item = item.trim();
+
+                var vals = item.split('=');
+
+                var v0 = vals[0];
+                var v1 = vals[1];
+
+                if (vals.length > 2) {
+
+                    /*
+                     * the regex item.match(/^((K|V|L|E|G|OV)=([0-9]+))=(.*)$/); is taken from StringParser method from
+                     * https://github.com/ndexbio/ndex-cytoscape-app/blob/master/src/main/java/org/cytoscape/ndex/internal/cx_reader/StringParser.java
+                     * If key or value contains the Equal sign in it (i.e., K=0=Node=1, where Node=1 is actually a name of the key),
+                     * this Equal sign will be correctly interpreted as part of the name.
+                     * Thus, the following definition argument "COL=name,T=string,K=0=Node=1,V=0=#00FF99,K=1=Node,,2,V=1=#CC0099"
+                     * passed to this function will be correctly parsed into the following def structure:
+                     *
+                     *     def = Object
+                     *              COL = "name"
+                     *              T   = "string"
+                     *              m   = Object
+                     *                 0  =  Object
+                     *                    K = "Node=1"
+                     *                    V = "#00FF99"
+                     *                 1  =  Object
+                     *                    K = "Node,2"
+                     *                    V = "#CC0099"
+                     */
+
+                    vals = item.match(/^((K|V|L|E|G|OV)=([0-9]+))=(.*)$/);
+
+                    v0 = vals[2];
+                    v1 = vals[3];
+
+                    var v2 = vals[4];
+                    var m = mapping[v1];
+                    if (!m) {
+                        m = {};
+                        mapping[v1] = m;
+                    }
+                    m[v0] = v2;
+                } else {
+                    def[v0] = v1;
+                }
+            });
+
             return def;
         };
 
