@@ -1924,7 +1924,7 @@ ndexApp.controller('networkController',
                     return;
                 }
 
-                var longestName = "Label";
+                var longestName = "Name";
                 for (var key in nodes) {
 
                     if (nodes[key].n) {
@@ -1945,8 +1945,8 @@ ndexApp.controller('networkController',
                 }
                 var columnDefs = [
                     {
-                        field: 'Label',
-                        displayName: 'Label',
+                        field: 'Name',
+                        displayName: 'Name',
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestName)
@@ -2079,9 +2079,9 @@ ndexApp.controller('networkController',
                     var nodeId = nodeKeys[key];
 
                     var nodeObj = networkService.getNodeInfo(nodeId);
-                    var label = $scope.getNodeName(nodeObj);
+                    var nodeName = $scope.getNodeName(nodeObj);
 
-                    var row = {"Label": label};
+                    var row = {"Name": nodeName};
 
                     if (nodeAttributes) {
 
