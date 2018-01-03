@@ -358,10 +358,15 @@ angular.module('ndexServiceApp')
 
             var result = [];
 
-            var objs = list.match(/(?<=(^|,))([^,]|,,)*(?=(,|$))/g);
+            //var objs = list.match(/(?<=(^|,))([^,]|,,)*(?=(,|$))/g);
+
+            var objs = list.match(/(^|,)([^,]|,,)*/g);
 
             objs.forEach(function (entry) {
-                result.push(entry.replace(/,,/g, ","));
+                if (entry.startsWith(',')) {
+                    entry = entry.replace(',', '');
+                }
+                result.push(entry.replace(/,,/g, ','));
             });
 
             return result;
