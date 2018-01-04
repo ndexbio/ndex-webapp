@@ -404,6 +404,9 @@ ndexApp.controller('networkController',
 
             $scope.networkToCytoscape = function() {
 
+                $scope.openInCytoscapeTitle = "Opening " + networkController.currentNetwork.name +
+                    " in Cytoscape...";
+
                 var serverURL  = cyREST.getNdexServerUriHTTP();
 
                 var postData = {
@@ -423,10 +426,11 @@ ndexApp.controller('networkController',
 
                 cyREST.exportNetworkToCytoscape(postData,
                     function(data, status, headers, config, statusText) {
-                        ; // console.log('success');
+                        $scope.openInCytoscapeTitle = "";
                     },
                     function(data, status, headers, config, statusText) {
                         console.log('unable to open network in Cytoscape error');
+                        $scope.openInCytoscapeTitle = "";
                     });
             };
 
@@ -2415,7 +2419,7 @@ ndexApp.controller('networkController',
                         } else {
                             // network Share URL is disabled; This network can not be opened in Cytoscape.
                             $scope.openInCytoscapeTitle =
-                                "Only public or shared private networks can be opened in Cytoscape.";
+                                "Only public or private networks accessed through enabled share URL can be opened in Cytoscape.";
                             doNothing();
 
                         };
@@ -2508,7 +2512,7 @@ ndexApp.controller('networkController',
                                 // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
 
                                 $scope.openInCytoscapeTitle =
-                                    "Only public or shared private networks can be opened in Cytoscape.";
+                                    "Only public or private networks accessed through enabled share URL can be opened in Cytoscape.";
                             };
 
 
