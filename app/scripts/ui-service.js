@@ -2089,10 +2089,14 @@
                 var modalInstance;
                 $scope.errors = null;
                 $scope.modal = {};
-                $scope.title = 'Export Selected Networks';
-                $scope.exportButtonLabel = "Export Networks";
+
 
                 $scope.openMe = function() {
+
+                    var noOfSelectedNetworks = $scope.ndexData.getNoOfSelectedNetworksOnCurrentPage();
+                    $scope.title = (noOfSelectedNetworks > 1) ? 'Export Selected Networks' : 'Export Selected Network';
+                    $scope.exportButtonLabel = (noOfSelectedNetworks > 1) ? 'Export Networks' : 'Export Network';
+
                     $scope.exporters = _.filter($scope.$root.ImporterExporters, 'exporter');
 
                     $scope.networkExporterName =
@@ -2108,7 +2112,7 @@
 
                     modalInstance = $modal.open({
                         templateUrl: 'views/directives/bulkExportNetwork.html',
-                        //templateUrl: 'export-network-modal.html',
+                        //templateUrl: 'views/directives/exportNetwork.html',
                         scope: $scope,
                         backdrop: 'static'
                     });
