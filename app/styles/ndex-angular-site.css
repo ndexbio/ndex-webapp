@@ -1087,3 +1087,23 @@ span.glyphicon-refresh {
     width: 23em;
     margin-top: -2em;
 }
+
+
+.cyButton {
+    border: none;
+    filter: saturate(50%);
+    margin-right: 5px
+}
+.cyButton:hover {
+    border: none;
+    filter: saturate(100%);
+    transform: scale(1.15);
+    margin-right: 5px;
+}
+.cyButtonDisabled {
+    border: none;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    margin-right: 5px;
+    cursor: not-allowed
+}

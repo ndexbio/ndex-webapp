@@ -2,11 +2,11 @@ ndexApp.controller('networkController',
     ['provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$rootScope', '$routeParams', '$modal', '$modalStack',
-        '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', 'cyREST', /*'$filter', '$location','$q',*/
+        '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', 'cyREST', '$timeout', /*'$filter', '$location','$q',*/
         function ( provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $rootScope, $routeParams, $modal, $modalStack,
-                  $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST /*, $filter /*, $location, $q */)
+                  $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST , $timeout /*, $filter /*, $location, $q */)
         {
             var self = this;
 
@@ -76,6 +76,8 @@ ndexApp.controller('networkController',
 
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
+
+                $scope.setToolTips();
             });
             $scope.changeTitle = function(obj) {
                 setTooltip("Copy network share URL to clipboard");
@@ -115,9 +117,96 @@ ndexApp.controller('networkController',
             clipboard3.on('success', function(e) {
                 setTooltip3('Copied');
             });
+
             $scope.setToolTips = function(){
                 var myToolTips = $('[data-toggle="tooltip"]');
                 myToolTips.tooltip();
+            };
+
+
+            function setTooltipForSwitchViewButton(message) {
+                $('#switchViewButtonId1').tooltip('hide')
+                    .attr('data-original-title', message)
+                    .tooltip('show');
+
+                $('#switchViewButtonId2').tooltip('hide')
+                    .attr('data-original-title', message)
+                    .tooltip('show');
+            };
+
+            $scope.changeCytoscapeButtonTitle = function() {
+                $('#openInCytoscapeButtonId').tooltip('hide')
+                    .attr('data-original-title', $scope.openInCytoscapeTitle)
+                    .tooltip('show');
+            };
+
+            $scope.changeShareButtonTitle = function() {
+                $('#shareButtonId').tooltip('hide')
+                    .attr('data-original-title', $scope.shareTitle)
+                    .tooltip('show');
+            };
+
+            $scope.changeEditButtonTitle = function() {
+                $('#editButtonId').tooltip('hide')
+                    .attr('data-original-title', $scope.editPropertiesButtonTitle)
+                    .tooltip('show');
+            };
+
+            $scope.changeRequestDOITitle = function() {
+                $('#requestDOIId').tooltip('hide')
+                    .attr('data-original-title', $scope.requestDOITitle)
+                    .tooltip('show');
+            };
+
+            $scope.changeReadOnlyButtonTitle = function() {
+                var title =
+                    networkController.hasMultipleSubNetworks() ?
+                        $scope.editPropertiesButtonTitle :
+                        'Only network owners can set/unset Read Only flag';
+
+                $('#readOnlyButtonId').tooltip('hide')
+                    .attr('data-original-title', title)
+                    .tooltip('show');
+            };
+
+
+            $scope.changeExportNetworkTitle  = function() {
+                $('#exportNetworkId').tooltip('hide')
+                    .attr('data-original-title', $scope.exportTitle)
+                    .tooltip('show');
+            };
+
+            $scope.changeUpgradePermissionTitle  = function() {
+                $('#upgradePermissionTitleId').tooltip('hide')
+                    .attr('data-original-title', $scope.upgradePermissionTitle)
+                    .tooltip('show');
+            };
+
+            $scope.changeDeleteNetworkTitle  = function() {
+                $('#deleteNetwoprkTitleId').tooltip('hide')
+                    .attr('data-original-title', $scope.deleteTitle)
+                    .tooltip('show');
+            };
+
+            $scope.changeDisabledQueryTitle1 = function() {
+                $('#disabledQueryId1').tooltip('hide')
+                    .attr('data-original-title', $scope.disabledQueryTooltip)
+                    .tooltip('show');
+            };
+            $scope.changeDisabledQueryTitle2 = function() {
+                $('#disabledQueryId2').tooltip('hide')
+                    .attr('data-original-title', $scope.disabledQueryTooltip)
+                    .tooltip('show');
+            };
+            $scope.changeDisabledQueryTitle3 = function() {
+                $('#disabledQueryId3').tooltip('hide')
+                    .attr('data-original-title', $scope.disabledQueryTooltip)
+                    .tooltip('show');
+            };
+            $scope.changeDisabledQueryTitle4 = function() {
+                $('#disabledQueryId4').tooltip('hide')
+                    .attr('data-original-title', $scope.disabledQueryTooltip)
+                    .tooltip('show');
             };
 
             networkController.tabs = [
@@ -346,13 +435,15 @@ ndexApp.controller('networkController',
 
 
             $scope.currentView = "Graphic";
-            $scope.buttonLabel = "Table View";
+            $scope.buttonLabel = "Table";
 
             $scope.switchView = function() {
                 if ($scope.currentView == "Graphic") {
                     // switch to table view
                     $scope.currentView = "Table";
-                    $scope.buttonLabel = "Graph View";
+                    $scope.buttonLabel = "Graph";
+
+                    setTooltipForSwitchViewButton("Switch to Graphical view");
 
                     spinnerNetworkPageId = "spinnerTableId";
 
@@ -369,7 +460,9 @@ ndexApp.controller('networkController',
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
                     $scope.currentView = "Graphic";
-                    $scope.buttonLabel = "Table View";
+                    $scope.buttonLabel = "Table";
+
+                    setTooltipForSwitchViewButton("Switch to Table view");
 
                     spinnerNetworkPageId = "spinnerGraphId";
 
@@ -426,14 +519,29 @@ ndexApp.controller('networkController',
 
                 cyREST.exportNetworkToCytoscape(postData,
                     function(data, status, headers, config, statusText) {
-                        $scope.openInCytoscapeTitle = "";
+
+                        // show the "Opened" tooltip ...
+                        $scope.openInCytoscapeTitle = "Opened";
+                        $scope.changeCytoscapeButtonTitle();
+
+                        // remove the "Opened" after 2 secs
+                        $timeout( function(){
+                            $scope.openInCytoscapeTitle = "";
+                        }, 2000 );
+
                     },
                     function(data, status, headers, config, statusText) {
                         console.log('unable to open network in Cytoscape error');
-                        $scope.openInCytoscapeTitle = "";
+
+                        $scope.openInCytoscapeTitle = "Unable to open this network in Cytoscape";
+                        $scope.changeCytoscapeButtonTitle();
+
+                        $timeout( function(){
+                            $scope.openInCytoscapeTitle = "";
+                        }, 2000 );
+
                     });
             };
-
 
             $scope.setReturnView = function(view) {
                 sharedProperties.setNetworkViewPage(view);
@@ -3129,8 +3237,8 @@ ndexApp.controller('networkController',
 
                     },
                     function(err) {
-                        $scope.openInCytoscapeTitle = "It seems that Cytoscape is not running on port 1234, or your Cytoscape version is too old.\n";
-                        $scope.openInCytoscapeTitle += "You need Cytoscape version 3.6.0 or later to run on port 1234 to use this feature.";
+                        $scope.openInCytoscapeTitle = "To use this feature you need Cytoscape 3.6.0 or higher running on ";
+                        $scope.openInCytoscapeTitle += " you machine on port 1234, with the CyNDEx 2 app installed";
                     });
             };
 

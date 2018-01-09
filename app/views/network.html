@@ -70,11 +70,14 @@
                       class="form-inline pull-left">
 
                     <div class="form-group">
-                        <input class="form-control" type="search" ng-model="networkController.searchString"
-                               placeholder="Network Terms" style="width:300px"
-                               title="{{disabledQueryTooltip}}"
-                               ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
-                               ng-disabled="true">
+
+                        <span id="disabledQueryId1" ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
+                              ng-mouseover="changeDisabledQueryTitle1()" title="">
+
+                            <input class="form-control" type="search"
+                                   placeholder="Network Terms" style="width:300px" disabled>
+                        </span>
+
 
                         <input class="form-control" type="search" ng-model="networkController.searchString"
                                placeholder="Network Terms" style="width:300px" required
@@ -102,9 +105,10 @@
                             style="margin-bottom:0">Run Query
                     </button>
 
-                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                    <a id="disabledQueryId2"
+                       class="actionsLabelDisabled-btn btn btn-primary"
                        ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
-                       title="{{disabledQueryTooltip}}">
+                       ng-mouseover="changeDisabledQueryTitle2()" title="">
                         Run Query
                     </a>
 
@@ -120,10 +124,11 @@
                     </a>
                 </span>
 
-                <span class="pull-left" style="margin-top:0.5em"
+                <span id="disabledQueryId3"
+                      class="pull-left" style="margin-top:0.5em"
                       ng-show="!hideAdvancedSearchLink"
                       ng-if="networkController.hasMultipleSubNetworks() || disableQuery"
-                      title="{{disabledQueryTooltip}}">
+                      ng-mouseover="changeDisabledQueryTitle3()" title="">
                     <span  style="color:#999999; cursor:not-allowed">
                         <u>Advanced Query</u>
                     </span>
@@ -167,7 +172,6 @@
 
                             <a id="copyNetworkShareURLToClipboardId3"
                                ng-if="!isDOIPending()"
-                               ng-init="setToolTips()"
                                data-toggle="tooltip"
                                data-placement="bottom"
                                ng-mouseover="changeTitle3(this)"
@@ -230,13 +234,10 @@
                                     ng-change="readOnlyChanged()"
                                 ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only 
                             </span>
-                            <span class="networkPropertyName" ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()">
-                                <input type="checkbox"  disabled readonly
-                                       ng-model="networkController.readOnlyChecked"
-                                       title=
-                                       "{{networkController.hasMultipleSubNetworks() ?
-                                       editPropertiesButtonTitle :
-                                       'Only network owners can set/unset Read Only flag'}}"> Read Only
+                            <span id="readOnlyButtonId"  class="networkPropertyName"
+                                  ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()"
+                                  ng-init="setToolTips()" data-toggle="tooltip" ng-mouseover="changeReadOnlyButtonTitle()" title="">
+                                <input type="checkbox" disabled ng-model="networkController.readOnlyChecked"> Read Only
                             </span>
 
 
@@ -250,7 +251,6 @@
 
                                     <a id="copyNetworkShareURLToClipboardId1"
                                        ng-hide="!networkController.networkShareURL"
-                                       ng-init="setToolTips()"
                                        data-toggle="tooltip"
                                        data-placement="bottom"
                                        ng-mouseover="changeTitle(this)"
@@ -265,7 +265,6 @@
 
                                     <a id="copyNetworkShareURLToClipboardId2"
                                        ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
-                                       ng-init="setToolTips()"
                                        data-toggle="tooltip"
                                        data-placement="bottom"
                                        ng-mouseover="changeTitle2(this)"
@@ -779,7 +778,9 @@
                 Save Query Result
             </button>
 
-            <button type="button" class="actionsLabel btn btn-primary"
+
+            <button id="switchViewButtonId2" type="button" class="actionsLabel btn btn-primary"
+                    data-toggle="tooltip" title="Switch to Table view"
                     ng-click="switchView()">
                 {{buttonLabel}}
             </button>
@@ -788,36 +789,46 @@
 
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried || networkController.accesskey">
 
+            <span>
+               <button id="openInCytoscapeButtonId" ng-show="openInCytoscapeTitle" type="button" class="cyButtonDisabled"
+                      ng-mouseover="changeCytoscapeButtonTitle()" title="">
+                        <img style="height: 32px;" src="images/cytoscape_logo.png">
+                </button>
+
+                <button ng-show="!openInCytoscapeTitle" type="button" class="cyButton" ng-click="networkToCytoscape()"
+                        data-toggle="tooltip"  title="Open this network in Cytoscape">
+                        <img style="height: 32px;" src="images/cytoscape_logo.png">
+                </button>
+            </span>
+
             <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
                     || networkController.isAdmin
                     || networkController.canEdit
                     || networkController.canRead) || networkController.accesskey'
                   ng-click="downloadNetwork()"
-                  style="cursor:pointer;" title="Download this network">
+                  style="cursor:pointer;">
 
-                      <button type="button" class="btn btn-primary download-btn">
+                      <button type="button" class="btn btn-primary download-btn"
+                              data-toggle="tooltip" title="Download this network in CX format">
+
                         <i class="fa fa-download fa-lg"
                            aria-hidden="true" style="vertical-align: middle; margin-bottom: -4px" >
                         </i>
                       </button>
-
             </span>
 
-            <span>
-                <button type="button" class="actionsLabelDisabled-btn btn btn-primary" style="cursor: not-allowed" ng-show="openInCytoscapeTitle"
-                   ng-attr-title="{{openInCytoscapeTitle}}">
-                    <img style="height: 19px" src="images/cytoscape_off.png">
-                </button>
-
-                <button type="button" class="actionsLabel btn btn-primary" ng-click="networkToCytoscape()"
-                   title="Open this network in Cytoscape" ng-show="!openInCytoscapeTitle">
-                        <img style="height: 19px" src="images/cytoscape_on.png" >
-                </button>
-
+            <span ng-show='networkController.isLoggedInUser'>
+                <a class="actionsLabel btn btn-primary"
+                   data-toggle="tooltip" title="Create a copy of this network and save it to your account"
+                   ng-click="networkController.cloneNetwork()">
+                        <i class="fa fa-clone"></i>
+                </a>
             </span>
 
+
             <span>
-                <button type="button" class="actionsLabel btn btn-primary"
+                <button id="switchViewButtonId1" type="button" class="actionsLabel btn btn-primary"
+                        data-toggle="tooltip" title="Switch to Table view"
                         ng-click="switchView()"
                         ng-hide="networkController.hasMultipleSubNetworks()">
                     {{buttonLabel}}
@@ -825,32 +836,44 @@
 
                 <a class="actionsLabelDisabled-btn btn btn-primary"
                    ng-show="networkController.hasMultipleSubNetworks()"
-                   title="{{editPropertiesButtonTitle}}">
+                   data-toggle="tooltip"
+                   title="This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx.">
                         {{buttonLabel}}
                 </a>
             </span>
 
-            <span ng-show='networkController.isLoggedInUser'>
+
+            <span id="shareButtonId" ng-show='networkController.isLoggedInUser && !networkController.isAdmin'
+                class="actionsLabelDisabled-btn btn btn-primary" ng-mouseover="changeShareButtonTitle()" title="">
+                Share
+            </span>
+            <span ng-show='networkController.isLoggedInUser && networkController.isAdmin'>
                 <a class="actionsLabel btn btn-primary"
-                   ng-click="networkController.cloneNetwork()">Clone
+                   data-toggle="tooltip" title="Share this network internally or externally"
+                   ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
+                    Share
                 </a>
             </span>
+
 
             <span ng-show='networkController.isLoggedInUser'>
                 <span ng-if="(networkController.currentNetwork.doi == null) || isNetworkCertified()">
                     <a class="actionsLabel btn btn-primary"
                        ng-show="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
                                 && !networkController.hasMultipleSubNetworks()"
+
+                       ng-init="setToolTips()" data-toggle="tooltip" title="Modify network properties"
+
                        ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
                        ng-click="setReturnView('network/')">
-                        Edit Properties
+                        Edit
 
                     </a>
-                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                    <a id="editButtonId" class="actionsLabelDisabled-btn btn btn-primary"
                        ng-show="!(networkController.isAdmin || networkController.canEdit) ||
                                 networkController.hasMultipleSubNetworks() || networkController.readOnlyChecked"
-                       title="{{editPropertiesButtonTitle}}">
-                        Edit Properties
+                       ng-mouseover="changeEditButtonTitle()" title="">
+                        Edit
                     </a>
                 </span>
 
@@ -881,10 +904,10 @@
                     <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="moreNetworkButton" >
 
 
-                        <li style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
+                        <li id="requestDOIId" style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
                                     (!networkController.isNetworkOwner || networkController.hasMultipleSubNetworks() || isNetworkCertified()
                                     || isDOIAssigned() || isDOIPending())'
-                                title="{{requestDOITitle}}">
+                            ng-mouseover="changeRequestDOITitle()" title="">
                             <a>
                                 Request DOI
                             </a>
@@ -900,9 +923,9 @@
                             </a>
                         </li>
 
-                        <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
+                        <li id="exportNetworkId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
                                 ng-show='networkController.isLoggedInUser && networkController.hasMultipleSubNetworks()'
-                            title="{{exportTitle}}">
+                            ng-mouseover="changeExportNetworkTitle()" title="">
                             <a>Export</a>
                         </li>
                         <li style="margin: 3px 0; line-height: 1.2em"
@@ -924,11 +947,11 @@
 
                         </li>
 
-                        <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
+                        <li id="upgradePermissionTitleId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
                             ng-show='networkController.isLoggedInUser &&
                                 (networkController.isAdmin || networkController.canEdit ||
                                 networkController.hasMultipleSubNetworks() || isDOIPending() || isDOIAssigned() || isNetworkCertified())'
-                            title="{{upgradePermissionTitle}}">
+                            ng-mouseover="changeUpgradePermissionTitle()" title="">
                             <a>Upgrade Permission</a>
                         </li>
                         <li style="margin: 3px 0; line-height: 1.2em"
@@ -945,36 +968,10 @@
 
                         </li>
 
-                        <li style="margin: 3px 0;" class="disabled"
-                                ng-show='networkController.isLoggedInUser && !networkController.isAdmin'
-                                title="{{shareTitle}}">
-                            <a>Share</a>
-                        </li>
-                        <li style="margin: 3px 0;"
-                              ng-show='networkController.isLoggedInUser && networkController.isAdmin'>
-                                <a  class="dropdown-btn"
-                                   ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
-                                        Share
-                                </a>
-                        </li>
-
-<!--
-                        <li style="margin: 3px 0"
-                            ng-show='networkController.isAdmin && networkController.currentNetwork.sourceFormat=="BEL" &&
-                            networkController.numberOfBelNetworkNamespacesAsInt > 0'>
-                            <a class="actionsLabel btn btn-primary customButtonWidth">
-                                <download-bel-namespace ndex-network-uuid='networkController.currentNetwork.externalId'
-                                                        ndex-network-name='networkController.currentNetwork.name'>
-                                    Download Namespace
-                                </download-bel-namespace>
-                            </a>
-                        </li>
--->
-
-                         <li style="margin: 3px 0; line-height: 1.2em" class="disabled"
+                         <li id="deleteNetwoprkTitleId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
                              ng-show='networkController.isLoggedInUser && !(networkController.isAdmin &&
                                   !networkController.readOnlyChecked)'
-                                  title="{{deleteTitle}}">
+                             ng-mouseover="changeDeleteNetworkTitle()" title="">
                             <a>Delete</a>
                         </li>
                         <li style="margin: 3px 0; line-height: 1.2em"
