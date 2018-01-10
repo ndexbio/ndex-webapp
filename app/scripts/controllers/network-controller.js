@@ -53,8 +53,6 @@ ndexApp.controller('networkController',
             networkController.edgePropertyNamesForAdvancedQuery = undefined;
             networkController.nodePropertyNamesForAdvancedQuery = undefined;
 
-            networkController.numberOfBelNetworkNamespacesAsInt = 0;
-
             networkController.context = {};
 
             networkController.isAdmin = false;
@@ -2644,11 +2642,6 @@ ndexApp.controller('networkController',
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
-                            if ("BEL" === networkController.currentNetwork.sourceFormat) {
-                                // for BEL networks, check if Namespaces have been archived
-                                getNumberOfBelNetworkNamespaces();
-                            }
-
                             networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId,'Reference');
                             networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId,'rightsHolder');
                             networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
@@ -2782,33 +2775,6 @@ ndexApp.controller('networkController',
                 }  else if (networkController.readOnlyChecked) {
                     $scope.editPropertiesButtonTitle = "Unable to edit this network: it is read-only";
                 };
-            };
-
-
-            var getNumberOfBelNetworkNamespaces = function()
-            {
-                ndexService.getNumberOfBelNetworkNamespaces(networkController.currentNetworkId,
-                    function(data)
-                    {
-                        networkController.numberOfBelNetworkNamespaces = "Not Archived";
-
-                        var i = 0;
-                        for (i = 0; i < data.metaData.length; i++) {
-
-                            if (data.metaData[i].name.toLowerCase() === 'belnamespacefiles') {
-                                if (data.metaData[i].elementCount > 0) {
-                                    networkController.numberOfBelNetworkNamespaces = "Archived (" +
-                                        data.metaData[i].elementCount + ")";
-                                    networkController.numberOfBelNetworkNamespacesAsInt = data.metaData[i].elementCount;
-                                }
-                                return;
-                            }
-                        }
-                    },
-                    function(error)
-                    {
-                        networkController.numberOfBelNetworkNamespaces = "Can't retrieve";
-                    });
             };
 
             var getMembership = function (callback) {
@@ -3063,11 +3029,6 @@ ndexApp.controller('networkController',
                                 networkService.getNetworkProperty(networkController.subNetworkId,'ndex:sourceFormat');
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
-
-                            if ("BEL" === networkController.currentNetwork.sourceFormat) {
-                                // for BEL networks, check if Namespaces have been archived
-                                getNumberOfBelNetworkNamespaces();
-                            }
 
                             networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId,'Reference');
                             networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId,'rightsHolder');
