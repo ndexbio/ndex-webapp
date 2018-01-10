@@ -284,7 +284,8 @@
     <div class="navbar-ndex navbar-ndex-top" style="padding-right: 20px;">
         <div class="navbar-header">
 
-            <button type="button"
+            <button ng-show="(main.serverIsDown != null) && !main.serverIsDown"
+                    type="button"
                     class="navbar-toggle"
                     data-toggle="collapse"
                     data-target="#myNavbar">

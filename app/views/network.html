@@ -994,9 +994,19 @@
             </span>
 
             <span ng-show='!networkController.isLoggedInUser'>
-                <a class="actionsLabel btn btn-primary" ng-click="main.startSignIn()">
-                    Log in to operate on this network
+
+                <a ng-show="!networkController.hasMultipleSubNetworks()"
+                   class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
+                   data-toggle="tooltip" title="Log in to operate on this network">
+                    Log in
                 </a>
+
+                <a ng-show="networkController.hasMultipleSubNetworks()"
+                   class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
+                   data-toggle="tooltip" title="Log in">
+                    Log in
+                </a>
+
             </span>
         </div>
     </div>

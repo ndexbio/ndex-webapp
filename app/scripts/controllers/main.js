@@ -200,6 +200,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 document.getElementById("hiddenElementId1").style.display = "";
                 document.getElementById("hiddenElementId2").style.display = "";
                 document.getElementById("hiddenElementId3").style.display = "";
+
+                // this will remove (hide) NDEx logo from the top left in the Navigation Bar
+                document.getElementById("hiddenElementId").style.background  = "transparent";
             });
 
         $scope.main.startSignIn = function()
