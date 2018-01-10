@@ -231,7 +231,7 @@ ndexApp.controller('networkController',
             $scope.upgradePermissionTitle    = "";
             $scope.shareTitle                = "";
             $scope.deleteTitle               = "";
-            $scope.openInCytoscapeTitle      = "";
+            $scope.openInCytoscapeTitle      = "Checking status ...";
 
             $scope.disabledQueryTooltip      = "";
 
@@ -2291,6 +2291,7 @@ ndexApp.controller('networkController',
                             }
 
                             if (networkController.currentNetwork.nodeCount == 0) {
+                                //networkController.successfullyQueried = false;
                                 networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
                             };
                         }
@@ -2525,7 +2526,8 @@ ndexApp.controller('networkController',
                         } else {
                             // network Share URL is disabled; This network can not be opened in Cytoscape.
                             $scope.openInCytoscapeTitle =
-                                "Only public or private networks accessed through enabled share URL can be opened in Cytoscape.";
+                                "This feature can be used only with Public networks, or Private networks " +
+                                "with an enabled Share URL";
                             doNothing();
 
                         };
@@ -2616,9 +2618,9 @@ ndexApp.controller('networkController',
                             } else {
                                 // Network is private, access key is not set, we are not the owner.
                                 // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
-
                                 $scope.openInCytoscapeTitle =
-                                    "Only public or private networks accessed through enabled share URL can be opened in Cytoscape.";
+                                    "This feature can be used only with Public networks, or Private networks " +
+                                    "with an enabled Share URL";
                             };
 
 
@@ -3171,35 +3173,41 @@ ndexApp.controller('networkController',
                                             if (currentCyNDEXVersion < minAcceptableCyNDEXVersion) {
 
                                                 $scope.openInCytoscapeTitle =
-                                                    "You need CyNDEx version 2.2.0 or later to use this feature.\n";
+                                                    "You need CyNDEx-2 version 2.2.0 or later to use this feature.\n";
                                                 $scope.openInCytoscapeTitle +=
-                                                    "Your version of CyNDEx is " + data['data']['appVersion'] + ".";
+                                                    "Your version of CyNDEx-2 is " + data['data']['appVersion'] + ".";
 
                                             } else {
-                                                // everything is fine: both Cytoscape and CyNDEx are recent enough to
+                                                // everything is fine: both Cytoscape and CyNDEx-2 are recent enough to
                                                 // support the Open in Cytoscape feature.  Enable this button.
                                                 $scope.openInCytoscapeTitle = "";
                                             };
 
                                         } else {
-                                            $scope.openInCytoscapeTitle = "You need CyNDEx version 2.2.0 or later to use this feature.\n";
-                                            $scope.openInCytoscapeTitle += "Your version of CyNDEx is too old.";
+                                            $scope.openInCytoscapeTitle =
+                                                "You need CyNDEx-2 version 2.2.0 or later to use this feature.\n" +
+                                                "Your version of CyNDEx-2 is too old.";
                                         };
 
                                     },
                                     function (error) {
-                                        $scope.openInCytoscapeTitle = "You need Cytoscape version 3.6.0 or later to run on port 1234 to use this feature.";
+                                        $scope.openInCytoscapeTitle =
+                                            "To use this feature, you need Cytoscape 3.6.0 or higher running on " +
+                                            " your machine (default port: 1234) and the CyNDEx-2 app installed";
                                     }
                                 );
                             };
                         } else {
-                            $scope.openInCytoscapeTitle = "You need Cytoscape version 3.6.0 or later to use this feature.";
+                            $scope.openInCytoscapeTitle =
+                                "To use this feature, you need Cytoscape 3.6.0 or higher running on " +
+                                " your machine (default port: 1234) and the CyNDEx-2 app installed";
                         };
 
                     },
                     function(err) {
-                        $scope.openInCytoscapeTitle = "To use this feature you need Cytoscape 3.6.0 or higher running on ";
-                        $scope.openInCytoscapeTitle += " you machine on port 1234, with the CyNDEx 2 app installed";
+                        $scope.openInCytoscapeTitle =
+                            "To use this feature, you need Cytoscape 3.6.0 or higher running on " +
+                            " your machine (default port: 1234) and the CyNDEx-2 app installed";
                     });
             };
 

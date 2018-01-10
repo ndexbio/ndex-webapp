@@ -1091,7 +1091,7 @@ span.glyphicon-refresh {
 
 .cyButton {
     border: none;
-    filter: saturate(50%);
+    filter: saturate(75%);
     margin-right: 5px
 }
 .cyButton:hover {

@@ -785,15 +785,13 @@
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried || networkController.accesskey">
 
             <span>
-               <button id="openInCytoscapeButtonId" ng-show="openInCytoscapeTitle" type="button" class="cyButtonDisabled"
-                      ng-mouseover="changeCytoscapeButtonTitle()" title="">
-                        <img style="height: 32px;" src="images/cytoscape_logo.png">
-                </button>
+                <img id="openInCytoscapeButtonId" ng-show="openInCytoscapeTitle" class="cyButtonDisabled"
+                     ng-mouseover="changeCytoscapeButtonTitle()" title=""
+                     style="height: 32px;" src="images/cytoscape_logo.png">
 
-                <button ng-show="!openInCytoscapeTitle" type="button" class="cyButton" ng-click="networkToCytoscape()"
-                        data-toggle="tooltip"  title="Open this network in Cytoscape">
-                        <img style="height: 32px;" src="images/cytoscape_logo.png">
-                </button>
+                <img ng-show="!openInCytoscapeTitle" class="cyButton" ng-click="networkToCytoscape()"
+                     data-toggle="tooltip"  title="Open this network in Cytoscape"
+                     style="height: 32px;" src="images/cytoscape_logo.png">
             </span>
 
             <span ng-show='((networkController.currentNetwork.visibility == "PUBLIC")
@@ -814,7 +812,7 @@
 
             <span ng-show='networkController.isLoggedInUser'>
                 <a class="actionsLabel btn btn-primary"
-                   data-toggle="tooltip" title="Create a copy of this network and save it to your account"
+                   data-toggle="tooltip" title="Clone this network and save a copy to your account"
                    ng-click="networkController.cloneNetwork()">
                         <i class="fa fa-clone"></i>
                 </a>
@@ -998,7 +996,7 @@
 
                 <a ng-show="networkController.hasMultipleSubNetworks()"
                    class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
-                   data-toggle="tooltip" title="Log in">
+                   data-toggle="tooltip" title="Log in to your account">
                     Log in
                 </a>
 
