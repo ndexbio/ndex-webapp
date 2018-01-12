@@ -19,7 +19,9 @@
                 <div id="spinnerGraphId"></div>
                 <div id="messageOverlay"
                      style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
-                     ng-show="networkController.isSample && networkController.sampleSize > 0">(Sample: {{networkController.sampleSize}} edges)</div>
+                     ng-show="networkController.isSample && networkController.sampleSize > 0">
+                            (Sample: {{networkController.sampleSize}} edges)
+                </div>
             </div>
             <tabset ng-show="currentView == 'Table'">
                 <div id="spinnerTableId"></div>
@@ -120,7 +122,7 @@
                       ng-show="!hideAdvancedSearchLink"
                       ng-if="!networkController.hasMultipleSubNetworks() && !disableQuery">
                     <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
-                        <u>Advanced Query</u>
+                        <u><strong>Advanced Query</strong></u>
                     </a>
                 </span>
 
@@ -130,7 +132,7 @@
                       ng-if="networkController.hasMultipleSubNetworks() || disableQuery"
                       ng-mouseover="changeDisabledQueryTitle3()" title="">
                     <span  style="color:#999999; cursor:not-allowed">
-                        <u>Advanced Query</u>
+                        <u><strong>Advanced Query</strong></u>
                     </span>
                 </span>
 
