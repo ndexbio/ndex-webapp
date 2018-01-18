@@ -782,6 +782,7 @@ ul.ndex-nav-pills > li > a:hover {
 
     /*height: 90vh;*/
     background-color: #eee;
+    position: relative;
 }
 
 .networkPropertiesTabset {

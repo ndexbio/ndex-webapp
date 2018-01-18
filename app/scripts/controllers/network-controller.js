@@ -168,6 +168,13 @@ ndexApp.controller('networkController',
             };
 
 
+            $scope.activeTab = "Edges";
+
+            $scope.activateTab = function(tabName){
+                $scope.activeTab = tabName;
+            };
+
+
             $scope.changeExportNetworkTitle  = function() {
                 $('#exportNetworkId').tooltip('hide')
                     .attr('data-original-title', $scope.exportTitle)
@@ -215,6 +222,8 @@ ndexApp.controller('networkController',
             ];
 
             networkController.queryWarnings = [];
+            networkController.queryErrors   = [];
+
 
             networkController.subNetworkId = null;
             networkController.noOfSubNetworks = 0;
@@ -472,8 +481,11 @@ ndexApp.controller('networkController',
                     };
 
                     // if any nodes or edges selected, show Tab 1 - Nodes/Edges
-                    if (networkController.selectionContainer['nodes'].length > 0 ||
-                        networkController.selectionContainer['edges'].length > 0 ) {
+                    if ((networkController.selectionContainer && networkController.selectionContainer.nodes &&
+                        networkController.selectionContainer.nodes.length > 0) ||
+                        (networkController.selectionContainer && networkController.selectionContainer.edges &&
+                        networkController.selectionContainer.edges.length > 0 ))
+                    {
                         networkController.tabs[0].active = false;
                         networkController.tabs[1].active = true;
                         networkController.tabs[2].active = false;
@@ -2259,12 +2271,25 @@ ndexApp.controller('networkController',
                 networkService.neighborhoodQuery(networkController.currentNetworkId, accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
                         function (network) {
+
+                            ndexSpinner.stopSpinner();
+
                             var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
+
+                            var nodeCount = (network.nodes) ? Object.keys(network.nodes).length : 0;
+                            var edgeCount = (network.edges) ? Object.keys(network.edges).length : 0;
+
+                            if ((nodeCount == 0) && (edgeCount == 0)) {
+                                networkController.successfullyQueried = false;
+                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                                return;
+                            }
+
                             networkController.successfullyQueried = true;
                             networkController.currentNetwork =
                               {name: resultName,
-                                  "nodeCount": (network.nodes) ? Object.keys(network.nodes).length : 0,
-                                  "edgeCount": (network.edges) ? Object.keys(network.edges).length : 0,
+                                  "nodeCount": nodeCount,
+                                  "edgeCount": edgeCount,
                                   "queryString": networkController.searchString,
                                   "queryDepth" : networkController.searchDepth.value
                               };
@@ -2274,8 +2299,6 @@ ndexApp.controller('networkController',
                             if (!networkController.tabs[0].active )
                                 networkController.tabs[0].active = true;
                             networkController.selectionContainer = {};
-
-                            ndexSpinner.stopSpinner();
 
                             // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                             drawCXNetworkOnCanvas(network,false);
@@ -2289,20 +2312,18 @@ ndexApp.controller('networkController',
                             } else {
                                 $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
                             }
-
-                            if (networkController.currentNetwork.nodeCount == 0) {
-                                //networkController.successfullyQueried = false;
-                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
-                            };
                         }
                     )
                     .error(
                         function (error) {
                             ndexSpinner.stopSpinner();
                             if (error.status != 0) {
-                                if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
+                                if (error.data.message &&
+                                    (error.data.message.toLowerCase().indexOf("edgelimitexceeded") > 0))
                                 {
-                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + ndexSettings.networkQueryLimit);
+                                    var edgeLimitExceededWarning =
+                                        "Query returned more than max edges (" + edgeLimit + "). Please refine your query.";
+                                    networkController.queryWarnings.push(edgeLimitExceededWarning);
                                 }
                                 else
                                 {
@@ -2445,20 +2466,29 @@ ndexApp.controller('networkController',
                     .success(
                         function (networkInNiceCX) {
 
+                            ndexSpinner.stopSpinner();
+
                             var networkName = networkController.currentNetwork.name;
                             var localNiceCX = networkInNiceCX;
 
+                            var nodeCount = (localNiceCX.nodes) ? Object.keys(localNiceCX.nodes).length : 0;
+                            var edgeCount = (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0;
+
+                            if (nodeCount == 0) {
+                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                                return;
+                            }
+
                             var resultName = "Advanced query result on network - " + currentNetworkSummary.name;
                             networkController.successfullyQueried = true;
-                            networkController.currentNetwork =
-                            {name: resultName,
-                                "nodeCount": (localNiceCX.nodes) ? Object.keys(localNiceCX.nodes).length : 0,
-                                "edgeCount": (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0
-                            };
+                            networkController.currentNetwork = {
+                                    name: resultName,
+                                    "nodeCount": nodeCount,
+                                    "edgeCount": edgeCount
+                                };
 
                             cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
 
-                            ndexSpinner.stopSpinner();
 
                             // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                             drawCXNetworkOnCanvas(localNiceCX,false);
@@ -2475,18 +2505,19 @@ ndexApp.controller('networkController',
                                 $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
                             };
 
-                            if (networkController.currentNetwork.nodeCount == 0) {
-                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
-                            };
                         })
                     .error(
 
                         function (error) {
                             ndexSpinner.stopSpinner();
+
                             if (error.status != 0) {
-                                if( error.data.message == "Error in queryForSubnetwork: Result set is too large for this query.")
+                                if (error.data && error.data.message &&
+                                    (error.data.message.toLowerCase().indexOf("edgelimitexceeded") > 0))
                                 {
-                                    networkController.queryErrors.push("Error Querying: The maximum query size is " + ndexSettings.networkQueryLimit);
+                                    var edgeLimitExceededWarning =
+                                        "Query returned more than max edges (" + edgeLimit + "). Please refine your query.";
+                                    networkController.queryWarnings.push(edgeLimitExceededWarning);
                                 }
                                 else
                                 {
@@ -3217,6 +3248,38 @@ ndexApp.controller('networkController',
             
             $("#cytoscape-canvas").height($(window).height() - 200);
             $("#divNetworkTabs").height($(window).height() - 200);
+
+            if ($scope.currentView == "Graphic") {
+                $("#queryWarningsOrErrorsId").width($("#cytoscape-canvas").width());
+            } else {
+
+                if ($scope.activeTab == "Edges") {
+                    $("#queryWarningsOrErrorsId").width($("#edgeGridId").width());
+                } else {
+                    $("#queryWarningsOrErrorsId").width($("#nodeGridId").width());
+                };
+            };
+
+
+            $(window).resize(function() {
+                $('#cytoscape-canvas').height($(window).height() - 200);
+                $('#divNetworkTabs').height($(window).height() - 200);
+
+                if ($scope.currentView == "Graphic") {
+                    $("#queryWarningsOrErrorsId").width($("#cytoscape-canvas").width());
+                } else {
+
+                    if ($scope.activeTab == "Edges") {
+                        $("#queryWarningsOrErrorsId").width($("#edgeGridId").width());
+                    } else {
+                        $("#queryWarningsOrErrorsId").width($("#nodeGridId").width());
+                    };
+
+                };
+
+            });
+
+            $(window).trigger('resize');
 
             ndexSpinner.startSpinner(spinnerNetworkPageId);
 

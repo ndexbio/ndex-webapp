@@ -467,15 +467,6 @@
 
 <script>
 
-    $(window).resize(function() {
-        $('#cytoscape-canvas').height($(window).height() - 200);
-        $("#divNetworkTabs").height($(window).height() - 200);
-    });
-
-    $(window).trigger('resize');
-
-
-
     function logInUserWithBasicAuth() {
         var initInjector = angular.injector(["ng"]);
         var $http = initInjector.get("$http");

@@ -16,6 +16,7 @@
 
             <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}"
                  ng-show="currentView == 'Graphic'">
+
                 <div id="spinnerGraphId"></div>
                 <div id="messageOverlay"
                      style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
@@ -23,34 +24,33 @@
                             (Sample: {{networkController.sampleSize}} edges)
                 </div>
             </div>
+
             <tabset ng-show="currentView == 'Table'">
                 <div id="spinnerTableId"></div>
-                <tab heading="Edges" ng-click="edgeGridApi.core.handleWindowResize()">
-                    <div id="edgeGrid" ui-grid="edgeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
+                <tab heading="Edges" ng-click="activateTab('Edges'); edgeGridApi.core.handleWindowResize()">
+                    <div id="edgeGridId" ui-grid="edgeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
                 </tab>
-                <tab heading="Nodes" ng-click="nodeGridApi.core.handleWindowResize()">
-                    <div id="nodeGrid" ui-grid="nodeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
+                <tab heading="Nodes" ng-click="activateTab('Nodes'); nodeGridApi.core.handleWindowResize()">
+                    <div id="nodeGridId" ui-grid="nodeGridOptions" ui-grid-resize-columns class="table_view_grid_height"></div>
                 </tab>
             </tabset>
 
             <div class="rowWithOneLineTopPad"></div>
 
-            <div ng-show="networkController.queryErrors.length > 0">
-                <p class="alert alert-danger" ng-repeat='error in networkController.queryErrors'>
-                    {{error}}
-                    <span class="glyphicon glyphicon-remove pull-right"
-                          style='cursor:pointer'
-                          ng-click='networkController.queryErrors.splice($index,1)'>
-                    </span>
-                </p>
-            </div>
-
-            <div ng-show="networkController.queryWarnings.length > 0">
-                <p class="alert alert-success" ng-repeat='warning in networkController.queryWarnings'>
+            <div id="queryWarningsOrErrorsId" ng-show="networkController.queryWarnings.length > 0 || networkController.queryErrors.length"
+                 style="position: absolute; bottom: 36px" class="rowWithOneLineBottomPad">
+                <p class="alert alert-success" style="margin-bottom: 0; margin-right: -3px" ng-repeat='warning in networkController.queryWarnings'>
                     {{warning}}
                     <span class="glyphicon glyphicon-remove pull-right"
-                          style='cursor:pointer'
+                          style='cursor:pointer;'
                           ng-click='networkController.queryWarnings.splice($index,1)'>
+                            </span>
+                </p>
+                <p class="alert alert-danger" style="margin-bottom: 0; margin-right: -3px" ng-repeat='error in networkController.queryErrors'>
+                    {{error}}
+                    <span class="glyphicon glyphicon-remove pull-right"
+                          style='cursor:pointer;'
+                          ng-click='networkController.queryErrors.splice($index,1)'>
                     </span>
                 </p>
             </div>
@@ -765,21 +765,20 @@
 
         <div class="rowWithOneLineTopPad"></div>
 
-        <div class="networkActionsSection pull-left"
+        <div class="networkActionsSection pull-right"
              ng-show="networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
-
-            <button id="saveQueryButton"
-                    ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary customButtonWidth"
-                    ng-click="networkController.saveQueryResult()" >
-                Save Query Result
-            </button>
-
 
             <button id="switchViewButtonId2" type="button" class="actionsLabel btn btn-primary"
                     data-toggle="tooltip" title="Switch to Table view"
                     ng-click="switchView()">
                 {{buttonLabel}}
+            </button>
+
+            <button id="saveQueryButton"
+                    ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary customButtonWidth"
+                    ng-click="networkController.saveQueryResult()" >
+                Save Query Result
             </button>
 
         </div>
