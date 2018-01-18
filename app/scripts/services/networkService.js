@@ -530,8 +530,59 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 onError);
         }
 
+        factory.updateNetworkContextFromNdexV2 = function (contextArray, networkId, onSuccess, onError) {
+            var rawCX = [
+                {"numberVerification": [{"longNumber": 281474976710655}]},
+                {"metaData": [{"elementCount": 1,"name": "@context","properties": []}]},
+                {"@context": contextArray},
+                {"status": [{"error": "","success": true}]}
+            ]
 
+            factory.updateContext(rawCX, networkId, function(putResponse) {
+                    onSuccess(putResponse);
+            },onError);
+        };
 
+        factory.updateContext = function (rawCX, networkId, onSuccess, onError) {
+
+            var url = ndexServerURI + "/network/" + networkId + "/aspects";
+
+            var XHR = new XMLHttpRequest();
+            var FD  = new FormData();
+
+            var content = JSON.stringify(rawCX);
+
+            var blob = new Blob([content], { type: "application/octet-stream"});
+
+            // data.append("myfile", myBlob, "filename.txt");
+            FD.append('CXNetworkStream', blob);
+
+            XHR.addEventListener('load', function(event) {
+
+                if (XHR.readyState === XHR.DONE) {
+                    if (XHR.status === 200 || XHR.status === 201) {
+                        var newUUID = XHR.responseText;
+                        onSuccess(XHR.responseText);
+                    }
+                }
+                //    alert('Yeah! Data sent and response loaded.');
+            });
+
+            // We define what will happen in case of error
+            XHR.addEventListener('error', function(event) {
+                //   alert('Oups! Something goes wrong.');
+                onError(XHR.responseText);
+            });
+
+            XHR.open('PUT', url);
+            var authValue = ndexUtility.getAuthHeaderValue();
+            if ( authValue != null )
+                XHR.setRequestHeader("Authorization", authValue );
+
+            // We just send our FormData object, HTTP headers are set automatically
+            var foo =  XHR.send(FD);
+
+        };
 
         factory.createCXNetwork = function (rawCX, onSuccess, onError) {
 

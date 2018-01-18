@@ -1105,3 +1105,7 @@ span.glyphicon-refresh {
     margin-right: 5px;
     cursor: not-allowed
 }
+
+.app-modal-window-800 .modal-dialog {
+    width: 800px;
+}

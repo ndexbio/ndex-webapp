@@ -1,0 +1,71 @@
+
+
+<div class='modal-content'>
+
+    <form class="form-horizontal" role="form">
+
+        <div class="modal-header">
+            <h4 class="modal-title" ng-bind-html="network.name"></h4>
+        </div>
+
+        <div class="modal-body" style="max-height:520px; overflow:auto">
+
+            <div class="form-group">
+                <div class="container">
+                    <div class="row">
+                       <table class="table table-sm">
+                            <thead class="thead-light">
+                            <tr>
+                                <th>namespace</th>
+                                <th>url</th>
+                                <th>remove</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="table-light" ng-repeat="(key, value) in context">
+                                <td width="200"><input name="{{key}}_tb" type="text" class="form-control" placeholder="Key" ng-model="key"></td>
+                                <td><input name="{{key}}value_tb" type="text" class="form-control" placeholder="Key" ng-model="value"></td>
+                                <td width="45"><button class="btn btn-link" style="padding-top:0px; padding-bottom: 0px;" ng-click="removeContext(key);"><i class="fa fa-times" style="color: #D9534F;" aria-hidden="true"></i></button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <table class="table table-sm">
+                            <tbody>
+                            <tr class="table-light" ng-repeat="atc in addTheseContexts">
+                                <td width="200"><input name="{{atc.namespace}}_tb" type="text" class="form-control" placeholder="Namespace" ng-model="atc.namespace"></td>
+                                <td><input name="{{atc.url}}value_tb" type="text" class="form-control" placeholder="Url" ng-model="atc.url"></td>
+                                <td width="45"><button class="btn btn-link" style="padding-top:0px; padding-bottom: 0px;" ng-click="removeCustomContext($index);"><i class="fa fa-times" style="color: #D9534F;" aria-hidden="true"></i></button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <button class="btn btn-success ng-scope" ng-click="addContext()">
+                                <i class="fa fa-plus" aria-hidden="true"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='text-danger'>
+                <strong>
+                    {{errors}}
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default" type='button' ng-click='save()'>Save</button>
+            <button class="btn btn-default" type='button' ng-click='close()'>Cancel</button>
+        </div>
+
+    </form>
+
+</div>
+
+</script>
