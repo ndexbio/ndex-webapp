@@ -279,6 +279,19 @@
                                 </span>
                             </span>
 
+
+
+                            <span class="networkPropertyName">Owner: </span>
+                            {{networkController.currentNetwork.owner}} <br/>
+
+                            <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin">
+
+                                <a ng-click="networkController.showContextModal();">Context</a>
+                            </span>
+
+
+
+
                             <br /><br />
 
                             <span class="networkPropertyName">Created: </span>

@@ -1367,6 +1367,64 @@ ndexApp.controller('networkController',
             }
 
 
+            networkController.showContextModal = function(){
+                networkController.contextModal("title", "message");
+            };
+
+            networkController.contextModal = function(title, message)
+            {
+                var   modalInstance = $modal.open({
+                    templateUrl: 'views/context-modal.html',
+                    windowClass: 'app-modal-window-800',
+                    scope: $scope,
+
+                    controller: function($scope, $modalInstance) {
+                        //$scope.context = {"ncbi": "http://identifiers.org/ncbi",
+                        //"pmid": "http://identifiers.org/pubmed"};
+
+                        $scope.context = networkController.context;
+                        $scope.addTheseContexts = [];
+
+                        $scope.title = title;
+                        $scope.message = message;
+
+                        $scope.removeContext = function(key){
+                            delete $scope.context[key];
+                        };
+
+                        $scope.removeCustomContext = function(index){
+                            if (index > -1) {
+                                $scope.addTheseContexts.splice(index, 1);
+                            }
+                        };
+
+                        $scope.addContext = function(){
+                            $scope.addTheseContexts.push({"namespace": "", "url": ""});
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.dismiss();
+                        };
+
+                        $scope.save = function() {
+                            _.forEach($scope.addTheseContexts, function (addThis) {
+                                $scope.context[addThis.namespace] = addThis.url;
+                            });
+
+                            networkService.updateNetworkContextFromNdexV2([$scope.context], networkExternalId,
+                            function(contextSuccess) {
+
+                            }, function(errorMessage){
+                                    console.log(errorMessage);
+                                }
+                            )
+
+                            $modalInstance.dismiss();
+                        };
+                    }
+                });
+            }
+
             $scope.getEdgeLabel = function(edge) {
 
                 if (!edge) {
