@@ -1,11 +1,41 @@
 <div class="row">
-    <div class='col-md-12 AlignCenter show-large'>
-        <img src='images/ndex-logo_850w.png' style="align:center"/>
+    <div ng-show="main.ndexServerVersion" class='col-md-12' style="text-align: left; margin-left: 20px; padding-top: 20px">
+        Version {{main.ndexServerVersion}}
     </div>
-    <div class='col-md-12 AlignCenter show-small'>
-        <img src='images/ndex-logo_500w.png' style="align:center"/>
+
+    <div class='col-md-12 AlignCenter show-large' style="text-align:center">
+        <img src='images/ndex-logo-900w-new.png'>
     </div>
+    <div class='col-md-12 AlignCenter show-small' style="align:center">
+        <img src='images/ndex-logo-600w-new.png'>
+    </div>
+
+<!--
+
+    <div class='col-md-12 AlignCenter show-large' style="text-align: center">
+        <img src='images/ndex-logo-750w-new1_2.png'>
+        <img src='images/ndex-logo-750w-new2_2.png'>
+    </div>
+-->
+    <!--
+    <div class='col-md-8 AlignCenter show-large' style="text-align: right">
+        <img src='images/ndex-logo-750w-new1_2.png'>
+    </div>
+    <div class='col-md-4 AlignCenter show-large' style="text-align: left">
+        <img src='images/ndex-logo-750w-new2_2.png'>
+    </div>
+    -->
+
+    <!--
+    <div class='col-md-12 AlignCenter show-small' style="align:center">
+        <img src='images/ndex-logo-500w-new1_2.png'>
+        <img src='images/ndex-logo-500w-new2_2.png'>
+    </div>
+-->
+
 </div>
+
+
 
 <div class='col-md-12' ng-show="!main.serverIsDown">
     <div class="row v-center-calc" style="border: 1px solid white;" ng-show="main.isSupportedBrowserUsed()">
@@ -89,41 +119,30 @@
 </div>
 
 
-<div class="row" ng-show="main.showSignIn && !config.requireAuthentication && !main.serverIsDown"
-     style="background-color: white;" id="logos-citation-above-footer">
+<div id="logos-citation-above-footer" class="row"
+     ng-show="main.showSignIn && !config.requireAuthentication && !main.serverIsDown">
 
-    <div style="max-width: 1000px; margin: auto;">
-        <div class='col-md-7' style="border: 1px solid white;">
+    <div style="text-align: center;">
+        <a href="https://www.roche.com/" target="_blank">
+            <img class="img-sizer" src="images/roche-150px.png">
+        </a>
 
-            <div class="home-support" style="margin-left: 20px;">
+        <a href="https://www.janssen.com/" target="_blank">
+            <img class="img-sizer" src="images/Janssen-150px.png">
+        </a>
 
-                <a href="http://www.ufl.edu/" target="_blank">
-                    <img class="img-sizer" src="images/uf-sign-transp-50px.png">
-                </a>
-                <a href="https://www.roche.com/" target="_blank">
-                    <img class="img-sizer" src="images/Roche-Logox50.jpg">
-                </a>
-                <a href="https://www.pfizer.com/" target="_blank">
-                    <img class="img-sizer" src="images/pfizer_logox501.png">
-                </a>
-                <a href="https://www.janssen.com/" target="_blank">
-                    <img class="img-sizer" src="images/janssen_logo.png">
-                </a>
-                <a href="http://www.nrnb.org/" target="_blank">
-                    <img class="img-sizer" src="images/NRNB_black_5001.png">
-                </a>
-            </div>
-        </div>
+        <a href="https://www.pfizer.com/" target="_blank">
+            <img class="img-sizer" src="images/pfizer-150px.png">
+        </a>
 
-        <div class='col-md-5' style="border: 1px solid white;">
-            <div class="ndex-citation-landing-page">Cite NDEx: Pratt <em>et al.</em>
-                <a href="https://dx.doi.org/10.1016/j.cels.2015.10.001" target="_blank">
-                    NDEx, the Network Data Exchange.
-                </a>
-                <br>
-                Cell Systems, Volume 1, Issue 4, 302-305 (2015).
-            </div>
-        </div>
+        <a href="http://www.ufl.edu/" target="_blank">
+            <img class="img-sizer" src="images/ufl-150px.png">
+        </a>
+
+        <a href="https://www.nature.com/sdata/" target="_blank">
+            <img class="img-sizer" src="images/sdatarecbadge-150px.png">
+        </a>
+
     </div>
 
 </div>

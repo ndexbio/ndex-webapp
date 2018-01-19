@@ -129,8 +129,8 @@ section
         padding-top: calc(2vh);
     }
     .img-sizer{
-        height: 27px;
-        padding-right: 10px;
+        height: 100px;
+        padding-right: 80px;
     }
 }
 
@@ -151,8 +151,8 @@ section
         padding-top: calc(1vh);
     }
     .img-sizer{
-        height: 18px;
-        padding-right: 5px;
+        height: 50px;
+        padding-right: 50px;
     }
 }
 
@@ -709,10 +709,11 @@ ul.ndex-nav-pills > li > a:hover {
 }
 
 .ndex-featured-collections {
-    /*font-size:1.1em;*/
+    font-size: 1.2em;
     line-height: 1.5em;
     margin: 1em;
     text-align: center;
+    margin-top: 4em;
 }
 
 
@@ -853,10 +854,24 @@ ul.ndex-nav-pills > li > a:hover {
     bottom: 3em;
     position: fixed;
 
+    width: 100%;
+    margin: 0 0 0 0;
+
+    padding-bottom: 4em;
+    background-color: white;
+}
+
+/*
+#logos-citation-above-footer {
+    bottom: 3em;
+    position: fixed;
+
     width: 80%;
     margin: 0 0 0 -40%;
     left: 50%;
 }
+*/
+
 
 .btn {
     border-radius: 24px;
@@ -1091,7 +1106,8 @@ span.glyphicon-refresh {
 .cyButton {
     border: none;
     filter: saturate(75%);
-    margin-right: 5px
+    margin-right: 5px;
+    cursor: pointer;
 }
 .cyButton:hover {
     border: none;
