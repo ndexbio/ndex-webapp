@@ -24,7 +24,8 @@ ndexApp.controller('networkController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
-            networkController.isLoggedInUser = ( window.currentNdexUser != null);
+            networkController.isLoggedInUser = (window.currentNdexUser != null);
+            networkController.networkOwner = {};
 
             networkController.privilegeLevel = "None";
             networkController.currentNetworkId = networkExternalId;
@@ -2629,6 +2630,32 @@ ndexApp.controller('networkController',
             };
 
 
+            var getOwnerOfTheNetwork = function(networkOwnerUUID) {
+
+                if (networkController.isLoggedInUser &&
+                    (networkOwnerUUID == window.currentNdexUser.externalId))
+                {
+                    networkController.networkOwner.firstName = window.currentNdexUser.firstName;
+                    networkController.networkOwner.lastName  = window.currentNdexUser.lastName;
+                    networkController.networkOwner.ownerUUID = networkOwnerUUID;
+
+                } else {
+
+                    ndexService.getUserByUUIDV2(networkOwnerUUID)
+                        .success(
+                            function (user) {
+                                networkController.networkOwner.firstName = user.firstName;
+                                networkController.networkOwner.lastName = user.lastName;
+                                networkController.networkOwner.ownerUUID = networkOwnerUUID;
+                            })
+                        .error(
+                            function (error) {
+                                console.log('unable to get the network owner info');
+                            })
+                };
+            };
+
+
             var initialize = function () {
                 // vars to keep references to http calls to allow aborts
 
@@ -2641,6 +2668,9 @@ ndexApp.controller('networkController',
                         function (network) {
                             networkController.currentNetwork = network;
                             currentNetworkSummary = network;
+
+                            var networkOwnerUUID = network.ownerUUID;
+                            getOwnerOfTheNetwork(networkOwnerUUID);
 
                             if (network && network.visibility) {
                                 networkController.visibility = network.visibility.toLowerCase();

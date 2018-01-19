@@ -281,8 +281,7 @@
 
 
 
-                            <span class="networkPropertyName">Owner: </span>
-                            {{networkController.currentNetwork.owner}} <br/>
+
 
                             <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin">
 
@@ -293,6 +292,12 @@
 
 
                             <br /><br />
+
+                            <span class="networkPropertyName">Owner: </span>
+                            <a ng-href="#/user/{{networkController.networkOwner.ownerUUID}}">
+                                {{networkController.networkOwner.firstName}}
+                                {{networkController.networkOwner.lastName}}</a>
+                            <br/>
 
                             <span class="networkPropertyName">Created: </span>
                             {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
