@@ -125,13 +125,16 @@ section
         color: #0088D2;
         margin-bottom: 2em;
     }
+
+    /*
     .v-center-calc {
         margin-top: calc(5vh);
     }
-
     .v-center-calc-small {
         padding-top: calc(2vh);
     }
+    */
+
     .img-sizer{
         height: 100px;
         padding-right: 80px;
@@ -168,13 +171,14 @@ section
         margin-bottom: 2em;
     }
 
+    /*
     .v-center-calc {
         margin-top: calc(2vh);
     }
-
     .v-center-calc-small {
         padding-top: calc(1vh);
     }
+    */
     .img-sizer{
         height: 50px;
         padding-right: 50px;
@@ -1159,4 +1163,8 @@ span.glyphicon-refresh {
 
 .app-modal-window-800 .modal-dialog {
     width: 800px;
+}
+
+.center-vertically {
+    margin-top: 10vh;
 }
