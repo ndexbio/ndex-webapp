@@ -512,6 +512,46 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
     .collapse.in {
         display: block !important;
     }
+
+
+
+    /*
+     * this portion is the same as  @media (max-height: 740px):
+     * we switch the Landing page to the "small" mode
+     */
+     .show-small{
+         display: inherit;
+     }
+
+    .show-large{
+        display: none;
+    }
+
+    .hx6 {
+        font-size: 12px;
+        line-height: 1.4em;
+        margin-bottom: 2em;
+    }
+
+    .hx3 {
+        font-family: "Open Sans";
+        font-size: 18px;
+        color: #0088D2;
+        margin-bottom: 2em;
+    }
+
+    .img-sizer{
+        height: 50px;
+        padding-right: 50px;
+    }
+
+    .ndex-featured-collections {
+        font-size: 1em;
+        line-height: 1.5em;
+        margin: 1em;
+        text-align: center;
+        margin-top: 3em;
+    }
 }
 
 .ndex-search-control > a {
