@@ -222,75 +222,87 @@
                         </div>
 
                         <div ng-show = "!networkController.successfullyQueried">
-                            <span>
-                                <strong>{{networkController.currentNetwork.visibility}}</strong>
-                                &nbsp;
-                                <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexLevel != 'NONE'"></i>
-                            </span>
-                            &nbsp;&nbsp;
+                            <div class="container">
+                                <div class="row">
 
 
-                            <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
-                                <input type="checkbox"
-                                    ng-model="networkController.readOnlyChecked"
-                                    ng-change="readOnlyChanged()"
-                                ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only 
-                            </span>
-                            <span id="readOnlyButtonId"  class="networkPropertyName"
-                                  ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()"
-                                  ng-init="setToolTips()" data-toggle="tooltip" ng-mouseover="changeReadOnlyButtonTitle()" title="">
-                                <input type="checkbox" disabled ng-model="networkController.readOnlyChecked"> Read Only
-                            </span>
+
+                                    <span>
+                                        <strong>{{networkController.currentNetwork.visibility}}</strong>
+                                        &nbsp;
+                                        <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexLevel != 'NONE'"></i>
+                                    </span>
+                                    &nbsp;&nbsp;
 
 
-                            &nbsp;&nbsp;
-                            <span ng-if="!networkController.currentNetwork.doi || networkController.currentNetwork.doi == 'Pending'">
-                                <span ng-if="networkController.isNetworkOwner && (networkController.currentNetwork.visibility.toUpperCase() == 'PRIVATE')">
-                                    <strong>Share URL: </strong>
-                                    <span ng-style="networkController.networkShareURL ? {color:'#18AD31'} : {color:'black'}">
-                                        {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
+                                    <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
+                                        <input type="checkbox"
+                                            ng-model="networkController.readOnlyChecked"
+                                            ng-change="readOnlyChanged()"
+                                        ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only
+                                    </span>
+                                    <span id="readOnlyButtonId"  class="networkPropertyName"
+                                          ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()"
+                                          ng-init="setToolTips()" data-toggle="tooltip" ng-mouseover="changeReadOnlyButtonTitle()" title="">
+                                        <input type="checkbox" disabled ng-model="networkController.readOnlyChecked"> Read Only
                                     </span>
 
-                                    <a id="copyNetworkShareURLToClipboardId1"
-                                       ng-hide="!networkController.networkShareURL"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       ng-mouseover="changeTitle(this)"
-                                       ngclipboard
-                                       data-clipboard-text="{{networkController.networkShareURL}}"
-                                       class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
-                                    </a>
 
-                                </span>
+                                    &nbsp;&nbsp;
+                                    <span ng-if="!networkController.currentNetwork.doi || networkController.currentNetwork.doi == 'Pending'">
+                                        <span ng-if="networkController.isNetworkOwner && (networkController.currentNetwork.visibility.toUpperCase() == 'PRIVATE')">
+                                            <strong>Share URL: </strong>
+                                            <span ng-style="networkController.networkShareURL ? {color:'#18AD31'} : {color:'black'}">
+                                                {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
+                                            </span>
 
-                                <span ng-if="networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC'">
+                                            <a id="copyNetworkShareURLToClipboardId1"
+                                               ng-hide="!networkController.networkShareURL"
+                                               data-toggle="tooltip"
+                                               data-placement="bottom"
+                                               ng-mouseover="changeTitle(this)"
+                                               ngclipboard
+                                               data-clipboard-text="{{networkController.networkShareURL}}"
+                                               class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
+                                            </a>
 
-                                    <a id="copyNetworkShareURLToClipboardId2"
-                                       ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       ng-mouseover="changeTitle2(this)"
-                                       ngclipboard
-                                       data-clipboard-text="{{networkController.networkURL}}"
-                                       class="actionsLabel btn btn-primary btn-xs">Copy URL
-                                    </a>
+                                        </span>
 
+                                        <span ng-if="networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC'">
 
-                                </span>
-                            </span>
-
-
-
-                            <span class="networkPropertyName">Owner: </span>
-                            {{networkController.currentNetwork.owner}} <br/>
-
-                            <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin">
-
-                                <a ng-click="networkController.showContextModal();">Context</a>
-                            </span>
+                                            <a id="copyNetworkShareURLToClipboardId2"
+                                               ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
+                                               data-toggle="tooltip"
+                                               data-placement="bottom"
+                                               ng-mouseover="changeTitle2(this)"
+                                               ngclipboard
+                                               data-clipboard-text="{{networkController.networkURL}}"
+                                               class="actionsLabel btn btn-primary btn-xs">Copy URL
+                                            </a>
 
 
+                                        </span>
+                                    </span>
 
+
+
+                                    <span class="networkPropertyName">Owner: </span>
+                                    {{networkController.currentNetwork.owner}} <br/>
+                                </div>
+
+                                <div class="row">
+
+                                    <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin">
+                                        <a ng-click="networkController.showContextModal(true);">@context (namespaces)</a>
+                                    </span>
+                                    <span class="networkPropertyName" ng-show="!networkController.isLoggedInUser || !networkController.isAdmin">
+                                        <a ng-click="networkController.showContextModal(false);">@context (namespaces)</a>
+                                    </span>
+
+                                </div>
+
+
+                            </div>
 
                             <br /><br />
 
