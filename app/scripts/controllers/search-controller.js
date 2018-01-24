@@ -125,14 +125,11 @@ ndexApp.controller('searchController',
                 */
             };
 
-            $scope.activeTab = {
-
-            };
+            $scope.activeTab = {};
 
             $scope.activateTab = function(tabName){
                 $scope.activeTab = {};
                 $scope.activeTab[tabName] = true;
-
             };
 
 
@@ -148,7 +145,7 @@ ndexApp.controller('searchController',
                 if (searchController.networkSearchInProgress){
                     return 'Networks';
                 } else if (searchController.networkSearchNoResults) {
-                    return 'Networks (0)'
+                    return 'Networks (0)';
                 } else {
                     return 'Networks (' + searchController.numberOfNetworksFound + ')';
                 }

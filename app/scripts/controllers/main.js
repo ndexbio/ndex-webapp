@@ -177,14 +177,20 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         //Test whether the server is up or not.
         $scope.main.serverIsDown = null;
 
+        $scope.main.ndexServerVersion = null;
+
 
         ndexService.getServerStatus('full',
             function(data, status, headers, config) {
                 // this callback will be called asynchronously
                 // when the response is available
-                if (data && data.properties && data.properties.ImporterExporters
-                    && data.properties.ImporterExporters.length > 0) {
-                    $scope.$parent.ImporterExporters = JSON.parse(JSON.stringify(data.properties.ImporterExporters));
+                if (data && data.properties) {
+                    if (data.properties.ImporterExporters && data.properties.ImporterExporters.length > 0) {
+                        $scope.$parent.ImporterExporters = JSON.parse(JSON.stringify(data.properties.ImporterExporters));
+                    };
+                    if (data.properties.ServerVersion) {
+                        $scope.main.ndexServerVersion = data.properties.ServerVersion;
+                    };
                 }
                 $scope.main.serverIsDown = false;
 

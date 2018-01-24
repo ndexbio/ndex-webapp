@@ -121,7 +121,45 @@ angular.module('ndexServiceApp')
 
         };
 
-        const CX_NUMBER_DATATYPES = ['byte','char', 'double', 'float', 'integer', 'long', 'short'];
+        const CX_NUMBER_DATATYPES = ['byte', 'char', 'double', 'float', 'integer', 'long', 'short'];
+
+        const CX_LIST_DATATYPES =
+            ['list_of_string', 'list_of_boolean',
+            'list_of_byte', 'list_of_char', 'list_of_double', 'list_of_float', 'list_of_integer',
+            'list_of_long', 'list_of_short'];
+
+
+
+        /*
+         * Get the first element from the list of elements.  Attributes of node or edge of this first element will be
+         * used to style the node/edge.  This behavior simulates the behavior of Cytoscape:
+         *
+         * if a node column has the type "list of ... (strings/numbers/boolens), then cytoscape uses the first element
+         * in the list to style the node (or edge).
+         * For example, if a column has the type ['protein', 'gene'] (list of strings), then Cytoscape uses the shape of
+         * 'protein' (the first element in the list) to draw this node (the shape of 'protein' in Cytoscape is 'round rectangle').
+         * If, however, a node has the list ['gene', 'protein'], then Cytoscape uses the shape of
+         * 'gene' (shape of 'gene' is 'diamond') to draw this node.
+         */
+        var getFirstElementFromList = function(attributeObj) {
+
+            var type      = (attributeObj && attributeObj.d) ? attributeObj.d : 'list_of_string';
+            var attrValue = (attributeObj && attributeObj.v && attributeObj.v[0]) ? attributeObj.v[0] : "";
+            var retValue;
+
+            if (type == 'list_of_string') {
+                retValue = attrValue;
+
+            } else if (type == 'list_of_boolean') {
+                retValue = (attrValue.toLowerCase() === 'true');
+
+            } else {
+                // this is a numeric type, one of CX_NUMBER_DATATYPES
+                retValue = parseFloat(attrValue);
+            }
+
+            return retValue;
+        };
 
 
         factory.cyElementsFromNiceCX = function (niceCX, attributeNameMap) {
@@ -197,8 +235,12 @@ angular.module('ndexServiceApp')
                                 } else if (attributeObject.v === 'false'){
                                     node.selected = false;
                                 }
-                            } else if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType)){
+                            } else if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType.toLowerCase())) {
                                 node.data[cyAttributeName] = parseFloat(attributeObject.v);
+
+                            } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
+                                node.data[cyAttributeName] = getFirstElementFromList(attributeObject);
+
                             } else if (dataType && dataType === 'boolean'){
                                 if (attributeObject.v === 'true'){
                                     node.data[cyAttributeName] = true;
@@ -257,9 +299,20 @@ angular.module('ndexServiceApp')
                         _.forEach(edgeAttributeMap, function (attributeObject, attributeName) {
                             var cyAttributeName = getCyAttributeName(attributeName, attributeNameMap);
                             var dataType = attributeObject.d;
-                            if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType)){
+                            if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType.toLowerCase())){
                                 edge.data[cyAttributeName] = parseFloat(attributeObject.v);
-                            } else {
+
+                            } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
+                                edge.data[cyAttributeName] = getFirstElementFromList(attributeObject);
+
+                            } else if (dataType && dataType === 'boolean'){
+                                if (attributeObject.v === 'true'){
+                                    edge.data[cyAttributeName] = true;
+                                } else if (attributeObject.v === 'false'){
+                                    edge.data[cyAttributeName] = false;
+                                }
+
+                            }  else {
                                 // Default to String
                                 edge.data[cyAttributeName] = attributeObject.v;
                             }
