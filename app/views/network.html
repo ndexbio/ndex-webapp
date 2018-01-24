@@ -234,7 +234,7 @@
                                 <input type="checkbox"
                                     ng-model="networkController.readOnlyChecked"
                                     ng-change="readOnlyChanged()"
-                                ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only 
+                                ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only
                             </span>
                             <span id="readOnlyButtonId"  class="networkPropertyName"
                                   ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()"
@@ -280,19 +280,15 @@
                             </span>
 
 
-
-
-
+                            <br />
                             <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin">
-
-                                <a ng-click="networkController.showContextModal();">Context</a>
+                                <a ng-click="networkController.showContextModal(true);">@context (namespaces)</a>
+                            </span>
+                            <span class="networkPropertyName" ng-show="!networkController.isLoggedInUser || !networkController.isAdmin">
+                                <a ng-click="networkController.showContextModal(false);">@context (namespaces)</a>
                             </span>
 
-
-
-
                             <br /><br />
-
                             <span class="networkPropertyName">Owner: </span>
                             <a ng-href="#/user/{{networkController.networkOwner.ownerUUID}}">
                                 {{networkController.networkOwner.firstName}}

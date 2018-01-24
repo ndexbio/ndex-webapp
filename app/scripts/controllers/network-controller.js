@@ -1368,11 +1368,11 @@ ndexApp.controller('networkController',
             }
 
 
-            networkController.showContextModal = function(){
-                networkController.contextModal("title", "message");
+            networkController.showContextModal = function(isEdit){
+                networkController.contextModal("title", "message", isEdit);
             };
 
-            networkController.contextModal = function(title, message)
+            networkController.contextModal = function(title, message, isEdit)
             {
                 var   modalInstance = $modal.open({
                     templateUrl: 'views/context-modal.html',
@@ -1384,10 +1384,20 @@ ndexApp.controller('networkController',
                         //"pmid": "http://identifiers.org/pubmed"};
 
                         $scope.context = networkController.context;
+                        $scope.contextIsEmpty = true;
+
+                        for(var key in $scope.context) {
+                            if($scope.context.hasOwnProperty(key)){
+                                $scope.contextIsEmpty = false;
+                                break;
+                            }
+                        }
+
                         $scope.addTheseContexts = [];
 
                         $scope.title = title;
                         $scope.message = message;
+                        $scope.isEdit = isEdit;
 
                         $scope.removeContext = function(key){
                             delete $scope.context[key];
@@ -1401,6 +1411,7 @@ ndexApp.controller('networkController',
 
                         $scope.addContext = function(){
                             $scope.addTheseContexts.push({"namespace": "", "url": ""});
+                            $scope.contextIsEmpty = false;
                         };
 
                         $scope.close = function() {
