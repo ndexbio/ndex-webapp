@@ -1,135 +1,139 @@
-<div class="row">
-    <div class='col-md-12 AlignCenter show-large' style="text-align:center">
-        <img src='images/ndex-logo-900w-new.png'>
+<div class="homeContainer">
+
+    <div class="row">
+        <div class='col-md-12 AlignCenter show-large'>
+            <img src='images/ndex-logo-900w-new.png'>
+        </div>
+        <div class='col-md-12 AlignCenter show-small'>
+            <img src='images/ndex-logo-600w-new.png'>
+        </div>
     </div>
-    <div class='col-md-12 AlignCenter show-small' style="align:center">
-        <img src='images/ndex-logo-600w-new.png'>
+
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+    <div class="row" style="border: 1px solid white;" ng-show="!main.serverIsDown">
+        <div class='col-md-12 center-vertically' ng-show="main.isSupportedBrowserUsed()">
+
+            <div style="max-width: 900px; margin-left: auto; margin-right: auto;">
+                <p style="text-align:center;">
+                    <span class="hx3" ng-bind-html="homeController.welcomeHeader"></span>
+
+                    <span ng-show="main.ndexServerVersion" class="ndexServerVersion">
+                        <span style="color:black">-</span>
+
+                        <a ng-href="{{homeController.linkToRelaseDocs}}" target="_blank">
+                            v<span ng-bind-html="main.ndexServerVersion"
+                                   data-toggle="tooltip" title="Release Notes">
+                            </span>
+                        </a>
+                    </span>
+
+                </p>
+            </div>
+            <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: left; margin-top: 4em">
+                <p>
+                <h6 class="hx6">
+                    <span ng-bind-html="homeController.welcomeMessage"></span>
+                </h6>
+                </p>
+            </div>
+
+            <div style="max-width: 900px; margin-left: auto; margin-right: auto; padding-top: 2em;">
+                <ng-include src="'search_bar.html'"></ng-include>
+            </div>
+
+            <div ng-show="homeController.featuredCollections.length > 0"
+                 class="ndex-featured-collections" style="border: 1px solid white;">
+                <strong>Featured Collections:</strong>
+                &nbsp;&nbsp;&nbsp;
+
+                <span ng-repeat="collection in homeController.featuredCollections">
+                    <a style="color: #0088D2" ng-href='{{homeController.getURLOfFeaturedCollection(collection)}}'  target="_blank">
+                        <strong>{{collection.name}}</strong>
+                    </a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
-<div class="row center-vertically" style="border: 1px solid white;" ng-show="!main.serverIsDown">
-    <div class='col-md-12' ng-show="main.isSupportedBrowserUsed()">
 
-        <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: center;">
-            <p>
-                <span class="hx3" ng-bind-html="homeController.welcomeHeader"></span>
+    <div class="row" style="border: 1px solid white;">
+        <div class='col-md-2'></div>
+        <div class='col-md-8 AlignCenter'>
+            <h1 class="text-danger rowWithOneLineTopPad" ng-show="main.serverIsDown">
+                <span id="bind-html-with-trust" ng-bind-html="config.messages.serverDown"></span>
+            </h1>
 
-                <span ng-show="main.ndexServerVersion" class="ndexServerVersion">
-                    <span style="color:black">-</span>
+            <div ng-show="!main.isSupportedBrowserUsed() && !main.serverIsDown"
+                 class="rowWithTwoLinesTopPad rowWithFourLinesBottomPad">
+                <span style="color:red; font-size:2.5em"><strong>Your browser is not supported</strong></span>
 
-                    <a ng-href="{{homeController.linkToRelaseDocs}}" target="_blank">
-                        v<span ng-bind-html="main.ndexServerVersion"
-                               data-toggle="tooltip" title="Release Notes">
-                        </span>
+                <br><br>
+                <span id="IENotSupportedText" style="color:black; font-size:1.5em;">
+                    NDEx supports ONLY
+                    <a href="https://www.google.com/chrome/browser/" target="_blank">Google Chrome</a>,
+                    <a href="https://www.mozilla.org/firefox" target="_blank">Mozilla Firefox</a> or
+                    <a href="https://support.apple.com/downloads/#safari" target="_blank">Safari</a>.
+                    <br><br>
+                </span>
+                <span>
+                    <a href="https://www.google.com/chrome/browser/" target="_blank">
+                        <img border="0" src="images/chrome.jpeg" width="100" height="100">
                     </a>
                 </span>
+                <span>
+                    <a href="https://www.mozilla.org/firefox" target="_blank">
+                        <img border="0" src="images/firefox.jpg" width="100" height="100">
+                    </a>
+                </span>
+                <span>
+                    <a href="https://support.apple.com/downloads/#safari" target="_blank">
+                        <img border="0" src="images/safari.jpeg" width="100" height="100">
+                    </a>
+                </span>
+            </div>
 
-            </p>
-        </div>
-        <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: left">
-            <p>
-            <h6 class="hx6">
-                <span ng-bind-html="homeController.welcomeMessage"></span>
-            </h6>
-            </p>
-        </div>
-
-        <div style="max-width: 900px; margin-left: auto; margin-right: auto; padding-top: 2em;">
-            <ng-include src="'search_bar.html'"></ng-include>
-        </div>
-
-        <div ng-show="homeController.featuredCollections.length > 0"
-             class="ndex-featured-collections v-center-calc-small" style="border: 1px solid white;">
-            <strong>Featured Collections:</strong>
-            &nbsp;&nbsp;&nbsp;
-
-            <span ng-repeat="collection in homeController.featuredCollections">
-                <a style="color: #0088D2" ng-href='{{homeController.getURLOfFeaturedCollection(collection)}}'  target="_blank">
-                    <strong>{{collection.name}}</strong>
-                </a>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-            </span>
         </div>
     </div>
-</div>
 
 
-<div class="row" style="border: 1px solid white;">
-    <div class='col-md-2'></div>
-    <div class='col-md-8 AlignCenter'>
-        <h1 class="text-danger rowWithOneLineTopPad" ng-show="main.serverIsDown">
-            <span id="bind-html-with-trust" ng-bind-html="config.messages.serverDown"></span>
-        </h1>
+    <div id="logos-citation-above-footer" class="row"
+         ng-show="main.showSignIn && !config.requireAuthentication && !main.serverIsDown">
 
-        <div ng-show="!main.isSupportedBrowserUsed() && !main.serverIsDown"
-             class="rowWithTwoLinesTopPad rowWithFourLinesBottomPad">
-            <span style="color:red; font-size:2.5em"><strong>Your browser is not supported</strong></span>
+        <div style="text-align: center;">
+            <a href="http://www.roche.com/" target="_blank">
+                <img class="img-sizer" src="images/roche-150px.png" data-toggle="tooltip" title="Explore Roche Website">
+            </a>
 
-            <br><br>
-            <span id="IENotSupportedText" style="color:black; font-size:1.5em;">
-                NDEx supports ONLY
-                <a href="https://www.google.com/chrome/browser/" target="_blank">Google Chrome</a>,
-                <a href="https://www.mozilla.org/firefox" target="_blank">Mozilla Firefox</a> or
-                <a href="https://support.apple.com/downloads/#safari" target="_blank">Safari</a>.
-                <br><br>
-            </span>
-            <span>
-                <a href="https://www.google.com/chrome/browser/" target="_blank">
-                    <img border="0" src="images/chrome.jpeg" width="100" height="100">
-                </a>
-            </span>
-            <span>
-                <a href="https://www.mozilla.org/firefox" target="_blank">
-                    <img border="0" src="images/firefox.jpg" width="100" height="100">
-                </a>
-            </span>
-            <span>
-                <a href="https://support.apple.com/downloads/#safari" target="_blank">
-                    <img border="0" src="images/safari.jpeg" width="100" height="100">
-                </a>
-            </span>
+            <a href="http://www.janssenrnd.com/" target="_blank">
+                <img class="img-sizer" src="images/Janssen-150px.png" data-toggle="tooltip" title="Visit Janssen R&D">
+            </a>
+
+            <a href="https://www.pfizer.com/" target="_blank">
+                <img class="img-sizer" src="images/pfizer-150px.png" data-toggle="tooltip" title="Visit Our Website">
+            </a>
+
+            <a href="https://neurosurgery.ufl.edu/faculty-staff/our-faculty/tran-patient-bio/tran-research-bio/"
+               target="_blank">
+                     <img class="img-sizer" src="images/ufl-150px.png"
+                          data-toggle="tooltip" title="David Tran's Laboratory at UF">
+            </a>
+
+            <a href="https://www.nature.com/sdata/" target="_blank">
+                <img class="img-sizer" src="images/sdatarecbadge-150px.png"
+                     data-toggle="tooltip" title="Scientific Data - Official Recommended Repository">
+            </a>
+
         </div>
-
-    </div>
-</div>
-
-
-<div id="logos-citation-above-footer" class="row"
-     ng-show="main.showSignIn && !config.requireAuthentication && !main.serverIsDown">
-
-    <div style="text-align: center;">
-        <a href="http://www.roche.com/" target="_blank">
-            <img class="img-sizer" src="images/roche-150px.png" data-toggle="tooltip" title="Explore Roche Website">
-        </a>
-
-        <a href="http://www.janssenrnd.com/" target="_blank">
-            <img class="img-sizer" src="images/Janssen-150px.png" data-toggle="tooltip" title="Visit Janssen R&D">
-        </a>
-
-        <a href="https://www.pfizer.com/" target="_blank">
-            <img class="img-sizer" src="images/pfizer-150px.png" data-toggle="tooltip" title="Visit Our Website">
-        </a>
-
-        <a href="https://neurosurgery.ufl.edu/faculty-staff/our-faculty/tran-patient-bio/tran-research-bio/"
-           target="_blank">
-                 <img class="img-sizer" src="images/ufl-150px.png"
-                      data-toggle="tooltip" title="David Tran's Laboratory at UF">
-        </a>
-
-        <a href="https://www.nature.com/sdata/" target="_blank">
-            <img class="img-sizer" src="images/sdatarecbadge-150px.png"
-                 data-toggle="tooltip" title="Scientific Data - Official Recommended Repository">
-        </a>
 
     </div>
 
 </div>
-
 
 <script type="text/ng-template" id="quoteNDEx.html">
     <div class="modal-content">
