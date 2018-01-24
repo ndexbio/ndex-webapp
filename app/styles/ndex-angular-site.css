@@ -121,9 +121,14 @@ section
     }
     .hx3 {
         font-family: "Open Sans";
+        font-size: 30px;
+        color: black; /*#0088D2;*/
+        margin-bottom: 2em;
+    }
+    .ndexServerVersion {
+        font-family: "Open Sans";
         font-size: 24px;
         color: #0088D2;
-        margin-bottom: 2em;
     }
 
     /*
@@ -166,9 +171,14 @@ section
 
     .hx3 {
         font-family: "Open Sans";
+        font-size: 24px;
+        color: black; /*#0088D2;*/
+        margin-bottom: 2em;
+    }
+    .ndexServerVersion {
+        font-family: "Open Sans";
         font-size: 18px;
         color: #0088D2;
-        margin-bottom: 2em;
     }
 
     /*
@@ -535,9 +545,14 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
 
     .hx3 {
         font-family: "Open Sans";
+        font-size: 24px;
+        color: black; /*#0088D2;*/
+        margin-bottom: 2em;
+    }
+    .ndexServerVersion {
+        font-family: "Open Sans";
         font-size: 18px;
         color: #0088D2;
-        margin-bottom: 2em;
     }
 
     .img-sizer{

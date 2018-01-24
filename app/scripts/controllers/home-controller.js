@@ -7,6 +7,7 @@ ndexApp.controller('homeController', ['sharedProperties', '$scope', 'uiMisc',
         homeController.URL = uiMisc.getCurrentServerURL();
         homeController.welcomeHeader = window.ndexSettings.welcome.header;
         homeController.welcomeMessage = window.ndexSettings.welcome.message;
+        homeController.linkToRelaseDocs = window.ndexSettings.welcome.linkToRelaseDocs;
 
         if (window.ndexSettings.featuredCollections) {
             homeController.featuredCollections = window.ndexSettings.featuredCollections;

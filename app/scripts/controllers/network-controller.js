@@ -269,7 +269,7 @@ ndexApp.controller('networkController',
             var spinner = undefined;
 
             networkController.hasMultipleSubNetworks = function() {
-                return (networkController.noOfSubNetworks > 1);
+                return (networkController.noOfSubNetworks >= 1);
             };
 
             $scope.isDOIPending = function() {
@@ -2689,11 +2689,11 @@ ndexApp.controller('networkController',
 
                             networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
 
-                            if ($scope.disableQuery && networkController.noOfSubNetworks < 2) {
+                            if ($scope.disableQuery && networkController.noOfSubNetworks < 1) {
                                 $scope.disabledQueryTooltip =
                                     "At this moment, the query service only supports networks with up to " +
                                             $scope.egeCountForDisablingQuery + " edges";
-                            } else if (networkController.noOfSubNetworks > 1) {
+                            } else if (networkController.noOfSubNetworks >= 1) {
                                 $scope.disabledQueryTooltip =
                                     "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx";
                             };

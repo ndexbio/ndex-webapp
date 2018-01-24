@@ -1453,7 +1453,7 @@ ndexApp.controller('myAccountController',
                     var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
                     if (networkStatus == "failed") {
                         networkName = "Invalid Network. UUID: " + network.externalId;
-                    } else if (noOfSubNetworks > 1) {
+                    } else if (noOfSubNetworks >= 1) {
                         networkStatus = "collection";
                     };
 
@@ -3271,7 +3271,7 @@ ndexApp.controller('myAccountController',
 
                                     var noOfSubNetworks = uiMisc.getNoOfSubNetworks(networkSummaryObj);
 
-                                    if (noOfSubNetworks > 1) {
+                                    if (noOfSubNetworks >= 1) {
                                         myAccountController.networksWithMultipleSubNetworks[networkSummaryObj.externalId] = noOfSubNetworks;
                                     };
                                 });
@@ -3327,7 +3327,7 @@ ndexApp.controller('myAccountController',
                     return;
                 }
 
-                if (rowEntity.subnetworks > 1) {
+                if (rowEntity.subnetworks >= 1) {
                     var title = "Warning";
                     var message = "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx.";
                     ndexNavigation.genericInfoModal(title, message);
