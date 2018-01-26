@@ -285,7 +285,7 @@
                             <!--=============  CONTEXT  ==============-->
                             <!--======================================-->
                             <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin
-                                && !networkController.currentNetwork.doi && !isNetworkCertified()">
+                                && !networkController.currentNetwork.doi && !isNetworkCertified() && !networkController.hasMultipleSubNetworks()">
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(true);"
                                    data-toggle="tooltip"
@@ -295,7 +295,7 @@
                                 </a>
                             </span>
                             <span class="networkPropertyName" ng-show="!networkController.isLoggedInUser || !networkController.isAdmin
-                                || networkController.currentNetwork.doi || isNetworkCertified()">
+                                || networkController.currentNetwork.doi || isNetworkCertified() || networkController.hasMultipleSubNetworks()">
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(false);"
                                    data-toggle="tooltip"
