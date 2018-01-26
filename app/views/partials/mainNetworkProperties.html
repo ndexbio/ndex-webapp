@@ -59,7 +59,7 @@
 
             <div class="form-group" ng-init="eyeopened=false">
                 <label class="col-sm-3 control-label">visibility</label>
-                <div class="col-sm-7" style="margin-bottom: 15px;">
+                <div class="col-sm-6" style="margin-bottom: 15px;">
 
                     <span ng-show="editor.isOwner">
                         <select class="form-control minwidth170" ng-model="editor.visibilityIndex">
@@ -99,12 +99,12 @@
                 </div>
 
 
-                <div class="col-sm-2" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
+                <div class="col-sm-3" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
                     && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)"
-                     style="margin-top: 5px;">
+                     style="margin-top: 5px; padding-right:0">
 
                     <a ng-click="editor.fullIndexed.state = !editor.fullIndexed.state"
-                       style="text-decoration: none; color: #656565; white-space: nowrap; float: left">
+                       style="text-decoration: none; color: #656565; white-space: nowrap;">
 
                         <span class="fa-stack" >
                             <i class="fa fa-square-o fa-stack-2x"></i>
@@ -122,6 +122,19 @@
                         <i class="fa fa-info-circle"></i>
                     </span>
                 </div>
+
+                <!--
+                <div class="col-sm-1" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
+                    && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)"
+                     style="margin-top: 5px; padding-left: 0">
+
+                    <div data-toggle="tooltip" title="{{fullIndexToolTip}}"
+                         style="cursor: pointer; color: #428bca;"
+                         target="_blank" ng-init="setToolTips()">
+                        <i class="fa fa-info-circle"></i>
+                    </div>
+                </div>
+                -->
 
             </div>
         </div>
