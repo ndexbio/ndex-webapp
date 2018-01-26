@@ -1385,6 +1385,7 @@ ndexApp.controller('networkController',
 
                         $scope.context = networkController.context;
                         $scope.contextIsEmpty = true;
+                        $scope.restoreIfCanceled = [];
 
                         for(var key in $scope.context) {
                             if($scope.context.hasOwnProperty(key)){
@@ -1400,6 +1401,7 @@ ndexApp.controller('networkController',
                         $scope.isEdit = isEdit;
 
                         $scope.removeContext = function(key){
+                            $scope.restoreIfCanceled.push({"namespace": key, "url": $scope.context[key]});
                             delete $scope.context[key];
                         };
 
@@ -1416,6 +1418,9 @@ ndexApp.controller('networkController',
 
                         $scope.close = function() {
                             $modalInstance.dismiss();
+                            _.forEach($scope.restoreIfCanceled, function (addThis) {
+                                $scope.context[addThis.namespace] = addThis.url;
+                            });
                         };
 
                         $scope.save = function() {
