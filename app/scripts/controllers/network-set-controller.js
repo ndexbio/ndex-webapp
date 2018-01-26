@@ -236,7 +236,7 @@ ndexApp.controller('networkSetController',
             var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
             if (networkStatus == "failed") {
                 networkName = "Invalid Network. UUID: " + network.externalId;
-            } else if (noOfSubNetworks > 1) {
+            } else if (noOfSubNetworks >= 1) {
                 networkStatus = "collection";
             };
 
