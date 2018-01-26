@@ -281,12 +281,30 @@
 
 
                             <br />
-                            <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin">
-                                <a ng-click="networkController.showContextModal(true);">@context (namespaces)</a>
+                            <!--======================================-->
+                            <!--=============  CONTEXT  ==============-->
+                            <!--======================================-->
+                            <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin
+                                && !networkController.currentNetwork.doi && !isNetworkCertified() && !networkController.hasMultipleSubNetworks()">
+                                <span style="font-weight: bold;">@context: </span>
+                                <a ng-click="networkController.showContextModal(true);"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   title="Click here to view or modify the namespaces defined for this network.">
+                                    view/edit namespaces
+                                </a>
                             </span>
-                            <span class="networkPropertyName" ng-show="!networkController.isLoggedInUser || !networkController.isAdmin">
-                                <a ng-click="networkController.showContextModal(false);">@context (namespaces)</a>
+                            <span class="networkPropertyName" ng-show="!networkController.isLoggedInUser || !networkController.isAdmin
+                                || networkController.currentNetwork.doi || isNetworkCertified() || networkController.hasMultipleSubNetworks()">
+                                <span style="font-weight: bold;">@context: </span>
+                                <a ng-click="networkController.showContextModal(false);"
+                                   data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   title="Click here to view the namespaces defined for this network.">
+                                    view namespaces
+                                </a>
                             </span>
+
 
                             <br /><br />
                             <span class="networkPropertyName">Owner: </span>
