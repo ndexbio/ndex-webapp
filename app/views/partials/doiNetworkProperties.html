@@ -112,7 +112,7 @@
                             <label for="referenceChange3">Let me add/modify the reference later.</label> &nbsp;&nbsp;
                             <a data-toggle="tooltip"
                                title="A reference is not required to request a DOI. If you want the ability to add or modify a reference later on, please indicate your intentions by checking this box to the left. If you don't check this box, the network will be permenantly locked, made publicly visible and no further changes will be allowed."
-                               style="text-decoration: none;"><i class="fa fa-info-circle"></i></a>
+                               style="text-decoration: none; font-weight: normal;"><i class="fa fa-info-circle"></i></a>
                         </div>
 
                     </div>
@@ -155,12 +155,12 @@
                 <label class="col-sm-3 control-label">rights &nbsp;&nbsp;
                     <a href="http://home.ndexbio.org/publishing-in-ndex/"
                        data-toggle="tooltip" title="Click for more information about specific licenses"
-                       style="text-decoration: none;" target="_blank" ng-init="setToolTips()"><i class="fa fa-info-circle"></i></a>
+                       style="text-decoration: none; font-weight: normal;" target="_blank" ng-init="setToolTips()"><i class="fa fa-info-circle"></i></a>
                     &nbsp;&nbsp;&nbsp;
                     <a ng-show="property.value == editor.rightsCustom && !editor.editCustomRights" ng-click="editor.editCustomRights = !editor.editCustomRights" data-toggle="tooltip" title="Click to edit custom rights"
-                       style="text-decoration: none;" target="_blank"><i class="fa fa-edit fa-lg"></i></a>
+                       style="text-decoration: none; font-weight: normal;" target="_blank"><i class="fa fa-edit fa-lg"></i></a>
                     <a ng-show="editor.editCustomRights" ng-click="editor.editCustomRights = !editor.editCustomRights; property.value = editor.rightsCustom;" data-toggle="tooltip" title="Click to edit custom rights"
-                       style="text-decoration: none;" target="_blank">Undo</a>
+                       style="text-decoration: none; font-weight: normal;" target="_blank">Undo</a>
                 </label>
 
                 <div class="col-sm-8" style="margin-bottom: 15px;"  ng-if="property.value != 'Other'">
@@ -239,7 +239,7 @@
                         <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                         <i ng-if="!property.value || property.value.length <= 0" data-toggle="tooltip" title="Hooray!"
                            id="authorTooltip" name="authorTooltip"
-                           class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                           class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-weight: normal;" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -252,7 +252,7 @@
                 <div class="row">
                     <label class="col-sm-3 control-label">Publication Date &nbsp;&nbsp;
                         <a data-toggle="tooltip" title="**Optional"
-                           style="text-decoration: none;"><i class="fa fa-info-circle"></i></a></label>
+                           style="text-decoration: none; font-weight: normal;"><i class="fa fa-info-circle"></i></a></label>
 
                     </label>
                     <div class="col-sm-8">
