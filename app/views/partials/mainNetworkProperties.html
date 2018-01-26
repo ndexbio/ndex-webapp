@@ -60,31 +60,8 @@
             <div class="form-group" ng-init="eyeopened=false">
                 <label class="col-sm-3 control-label">visibility</label>
                 <div class="col-sm-7" style="margin-bottom: 15px;">
-<!--                    <div class="dropdown">
-                        <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            SELECT VISIBILITY
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a ng-click="mainProperty.visibility = 'PUBLIC'">Public
-                            </a></li>
-                            <li><a ng-click="mainProperty.visibility = 'PUBLIC_NOT_INDEXED'">Public &nbsp;&nbsp;&nbsp;
-                                <span class="fa-stack">
-                                    <i class="fa fa-ban fa-stack-2x" aria-hidden="true" style="color: red;"></i>
-                                    <i class="fa fa-search fa-stack-1x"></i>
-                                </span>
-                            </a></li>
-                            <li><a ng-click="mainProperty.visibility = 'PRIVATE'">Private
-                            </a></li>
-                            <li><a ng-click="mainProperty.visibility = 'PRIVATE_NOT_INDEXED'">Private &nbsp;&nbsp;
-                                <span class="fa-stack">
-                                    <i class="fa fa-ban fa-stack-2x" aria-hidden="true" style="color: red;"></i>
-                                    <i class="fa fa-search fa-stack-1x"></i>
-                                </span>
-                            </a></li>
-                        </ul>
-                    </div>-->
-                    <span ng-if="editor.isOwner">
+
+                    <span ng-show="editor.isOwner">
                         <select class="form-control minwidth170" ng-model="editor.visibilityIndex">
                             <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
                             <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
@@ -92,7 +69,7 @@
                             <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
                         </select>
                     </span>
-                    <span ng-if="!editor.isOwner">
+                    <span ng-show="!editor.isOwner">
                         <select class="form-control minwidth170" ng-model='editor.visibilityIndex'
                                 title="Only network owners can change network Visibility" disabled>
                             <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
@@ -103,19 +80,8 @@
                     </span>
 
                 </div>
-<!--
-                <div class="col-sm-1">
-                    <div class="input-group-btn">
-                        <div title="Name, Description and Version are required for public status">
-                            <i ng-if="(mainProperty.description.length < 1 || mainProperty.name.length < 1 || mainProperty.version.length < 1) && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width"
-                               style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        </div>
-                    </div>
-                </div>
 
--->
-
-                <div class="col-sm-2" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED')
+                <div class="col-sm-2" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED')
                     && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
                     <a ng-click="editor.showcased.state = !editor.showcased.state" style="text-decoration: none; color: #656565;">
                         <div style="width: 95px;">
@@ -133,31 +99,28 @@
                 </div>
 
 
-                <div class="col-sm-2" ng-if="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
-                && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)"
+                <div class="col-sm-2" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
+                    && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)"
                      style="margin-top: 5px;">
+
                     <a ng-click="editor.fullIndexed.state = !editor.fullIndexed.state"
-                       style="text-decoration: none; color: #656565;">
+                       style="text-decoration: none; color: #656565; white-space: nowrap; float: left">
 
-                        <div style="width: 132px">
+                        <span class="fa-stack" >
+                            <i class="fa fa-square-o fa-stack-2x"></i>
+                            <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x"></i>
+                        </span>
 
-                            <span class="fa-stack" >
-                                <i class="fa fa-square-o fa-stack-2x"></i>
-                                <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x"></i>
-                            </span>
-
-                            <span style="font-size: 15px;">
-                                Full Index
-                            </span>
-
-                            <a class="fa-stack"
-                               data-toggle="tooltip" title="Select this for full indexing">
-                                <i class="fa fa-info-circle fa-stack-lg"></i>
-                            </a>
-
-                        </div>
-
+                        <span style="font-size: 15px;">
+                            Full Index
+                        </span>
                     </a>
+
+                    <span data-toggle="tooltip" title="{{fullIndexToolTip}}"
+                       style="cursor: pointer; color: #428bca;"
+                       target="_blank" ng-init="setToolTips()">
+                        <i class="fa fa-info-circle"></i>
+                    </span>
                 </div>
 
             </div>

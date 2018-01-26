@@ -27,6 +27,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     $scope.originalIndexLevel = 'NONE';
     $scope.originalShowCased  = false;
 
+    $scope.fullIndexToolTip =
+        'Marking this checkbox will force the indexing of "name", "represent" and "alias" for each node of the network.'
+        + ' This feature increases the network file size/complexity and should be used sparingly.';
+
+
     $scope.$watch('editor.visibilityIndex', function() {
         if(editor.visibilityIndex === "PUBLIC"){
 
