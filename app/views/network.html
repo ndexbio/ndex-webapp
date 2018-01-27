@@ -284,7 +284,7 @@
                             <!--======================================-->
                             <!--=============  CONTEXT  ==============-->
                             <!--======================================-->
-                            <span class="networkPropertyName" ng-show="networkController.isLoggedInUser && networkController.isAdmin
+                            <span ng-show="networkController.isLoggedInUser && networkController.isAdmin
                                 && !networkController.currentNetwork.doi && !isNetworkCertified() && !networkController.hasMultipleSubNetworks()">
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(true);"
@@ -294,7 +294,7 @@
                                     view/edit namespaces
                                 </a>
                             </span>
-                            <span class="networkPropertyName" ng-show="!networkController.isLoggedInUser || !networkController.isAdmin
+                            <span ng-show="!networkController.isLoggedInUser || !networkController.isAdmin
                                 || networkController.currentNetwork.doi || isNetworkCertified() || networkController.hasMultipleSubNetworks()">
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(false);"
