@@ -22,11 +22,20 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+
                         <div title="Name is required for public status">
-                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                               aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+
+                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                           aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
@@ -50,9 +59,15 @@
                     <div class="input-group-btn">
                         <i ng-if="mainProperty.description.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
                         <div title="Description is required for public status">
-                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility != 'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 15px;  margin-left: 1px; font-size: 2em"
+                               aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 15px;  margin-left: 1px; font-size: 2em"
+                           aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
@@ -210,9 +225,15 @@
                     <div class="input-group-btn" style="margin-top: 40px;">
                         <i ng-if="mainProperty.version.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                         <div title="Version is required for public status">
-                            <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility !=  'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                               aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                           aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
