@@ -1233,4 +1233,11 @@ span.glyphicon-refresh {
     transform: translateY(-50%);
 }
 
-
+.fa-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+/* we use this class to still show popup tooltips (titles) on disabled elements */
+.showTooltipOnDisabledElement {
+    pointer-events: none;
+}

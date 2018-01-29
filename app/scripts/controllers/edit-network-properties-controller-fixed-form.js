@@ -31,6 +31,9 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         'Marking this checkbox will force the indexing of "name", "represent" and "alias" for each node of the network.'
         + ' This feature increases the network file size/complexity and should be used sparingly.';
 
+    $scope.fillInNameDescriptionVersionFirst =
+        'Changing network Visibility requires Name, Description and Version fields to be filled in.';
+
 
     $scope.$watch('editor.visibilityIndex', function() {
         if(editor.visibilityIndex === "PUBLIC"){
@@ -84,6 +87,17 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             }
         }
     });
+
+    $scope.checkNameDescriptionVersion = function() {
+        var retValue =
+            ($scope.mainProperty.description.length > 0 &&
+             $scope.mainProperty.name.length > 0 && $scope.mainProperty.version.length > 0);
+        return retValue;
+    };
+
+    $scope.doNothingOnMouseClick = function() {
+        event.stopPropagation();
+    };
 
     editor.reference = null;
 
