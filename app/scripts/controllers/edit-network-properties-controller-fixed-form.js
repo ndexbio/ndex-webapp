@@ -1319,4 +1319,32 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         return null;
     }
 
+    $scope.showFullIndexAdvisory = function() {
+        if (editor.fullIndexed.state) {
+            editor.fullIndexed.state = !editor.fullIndexed.state;
+            return;
+        };
+
+        var title = "Full Index Advisory";
+        var message =
+            " Full Index is resource-expensive feature and should only be used for high quality, " +
+            " published networks made available to the scientific community... Although we " +
+            " understand that this feature might also be useful for PRIVATE networks, " +
+            " we ask you to be considerate and use it sparingly. " +
+            " <br><br>" +
+            "<strong>Would you like to activate the Full Index feature?</strong>";
+
+        var dismissModal = true;
+
+        ndexNavigation.openConfirmationModal(title, message, "Proceed", "Cancel", dismissModal,
+            function () {
+                editor.fullIndexed.state = !editor.fullIndexed.state;
+            },
+            function () {
+                // user canceled - do nothing
+            });
+        return;
+
+    };
+
 }]);
