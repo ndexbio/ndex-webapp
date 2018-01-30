@@ -151,7 +151,10 @@ angular.module('ndexServiceApp')
                 retValue = attrValue;
 
             } else if (type == 'list_of_boolean') {
-                retValue = (attrValue.toLowerCase() === 'true');
+                // N.B.: for list of booleans, we take the first value and return it as
+                // a String ('true' or 'false'), and not as an actual Boolean (true or false),
+                // since Cytoscape.js expects 'true' or 'false'.
+                retValue = attrValue;
 
             } else {
                 // this is a numeric type, one of CX_NUMBER_DATATYPES
@@ -241,12 +244,20 @@ angular.module('ndexServiceApp')
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 node.data[cyAttributeName] = getFirstElementFromList(attributeObject);
 
-                            } else if (dataType && dataType === 'boolean'){
+                            } else if (dataType && dataType === 'boolean') {
+
+                                // N.B.: for Boolean, Cytoscape.js expects 'true' or 'false' (string),
+                                // and not true or false (actual Boolean).
+                                // Thus, we just use attributeObject.v to pass to Cytoscape.js.
+                                node.data[cyAttributeName] = attributeObject.v;
+
+                                /*
                                 if (attributeObject.v === 'true'){
                                     node.data[cyAttributeName] = true;
-                                } else if (attributeObject.v === 'false'){
+                                } else if (attributeObject.v === 'false') {
                                     node.data[cyAttributeName] = false;
                                 }
+                                */
 
                             } else {
                                 // Default to String
@@ -305,14 +316,22 @@ angular.module('ndexServiceApp')
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 edge.data[cyAttributeName] = getFirstElementFromList(attributeObject);
 
-                            } else if (dataType && dataType === 'boolean'){
-                                if (attributeObject.v === 'true'){
-                                    edge.data[cyAttributeName] = true;
-                                } else if (attributeObject.v === 'false'){
-                                    edge.data[cyAttributeName] = false;
-                                }
+                            } else if (dataType && dataType === 'boolean') {
 
-                            }  else {
+                                // N.B.: for Boolean, Cytoscape.js expects 'true' or 'false' (string),
+                                // and not true or false (actual Boolean).
+                                // Thus, we just use attributeObject.v to pass to Cytoscape.js.
+                                edge.data[cyAttributeName] =  attributeObject.v;
+
+                                /*
+                                if (attributeObject.v === 'true'){
+                                    edge.data[cyAttributeName] = 'true';
+                                } else if (attributeObject.v === 'false'){
+                                    edge.data[cyAttributeName] = 'false';
+                                }
+                                */
+
+                            }   else {
                                 // Default to String
                                 edge.data[cyAttributeName] = attributeObject.v;
                             }
