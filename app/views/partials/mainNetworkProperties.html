@@ -22,11 +22,20 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+
                         <div title="Name is required for public status">
-                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                               aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+
+                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                           aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
@@ -50,25 +59,50 @@
                     <div class="input-group-btn">
                         <i ng-if="mainProperty.description.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
                         <div title="Description is required for public status">
-                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility != 'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 15px;  margin-left: 1px; font-size: 2em"
+                               aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 15px;  margin-left: 1px; font-size: 2em"
+                           aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
 
             <div class="form-group" ng-init="eyeopened=false">
                 <label class="col-sm-3 control-label">visibility</label>
-                <div class="col-sm-6" style="margin-bottom: 15px;">
+                <div class="col-sm-5" style="margin-bottom: 15px;">
 
                     <span ng-show="editor.isOwner">
-                        <select class="form-control minwidth170" ng-model="editor.visibilityIndex">
-                            <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
-                            <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
-                            <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
-                            <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
-                        </select>
+
+                        <div ng-show="checkNameDescriptionVersion()">
+                            <select class="form-control minwidth170"
+                                    ng-model="editor.visibilityIndex">
+                                <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
+                                <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
+                                <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
+                                <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
+                            </select>
+                        </div>
+
+                        <div ng-show="!checkNameDescriptionVersion()">
+                            <div tooltip="{{fillInNameDescriptionVersionFirst}}" style="cursor: not-allowed">
+
+                                <select disabled
+                                        class="form-control minwidth170 showTooltipOnDisabledElement"
+                                        ng-model="editor.visibilityIndex">
+                                    <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
+                                    <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
+                                    <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
+                                    <option value='PRIVATE_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PRIVATE_NOT_INDEXED"'>Private (not searchable)</option>
+                                </select>
+                            </div>
+                        </div>
                     </span>
+
                     <span ng-show="!editor.isOwner">
                         <select class="form-control minwidth170" ng-model='editor.visibilityIndex'
                                 title="Only network owners can change network Visibility" disabled>
@@ -81,60 +115,98 @@
 
                 </div>
 
-                <div class="col-sm-2" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED')
-                    && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)" style="margin-top: 5px;">
+                <div class="col-sm-2" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PUBLIC_NOT_INDEXED')"
+                     style="margin-top: 5px;">
                     <a ng-click="editor.showcased.state = !editor.showcased.state" style="text-decoration: none; color: #656565;">
                         <div style="width: 95px;">
-                            <span class="fa-stack" ng-show="!editor.showcased.state">
-                                <i class="fa fa-square-o fa-stack-2x"></i>
+
+                            <span ng-show="checkNameDescriptionVersion()">
+                                <span class="fa-stack" ng-show="!editor.showcased.state">
+                                    <i ng-show="checkNameDescriptionVersion()" class="fa fa-square-o fa-stack-2x"></i>
+                                </span>
+
+                                <span class="fa-stack" ng-show="editor.showcased.state">
+                                    <i class="fa fa-square-o fa-stack-2x"></i>
+                                    <i class="fa fa-check fa-stack-1x"></i>
+                                </span>
+
+
+                                <div class="pull-right" style="font-size: 15px; margin-top: 3px;">Showcase</div>
                             </span>
 
-                            <span class="fa-stack" ng-show="editor.showcased.state">
-                                <i class="fa fa-square-o fa-stack-2x"></i>
-                                <i class="fa fa-check fa-stack-1x"></i>
+                            <span ng-show="!checkNameDescriptionVersion()" ng-click="doNothingOnMouseClick()"
+                                  tooltip="{{fillInNameDescriptionVersionFirst}}">
+                                <span class="fa-stack" ng-show="!editor.showcased.state">
+                                    <i class="fa fa-square-o fa-stack-2x fa-disabled"></i>
+                                </span>
+
+                                <span class="fa-stack" ng-show="editor.showcased.state">
+                                    <i class="fa fa-square-o fa-stack-2x fa-disabled"></i>
+                                    <i class="fa fa-check fa-stack-1x fa-disabled"></i>
+                                </span>
+
+                                <div class="pull-right fa-disabled" style="font-size: 15px; margin-top: 3px;">Showcase</div>
                             </span>
-                            <div class="pull-right" style="font-size: 15px; margin-top: 3px;">Showcase</div>
+
                         </div>
+
                     </a>
                 </div>
 
 
-                <div class="col-sm-3" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
-                    && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)"
+                <div class="col-sm-3" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')"
                      style="margin-top: 5px; padding-right:0">
 
-                    <a ng-click="editor.fullIndexed.state = !editor.fullIndexed.state"
-                       style="text-decoration: none; color: #656565; white-space: nowrap;">
+                    <span ng-show="checkNameDescriptionVersion()">
+                        <a ng-click="editor.fullIndexed.state = !editor.fullIndexed.state"
+                           style="text-decoration: none; color: #656565; white-space: nowrap;">
 
-                        <span class="fa-stack" >
-                            <i class="fa fa-square-o fa-stack-2x"></i>
-                            <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x"></i>
-                        </span>
+                            <span class="fa-stack" >
+                                <i class="fa fa-square-o fa-stack-2x"></i>
+                                <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x"></i>
+                            </span>
 
-                        <span style="font-size: 15px;">
-                            Full Index
-                        </span>
-                    </a>
-
-                    <span data-toggle="tooltip" title="{{fullIndexToolTip}}"
-                       style="cursor: pointer; color: #428bca;"
-                       target="_blank" ng-init="setToolTips()">
-                        <i class="fa fa-info-circle"></i>
+                            <span style="font-size: 15px;">
+                                Full Index
+                            </span>
+                        </a>
                     </span>
+
+                    <span ng-show="!checkNameDescriptionVersion()" ng-click="doNothingOnMouseClick()"
+                          tooltip="{{fillInNameDescriptionVersionFirst}}">
+
+                            <span class="fa-stack" >
+                                <i class="fa fa-square-o fa-stack-2x fa-disabled"></i>
+                                <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x fa-disabled"></i>
+                            </span>
+
+                            <span class="fa-disabled" style="font-size: 15px;">
+                                Full Index
+                            </span>
+
+
+                    </span>
+
+
+                        <!--
+                        <span data-toggle="tooltip" title="{{fullIndexToolTip}}"
+                           style="cursor: pointer; color: #428bca;"
+                           target="_blank" ng-init="setToolTips()">
+                            <i class="fa fa-info-circle"></i>
+                        </span>
+                        -->
                 </div>
 
-                <!--
-                <div class="col-sm-1" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')
-                    && (mainProperty.description.length > 0 && mainProperty.name.length > 0 && mainProperty.version.length > 0)"
+                <div class="col-sm-1" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')"
                      style="margin-top: 5px; padding-left: 0">
 
-                    <div data-toggle="tooltip" title="{{fullIndexToolTip}}"
+                    <div tooltip="{{fullIndexToolTip}}"
                          style="cursor: pointer; color: #428bca;"
                          target="_blank" ng-init="setToolTips()">
                         <i class="fa fa-info-circle"></i>
                     </div>
                 </div>
-                -->
+
 
             </div>
         </div>
@@ -153,9 +225,15 @@
                     <div class="input-group-btn" style="margin-top: 40px;">
                         <i ng-if="mainProperty.version.length > 0" class="fa fa-check icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
                         <div title="Version is required for public status">
-                            <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility !=  'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                               aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        <i ng-if="mainProperty.version.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 5px; margin-left: 1px; font-size: 2em"
+                           aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
