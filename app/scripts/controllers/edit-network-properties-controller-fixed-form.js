@@ -345,12 +345,27 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             delete pair.valueError;
         }
     }
+/*
+    $scope.gotFocus = function(elementId) {
+        var style   = document.getElementById(elementId).style;
+        if ($('#' + elementId).val().length == 0) {
+            style['border-color'] = "red";
+        } else {
+            style['border-color'] = "#66afe9";
+        }
+    };
 
+    $scope.lostFocus = function(elementId) {
+        var style   = document.getElementById(elementId).style;
+        if ($('#' + elementId).val().length == 0) {
+            style['border-color'] = "red";
+        } else {
+            style['border-color'] = "green";
+        }
+    };
+*/
     editor.updateScore = function() {
         $scope.score = 0;
-
-        var myElement = angular.element(document.querySelector('#descriptionTextBox'));
-        //console.log(myElement);
 
         for(var i=0; i<editor.propertyValuePairs.length; i++) {
             var pair = editor.propertyValuePairs[i];
