@@ -15,8 +15,8 @@
         });
     </script>
 
-    <div class="row" style="border: 1px solid white;" ng-show="!main.serverIsDown">
-        <div class='col-md-12 center-vertically' ng-show="main.isSupportedBrowserUsed()">
+    <div class="row center-vertically" style="border: 1px solid white;" ng-show="!main.serverIsDown">
+        <div class='col-md-12' ng-show="main.isSupportedBrowserUsed()">
 
             <div style="max-width: 900px; margin-left: auto; margin-right: auto;">
                 <p style="text-align:center;">
@@ -25,9 +25,9 @@
                     <span ng-show="main.ndexServerVersion" class="ndexServerVersion">
                         <span style="color:black">-</span>
 
-                        <a ng-href="{{homeController.linkToReleaseDocs}}"
-                           target="_blank" tooltip="Release Notes">
-                                v{{main.ndexServerVersion}}
+                        <a ng-href="{{homeController.linkToRelaseDocs}}"
+                           target="_blank" data-toggle="tooltip" title="Release Notes">
+                                v<span ng-bind-html="main.ndexServerVersion"></span>
                         </a>
                     </span>
 
@@ -41,7 +41,7 @@
                 </p>
             </div>
 
-            <div style="max-width: 900px; margin-left: auto; margin-right: auto; padding-top: 2em;">
+            <div style="max-width: 900px; margin-left: auto; margin-right: auto; text-align: left;">
                 <ng-include src="'search_bar.html'"></ng-include>
             </div>
 
@@ -51,7 +51,7 @@
                 &nbsp;&nbsp;&nbsp;
 
                 <span ng-repeat="collection in homeController.featuredCollections">
-                    <a style="color: #0088D2" ng-href='{{homeController.getURLOfFeaturedCollection(collection)}}'  target="_blank">
+                    <a style="color: #0088D2" ng-href='{{homeController.getURLOfFeaturedCollection(collection)}}'>
                         <strong>{{collection.name}}</strong>
                     </a>
                     &nbsp;&nbsp;&nbsp;&nbsp;

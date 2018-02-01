@@ -117,7 +117,7 @@ section
     .hx6 {
         font-size: 18px;
         line-height: 1.4em;
-        margin-bottom: 2em;
+        margin-bottom: 4em;
     }
     .hx3 {
         font-family: "Open Sans";
@@ -152,6 +152,33 @@ section
         margin: 1em;
         text-align: center;
         margin-top: 4em;
+    }
+
+    .center-vertically {
+        position: fixed;
+
+        top: 30%;
+
+        /*transform: translateY(50%);
+        */
+        margin-top: 3em;
+
+        left: 0;
+        right: 0;
+        height: 0;
+
+        text-align: center;
+    }
+
+    #logos-citation-above-footer {
+        bottom: 3em;
+        position: fixed;
+
+        width: 100%;
+        margin: 0 0 0 0;
+
+        padding-bottom: 4em;
+        background-color: white;
     }
 }
 
@@ -201,7 +228,26 @@ section
         line-height: 1.5em;
         margin: 1em;
         text-align: center;
+
         margin-top: 3em;
+        margin-bottom: 5em;
+    }
+
+    .center-vertically {
+        position: relative;
+        margin-top: 7em;
+        margin-bottom: 5em;
+    }
+
+    #logos-citation-above-footer {
+        bottom: 0;
+        position: fixed;
+
+        width: 100%;
+        margin: 0 0 3em 0;
+
+        padding-bottom: 3em;
+        background-color: white;
     }
 }
 
@@ -568,7 +614,26 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
         line-height: 1.5em;
         margin: 1em;
         text-align: center;
+
         margin-top: 3em;
+        margin-bottom: 5em;
+    }
+
+    .center-vertically {
+        position: relative;
+        margin-top: 7em;
+        margin-bottom: 5em;
+    }
+
+    #logos-citation-above-footer {
+        bottom: 0;
+        position: fixed;
+
+        width: 100%;
+        margin: 0 0 3em 0;
+
+        padding-bottom: 3em;
+        background-color: white;
     }
 }
 
@@ -945,7 +1010,7 @@ ul.ndex-nav-pills > li > a:hover {
     text-align: center;
 }
 
-
+/*
 #logos-citation-above-footer {
     bottom: 3em;
     position: fixed;
@@ -1227,12 +1292,21 @@ span.glyphicon-refresh {
 .homeContainer{
     height: 100%;
 }
-.center-vertically {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-}
 
+/*
+.center-vertically-logo {
+    position: relative;
+    top: 5%;
+    /*transform: translateY(-5%);
+}
+/*
+.center-vertically {
+    position: relative;
+    top: 50%;
+    transform: translateY(50%);
+    padding-top: 2em;
+}
+*/
 .fa-disabled {
     opacity: 0.5;
     cursor: not-allowed;

@@ -543,7 +543,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
          */
         $scope.redirectToCurrentServer = function() {
             var currentServerURL = uiMisc.getCurrentServerURL();
-            var win = window.open(currentServerURL, '_blank');
+            var win = window.open(currentServerURL, '_self');
             win.focus();
         };
 
