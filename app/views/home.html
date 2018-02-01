@@ -25,9 +25,9 @@
                     <span ng-show="main.ndexServerVersion" class="ndexServerVersion">
                         <span style="color:black">-</span>
 
-                        <a ng-href="{{homeController.linkToRelaseDocs}}"
-                           target="_blank" data-toggle="tooltip" title="Release Notes">
-                                v<span ng-bind-html="main.ndexServerVersion"></span>
+                        <a ng-href="{{homeController.linkToReleaseDocs}}"
+                           target="_blank" tooltip="Release Notes">
+                                v{{main.ndexServerVersion}}
                         </a>
                     </span>
 
