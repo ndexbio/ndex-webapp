@@ -7,14 +7,14 @@ ndexApp.controller('homeController', ['sharedProperties', '$scope', 'uiMisc',
         homeController.URL = uiMisc.getCurrentServerURL();
         homeController.welcomeHeader = window.ndexSettings.welcome.header;
         homeController.welcomeMessage = window.ndexSettings.welcome.message;
-        homeController.linkToRelaseDocs = window.ndexSettings.welcome.linkToRelaseDocs;
+        homeController.linkToReleaseDocs = window.ndexSettings.welcome.linkToReleaseDocs;
 
         if (window.ndexSettings.featuredCollections) {
             homeController.featuredCollections = window.ndexSettings.featuredCollections;
         }
 
         homeController.getURLOfFeaturedCollection = function(collection) {
-            return homeController.URL + collection.account + "/" + collection.UUID;
-        }
+            return homeController.URL + collection.account + '/' + collection.UUID;
+        };
     }
 ]);
