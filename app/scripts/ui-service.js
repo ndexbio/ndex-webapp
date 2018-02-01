@@ -1809,7 +1809,8 @@
             },
 
             restrict: 'AE',
-            template: '<button class="{{myClass}}" ng-click="openMe()">Add Reference</button>',
+            template: '<button class="{{myClass}}" ng-click="openMe()" ' +
+            'tooltip="This network is PRE-CERTIFIED; click to add full reference info and get it CERTIFIED.">Add Reference</button>',
 
             controller: function($scope, $modal, $location, ndexService, $route) {
 

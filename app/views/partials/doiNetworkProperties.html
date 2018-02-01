@@ -31,12 +31,18 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="mainProperty.name.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.name.length > 0" class="fa fa-check-square-o icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.name.length <= 0" class="fa fa-square-o icon-fixed-width"
+                           style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                         <div title="Name is required for public status">
-                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility !=  'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        <i ng-if="mainProperty.name.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
@@ -52,8 +58,10 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="mainProperty.version.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="mainProperty.version.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.version.length > 0" class="fa fa-check-square-o icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.version.length <= 0" class="fa fa-square-o icon-fixed-width"
+                           style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -84,14 +92,20 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="mainProperty.description.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="mainProperty.description.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.description.length > 0" class="fa fa-check-square-o icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
+                        <i ng-if="mainProperty.description.length <= 0" class="fa fa-square-o icon-fixed-width"
+                           style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
 
 
                         <div title="Description is required for public status">
-                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'" class="fa fa-exclamation-triangle icon-fixed-width" style="color: red; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility !=  'PRIVATE'"
+                               class="fa fa-exclamation-triangle icon-fixed-width"
+                               style="color: red; margin-top: 20px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                         </div>
-                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'" class="fa fa-check icon-fixed-width" style="color: white; margin-top: 20px; margin-left: 10px;" aria-hidden="true"></i>&nbsp;&nbsp;
+                        <i ng-if="mainProperty.description.length < 1 && mainProperty.visibility ==  'PRIVATE'"
+                           class="fa fa-check icon-fixed-width"
+                           style="color: white; margin-top: 20px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>
@@ -157,9 +171,13 @@
                        data-toggle="tooltip" title="Click for more information about specific licenses"
                        style="text-decoration: none; font-weight: normal;" target="_blank" ng-init="setToolTips()"><i class="fa fa-info-circle"></i></a>
                     &nbsp;&nbsp;&nbsp;
-                    <a ng-show="property.value == editor.rightsCustom && !editor.editCustomRights" ng-click="editor.editCustomRights = !editor.editCustomRights" data-toggle="tooltip" title="Click to edit custom rights"
+                    <a ng-show="property.value == editor.rightsCustom && !editor.editCustomRights"
+                       ng-click="editor.editCustomRights = !editor.editCustomRights"
+                       data-toggle="tooltip" title="Click to edit custom rights"
                        style="text-decoration: none; font-weight: normal;" target="_blank"><i class="fa fa-edit fa-lg"></i></a>
-                    <a ng-show="editor.editCustomRights" ng-click="editor.editCustomRights = !editor.editCustomRights; property.value = editor.rightsCustom;" data-toggle="tooltip" title="Click to edit custom rights"
+                    <a ng-show="editor.editCustomRights"
+                       ng-click="editor.editCustomRights = !editor.editCustomRights; property.value = editor.rightsCustom;"
+                       data-toggle="tooltip" title="Click to edit custom rights"
                        style="text-decoration: none; font-weight: normal;" target="_blank">Undo</a>
                 </label>
 
@@ -193,8 +211,10 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
+                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width"
+                           style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -211,8 +231,10 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
+                        <i ng-if="!property.value || property.value.length <= 0" class="fa fa-square-o icon-fixed-width"
+                           style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -236,10 +258,12 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
-                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                        <i ng-if="property.value.length > 0" class="fa fa-check-square-o icon-fixed-width"
+                           style="color: green; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                         <i ng-if="!property.value || property.value.length <= 0" data-toggle="tooltip" title="Hooray!"
                            id="authorTooltip" name="authorTooltip"
-                           class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-weight: normal;" aria-hidden="true"></i>
+                           class="fa fa-square-o icon-fixed-width"
+                           style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-weight: normal; font-size: 1.5em" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -284,8 +308,12 @@
                     </div>
                     <div class="col-sm-1">
                         <div class="input-group-btn">
-                            <i ng-if="!doiform.doiinputemail.$error.required && !doiform.doiinputemail.$error.email" class="fa fa-check-square-o icon-fixed-width" style="color: green; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
-                            <i ng-if="doiform.doiinputemail.$error.required || doiform.doiinputemail.$error.email" class="fa fa-square-o icon-fixed-width" style="color: #C0C0C0; margin-top: 10px; margin-left: 10px;" aria-hidden="true"></i>
+                            <i ng-if="!doiform.doiinputemail.$error.required && !doiform.doiinputemail.$error.email"
+                               class="fa fa-check-square-o icon-fixed-width"
+                               style="color: green; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
+                            <i ng-if="doiform.doiinputemail.$error.required || doiform.doiinputemail.$error.email" c
+                               lass="fa fa-square-o icon-fixed-width"
+                               style="color: #C0C0C0; margin-top: 10px; margin-left: 10px; font-size: 1.5em" aria-hidden="true"></i>
                         </div>
                     </div>
                 </div>
