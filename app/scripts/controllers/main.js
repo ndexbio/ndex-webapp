@@ -531,8 +531,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             // if we are here, then either config parameter redirectObj.showWarning is false
             // or redirectObj.showWarning is true and user chose to follow the link to external site;
-            // open the link in new tab
-            var win = window.open(redirectObj.href, '_blank');
+            // open the link in new_tab
+            var win = window.open(redirectObj.href, 'new_tab');
             win.focus();
 
         };
