@@ -471,7 +471,7 @@
                                                     <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
 
 
-                                                    <span ng-show="checkHowManyAttributes(attributeName, node[attributeName])">
+                                                    <span ng-show="howManyAttributes(node[attributeName]) > 5">
                                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                         <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
                                                             more...
@@ -521,7 +521,7 @@
                                                    <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
                                                 </span>
 
-                                                <span ng-show="checkHowManyAttributes(attributeName, edge[attributeName])">
+                                                <span ng-show="howManyAttributes(edge[attributeName]) > 5">
                                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                     <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
                                                         more...
