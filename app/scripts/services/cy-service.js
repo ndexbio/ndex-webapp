@@ -311,7 +311,11 @@ angular.module('ndexServiceApp')
                             var cyAttributeName = getCyAttributeName(attributeName, attributeNameMap);
                             var dataType = attributeObject.d;
                             if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType.toLowerCase())){
-                                edge.data[cyAttributeName] = parseFloat(attributeObject.v);
+                                //edge.data[cyAttributeName] = parseFloat(attributeObject.v);
+
+                                // N.B.: for Numbers, Cytoscape.js expects a string,
+                                // Thus, we just use attributeObject.v to pass to Cytoscape.js.
+                                edge.data[cyAttributeName] = attributeObject.v;
 
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 edge.data[cyAttributeName] = getFirstElementFromList(attributeObject);

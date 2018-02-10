@@ -361,7 +361,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             urlConfig.timeout = deferredAbort.promise;
 
             // We want to perform some operations on the response from the $http request. We can simply wrap the
-            // returned $http-promise around another psuedo promise. This way we can unwrap the response and return the
+            // returned $http-promise around another pseudo promise. This way we can unwrap the response and return the
             // preprocessed data. Additionally, the wrapper allows us to augment the return promise with an abort method.
             var request = $http(urlConfig);
             var promise = {};
