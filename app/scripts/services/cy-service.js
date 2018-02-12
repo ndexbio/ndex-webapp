@@ -311,11 +311,7 @@ angular.module('ndexServiceApp')
                             var cyAttributeName = getCyAttributeName(attributeName, attributeNameMap);
                             var dataType = attributeObject.d;
                             if (dataType && _.includes(CX_NUMBER_DATATYPES, dataType.toLowerCase())){
-                                //edge.data[cyAttributeName] = parseFloat(attributeObject.v);
-
-                                // N.B.: for Numbers, Cytoscape.js expects a string,
-                                // Thus, we just use attributeObject.v to pass to Cytoscape.js.
-                                edge.data[cyAttributeName] = attributeObject.v;
+                                edge.data[cyAttributeName] = parseFloat(attributeObject.v);
 
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 edge.data[cyAttributeName] = getFirstElementFromList(attributeObject);
@@ -680,7 +676,7 @@ angular.module('ndexServiceApp')
             var elements = [];
             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
             if (!cyVisualAttribute) {
-                console.log("no visual attribute for " + vp);
+                console.log('no visual attribute for ' + vp);
                 return elements;  // empty result, vp not handled
             }
 
@@ -691,11 +687,23 @@ angular.module('ndexServiceApp')
             // the cytoscape column is mapped to the cyjs attribute name
             var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
+            var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
+            var regExToCheckIfFloatNumber = /^\d+\.\d*$/;
+
             _.forEach(def.m, function (pair) {
                 var cyDataAttributeValue = pair.K;
                 var visualAttributeValue = pair.V;
                 var cyVisualAttributeValue = getCyVisualAttributeValue(visualAttributeValue, cyVisualAttributeType);
-                var cySelector = elementType + '[' + cyDataAttribute + ' = \'' + cyDataAttributeValue + '\']';
+
+                // check if cyDataAttributeValue is a valid number (float or integer)
+                var isValidNumber =
+                    regExToCheckIfIntNumber.test(cyDataAttributeValue) ||
+                    regExToCheckIfFloatNumber.test(cyDataAttributeValue);
+
+                var cySelector = (isValidNumber) ?
+                    elementType + '[' + cyDataAttribute + ' = ' + cyDataAttributeValue + ']'  :
+                    elementType + '[' + cyDataAttribute + ' = \'' + cyDataAttributeValue + '\']';
+
                 var cyVisualAttributePair = {};
                 cyVisualAttributePair[cyVisualAttribute] = cyVisualAttributeValue;
                 var element = {'selector': cySelector, 'css': cyVisualAttributePair};
