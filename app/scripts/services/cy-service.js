@@ -688,7 +688,7 @@ angular.module('ndexServiceApp')
             var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
             var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
-            var regExToCheckIfFloatNumber = /^\d+\.\d*$/;
+            var regExToCheckIfFloatNumber = /^-{0,1}\d+\.\d*$/;
 
             _.forEach(def.m, function (pair) {
                 var cyDataAttributeValue = pair.K;
@@ -1028,14 +1028,14 @@ angular.module('ndexServiceApp')
                             //console.log('VP = ' + vp);
                             elementType = 'edge';
 
-                                if (vpElement.dependencies.arrowColorMatchesEdge ) {
-                                if(vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" &&
-                                    vp !== "EDGE_TARGET_ARROW_UNSELECTED_PAINT" ) {
-
-                                    if (vp == "EDGE_UNSELECTED_PAINT") {
-                                        var styles = mappingStyle(elementType, "EDGE_TARGET_ARROW_UNSELECTED_PAINT" , mapping.type, mapping.definition, attributeNameMap);
+                            if (vpElement.dependencies.arrowColorMatchesEdge ) {
+                                if (vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
+                                    vp !== 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' )
+                                {
+                                    if (vp === 'EDGE_UNSELECTED_PAINT') {
+                                        var styles = mappingStyle(elementType, 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
                                         edge_default_mappings = edge_default_mappings.concat(styles);
-                                        styles = mappingStyle(elementType, "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" , mapping.type, mapping.definition, attributeNameMap);
+                                        styles = mappingStyle(elementType, 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
                                         edge_default_mappings = edge_default_mappings.concat(styles);
                                     }
                                     var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
