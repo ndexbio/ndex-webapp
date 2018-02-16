@@ -11,7 +11,10 @@ ndexApp.controller('searchController',
             var searchController = $scope.searcher;
             searchController.isLoggedInUser = (window.currentNdexUser != null);
 
-            searchController.errors = [];
+            searchController.networkErrors = [];
+            searchController.userErrors = [];
+            searchController.groupErrors = [];
+
             searchController.pageSize = 1000000;
             
             searchController.networkSearchResults = [];
@@ -317,6 +320,8 @@ ndexApp.controller('searchController',
                 searchController.networkSearchInProgress = true;
                 searchController.networkSearchNoResults = false;
 
+                searchController.networkErrors = [];
+
                 networkQuery = {
                     'accountName': searchController.userName,
                     'searchString': searchController.searchString,
@@ -355,9 +360,10 @@ ndexApp.controller('searchController',
                     {
                         ndexSpinner.stopSpinner();
                         if (error) {
-
                             searchController.networkSearchResults = [];
-                            searchController.errors.push(error.message);
+                            var errorMessage = 'No networks found: ' + error.message;
+                            searchController.networkErrors.push(errorMessage);
+
                             searchController.networkSearchInProgress = false;
                             searchController.networkSearchNoResults = true;
                         };
@@ -407,7 +413,8 @@ ndexApp.controller('searchController',
                         ndexSpinner.stopSpinner();
                         if (error) {
                             searchController.networkSearchResults = [];
-                            searchController.errors.push(error.message);
+                            var errorMessage = 'No networks found: ' + error.message;
+                            searchController.networkErrors.push(errorMessage);
                             searchController.networkSearchInProgress = false;
                             searchController.networkSearchNoResults = true;
                         }
@@ -546,6 +553,7 @@ ndexApp.controller('searchController',
                 searchController.userSearchResults = null;
                 searchController.userSearchInProgress = true;
                 searchController.userSearchNoResults = false;
+                searchController.userErrors = [];
                 // We find only one page of users. No paging.
                 ndexService.searchUsersV2(
                     searchString,
@@ -569,7 +577,11 @@ ndexApp.controller('searchController',
                         if (searchController.searchType.toLowerCase() != "all") {
                             ndexSpinner.stopSpinner();
                         };
-                        searchController.errors.push(error.data);
+
+                        if (error.errorMessage && error.errorMessage != 'NDEx_Bad_Request_Exception') {
+                            var errorMessage = 'No networks found: ' + error.message;
+                            searchController.userErrors.push(errorMessage);
+                        };
                         searchController.userSearchInProgress = false;
                     });
             };
@@ -677,6 +689,7 @@ ndexApp.controller('searchController',
                 searchController.groupSearchResults = null;
                 searchController.groupSearchInProgress = true;
                 searchController.groupSearchNoResults = false;
+                searchController.groupErrors = [];
                 // We find only one page of groups. No paging.
                 ndexService.searchGroupsV2(
                     searchController.searchString,
@@ -699,7 +712,11 @@ ndexApp.controller('searchController',
                         if (searchController.searchType.toLowerCase() != "all") {
                             ndexSpinner.stopSpinner();
                         };
-                        searchController.errors.push(error.data);
+
+                        if (error.errorMessage && error.errorMessage != 'NDEx_Bad_Request_Exception') {
+                            var errorMessage = 'No groups found: ' + error.message;
+                            searchController.groupErrors.push(errorMessage);
+                        };
                         searchController.groupSearchInProgress = false;
                         searchController.groupSearchNoResults = true;
                     });

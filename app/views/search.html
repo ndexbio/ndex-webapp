@@ -1,16 +1,28 @@
-<div class="row" ng-show="networkSearch.errors.length > 0">
-    <div class="col-md-12">
-        <div>
-            <p class="alert alert-danger" ng-repeat='error in networkSearch.errors'>
-                {{error}}
-              <span class="glyphicon glyphicon-remove pull-right"
-                    style='cursor:pointer'
-                    ng-click='networkSearch.errors.splice($index,1)'>
-              </span>
-            </p>
-        </div>
-    </div>
-</div>
+<span class="row" ng-show="searcher.networkErrors.length > 0">
+    <span class="col-md-12">
+        <p class="alert alert-success" style='margin-bottom: 0;' ng-repeat='error in searcher.networkErrors'>
+            {{error}}
+          <span class="glyphicon glyphicon-remove pull-right"
+                style='cursor:pointer'
+                ng-click='searcher.networkErrors.splice($index,1)'>
+          </span>
+        </p>
+        <p class="alert alert-danger" style='margin-bottom: 0;' ng-repeat='error in searcher.userErrors'>
+            {{error}}
+            <span class="glyphicon glyphicon-remove pull-right"
+                  style='cursor:pointer'
+                  ng-click='searcher.userErrors.splice($index,1)'>
+          </span>
+        </p>
+        <p class="alert alert-danger" style='margin-bottom: 0;' ng-repeat='error in searcher.groupErrors'>
+            {{error}}
+            <span class="glyphicon glyphicon-remove pull-right"
+                  style='cursor:pointer'
+                  ng-click='searcher.groupErrors.splice($index,1)'>
+          </span>
+        </p>
+    </span>
+</span>
 
 
 <div class="row">
