@@ -178,7 +178,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.main.serverIsDown = null;
 
         $scope.main.ndexServerVersion = null;
-
+        window.navigator.ndexServerVersion = 'ndex-webapp/';
+        $http.defaults.headers.common['NDEx-application'] = window.navigator.ndexServerVersion;
 
         ndexService.getServerStatus('full',
             function(data, status, headers, config) {
@@ -190,6 +191,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     };
                     if (data.properties.ServerVersion) {
                         $scope.main.ndexServerVersion = data.properties.ServerVersion;
+                        window.navigator.ndexServerVersion += data.properties.ServerVersion;
+                        $http.defaults.headers.common['NDEx-application'] = window.navigator.ndexServerVersion;
                     };
                 }
                 $scope.main.serverIsDown = false;
@@ -201,6 +204,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             },
             function(data, status, headers, config) {
                 $scope.main.serverIsDown = true;
+                window.navigator.ndexServerVersion += 'unknown';
+                $http.defaults.headers.common['NDEx-application'] = window.navigator.ndexServerVersion;
 
                 document.getElementById("hiddenElementId").style.display  = "";
                 document.getElementById("hiddenElementId1").style.display = "";

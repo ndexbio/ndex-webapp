@@ -108,9 +108,10 @@ ndexApp.controller('uploadController',
 
             var uploader = $scope.uploader = new FileUploader({
                 url: ndexService.getNetworkUploadURI(),
-                alias: "CXNetworkStream",
+                alias: 'CXNetworkStream',
                 headers: {
-                    Authorization: ndexUtility.getAuthHeaderValue()
+                    'Authorization': ndexUtility.getAuthHeaderValue(),
+                    'NDEx-application': window.navigator.ndexServerVersion
                 }
             });
 
