@@ -72,6 +72,9 @@ ndexApp.controller('networkController',
             // from the "Network Cloned" information modal.
             //$modalStack.dismissAll('close');
 
+            $scope.query = null;
+            networkController.searchString = "";
+
 
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
@@ -256,6 +259,8 @@ ndexApp.controller('networkController',
             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
             var spinnerNetworkPageId = "spinnerGraphId";
+
+            $scope.showAdvancedQuery = true;
 
 
             //networkController.prettyStyle = "no style yet";
@@ -462,8 +467,8 @@ ndexApp.controller('networkController',
                     "id": "2"
                 },
                 {
-                    "name": "3-step",
-                    "description": "3-step",
+                    "name": "1-step Interconnect",
+                    "description": "1-step Interconnect",
                     "value": 3,
                     "id": "3"
                 }
@@ -595,14 +600,18 @@ ndexApp.controller('networkController',
 
             $scope.backToSimpleQuery = function(event) {
 
-                // this is needed to Close the Advacned Query tab in case the Close tab sign (x) was clicked
+                // this is needed to Close the Advanced Query tab in case the Close tab sign (x) was clicked
                 event.stopPropagation();
 
 
                 networkController.tabs[3].active = false;
                 networkController.tabs[3].hidden = true;
 
-                networkController.reloadOriginalNetwork();
+                networkController.tabs[0].active = true;
+                networkController.tabs[0].hidden = false;
+
+                enableSimpleQueryElements();
+                networkController.backToOriginalNetwork();
             };
 
             var enableSimpleQueryElements = function () {
@@ -702,6 +711,9 @@ ndexApp.controller('networkController',
 
             $scope.activateAdvancedQueryTab = function() {
 
+                networkController.previousNetwork = networkController.currentNetwork;
+                $scope.query = 'advanced';
+
                 //populate the node and edge properties
 
                 if ( networkController.edgePropertyNamesForAdvancedQuery == undefined) {
@@ -709,9 +721,7 @@ ndexApp.controller('networkController',
                     networkController.edgePropertyNamesForAdvancedQuery = [];
                     networkController.nodePropertyNamesForAdvancedQuery = [];
                     populateNodeAndEdgeAttributesForAdvancedQuery();
-                }    
-
-                networkController.queryMode = 'advanced';
+                }
 
                 for (var i = 0; i < 3; i++) {
                     networkController.tabs[i].active = false;
@@ -726,6 +736,8 @@ ndexApp.controller('networkController',
                 for(var i = 0; i < nodes.length; i++){
                     nodes[i].disabled = true;
                 }
+
+                $scope.disableQuery = true;
             }
             
             
@@ -1690,7 +1702,7 @@ ndexApp.controller('networkController',
                 $(function () { // on dom ready
 
                     var cv = document.getElementById(canvasName);
-                    
+
                     try{
                         cy = cytoscape({
                             container: cv,
@@ -1987,7 +1999,7 @@ ndexApp.controller('networkController',
                 
                 var cyStyle ;
                 if ( noStyle ) {
-                    cyStyle =  cyService.getDefaultStyle()
+                    cyStyle =  cyService.getDefaultStyle();
                     resetBackgroudColor();
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
@@ -2466,6 +2478,15 @@ ndexApp.controller('networkController',
 
             networkController.checkQueryNetworkAndDisplay = function (query) {
 
+                if (!networkController.searchString || !networkController.searchString.trim()) {
+                    networkController.searchString = "";
+                    $("#inputQueryStrId").val("");
+                    return;
+                };
+
+                $scope.query = query;
+                networkController.previousNetwork = networkController.currentNetwork;
+
                 if (!$scope.warningQuery) {
                     if (query == 'neighborhood') {
                         networkController.queryNetworkAndDisplay();
@@ -2507,8 +2528,6 @@ ndexApp.controller('networkController',
                     .success(
                         function (network) {
 
-                            ndexSpinner.stopSpinner();
-
                             var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
 
                             var nodeCount = (network.nodes) ? Object.keys(network.nodes).length : 0;
@@ -2516,11 +2535,14 @@ ndexApp.controller('networkController',
 
                             if ((nodeCount == 0) && (edgeCount == 0)) {
                                 networkController.successfullyQueried = false;
+                                networkController.queryWarnings = [];
                                 networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                                ndexSpinner.stopSpinner();
                                 return;
                             }
 
                             networkController.successfullyQueried = true;
+
                             networkController.currentNetwork =
                               {name: resultName,
                                   "nodeCount": nodeCount,
@@ -2558,10 +2580,12 @@ ndexApp.controller('networkController',
                                 {
                                     var edgeLimitExceededWarning =
                                         "Query returned more than max edges (" + edgeLimit + "). Please refine your query.";
+                                    networkController.queryWarnings = [];
                                     networkController.queryWarnings.push(edgeLimitExceededWarning);
                                 }
                                 else
                                 {
+                                    networkController.queryErrors = [];
                                     networkController.queryErrors.push(error.data.message);
                                 }
                             }
@@ -2569,28 +2593,36 @@ ndexApp.controller('networkController',
                     );  
             };
 
-            /*
+
             networkController.backToOriginalNetwork = function () {
 
-                networkService.resetNetwork();
-                networkController.currentNetwork = currentNetworkSummary;
-                drawCXNetworkOnCanvas(networkService.getNiceCX(),false);
-                networkController.successfullyQueried = false;
-                if (!networkController.tabs[0].active )
+                if ($scope.query == 'advanced') {
+                    $scope.query = null;
+
+                    event.stopPropagation();
+
+                    networkController.tabs[3].active = false;
+                    networkController.tabs[3].hidden = true;
+
                     networkController.tabs[0].active = true;
-                networkController.selectionContainer = {};
+                    networkController.tabs[0].hidden = false;
 
-                networkController.tabs[3].active = false;
-                networkController.tabs[3].hidden = true;
+                    enableSimpleQueryElements();
+                };
 
-                enableSimpleQueryElements();
-                $scope.hideAdvancedSearchLink = false;
+
+                networkController.successfullyQueried = false;
+                $scope.disableQuery = false;
+
+                ndexSpinner.startSpinner(spinnerNetworkPageId);
+
+                networkController.currentNetwork = networkController.previousNetwork;
+
+                var cxNetwork = networkService.getNiceCX();
+
+                drawCXNetworkOnCanvas(cxNetwork,false);
             };
-            */
 
-            networkController.reloadOriginalNetwork = function () {
-                $route.reload();
-            };
 
             // this is used by showNetworkSetsModal directive in ui-services.js for adding
             // selected networks to selected sets.  In network-controller there is only one "selected" network
@@ -2621,7 +2653,7 @@ ndexApp.controller('networkController',
                             $scope.isProcessing = true;
                             $scope.progress = 'Save in progress.... ';
 
-                            var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getNiceCX());
+                            var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getQueryResultNiceCX());
 
                             //               console.log ( JSON.stringify(rawCX));
 
@@ -2710,12 +2742,14 @@ ndexApp.controller('networkController',
                             var edgeCount = (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0;
 
                             if (nodeCount == 0) {
+                                networkController.queryWarnings = [];
                                 networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
                                 return;
                             }
 
                             var resultName = "Advanced query result on network - " + currentNetworkSummary.name;
                             networkController.successfullyQueried = true;
+                            //networkController.previousNetwork = networkController.currentNetwork;
                             networkController.currentNetwork = {
                                     name: resultName,
                                     "nodeCount": nodeCount,
@@ -2752,10 +2786,12 @@ ndexApp.controller('networkController',
                                 {
                                     var edgeLimitExceededWarning =
                                         "Query returned more than max edges (" + edgeLimit + "). Please refine your query.";
+                                    networkController.queryWarnings = [];
                                     networkController.queryWarnings.push(edgeLimitExceededWarning);
                                 }
                                 else
                                 {
+                                    networkController.queryErrors = [];
                                     networkController.queryErrors.push(error.data.message);
                                 };
                             };
@@ -3289,7 +3325,7 @@ ndexApp.controller('networkController',
                                 networkController.visibility = network.visibility.toLowerCase();
                             };
 
-                            $scope.disableQuery = (network.edgeCount > 250000);
+                            $scope.disableQuery = (network.edgeCount > $scope.egeCountForDisablingQuery);
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
@@ -3545,7 +3581,7 @@ ndexApp.controller('networkController',
 
             $(window).trigger('resize');
 
-            ndexSpinner.startSpinner(spinnerNetworkPageId);
+             ndexSpinner.startSpinner(spinnerNetworkPageId);
 
             uiMisc.hideSearchMenuItem();
 

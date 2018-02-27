@@ -287,7 +287,7 @@ angular.module('ndexServiceApp')
       var abbreviate = function (functionName) {
           var pureFunctionName =functionName;
           var arr = functionName.split(':');
-          if (arr.length=2)
+          if (arr.length==2)
               pureFunctionName = arr[1];
 
           switch (pureFunctionName) {

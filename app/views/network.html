@@ -19,7 +19,7 @@
 
                 <div id="spinnerGraphId"></div>
                 <div id="messageOverlay"
-                     style="float:left; vdisplay: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
+                     style="float:left; display: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
                      ng-show="networkController.isSample && networkController.sampleSize > 0">
                             (Sample: {{networkController.sampleSize}} edges)
                 </div>
@@ -57,7 +57,7 @@
 
             <button type="button"
                     class="btn btn-primary"
-                    ng-click="networkController.reloadOriginalNetwork()"
+                    ng-click="networkController.backToOriginalNetwork()"
                     ng-show="networkController.successfullyQueried">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
                 Back To Original Network
@@ -67,9 +67,7 @@
                  ng-show="!networkController.successfullyQueried"
                  id="simpleQueryNetworkViewId">
 
-                <form id="frmSearchNetwork"
-                      ng-submit="networkController.checkQueryNetworkAndDisplay('neighborhood')"
-                      class="form-inline pull-left">
+                <form id="frmSearchNetwork" class="form-inline pull-left">
 
                     <div class="form-group">
 
@@ -81,7 +79,7 @@
                         </span>
 
 
-                        <input class="form-control" type="search" ng-model="networkController.searchString"
+                        <input id="inputQueryStrId" class="form-control" type="search" ng-model="networkController.searchString"
                                placeholder="Network Terms" style="width:300px" required
                                ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery">
                     </div>
@@ -102,8 +100,9 @@
                         </span>
                     </div>
 
-                    <button type="submit" class="btn btn-default btn-primary"
+                    <button class="btn btn-default btn-primary"
                             ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery"
+                            ng-click="networkController.checkQueryNetworkAndDisplay('neighborhood')"
                             style="margin-bottom:0">Run Query
                     </button>
 
@@ -119,16 +118,14 @@
 
 
                 <span class="pull-left" style="margin-top:0.5em"
-                      ng-show="!hideAdvancedSearchLink"
                       ng-if="!networkController.hasMultipleSubNetworks() && !disableQuery">
-                    <a ng-click="hideAdvancedSearchLink=!hideAdvancedSearchLink; activateAdvancedQueryTab()">
+                    <a ng-click="activateAdvancedQueryTab()">
                         <u><strong>Advanced Query</strong></u>
                     </a>
                 </span>
 
                 <span id="disabledQueryId3"
                       class="pull-left" style="margin-top:0.5em"
-                      ng-show="!hideAdvancedSearchLink"
                       ng-if="networkController.hasMultipleSubNetworks() || disableQuery"
                       ng-mouseover="changeDisabledQueryTitle3()" title="">
                     <span  style="color:#999999; cursor:not-allowed">
@@ -632,7 +629,7 @@
                     <tab-heading>
                         {{ networkController.tabs[3].heading }}
 
-                        <a ng-click="backToSimpleQuery($event); networkController.resetForm();">
+                        <a ng-click="networkController.backToOriginalNetwork(); networkController.resetForm();">
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </tab-heading>
@@ -657,8 +654,7 @@
 
                     <div>
 
-                        <form novalidate ng-submit="networkController.checkQueryNetworkAndDisplay('advanced')"
-                          style="padding-left:15px">
+                        <form novalidate style="padding-left:15px">
 
                             <!--
                             <div class="row">
@@ -776,7 +772,7 @@
                             <div class="container; rowWithTwoLinesTopPad">
 
                                 <button ng-disabled="!networkController.advancedQueryIsValid"
-                                        type="submit"
+                                        ng-click="networkController.checkQueryNetworkAndDisplay('advanced')"
                                         class="actionsLabel btn btn-primary btn-default">Run Query
                                 </button>
 

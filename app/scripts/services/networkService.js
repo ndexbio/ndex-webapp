@@ -11,10 +11,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         var currentNetworkSummary = undefined;
 
         var ndexServerURI = window.ndexSettings.ndexServerUri;
-
-        //var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
-        var localNiceCX;   // the copy of CX network that are currently displayed. It can be a subnetwork from query
+        var localNiceCX;   // the copy of CX network that are currently displayed
+        var queryResultNiceCX;
 
         var localNetworkUUID = undefined;
 
@@ -95,16 +94,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         factory.getNiceCX = function () {
             return localNiceCX;
         };
-
-        factory.getOriginalCXNetwork = function () {
-          return localNiceCXNetwork;
+        factory.getQueryResultNiceCX = function() {
+            return queryResultNiceCX;
         };
-
-        /*
-        factory.resetNetwork = function () {
-            localNiceCX = localNiceCXNetwork;
-        };
-        */
 
         factory.getLocalNetworkUUID = function() {
             return localNetworkUUID;
@@ -242,7 +234,6 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 request.success(
                     function (network) {
                         localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        //localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
                     }
                 );
@@ -303,7 +294,6 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 request.success(
                     function (network) {
                         localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        //localNiceCXNetwork = localNiceCX;
                         handler(localNiceCX);
                     }
                 );
@@ -339,14 +329,26 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         };
 
         factory.neighborhoodQuery = function (networkId, accesskey, searchString, searchDepth, edgeLimit) {
-            // Server API : Querey Network As CX
-            // POST /search/network/{networkId}/query?accesskey={accesskey}
+            // Server API : Query Network As CX
+            // POST /search/network/{networkId}/query?accesskey={accesskey} or
+            // POST /search/network/{networkId}/interconnectquery?accesskey={accesskey}
 
-            var url = "/search/network/" + networkId + "/query";
-            var postData = {
-                searchString: searchString,
-                searchDepth: searchDepth,
-                edgeLimit: edgeLimit
+            if (3 == searchDepth) {
+
+                // this is 1-step Interconnect
+                var url = "/search/network/" + networkId + "/interconnectquery";
+                var postData = {
+                    searchString: searchString,
+                    edgeLimit: edgeLimit
+                };
+
+            } else {
+                var url = "/search/network/" + networkId + "/query";
+                var postData = {
+                    searchString: searchString,
+                    searchDepth: searchDepth,
+                    edgeLimit: edgeLimit
+                };
             };
 
             if (accesskey) {
@@ -369,9 +371,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
-                        //localNiceCXNetwork = localNiceCX;
-                        handler(localNiceCX);
+                        queryResultNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        handler(queryResultNiceCX);
                     }
                 );
                 return promise;
@@ -649,8 +650,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
-                        handler(localNiceCX);
+                        queryResultNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
+                        handler(queryResultNiceCX);
                     }
                 );
                 return promise;
