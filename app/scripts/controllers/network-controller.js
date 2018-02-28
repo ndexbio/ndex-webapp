@@ -248,8 +248,6 @@ ndexApp.controller('networkController',
 
             $scope.disabledQueryTooltip      = "";
 
-
-
             $scope.disableQuery = false;
             $scope.warningQuery = false;
             $scope.egeCountForDisablingQuery = 500000;
@@ -433,6 +431,11 @@ ndexApp.controller('networkController',
                 onRegisterApi: function( gridApi )
                 {
                     $scope.edgeGridApi = gridApi;
+
+                    gridApi.core.on.rowsRendered($scope, function() {
+                        // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
+                        setTimeout($scope.edgeGridApi.core.handleWindowResize, 10);
+                    });
                 }
             };
 
@@ -444,6 +447,11 @@ ndexApp.controller('networkController',
                 onRegisterApi: function( gridApi )
                 {
                     $scope.nodeGridApi = gridApi;
+
+                    gridApi.core.on.rowsRendered($scope, function() {
+                        // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
+                        setTimeout($scope.nodeGridApi.core.handleWindowResize, 10);
+                    });
                 }
             };
 
@@ -467,8 +475,8 @@ ndexApp.controller('networkController',
                     "id": "2"
                 },
                 {
-                    "name": "1-step Interconnect",
-                    "description": "1-step Interconnect",
+                    "name": "Interconnect",
+                    "description": "Interconnect",
                     "value": 3,
                     "id": "3"
                 }
@@ -497,7 +505,10 @@ ndexApp.controller('networkController',
 
                     var enableFiltering = true;
                     var setGridWidth = true;
-                    localNetwork = networkService.getNiceCX();
+
+                    localNetwork = ($scope.query) ?
+                        networkService.getQueryResultNiceCX() : networkService.getNiceCX();
+
                     populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                     populateNodeTable(localNetwork, enableFiltering, setGridWidth);
 
@@ -517,7 +528,9 @@ ndexApp.controller('networkController',
                     if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
-                        localNetwork = networkService.getNiceCX();
+                        localNetwork = ($scope.query) ?
+                            networkService.getQueryResultNiceCX() : networkService.getNiceCX();
+
                         checkIfCanvasIsVisibleAndDrawNetwork();
                     };
 
@@ -602,7 +615,6 @@ ndexApp.controller('networkController',
 
                 // this is needed to Close the Advanced Query tab in case the Close tab sign (x) was clicked
                 event.stopPropagation();
-
 
                 networkController.tabs[3].active = false;
                 networkController.tabs[3].hidden = true;
@@ -2478,11 +2490,13 @@ ndexApp.controller('networkController',
 
             networkController.checkQueryNetworkAndDisplay = function (query) {
 
-                if (!networkController.searchString || !networkController.searchString.trim()) {
-                    networkController.searchString = "";
-                    $("#inputQueryStrId").val("");
-                    return;
-                };
+                if ('neighborhood' == query) {
+                    if (!networkController.searchString || !networkController.searchString.trim()) {
+                        networkController.searchString = "";
+                        $("#inputQueryStrId").val("");
+                        return;
+                    }
+                }
 
                 $scope.query = query;
                 networkController.previousNetwork = networkController.currentNetwork;
@@ -2524,7 +2538,8 @@ ndexApp.controller('networkController',
 
                 ndexSpinner.startSpinner(spinnerNetworkPageId);
                 var edgeLimit = ndexSettings.networkQueryLimit;
-                networkService.neighborhoodQuery(networkController.currentNetworkId, accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
+                networkService.neighborhoodQuery(networkController.currentNetworkId,
+                            accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
                     .success(
                         function (network) {
 
@@ -2548,7 +2563,7 @@ ndexApp.controller('networkController',
                                   "nodeCount": nodeCount,
                                   "edgeCount": edgeCount,
                                   "queryString": networkController.searchString,
-                                  "queryDepth" : networkController.searchDepth.value
+                                  "queryDepth" : networkController.searchDepths[networkController.searchDepth.value-1]['description']
                               };
 
                             cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
@@ -2597,7 +2612,6 @@ ndexApp.controller('networkController',
             networkController.backToOriginalNetwork = function () {
 
                 if ($scope.query == 'advanced') {
-                    $scope.query = null;
 
                     event.stopPropagation();
 
@@ -2610,17 +2624,29 @@ ndexApp.controller('networkController',
                     enableSimpleQueryElements();
                 };
 
+                $scope.query = null;
 
                 networkController.successfullyQueried = false;
                 $scope.disableQuery = false;
 
-                ndexSpinner.startSpinner(spinnerNetworkPageId);
-
                 networkController.currentNetwork = networkController.previousNetwork;
+                localNetwork = networkService.getNiceCX();
 
-                var cxNetwork = networkService.getNiceCX();
+                if ($scope.currentView == "Graphic") {
+                    spinnerNetworkPageId = "spinnerGraphId";
+                } else {
+                    $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
+                    spinnerNetworkPageId = "spinnerTableId";
+                };
 
-                drawCXNetworkOnCanvas(cxNetwork,false);
+                ndexSpinner.startSpinner(spinnerNetworkPageId);
+                drawCXNetworkOnCanvas(localNetwork,false);
+
+                var enableFiltering = true;
+                var setGridWidth = true;
+                populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                populateNodeTable(localNetwork, enableFiltering, setGridWidth);
+                ndexSpinner.stopSpinner();
             };
 
 
@@ -3293,7 +3319,10 @@ ndexApp.controller('networkController',
                 networkController.advancedQueryNodeCriteria = 'Source';
             };
 
-            var checkNetworkViewMode = function() {
+            networkController.resetAdvancedQuery = function () {
+                provenanceService.resetProvenance();
+                networkController.successfullyQueried = false;
+
                 localNetwork = networkService.getNiceCX();
 
                 if ("Graphic" == $scope.currentView) {
@@ -3307,14 +3336,11 @@ ndexApp.controller('networkController',
                     populateNodeTable(localNetwork, enableFiltering, setGridWidth);
                     populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                 };
-            };
 
-            networkController.resetAdvancedQuery = function () {
-                provenanceService.resetProvenance();
-                networkController.successfullyQueried = false;
 
                 // get network summary
                 // keep a reference to the promise
+                /*
                 networkService.getNetworkSummaryFromNdexV2(networkExternalId, accesskey)
                     .success(
                         function (network) {
@@ -3377,6 +3403,7 @@ ndexApp.controller('networkController',
                             displayErrorMessage(error);
                         }
                     );
+                    */
             };
 
 
