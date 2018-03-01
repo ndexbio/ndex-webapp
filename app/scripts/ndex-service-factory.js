@@ -1781,6 +1781,7 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', 'sharedProperties', "$win
             method: 'GET',
             url: ndexServerURI + url,
             headers: {
+                'NDEx-application': window.navigator.ndexServerVersion
             }
         };
         setAuthorizationHeader(config);
@@ -1798,7 +1799,9 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', 'sharedProperties', "$win
             method: 'POST',
             url: ndexServerURI + url,
             data: angular.toJson(postData),
-            headers: {}
+            headers: {
+                'NDEx-application': window.navigator.ndexServerVersion
+            }
         };
 
         setAuthorizationHeader(config);
@@ -1837,7 +1840,9 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', 'sharedProperties', "$win
         var config = {
             method: 'PUT',
             url: ndexServerURI + url,
-            headers: {}
+            headers: {
+                'NDEx-application': window.navigator.ndexServerVersion
+            }
         };
         setAuthorizationHeader(config);
 
@@ -1858,7 +1863,9 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', 'sharedProperties', "$win
         var config = {
             method: 'DELETE',
             url: ndexServerURI + url,
-            headers: {}
+            headers: {
+                'NDEx-application': window.navigator.ndexServerVersion
+            }
         };
         setAuthorizationHeader(config);
 
