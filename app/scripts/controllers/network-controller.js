@@ -2010,7 +2010,7 @@ ndexApp.controller('networkController',
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
                 
                 var cyStyle ;
-                if ( noStyle ) {
+                if (noStyle) {
                     cyStyle =  cyService.getDefaultStyle();
                     resetBackgroudColor();
                 } else {
@@ -2020,20 +2020,33 @@ ndexApp.controller('networkController',
                         networkController.bgColor = cxBGColor;
                 }
 
-
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
 
                 // networkController.prettyVisualProperties added for debugging -- remove/comment out when done
                 //networkController.prettyVisualProperties = JSON.stringify(cxNetwork.visualProperties, null, 2);
-                
+
+                /*
+                 * NB:
+                 * setting "curve-style" to "bezier" for the "edge" selector in Cytoscape.js 3.2.9 shows
+                 * all multiple edges between two nodes separately;
+                 * in other words, if you do not specify 'curve-style': 'bezier', then multiple edges
+                 * between any two nodes will be shown on top of one another creating a deceptive visibility
+                 * of only one edge ...
+                 */
+                var edgeCSS = _.find(cyStyle, {'selector': 'edge'});
+                if (edgeCSS && edgeCSS.css && !edgeCSS.css['curve-style']) {
+                    edgeCSS.css['curve-style'] = 'bezier';
+                };
+
                 var layoutName = 'cose';
 
                 if ( ! noStyle && cyService.allNodesHaveUniquePositions(cyElements)) {
                     layoutName = 'preset';
                 }
 
-                var cyLayout = {name: layoutName};
+                var cyLayout = {name: layoutName, animate: false, numIter: 50, coolingFactor: 0.9};
+                //var cyLayout = {name: layoutName};
 
                 initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
 

@@ -41,7 +41,17 @@ angular.module('ndexServiceApp')
                     'width': '2px',
                  //   'label': 'data(interaction)',
                     'font-family': 'Roboto, sans-serif',
-                    'text-opacity': 0.8
+                    'text-opacity': 0.8,
+
+                    /*
+                     * NB:
+                     * setting "curve-style" to "bezier" for the "edge" selector in Cytoscape.js 3.2.9 shows
+                     * all multiple edges between two nodes separately;
+                     * in other words, if you do not specify 'curve-style': 'bezier', then multiple edges
+                     * between any two nodes will be shown on top of one another creating a deceptive visibility
+                     * of only one edge ...
+                     */
+                    'curve-style': 'bezier'
                 }
             },
             {
