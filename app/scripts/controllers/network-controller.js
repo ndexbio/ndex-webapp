@@ -2039,17 +2039,11 @@ ndexApp.controller('networkController',
                     edgeCSS.css['curve-style'] = 'bezier';
                 };
 
-                var layoutName = 'cose';
-
-                if ( ! noStyle && cyService.allNodesHaveUniquePositions(cyElements)) {
-                    layoutName = 'preset';
-                }
+                var layoutName = (cxNetwork.cartesianLayout) ? 'preset' : 'cose';
 
                 var cyLayout = {name: layoutName, animate: false, numIter: 50, coolingFactor: 0.9};
-                //var cyLayout = {name: layoutName};
 
                 initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
-
             };
 
             var displayErrorMessage = function(error) {
@@ -2081,8 +2075,11 @@ ndexApp.controller('networkController',
                         hasLayout = true;
                     else
                         hasLayout = false;
-
-                }
+                } else {
+                    if (typeof hasLayout == "string") {
+                        hasLayout = (hasLayout.toLowerCase() == 'true');
+                    }
+                };
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
                     (  (!hasLayout) && networkController.currentNetwork.edgeCount > 500 ) ) {
