@@ -421,7 +421,7 @@
                     $scope.networkSet['description'] = $scope.networkSetController.displayedSet.description;
                     $scope.networkSet['properties']  = {reference: ""};
 
-                    $scope.title = $attrs.triggerEditNetworkSetModal + ' ' +  $scope.networkSet['name'];
+                    $scope.title = 'Edit Network Set ' + $scope.networkSet['name'];
 
                     if ($scope.networkSetController.displayedSet['properties'] &&
                         $scope.networkSetController.displayedSet['properties']['reference']) {
