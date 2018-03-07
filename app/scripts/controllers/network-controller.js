@@ -1245,20 +1245,20 @@ ndexApp.controller('networkController',
 
             $scope.getNodeAttributesNames = function(node) {
 
-                var nodeAttributeNames = _.keys(node);
-                var attributeNames =  $scope.removeHiddenAttributes(nodeAttributeNames);
+                var nodeAttributeNames = _.mapValues(_.keys(node), _.method('toLowerCase'));
+                var attributeNames     =  $scope.removeHiddenAttributes(nodeAttributeNames);
 
                 var resultList = ['id'];
 
                 //First section has these attributes in order if they exists
                 var topList = ['n', 'r','alias','relatedTo','citations'];
                 _(topList).forEach(function (value) {
-                    if ( node[value]) {
+                    if (node[value]) {
                         resultList.push(value);
                     }
                 });
 
-                var elementsToRemove = topList.concat([ '_cydefaultLabel', 'id', '$$hashKey', '$$expanded']);
+                var elementsToRemove = topList.concat([ '_cydefaultLabel', 'id', '$$hashKey', '$$expanded', 'pmid']);
 
                 for (i = 0; i < elementsToRemove.length; i++) {
 
@@ -1296,10 +1296,11 @@ ndexApp.controller('networkController',
 
             $scope.getEdgeAttributesNames = function(node) {
 
-                var edgeAttributeNames = _.keys(node);
-                var attributeNames =  $scope.removeHiddenAttributes(edgeAttributeNames);
+                // get keys and lower case them
+                var edgeAttributeNames = _.mapValues(_.keys(node), _.method('toLowerCase'));
+                var attributeNames     =  $scope.removeHiddenAttributes(edgeAttributeNames);
 
-                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded'];
+                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded', 'pmid'];
 
                 for (i = 0; i < elementsToRemove.length; i++) {
 
@@ -2189,10 +2190,10 @@ ndexApp.controller('networkController',
                 if (edgeCitations) {
                     var citationsHeader =
                     {
-                        field: 'Citations',
-                        displayName: 'Citations',
+                        field: 'citation',
+                        displayName: 'citation',
                         cellToolTip: false,
-                        minWidth: calcColumnWidth('Citations'),
+                        minWidth: calcColumnWidth('citation'),
                         enableFiltering: true,
                         enableSorting: true,
                         cellTemplate: "<div class='text-center'><h6>" +
@@ -2221,17 +2222,25 @@ ndexApp.controller('networkController',
                         for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
                             var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
 
-                            if ('ndex:citation' == edgeAttributteProperty) {
+                            if (edgeAttributteProperty && edgeAttributteProperty.toLowerCase() == 'pmid') {
+                                // exclude column PMID from the table
+                                continue;
+                            }
+
+                            var isItCitationHeader = (edgeAttributteProperty.toLowerCase().indexOf('citation') > -1);
+
+                            if (isItCitationHeader) {
+
                                 var columnDef =
                                     {
                                         field: edgeAttributteProperty,
-                                        displayName: edgeAttributteProperty,
+                                        displayName: 'citation',
                                         cellToolTip: false,
-                                        minWidth: calcColumnWidth('ndex:citation'),
+                                        minWidth: calcColumnWidth('citation'),
                                         enableFiltering: true,
                                         enableSorting: true,
                                         cellTemplate: '<div class="text-center"><h6>' +
-                                        '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'ndex:citation\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
+                                        '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'citation\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
                                         '{{grid.appScope.getNumEdgeNdexCitations(COL_FIELD)}}</a></h6></div>'
                                     };
                             } else {
@@ -2288,12 +2297,16 @@ ndexApp.controller('networkController',
                     var row = {"Source": source, "Interaction": interaction, "Target": target};
                     
                     if (edgeCitations) {
-                        row["Citations"] = (edgeCitations[edgeKey]) ? edgeKey : "";
+                        row["citation"] = (edgeCitations[edgeKey]) ? edgeKey : "";
                     }
 
                     if (edgeAttributes) {
                         for (var key in edgeAttributes[edgeKey]) {
                             if (key.startsWith("__")) {
+                                continue;
+                            }
+                            if (key.toLowerCase() == 'pmid') {
+                                // exclude PMID data from the table
                                 continue;
                             }
                             var attributeValue = edgeAttributes[edgeKey][key]['v'];
@@ -2348,7 +2361,7 @@ ndexApp.controller('networkController',
                     var citationsHeader =
                     {
                         field: 'Citations',
-                        displayName: 'Citations',
+                        displayName: 'citation',
                         cellToolTip: false,
                         enableFiltering: false,
                         enableSorting: false,

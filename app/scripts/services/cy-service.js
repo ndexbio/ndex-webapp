@@ -574,14 +574,16 @@ angular.module('ndexServiceApp')
             'T' : 'top',
             'B' : 'bottom',
             'L' : 'left',
-            'R' : 'right'
+            'R' : 'right',
+            'S' : 'bottom',
+            'N' : 'top'
         };
 
         var getTextAlign = function(align){
             if (!align){
                 return 'center';
             }
-            var ta = TEXT_ALIGN_MAP[align];
+            var ta = TEXT_ALIGN_MAP[align.toUpperCase()];
             if (ta){
                 return ta;
             }
