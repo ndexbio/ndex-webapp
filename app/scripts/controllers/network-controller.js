@@ -2040,7 +2040,8 @@ ndexApp.controller('networkController',
                     edgeCSS.css['curve-style'] = 'bezier';
                 };
 
-                var layoutName = (cxNetwork.cartesianLayout) ? 'preset' : 'cose';
+                var layoutName = (cxNetwork.cartesianLayout) ? 'preset' :
+                    (Object.keys(cxNetwork.edges).length <= 1000 ? 'cose' : 'circle') ;
 
                 var cyLayout = {name: layoutName, animate: false, numIter: 50, coolingFactor: 0.9};
 
@@ -2069,9 +2070,10 @@ ndexApp.controller('networkController',
       //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
                 // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
-                var hasLayout = networkService.getNetworkProperty(networkController.subNetworkId,'hasLayout');
+                var hasLayout = networkController.currentNetwork.hasLayout;
+                  //networkService.getNetworkProperty(networkController.subNetworkId,'hasLayout');
 
-                if ( hasLayout == undefined ) {
+        /*        if ( hasLayout == undefined ) {
                     if ( networkController.subNetworkId != null)
                         hasLayout = true;
                     else
@@ -2080,10 +2082,10 @@ ndexApp.controller('networkController',
                     if (typeof hasLayout == "string") {
                         hasLayout = (hasLayout.toLowerCase() == 'true');
                     }
-                };
+                }; */
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
-                    (  (!hasLayout) && networkController.currentNetwork.edgeCount > 500 ) ) {
+                    (  (!hasLayout) && networkController.currentNetwork.hasSample ) ) {
                     // get sample CX network
                     networkController.isSample = true;
                     (request2 = networkService.getNetworkSampleV2(networkId, accesskey) )

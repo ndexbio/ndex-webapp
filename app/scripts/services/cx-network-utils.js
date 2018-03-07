@@ -16,6 +16,7 @@ angular.module('ndexServiceApp')
       self.rawCXtoNiceCX = function(rawCX) {
 
           var niceCX = {};
+          niceCX['edges'] = {};
 
           for (var i = 0; i < rawCX.length; i++) {
               var fragment = rawCX[i];
