@@ -1245,7 +1245,7 @@ ndexApp.controller('networkController',
 
             $scope.getNodeAttributesNames = function(node) {
 
-                var nodeAttributeNames = _.mapValues(_.keys(node), _.method('toLowerCase'));
+                var nodeAttributeNames = _.keys(node);
                 var attributeNames     =  $scope.removeHiddenAttributes(nodeAttributeNames);
 
                 var resultList = ['id'];
@@ -1296,9 +1296,8 @@ ndexApp.controller('networkController',
 
             $scope.getEdgeAttributesNames = function(node) {
 
-                // get keys and lower case them
-                var edgeAttributeNames = _.mapValues(_.keys(node), _.method('toLowerCase'));
-                var attributeNames     =  $scope.removeHiddenAttributes(edgeAttributeNames);
+                var edgeAttributeNames  = _.keys(node);
+                var attributeNames      =  $scope.removeHiddenAttributes(edgeAttributeNames);
 
                 var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded', 'pmid'];
 
