@@ -325,8 +325,8 @@
                             <span class="networkPropertyName">Created: </span>
                             {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
 
-                            <span ng-show="(networkController.currentNetwork.creationTime | date) !=
-                                           (networkController.currentNetwork.modificationTime | date)">
+                            <span ng-show="(networkController.currentNetwork.creationTime) !=
+                                           (networkController.currentNetwork.modificationTime)">
                                 <span class="networkPropertyName">Last Modified: </span>
                                 {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
                             </span>
