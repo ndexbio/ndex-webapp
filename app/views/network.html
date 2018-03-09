@@ -513,30 +513,20 @@
                                     <span ng-repeat="attributeName in getEdgeAttributesNames(edge)">
                                         <span ng-show="getAttributeValue(attributeName, edge[attributeName])">
 
-                                            <span ng-switch="attributeName">
+                                       &nbsp;&nbsp;&nbsp;  <strong>{{attributeName}}:</strong>
+                                            <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
 
-                                                <span ng-switch-when="citations">
-                                                    <span ng-repeat="citation in edge.citations">
-                                                        &nbsp;&nbsp;
-                                                        <span ng-bind-html='getCitation(citation)'></span>
-                                                        <br />
-                                                    </span>
-                                                </span>
 
-                                                <span ng-switch-default>
-                                                   &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
-                                                   <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
-                                                </span>
-
-                                                <span ng-show="howManyAttributes(edge[attributeName]) > 5">
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
-                                                        more...
-                                                    </a>
-                                                    <br>
-                                                </span>
-                                                <br />
+                                            <span ng-show="howManyAttributes(edge[attributeName]) > 5">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
+                                                    more...
+                                                </a>
+                                                <br>
                                             </span>
+                                            <br />
+
+
                                         </span>
                                     </span>
 

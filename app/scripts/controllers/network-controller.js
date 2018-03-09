@@ -250,8 +250,8 @@ ndexApp.controller('networkController',
 
             $scope.disableQuery = false;
             $scope.warningQuery = false;
-            $scope.egeCountForDisablingQuery = 500000;
-            $scope.egeCountForQueryWarning   = 100000;
+            //$scope.egeCountForDisablingQuery = 500000;
+            //$scope.egeCountForQueryWarning   = 100000;
 
 
             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -960,8 +960,13 @@ ndexApp.controller('networkController',
                     return null;
                 }
 
-                var attributeValue = attribute;
-                var attr = attribute.toLowerCase();
+                var attributeValue =
+                    ((attribute instanceof Object) && (attribute['dc:identifier'])) ?
+                    attribute['dc:identifier'] : attribute;
+
+                attribute = attributeValue;
+
+                var attr = attributeValue.toLowerCase();
 
                 if ((attr.startsWith('http://') || attr.startsWith('https://'))
                     && !attr.startsWith('http://biopax') && !attr.startsWith('http://www.biopax')
@@ -1371,9 +1376,6 @@ ndexApp.controller('networkController',
                 if (!attributeName) {
                     return null;
                 }
-                if ('citations' === attributeName.toLowerCase()) {
-                    return attribute;
-                }
 
                 var attributeValue = "";
 
@@ -1415,7 +1417,36 @@ ndexApp.controller('networkController',
                         } else if (attributeName.toLowerCase() == 'ndex:externallink') {
 
                             return  getURLsForNdexExternalLink(attribute.v);
-                        };
+
+                        } else if  (Array.isArray(attribute) && attribute.length > 0) {
+
+                            if(attribute.length > 5) {
+
+                                for (var i = 0; i < 5; i++) {
+                                    if (i == 0) {
+                                        attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            getStringAttributeValue(attribute[i]) + "<br>";
+                                    } else {
+                                        attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            getStringAttributeValue(attribute[i]) + "<br>";
+                                    }
+                                }
+
+                            } else {
+
+                                for (var i = 0; i < attribute.length; i++) {
+                                    if (i == 0) {
+                                        attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            $getStringAttributeValue(attribute[i]) + "<br>";
+                                    } else {
+                                        attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            getStringAttributeValue(attribute[i]) + "<br> ";
+                                    }
+                                }
+                            }
+
+                            return attributeValue;
+                        }
 
 
                         attributeValue = (attribute['v']) ? attribute['v'] : '';
@@ -1449,11 +1480,13 @@ ndexApp.controller('networkController',
                     return numOfAttributes;
                 }
 
-                if ((attribute instanceof Object)
-                    && (attribute['v'])
-                    && (Array.isArray(attribute['v']))) {
+                if ((attribute instanceof Object) && (attribute['v']) && (Array.isArray(attribute['v']))) {
 
                     numOfAttributes = attribute['v'].length;
+
+                }  else if ((attribute instanceof Object) && (Array.isArray(attribute))) {
+
+                    numOfAttributes = attribute.length;
 
                 } else if (_.isString(attribute)) {
 
@@ -1475,6 +1508,12 @@ ndexApp.controller('networkController',
 
                         for (var i = 0; i < attribute['v'].length; i++) {
                             attributeValue = attributeValue + getStringAttributeValue(attribute['v'][i]) + '<br>';
+                        }
+
+                    } else if (attribute && Array.isArray(attribute)) {
+
+                        for (var i = 0; i < attribute.length; i++) {
+                            attributeValue = attributeValue + getStringAttributeValue(attribute[i]) + '<br>';
                         }
                     }
                 }
@@ -1636,11 +1675,13 @@ ndexApp.controller('networkController',
 
             $scope.getCitation = function (citation) {
 
-                var retString = 'PMID : unable to get citation info';
+                var retString = 'pmid : unable to get citation info';
+                var isCitationAString = (typeof citation == 'string');
 
-                if (citation && citation['dc:identifier']) {
+                if (citation && (citation['dc:identifier'] || isCitationAString)) {
 
-                    var splitString = citation['dc:identifier'].split(':');
+                    var splitString = (isCitationAString) ?
+                        citation.split(':') : citation['dc:identifier'].split(':');
                     
                     if (splitString.length == 2) {
 
@@ -1652,7 +1693,7 @@ ndexApp.controller('networkController',
                                 // it is a number
 
                                 retString = '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/' +
-                                    splitString[1] + '"><strong>PMID: </strong>' +
+                                    splitString[1] + '"><strong>pmid: </strong>' +
                                     splitString[1] + '</a>';
 
                             } else if (typeof splitString[1] === 'string') {
@@ -2235,13 +2276,13 @@ ndexApp.controller('networkController',
                                 var columnDef =
                                     {
                                         field: edgeAttributteProperty,
-                                        displayName: 'citation',
+                                        displayName: edgeAttributteProperty,
                                         cellToolTip: false,
-                                        minWidth: calcColumnWidth('citation'),
+                                        minWidth: calcColumnWidth(edgeAttributteProperty),
                                         enableFiltering: true,
                                         enableSorting: true,
                                         cellTemplate: '<div class="text-center"><h6>' +
-                                        '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'citation\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
+                                        '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'Citations\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
                                         '{{grid.appScope.getNumEdgeNdexCitations(COL_FIELD)}}</a></h6></div>'
                                     };
                             } else {
@@ -2942,20 +2983,22 @@ ndexApp.controller('networkController',
                                 networkController.currentNetwork.name = "Untitled";
                             };
 
-                            $scope.disableQuery = (network.edgeCount > $scope.egeCountForDisablingQuery);
-                            $scope.warningQuery = ((network.edgeCount > $scope.egeCountForQueryWarning)
-                                && (network.edgeCount <= $scope.egeCountForDisablingQuery));
+                            //$scope.disableQuery = (network.edgeCount > $scope.egeCountForDisablingQuery);
+                            //$scope.warningQuery = ((network.edgeCount > $scope.egeCountForQueryWarning)
+                            //    && (network.edgeCount <= $scope.egeCountForDisablingQuery));
 
                             // subNetworkId is the current subNetwork we are displaying
                             networkController.subNetworkId = uiMisc.getSubNetworkId(network);
 
                             networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
 
-                            if ($scope.disableQuery && networkController.noOfSubNetworks < 1) {
-                                $scope.disabledQueryTooltip =
-                                    "At this moment, the query service only supports networks with up to " +
-                                            $scope.egeCountForDisablingQuery + " edges";
-                            } else if (networkController.noOfSubNetworks >= 1) {
+                            ///if ($scope.disableQuery && networkController.noOfSubNetworks < 1) {
+                            //    $scope.disabledQueryTooltip =
+                            //        "At this moment, the query service only supports networks with up to " +
+                            //                $scope.egeCountForDisablingQuery + " edges";
+                            //} else
+
+                            if (networkController.noOfSubNetworks >= 1) {
                                 $scope.disabledQueryTooltip =
                                     "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx";
                             };
