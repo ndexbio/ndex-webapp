@@ -506,15 +506,14 @@ ndexApp.controller('networkController',
                     var enableFiltering = true;
                     var setGridWidth = true;
 
-                    localNetwork = ($scope.query) ?
-                        networkService.getQueryResultNiceCX() : networkService.getNiceCX();
+                    localNetwork = networkService.getCurrentNiceCX();
 
                     populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                     populateNodeTable(localNetwork, enableFiltering, setGridWidth);
 
-                    networkController.tabs[0].active = true;
-                    networkController.tabs[1].active = false;
-                    networkController.tabs[2].active = false;
+                    //networkController.tabs[0].active = true;
+                    //networkController.tabs[1].active = false;
+                    //networkController.tabs[2].active = false;
 
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
@@ -528,13 +527,13 @@ ndexApp.controller('networkController',
                     if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
-                        localNetwork = ($scope.query) ?
-                            networkService.getQueryResultNiceCX() : networkService.getNiceCX();
+                        localNetwork = networkService.getCurrentNiceCX();
 
                         checkIfCanvasIsVisibleAndDrawNetwork();
-                    };
+                    }
 
                     // if any nodes or edges selected, show Tab 1 - Nodes/Edges
+                    /*
                     if ((networkController.selectionContainer && networkController.selectionContainer.nodes &&
                         networkController.selectionContainer.nodes.length > 0) ||
                         (networkController.selectionContainer && networkController.selectionContainer.edges &&
@@ -548,7 +547,8 @@ ndexApp.controller('networkController',
                         networkController.tabs[1].active = false;
                         networkController.tabs[2].active = false;
                     };
-                };
+                    */
+                }
             };
             function checkIfCanvasIsVisibleAndDrawNetwork() {
                 if($('#cytoscape-canvas').is(':visible')) {
@@ -643,6 +643,8 @@ ndexApp.controller('networkController',
                 $scope.$parent.showSearchMenu = false;
 
                 uiMisc.showSearchMenuItem();
+
+                networkService.clearNiceCX();
             });
 
             /*
@@ -724,6 +726,7 @@ ndexApp.controller('networkController',
             $scope.activateAdvancedQueryTab = function() {
 
                 networkController.previousNetwork = networkController.currentNetwork;
+                //networkService.saveCurrentNiceCXBeforeQuery();
                 $scope.query = 'advanced';
 
                 //populate the node and edge properties
@@ -735,7 +738,7 @@ ndexApp.controller('networkController',
                     populateNodeAndEdgeAttributesForAdvancedQuery();
                 }
 
-                for (var i = 0; i < 3; i++) {
+                for (var i = 0; i < 2; i++) {
                     networkController.tabs[i].active = false;
                 }
 
@@ -1713,7 +1716,7 @@ ndexApp.controller('networkController',
 
             $scope.getContextAspectFromNiceCX = function() {
 
-                var contextAspect = networkService.getNiceCX()['@context'];
+                var contextAspect = networkService.getCurrentNiceCX()['@context'];
 
                 networkController.context = {};
 
@@ -1965,7 +1968,7 @@ ndexApp.controller('networkController',
 
             var populateNodeAndEdgeAttributesForAdvancedQuery = function() {
                 
-                var cxNetwork = networkService.getNiceCX();
+                var cxNetwork = networkService.getOriginalNiceCX();
                 
                 if (!cxNetwork) {
                     return;
@@ -2107,22 +2110,8 @@ ndexApp.controller('networkController',
             }
 
             var getNetworkAndDisplay = function (networkId, callback) {
-      //          var config = angular.injector(['ng', 'ndexServiceApp']).get('config');
-                // hard-coded parameters for ndexService call, later on we may want to implement pagination
 
                 var hasLayout = networkController.currentNetwork.hasLayout;
-                  //networkService.getNetworkProperty(networkController.subNetworkId,'hasLayout');
-
-        /*        if ( hasLayout == undefined ) {
-                    if ( networkController.subNetworkId != null)
-                        hasLayout = true;
-                    else
-                        hasLayout = false;
-                } else {
-                    if (typeof hasLayout == "string") {
-                        hasLayout = (hasLayout.toLowerCase() == 'true');
-                    }
-                }; */
 
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
                     (  (!hasLayout) && networkController.currentNetwork.hasSample ) ) {
@@ -2613,7 +2602,8 @@ ndexApp.controller('networkController',
                             var nodeCount = (network.nodes) ? Object.keys(network.nodes).length : 0;
                             var edgeCount = (network.edges) ? Object.keys(network.edges).length : 0;
 
-                            if ((nodeCount == 0) && (edgeCount == 0)) {
+                            if (nodeCount == 0) {
+                                networkService.restoreCurrentNiceCXAfterQuery();
                                 networkController.successfullyQueried = false;
                                 networkController.queryWarnings = [];
                                 networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
@@ -2674,20 +2664,28 @@ ndexApp.controller('networkController',
             };
 
 
-            networkController.backToOriginalNetwork = function () {
+            networkController.backToOriginalNetwork = function (event) {
+
+                networkController.selectionContainer = {};
 
                 if ($scope.query == 'advanced') {
 
-                    event.stopPropagation();
+                    if (typeof event !== 'undefined') {
+                        // 'event' is not defined in FireFox (this is bug of the current FireFox v.58.0.2),
+                        // but defined in Chrome, Safari and Opera
+                        event.stopPropagation();
+                    }
 
-                    networkController.tabs[3].active = false;
-                    networkController.tabs[3].hidden = true;
-
-                    networkController.tabs[0].active = true;
-                    networkController.tabs[0].hidden = false;
+                    networkController.tabs[3].active   = false;
+                    networkController.tabs[3].disabled = true;
+                    networkController.tabs[3].hidden   = true;
 
                     enableSimpleQueryElements();
                 };
+
+                networkController.tabs[0].active   = true;
+                networkController.tabs[0].disabled = false;
+                networkController.tabs[0].hidden   = false;
 
                 $scope.query = null;
 
@@ -2695,7 +2693,8 @@ ndexApp.controller('networkController',
                 $scope.disableQuery = false;
 
                 networkController.currentNetwork = networkController.previousNetwork;
-                localNetwork = networkService.getNiceCX();
+                networkService.restoreCurrentNiceCXAfterQuery();
+                localNetwork = networkService.getOriginalNiceCX();
 
                 if ($scope.currentView == "Graphic") {
                     spinnerNetworkPageId = "spinnerGraphId";
@@ -2744,12 +2743,7 @@ ndexApp.controller('networkController',
                             $scope.isProcessing = true;
                             $scope.progress = 'Save in progress.... ';
 
-                            var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getQueryResultNiceCX());
-
-                            //               console.log ( JSON.stringify(rawCX));
-
-
-                            //networkService.saveQueryResults(currentNetworkSummary, networkController.currentNetwork, rawCX,
+                            var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getCurrentNiceCX());
 
                             networkService.createCXNetwork(rawCX,
                                 function (newNetworkURL) {
@@ -2833,6 +2827,7 @@ ndexApp.controller('networkController',
                             var edgeCount = (localNiceCX.edges) ? Object.keys(localNiceCX.edges).length : 0;
 
                             if (nodeCount == 0) {
+                                networService.restoreCurrentNiceCXAfterQuery();
                                 networkController.queryWarnings = [];
                                 networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
                                 return;
@@ -3390,7 +3385,8 @@ ndexApp.controller('networkController',
                 provenanceService.resetProvenance();
                 networkController.successfullyQueried = false;
 
-                localNetwork = networkService.getNiceCX();
+                networkService.restoreCurrentNiceCXAfterQuery();
+                localNetwork = networkService.getOriginalNiceCX();
 
                 if ("Graphic" == $scope.currentView) {
                     drawCXNetworkOnCanvas(localNetwork,false);

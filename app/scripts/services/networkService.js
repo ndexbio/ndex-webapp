@@ -12,8 +12,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
         var ndexServerURI = window.ndexSettings.ndexServerUri;
         
-        var localNiceCX;   // the copy of CX network that are currently displayed
-        var queryResultNiceCX;
+        var currentNiceCX  = null;   // the copy of CX network that are currently displayed
+        var originalNiceCX = null;
 
         var localNetworkUUID = undefined;
 
@@ -91,11 +91,22 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             return currentNetworkSummary;
         };
 
-        factory.getNiceCX = function () {
-            return localNiceCX;
+        factory.getCurrentNiceCX = function () {
+            return currentNiceCX;
         };
-        factory.getQueryResultNiceCX = function() {
-            return queryResultNiceCX;
+
+        factory.clearNiceCX = function() {
+            currentNiceCX  = null;
+            originalNiceCX = null;
+        };
+        factory.saveOriginalNiceCX = function(originalNetworkInNiceCX) {
+            originalNiceCX = originalNetworkInNiceCX;
+        };
+        factory.getOriginalNiceCX = function() {
+            return originalNiceCX;
+        };
+        factory.restoreCurrentNiceCXAfterQuery = function() {
+            currentNiceCX = originalNiceCX;
         };
 
         factory.getLocalNetworkUUID = function() {
@@ -107,18 +118,18 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         };
 
         factory.getNodeInfo = function (nodeId) {
-            if (!localNiceCX) return null;
+            if (!currentNiceCX) return null;
 
-            var node = localNiceCX.nodes[nodeId];
+            var node = currentNiceCX.nodes[nodeId];
             
             var nodeInfo = {'id': nodeId,
-                             '_cydefaultLabel': cxNetworkUtils.getDefaultNodeLabel(localNiceCX,node),
+                             '_cydefaultLabel': cxNetworkUtils.getDefaultNodeLabel(currentNiceCX,node),
                             'n': node.n,
                             'r': node.r
                             };
             var counter =1;
-            if ( localNiceCX.nodeAttributes && localNiceCX.nodeAttributes[nodeId]) {
-                var nodeAttrs = localNiceCX.nodeAttributes[nodeId];
+            if ( currentNiceCX.nodeAttributes && currentNiceCX.nodeAttributes[nodeId]) {
+                var nodeAttrs = currentNiceCX.nodeAttributes[nodeId];
                 _.forEach(nodeAttrs, function(value, pname) {
                     if ( pname != "selected") {
                         if ( !nodeInfo[pname] ) {
@@ -141,42 +152,42 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
 
         factory.getNodeAttributes = function ( nodeId) { 
-            if ( !localNiceCX) return null;
-            return localNiceCX.nodeAttributes[nodeId];
+            if ( !currentNiceCX) return null;
+            return currentNiceCX.nodeAttributes[nodeId];
         };
         
         factory.getEdgeAttributes = function (edgeId) { 
-            if ( !localNiceCX) return null;
+            if ( !currentNiceCX) return null;
             
-            return localNiceCX.edgeAttributes[edgeId];
+            return currentNiceCX.edgeAttributes[edgeId];
         };
         
         factory.getNodeAttr = function (nodeId, propName ) {
-            if ( localNiceCX && localNiceCX.nodeAttributes[nodeId] ) {
-                return localNiceCX.nodeAttributes[nodeId][propName];
+            if ( currentNiceCX && currentNiceCX.nodeAttributes[nodeId] ) {
+                return currentNiceCX.nodeAttributes[nodeId][propName];
             }
             return null;
         };
         
         factory.getEdgeAttr = function ( edgeId, propName) {
-           if ( localNiceCX && localNiceCX.edgeAttributes[edgeId]) {
-               return localNiceCX.edgeAttributes[edgeId][propName];
+           if ( currentNiceCX && currentNiceCX.edgeAttributes[edgeId]) {
+               return currentNiceCX.edgeAttributes[edgeId][propName];
            }
             
             return null;
         };
         
         factory.getEdgeInfo = function (edgeId) {
-            if ( !localNiceCX) return null;
+            if ( !currentNiceCX) return null;
 
-            var edge = localNiceCX.edges[edgeId];
+            var edge = currentNiceCX.edges[edgeId];
             var edgeInfo = { 'id': edgeId,
                             s: edge.s,
                             t: edge.t,
                             i: edge.i};
             var counter;
-            if ( localNiceCX.edgeAttributes && localNiceCX.edgeAttributes[edgeId]) {
-                var edgeAttrs = localNiceCX.edgeAttributes[edgeId];
+            if ( currentNiceCX.edgeAttributes && currentNiceCX.edgeAttributes[edgeId]) {
+                var edgeAttrs = currentNiceCX.edgeAttributes[edgeId];
                 _.forEach(edgeAttrs, function(value, pname) {
                     if ( pname != 'selected') {
                         if ( !edgeInfo[pname]) {
@@ -192,10 +203,10 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 });
             }
 
-            if ( localNiceCX.edgeCitations && localNiceCX.edgeCitations[edgeId]) {
+            if ( currentNiceCX.edgeCitations && currentNiceCX.edgeCitations[edgeId]) {
                 var citationList = [];
-                _.forEach(localNiceCX.edgeCitations[edgeId], function ( citationId) {
-                    citationList.push ( localNiceCX.citations[citationId]);
+                _.forEach(currentNiceCX.edgeCitations[edgeId], function ( citationId) {
+                    citationList.push ( currentNiceCX.citations[citationId]);
                 });
                 if (citationList.length >0 )
                     edgeInfo['citations'] = citationList;
@@ -233,8 +244,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        handler(localNiceCX);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        originalNiceCX = currentNiceCX;
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;
@@ -293,8 +305,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        handler(localNiceCX);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        originalNiceCX = currentNiceCX;
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;
@@ -371,8 +384,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        queryResultNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        handler(queryResultNiceCX);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;
@@ -650,8 +663,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        queryResultNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
-                        handler(queryResultNiceCX);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;

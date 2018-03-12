@@ -67,7 +67,7 @@
 
             <button type="button"
                     class="btn btn-primary"
-                    ng-click="networkController.backToOriginalNetwork()"
+                    ng-click="networkController.backToOriginalNetwork($event)"
                     ng-show="networkController.successfullyQueried">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
                 Back To Original Network
@@ -624,12 +624,12 @@
                 </tab>
 
 
-                <tab active="networkController.tabs[3].active" ng-show="!networkController.tabs[3].hidden">
+                <tab active="networkController.tabs[3].active" ng-hide="networkController.tabs[3].hidden">
 
                     <tab-heading>
                         {{ networkController.tabs[3].heading }}
 
-                        <a ng-click="networkController.backToOriginalNetwork(); networkController.resetForm();">
+                        <a ng-click="networkController.backToOriginalNetwork($event); networkController.resetForm();">
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </tab-heading>
