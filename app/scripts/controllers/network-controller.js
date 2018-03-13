@@ -392,6 +392,16 @@ ndexApp.controller('networkController',
                 }
                 return numOfNodeAttributes;
             };
+            $scope.getNumEdgeAttributes = function(edgeAttributesObj)
+            {
+                var numOfEdgeAttributes = 1;
+
+                if (edgeAttributesObj && Array.isArray(edgeAttributesObj)) {
+                    numOfEdgeAttributes = edgeAttributesObj.length;
+                }
+                return numOfEdgeAttributes;
+            };
+
 
             $scope.getInternalNetworkUUID = function(nodeAttributeInternalLink)
             {
@@ -1511,7 +1521,36 @@ ndexApp.controller('networkController',
 
             $scope.showMoreEdgeAttributes = function(attributeName, attributeObj) {
 
-                var title = attributeName + ':';
+                var title;
+                var typeOfAttributeName = typeof attributeName;
+
+                if ((typeOfAttributeName === 'object') && (Array.isArray(attributeObj))) {
+
+                    var attributeObjLen = attributeObj.length;
+
+                    if (attributeName && attributeName.entity) {
+
+                        _.forOwn(attributeName.entity, function(value, key) {
+
+                            title = key + ':';
+
+                            if (Array.isArray(value) && (value.length == attributeObjLen)) {
+
+                                for (var i=0; i<attributeObjLen; i++) {
+                                    if (value[i] != attributeObj[i]) {
+                                        title = null;
+                                    };
+                                };
+
+                                if (title != null) {
+                                    return false;
+                                }
+                            };
+                        });
+                    }
+                } else {
+                    title = attributeName + ':';
+                }
 
                 var attributeValue = "";
 
@@ -2264,7 +2303,10 @@ ndexApp.controller('networkController',
                                     cellTooltip: true,
                                     minWidth: calcColumnWidth(edgeAttributteProperty, false),
                                     enableFiltering: filteringEnabled,
-                                    cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>'
+                                    cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+
+                                    //'<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getAttributeValueForTable(COL_FIELD)"></div>'
+                                    //cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>'
                                 };
                            }
                             edgeAttributesHeaders[edgeAttributteProperty] = columnDef;
@@ -2285,6 +2327,94 @@ ndexApp.controller('networkController',
 
                refreshEdgeTable(network);
             };
+
+
+            $scope.getAttributeValueForTable = function(attribute) {
+
+                if (!attribute && (attribute != 0)) {
+                    return "";
+                }
+
+                var attributeValue = "";
+
+                if (attribute instanceof Object) {
+                    if (Array.isArray(attribute) && (attribute.length > 0))
+                    {
+
+                        for (var i = 0; i < attribute.length; i++) {
+                            if (i == 0) {
+                                attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                    getStringAttributeValue(attribute[i]) + "<br>";
+                            } else {
+                                attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                    getStringAttributeValue(attribute[i]) + "<br> ";
+                            }
+                        }
+
+                    } else {
+
+                        if (attributeName.toLowerCase() == 'ndex:internallink') {
+
+                            return getURLForNdexInternalLink(attribute.v);
+
+                        } else if (attributeName.toLowerCase() == 'ndex:externallink') {
+
+                            return  getURLsForNdexExternalLink(attribute.v);
+
+                        } else if  (Array.isArray(attribute) && attribute.length > 0) {
+
+                            if(attribute.length > 5) {
+
+                                for (var i = 0; i < 5; i++) {
+                                    if (i == 0) {
+                                        attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            getStringAttributeValue(attribute[i]) + "<br>";
+                                    } else {
+                                        attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            getStringAttributeValue(attribute[i]) + "<br>";
+                                    }
+                                }
+
+                            } else {
+
+                                for (var i = 0; i < attribute.length; i++) {
+                                    if (i == 0) {
+                                        attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            $getStringAttributeValue(attribute[i]) + "<br>";
+                                    } else {
+                                        attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
+                                            getStringAttributeValue(attribute[i]) + "<br> ";
+                                    }
+                                }
+                            }
+
+                            return attributeValue;
+                        }
+
+
+                        attributeValue = (attribute['v']) ? attribute['v'] : '';
+
+                        var typeOfAttributeValue = typeof(attributeValue);
+
+                        if (attributeValue && (typeOfAttributeValue === 'string')) {
+                            attributeValue = getStringAttributeValue(attributeValue);
+                        };
+                    }
+
+                } else {
+
+                    if (typeof attribute === 'string') {
+
+                        attributeValue = getStringAttributeValue(attribute);
+
+                    } else {
+
+                        attributeValue = (attribute == 0) ? "0" : attribute;
+                    }
+                }
+
+                return attributeValue;
+            }
 
             var refreshEdgeTable = function (network) {
 
@@ -2434,7 +2564,7 @@ ndexApp.controller('networkController',
                                     cellTemplate: "<div class='text-center'><h6>" +
                                     "<a ng-click='grid.appScope.showNodeAttributes(COL_FIELD)' ng-show='grid.appScope.getNumNodeAttributes(COL_FIELD) > 0'>" +
                                     "{{grid.appScope.getNumNodeAttributes(COL_FIELD)}}" +
-                                    "</h6></div>"
+                                    "</a></h6></div>"
                                 };
 
                             } else if (nodeAttributteProperty == ndexInternalLink) {
