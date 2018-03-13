@@ -40,7 +40,6 @@ ndexServiceApp.factory('ndexSpinner', [
                 };
 
                 var target  = document.getElementById(spinnerId);
-                var target1 = document.getElementById("cytoscape-canvas");
                 if (target) {
                     spinnerObj.spinner = new Spinner(opts).spin(target);
                 }
@@ -48,9 +47,6 @@ ndexServiceApp.factory('ndexSpinner', [
             } else {
 
                 return;
-
-                //var target1 = document.getElementById(spinnerId);
-                //spinnerObj.spinner.spin(target1);
             }
         };
 

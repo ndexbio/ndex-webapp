@@ -14,10 +14,11 @@
 
         <div class="row">
 
+            <div id="spinnerId"></div>
+
             <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}"
                  ng-show="currentView == 'Graphic'">
 
-                <div id="spinnerGraphId"></div>
                 <div id="messageOverlay"
                      style="float:left; display: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
                      ng-show="networkController.isSample && networkController.sampleSize > 0">
@@ -26,7 +27,6 @@
             </div>
 
             <tabset ng-show="currentView == 'Table'">
-                <div id="spinnerTableId"></div>
                 <tab heading="Edges" ng-click="activateTab('Edges'); edgeGridApi.core.handleWindowResize()">
                     <div id="edgeGridId"
                          ui-grid="edgeGridOptions"
@@ -655,17 +655,6 @@
                     <div>
 
                         <form novalidate style="padding-left:15px">
-
-                            <!--
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <span class="row"><a ng-click="backToSimpleQuery($event); networkController.resetForm();">
-                                        <u><strong>Back to Simple Query</strong></u></a>
-                                    </span>
-                                </div>
-                            </div>
-                            -->
-
                             Find a subnetwork with edges that,<br>
                             (1) have one or more of these properties:<br>
 

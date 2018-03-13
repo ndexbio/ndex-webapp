@@ -256,7 +256,7 @@ ndexApp.controller('networkController',
 
             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
-            var spinnerNetworkPageId = "spinnerGraphId";
+            var spinnerId = "spinnerId";
 
             $scope.showAdvancedQuery = true;
 
@@ -501,8 +501,6 @@ ndexApp.controller('networkController',
 
                     setTooltipForSwitchViewButton("Switch to Graphical view");
 
-                    spinnerNetworkPageId = "spinnerTableId";
-
                     var enableFiltering = true;
                     var setGridWidth = true;
 
@@ -521,8 +519,6 @@ ndexApp.controller('networkController',
                     $scope.buttonLabel = "Table";
 
                     setTooltipForSwitchViewButton("Switch to Table view");
-
-                    spinnerNetworkPageId = "spinnerGraphId";
 
                     if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -611,20 +607,7 @@ ndexApp.controller('networkController',
                 sharedProperties.setNetworkViewPage(view);
             }
 
-            $scope.backToSimpleQuery = function(event) {
 
-                // this is needed to Close the Advanced Query tab in case the Close tab sign (x) was clicked
-                event.stopPropagation();
-
-                networkController.tabs[3].active = false;
-                networkController.tabs[3].hidden = true;
-
-                networkController.tabs[0].active = true;
-                networkController.tabs[0].hidden = false;
-
-                enableSimpleQueryElements();
-                networkController.backToOriginalNetwork();
-            };
 
             var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
@@ -2590,7 +2573,7 @@ ndexApp.controller('networkController',
                 networkController.queryWarnings = [];
                 networkController.queryErrors = [];
 
-                ndexSpinner.startSpinner(spinnerNetworkPageId);
+                ndexSpinner.startSpinner(spinnerId);
                 var edgeLimit = ndexSettings.networkQueryLimit;
                 networkService.neighborhoodQuery(networkController.currentNetworkId,
                             accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
@@ -2696,14 +2679,11 @@ ndexApp.controller('networkController',
                 networkService.restoreCurrentNiceCXAfterQuery();
                 localNetwork = networkService.getOriginalNiceCX();
 
-                if ($scope.currentView == "Graphic") {
-                    spinnerNetworkPageId = "spinnerGraphId";
-                } else {
+                if ($scope.currentView == "Table") {
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
-                    spinnerNetworkPageId = "spinnerTableId";
                 };
 
-                ndexSpinner.startSpinner(spinnerNetworkPageId);
+                ndexSpinner.startSpinner(spinnerId);
                 drawCXNetworkOnCanvas(localNetwork,false);
 
                 var enableFiltering = true;
@@ -2775,7 +2755,7 @@ ndexApp.controller('networkController',
 
                 var networkQueryLimit = ndexSettings.networkQueryLimit;
 
-                ndexSpinner.startSpinner(spinnerNetworkPageId);
+                ndexSpinner.startSpinner(spinnerId);
 
                 var postData =
                 {
@@ -3382,6 +3362,8 @@ ndexApp.controller('networkController',
             };
 
             networkController.resetAdvancedQuery = function () {
+
+                ndexSpinner.startSpinner(spinnerId);
                 provenanceService.resetProvenance();
                 networkController.successfullyQueried = false;
 
@@ -3389,6 +3371,8 @@ ndexApp.controller('networkController',
                 localNetwork = networkService.getOriginalNiceCX();
 
                 if ("Graphic" == $scope.currentView) {
+                    // no need to call ndexSpinner.stopSpinner() here since it
+                    //will be called in drawCXNetworkOnCanvas->initCyGraphFromCyjsComponents()
                     drawCXNetworkOnCanvas(localNetwork,false);
 
                 } else {
@@ -3398,75 +3382,8 @@ ndexApp.controller('networkController',
 
                     populateNodeTable(localNetwork, enableFiltering, setGridWidth);
                     populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                    ndexSpinner.stopSpinner();
                 };
-
-
-                // get network summary
-                // keep a reference to the promise
-                /*
-                networkService.getNetworkSummaryFromNdexV2(networkExternalId, accesskey)
-                    .success(
-                        function (network) {
-                            networkController.currentNetwork = network;
-                            currentNetworkSummary = network;
-
-                            if (network && network.visibility) {
-                                networkController.visibility = network.visibility.toLowerCase();
-                            };
-
-                            $scope.disableQuery = (network.edgeCount > $scope.egeCountForDisablingQuery);
-
-                            if (!network.name) {
-                                networkController.currentNetwork.name = "Untitled";
-                            }
-
-                            // subNetworkId is the current subNetwork we are displaying
-                            networkController.subNetworkId = uiMisc.getSubNetworkId(network);
-
-                            networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
-
-                            if (networkController.subNetworkId != null) {
-                                networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
-                                networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId,"version");
-                            };
-
-                            getMembership(function ()
-                            {
-                                if (networkController.visibility == 'public'
-                                    || networkController.isAdmin
-                                    || networkController.canEdit
-                                    || networkController.canRead
-                                    || networkController.canRead
-                                    || accesskey)
-                                {
-                                    getNetworkAndDisplay(networkExternalId, checkNetworkViewMode);
-                                };
-
-                            });
-
-                            networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
-                            //getNetworkAdmins();
-
-                            var sourceFormat =
-                                networkService.getNetworkProperty(networkController.subNetworkId,'ndex:sourceFormat');
-                            networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
-                                'Unknown' : sourceFormat;
-
-                            networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId,'Reference');
-                            networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId,'rightsHolder');
-                            networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
-                            networkController.otherProperties =
-                                _.sortBy(
-                                    networkService.getPropertiesExcluding(networkController.subNetworkId,[
-                                        'rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
-                        }
-                    )
-                    .error(
-                        function (error) {
-                            displayErrorMessage(error);
-                        }
-                    );
-                    */
             };
 
 
@@ -3671,7 +3588,7 @@ ndexApp.controller('networkController',
 
             $(window).trigger('resize');
 
-             ndexSpinner.startSpinner(spinnerNetworkPageId);
+             ndexSpinner.startSpinner(spinnerId);
 
             uiMisc.hideSearchMenuItem();
 
