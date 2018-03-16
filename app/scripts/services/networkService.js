@@ -94,6 +94,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         factory.getCurrentNiceCX = function () {
             return currentNiceCX;
         };
+        factory.setCurrentNiceCX = function (networkInNiceCX) {
+            currentNiceCX = networkInNiceCX;
+        };
 
         factory.clearNiceCX = function() {
             currentNiceCX  = null;
@@ -363,6 +366,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                     edgeLimit: edgeLimit
                 };
             };
+
+            postData['errorWhenLimitIsOver'] = true;
 
             if (accesskey) {
                 url = url + "?accesskey=" + accesskey;

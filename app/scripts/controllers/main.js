@@ -681,8 +681,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             if (typeof config.welcome === 'undefined') {
                 config.welcome = "NDEx Web App deployed at My Company";
             }
-            if (typeof config.networkQueryLimit === 'undefined') {
-                config.networkQueryLimit = 1500;
+            if (typeof config.networkQueryLimitLow === 'undefined') {
+                config.networkQueryLimitLow = 5000;
+            }
+            if (typeof config.networkQueryLimitHigh === 'undefined') {
+                config.networkQueryLimitHigh = 50000;
             }
             if (typeof config.networkTableLimit === 'undefined') {
                 config.networkTableLimit = 500;

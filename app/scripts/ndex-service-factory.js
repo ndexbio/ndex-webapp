@@ -1456,6 +1456,46 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+
+            factory.queryNetworkV2 = function (networkId, accesskey, searchString,
+                                               searchDepth, edgeLimit, save, errorWhenLimitIsOver, successHandler, errorHandler) {
+
+                // Server API : Query Network As CX
+                // POST /search/network/{networkId}/query?accesskey={accesskey}&save={true|false} or
+                // POST /search/network/{networkId}/interconnectquery?accesskey={accesskey}&save={true|false}
+
+                if (3 == searchDepth) {
+
+                    // this is 1-step Interconnect
+                    var url = "/search/network/" + networkId + "/interconnectquery";
+                    var postData = {
+                        searchString: searchString,
+                        edgeLimit: edgeLimit
+                    };
+
+                } else {
+                    var url = "/search/network/" + networkId + "/query";
+                    var postData = {
+                        searchString: searchString,
+                        searchDepth: searchDepth,
+                        edgeLimit: edgeLimit
+                    };
+                };
+
+                postData['errorWhenLimitIsOver'] = errorWhenLimitIsOver;
+
+                if (accesskey) {
+                    url = url + "?accesskey=" + accesskey;
+                };
+                if (save) {
+                    url = url + "?save=" + save;
+                };
+
+                var config = ndexConfigs.getPostConfigV2(url, postData);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.searchNetworksByGeneProteinV2 = function (query, start, size, successHandler, errorHandler) {
                 // Server API: Search Networks by Gene/Protein
                 // POST /search/network/genes?start={number}&size={number}
