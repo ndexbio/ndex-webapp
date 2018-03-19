@@ -2862,6 +2862,7 @@ ndexApp.controller('networkController',
                                         $scope.choiceOne = function () {
                                             var save = true;
                                             var errorWhenLimitIsOver = false;
+                                            edgeLimit = -1;
 
                                             networkController.rerunQueryAndSaveResult(networkController.currentNetworkId,
                                                 accesskey, networkController.searchString,
@@ -2921,7 +2922,6 @@ ndexApp.controller('networkController',
                                                     ndexSpinner.stopSpinner();
 
                                                     if (!queryStatus.success && ('edgelimitexceeded' == queryStatus.error.toLowerCase())) {
-                                                        networkController.queryWarnings.push("Edge Limit of " + edgeLimit + " edges exceeded ");
 
                                                         $scope.title = 'The Query Result Is Too Big ... ';
                                                         $scope.message =
@@ -2935,8 +2935,6 @@ ndexApp.controller('networkController',
                                                         $scope.choiceTwoButtonLabel    = null;  // this will hide the button
 
                                                     } else {
-
-                                                        networkController.queryWarnings = [];
 
                                                         networkService.setCurrentNiceCX(currentNetworkInNiceCX);
                                                         networkController.presentQueryResult(nodeCount, edgeCount, queryStatus);
@@ -2960,7 +2958,6 @@ ndexApp.controller('networkController',
                                 });
 
                                 ndexSpinner.stopSpinner();
-                                networkController.queryWarnings.push("Edge Limit of " + edgeLimit + " edges exceeded ");
                                 return;
                             }
 
