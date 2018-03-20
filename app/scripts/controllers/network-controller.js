@@ -444,7 +444,7 @@ ndexApp.controller('networkController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        setTimeout($scope.edgeGridApi.core.handleWindowResize, 100);
+                        setTimeout($scope.edgeGridApi.core.handleWindowResize, 250);
                     });
                 }
             };
@@ -460,7 +460,7 @@ ndexApp.controller('networkController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        setTimeout($scope.nodeGridApi.core.handleWindowResize, 100);
+                        setTimeout($scope.nodeGridApi.core.handleWindowResize, 250);
                     });
                 }
             };
@@ -2784,8 +2784,10 @@ ndexApp.controller('networkController',
                     $scope.buttonLabel = "Graph";
                     $scope.switchViewButtonEnabled = false;
 
-                    setTooltipForSwitchViewButton(
-                        "This network is too large to display in the browser. Please import it in Cytoscape for visualization purposes.");
+                    var networkIsTooLargeMessage =
+                        'This network is too large to display in the browser. Please import it in Cytoscape for visualization purposes.';
+
+                    $('#switchViewButtonId2').tooltip('hide').attr('data-original-title', networkIsTooLargeMessage);
 
                     var enableFiltering = true;
                     var setGridWidth    = false;
