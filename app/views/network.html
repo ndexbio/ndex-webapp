@@ -788,8 +788,9 @@
              ng-show="networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
-            <button id="switchViewButtonId2" type="button" class="actionsLabel btn btn-primary"
-                    data-toggle="tooltip" title="Switch to Table view"
+            <button id="switchViewButtonId2" type="button"
+                    ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
+                    data-toggle="tooltip" title="Switch to Table View"
                     ng-click="switchView()">
                 {{buttonLabel}}
             </button>
@@ -840,8 +841,9 @@
 
 
             <span>
-                <button id="switchViewButtonId1" type="button" class="actionsLabel btn btn-primary"
-                        data-toggle="tooltip" title="Switch to Table view"
+                <button id="switchViewButtonId1" type="button"
+                        ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
+                        data-toggle="tooltip" title="Switch to Table View"
                         ng-click="switchView()"
                         ng-hide="networkController.hasMultipleSubNetworks()">
                     {{buttonLabel}}

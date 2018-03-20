@@ -444,7 +444,7 @@ ndexApp.controller('networkController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        setTimeout($scope.edgeGridApi.core.handleWindowResize, 10);
+                        setTimeout($scope.edgeGridApi.core.handleWindowResize, 100);
                     });
                 }
             };
@@ -460,7 +460,7 @@ ndexApp.controller('networkController',
 
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
-                        setTimeout($scope.nodeGridApi.core.handleWindowResize, 10);
+                        setTimeout($scope.nodeGridApi.core.handleWindowResize, 100);
                     });
                 }
             };
@@ -502,14 +502,19 @@ ndexApp.controller('networkController',
 
             $scope.currentView = "Graphic";
             $scope.buttonLabel = "Table";
+            $scope.switchViewButtonEnabled = true;
 
             $scope.switchView = function() {
+                if (!$scope.switchViewButtonEnabled) {
+                    return;
+                };
+
                 if ($scope.currentView == "Graphic") {
                     // switch to table view
                     $scope.currentView = "Table";
                     $scope.buttonLabel = "Graph";
 
-                    setTooltipForSwitchViewButton("Switch to Graphical view");
+                    setTooltipForSwitchViewButton("Switch to Graphical View");
 
                     var enableFiltering = true;
                     var setGridWidth = true;
@@ -519,16 +524,12 @@ ndexApp.controller('networkController',
                     populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                     populateNodeTable(localNetwork, enableFiltering, setGridWidth);
 
-                    //networkController.tabs[0].active = true;
-                    //networkController.tabs[1].active = false;
-                    //networkController.tabs[2].active = false;
-
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
                     $scope.currentView = "Graphic";
                     $scope.buttonLabel = "Table";
 
-                    setTooltipForSwitchViewButton("Switch to Table view");
+                    setTooltipForSwitchViewButton("Switch to Table View");
 
                     if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -537,23 +538,6 @@ ndexApp.controller('networkController',
 
                         checkIfCanvasIsVisibleAndDrawNetwork();
                     }
-
-                    // if any nodes or edges selected, show Tab 1 - Nodes/Edges
-                    /*
-                    if ((networkController.selectionContainer && networkController.selectionContainer.nodes &&
-                        networkController.selectionContainer.nodes.length > 0) ||
-                        (networkController.selectionContainer && networkController.selectionContainer.edges &&
-                        networkController.selectionContainer.edges.length > 0 ))
-                    {
-                        networkController.tabs[0].active = false;
-                        networkController.tabs[1].active = true;
-                        networkController.tabs[2].active = false;
-                    } else {
-                        networkController.tabs[0].active = true;
-                        networkController.tabs[1].active = false;
-                        networkController.tabs[2].active = false;
-                    };
-                    */
                 }
             };
             function checkIfCanvasIsVisibleAndDrawNetwork() {
@@ -2711,26 +2695,22 @@ ndexApp.controller('networkController',
                 ndexService.queryNetworkV2(networkId, accesskey, searchString, searchDepth,
                     edgeLimit, save, errorWhenLimitIsOver,
                         function(networkURI) {
-                            //
+                            /*
                             var regExpToSplitBy = /^http:.*\/network\//;
                             var networkUUIDArray = networkURI.split(regExpToSplitBy);
 
                             var networkUUID = (Array.isArray(networkUUIDArray) && (networkUUIDArray.length == 2)) ?
                                 networkUUIDArray[1] : "";
-/*
-                            var clonedNetworkUUID = data.split("/").pop();
-                            title = "Network Cloned";
-                            message  = networkName + " cloned to your account.<br><br>";
-                            message = message +
-                                "Follow this <a href='#/network/" + clonedNetworkUUID + "'>link</a> " +
-                                " to go the clone of <strong>" + networkController.currentNetwork.name +
-                                "</strong>.";
-  */
+                                */
+                            ; // do nothing here
 
-                            console.log('uuid received');
                         },
                         function(error) {
-                            console.log('error');
+                            if (error && error.errorCode && error.errorCode == 'NDEx_Bad_Request_Exception') {
+                                if (error.message) {
+                                    networkController.queryErrors.push(error.message);
+                                }
+                            };
                         });
             };
 
@@ -2782,18 +2762,39 @@ ndexApp.controller('networkController',
                 }
                 networkController.selectionContainer = {};
 
-                // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
-                drawCXNetworkOnCanvas(network, false);
+                var edgeLimitLow = ndexSettings.networkQueryLimitLow;
 
-                if ($scope.currentView == "Table") {
+                // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
+                if (edgeCount <= edgeLimitLow) {
+                    drawCXNetworkOnCanvas(network, false);
+
+                    if ($scope.currentView == "Table") {
+                        var enableFiltering = true;
+                        var setGridWidth = false;
+                        populateNodeTable(network, enableFiltering, setGridWidth);
+                        populateEdgeTable(network, enableFiltering, setGridWidth);
+                        $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
+                    } else {
+                        $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+                    }
+
+                } else {
+
+                    $scope.currentView = "Table";
+                    $scope.buttonLabel = "Graph";
+                    $scope.switchViewButtonEnabled = false;
+
+                    setTooltipForSwitchViewButton(
+                        "This network is too large to display in the browser. Please import it in Cytoscape for visualization purposes.");
+
                     var enableFiltering = true;
-                    var setGridWidth = false;
+                    var setGridWidth    = false;
+
+                    $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+
                     populateNodeTable(network, enableFiltering, setGridWidth);
                     populateEdgeTable(network, enableFiltering, setGridWidth);
-                    $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
-                } else {
-                    $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
-                }
+                };
 
                 return;
             };
@@ -2990,6 +2991,8 @@ ndexApp.controller('networkController',
             networkController.backToOriginalNetwork = function (event) {
 
                 networkController.selectionContainer = {};
+                $scope.switchViewButtonEnabled = true;
+
 
                 if ($scope.query == 'advanced') {
 
@@ -3021,7 +3024,10 @@ ndexApp.controller('networkController',
 
                 if ($scope.currentView == "Table") {
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
-                };
+                    setTooltipForSwitchViewButton("Switch to Graphical View");
+                } else {
+                    setTooltipForSwitchViewButton("Switch to Table View");
+                }
 
                 ndexSpinner.startSpinner(spinnerId);
                 drawCXNetworkOnCanvas(localNetwork,false);
