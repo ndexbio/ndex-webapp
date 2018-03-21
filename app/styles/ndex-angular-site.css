@@ -981,10 +981,6 @@ ul.ndex-nav-pills > li > a:hover {
     width: 75%;
 }
 
-.table_view_grid_height {
-    height: 425px;
-}
-
 .selected-navbar-item {
     color: #ffffff !important;
     background: #555;
