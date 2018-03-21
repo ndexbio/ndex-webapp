@@ -524,11 +524,12 @@ ndexApp.controller('networkController',
                     setTooltipForSwitchViewButton("Switch to Graphical View");
 
                     var enableFiltering = true;
+                    var setGridWidth = true;
 
                     localNetwork = networkService.getCurrentNiceCX();
 
-                    populateEdgeTable(localNetwork, enableFiltering);
-                    populateNodeTable(localNetwork, enableFiltering);
+                    populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                    populateNodeTable(localNetwork, enableFiltering, setGridWidth);
 
                 } else if  ($scope.currentView == "Table") {
                     // switch to graphic view
@@ -2167,7 +2168,7 @@ ndexApp.controller('networkController',
                 return result > 250 ? 250 : result;
             };
 
-            var populateEdgeTable = function(network, enableFiltering)
+            var populateEdgeTable = function(network, enableFiltering, setGridWidth)
             {
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
@@ -2311,6 +2312,9 @@ ndexApp.controller('networkController',
                 
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
 
+                if (setGridWidth) {
+                    $scope.edgeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                }
                 $("#edgeGridId").height($(window).height() - 235);
                 $scope.edgeGridApi.grid.gridHeight = $("#edgeGridId").height();
 
@@ -2451,7 +2455,7 @@ ndexApp.controller('networkController',
             };
 
 
-            var populateNodeTable = function(network, enableFiltering)
+            var populateNodeTable = function(network, enableFiltering, setGridWidth)
             {
                 var nodes = network.nodes;
                 var nodeCitations = network.nodeCitations;
@@ -2594,7 +2598,9 @@ ndexApp.controller('networkController',
 
                 $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
 
-
+                if (setGridWidth) {
+                    $scope.nodeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                }
                 $("#nodeGridId").height($(window).height() - 235);
                 $scope.nodeGridApi.grid.gridHeight = $("#nodeGridId").height();
 
@@ -2774,8 +2780,9 @@ ndexApp.controller('networkController',
 
                     if ($scope.currentView == "Table") {
                         var enableFiltering = true;
-                        populateNodeTable(network, enableFiltering);
-                        populateEdgeTable(network, enableFiltering);
+                        var setGridWidth = false;
+                        populateNodeTable(network, enableFiltering, setGridWidth);
+                        populateEdgeTable(network, enableFiltering, setGridWidth);
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
                     } else {
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -2793,10 +2800,11 @@ ndexApp.controller('networkController',
                     $('#switchViewButtonId2').tooltip('hide').attr('data-original-title', networkIsTooLargeMessage);
 
                     var enableFiltering = true;
+                    var setGridWidth    = false;
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
-                    populateNodeTable(network, enableFiltering);
-                    populateEdgeTable(network, enableFiltering);
+                    populateNodeTable(network, enableFiltering, setGridWidth);
+                    populateEdgeTable(network, enableFiltering, setGridWidth);
                 };
 
                 return;
@@ -3036,8 +3044,9 @@ ndexApp.controller('networkController',
                 drawCXNetworkOnCanvas(localNetwork,false);
 
                 var enableFiltering = true;
-                populateEdgeTable(localNetwork, enableFiltering);
-                populateNodeTable(localNetwork, enableFiltering);
+                var setGridWidth = true;
+                populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
+                populateNodeTable(localNetwork, enableFiltering, setGridWidth);
                 ndexSpinner.stopSpinner();
             };
 
@@ -3180,8 +3189,9 @@ ndexApp.controller('networkController',
 
                             if ($scope.currentView == "Table") {
                                 var enableFiltering = true;
-                                populateNodeTable(localNiceCX, enableFiltering);
-                                populateEdgeTable(localNiceCX, enableFiltering);
+                                var setGridWidth = false;
+                                populateNodeTable(localNiceCX, enableFiltering, setGridWidth);
+                                populateEdgeTable(localNiceCX, enableFiltering, setGridWidth);
                                 $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
                             } else {
                                 $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -3725,9 +3735,10 @@ ndexApp.controller('networkController',
                 } else {
 
                     var enableFiltering = true;
+                    var setGridWidth = false;
 
-                    populateNodeTable(localNetwork, enableFiltering);
-                    populateEdgeTable(localNetwork, enableFiltering);
+                    populateNodeTable(localNetwork, enableFiltering, setGridWidth);
+                    populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                     ndexSpinner.stopSpinner();
                 };
             };
