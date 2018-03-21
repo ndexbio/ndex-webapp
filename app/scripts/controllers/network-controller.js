@@ -2800,7 +2800,7 @@ ndexApp.controller('networkController',
                     $('#switchViewButtonId2').tooltip('hide').attr('data-original-title', networkIsTooLargeMessage);
 
                     var enableFiltering = true;
-                    var setGridWidth    = false;
+                    var setGridWidth    = true;
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
                     populateNodeTable(network, enableFiltering, setGridWidth);
