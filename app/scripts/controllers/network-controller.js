@@ -2313,7 +2313,10 @@ ndexApp.controller('networkController',
                 $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
 
                 if (setGridWidth) {
-                    $scope.edgeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                    var cytoscapeCanvasWidth = $('#cytoscape-canvas').width();
+                    if (cytoscapeCanvasWidth > 0) {
+                        $scope.edgeGridApi.grid.gridWidth = cytoscapeCanvasWidth;
+                    };
                 }
                 $("#edgeGridId").height($(window).height() - 235);
                 $scope.edgeGridApi.grid.gridHeight = $("#edgeGridId").height();
@@ -2599,7 +2602,10 @@ ndexApp.controller('networkController',
                 $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
 
                 if (setGridWidth) {
-                    $scope.nodeGridApi.grid.gridWidth = $('#cytoscape-canvas').width();
+                    var cytoscapeCanvasWidth = $('#cytoscape-canvas').width();
+                    if (cytoscapeCanvasWidth > 0) {
+                        $scope.nodeGridApi.grid.gridWidth = cytoscapeCanvasWidth;
+                    }
                 }
                 $("#nodeGridId").height($(window).height() - 235);
                 $scope.nodeGridApi.grid.gridHeight = $("#nodeGridId").height();
