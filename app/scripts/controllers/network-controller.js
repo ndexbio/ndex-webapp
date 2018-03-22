@@ -179,9 +179,11 @@ ndexApp.controller('networkController',
 
                 if('Edges' == tabName) {
                     $("#edgeGridId").height($(window).height() - 235);
+                    $scope.edgeGridApi.core.refresh();
 
                 } else if ('Nodes' == tabName) {
                     $("#nodeGridId").height($(window).height() - 235);
+                    $scope.nodeGridApi.core.refresh();
                 }
             };
 
@@ -3944,10 +3946,14 @@ ndexApp.controller('networkController',
                     if ($scope.activeTab == "Edges") {
                         $("#queryWarningsOrErrorsId").width($("#edgeGridId").width());
                         $("#edgeGridId").height($(window).height() - 235);
+                        $scope.edgeGridApi.grid.gridHeight = $("#edgeGridId").height();
+                        $scope.edgeGridApi.core.refresh();
 
                     } else {
                         $("#queryWarningsOrErrorsId").width($("#nodeGridId").width());
                         $("#nodeGridId").height($(window).height() - 235);
+                        $scope.nodeGridApi.grid.gridHeight = $("#nodeGridId").height();
+                        $scope.nodeGridApi.core.refresh();
                     };
 
 
