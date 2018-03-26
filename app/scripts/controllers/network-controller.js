@@ -76,6 +76,11 @@ ndexApp.controller('networkController',
             networkController.searchString = "";
 
 
+            networkController.queryEdgeLimitToShowGraph     = 1000;
+            networkController.queryEdgeLimitToShowTableOnly = 3000;
+            networkController.warningShown                  = false;
+
+
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
 
@@ -533,22 +538,67 @@ ndexApp.controller('networkController',
                     populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                     populateNodeTable(localNetwork, enableFiltering, setGridWidth);
 
-                } else if  ($scope.currentView == "Table") {
-                    // switch to graphic view
-                    $scope.currentView = "Graphic";
-                    $scope.buttonLabel = "Table";
+                } else if  ($scope.currentView == 'Table') {
 
-                    setTooltipForSwitchViewButton("Switch to Table View");
+                    if (('neighborhood' === $scope.query) && !networkController.warningShown &&
+                        networkController.currentNetwork.edgeCount &&
+                        ((networkController.currentNetwork.edgeCount > networkController.queryEdgeLimitToShowGraph) &&
+                        (networkController.currentNetwork.edgeCount <= networkController.queryEdgeLimitToShowTableOnly))) {
+                        //
 
-                    if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
-                        $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+                        var title = 'Query Found  ' + networkController.currentNetwork.edgeCount + ' Edges';
+                        var message =  'The query found ' + networkController.currentNetwork.edgeCount + ' edges. <br>' +
+                            'Viewing it in Graph mode may cause browser to be slow. <br>' +
+                            'Would you still like to switch to Graph Mode?';
 
-                        localNetwork = networkService.getCurrentNiceCX();
 
-                        checkIfCanvasIsVisibleAndDrawNetwork();
+                        networkController.warningShown = true;
+
+                        var dismissModal = true;
+
+                        ndexNavigation.openConfirmationModal(title, message, "Switch to Graph", "Cancel", dismissModal,
+                            function () {
+
+                                // switch to graphic view
+                                $scope.currentView = "Graphic";
+                                $scope.buttonLabel = "Table";
+
+                                setTooltipForSwitchViewButton("Switch to Table View");
+
+                                if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
+                                    $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+
+                                    localNetwork = networkService.getCurrentNiceCX();
+
+                                    checkIfCanvasIsVisibleAndDrawNetwork();
+                                }
+
+                                return;
+                            },
+                            function () {
+
+                                return;
+                            });
+                    } else {
+
+                        // switch to graphic view
+                        $scope.currentView = "Graphic";
+                        $scope.buttonLabel = "Table";
+
+                        setTooltipForSwitchViewButton("Switch to Table View");
+
+                        if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
+                            $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+
+                            localNetwork = networkService.getCurrentNiceCX();
+
+                            checkIfCanvasIsVisibleAndDrawNetwork();
+                        }
                     }
                 }
+
             };
+
             function checkIfCanvasIsVisibleAndDrawNetwork() {
                 if($('#cytoscape-canvas').is(':visible')) {
                     drawCXNetworkOnCanvas(localNetwork, false);
@@ -2732,6 +2782,7 @@ ndexApp.controller('networkController',
                         });
             };
 
+            /*
             networkController.rerunQueryAndWait =
                 function (networkId, accesskey, searchString, searchDepth, edgeLimit, save,
                           errorWhenLimitIsOver, successHandler, errorHandler) {
@@ -2745,6 +2796,7 @@ ndexApp.controller('networkController',
                         errorHandler(error);
                     });
             };
+            */
 
 
             networkController.presentQueryResult = function(nodeCount, edgeCount, queryStatus) {
@@ -2780,10 +2832,10 @@ ndexApp.controller('networkController',
                 }
                 networkController.selectionContainer = {};
 
-                var edgeLimitLow = ndexSettings.networkQueryLimitLow;
+                var networkQueryEdgeLimit = ndexSettings.networkQueryEdgeLimit;
 
                 // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
-                if (edgeCount <= edgeLimitLow) {
+                if (edgeCount <= networkController.queryEdgeLimitToShowGraph) {
                     drawCXNetworkOnCanvas(network, false);
 
                     if ($scope.currentView == "Table") {
@@ -2796,7 +2848,31 @@ ndexApp.controller('networkController',
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
                     }
 
-                } else {
+                } else if ((edgeCount > networkController.queryEdgeLimitToShowGraph) &&
+                    (edgeCount <= networkController.queryEdgeLimitToShowTableOnly)) {
+
+                    $scope.currentView = "Table";
+                    $scope.buttonLabel = "Graph";
+                    $scope.switchViewButtonEnabled = true;
+
+
+                    var enableFiltering = true;
+                    var setGridWidth    = true;
+                    $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+
+                    populateNodeTable(network, enableFiltering, setGridWidth);
+                    populateEdgeTable(network, enableFiltering, setGridWidth);
+
+
+                    //$scope.switchViewButtonEnabled = false;
+
+                    //var networkIsTooLargeMessage =
+                    //    'This network is too large to display in the browser. Please import it in Cytoscape for visualization purposes.';
+
+                    //$('#switchViewButtonId2').tooltip('hide').attr('data-original-title', networkIsTooLargeMessage);
+
+
+                } else if (edgeCount > networkController.queryEdgeLimitToShowTableOnly) {
 
                     $scope.currentView = "Table";
                     $scope.buttonLabel = "Graph";
@@ -2825,9 +2901,9 @@ ndexApp.controller('networkController',
                 networkController.queryErrors = [];
 
                 ndexSpinner.startSpinner(spinnerId);
-                var edgeLimit = ndexSettings.networkQueryLimitLow;
+                var networkQueryEdgeLimit = ndexSettings.networkQueryEdgeLimit;
                 networkService.neighborhoodQuery(networkController.currentNetworkId,
-                            accesskey, networkController.searchString, networkController.searchDepth.value, edgeLimit)
+                            accesskey, networkController.searchString, networkController.searchDepth.value, networkQueryEdgeLimit)
                     .success(
                         function (network) {
 
@@ -2839,35 +2915,34 @@ ndexApp.controller('networkController',
                                     network.status.status[0] : null;
 
                             if (!queryStatus.success && ('edgelimitexceeded' == queryStatus.error.toLowerCase())) {
-                                // for now, we consider only logged in users
 
-                                // Query Exceed Edge Limit; ask user what (s)he wants to do:
-                                // 1) Cancel Query
-                                // 2) Save Result - we need to re-run this query with save=true in the URI
-                                // 3) Wait        - increase Edge Limit and re-rerun query
+                                if (networkController.isLoggedInUser) {
 
-                                var  modalInstanceSave = $modal.open({
-                                    templateUrl: 'views/directives/choiceOfThreeModal.html',
-                                    scope: $scope,
-                                    controller: function ($scope, $modalInstance) {
-                                        $scope.title = 'Query Exceeded Limit of ' + edgeLimit + ' Edges';
-                                        $scope.message =
-                                            'The query returned more than ' + edgeLimit + ' edges. <br>' +
-                                            'What would you like to do?';
+                                    var title = 'Query Exceeded Limit of ' + networkQueryEdgeLimit + ' Edges';
+                                    var message =  'The query returned more than ' + networkQueryEdgeLimit + ' edges. <br>' +
+                                        'Running it may take some time. We can run it and save to your account. <br>' +
+                                        'What would you like to do?';
 
-                                        $scope.errors    = null;
-                                        $scope.progress  = null;
-                                        $scope.progress2 = null;
+                                    var dismissModal = true;
 
-                                        $scope.cancelButtonDisabled    = false;
-                                        $scope.choiceOneButtonDisabled = false;
-                                        $scope.choiceTwoButtonDisabled = false;
+                                    ndexNavigation.openConfirmationModal(title, message, "Wait", "Cancel", dismissModal,
+                                        function () {
+                                            var save = true;
+                                            var errorWhenLimitIsOver = false;
+                                            networkQueryEdgeLimit = -1;
 
-                                        $scope.cancelButtonLabel    = 'Cancel';
-                                        $scope.choiceOneButtonLabel = 'Save Result';
-                                        $scope.choiceTwoButtonLabel = 'Wait';
+                                            networkController.rerunQueryAndSaveResult(networkController.currentNetworkId,
+                                                accesskey, networkController.searchString,
+                                                networkController.searchDepth.value,
+                                                networkQueryEdgeLimit, save, errorWhenLimitIsOver);
 
-                                        $scope.cancel = function () {
+                                            $modalInstance.dismiss();
+                                            networkController.cleanUpAfterQuerying();
+
+                                            return;
+                                        },
+                                        function () {
+                                            // user canceled
                                             delete $scope.errors;
                                             delete $scope.progress;
                                             delete $scope.progress2;
@@ -2875,113 +2950,30 @@ ndexApp.controller('networkController',
                                             networkController.cleanUpAfterQuerying();
 
                                             $modalInstance.dismiss();
-
                                             return;
-                                        };
+                                        });
 
-                                        $scope.choiceOne = function () {
-                                            var save = true;
-                                            var errorWhenLimitIsOver = false;
-                                            edgeLimit = -1;
+                                } else {
+                                    // user is anonymous; prompt her/him to log in to save this query to her/his account
+                                    var title   = 'Query Exceeded Limit of ' + networkQueryEdgeLimit + ' Edges';
+                                    var message = 'The query returned more than ' + networkQueryEdgeLimit + ' edges. <br>' +
+                                        'Running it may take some time. Please log in, and then we can run it and ' +
+                                        'save it to your account.'
 
-                                            networkController.rerunQueryAndSaveResult(networkController.currentNetworkId,
-                                                accesskey, networkController.searchString,
-                                                networkController.searchDepth.value,
-                                                edgeLimit, save, errorWhenLimitIsOver);
-
-                                            $modalInstance.dismiss();
-                                            networkController.cleanUpAfterQuerying();
-
-                                            return;
-                                        };
+                                    networkController.cleanUpAfterQuerying();
+                                    ndexNavigation.genericInfoModal(title, message);
+                                    return;
+                                };
 
 
-                                        $scope.choiceTwo = function () {
-                                            $scope.title = 'Waiting For the Query to Finish ... ';
-                                            $scope.message =
-                                                'The query returned more than ' + edgeLimit + ' edges. <br>' +
-                                                'Waiting for it to finish ...';
+                            } else {
 
-                                            $scope.errors    = null;
-                                            $scope.progress  = null;
-                                            $scope.progress2 = null;
+                                networkController.presentQueryResult(nodeCount, edgeCount, queryStatus);
 
-                                            $scope.cancelButtonDisabled    = false;
-                                            $scope.choiceOneButtonDisabled = true;
-                                            $scope.choiceTwoButtonDisabled = true;
-
-                                            $scope.cancelButtonLabel    = 'Cancel';
-                                            $scope.choiceOneButtonLabel = 'Save Result';
-                                            $scope.choiceTwoButtonLabel = 'Wait';
-
-                                            var confirmationSpinnerId = "confirmationSpinnerId";
-                                            ndexSpinner.startSpinner(confirmationSpinnerId);
-
-                                            edgeLimit = ndexSettings.networkQueryLimitHigh;
-                                            var errorWhenLimitIsOver = true;
-                                            var save = false;
-
-
-                                            networkController.rerunQueryAndWait(networkController.currentNetworkId,
-                                                accesskey, networkController.searchString,
-                                                networkController.searchDepth.value,
-                                                edgeLimit, save, errorWhenLimitIsOver,
-
-                                                function(network) {
-                                                    networkController.queryWarnings = [];
-
-                                                    var currentNetworkInNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-
-                                                    nodeCount = (currentNetworkInNiceCX.nodes) ? Object.keys(currentNetworkInNiceCX.nodes).length : 0;
-                                                    edgeCount = (currentNetworkInNiceCX.edges) ? Object.keys(currentNetworkInNiceCX.edges).length : 0;
-
-                                                    queryStatus =
-                                                        (currentNetworkInNiceCX.status && currentNetworkInNiceCX.status.status && currentNetworkInNiceCX.status.status[0]) ?
-                                                            currentNetworkInNiceCX.status.status[0] : null;
-
-                                                    ndexSpinner.stopSpinner();
-
-                                                    if (!queryStatus.success && ('edgelimitexceeded' == queryStatus.error.toLowerCase())) {
-
-                                                        $scope.title = 'The Query Result Is Too Big ... ';
-                                                        $scope.message =
-                                                            'The query result is too big and exceeds ' + edgeLimit + ' edges. <br>' +
-                                                            'Running the Query may take some time and result will be saved to your account. <br>' +
-                                                            'Proceed?';
-
-                                                        $scope.cancelButtonLabel       = 'Cancel';
-                                                        $scope.choiceOneButtonLabel    = 'Proceed';
-                                                        $scope.choiceOneButtonDisabled = false;
-                                                        $scope.choiceTwoButtonLabel    = null;  // this will hide the button
-
-                                                    } else {
-
-                                                        networkService.setCurrentNiceCX(currentNetworkInNiceCX);
-                                                        networkController.presentQueryResult(nodeCount, edgeCount, queryStatus);
-                                                        $modalInstance.dismiss();
-                                                    }
-
-                                                },
-                                                function(error) {
-                                                    console.log('error');
-                                                    ndexSpinner.stopSpinner(confirmationSpinnerId);
-                                                    $modalInstance.dismiss();
-                                                    networkController.cleanUpAfterQuerying();
-
-                                                });
-
-                                            return;
-
-                                        };
-
-                                    }
-                                });
-
-                                ndexSpinner.stopSpinner();
-                                return;
                             }
 
-                            networkController.presentQueryResult(nodeCount, edgeCount, queryStatus);
+                            ndexSpinner.stopSpinner();
+                            return;
                         }
                     )
                     .error(
@@ -2992,7 +2984,7 @@ ndexApp.controller('networkController',
                                     (error.data.message.toLowerCase().indexOf("edgelimitexceeded") > 0))
                                 {
                                     var edgeLimitExceededWarning =
-                                        "Query returned more than max edges (" + edgeLimit + "). Please refine your query.";
+                                        "Query returned more than max edges (" + networkQueryEdgeLimit + "). Please refine your query.";
                                     networkController.queryWarnings = [];
                                     networkController.queryWarnings.push(edgeLimitExceededWarning);
                                 }
@@ -3011,6 +3003,7 @@ ndexApp.controller('networkController',
 
                 networkController.selectionContainer = {};
                 $scope.switchViewButtonEnabled = true;
+                networkController.warningShown = false;
 
 
                 if ($scope.query == 'advanced') {
@@ -3118,13 +3111,13 @@ ndexApp.controller('networkController',
                 networkController.queryWarnings = [];
                 networkController.queryErrors = [];
 
-                var networkQueryLimitLow = ndexSettings.networkQueryLimitLow;
+                var networkQueryEdgeLimit = ndexSettings.networkQueryEdgeLimit;
 
                 ndexSpinner.startSpinner(spinnerId);
 
                 var postData =
                 {
-                    edgeLimit: networkQueryLimitLow,
+                    edgeLimit: networkQueryEdgeLimit,
                     queryName: "Not used yet."
                 };
 
