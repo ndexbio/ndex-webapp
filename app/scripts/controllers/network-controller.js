@@ -551,13 +551,12 @@ ndexApp.controller('networkController',
                             'Viewing it in Graph mode may cause browser to be slow. <br>' +
                             'Would you still like to switch to Graph Mode?';
 
-
-                        networkController.warningShown = true;
-
                         var dismissModal = true;
 
                         ndexNavigation.openConfirmationModal(title, message, "Switch to Graph", "Cancel", dismissModal,
                             function () {
+
+                                networkController.warningShown = true;
 
                                 // switch to graphic view
                                 $scope.currentView = "Graphic";
