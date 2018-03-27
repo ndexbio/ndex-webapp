@@ -120,6 +120,125 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             localNetworkUUID = networkUUID;
         };
 
+        factory.getNodeName = function(node) {
+            return node['_cydefaultLabel'];
+        };
+
+        factory.getTSVOfCurrentNiceCX = function() {
+
+            var network = currentNiceCX;
+
+            var edges = network.edges;
+            var edgeCitations = network.edgeCitations;
+            var edgeKeys = Object.keys(edges);
+
+
+            data = [];
+            var row = {};
+
+            var edgeAttributes = network.edgeAttributes;
+
+            var headers = {source: 0, interaction: 1, target: 2};
+            if (edgeCitations) {
+                headers['citation'] = 3;
+            }
+
+            var headersSize = 0;
+
+            for( i = 0; i < edgeKeys.length; i++ )
+            {
+                var edgeKey = edgeKeys[i];
+
+                if (edgeAttributes) {
+                    for (var key in edgeAttributes[edgeKey]) {
+                        if (!(key in headers)) {
+                            // key is not in headers; add it there
+                            headersSize = _.size(headers);
+
+                            // replace Tab characters (if any) in key
+                            var keyNoTabs      = key.replace(/\t/g, ' ');
+                            headers[keyNoTabs] = headersSize;
+                        }
+                    }
+                }
+            }
+
+            headersSize     = _.size(headers);
+            headers['node'] = headersSize;
+
+
+
+            var nodes = network.nodes;
+            var nodeKeys = Object.keys(nodes);
+
+            var nodeAttributes = network.nodeAttributes;
+
+            for (var key in nodeKeys)
+            {
+                var nodeId = nodeKeys[key];
+
+                //var nodeObj = networkService.getNodeInfo(nodeId);
+                //var nodeName = networkService.getNodeName(nodeObj);
+
+                if (nodeAttributes) {
+
+                    var nodeAttrs = nodeAttributes[nodeId];
+
+                    for (var key1 in nodeAttrs) {
+                        var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+                        var attributeObjName = attributeObj['n'];
+
+                        console.log('node');
+
+
+                        if (!(attributeObjName in headers)) {
+                            // key is not in headers; add it there
+                            headersSize = _.size(headers);
+
+                            // replace Tab characters (if any) in key
+                            //
+                            keyNoTabs = attributeObjName.replace(/\t/g, ' ');
+                            headers[keyNoTabs + '_source'] = headersSize;
+                            headers[keyNoTabs + '_target'] = headersSize + 1;
+                        }
+
+
+                        /*
+                        if (attributeObjName && attributeObjName.startsWith("__")) {
+                            continue;
+                        };
+                        */
+/*
+                        if (attributeObjName && ((attributeObjName == 'alias') || (attributeObjName == 'relatedTo')) ) {
+                            row[key1] = attributeObj;
+                        } else {
+                            row[key1] = (attributeObj['v']) ? attributeObj['v'] : "";
+                        }
+*/
+                    }
+                }
+
+            }
+
+
+
+
+
+
+
+
+            console.log('done');
+
+            /*
+            var niceCX = currentNiceCX;
+            var currentTSV = "niceCX";
+
+            return currentTSV;
+            */
+        };
+
+
+
         factory.getNodeInfo = function (nodeId) {
             if (!currentNiceCX) return null;
 

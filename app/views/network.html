@@ -786,6 +786,12 @@
              ng-show="networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
+            <button id="converNiceCXtoTSVId" type="button" class="actionsLabel btn btn-primary"
+                    data-toggle="tooltip" title="Download Result in tab-delimited text format (TSV)"
+                    ng-click="saveAsTSV()"
+                    style="margin-right: 5px;"> Download Result
+            </button>
+
             <button id="switchViewButtonId2" type="button"
                     ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
                     data-toggle="tooltip" title="Switch to Table View"
@@ -794,9 +800,9 @@
             </button>
 
             <button id="saveQueryButton"
-                    ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary customButtonWidth"
+                    ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary "
                     ng-click="networkController.saveQueryResult()" >
-                Save Query Result
+                Save Result
             </button>
 
         </div>
@@ -1021,6 +1027,7 @@
                 </a>
 
             </span>
+
         </div>
     </div>
 </div>

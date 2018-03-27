@@ -1122,7 +1122,7 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableDeleteBulkButton = true;
 
-                var undeleteableNetworkStates = {"nonadmin" : 0, "certified" : 0, "readonly" : 0, "processing" : 0};
+                var undeleteableNetworkStates = {"nonadmin" : 0, "certified" : 0, "readonly" : 0, /*"processing" : 0*/};
                 var statesForWhichToDisable = Object.keys(undeleteableNetworkStates);
 
                 _.forEach (selectedNetworksRows, function(row) {
