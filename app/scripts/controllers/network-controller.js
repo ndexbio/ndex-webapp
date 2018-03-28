@@ -605,16 +605,16 @@ ndexApp.controller('networkController',
 
 
             $scope.saveAsTSV = function() {
+                var anchor = document.createElement('a');
+                var textToSaveInTheFile = 'line 1 \nline 2 \nline 3\n';
 
-                //var title   = 'Saved As TSV File ';
-                //var message = 'This network has been saved as TSV File';
+                var outputFileName = networkController.currentNetwork.name + '.txt';
 
-                //ndexNavigation.genericInfoModal(title, message);
+                anchor.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textToSaveInTheFile));
+                anchor.setAttribute('download', outputFileName);
+                anchor.click();
 
-                var tsvFile = networkService.getTSVOfCurrentNiceCX();
-
-                console.log('done');
-
+                //var tsvFile = networkService.getTSVOfCurrentNiceCX();
 
                 return;
             };
