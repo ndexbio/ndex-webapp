@@ -610,9 +610,14 @@ ndexApp.controller('networkController',
 
                 var outputFileName = networkController.currentNetwork.name + '.txt';
 
-                anchor.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textToSaveInTheFile));
+                anchor.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(textToSaveInTheFile));
                 anchor.setAttribute('download', outputFileName);
+
+                document.body.appendChild(anchor);
                 anchor.click();
+
+                document.body.removeChild(anchor);
+
 
                 //var tsvFile = networkService.getTSVOfCurrentNiceCX();
 
