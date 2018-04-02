@@ -605,8 +605,9 @@ ndexApp.controller('networkController',
 
 
             $scope.saveAsTSV = function() {
+
                 var anchor = document.createElement('a');
-                var textToSaveInTheFile = 'line 1 \nline 2 \nline 3\n';
+                var textToSaveInTheFile = networkService.getTSVOfCurrentNiceCX();
 
                 var outputFileName = networkController.currentNetwork.name + '.txt';
 
@@ -617,9 +618,6 @@ ndexApp.controller('networkController',
                 anchor.click();
 
                 document.body.removeChild(anchor);
-
-
-                //var tsvFile = networkService.getTSVOfCurrentNiceCX();
 
                 return;
             };
