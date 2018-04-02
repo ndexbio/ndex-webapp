@@ -187,8 +187,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
                         var attributeObjName = removeTabsAndPipesFromString(attributeObj['n']);
 
-                        var attributeObjNameSource = attributeObjName + '_source';
-                        var attributeObjNameTarget = attributeObjName + '_target';
+                        var attributeObjNameSource = 'Source_' + attributeObjName;
+                        var attributeObjNameTarget = 'Target_' + attributeObjName;
 
                         if (!(attributeObjNameSource in headers)) {
                             headers[attributeObjNameSource] = _.size(headers);
@@ -273,7 +273,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                     if (nodeAttrNormalized in nodeAttributesAlreadyProcessed) {
                         continue;
                     }
-                    row[nodeAttrNormalized+'_source'] = getAttributeValue(sourceNodeObj[nodeAttr]);
+                    row['Source_' + nodeAttrNormalized] = getAttributeValue(sourceNodeObj[nodeAttr]);
                 }
                 // get Target Node attributes
                 for (nodeAttr in targetNodeObj) {
@@ -281,7 +281,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                     if (nodeAttrNormalized1 in nodeAttributesAlreadyProcessed) {
                         continue;
                     }
-                    row[nodeAttrNormalized1+'_target'] = getAttributeValue(targetNodeObj[nodeAttr]);
+                    row['Target_' + nodeAttrNormalized1] = getAttributeValue(targetNodeObj[nodeAttr]);
                 }
 
                 // get edge attributes
