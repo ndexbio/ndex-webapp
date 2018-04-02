@@ -187,13 +187,6 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
                         var attributeObjName = removeTabsAndPipesFromString(attributeObj['n']);
 
-                        if (attributeObjName.toLowerCase() === 'alias') {
-                            if (!(attributeObjName in headers)) {
-                                headers[attributeObjName] = _.size(headers);
-                            }
-                            continue;
-                        }
-
                         var attributeObjNameSource = attributeObjName + '_source';
                         var attributeObjNameTarget = attributeObjName + '_target';
 
