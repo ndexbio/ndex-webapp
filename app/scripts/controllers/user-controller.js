@@ -46,6 +46,8 @@ ndexApp.controller('userController',
             userController.networkSetsOwnerOfPage = [];
             userController.networkSets = [];
 
+            var windowsHeightCorrection = 285;
+
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -169,6 +171,10 @@ ndexApp.controller('userController',
                     { field: 'indexLevel',  enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+
+                $("#userNetworksGridId").height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $("#userNetworksGridId").height();
+
                 refreshNetworkTable();
             };
 
@@ -762,6 +768,14 @@ ndexApp.controller('userController',
                         );
                     })
                 };
+
+                $(window).resize(function() {
+
+                    $("#userNetworksGridId").height($(window).height() - windowsHeightCorrection);
+                    $scope.networkGridApi.grid.gridHeight = $("#userNetworksGridId").height();
+                    $scope.networkGridApi.core.refresh();
+
+                });
 
             }]);
 

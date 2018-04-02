@@ -80,7 +80,8 @@
         <tabset justified="true">
             <tab heading="Networks">
                 <div id="divNetworks" ng-show='groupController.networkSearchResults.length > 0'>
-                    <div ui-grid-selection
+                    <div id="userGroupsGridId"
+                         ui-grid-selection
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize

@@ -33,6 +33,8 @@ ndexApp.controller('groupController',
 
     groupController.isLoggedInUser = (window.currentNdexUser != null);
 
+    var windowsHeightCorrection = 285;
+
     //              scope functions
     // called on Networks belonging to group displayed on page
     groupController.setAndDisplayCurrentNetwork = function (identifier) {
@@ -247,6 +249,10 @@ ndexApp.controller('groupController',
             { field: 'indexLevel',   enableFiltering: false,  visible: false}
         ];
         $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+
+        $("#userGroupsGridId").height($(window).height() - windowsHeightCorrection);
+        $scope.networkGridApi.grid.gridHeight = $("#userGroupsGridId").height();
+
         refreshNetworkTable();
     };
 
@@ -449,6 +455,13 @@ ndexApp.controller('groupController',
             var member = null;
             groupController.getMembersOfGroup(member);
         });
+
+
+    $(window).resize(function() {
+        $("#userGroupsGridId").height($(window).height() - windowsHeightCorrection);
+        $scope.networkGridApi.grid.gridHeight = $("#userGroupsGridId").height();
+        $scope.networkGridApi.core.refresh();
+    });
 
     //------------------------------------------------------------------------------------//
 }]);
