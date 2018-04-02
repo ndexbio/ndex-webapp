@@ -67,6 +67,9 @@ ndexApp.controller('myAccountController',
             var tasksAndNotificationsOldHash = 0;
             var tasksAndNotificationsNewHash = 0;
 
+
+            var windowsHeightCorrection = 185;
+
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on("$destroy", function(){
@@ -257,7 +260,7 @@ ndexApp.controller('myAccountController',
                             $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = row.entity.name;
                         } else {
                             delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
-                        };
+                        }
 
                         myAccountController.networkTableRowsSelected = _.size($scope.selectedRowsNetworkExternalIds);
 
@@ -271,7 +274,7 @@ ndexApp.controller('myAccountController',
                         enableOrDisableShareBulkButton();
                         enableOrDisableAddToMySetsBulkButton();
                         enableOrDisableDeleteBulkButton();
-                    });
+                    })
 
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
 
@@ -308,6 +311,7 @@ ndexApp.controller('myAccountController',
                         enableOrDisableAddToMySetsBulkButton();
                         enableOrDisableDeleteBulkButton();
                     });
+
                 }
             };
 
@@ -496,6 +500,9 @@ ndexApp.controller('myAccountController',
                     { field: 'indexLevel',   enableFiltering: false,  visible: false}
                 ];
                 $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+
+                $('#myNetworksGridId').height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $('#myNetworksGridId').height();
             };
 
             var defineTasksAndNotificationsTable = function()
@@ -521,6 +528,9 @@ ndexApp.controller('myAccountController',
                     { field: 'whatType',     enableFiltering: false,  visible: false}
                 ];
                 $scope.taskGridApi.grid.options.columnDefs = columnDefs;
+
+                $('#myTasksAndRequestsGridId').height($(window).height() - windowsHeightCorrection);
+                $scope.taskGridApi.grid.gridHeight = $('#myTasksAndRequestsGridId').height();
             };
 
 /*
@@ -3749,9 +3759,20 @@ ndexApp.controller('myAccountController',
                 }
             );
 
+
+            $(window).resize(function() {
+
+                $("#myNetworksGridId").height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $("#myNetworksGridId").height();
+                $scope.networkGridApi.core.refresh();
+
+                $("#myTasksAndRequestsGridId").height($(window).height() - windowsHeightCorrection);
+                $scope.taskGridApi.grid.gridHeight = $("#myTasksAndRequestsGridId").height();
+                $scope.taskGridApi.core.refresh();
+            });
+
             // get groups
             var member = null;
             myAccountController.getUserGroupMemberships(member);
-
         }]);
             //------------------------------------------------------------------------------------//

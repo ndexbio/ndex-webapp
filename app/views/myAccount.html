@@ -329,7 +329,8 @@
                  the selected rows on the Networks page get unselected if you select a different tab (i.e., Groups)
                  and come back to Networks tab. -->
                 <div ng-show='myAccountController.showNetworkTable'>
-                    <div ui-grid-selection
+                    <div id="myNetworksGridId"
+                         ui-grid-selection
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize
@@ -432,7 +433,8 @@
                 </tab-heading>
 
                 <div ng-show='showTasksAndRequestsTable()'>
-                    <div ui-grid-selection
+                    <div id="myTasksAndRequestsGridId"
+                         ui-grid-selection
                          ui-grid="tasksAndRequestsGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize

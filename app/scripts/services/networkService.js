@@ -142,7 +142,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             var edgeAttributes = network.edgeAttributes;
 
-            var headers = {edge_id: 0, source: 1, interaction: 2, target: 3};
+            var headers = {edge_id: 0, Source: 1, Interaction: 2, Target: 3};
             var headersSize = 0;
 
 
@@ -245,22 +245,22 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
 
                 row['edge_id']     = (edgeObj && edgeObj.id) ? edgeObj.id : '';
-                row['source']      = (edgeObj && edgeObj.s)  ? edgeObj.s  : '';
-                row['interaction'] = (edgeObj && edgeObj.i)  ? edgeObj.i  : '';
-                row['target']      = (edgeObj && edgeObj.t)  ? edgeObj.t  : '';
+                row['Source']      = (edgeObj && edgeObj.s)  ? edgeObj.s  : '';
+                row['Interaction'] = (edgeObj && edgeObj.i)  ? edgeObj.i  : '';
+                row['Target']      = (edgeObj && edgeObj.t)  ? edgeObj.t  : '';
 
 
                 var sourceNodeObj = factory.getNodeInfo(edgeObj['s']);
                 var targetNodeObj = factory.getNodeInfo(edgeObj['t']);
 
                 if (headers['s.n']) {
-                    row['s.n'] = (sourceNodeObj && sourceNodeObj.id) ? sourceNodeObj.id : '';
+                    row['s.n'] = (sourceNodeObj && sourceNodeObj.n) ? sourceNodeObj.n : '';
                 }
                 if (headers['s.r']) {
                     row['s.r'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
                 }
                 if (headers['t.n']) {
-                    row['t.n'] = (targetNodeObj && targetNodeObj.id) ? targetNodeObj.id : '';
+                    row['t.n'] = (targetNodeObj && targetNodeObj.n) ? targetNodeObj.n : '';
                 }
                 if (headers['t.r']) {
                     row['t.r'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';

@@ -64,6 +64,8 @@ ndexApp.controller('searchController',
             searchController.showNetworkTable = false;
             var spinnerSearchPageId = "spinnerSearchPageId";
 
+            var windowsHeightCorrection = 285;
+
 
             $(document).ready(function() {
                 if (!searchController.loggedInUserId) {
@@ -229,6 +231,10 @@ ndexApp.controller('searchController',
             var populateNetworkTable = function()
             {
                 $scope.networkGridApi.grid.options.columnDefs = NETWORK_COLUMN_FIELDS;
+
+                $("#foundNetworksTableId").height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $("#foundNetworksTableId").height();
+
                 refreshNetworkTable();
             };
 
@@ -515,6 +521,10 @@ ndexApp.controller('searchController',
             var populateUserTable = function()
             {
                 $scope.userGridApi.grid.options.columnDefs = USER_COLUMN_FIELDS;
+
+                $("#foundUsersTableId").height($(window).height() - windowsHeightCorrection);
+                $scope.userGridApi.grid.gridHeight = $("#foundUsersTableId").height();
+
                 refreshUserTable();
                 //console.log($scope.userSearchGridOptions.data);
 
@@ -653,6 +663,10 @@ ndexApp.controller('searchController',
             var populateGroupTable = function()
             {
                 $scope.groupGridApi.grid.options.columnDefs = GROUP_COLUMN_FIELDS;
+
+                $("#foundGroupsTableId").height($(window).height() - windowsHeightCorrection);
+                $scope.groupGridApi.grid.gridHeight = $("#foundGroupsTableId").height();
+
                 refreshGroupTable();
 
             };
@@ -792,5 +806,21 @@ ndexApp.controller('searchController',
                 $scope.activateTab('Groups');
 
             };
+
+
+            $(window).resize(function() {
+
+                $("#foundNetworksTableId").height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $("#foundNetworksTableId").height();
+                $scope.networkGridApi.core.refresh();
+
+                $("#foundUsersTableId").height($(window).height() - windowsHeightCorrection);
+                $scope.userGridApi.grid.gridHeight = $("#foundUsersTableId").height();
+                $scope.userGridApi.core.refresh();
+
+                $("#foundGroupsTableId").height($(window).height() - windowsHeightCorrection);
+                $scope.groupGridApi.grid.gridHeight = $("#foundGroupsTableId").height();
+                $scope.groupGridApi.core.refresh();
+            });
         }]);
 
