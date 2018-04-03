@@ -129,7 +129,280 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             return strWithoutTabsOrPipes;
         };
 
+
+
         factory.getTSVOfCurrentNiceCX = function() {
+
+            /*
+             Source		Node name (if Node Name missing, then represents, node Id)
+             Interaction
+             Target		Node name (if Node Name missing, then represents, node Id)
+             Source Id
+             Source Alias
+             Source Properties 1,2,3
+             Target Id
+             Target Alias
+             Target Properties 1,2,3
+             Citation
+             Edge Properties 1,2,3
+
+             cx edge id
+             cx source node id
+             cx target node id
+             */
+
+            var network = currentNiceCX;
+
+            var edges = network.edges;
+            var edgeKeys = Object.keys(edges);
+
+
+            data = [];
+            var row = {};
+
+            var edgeAttributes = network.edgeAttributes;
+
+            var headers = {Source: 0, Interaction: 1, Target: 2, 'Source Id': 3, 'Source Alias': 4};
+            var sourceAliasOrder = headers['Source Alias'];
+            var headersSize = 0;
+
+
+            var nodes = network.nodes;
+
+            // in this loop, build headers for Node: Source NAme (s.n), Source Represents (s.r),
+            // Target Name (t.n), Target Represents (t.r)
+            /*
+            _.forEach(nodes, function(node) {
+
+                if (node) {
+                    if (node['n'] && !('s.n' in headers)) {
+                        headers['s.n'] = _.size(headers);
+                    }
+                    if (node['r'] && !('s.r' in headers)) {
+                        headers['s.r'] = _.size(headers);
+                    }
+                    if (node['n'] && !('t.n' in headers)) {
+                        headers['t.n'] = _.size(headers);
+                    }
+                    if (node['r'] && !('t.r' in headers)) {
+                        headers['t.r'] = _.size(headers);
+                    }
+                }
+            });
+            */
+
+            var nodeKeys = Object.keys(nodes);
+            var nodeAttributes = network.nodeAttributes;
+            var aliasColumnHeader = null;
+
+            for (var key in nodeKeys)
+            {
+                var nodeId = nodeKeys[key];
+
+                //var nodeObj = networkService.getNodeInfo(nodeId);
+                //var nodeName = networkService.getNodeName(nodeObj);
+
+                if (nodeAttributes) {
+
+                    var nodeAttrs = nodeAttributes[nodeId];
+
+                    for (var key1 in nodeAttrs) {
+                        var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+
+                        var attributeObjName = removeTabsAndPipesFromString(attributeObj['n']);
+
+                        var attributeObjNameSource = 'Source ' + attributeObjName;
+
+                        if (attributeObjName && (attributeObjName.toLowerCase() == 'alias')) {
+                            aliasColumnHeader = attributeObjName;
+                            if (!(attributeObjNameSource in headers)) {
+                                delete headers['Source Alias'];
+                                headers[attributeObjNameSource] = sourceAliasOrder;
+                            }
+                        }
+                        //var attributeObjNameTarget = 'Target ' + attributeObjName;
+
+                        if (!(attributeObjNameSource in headers)) {
+                            headers[attributeObjNameSource] = _.size(headers);
+                        }
+
+                        //if (!(attributeObjNameTarget in headers)) {
+                        //    headers[attributeObjNameTarget] = _.size(headers);
+                        //}
+                    }
+                }
+            }
+
+            headers['Target Id']    = _.size(headers);
+            headers['Target Alias'] = _.size(headers);
+            var targetAliasOrder    = headers['Target Alias'];
+
+
+
+            for (var key in nodeKeys)
+            {
+                var nodeId = nodeKeys[key];
+
+                if (nodeAttributes) {
+
+                    var nodeAttrs = nodeAttributes[nodeId];
+
+                    for (var key1 in nodeAttrs) {
+                        var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+
+                        var attributeObjName = removeTabsAndPipesFromString(attributeObj['n']);
+
+                        var attributeObjNameTarget = 'Target ' + attributeObjName;
+
+                        if (attributeObjName && (attributeObjName.toLowerCase() == 'alias')) {
+                            if (!(attributeObjNameTarget in headers)) {
+                                delete headers['Target Alias'];
+                                headers[attributeObjNameTarget] = targetAliasOrder;
+                            }
+                        }
+
+                        if (!(attributeObjNameTarget in headers)) {
+                            headers[attributeObjNameTarget] = _.size(headers);
+                        }
+                    }
+                }
+            }
+
+            headers['Citation'] = _.size(headers);
+            var citationOrder   = headers['Citation'];
+
+            for( i = 0; i < edgeKeys.length; i++ )
+            {
+                var edgeKey = edgeKeys[i];
+
+                if (edgeAttributes) {
+                    for (var key in edgeAttributes[edgeKey]) {
+
+                        var keySanitized = removeTabsAndPipesFromString(key);
+
+                        if (keySanitized && (keySanitized.toLowerCase() == 'citation')) {
+                            if (!(keySanitized in headers)) {
+                                delete headers['Citation'];
+                                headers[keySanitized] = citationOrder;
+                            }
+                        }
+
+                        if (!(keySanitized in headers)) {
+                            headers[keySanitized] = _.size(headers);
+                        }
+                    }
+                }
+            }
+
+            headers['cx edge id']        = _.size(headers);
+            headers['cx source node id'] = _.size(headers);
+            headers['cx target node id'] = _.size(headers);
+
+
+            var headersKeysSorted = Object.keys(headers);
+            headersKeysSorted.sort(function(a, b) {
+                return headers[a] - headers[b];
+            });
+            var headerKeysJoined = headersKeysSorted.join('\t') + '\n';
+
+
+
+            var headersInverted = _.invert(headers);
+            var fileString      = headerKeysJoined;
+
+            var row = {};
+
+            var nodeAttributesAlreadyProcessed = {'n':0,  'r':0, 'id':0, '_cydefaultLabel':0};
+            var edgeAttributesAlreadyProcessed = {'id':0, 's':0, 't':0,  'i':0};
+
+            // Generate Source Node, Source Node Represents, Target Node, Target Node Represents,
+            // if present
+            for( i = 0; i < edgeKeys.length; i++ )
+            {
+                for (key in headers) {
+                    row[key] = '';
+                };
+
+                var rowStringTemp = '';
+                var edgeKey       = edgeKeys[i];
+                var edgeObj       = factory.getEdgeInfo(edgeKey);
+
+
+                row['cx edge id']        = (edgeObj && edgeObj.id) ? edgeObj.id : '';
+                row['cx source node id'] = (edgeObj && (edgeObj.s || edgeObj.s == 0)) ? edgeObj.s  : '';
+                row['Interaction']       = (edgeObj && edgeObj.i)  ? edgeObj.i  : '';
+                row['cx target node id'] = (edgeObj && (edgeObj.t || edgeObj.t == 0)) ? edgeObj.t  : '';
+
+
+                var sourceNodeObj = factory.getNodeInfo(edgeObj['s']);
+                var targetNodeObj = factory.getNodeInfo(edgeObj['t']);
+
+                row['Source']    = getNodeName(sourceNodeObj);   // (sourceNodeObj && sourceNodeObj.n) ? sourceNodeObj.n : '';
+                row['Source Id'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
+                row['Target']    = getNodeName(targetNodeObj);   // (targetNodeObj && targetNodeObj.n) ? targetNodeObj.n : '';
+                row['Target Id'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';
+
+                // get Source Node attributes
+                for (var nodeAttr in sourceNodeObj) {
+                    var nodeAttrNormalized = removeTabsAndPipesFromString(nodeAttr);
+                    if (nodeAttrNormalized in nodeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row['Source ' + nodeAttrNormalized] = getAttributeValue(sourceNodeObj[nodeAttr]);
+                }
+                // get Target Node attributes
+                for (nodeAttr in targetNodeObj) {
+                    var nodeAttrNormalized1 = removeTabsAndPipesFromString(nodeAttr);
+                    if (nodeAttrNormalized1 in nodeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row['Target ' + nodeAttrNormalized1] = getAttributeValue(targetNodeObj[nodeAttr]);
+                }
+
+                // get edge attributes
+                for (var edgeAttr in edgeObj) {
+                    var edgeAttrNormalized = removeTabsAndPipesFromString(edgeAttr);
+                    if (edgeAttrNormalized in edgeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row[edgeAttrNormalized] = getAttributeValue(edgeObj[edgeAttr]);
+                }
+
+                var tabSeparatedRow = '';
+                for (key in headersKeysSorted) {
+                    var rowElement = row[headersKeysSorted[key]];
+                    tabSeparatedRow = tabSeparatedRow + rowElement + '\t';
+                }
+                // replace last \t (tab) in tabSeparatedRow with \n (new line)
+                tabSeparatedRow = tabSeparatedRow.slice(0, -1) + '\n';
+
+                fileString = fileString + tabSeparatedRow;
+
+            }
+
+            return fileString;
+        };
+
+        /*
+        factory.getTSVOfCurrentNiceCX1 = function() {
+
+
+                // Source		Node name (if Node Name missing, then represents, node Id)
+                // Interaction
+                // Target		Node name (if Node Name missing, then represents, node Id)
+                // Source Id
+                // Source Alias
+                // Source Properties 1,2,3
+                // Target Id
+                // Target Alias
+                // Target Properties 1,2,3
+                // Citation
+                // Edge Properties 1,2,3
+
+                // cx edge id
+                // cx source node id
+                // cx target node id
+
 
             var network = currentNiceCX;
 
@@ -236,7 +509,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             for( i = 0; i < edgeKeys.length; i++ )
             {
                 for (key in headers) {
-                    row[key] = ' ';
+                    row[key] = '';
                 };
 
                 var rowStringTemp = '';
@@ -245,9 +518,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
 
                 row['edge_id']     = (edgeObj && edgeObj.id) ? edgeObj.id : '';
-                row['Source']      = (edgeObj && edgeObj.s)  ? edgeObj.s  : '';
+                row['Source']      = (edgeObj && (edgeObj.s || edgeObj.s == 0)) ? edgeObj.s  : '';
                 row['Interaction'] = (edgeObj && edgeObj.i)  ? edgeObj.i  : '';
-                row['Target']      = (edgeObj && edgeObj.t)  ? edgeObj.t  : '';
+                row['Target']      = (edgeObj && (edgeObj.t || edgeObj.t == 0)) ? edgeObj.t  : '';
 
 
                 var sourceNodeObj = factory.getNodeInfo(edgeObj['s']);
@@ -307,6 +580,25 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             console.log(fileString);
             return fileString;
         };
+*/
+        var getNodeName = function(nodeObj) {
+
+            var nodeName = 'No Name';
+
+            if (nodeObj) {
+
+                if (nodeObj.n) {
+                    nodeName = nodeObj.n;
+
+                } else if (nodeObj.r) {
+                    nodeName = nodeObj.r;
+
+                } else if (nodeObj.id) {
+                    nodeName = nodeObj.id;
+                }
+            }
+            return nodeName;
+        }
 
         var getAttributeValue = function(attribute)
         {

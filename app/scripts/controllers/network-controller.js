@@ -2833,6 +2833,8 @@ ndexApp.controller('networkController',
                     $scope.buttonLabel = "Graph";
                     $scope.switchViewButtonEnabled = true;
 
+                    setTooltipForSwitchViewButton("Switch to Graphic View");
+
 
                     var enableFiltering = true;
                     var setGridWidth    = true;

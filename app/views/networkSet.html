@@ -123,11 +123,13 @@
         <tabset justified="true">
             <tab heading="Networks in set {{networkSetController.displayedSet.name}}">
                 <div id="divNetworks" ng-show='networkSetController.networkSearchResults.length > 0'>
-                    <div ui-grid-selection
+                    <div id="myNetworksOfSetGridId"
+                         ui-grid-selection
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize
-                         class="networkGrid"></div>
+                         class="networkGrid">
+                    </div>
                 </div>
                 <div class='row' ng-hide='networkSetController.networkSearchResults.length > 0'>
                     <br>

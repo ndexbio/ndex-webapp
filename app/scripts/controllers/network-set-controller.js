@@ -39,6 +39,8 @@ ndexApp.controller('networkSetController',
     var activateURLLabel   = "Enable Share URL";
     var deActivateURLLabel = "Disable Share URL";
 
+    var windowsHeightCorrection = 185;
+
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -185,6 +187,10 @@ ndexApp.controller('networkSetController',
             { field: 'indexLevel',   enableFiltering: false,  visible: false}
         ];
         $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+
+        $("#myNetworksOfSetGridId").height($(window).height() - windowsHeightCorrection);
+        $scope.networkGridApi.grid.gridHeight = $("#myNetworksOfSetGridId").height();
+
         refreshNetworkTable();
     };
 
@@ -574,6 +580,13 @@ ndexApp.controller('networkSetController',
     //------------------------------------------------------------------------------------
 
     networkSetController.getNetworksOfNetworkSet();
+
+    $(window).resize(function() {
+
+        $("#myNetworksOfSetGridId").height($(window).height() - windowsHeightCorrection);
+        $scope.networkGridApi.grid.gridHeight = $("#myNetworksOfSetGridId").height();
+        $scope.networkGridApi.core.refresh();
+    })
 
     //------------------------------------------------------------------------------------//
 }]);
