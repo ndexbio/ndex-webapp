@@ -162,7 +162,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             var edgeAttributes = network.edgeAttributes;
 
-            var headers = {Source: 0, Interaction: 1, Target: 2, 'Source Id': 3, 'Source Alias': 4};
+            var headers = {Source: 0, Interaction: 1, Target: 2, 'Source ID': 3, 'Source Alias': 4};
             var sourceAliasOrder = headers['Source Alias'];
             var headersSize = 0;
 
@@ -233,7 +233,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 }
             }
 
-            headers['Target Id']    = _.size(headers);
+            headers['Target ID']    = _.size(headers);
             headers['Target Alias'] = _.size(headers);
             var targetAliasOrder    = headers['Target Alias'];
 
@@ -338,9 +338,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 var targetNodeObj = factory.getNodeInfo(edgeObj['t']);
 
                 row['Source']    = getNodeName(sourceNodeObj);   // (sourceNodeObj && sourceNodeObj.n) ? sourceNodeObj.n : '';
-                row['Source Id'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
+                row['Source ID'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
                 row['Target']    = getNodeName(targetNodeObj);   // (targetNodeObj && targetNodeObj.n) ? targetNodeObj.n : '';
-                row['Target Id'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';
+                row['Target ID'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';
 
                 // get Source Node attributes
                 for (var nodeAttr in sourceNodeObj) {

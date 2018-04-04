@@ -169,7 +169,7 @@ ndexApp.controller('myAccountController',
 
             var paginationOptions = {
                 pageNumber: 1,
-                pageSize: 15,
+                pageSize: 50,
                 sort: null,
                 networkCount: 0,
                 networkSetCount: 0
@@ -187,8 +187,8 @@ ndexApp.controller('myAccountController',
                 enableColumnMenus: false,
                 enableRowHeaderSelection: true,
 
-                paginationPageSizes: [15, 30, 50],
-                paginationPageSize: 15,
+                paginationPageSizes: [25, 50, 75],
+                paginationPageSize: 50,
                 useExternalPagination: true,
 
                 onRegisterApi: function( gridApi )
