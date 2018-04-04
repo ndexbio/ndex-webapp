@@ -337,9 +337,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 var sourceNodeObj = factory.getNodeInfo(edgeObj['s']);
                 var targetNodeObj = factory.getNodeInfo(edgeObj['t']);
 
-                row['Source']    = getNodeName(sourceNodeObj);   // (sourceNodeObj && sourceNodeObj.n) ? sourceNodeObj.n : '';
+                row['Source']    = getNodeNameFromNodeObj(sourceNodeObj);
                 row['Source ID'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
-                row['Target']    = getNodeName(targetNodeObj);   // (targetNodeObj && targetNodeObj.n) ? targetNodeObj.n : '';
+                row['Target']    = getNodeNameFromNodeObj(targetNodeObj);
                 row['Target ID'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';
 
                 // get Source Node attributes
@@ -581,7 +581,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             return fileString;
         };
 */
-        var getNodeName = function(nodeObj) {
+        var getNodeNameFromNodeObj = function(nodeObj) {
 
             var nodeName = 'No Name';
 
@@ -590,15 +590,12 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 if (nodeObj.n) {
                     nodeName = nodeObj.n;
 
-                } else if (nodeObj.r) {
-                    nodeName = nodeObj.r;
-
                 } else if (nodeObj.id) {
                     nodeName = nodeObj.id;
                 }
             }
             return nodeName;
-        }
+        };
 
         var getAttributeValue = function(attribute)
         {
