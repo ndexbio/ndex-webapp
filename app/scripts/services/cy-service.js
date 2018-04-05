@@ -576,7 +576,15 @@ angular.module('ndexServiceApp')
             'L' : 'left',
             'R' : 'right',
             'S' : 'bottom',
-            'N' : 'top'
+            'N' : 'top',
+            'NE' : 'top right',
+            'NW' : 'top left',
+            'NC' : 'top center',
+            'NM' : 'top center',
+            'SE' : 'bottom right',
+            'SW' : 'bottom left',
+            'SC' : 'bottom center',
+            'SM' : 'bottom center'
         };
 
         var getTextAlign = function(align){
@@ -949,6 +957,13 @@ angular.module('ndexServiceApp')
                             var position = nodeLabelPosition.split(',');
                             defaultNodeProperties['text-valign'] = getTextAlign(position[0]);
                             defaultNodeProperties['text-halign'] = getTextAlign(position[1]);
+
+                            var textVerticalAlign = defaultNodeProperties['text-valign'].split(' ');
+                            if (Array.isArray(textVerticalAlign) &&
+                                textVerticalAlign.length == 2) {
+                                defaultNodeProperties['text-valign'] = textVerticalAlign[0];
+                                defaultNodeProperties['text-halign'] = textVerticalAlign[1];
+                            }
                         } else {
                             defaultNodeProperties['text-valign'] = 'center';
                             defaultNodeProperties['text-halign'] = 'center';
