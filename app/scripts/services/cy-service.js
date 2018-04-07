@@ -131,7 +131,7 @@ angular.module('ndexServiceApp')
 
         };
 
-        const CX_NUMBER_DATATYPES = ['byte', 'char', 'double', 'float', 'integer', 'long', 'short'];
+        const CX_NUMBER_DATATYPES = ['byte', 'double', 'float', 'integer', 'long', 'short'];
 
         const CX_LIST_DATATYPES =
             ['list_of_string', 'list_of_boolean',
@@ -157,15 +157,15 @@ angular.module('ndexServiceApp')
             var attrValue = (attributeObj && attributeObj.v && attributeObj.v[0]) ? attributeObj.v[0] : "";
             var retValue;
 
-            if (type == 'list_of_string') {
+            if (type == 'list_of_string' || type == 'list_of_boolean' ) {
                 retValue = attrValue;
 
-            } else if (type == 'list_of_boolean') {
+         /*   } else if (type == 'list_of_boolean') {
                 // N.B.: for list of booleans, we take the first value and return it as
                 // a String ('true' or 'false'), and not as an actual Boolean (true or false),
                 // since Cytoscape.js expects 'true' or 'false'.
-                retValue = attrValue;
-
+                retValue = (attrValue.toLowerCase() === 'true'); //attrValue;
+*/
             } else {
                 // this is a numeric type, one of CX_NUMBER_DATATYPES
                 retValue = parseFloat(attrValue);
@@ -254,23 +254,23 @@ angular.module('ndexServiceApp')
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 node.data[cyAttributeName] = getFirstElementFromList(attributeObject);
 
-                            } else if (dataType && dataType === 'boolean') {
+                          /*  } else if (dataType && dataType === 'boolean') {
 
                                 // N.B.: for Boolean, Cytoscape.js expects 'true' or 'false' (string),
                                 // and not true or false (actual Boolean).
                                 // Thus, we just use attributeObject.v to pass to Cytoscape.js.
-                                node.data[cyAttributeName] = attributeObject.v;
+                                //node.data[cyAttributeName] = attributeObject.v;
 
-                                /*
+
                                 if (attributeObject.v === 'true'){
                                     node.data[cyAttributeName] = true;
                                 } else if (attributeObject.v === 'false') {
                                     node.data[cyAttributeName] = false;
                                 }
-                                */
+*/
 
                             } else {
-                                // Default to String
+                                // Default to String && boolean
                                 node.data[cyAttributeName] = attributeObject.v;
                             }
                         });
@@ -326,12 +326,12 @@ angular.module('ndexServiceApp')
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 edge.data[cyAttributeName] = getFirstElementFromList(attributeObject);
 
-                            } else if (dataType && dataType === 'boolean') {
+                      /*      } else if (dataType && dataType === 'boolean') {
 
                                 // N.B.: for Boolean, Cytoscape.js expects 'true' or 'false' (string),
                                 // and not true or false (actual Boolean).
                                 // Thus, we just use attributeObject.v to pass to Cytoscape.js.
-                                edge.data[cyAttributeName] =  attributeObject.v;
+                                edge.data[cyAttributeName] =  attributeObject.v.toLowerCase() === 'true';
 
                                 /*
                                 if (attributeObject.v === 'true'){
@@ -342,7 +342,7 @@ angular.module('ndexServiceApp')
                                 */
 
                             }   else {
-                                // Default to String
+                                // Default to String and boolean
                                 edge.data[cyAttributeName] = attributeObject.v;
                             }
                         });
@@ -707,8 +707,10 @@ angular.module('ndexServiceApp')
             // the cytoscape column is mapped to the cyjs attribute name
             var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
-            var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
-            var regExToCheckIfFloatNumber = /^-{0,1}\d+\.\d*$/;
+            var colDataType = def.T;
+
+        //    var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
+        //    var regExToCheckIfFloatNumber = /^-{0,1}\d+\.\d*$/;
 
             _.forEach(def.m, function (pair) {
                 var cyDataAttributeValue = pair.K;
@@ -716,11 +718,11 @@ angular.module('ndexServiceApp')
                 var cyVisualAttributeValue = getCyVisualAttributeValue(visualAttributeValue, cyVisualAttributeType);
 
                 // check if cyDataAttributeValue is a valid number (float or integer)
-                var isValidNumber =
-                    regExToCheckIfIntNumber.test(cyDataAttributeValue) ||
-                    regExToCheckIfFloatNumber.test(cyDataAttributeValue);
+          //      var isValidNumber =
+          //          regExToCheckIfIntNumber.test(cyDataAttributeValue) ||
+          //          regExToCheckIfFloatNumber.test(cyDataAttributeValue);
 
-                var cySelector = (isValidNumber) ?
+                var cySelector =  colDataType != 'string' && colDataType != 'boolean' ?
                     elementType + '[' + cyDataAttribute + ' = ' + cyDataAttributeValue + ']'  :
                     elementType + '[' + cyDataAttribute + ' = \'' + cyDataAttributeValue + '\']';
 
@@ -1055,8 +1057,8 @@ angular.module('ndexServiceApp')
                             //console.log('VP = ' + vp);
                             elementType = 'edge';
 
-                            if (vpElement.dependencies.arrowColorMatchesEdge ) {
-                                if (vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
+                            if (vpElement.dependencies.arrowColorMatchesEdge ==='true' ) {
+                                if (vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
                                     vp !== 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' )
                                 {
                                     if (vp === 'EDGE_UNSELECTED_PAINT') {
