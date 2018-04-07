@@ -200,8 +200,8 @@
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
                             <br>
                             <span class="networkPropertyName"
-                                  ng-show="networkController.currentNetwork.queryDepth">Search depth: </span>
-                            {{networkController.currentNetwork.queryDepth}}
+                                  ng-show="networkController.searchDepth.value < 3">Query depth: </span>
+                            <span ng-show="networkController.searchDepth.value < 3">{{networkController.currentNetwork.queryDepth}}</span>
 
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter:
                                 <br>

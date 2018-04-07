@@ -513,6 +513,7 @@ ndexApp.controller('networkController',
             $scope.currentView = "Graphic";
             $scope.buttonLabel = "Table";
             $scope.switchViewButtonEnabled = true;
+            $scope.beforeQueryView = null;
 
             $scope.switchView = function() {
                 if (!$scope.switchViewButtonEnabled) {
@@ -609,7 +610,10 @@ ndexApp.controller('networkController',
                 var anchor = document.createElement('a');
                 var textToSaveInTheFile = networkService.getTSVOfCurrentNiceCX();
 
-                var outputFileName = networkController.currentNetwork.name + '.txt';
+                var currentNetworkCXName = networkService.getCurrentNetworkName();
+                var outputFileName = (currentNetworkCXName) ?
+                    currentNetworkCXName :
+                    networkController.currentNetwork.name + '.txt';
 
                 anchor.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(textToSaveInTheFile));
                 anchor.setAttribute('download', outputFileName);
@@ -2734,6 +2738,7 @@ ndexApp.controller('networkController',
 
                 $scope.query = query;
                 networkController.previousNetwork = networkController.currentNetwork;
+                $scope.beforeQueryView = $scope.currentView;
 
                 if (query == 'neighborhood') {
                     networkController.queryNetworkAndDisplay();
@@ -2779,9 +2784,6 @@ ndexApp.controller('networkController',
 
             networkController.presentQueryResult = function(nodeCount, edgeCount, queryStatus) {
 
-                var resultName = "Neighborhood query result on network - " + currentNetworkSummary.name;
-
-
                 if ((nodeCount == 0) && (queryStatus.success)) {
                     networkService.restoreCurrentNiceCXAfterQuery();
                     networkController.successfullyQueried = false;
@@ -2793,6 +2795,12 @@ ndexApp.controller('networkController',
 
                 networkController.successfullyQueried = true;
 
+                var network     = networkService.getCurrentNiceCX();
+                var networkName = networkService.getCurrentNetworkName();
+
+                var resultName = (networkName) ? networkName :
+                    "Neighborhood query result on network - " + currentNetworkSummary.name;
+
                 networkController.currentNetwork =
                     {name: resultName,
                         "nodeCount": nodeCount,
@@ -2800,8 +2808,6 @@ ndexApp.controller('networkController',
                         "queryString": networkController.searchString,
                         "queryDepth" : networkController.searchDepths[networkController.searchDepth.value-1]['description']
                     };
-
-                var network = networkService.getCurrentNiceCX();
 
                 cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
 
@@ -3028,6 +3034,11 @@ ndexApp.controller('networkController',
                 var setGridWidth = true;
                 populateEdgeTable(localNetwork, enableFiltering, setGridWidth);
                 populateNodeTable(localNetwork, enableFiltering, setGridWidth);
+
+                if ($scope.currentView != $scope.beforeQueryView) {
+                    $scope.switchView();
+                }
+
                 ndexSpinner.stopSpinner();
             };
 
@@ -3061,6 +3072,21 @@ ndexApp.controller('networkController',
                             $scope.isProcessing = true;
                             $scope.progress = 'Save in progress.... ';
 
+                            networkQueryEdgeLimit = -1;
+                            var save = true;
+                            var errorWhenLimitIsOver = false;
+
+                            networkController.rerunQueryAndSaveResult(networkController.currentNetworkId,
+                                accesskey, networkController.searchString,
+                                networkController.searchDepth.value,
+                                networkQueryEdgeLimit, save, errorWhenLimitIsOver);
+
+                            $modalInstance.close();
+                            $scope.isProcessing = false;
+
+
+                            /*
+
                             var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getCurrentNiceCX());
 
                             networkService.createCXNetwork(rawCX,
@@ -3074,6 +3100,9 @@ ndexApp.controller('networkController',
                                     delete $scope.progress;
                                     $scope.errors = (error && error.message) ? error.message : "Unable to save Query results"
                                 });
+
+
+                            */
                         };
                     }
                 });

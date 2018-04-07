@@ -129,6 +129,25 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             return strWithoutTabsOrPipes;
         };
 
+        factory.getCurrentNetworkName = function() {
+            var networkNameFromNiceCX = null;
+
+            var networkAttributes = (currentNiceCX && currentNiceCX.networkAttributes) ?
+                currentNiceCX.networkAttributes : null;
+
+            if ((networkAttributes == null) || !(networkAttributes.elements) ||
+                !Array.isArray(networkAttributes.elements) || (networkAttributes.elements.length == 0)) {
+                return networkNameFromNiceCX;
+            }
+
+            var networkNameObj = _.find(networkAttributes.elements, {n:'name'});
+
+            if (networkNameObj && networkNameObj.v) {
+                networkNameFromNiceCX = networkNameObj.v;
+            }
+
+            return networkNameFromNiceCX;
+        };
 
 
         factory.getTSVOfCurrentNiceCX = function() {
