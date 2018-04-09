@@ -260,7 +260,7 @@ ndexApp.controller('networkController',
             $scope.deleteTitle               = "";
             $scope.openInCytoscapeTitle      = "Checking status ...";
 
-            $scope.disabledQueryTooltip      = "";
+            $scope.disabledQueryTooltip      = "The Advanced Query feature is being improved and will be back soon!";
 
             $scope.disableQuery = false;
 

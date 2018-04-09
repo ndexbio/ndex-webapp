@@ -124,17 +124,17 @@
                     &nbsp;
                 </form>
 
-
+<!--
                 <span class="pull-left" style="margin-top:0.5em"
                       ng-if="!networkController.hasMultipleSubNetworks() && !disableQuery">
                     <a ng-click="activateAdvancedQueryTab()">
                         <u><strong>Advanced Query</strong></u>
                     </a>
                 </span>
-
+-->
                 <span id="disabledQueryId3"
                       class="pull-left" style="margin-top:0.5em"
-                      ng-if="networkController.hasMultipleSubNetworks() || disableQuery"
+                      ng-disable="true"
                       ng-mouseover="changeDisabledQueryTitle3()" title="">
                     <span  style="color:#999999; cursor:not-allowed">
                         <u><strong>Advanced Query</strong></u>
