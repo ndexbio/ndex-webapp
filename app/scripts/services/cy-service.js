@@ -541,7 +541,7 @@ angular.module('ndexServiceApp')
             'RECTANGLE': 'rectangle',
             'ROUND_RECTANGLE': 'roundrectangle',
             'TRIANGLE': 'triangle',
-            'PARALLELOGRAM': 'rectangle',
+            'PARALLELOGRAM': 'rhomboid',
             'DIAMOND': 'diamond',
             'ELLIPSE': 'ellipse',
             'HEXAGON': 'hexagon',
