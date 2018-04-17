@@ -181,7 +181,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             var edgeAttributes = network.edgeAttributes;
 
-            var headers = {Source: 0, Interaction: 1, Target: 2, 'Source ID': 3, 'Source Alias': 4};
+            var headers = {'Source Node': 0, Interaction: 1, 'Target Node': 2, 'Source ID': 3, 'Source Alias': 4};
             var sourceAliasOrder = headers['Source Alias'];
             var headersSize = 0;
 
@@ -356,9 +356,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 var sourceNodeObj = factory.getNodeInfo(edgeObj['s']);
                 var targetNodeObj = factory.getNodeInfo(edgeObj['t']);
 
-                row['Source']    = getNodeNameFromNodeObj(sourceNodeObj);
+                row['Source Node']    = getNodeNameFromNodeObj(sourceNodeObj);
                 row['Source ID'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
-                row['Target']    = getNodeNameFromNodeObj(targetNodeObj);
+                row['Target Node']    = getNodeNameFromNodeObj(targetNodeObj);
                 row['Target ID'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';
 
                 // get Source Node attributes

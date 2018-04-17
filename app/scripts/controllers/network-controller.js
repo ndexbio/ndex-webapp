@@ -260,7 +260,7 @@ ndexApp.controller('networkController',
             $scope.deleteTitle               = "";
             $scope.openInCytoscapeTitle      = "Checking status ...";
 
-            $scope.disabledQueryTooltip      = "";
+            $scope.disabledQueryTooltip      = "The Advanced Query feature is being improved and will be back soon!";
 
             $scope.disableQuery = false;
 
@@ -2271,7 +2271,7 @@ ndexApp.controller('networkController',
                 }
 
                 // enable filtering if number of edges in the network is no greater than 500
-                var filteringEnabled = (edgeKeys.length <= 500) ? true : false;
+                var filteringEnabled = (edgeKeys.length <= 500);
 
                 if (enableFiltering) {
                     // enable filtering even if the number of edges in the network is greater than 500;
@@ -2280,8 +2280,8 @@ ndexApp.controller('networkController',
                 }
                 var columnDefs = [
                     {
-                        field: 'Source',
-                        displayName: 'Source',
+                        field: 'Source Node',
+                        displayName: 'Source Node',
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestSubject, false)
@@ -2294,8 +2294,8 @@ ndexApp.controller('networkController',
                         minWidth: calcColumnWidth(longestPredicate, false)
                     },
                     {
-                        field: 'Target',
-                        displayName: 'Target',
+                        field: 'Target Node',
+                        displayName: 'Target Node',
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestObject, false)
@@ -2327,7 +2327,7 @@ ndexApp.controller('networkController',
 
                     var edgeAttributesKeys = _.keys(edgeAttributes);
 
-                    for (var i=0; i<edgeAttributesKeys.length; i++)
+                    for ( i=0; i<edgeAttributesKeys.length; i++)
                     {
                         var edgeAttributeKey = edgeAttributesKeys[i];
 
@@ -2337,7 +2337,7 @@ ndexApp.controller('networkController',
                         for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
                             var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
 
-                            if (edgeAttributteProperty && edgeAttributteProperty.toLowerCase() == 'pmid') {
+                            if (edgeAttributteProperty && edgeAttributteProperty.toLowerCase() === 'pmid') {
                                 // exclude column PMID from the table
                                 continue;
                             }
@@ -2505,7 +2505,7 @@ ndexApp.controller('networkController',
                     var targeteNodeObj = networkService.getNodeInfo(edgeObj['t']);
                     var target = networkService.getNodeName(targeteNodeObj);
 
-                    var row = {"Source": source, "Interaction": interaction, "Target": target};
+                    var row = {"Source Node": source, "Interaction": interaction, "Target Node": target};
                     
                     if (edgeCitations) {
                         row["citation"] = (edgeCitations[edgeKey]) ? edgeKey : "";
