@@ -551,13 +551,15 @@ angular.module('ndexServiceApp')
 
         const ARROW_SHAPE_MAP = {
             'T': 'tee',
+            'CROSS_DELTA': 'triangle-tee',
             'DELTA' : 'triangle',
             'CIRCLE' : 'circle',
             'DIAMOND': 'diamond',
             'ARROW': 'triangle',
             'HALF_BOTTOM': 'triangle',
             'HALF_TOP': 'triangle',
-            'NONE': 'none'
+            'NONE': 'none',
+            'SQUARE': 'square'
         };
 
         const LINE_STYLE_MAP = {

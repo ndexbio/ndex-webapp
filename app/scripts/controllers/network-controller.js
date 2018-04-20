@@ -612,8 +612,9 @@ ndexApp.controller('networkController',
 
                 var currentNetworkCXName = networkService.getCurrentNetworkName();
                 var outputFileName = (currentNetworkCXName) ?
-                    currentNetworkCXName :
-                    networkController.currentNetwork.name + '.txt';
+                    currentNetworkCXName : networkController.currentNetwork.name;
+
+                outputFileName += '.txt';
 
                 anchor.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(textToSaveInTheFile));
                 anchor.setAttribute('download', outputFileName);
