@@ -612,6 +612,8 @@ angular.module('ndexServiceApp')
             'NODE_BORDER_WIDTH': {'att': 'border-width', 'type': 'number'},
             'NODE_SIZE' : [{'att': 'width','type': 'number'},{'att': 'height', 'type': 'number'}],
 
+            'NODE_LABEL_FONT_FACE': {'att': 'font-family', 'type': 'fontFamily'},
+
             'NODE_LABEL': {'att': 'content', 'type': 'string'},
             'NODE_LABEL_COLOR': {'att': 'color', 'type': 'color'},
             'NODE_LABEL_FONT_SIZE': {'att': 'font-size', 'type': 'number'},
@@ -621,7 +623,7 @@ angular.module('ndexServiceApp')
             'EDGE_LABEL': {'att': 'label', 'type': 'string'},
             'EDGE_LABEL_COLOR': {'att': 'color', 'type': 'color'},
             'EDGE_LABEL_FONT_SIZE': {'att': 'font-size', 'type': 'number'},
-            'EDGE_LABEL_FONT_FACE': {'att': 'font-size', 'type': 'fontFamily'},
+            'EDGE_LABEL_FONT_FACE': {'att': 'font-family', 'type': 'fontFamily'},
             'EDGE_LABEL_TRANSPARENCY': {'att': 'text-opacity', 'type': 'opacity'},
             'EDGE_LINE_TYPE': {'att': 'line-style', 'type': 'line'},
             'EDGE_STROKE_UNSELECTED_PAINT': {'att': 'line-color', 'type': 'color'},
@@ -631,6 +633,16 @@ angular.module('ndexServiceApp')
             'EDGE_TARGET_ARROW_SHAPE': {'att': 'target-arrow-shape', 'type': 'arrow'},
             'EDGE_TARGET_ARROW_UNSELECTED_PAINT': {'att': 'target-arrow-color', 'type': 'color'},
             'EDGE_SOURCE_ARROW_UNSELECTED_PAINT': {'att': 'source-arrow-color', 'type': 'color'}
+        };
+
+        const FONT_FAMILY_MAP = {
+            'Braggadocio'  : 'Braggadocio',
+            'Courier-Bold' : 'courier-bold',
+            'Dialog'       : 'dialog',
+            'Monospaced'   : 'monospace',
+            'SansSerif'    : 'sans-serif',
+            'Serif'        : 'serif',
+            'Times-Roman'  : 'times-roman'
         };
 
         var getCyVisualAttributeForVP = function (vp) {
@@ -687,6 +699,13 @@ angular.module('ndexServiceApp')
                 if (lineValue){
                     return lineValue;
                 }
+            } else if (cyVisualAttributeType === 'fontFamily') {
+
+                var fontFamilyValue = visualAttributeValue.split(',').shift();
+
+                var fontFamilyValueMapped = FONT_FAMILY_MAP[fontFamilyValue];
+
+                return (fontFamilyValueMapped) ? fontFamilyValueMapped : fontFamilyValue;
             }
             // assume string
             return visualAttributeValue;
