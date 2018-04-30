@@ -744,7 +744,7 @@ angular.module('ndexServiceApp')
       //TODO: needs to handle collections in the future
       // Partially populate a networkSummary object from a niceCX object.
       self.getPartialSummaryFromNiceCX = function(niceCX){
-          let summary = {
+          var summary = {
             'name': 'Untitled',
             'edgeCount': niceCX['edges'] === undefined ? 0: Object.keys(niceCX['edges']).length,
             'nodeCount': niceCX['nodes'] === undefined ? 0: Object.keys(niceCX['nodes']).length,
@@ -753,7 +753,7 @@ angular.module('ndexServiceApp')
 
           const attributes = niceCX['networkAttributes'];
           if ( attributes ) {
-              for ( let i = 0 ; i < attributes.elements.length; i ++) {
+              for ( var i = 0 ; i < attributes.elements.length; i ++) {
                   const attr = attributes.elements[i];
                   if (attr.n === 'name') {
                       summary['name'] = attr.v;

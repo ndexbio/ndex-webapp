@@ -8,7 +8,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
         var factory = {};
         
-        let provenance = undefined;
+        var provenance = undefined;
         
         var extractUuidFromUri = function( uri )
         {
@@ -85,7 +85,7 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
             for( var i = 0; i < prov.properties.length; i++ )
             {
-                let p = prov.properties[i];
+                var p = prov.properties[i];
                 if(p.name.toLowerCase() === "dc:title")
                     return p.value;
             }

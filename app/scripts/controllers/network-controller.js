@@ -810,7 +810,7 @@ ndexApp.controller('networkController',
 
             $scope.build_provenance_view = function () {
                 if (networkExternalId === undefined) {
-                    let prov = cxNetworkUtils.getProvenanceFromNiceCX(networkService.getCurrentNiceCX());
+                    var prov = cxNetworkUtils.getProvenanceFromNiceCX(networkService.getCurrentNiceCX());
                     provenanceService.setProvenanceObj(prov);
                 }
                 provenanceService.showProvenance(networkController);
@@ -4120,7 +4120,7 @@ ndexApp.controller('networkController',
             if ($routeParams.identifier !== undefined)
                 initialize();
             else if ($routeParams.url !== undefined) {
-                let cxURL = $routeParams.url;
+                var cxURL = $routeParams.url;
                 delete $routeParams.url;
                 initializeAsViewer(cxURL);
             }

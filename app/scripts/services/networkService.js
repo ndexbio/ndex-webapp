@@ -756,7 +756,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             $http.get(url).then(
                 function suc_init(response) {
-                    let rawcx = response.data;
+                    var rawcx = response.data;
                     currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(rawcx);
                     originalNiceCX = currentNiceCX;
                     successCallBack(currentNiceCX);
