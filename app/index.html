@@ -487,7 +487,7 @@
         var initInjector = angular.injector(["ng"]);
         var $http = initInjector.get("$http");
 
-        let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
         if (loggedInUser) {
             $http({

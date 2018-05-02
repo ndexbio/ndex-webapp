@@ -519,7 +519,7 @@ ndexApp.controller('networkController',
             $scope.beforeQueryView = null;
 
             $scope.showNetworkSample = function() {
-                return (($scope.currentView == "Graphic") && networkController.isSample && (networkController.sampleSize > 0));
+                return (networkController.isSample && (networkController.sampleSize > 0));
             };
 
             $scope.switchView = function() {
