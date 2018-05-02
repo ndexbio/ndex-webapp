@@ -84,10 +84,10 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         })
 
         // route for the api page
-        .when('/api', {
+      /* .when('/api', {
             templateUrl: 'views/api.html',
             controller: 'apiController'
-        })
+        }) */
 
         //route for search page
         .when('/search', {
@@ -117,6 +117,12 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         .when('/networkSet/:identifier', {
             templateUrl: 'views/networkSet.html',
             controller: 'networkSetController'
+        })
+
+        // route for external network viewer page
+        .when('/viewer', {
+            templateUrl: 'views/network.html',
+            controller: 'networkController'
         })
 
         // route for the network view page

@@ -39,6 +39,10 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
         factory.resetProvenance = function () {provenance = undefined;};
 
+        factory.setProvenanceObj  = function (prov) {
+            provenance = prov;
+        };
+
         factory.getNetworkProvenance = function (networkId, onSuccess, onError) {
             if (provenance) {
                 onSuccess(provenance);
@@ -76,13 +80,13 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
         {
             var untitled = "Untitled Network";
 
-            if( typeof prov == 'undefined' || prov.properties == null )
+            if( typeof prov === 'undefined' || prov.properties == null )
                 return untitled;
 
             for( var i = 0; i < prov.properties.length; i++ )
             {
                 var p = prov.properties[i];
-                if(p.name.toLowerCase() == "dc:title")
+                if(p.name.toLowerCase() === "dc:title")
                     return p.value;
             }
             return untitled; //provenance.uri;
@@ -90,25 +94,27 @@ ndexServiceApp.factory('provenanceService', ['ndexService','$location', '$filter
 
         factory.showProvenance = function (controller) {
             if (!provenance) {
-                ndexService.getNetworkProvenanceV2(controller.currentNetworkId,
-                    function (data) {
 
-                    provenance = data;
-                    build_provenance_view(controller);
-                }, function (error) {
-                    controller.showRetrieveMessage = false;
-                    if ((error != null) && (typeof error.message !== 'undefined')) {
-                        controller.errors.push({
-                            label: "Unable to retrieve network provenance: ",
-                            error: error.message
+                    ndexService.getNetworkProvenanceV2(controller.currentNetworkId,
+                        function (data) {
+
+                            provenance = data;
+                            build_provenance_view(controller);
+                        }, function (error) {
+                            controller.showRetrieveMessage = false;
+                            if ((error != null) && (typeof error.message !== 'undefined')) {
+                                controller.errors.push({
+                                    label: "Unable to retrieve network provenance: ",
+                                    error: error.message
+                                });
+                            } else {
+                                networkController.errors.push({
+                                    label: "Unable to retrieve network provenance: ",
+                                    error: "Unknown error"
+                                });
+                            }
                         });
-                    } else {
-                        networkController.errors.push({
-                            label: "Unable to retrieve network provenance: ",
-                            error: "Unknown error"
-                        });
-                    }
-                });
+
             } else
                 build_provenance_view(controller);  
         };

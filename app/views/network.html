@@ -227,7 +227,7 @@
                         </div>
 
                         <div ng-show = "!networkController.successfullyQueried">
-                            <span>
+                            <span ng-show = "networkController.currentNetwork.externalId !== undefined">
                                 <strong>{{networkController.currentNetwork.visibility}}</strong>
                                 &nbsp;
                                 <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexLevel != 'NONE'"></i>
@@ -242,7 +242,7 @@
                                 ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only
                             </span>
                             <span id="readOnlyButtonId"  class="networkPropertyName"
-                                  ng-show="!networkController.isAdmin || networkController.hasMultipleSubNetworks()"
+                                  ng-show="networkController.currentNetwork.externalId !==undefined && (!networkController.isAdmin || networkController.hasMultipleSubNetworks())"
                                   ng-init="setToolTips()" data-toggle="tooltip" ng-mouseover="changeReadOnlyButtonTitle()" title="">
                                 <input type="checkbox" disabled ng-model="networkController.readOnlyChecked"> Read Only
                             </span>
@@ -312,15 +312,15 @@
                                 </a>
                             </span>
 
-
+                            <span ng-show="networkController.currentNetwork.externalId !== undefined">
                             <br /><br />
-                            <span class="networkPropertyName">Owner: </span>
+                            <span class="networkPropertyName"  >Owner: </span>
                             <a ng-href="#/user/{{networkController.networkOwner.ownerUUID}}">
                                 {{networkController.networkOwner.firstName}}
                                 {{networkController.networkOwner.lastName}}</a>
                             <br/>
 
-                            <span class="networkPropertyName">Created: </span>
+                            <span class="networkPropertyName" >Created: </span>
                             {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
 
                             <span ng-show="(networkController.currentNetwork.creationTime) !=
@@ -329,13 +329,15 @@
                                 {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
                             </span>
 
-                            <span class="networkPropertyName">UUID: </span>
+                            </span>
+
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.externalId !== undefined">UUID: </span>
                             {{networkController.currentNetwork.externalId}}<br/>
 
                             <span class="networkPropertyName">Format: </span>
                             {{networkController.currentNetwork.sourceFormat}}<br/>
 
-                            <span ng-show="networkController.isLoggedInUser">
+                            <span ng-show="networkController.isLoggedInUser && networkController.currentNetwork.externalId !== undefined">
                                 <span class="networkPropertyName">Your Privileges: </span>
                                 {{networkController.privilegeLevel}}<br/>
                             </span>
@@ -835,7 +837,7 @@
                       </button>
             </span>
 
-            <span ng-show='networkController.isLoggedInUser'>
+            <span ng-show='networkController.isLoggedInUser && networkController.currentNetwork.externalId !== undefined'>
                 <a class="actionsLabel btn btn-primary"
                    data-toggle="tooltip" title="Clone this network and save a copy to your account"
                    ng-click="networkController.cloneNetwork()">
@@ -909,7 +911,7 @@
             </span>
 
 
-            <span ng-show='networkController.isLoggedInUser'>
+            <span ng-show='networkController.isLoggedInUser && networkController.currentNetwork.externalId !== undefined'>
 
 
                 <div class="btn-group dropup">
@@ -1014,17 +1016,25 @@
 
             <span ng-show='!networkController.isLoggedInUser'>
 
+                <a
+                   class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
+                   data-toggle="tooltip"
+                   ng-attr-title="{{ networkController.hasMultipleSubNetworks() && 'Log in to your account' || 'Log in to operate on this network'  }}">
+                    Log in
+                </a>
+
+            <!--
                 <a ng-show="!networkController.hasMultipleSubNetworks()"
                    class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
                    data-toggle="tooltip" title="Log in to operate on this network">
                     Log in
                 </a>
 
-                <a ng-show="networkController.hasMultipleSubNetworks()"
+              <a ng-show="networkController.hasMultipleSubNetworks()"
                    class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
                    data-toggle="tooltip" title="Log in to your account">
                     Log in
-                </a>
+                </a>  -->
 
             </span>
 

@@ -272,6 +272,7 @@ angular.module('ndexServiceApp')
           return niceCX['edgeAttributes'];
       };
 
+/*      removing these functions because they are no longer used anywhere. --cj
       var stringifyFunctionTerm = function (functionTerm) {
           var params = [];
           angular.forEach(functionTerm.args, function (parameter) {
@@ -361,7 +362,7 @@ angular.module('ndexServiceApp')
           }
       };
 
-
+*/
       
       var createCXFunctionTerm = function (oldJSONNetwork, jsonFunctionTerm ) {
          var functionTerm = { 'f': getBaseTermStr(oldJSONNetwork , jsonFunctionTerm.functionTermId)};
@@ -693,7 +694,7 @@ angular.module('ndexServiceApp')
       };
 
 
-       self.setNetworkProperty = function ( niceCX, attributeName, attributeValue, attributeDataType)  {
+      self.setNetworkProperty = function ( niceCX, attributeName, attributeValue, attributeDataType)  {
            var dType = attributeDataType ? attributeDataType : 'string';
 
            var value = ( (dType.substring(0,7) === 'list_of' && typeof attributeValue === 'string') ? JSON.parse(attributeValue) :  attributeValue);
@@ -725,6 +726,57 @@ angular.module('ndexServiceApp')
            
        };
 
+      /*
+      //TODO: needs to handle collections in the future
+      self.getTitleFromNiceCX = function(niceCX){
+          const attributes = niceCX['networkAttributes'];
+          if ( attributes ) {
+              for ( let i = 0 ; i < attributes.elements.length; i ++) {
+                  const attr = attributes.elements[i];
+                  if (attr.n === 'name') {
+                      return attr.v;
+                  }
+              }
+          }
+          return undefined;
+      };*/
+
+      //TODO: needs to handle collections in the future
+      // Partially populate a networkSummary object from a niceCX object.
+      self.getPartialSummaryFromNiceCX = function(niceCX){
+          var summary = {
+            'name': 'Untitled',
+            'edgeCount': niceCX['edges'] === undefined ? 0: Object.keys(niceCX['edges']).length,
+            'nodeCount': niceCX['nodes'] === undefined ? 0: Object.keys(niceCX['nodes']).length,
+            'properties': []
+          };
+
+          const attributes = niceCX['networkAttributes'];
+          if ( attributes ) {
+              for ( var i = 0 ; i < attributes.elements.length; i ++) {
+                  const attr = attributes.elements[i];
+                  if (attr.n === 'name') {
+                      summary['name'] = attr.v;
+                  } else if (attr.n === 'description') {
+                      summary['description'] = attr.v;
+                  } else if (attr.n === 'version') {
+                      summary['version'] = attr.v;
+                  } else if (attr.n === 'ndex:sourceFormat') {
+                      summary['sourceFormat'] = attr.v;
+                  } else
+                      summary['properties'].push(
+                          {
+                              subNetworkId: attr.s,
+                              predicateString: attr.n,
+                              dataType: attr.d,
+                              value: attr.v
+                          }
+                      )
+              }
+          }
+          return summary;
+      };
+
 
       self.getDefaultNodeLabel = function (niceCX, nodeElement) {
           if (nodeElement.n) {
@@ -740,6 +792,13 @@ angular.module('ndexServiceApp')
 
           return nodeElement['@id'];
 
+      };
+
+      self.getProvenanceFromNiceCX = function (niceCX) {
+            const history= niceCX['provenanceHistory'];
+            if (history !== undefined) {
+                return history.elements[0].entity;
+            }
       };
 
   }]);

@@ -39,7 +39,7 @@ angular.module('ndexServiceApp')
                 }
              }
 
-             var title = (status == 'failed') ? "Failed Error Message" : "Warnings";
+             var title = (status === 'failed') ? "Failed Error Message" : "Warnings";
 
              ndexNavigation.genericInfoModal(title, message);
         };

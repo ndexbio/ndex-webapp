@@ -116,7 +116,7 @@
     <script src="scripts/controllers/manage-network-access.js"></script>
     <script src="scripts/controllers/manage-bulk-network-access.js"></script>
     <script src="scripts/controllers/manage-group-access.js"></script>
-    <script src="scripts/controllers/api-controller.js"></script>
+ <!--   <script src="scripts/controllers/api-controller.js"></script>  -->
     <script src="scripts/controllers/home-controller.js"></script>
     <script src="scripts/controllers/my-account-controller.js"></script>
 
@@ -487,7 +487,7 @@
         var initInjector = angular.injector(["ng"]);
         var $http = initInjector.get("$http");
 
-        var loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
         if (loggedInUser) {
             $http({
@@ -510,23 +510,23 @@
             } catch(e) {
                 //already loaded; do not do anything here; we use the try .. catch block to silence up
                 // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
-            };
-        };
-    };
+            }
+        }
+    }
 
   function initClient() {
       gapi.client.init({
           clientId: ndexSettings.googleClientId,
           scope: 'profile email',
       }).then(function () {
-          var initInjector = angular.injector(["ng"]);
-          var $http = initInjector.get("$http");
+          const initInjector = angular.injector(["ng"]);
+          const $http = initInjector.get("$http");
 
           isSignedIn = gapi.auth2.getAuthInstance().isSignedIn.get();
 
           if (isSignedIn) {
-              var curUser = gapi.auth2.getAuthInstance().currentUser.get();
-              var id_token = curUser.getAuthResponse().id_token;
+              const curUser = gapi.auth2.getAuthInstance().currentUser.get();
+              const id_token = curUser.getAuthResponse().id_token;
 
               $http({
                   method: 'GET',
@@ -547,7 +547,7 @@
 
               logInUserWithBasicAuth();
 
-          };
+          }
       }, function(error) {
 
           // this is the case where 3rd parties cookies are blocked by the browser.
@@ -565,13 +565,13 @@
       if ( signedInUser !=null ) {
           window.currentNdexUser = signedInUser;
           window.currentSignInType = type;
-      };
+      }
       try {
           angular.bootstrap(document, ['ndexApp']);
       } catch(e) {
           //already loaded; do not do anything here; we use the try .. catch block to silence up
           // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
-      };
+      }
   }
 
 
@@ -588,7 +588,7 @@
             alert("Update your ndex-webapp-config.js file");
         } else {
             gapi.load('client:auth2', initClient);
-        };
+        }
 
     } else {
 
@@ -599,7 +599,7 @@
             'Cookies are blocked by your browser. <br>' +
             'NDEx requires that cookies be unblocked. <br>' +
             'Please unblock cookies and try again. </div>';
-    };
+    }
 
 
 </script>

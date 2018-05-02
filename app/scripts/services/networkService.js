@@ -8,7 +8,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
         var factory = {};
         
-        var currentNetworkSummary = undefined;
+     //   var currentNetworkSummary = undefined;
 
         var ndexServerURI = window.ndexSettings.ndexServerUri;
         
@@ -51,7 +51,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        currentNetworkSummary = network;
+  //                      currentNetworkSummary = network;
                         handler(network);
                     }
                 );
@@ -87,9 +87,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         };
 
 
-        factory.getCurrentNetworkSummary = function () {
+     /*   factory.getCurrentNetworkSummary = function () {
             return currentNetworkSummary;
-        };
+        }; */
 
         factory.getCurrentNiceCX = function () {
             return currentNiceCX;
@@ -102,9 +102,12 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             currentNiceCX  = null;
             originalNiceCX = null;
         };
+
+        /* commenting out. Doesn't seem to be used anywhere -- cj
         factory.saveOriginalNiceCX = function(originalNetworkInNiceCX) {
             originalNiceCX = originalNetworkInNiceCX;
-        };
+        }; */
+
         factory.getOriginalNiceCX = function() {
             return originalNiceCX;
         };
@@ -326,7 +329,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
 
 
-            var headersInverted = _.invert(headers);
+          //  var headersInverted = _.invert(headers);
             var fileString      = headerKeysJoined;
 
             var row = {};
@@ -747,7 +750,21 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             }
 
             return edgeInfo;
-        }
+        };
+
+        factory.getNiceCXNetworkFromURL = function (url, successCallBack, errorCallback) {
+
+            $http.get(url).then(
+                function suc_init(response) {
+                    var rawcx = response.data;
+                    currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(rawcx);
+                    originalNiceCX = currentNiceCX;
+                    successCallBack(currentNiceCX);
+                },
+                errorCallback
+            );
+        };
+
 
         factory.getCompleteNetworkInCXV2 = function (networkId, accesskey) {
 
@@ -1245,7 +1262,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
          * @returns {undefined}
          */
 
-        factory.getNetworkProperty = function( subNetworkId, propertyName)
+        factory.getNetworkProperty = function( currentNetworkSummary, subNetworkId, propertyName)
         {
             if ('undefined'===typeof(currentNetworkSummary) || !propertyName) {
                 return undefined;
@@ -1262,7 +1279,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             return undefined;
         }
 
-        factory.getPropertiesExcluding = function (subNetworkId, excludeList) {
+        factory.getPropertiesExcluding = function (currentNetworkSummary, subNetworkId, excludeList) {
 
             var result = [];
             var excludeSet = new Set();
@@ -1293,8 +1310,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             return result;
         };
-        
-        factory.setNetworkProperty = function ( propertyName, propertyValue, propertyValueType ) {
+
+
+     /*   factory.setNetworkProperty = function ( propertyName, propertyValue, propertyValueType ) {
 
             var propObject = { "predicateString": propertyName, "value": propertyValue,
                 "dataType": (typeof propertyValueType !== 'undefined ') ? b : 'string'  };
@@ -1309,7 +1327,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 }
                 networkProperties.push(propObject);
             }
-        }
+        } */
         
         return factory;
 
