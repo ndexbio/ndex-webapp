@@ -38,6 +38,9 @@ ndexApp.controller('networkController',
             networkController.baseURL = $location.absUrl();
             networkController.isSample=false;
             networkController.sampleSize = 0;
+            networkController.isSamplePrevious=false;
+            networkController.sampleSizePrevious=0;
+
             networkController.successfullyQueried = false;
 
             // turn on (show) Search menu item on the Nav Bar
@@ -514,6 +517,10 @@ ndexApp.controller('networkController',
             $scope.buttonLabel = "Table";
             $scope.switchViewButtonEnabled = true;
             $scope.beforeQueryView = null;
+
+            $scope.showNetworkSample = function() {
+                return (($scope.currentView == "Graphic") && networkController.isSample && (networkController.sampleSize > 0));
+            };
 
             $scope.switchView = function() {
                 if (!$scope.switchViewButtonEnabled) {
@@ -2819,6 +2826,12 @@ ndexApp.controller('networkController',
 
                 var networkQueryEdgeLimit = ndexSettings.networkQueryEdgeLimit;
 
+                networkController.isSamplePrevious   = networkController.isSample;
+                networkController.sampleSizePrevious = networkController.sampleSize;
+                networkController.isSample   = false;
+                networkController.sampleSize = 0;
+
+
                 // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                 if (edgeCount <= networkController.queryEdgeLimitToShowGraph) {
                     drawCXNetworkOnCanvas(network, false);
@@ -3030,6 +3043,9 @@ ndexApp.controller('networkController',
 
                 ndexSpinner.startSpinner(spinnerId);
                 drawCXNetworkOnCanvas(localNetwork,false);
+
+                networkController.isSample   = networkController.isSamplePrevious;
+                networkController.sampleSize = networkController.sampleSizePrevious;
 
                 var enableFiltering = true;
                 var setGridWidth = true;

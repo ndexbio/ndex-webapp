@@ -18,12 +18,12 @@
 
             <div class="cytoscapeCanvas" id="cytoscape-canvas" ng-style="{background: networkController.bgColor}"
                  ng-show="currentView == 'Graphic'">
+            </div>
 
-                <div id="messageOverlay"
-                     style="float:left; display: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
-                     ng-show="networkController.isSample && networkController.sampleSize > 0">
-                            (Sample: {{networkController.sampleSize}} edges)
-                </div>
+            <div id="messageOverlay"
+                 style="float:bottom; display: inline-block; position: absolute; top: 20px; right: 20px;font-size: 1.2em; color: #FF0000"
+                 ng-show="showNetworkSample()">
+                (Sample: {{networkController.sampleSize}} edges)
             </div>
 
             <tabset ng-show="currentView == 'Table'">
