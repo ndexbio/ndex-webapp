@@ -982,121 +982,6 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             return uuid;
         };
 
-
-        // TODO: delete factory.saveQueryResults -- it is obsolete.  No need to add Provenance Event to
-        // the network created by search since service already adds this event to provenance
-        factory.saveQueryResults = function (currentNetworkSummary, currentSubNetwork, rawCX, onSuccess, onError) {
-
-            // let's get provenance from rawCX
-
-            factory.createCXNetwork(rawCX, function(newNetworkURL) {
-
-                provenanceService.getNetworkProvenance(currentNetworkSummary.externalId,
-                    function (provenance) {
-
-                    var eventProperties= [];
-
-                    if (currentSubNetwork['queryString']) { // is neighborhood query
-                        eventProperties = [
-                            {
-                                name: 'query terms',
-                                value: currentSubNetwork['queryString'],
-                                type: 'SimplePropertyValuePair'
-                            },
-                            {
-                                name: 'query depth',
-                                value: currentSubNetwork['queryDepth'],
-                                type: 'SimplePropertyValuePair'
-                            }
-                        ];
-                    } else {
-
-                        if (currentSubNetwork.edgeFilter && currentSubNetwork.edgeFilter.propertySpecifications.length > 0) {
-                            _.forEach(currentSubNetwork.edgeFilter.propertySpecifications, function (filter) {
-                                var prop = {
-                                    'name': 'Edge Filter',
-                                    'value': filter.name + '=' + filter.value,
-                                    'type': 'SimplePropertyValuePair'
-                                };
-
-                                eventProperties.push(prop);
-                            });
-                        }
-
-                        if (currentSubNetwork.nodeFilter && currentSubNetwork.nodeFilter.propertySpecifications.length > 0) {
-                            _.forEach(currentSubNetwork.nodeFilter.propertySpecifications, function (filter) {
-                                var prop = {
-                                    'name': 'node Filter',
-                                    'value': filter.name + '=' + filter.value,
-                                    'type': 'SimplePropertyValuePair'
-                                };
-                                eventProperties.push(prop);
-                            });
-
-                        }
-                    }
-
-                    var newProvenance =
-                    {
-                        uri: ndexServerURI + '/network/' + currentNetworkSummary.externalId,
-                        properties: [
-                            {
-                                name: 'edge count',
-                                value: currentNetworkSummary.edgeCount,
-                                type: 'SimplePropertyValuePair'
-                            },
-                            {
-                                name: 'node count',
-                                value: currentNetworkSummary.nodeCount,
-                                type: 'SimplePropertyValuePair'
-                            },
-                            {
-                                name: 'dc:title',
-                                value: currentNetworkSummary.name,
-                                type: 'SimplePropertyValuePair'
-                            }
-                        ],
-                        creationEvent: {
-                            startedAtTime: currentNetworkSummary.creationTime,
-                            endedAtTime: currentNetworkSummary.creationTime,
-                            inputs: [provenance],
-                            type: 'ProvenanceEvent',
-                            eventType: 'Query',
-                            properties: eventProperties
-
-                        }
-                    };
-
-                    if (currentNetworkSummary.description) {
-                        newProvenance.properties.push({
-                            name: 'description',
-                            value: currentNetworkSummary.description,
-                            type: 'SimplePropertyValuePair'
-                        })
-                    }
-                    if (currentNetworkSummary.version) {
-                        newProvenance.properties.push({
-                            name: 'version',
-                            value: currentNetworkSummary.version,
-                            type: 'SimplePropertyValuePair'
-                        })
-                    }
-
-                    var newUUID = extractUuidFromUri(newNetworkURL);
-
-                    ndexService.setNetworkProvenanceV2(newUUID, newProvenance,
-                        function(success){
-                            onSuccess(success);
-                        },
-                        function(error){
-                            onError(error);
-                        })
-                },
-                 onError)
-                },
-                onError);
-        }
-
         factory.updateNetworkContextFromNdexV2 = function (contextArray, networkId, onSuccess, onError) {
             var rawCX = [
                 {"numberVerification": [{"longNumber": 281474976710655}]},
@@ -1262,7 +1147,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
          * @returns {undefined}
          */
 
-        factory.getNetworkProperty = function( currentNetworkSummary, subNetworkId, propertyName)
+        factory.getNetworkProperty = function(currentNetworkSummary, subNetworkId, propertyName)
         {
             if ('undefined'===typeof(currentNetworkSummary) || !propertyName) {
                 return undefined;

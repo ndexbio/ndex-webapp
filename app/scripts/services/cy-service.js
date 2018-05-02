@@ -537,38 +537,64 @@ angular.module('ndexServiceApp')
             return def;
         };
 
+        // there are 9 types of Node Shapes in Cytoscape 3.6.1 and 18 types of Node Shapes in Cytoscape.js 3.2.9;
+        // all Node Shapes of Cytoscape 3.6.1 map nicely to Node Body Shapes of Cytoscape.js 3.2.9.
         const NODE_SHAPE_MAP = {
-            'RECTANGLE': 'rectangle',
-            'ROUND_RECTANGLE': 'roundrectangle',
-            'TRIANGLE': 'triangle',
-            'PARALLELOGRAM': 'rhomboid',
-            'DIAMOND': 'diamond',
-            'ELLIPSE': 'ellipse',
-            'HEXAGON': 'hexagon',
-            'OCTAGON': 'octagon',
-            'VEE':	'vee'
+            'DIAMOND'         : 'diamond',
+            'ELLIPSE'         : 'ellipse',
+            'HEXAGON'         : 'hexagon',
+            'OCTAGON'         : 'octagon',
+            'PARALLELOGRAM'   : 'rhomboid',
+            'RECTANGLE'       : 'rectangle',
+            'ROUND_RECTANGLE' : 'roundrectangle',
+            'TRIANGLE'        : 'triangle',
+            'VEE'             : 'vee'
         };
 
+        // there are 22 arrow shapes in Cytoscape 3.6.1 and 10 arrow shapes in Cytoscape.js 3.2.9
         const ARROW_SHAPE_MAP = {
-            'T': 'tee',
-            'CROSS_DELTA': 'triangle-tee',
-            'DELTA' : 'triangle',
-            'CIRCLE' : 'circle',
-            'DIAMOND': 'diamond',
-            'ARROW': 'triangle',
-            'HALF_BOTTOM': 'triangle',
-            'HALF_TOP': 'triangle',
-            'NONE': 'none',
-            'SQUARE': 'square'
+            'ARROW'            : 'triangle',
+            'ARROW_SHORT'      : 'triangle',
+            'CIRCLE'           : 'circle',
+            'CROSS_DELTA'      : 'triangle-tee',
+            'CROSS_OPEN_DELTA' : 'triangle-tee',
+            'DELTA'            : 'triangle',
+            'DELTA_SHORT_1'    : 'triangle',
+            'DELTA_SHORT_2'    : 'triangle',
+            'DIAMOND'          : 'diamond',
+            'DIAMOND_SHORT_1'  : 'diamond',
+            'DIAMOND_SHORT_2'  : 'diamond',
+            'HALF_BOTTOM'      : 'triangle',
+            'HALF_CIRCLE'      : 'triangle',
+            'HALF_TOP'         : 'triangle',
+            'NONE'             : 'none',
+            'OPEN_CIRCLE'      : 'triangle',
+            'OPEN_DELTA'       : 'triangle',
+            'OPEN_DIAMOND'     : 'diamond',
+            'OPEN_HALF_CIRCLE' : 'triangle',
+            'OPEN_SQUARE'      : 'square',
+            'SQUARE'           : 'square',
+            'T'                : 'tee'
         };
 
+        // there are 16 line styles in Cytoscape 3.6.1 and 3 line styles in Cytoscape.js 3.2.9
         const LINE_STYLE_MAP = {
-            'SOLID': 'solid',
-            'DOT': 'dotted',
-            'DASH_DOT': 'dotted',
-            'LONG_DASH': 'dashed',
-            'EQUAL_DASH': 'dashed',
-            'MARQUEE_DASH': 'dashed'
+            'BACKWARD_SLASH'  : 'dashed',
+            'CONTIGUOUS_ARROW': 'solid',
+            'LONG_DASH'       : 'dashed',
+            'DASH_DOT'        : 'dotted',
+            'DOT'             : 'dotted',
+            'EQUAL_DASH'      : 'dashed',
+            'FORWARD_SLASH'   : 'dashed',
+            'MARQUEE_DASH'    : 'dashed',
+            'MARQUEE_DASH_DOT': 'dotted',
+            'MARQUEE_EQUAL'   : 'dashed',
+            'PARALLEL_LINES'  : 'solid',
+            'SEPARATE_ARROW'  : 'dashed',
+            'SINEWAVE'        : 'solid',
+            'SOLID'           : 'solid',
+            'VERTICAL_SLASH'  : 'dashed',
+            'ZIGZAG'          : 'solid'
         };
 
         const TEXT_ALIGN_MAP = {
@@ -635,7 +661,40 @@ angular.module('ndexServiceApp')
             'EDGE_SOURCE_ARROW_UNSELECTED_PAINT': {'att': 'source-arrow-color', 'type': 'color'}
         };
 
+        // https://www.cssfontstack.com/
         const FONT_FAMILY_MAP = {
+
+            //Sans-serif font stack
+            'Arial'                : 'Arial,Helvetica Neue,Helvetica,sans-serif',
+            'Arial Black'          : 'Arial Black,Arial Bold,Gadget,sans-serif',
+            'Arial Narrow'         : 'Arial Narrow,Arial,sans-serif',
+            'ArialRoundedMTBold'   : 'Arial Rounded MT Bold,Helvetica Rounded,Arial,sans-serif',
+
+            'Avant Garde'          : 'Avant Gard,Avantgarde,Century Gothic,CenturyGothic,AppleGothic,sans-serif',
+            'Calibri'              : 'Calibri,Candara,Segoe,"Segoe UI",Optima,Arial,sans-serif',
+            'Candara'              : 'Candara,Calibri,Segoe,"Segoe UI",Optima,Arial,sans-serif',
+            'Century Gothic'       : 'Century Gothic",CenturyGothic,AppleGothic,sans-serif',
+
+            'Franklin Gothic Medium': 'Franklin Gothic Medium,Franklin Gothic,ITC Franklin Gothic,Arial,sans-serif',
+            'Futura'                : 'Futura,Trebuchet MS,Arial,sans-serif',
+            'Geneva'                : 'Geneva,Tahoma,Verdana,sans-serif',
+            'Gill Sans'             : 'Gill Sans,Gill Sans MT,Calibri,sans-serif',
+
+            'Helvetica Neue'        : 'Helvetica Neue,Helvetica,Arial,sans-serif',
+            'Impact'                : 'Impact,Haettenschweiler,Franklin Gothic Bold,Charcoal,Helvetica Inserat,Bitstream Vera Sans Bold,Arial Black,sans-serif',
+            'Lucida Grande'         : 'Lucida Grande,Lucida Sans Unicode,Lucida Sans,Geneva,Verdana,sans-serif',
+            'Optima'                : 'Optima,Segoe,Segoe UI,Candara,Calibri,Arial,sans-serif',
+
+            'Segoe UI'              : 'Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif',
+            'Tahoma'                : 'Tahoma,Verdana,Segoe,sans-serif',
+            'Trebuchet MS'          : 'Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif',
+            'Verdana'               : 'Verdana,Geneva,sans-serif',
+
+
+            //Serif font stack
+
+
+
             'Braggadocio'  : 'Braggadocio',
             'Courier-Bold' : 'courier-bold',
             'Dialog'       : 'dialog',
@@ -690,6 +749,7 @@ angular.module('ndexServiceApp')
                     return shapeValue;
                 }
             } else if (cyVisualAttributeType === 'arrow') {
+                //console.log(visualAttributeValue);
                 var arrowValue = ARROW_SHAPE_MAP[visualAttributeValue];
                 if (arrowValue){
                     return arrowValue;
@@ -1028,13 +1088,12 @@ angular.module('ndexServiceApp')
                                         defaultNodeProperties['pie-size'] = '100%';
                                     }
                                     */
-                                    console.log();
 
-                                    defaultNodeProperties['pie-1-background-size'] = 10; //'function(ele) {  return 10; }';
-                                    defaultNodeProperties['pie-2-background-size'] = 15; //'function(ele) {  return 15; }';
-                                    defaultNodeProperties['pie-3-background-size'] = 20; //'function(ele) {  return 20; }';
-                                    defaultNodeProperties['pie-4-background-size'] = 25; //'function(ele) {  return 25; }';
-                                    defaultNodeProperties['pie-5-background-size'] = 30; //'function(ele) {  return 30; }';
+                                    //defaultNodeProperties['pie-1-background-size'] = 10; //'function(ele) {  return 10; }';
+                                    //defaultNodeProperties['pie-2-background-size'] = 15; //'function(ele) {  return 15; }';
+                                    //defaultNodeProperties['pie-3-background-size'] = 20; //'function(ele) {  return 20; }';
+                                    //defaultNodeProperties['pie-4-background-size'] = 25; //'function(ele) {  return 25; }';
+                                    //defaultNodeProperties['pie-5-background-size'] = 30; //'function(ele) {  return 30; }';
                                     defaultNodeProperties['pie-size']              = '80%';
                                 }
 

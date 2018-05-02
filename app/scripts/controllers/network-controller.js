@@ -3353,8 +3353,10 @@ ndexApp.controller('networkController',
                             };
 
                             if (networkController.subNetworkId != null) {
-                                networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId,"description");
-                                networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId,"version");
+                                networkController.currentNetwork.description =
+                                    networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,"description");
+                                networkController.currentNetwork.version =
+                                    networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,"version");
                             };
 
                             if (networkController.isLoggedInUser && (network['ownerUUID'] == sharedProperties.getCurrentUserId()) ) {
@@ -3413,17 +3415,21 @@ ndexApp.controller('networkController',
                             //getNetworkAdmins();
 
                             var sourceFormat =
-                                networkService.getNetworkProperty(networkController.subNetworkId,'ndex:sourceFormat');
+                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,'ndex:sourceFormat');
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
-                            networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId,'Reference');
-                            networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId,'rightsHolder');
-                            networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
+                            networkController.currentNetwork.reference =
+                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,'Reference');
+                            networkController.currentNetwork.rightsHolder =
+                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,'rightsHolder');
+                            networkController.currentNetwork.rights =
+                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId, 'rights');
                             networkController.otherProperties =
                                 _.sortBy(
-                                networkService.getPropertiesExcluding(networkController.subNetworkId,[
-                                    'rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
+                                networkService.getPropertiesExcluding(currentNetworkSummary,
+                                    networkController.subNetworkId,
+                                    ['rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
 
                             networkController.getAllNetworkSetsOwnedByUser(
                                 function(newNetworkSet) {
