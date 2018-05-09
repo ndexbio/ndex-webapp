@@ -185,11 +185,11 @@ ndexApp.controller('networkController',
             $scope.activateTab = function(tabName){
                 $scope.activeTab = tabName;
 
-                if('Edges' == tabName) {
+                if ('Edges' === tabName) {
                     $("#edgeGridId").height($(window).height() - 235);
                     $scope.edgeGridApi.core.refresh();
 
-                } else if ('Nodes' == tabName) {
+                } else if ('Nodes' === tabName) {
                     $("#nodeGridId").height($(window).height() - 235);
                     $scope.nodeGridApi.core.refresh();
                 }
@@ -1851,7 +1851,7 @@ ndexApp.controller('networkController',
 
                     var cv = document.getElementById(canvasName);
 
-                    try{
+                    try {
                         cy = cytoscape({
                             container: cv,
 
@@ -1867,8 +1867,37 @@ ndexApp.controller('networkController',
                             }
                         });
                     }
-                    catch(e){
-                        var defaultStyle = [{"selector":"node","style":{"background-color":"#f6eecb","background-opacity":0.8,"width":"40px","height":"40px","label":"data(name)","font-family":"Roboto, sans-serif"}},{"selector":"edge","style":{"line-color":"#75736c","width":"2px","font-family":"Roboto, sans-serif","text-opacity":0.8}},{"selector":"node:selected","style":{"color":"#fb1605","background-color":"yellow"}},{"selector":"edge:selected","style":{"label":"data(interaction)","color":"#fb1605","line-color":"yellow","width":6}}];
+                    catch (e) {
+                        var defaultStyle = [{
+                            "selector": "node",
+                            "style": {
+                                "background-color": "#f6eecb",
+                                "background-opacity": 0.8,
+                                "width": "40px",
+                                "height": "40px",
+                                "label": "data(name)",
+                                "font-family": "Roboto, sans-serif"
+                            }
+                        }, {
+                            "selector": "edge",
+                            "style": {
+                                "line-color": "#75736c",
+                                "width": "2px",
+                                "font-family": "Roboto, sans-serif",
+                                "text-opacity": 0.8
+                            }
+                        }, {
+                            "selector": "node:selected",
+                            "style": {"color": "#fb1605", "background-color": "yellow"}
+                        }, {
+                            "selector": "edge:selected",
+                            "style": {
+                                "label": "data(interaction)",
+                                "color": "#fb1605",
+                                "line-color": "yellow",
+                                "width": 6
+                            }
+                        }];
                         cy = cytoscape({
                             container: cv,
 
@@ -1887,31 +1916,29 @@ ndexApp.controller('networkController',
                     }
 
 
-
-
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
                     // edges, the event is triggered for each node/edge.
-                    cy.on ( 'select unselect',function (event) {
+                    cy.on('select unselect', function (event) {
                         clearTimeout(cy.nodesSelectionTimeout);
                         cy.nodesSelectionTimeout = setTimeout(function () {
                             var cxNodes = [];
                             var cxEdges = [];
                             _.forEach(cy.$("node:selected"), function (node) {
                                 var id = Number(node.id());
-                                cxNodes.push( networkService.getNodeInfo(id));
+                                cxNodes.push(networkService.getNodeInfo(id));
 
                             });
                             _.forEach(cy.$("edge:selected"), function (edge) {
                                 var idstr = edge.id();
-                                var id= Number(idstr.substring(1));
-                                cxEdges.push( networkService.getEdgeInfo(id));
+                                var id = Number(idstr.substring(1));
+                                cxEdges.push(networkService.getEdgeInfo(id));
                             });
 
 
                             $scope.$apply(function () {
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges}; //{'nodes': selectedNodes, 'edges': selectedEdges};
 
-                                if ( cxNodes.length ===0 && cxEdges.length ===0 ) {
+                                if (cxNodes.length === 0 && cxEdges.length === 0) {
                                     networkController.tabs[0].active = true;
                                     networkController.tabs[1].disabled = true;
                                     networkController.tabs[1].active = false;
@@ -1939,7 +1966,7 @@ ndexApp.controller('networkController',
                     var ndexDesc = attributeNameMap['ndex:description'];
                     var ndexExtLink = attributeNameMap['ndex:externalLink'];
 
-                    if ( ndexLink || ndexDesc || ndexExtLink) {
+                    if (ndexLink || ndexDesc || ndexExtLink) {
                         var tmpArry = [];
                         [ndexLink,ndexDesc, ndexExtLink].forEach(function(entry){
                             if (entry)
@@ -3314,7 +3341,11 @@ ndexApp.controller('networkController',
                             function (error) {
                                 console.log('unable to get the network owner info');
                             })
-                };
+                }
+            };
+
+            const getNetworkPropertyFromSummary = function (subNetworkId, attributeName) {
+                return networkService.getNetworkProperty(currentNetworkSummary, subNetworkId, attributeName);
             };
 
 
@@ -3336,13 +3367,15 @@ ndexApp.controller('networkController',
 
                             if (network && network.visibility) {
                                 networkController.visibility = network.visibility.toLowerCase();
-                            };
+                            }
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = "Untitled";
-                            };
+                            }
 
                             // subNetworkId is the current subNetwork we are displaying
+                            // If the network is a Cytoscape collection, we only handle the case that the collection has
+                            // only one subnetwork.
                             networkController.subNetworkId = uiMisc.getSubNetworkId(network);
 
                             networkController.noOfSubNetworks = uiMisc.getNoOfSubNetworks(network);
@@ -3350,21 +3383,19 @@ ndexApp.controller('networkController',
                             if (networkController.noOfSubNetworks >= 1) {
                                 $scope.disabledQueryTooltip =
                                     "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx";
-                            };
+                            }
 
                             if (networkController.subNetworkId != null) {
-                                networkController.currentNetwork.description =
-                                    networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,"description");
-                                networkController.currentNetwork.version =
-                                    networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,"version");
-                            };
+                                networkController.currentNetwork.description = getNetworkPropertyFromSummary(networkController.subNetworkId, "description");
+                                networkController.currentNetwork.version = getNetworkPropertyFromSummary(networkController.subNetworkId, "version");
+                            }
 
-                            if (networkController.isLoggedInUser && (network['ownerUUID'] == sharedProperties.getCurrentUserId()) ) {
+                            if (networkController.isLoggedInUser && (network['ownerUUID'] === sharedProperties.getCurrentUserId())) {
                                 networkController.isNetworkOwner = true;
-                            };
+                            }
 
                             // decide whether to enable the Open In Cytoscape button
-                            if (networkController.visibility == 'public' || networkController.accesskey) {
+                            if (networkController.visibility === 'public' || networkController.accesskey) {
 
                                 // Network is Public or (private and accessed through Share URL); enable the button
                                 // in case we have the right versions of Cytoscape and CyREST.
@@ -3372,7 +3403,7 @@ ndexApp.controller('networkController',
                                 if (networkController.visibility == 'private' && networkController.accesskey) {
                                     networkController.networkShareURL =
                                         uiMisc.buildNetworkURL(networkController.accesskey, networkExternalId);
-                                };
+                                }
 
                                 getCytoscapeAndCyRESTVersions();
 
@@ -3414,23 +3445,20 @@ ndexApp.controller('networkController',
                             networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
                             //getNetworkAdmins();
 
-                            var sourceFormat =
-                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,'ndex:sourceFormat');
+                            const sourceFormat =
+                                getNetworkPropertyFromSummary(networkController.subNetworkId, 'ndex:sourceFormat');
                             networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
                                 'Unknown' : sourceFormat;
 
-                            networkController.currentNetwork.reference =
-                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,'Reference');
-                            networkController.currentNetwork.rightsHolder =
-                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId,'rightsHolder');
-                            networkController.currentNetwork.rights =
-                                networkService.getNetworkProperty(currentNetworkSummary,networkController.subNetworkId, 'rights');
+                            networkController.currentNetwork.reference = getNetworkPropertyFromSummary(networkController.subNetworkId, 'Reference');
+                            networkController.currentNetwork.rightsHolder = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rightsHolder');
+                            networkController.currentNetwork.rights = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rights');
                             networkController.otherProperties =
                                 _.sortBy(
-                                networkService.getPropertiesExcluding(currentNetworkSummary,
-                                    networkController.subNetworkId,
-                                    ['rights','rightsHolder','Reference','ndex:sourceFormat','name','description','version']), 'predicateString');
+                                    networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
+                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
 
+                            //TODO: need to move this to 'add to my set' modal.
                             networkController.getAllNetworkSetsOwnedByUser(
                                 function(newNetworkSet) {
                                     ;
@@ -3456,7 +3484,84 @@ ndexApp.controller('networkController',
                     );
             };
 
-            var setTitlesForCytoscapeCollection = function() {
+
+            var initializeAsViewer = function (cxURL) {
+
+                networkService.getNiceCXNetworkFromURL(cxURL,
+                    function (niceCX) {
+                        $scope.openInCytoscapeTitle = "";
+                        networkController.currentNetwork = cxNetworkUtils.getPartialSummaryFromNiceCX(niceCX);
+                        currentNetworkSummary = networkController.currentNetwork;
+
+                        networkController.visibility = undefined;
+                        networkController.isAdmin = false;
+
+                        // subNetworkId is the current subNetwork we are displaying
+                        // If the network is a Cytoscape collection, we only handle the case that the collection has
+                        // only one subnetwork.
+                        networkController.subNetworkId = undefined; //uiMisc.getSubNetworkId(network);
+
+                        networkController.noOfSubNetworks = undefined; //uiMisc.getNoOfSubNetworks(network);
+
+                        $scope.disabledQueryTooltip =
+                            "This network is not in NDEx yet. You can operate on it.";
+
+
+                        /*   if (networkController.subNetworkId != null) {
+                               networkController.currentNetwork.description = networkService.getNetworkProperty(networkController.subNetworkId, "description");
+                               networkController.currentNetwork.version = networkService.getNetworkProperty(networkController.subNetworkId, "version");
+                           } */
+
+
+                        //enable the Open In Cytoscape button
+                        //getCytoscapeAndCyRESTVersions();
+
+
+                        resetBackgroudColor();
+                        drawCXNetworkOnCanvas(niceCX, false);
+
+                        networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
+
+                        const sourceFormat =
+                            networkService.getNetworkProperty(networkController.subNetworkId, 'ndex:sourceFormat');
+                        networkController.currentNetwork.sourceFormat = (undefined === sourceFormat) ?
+                            'Unknown' : sourceFormat;
+
+                        networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId, 'Reference');
+                        networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId, 'rightsHolder');
+                        networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
+                        networkController.otherProperties =
+                            _.sortBy(
+                                networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
+                                    'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
+
+                        /*   networkController.getAllNetworkSetsOwnedByUser(
+                               function (newNetworkSet) {
+                                   ;
+                               },
+                               function (data, status) {
+                                   ;
+                               }); */
+
+                        $scope.disableQuery = true;
+
+                        if (networkController.hasMultipleSubNetworks()) {
+                            setTitlesForCytoscapeCollection();
+                        } else {
+                            setDOITitle();
+                            setShareTitle();
+                        }
+
+                        setEditPropertiesTitle();
+                        setDeleteTitle();
+                    },
+                    function (error) {
+                        displayErrorMessage(error);
+                    }
+                );
+            };
+
+            var setTitlesForCytoscapeCollection = function () {
                 $scope.requestDOITitle = "This network is a Cytoscape collection. Cannot request DOI";
                 $scope.exportTitle     = "This network is a Cytoscape collection and cannot be exported";
                 $scope.upgradePermissionTitle =
@@ -3753,7 +3858,7 @@ ndexApp.controller('networkController',
                 if ("Graphic" == $scope.currentView) {
                     // no need to call ndexSpinner.stopSpinner() here since it
                     //will be called in drawCXNetworkOnCanvas->initCyGraphFromCyjsComponents()
-                    drawCXNetworkOnCanvas(localNetwork,false);
+                    drawCXNetworkOnCanvas(localNetwork, false);
 
                 } else {
 
@@ -3978,11 +4083,20 @@ ndexApp.controller('networkController',
 
             $(window).trigger('resize');
 
-             ndexSpinner.startSpinner(spinnerId);
+            ndexSpinner.startSpinner(spinnerId);
 
             uiMisc.hideSearchMenuItem();
 
-            initialize();
+            if ($routeParams.identifier !== undefined)
+                initialize();
+            else if ($routeParams.url !== undefined) {
+                var cxURL = $routeParams.url;
+                delete $routeParams.url;
+                initializeAsViewer(cxURL);
+            }
+            else
+                // TODO: Handle error
+                console.log("Unexpected route.");
         }
         
      ]
