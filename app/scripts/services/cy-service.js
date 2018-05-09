@@ -615,15 +615,173 @@ angular.module('ndexServiceApp')
             'SM' : 'bottom center'
         };
 
-        var getTextAlign = function(align){
-            if (!align){
-                return 'center';
+
+        const VALID_NODE_LABEL_POSITIONS = {
+            'NW'   :  0,
+            'N'    :  1,
+            'NE'   :  2,
+
+            'W'    :  3,
+            'C'    :  4,
+            'E'    :  5,
+
+            'SW'   :  6,
+            'S'    :  7,
+            'SE'   :  8,
+
+            'NONE' :  9
+        };
+
+        // 0 = 'text-halign'  1 = 'text-valign'
+        // {0: 'left', 1: 'center'} same as {'text-halign' : 'left', 'text-valign' : 'center'}
+        const CYTOSCAPE_TO_JS_NODE_LABEL_COOORDINATES = {
+            'C': {
+                'C'    : {'text-halign': 'center', 'text-valign': 'center'},  //  1
+                'E'    : {'text-halign': 'left',   'text-valign': 'center'},  //  2
+                'NONE' : {'text-halign': 'center', 'text-valign': 'center'},  //  3
+
+                'N'    : {'text-halign': 'center', 'text-valign': 'center'},  //  4
+                'NE'   : {'text-halign': 'left',   'text-valign': 'center'},  //  5
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'},  //  6
+
+                'S'    : {'text-halign': 'center', 'text-valign': 'center'},  //  7
+                'SE'   : {'text-halign': 'left',   'text-valign': 'center'},  //  8
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  //  9
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'center'}   // 10
+            },
+            'E': {
+                'C'    : {'text-halign': 'right',  'text-valign': 'center'},  // 11
+                'E'    : {'text-halign': 'center', 'text-valign': 'center'},  // 12
+                'NONE' : {'text-halign': 'right',  'text-valign': 'center'},  // 13
+
+                'N'    : {'text-halign': 'right',  'text-valign': 'center'},  // 14
+                'NE'   : {'text-halign': 'center', 'text-valign': 'center'},  // 15
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 16
+
+                'S'    : {'text-halign': 'right',  'text-valign': 'center'},  // 17
+                'SE'   : {'text-halign': 'center', 'text-valign': 'center'},  // 18
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 19
+
+                'W'   : {'text-halign': 'right',   'text-valign': 'center'}   // 20
+            },
+            'NONE': {
+                'C'    : {'text-halign': 'center', 'text-valign': 'center'},  // 21
+                'E'    : {'text-halign': 'left',   'text-valign': 'center'},  // 22
+                'NONE' : {'text-halign': 'center', 'text-valign': 'center'},  // 23
+
+                'N'    : {'text-halign': 'center', 'text-valign': 'center'},  // 24
+                'NE'   : {'text-halign': 'left',   'text-valign': 'center'},  // 25
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 26
+
+                'S'    : {'text-halign': 'center', 'text-valign': 'center'},  // 27
+                'SE'   : {'text-halign': 'left',   'text-valign': 'center'},  // 28
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 29
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'center'}   // 30
+            },
+            'N': {
+                'C'    : {'text-halign': 'center', 'text-valign': 'top'},    // 31
+                'E'    : {'text-halign': 'left',   'text-valign': 'top'},    // 32
+                'NONE' : {'text-halign': 'center', 'text-valign': 'top'},    // 33
+
+                'N'    : {'text-halign': 'center', 'text-valign': 'center'}, // 34
+                'NE'   : {'text-halign': 'left',   'text-valign': 'top'},    // 35
+                'NW'   : {'text-halign': 'right',  'text-valign': 'top'},    // 36
+
+                'S'    : {'text-halign': 'center', 'text-valign': 'top'},    // 37
+                'SE'   : {'text-halign': 'left',   'text-valign': 'top'},    // 38
+                'SW'   : {'text-halign': 'right',  'text-valign': 'top'},    // 39
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'top'}     // 40
+            },
+            'NE': {
+                'C'    : {'text-halign': 'right',  'text-valign': 'top'},    // 41
+                'E'    : {'text-halign': 'center', 'text-valign': 'top'},    // 42
+                'NONE' : {'text-halign': 'right',  'text-valign': 'top'},    // 43
+
+                'N'    : {'text-halign': 'right',  'text-valign': 'center'}, // 44
+                'NE'   : {'text-halign': 'center', 'text-valign': 'center'}, // 45
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'}, // 46
+
+                'S'    : {'text-halign': 'right',  'text-valign': 'top'},    // 47
+                'SE'   : {'text-halign': 'center', 'text-valign': 'top'},    // 48
+                'SW'   : {'text-halign': 'right',  'text-valign': 'top'},    // 49
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'top'}     // 50
+            },
+            'NW': {
+                'C'    : {'text-halign': 'left',  'text-valign': 'top'},    // 51
+                'E'    : {'text-halign': 'left',  'text-valign': 'top'},    // 52
+                'NONE' : {'text-halign': 'left',  'text-valign': 'top'},    // 53
+
+                'N'    : {'text-halign': 'left',  'text-valign': 'center'}, // 54
+                'NE'   : {'text-halign': 'left',  'text-valign': 'center'}, // 55
+                'NW'   : {'text-halign': 'center','text-valign': 'center'}, // 56
+
+                'S'    : {'text-halign': 'left',  'text-valign': 'top'},    // 57
+                'SE'   : {'text-halign': 'left',  'text-valign': 'top'},    // 58
+                'SW'   : {'text-halign': 'center','text-valign': 'top'},    // 59
+
+                'W'    : {'text-halign': 'center','text-valign': 'top'}     // 60
             }
-            var ta = TEXT_ALIGN_MAP[align.toUpperCase()];
-            if (ta){
-                return ta;
+        }
+
+        /*
+         * This function gets a string with 5 Cytoscape Node Label coordinates in the form
+         *
+         *  <Node Anchor>, <Label Anchor>, <Label Justification>, <X Offset>, <Y Offset>
+         *
+         *  where
+         *
+         *   <Node Anchor>         - one of the values from VALID_NODE_LABEL_POSITIONS
+         *   <Label Anchor>        - one of the values from VALID_NODE_LABEL_POSITIONS
+         *   <Label Justification> - one of the values: l, c, or r (for 'left', 'center' or 'right', respectively)
+         *   <X Offset>            - float number (negative or positive)
+         *   <Y Offset>            - float number (negative or positive)
+         *
+         *  example of cyLabelCoordinates: 'N,SW,c,0.00,0.00'
+         *
+         *  As of 9 May 2018, we only support <Node Anchor> and <Label Anchor>.
+         */
+        var getNodeLabelPosition = function(cyLabelCoordinates){
+            var textHalign = 'center';
+            var textValign = 'center';
+
+            var position = {
+                'text-halign' : textHalign,
+                'text-valign' : textValign
+            };
+
+            if (!cyLabelCoordinates){
+                return position;
             }
-            return 'center';
+
+            var cyLabelCoordinatesArray = cyLabelCoordinates.split(',');
+
+            if (cyLabelCoordinatesArray.length >= 2) {
+
+                var nodeAnchorCoordinate  = cyLabelCoordinatesArray[0];
+                var labelAnchorCoordinate = cyLabelCoordinatesArray[1];
+
+                if (nodeAnchorCoordinate) {
+                    nodeAnchorCoordinate = nodeAnchorCoordinate.toUpperCase();
+                }
+                if (labelAnchorCoordinate) {
+                    labelAnchorCoordinate = labelAnchorCoordinate.toUpperCase();
+                }
+                if (!(nodeAnchorCoordinate in VALID_NODE_LABEL_POSITIONS)) {
+                    nodeAnchorCoordinate = 'C';
+                }
+                if (!(labelAnchorCoordinate in VALID_NODE_LABEL_POSITIONS)) {
+                    labelAnchorCoordinate = 'C';
+                }
+
+                position =
+                    CYTOSCAPE_TO_JS_NODE_LABEL_COOORDINATES[nodeAnchorCoordinate][labelAnchorCoordinate];
+            }
+
+            return position;
         };
 
         const visualPropertyMap = {
@@ -1028,7 +1186,7 @@ angular.module('ndexServiceApp')
                     var elementType = vpElement['properties_of'];
                     if (elementType === 'nodes:default') {
 
-                        var nodeLabelPosition = null;
+                        var cyLabelPositionCoordinates = null;
                         var nodeLabelFontFace = null;
                         var defaultNodeProperties = {};
                         var node_size = null;
@@ -1041,7 +1199,7 @@ angular.module('ndexServiceApp')
                                     defaultNodeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                             } else {
                                 if (vp === 'NODE_LABEL_POSITION'){
-                                    nodeLabelPosition = value;
+                                    cyLabelPositionCoordinates = value;
                                 } else if (vp === 'NODE_LABEL_FONT_FACE'){
                                     nodeLabelFontFace  = value;
                                 } else if (vp === 'NODE_SELECTED_PAINT'){
@@ -1130,27 +1288,18 @@ angular.module('ndexServiceApp')
                             defaultNodeProperties['height'] = node_size;
                             defaultNodeProperties['width'] = node_size;
                         }
-                        if (nodeLabelPosition){
-                            var position = nodeLabelPosition.split(',');
-                            defaultNodeProperties['text-valign'] = getTextAlign(position[0]);
-                            defaultNodeProperties['text-halign'] = getTextAlign(position[1]);
 
-                            var textVerticalAlign = defaultNodeProperties['text-valign'].split(' ');
-                            if (Array.isArray(textVerticalAlign) &&
-                                textVerticalAlign.length == 2) {
-                                defaultNodeProperties['text-valign'] = textVerticalAlign[0];
-                                defaultNodeProperties['text-halign'] = textVerticalAlign[1];
-                            }
-                        } else {
-                            defaultNodeProperties['text-valign'] = 'center';
-                            defaultNodeProperties['text-halign'] = 'center';
-                        }
+                        var nodeLabelPosition = getNodeLabelPosition(cyLabelPositionCoordinates);
+
+                        defaultNodeProperties['text-valign'] = nodeLabelPosition['text-valign'];
+                        defaultNodeProperties['text-halign'] = nodeLabelPosition['text-halign'];
+
                         if (nodeLabelFontFace){
                             var font = nodeLabelFontFace.split(',');
                             defaultNodeProperties['font-family'] = font[0];
                             defaultNodeProperties['font-weight'] = font[1];
                         } else {
-                            defaultNodeProperties['font-family'] = 'SansSerif';
+                            defaultNodeProperties['font-family'] = 'sans-serif';
                             defaultNodeProperties['font-weight'] = 'normal';
                         }
                         var defaultNodeStyle = {'selector': 'node', 'css': defaultNodeProperties};
@@ -1289,28 +1438,10 @@ angular.module('ndexServiceApp')
                         var edgeSelector = 'edge[ id = \'e' + edgeId + '\' ]';
                         var edgeStyle = {'selector': edgeSelector, 'css': edgeProperties};
                         edge_specific_styles.push(edgeStyle);
-
-
                     }
                 });
             });
 
-
-
-
-            var retString = node_default_styles.concat(
-                node_default_mappings,
-                node_specific_styles,
-                edge_default_styles,
-                edge_default_mappings,
-                edge_specific_styles,
-                node_selected_styles,
-                edge_selected_styles);
-
-            return retString;
-
-            /*
-            // concatenate all of the style elements in order of specificity
             return node_default_styles.concat(
                 node_default_mappings,
                 node_specific_styles,
@@ -1319,7 +1450,6 @@ angular.module('ndexServiceApp')
                 edge_specific_styles,
                 node_selected_styles,
                 edge_selected_styles);
-            */
         };
 
 
