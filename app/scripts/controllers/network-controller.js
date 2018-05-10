@@ -820,6 +820,10 @@ ndexApp.controller('networkController',
             
             
             $scope.build_provenance_view = function() {
+                if (networkExternalId === undefined) {
+                    var prov = cxNetworkUtils.getProvenanceFromNiceCX(networkService.getCurrentNiceCX());
+                    provenanceService.setProvenanceObj(prov);
+                }
                 provenanceService.showProvenance(networkController);
             };
 
@@ -3504,7 +3508,8 @@ ndexApp.controller('networkController',
                         networkController.noOfSubNetworks = undefined; //uiMisc.getNoOfSubNetworks(network);
 
                         $scope.disabledQueryTooltip =
-                            "This network is not in NDEx yet. You can operate on it.";
+                            "This network is not in NDEx yet. Saving it to NDEx will enable more operations on it.";
+
 
 
                         /*   if (networkController.subNetworkId != null) {

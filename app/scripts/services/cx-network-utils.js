@@ -272,7 +272,6 @@ angular.module('ndexServiceApp')
           return niceCX['edgeAttributes'];
       };
 
-/*      removing these functions because they are no longer used anywhere. --cj
       var stringifyFunctionTerm = function (functionTerm) {
           var params = [];
           angular.forEach(functionTerm.args, function (parameter) {
@@ -362,7 +361,7 @@ angular.module('ndexServiceApp')
           }
       };
 
-*/
+
       
       var createCXFunctionTerm = function (oldJSONNetwork, jsonFunctionTerm ) {
          var functionTerm = { 'f': getBaseTermStr(oldJSONNetwork , jsonFunctionTerm.functionTermId)};
