@@ -3508,7 +3508,7 @@ ndexApp.controller('networkController',
                         networkController.noOfSubNetworks = undefined; //uiMisc.getNoOfSubNetworks(network);
 
                         $scope.disabledQueryTooltip =
-                            "This network is not in NDEx yet. Please Save it to NDEx to enable more operations on it.";
+                            "This network is not in NDEx yet. Saving it to NDEx will enable more operations on it.";
 
 
 
