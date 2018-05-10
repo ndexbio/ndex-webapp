@@ -1,4 +1,4 @@
-//'use strict';   //comment out this line because Safari doesn' allow using const in strict mood.
+//'use strict';   //comment out this line because Safari doesn't allow using const in strict mood.
 
 /**
  * @ngdoc service
@@ -76,23 +76,6 @@ angular.module('ndexServiceApp')
             return DEF_VISUAL_STYLE;
         };
 
-        var getCyAttributeName = function (attributeName, attributeNameMap) {
-
-            var cyAttributeName = attributeNameMap[attributeName];
-
-            if (!cyAttributeName) {
-                cyAttributeName = specialCaseAttributeMap[attributeName];
-                if(cyAttributeName)
-                    return cyAttributeName;
-
-                attributeNameMap[attributeName] = attributeName; // direct mapping
-                cyAttributeName = attributeName;
-            }
-
-            return cyAttributeName;
-
-        };
-
         // The attributeNameMap maps attribute names in niceCX to attribute names in cyjs.
         // In some cases, such as 'id', 'source', and 'target', cyjs uses reserved names and
         // any attribute names that conflict must be mapped.
@@ -104,6 +87,25 @@ angular.module('ndexServiceApp')
             'shared interaction': 'interaction'
 
         };
+
+        var getCyAttributeName = function (attributeName, attributeNameMap) {
+
+            var cyAttributeName = attributeNameMap[attributeName];
+
+            if (!cyAttributeName) {
+                cyAttributeName = specialCaseAttributeMap[attributeName];
+                if(cyAttributeName) {
+                    return cyAttributeName;
+                }
+
+                attributeNameMap[attributeName] = attributeName; // direct mapping
+                cyAttributeName = attributeName;
+            }
+
+            return cyAttributeName;
+
+        };
+
 
         var sanitizeAttributeNameMap = function (attributeNameMap){
             var attributeNames = _.keys(attributeNameMap);
@@ -157,7 +159,7 @@ angular.module('ndexServiceApp')
             var attrValue = (attributeObj && attributeObj.v && attributeObj.v[0]) ? attributeObj.v[0] : "";
             var retValue;
 
-            if (type == 'list_of_string' || type == 'list_of_boolean' ) {
+            if (type === 'list_of_string' || type === 'list_of_boolean') {
                 retValue = attrValue;
 
          /*   } else if (type == 'list_of_boolean') {
@@ -287,7 +289,7 @@ angular.module('ndexServiceApp')
                         node.position = {x: element.x, y: element.y};
                     } else {
                         console.log("no node for cartesian Node Id = " + nodeId);
-                    };
+                    }
                 });
             }
 
@@ -435,8 +437,8 @@ angular.module('ndexServiceApp')
          */
         var commaDelimitedListStringToStringList2 = function(list) {
 
-            var mapping = {};
-            var def = {m: mapping};
+            //var mapping = {};
+            //var def = {m: mapping};
 
             var result = [];
 
@@ -452,7 +454,7 @@ angular.module('ndexServiceApp')
             });
 
             return result;
-        }
+        };
 
 
 
@@ -597,25 +599,6 @@ angular.module('ndexServiceApp')
             'ZIGZAG'          : 'solid'
         };
 
-        const TEXT_ALIGN_MAP = {
-            'C' : 'center',
-            'T' : 'top',
-            'B' : 'bottom',
-            'L' : 'left',
-            'R' : 'right',
-            'S' : 'bottom',
-            'N' : 'top',
-            'NE' : 'top right',
-            'NW' : 'top left',
-            'NC' : 'top center',
-            'NM' : 'top center',
-            'SE' : 'bottom right',
-            'SW' : 'bottom left',
-            'SC' : 'bottom center',
-            'SM' : 'bottom center'
-        };
-
-
         const VALID_NODE_LABEL_POSITIONS = {
             'NW'   :  0,
             'N'    :  1,
@@ -632,8 +615,16 @@ angular.module('ndexServiceApp')
             'NONE' :  9
         };
 
-        // 0 = 'text-halign'  1 = 'text-valign'
-        // {0: 'left', 1: 'center'} same as {'text-halign' : 'left', 'text-valign' : 'center'}
+        /*
+         * Shall we replace
+         *      {'text-halign' : 'left', 'text-valign' : 'center'}
+         *
+         * with more compact
+         *      {0: 'left', 1: 'center'}
+         *
+         * where  0 = 'text-halign'  1 = 'text-valign'
+         * ?
+         */
         const CYTOSCAPE_TO_JS_NODE_LABEL_COOORDINATES = {
             'C': {
                 'C'    : {'text-halign': 'center', 'text-valign': 'center'},  //  1
@@ -711,21 +702,81 @@ angular.module('ndexServiceApp')
                 'W'    : {'text-halign': 'right',  'text-valign': 'top'}     // 50
             },
             'NW': {
-                'C'    : {'text-halign': 'left',  'text-valign': 'top'},    // 51
-                'E'    : {'text-halign': 'left',  'text-valign': 'top'},    // 52
-                'NONE' : {'text-halign': 'left',  'text-valign': 'top'},    // 53
+                'C'    : {'text-halign': 'left',  'text-valign': 'top'},     // 51
+                'E'    : {'text-halign': 'left',  'text-valign': 'top'},     // 52
+                'NONE' : {'text-halign': 'left',  'text-valign': 'top'},     // 53
 
-                'N'    : {'text-halign': 'left',  'text-valign': 'center'}, // 54
-                'NE'   : {'text-halign': 'left',  'text-valign': 'center'}, // 55
-                'NW'   : {'text-halign': 'center','text-valign': 'center'}, // 56
+                'N'    : {'text-halign': 'left',  'text-valign': 'center'},  // 54
+                'NE'   : {'text-halign': 'left',  'text-valign': 'center'},  // 55
+                'NW'   : {'text-halign': 'center','text-valign': 'center'},  // 56
 
-                'S'    : {'text-halign': 'left',  'text-valign': 'top'},    // 57
-                'SE'   : {'text-halign': 'left',  'text-valign': 'top'},    // 58
-                'SW'   : {'text-halign': 'center','text-valign': 'top'},    // 59
+                'S'    : {'text-halign': 'left',  'text-valign': 'top'},     // 57
+                'SE'   : {'text-halign': 'left',  'text-valign': 'top'},     // 58
+                'SW'   : {'text-halign': 'center','text-valign': 'top'},     // 59
 
-                'W'    : {'text-halign': 'center','text-valign': 'top'}     // 60
+                'W'    : {'text-halign': 'center','text-valign': 'top'}      // 60
+            },
+            'S': {
+                'C'    : {'text-halign': 'center','text-valign': 'bottom'},  // 61
+                'E'    : {'text-halign': 'left',  'text-valign': 'bottom'},  // 62
+                'NONE' : {'text-halign': 'center','text-valign': 'bottom'},  // 63
+
+                'N'    : {'text-halign': 'center','text-valign': 'bottom'},  // 64
+                'NE'   : {'text-halign': 'left',  'text-valign': 'bottom'},  // 65
+                'NW'   : {'text-halign': 'right', 'text-valign': 'bottom'},  // 66
+
+                'S'    : {'text-halign': 'center','text-valign': 'center'},  // 67
+                'SE'   : {'text-halign': 'left',  'text-valign': 'bottom'},  // 68
+                'SW'   : {'text-halign': 'right', 'text-valign': 'bottom'},  // 69
+
+                'W'    : {'text-halign': 'right', 'text-valign': 'bottom'}   // 70
+            },
+            'SE': {
+                'C'    : {'text-halign': 'right',  'text-valign': 'bottom'},  // 71
+                'E'    : {'text-halign': 'center', 'text-valign': 'bottom'},  // 72
+                'NONE' : {'text-halign': 'right',  'text-valign': 'bottom'},  // 73
+
+                'N'    : {'text-halign': 'right',  'text-valign': 'bottom'},  // 74
+                'NE'   : {'text-halign': 'center', 'text-valign': 'bottom'},  // 75
+                'NW'   : {'text-halign': 'right',  'text-valign': 'bottom'},  // 76
+
+                'S'    : {'text-halign': 'right',  'text-valign': 'center'},  // 77
+                'SE'   : {'text-halign': 'center', 'text-valign': 'center'},  // 78
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 79
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'bottom'}   // 80
+            },
+            'SW': {
+                'C'    : {'text-halign': 'left', 'text-valign': 'bottom'},    // 81
+                'E'    : {'text-halign': 'left', 'text-valign': 'bottom'},    // 82
+                'NONE' : {'text-halign': 'left', 'text-valign': 'bottom'},    // 83
+
+                'N'    : {'text-halign': 'left',  'text-valign': 'bottom'},   // 84
+                'NE'   : {'text-halign': 'left',  'text-valign': 'bottom'},   // 85
+                'NW'   : {'text-halign': 'center','text-valign': 'bottom'},   // 86
+
+                'S'    : {'text-halign': 'left',  'text-valign': 'center'},   // 87
+                'SE'   : {'text-halign': 'left',  'text-valign': 'center'},   // 88
+                'SW'   : {'text-halign': 'center','text-valign': 'center'},   // 89
+
+                'W'    : {'text-halign': 'center','text-valign': 'bottom'}    // 90
+            },
+            'W': {
+                'C'    : {'text-halign': 'left', 'text-valign': 'center'},    // 91
+                'E'    : {'text-halign': 'left', 'text-valign': 'center'},    // 92
+                'NONE' : {'text-halign': 'left', 'text-valign': 'center'},    // 93
+
+                'N'    : {'text-halign': 'left',  'text-valign': 'center'},   // 94
+                'NE'   : {'text-halign': 'left',  'text-valign': 'center'},   // 95
+                'NW'   : {'text-halign': 'center','text-valign': 'center'},   // 96
+
+                'S'    : {'text-halign': 'left',  'text-valign': 'center'},   // 97
+                'SE'   : {'text-halign': 'left',  'text-valign': 'center'},   // 98
+                'SW'   : {'text-halign': 'center','text-valign': 'center'},   // 99
+
+                'W'    : {'text-halign': 'center','text-valign': 'center'}   // 100
             }
-        }
+        };
 
         /*
          * This function gets a string with 5 Cytoscape Node Label coordinates in the form
@@ -734,23 +785,29 @@ angular.module('ndexServiceApp')
          *
          *  where
          *
-         *   <Node Anchor>         - one of the values from VALID_NODE_LABEL_POSITIONS
-         *   <Label Anchor>        - one of the values from VALID_NODE_LABEL_POSITIONS
-         *   <Label Justification> - one of the values: l, c, or r (for 'left', 'center' or 'right', respectively)
-         *   <X Offset>            - float number (negative or positive)
-         *   <Y Offset>            - float number (negative or positive)
+         *     <Node Anchor>         - one of the values from VALID_NODE_LABEL_POSITIONS
+         *     <Label Anchor>        - one of the values from VALID_NODE_LABEL_POSITIONS
+         *     <Label Justification> - one of the values: l, c, or r (for 'left', 'center' or 'right', respectively)
+         *     <X Offset>            - float number (negative or positive)
+         *     <Y Offset>            - float number (negative or positive)
          *
          *  example of cyLabelCoordinates: 'N,SW,c,0.00,0.00'
          *
-         *  As of 9 May 2018, we only support <Node Anchor> and <Label Anchor>.
+         *  As of 9 May 2018, we only support/process/(extract from cyLabelCoordinates) <Node Anchor> and <Label Anchor>.
+         *
+         *  The function returns a javascript map with Javascript.js Node Label coordinates in the form
+         *
+         *      {
+         *          'text-halign' : <halign>,   // halign is in ['left', 'center', 'right']
+         *          'text-valign' : <valign>    // valign is in ['top',  'center', 'bottom']
+         *      }
+         *
          */
-        var getNodeLabelPosition = function(cyLabelCoordinates){
-            var textHalign = 'center';
-            var textValign = 'center';
 
+        var getNodeLabelPosition = function(cyLabelCoordinates){
             var position = {
-                'text-halign' : textHalign,
-                'text-valign' : textValign
+                'text-halign' : 'center',
+                'text-valign' : 'center'
             };
 
             if (!cyLabelCoordinates){
@@ -909,17 +966,6 @@ angular.module('ndexServiceApp')
             return attProps.type;
         };
 
-        var mappingStyle = function (elementType, vp, type, definition, attributeNameMap) {
-            var def = parseMappingDefinition(definition);
-            if (type === 'DISCRETE') {
-                return discreteMappingStyle(elementType, vp, def, attributeNameMap);
-            } else if (type === 'CONTINUOUS') {
-                return continuousMappingStyle(elementType, vp, def, attributeNameMap);
-            } else if (type === 'PASSTHROUGH') {
-                return passthroughMappingStyle(elementType, vp, def, attributeNameMap);
-            }
-        };
-
         var getCyVisualAttributeValue = function(visualAttributeValue, cyVisualAttributeType){
             if (cyVisualAttributeType === 'number') {
                 return cyNumberFromString(visualAttributeValue);
@@ -974,8 +1020,8 @@ angular.module('ndexServiceApp')
 
             var colDataType = def.T;
 
-        //    var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
-        //    var regExToCheckIfFloatNumber = /^-{0,1}\d+\.\d*$/;
+            //    var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
+            //    var regExToCheckIfFloatNumber = /^-{0,1}\d+\.\d*$/;
 
             _.forEach(def.m, function (pair) {
                 var cyDataAttributeValue = pair.K;
@@ -983,23 +1029,22 @@ angular.module('ndexServiceApp')
                 var cyVisualAttributeValue = getCyVisualAttributeValue(visualAttributeValue, cyVisualAttributeType);
 
                 // check if cyDataAttributeValue is a valid number (float or integer)
-          //      var isValidNumber =
-          //          regExToCheckIfIntNumber.test(cyDataAttributeValue) ||
-          //          regExToCheckIfFloatNumber.test(cyDataAttributeValue);
+                //      var isValidNumber =
+                //          regExToCheckIfIntNumber.test(cyDataAttributeValue) ||
+                //          regExToCheckIfFloatNumber.test(cyDataAttributeValue);
 
-                var cySelector =  colDataType != 'string' && colDataType != 'boolean' ?
+                var cySelector =  colDataType !== 'string' && colDataType !== 'boolean' ?
                     elementType + '[' + cyDataAttribute + ' = ' + cyDataAttributeValue + ']'  :
                     elementType + '[' + cyDataAttribute + ' = \'' + cyDataAttributeValue + '\']';
 
                 var cyVisualAttributePair = {};
                 cyVisualAttributePair[cyVisualAttribute] = cyVisualAttributeValue;
                 var element = {'selector': cySelector, 'css': cyVisualAttributePair};
-             //   console.log(element);
+                //   console.log(element);
                 elements.push(element);
             });
             return elements;
         };
-
 
         var continuousMappingStyle_aux = function (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements) {
             var lastPointIndex = Object.keys(def.m).length - 1;
@@ -1094,9 +1139,9 @@ angular.module('ndexServiceApp')
                 return elements;  // empty result, vp not handled
             }
             var ll = Object.prototype.toString.call( cyVisualAttributeObj );
-            if(  ll != '[object Array]' ) {
+            if(  ll !== '[object Array]' ) {
                 cyVisualAttributeObj = [ cyVisualAttributeObj];
-            };
+            }
 
             var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
@@ -1129,23 +1174,35 @@ angular.module('ndexServiceApp')
             return elements;
         };
 
-
+        var mappingStyle = function (elementType, vp, type, definition, attributeNameMap) {
+            var def = parseMappingDefinition(definition);
+            if (type === 'DISCRETE') {
+                return discreteMappingStyle(elementType, vp, def, attributeNameMap);
+            } else if (type === 'CONTINUOUS') {
+                return continuousMappingStyle(elementType, vp, def, attributeNameMap);
+            } else if (type === 'PASSTHROUGH') {
+                return passthroughMappingStyle(elementType, vp, def, attributeNameMap);
+            }
+        };
 
         // get the color from the network visual property and convert it to CSS format
         factory.cyBackgroundColorFromNiceCX = function (niceCX) {
             //console.log(niceCX);
             var result = null;
             var visualProps ;
-            if ( niceCX.cyVisualProperties )
+            if ( niceCX.cyVisualProperties ) {
                 visualProps = niceCX.cyVisualProperties;
-            else if ( niceCX.visualProperties )
+            }
+            else if ( niceCX.visualProperties ) {
                 visualProps = niceCX.visualProperties;
-            else
+            }
+            else {
                 return null;
+            }
 
             _.forEach(visualProps, function (vpAspectElement) {
                     _.forEach(vpAspectElement, function (vpElement) {
-                        var elementType = vpElement['properties_of'];
+                        var elementType = vpElement.properties_of;
                         if (elementType === 'network') {
                            result =  vpElement.properties.NETWORK_BACKGROUND_PAINT;
                             return false;
@@ -1174,8 +1231,9 @@ angular.module('ndexServiceApp')
                 visualProperties = niceCX.cyVisualProperties;
             } else if ( niceCX.visualProperties ) {
                visualProperties = niceCX.visualProperties;
-            } else
+            } else {
                 return DEF_VISUAL_STYLE;
+            }
 
             // TODO handle cases with multiple views
 
@@ -1183,7 +1241,7 @@ angular.module('ndexServiceApp')
             _.forEach(visualProperties, function (vpAspectElement) {
                 _.forEach(vpAspectElement, function (vpElement) {
                     //console.log(vpElement);
-                    var elementType = vpElement['properties_of'];
+                    var elementType = vpElement.properties_of;
                     if (elementType === 'nodes:default') {
 
                         var cyLabelPositionCoordinates = null;
@@ -1226,7 +1284,7 @@ angular.module('ndexServiceApp')
                                     var pieChartObj = JSON.parse(pieChartStr[0]);
 
                                     if (pieChartObj && pieChartObj.cy_colors && Array.isArray(pieChartObj.cy_colors)) {
-                                        var backgroundColor = {};
+                                        //var backgroundColor = {};
 
                                         var i = 1;
 
@@ -1284,9 +1342,9 @@ angular.module('ndexServiceApp')
                             }
                         });
 
-                        if ( node_size && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'true') {
-                            defaultNodeProperties['height'] = node_size;
-                            defaultNodeProperties['width'] = node_size;
+                        if ( node_size && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'true') {
+                            defaultNodeProperties.height = node_size;
+                            defaultNodeProperties.width = node_size;
                         }
 
                         var nodeLabelPosition = getNodeLabelPosition(cyLabelPositionCoordinates);
@@ -1309,10 +1367,9 @@ angular.module('ndexServiceApp')
                             //console.log(mapping);
                             //console.log('VP = ' + vp);
                             // need to check if the nodeSizedLocked is true for NODE_HEIGHT, NODE_WIDTH, and NODE_SIZE
-                            if ( !((vp ==='NODE_HEIGHT' || vp ==='NODE_HEIGHT')
-                                       && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'true') &&
-
-                                !(vp ==='NODE_SIZE' &&( !vpElement.dependencies.nodeSizeLocked || (vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'false')))
+                            if ( !((vp ==='NODE_HEIGHT' || vp ==='NODE_HEIGHT') &&
+                                vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'true') &&
+                                !(vp ==='NODE_SIZE' &&( !vpElement.dependencies.nodeSizeLocked || (vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'false')))
                             ) {
 
                                 elementType = 'node';
@@ -1326,22 +1383,24 @@ angular.module('ndexServiceApp')
                         var defaultEdgeProperties = {};
                         var selectedEdgeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
+                            var cyVisualAttribute = null;
+                            var cyVisualAttributeType = null;
                             //console.log('default node property ' + vp + ' = ' + value);
                             //special cases for locked edge color
-                            if (vpElement.dependencies.arrowColorMatchesEdge.toLowerCase() == 'true') {
+                            if (vpElement.dependencies.arrowColorMatchesEdge.toLowerCase() === 'true') {
                                 if(vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" &&
                                     vp !== "EDGE_TARGET_ARROW_UNSELECTED_PAINT" ) {
-                                    if ( vp == "EDGE_UNSELECTED_PAINT") {   // add extra handling since the color is locked
-                                        var cyVisualAttribute = getCyVisualAttributeForVP("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
-                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
+                                    if ( vp === "EDGE_UNSELECTED_PAINT") {   // add extra handling since the color is locked
+                                        cyVisualAttribute = getCyVisualAttributeForVP("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                         cyVisualAttribute = getCyVisualAttributeForVP("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
                                         cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                     }
-                                    var cyVisualAttribute = getCyVisualAttributeForVP(vp);
+                                    cyVisualAttribute = getCyVisualAttributeForVP(vp);
                                     if (cyVisualAttribute) {
-                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                     } else if (vp === 'EDGE_STROKE_SELECTED_PAINT'){
                                         selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
@@ -1353,10 +1412,10 @@ angular.module('ndexServiceApp')
 
                                 }
                             } else {
-                                if ( vp != "EDGE_UNSELECTED_PAINT") {
-                                    var cyVisualAttribute = getCyVisualAttributeForVP(vp);
+                                if ( vp !== "EDGE_UNSELECTED_PAINT") {
+                                    cyVisualAttribute = getCyVisualAttributeForVP(vp);
                                     if (cyVisualAttribute) {
-                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                     } else if (vp === 'EDGE_STROKE_SELECTED_PAINT') {
                                         selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
@@ -1380,23 +1439,24 @@ angular.module('ndexServiceApp')
                             //console.log(mapping);
                             //console.log('VP = ' + vp);
                             elementType = 'edge';
+                            var styles = null;
 
                             if (vpElement.dependencies.arrowColorMatchesEdge ==='true' ) {
                                 if (vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
                                     vp !== 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' )
                                 {
                                     if (vp === 'EDGE_UNSELECTED_PAINT') {
-                                        var styles = mappingStyle(elementType, 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
+                                        styles = mappingStyle(elementType, 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
                                         edge_default_mappings = edge_default_mappings.concat(styles);
                                         styles = mappingStyle(elementType, 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
                                         edge_default_mappings = edge_default_mappings.concat(styles);
                                     }
-                                    var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
+                                    styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
                                     edge_default_mappings = edge_default_mappings.concat(styles);
                                 }
                             } else {
 
-                                var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
+                                styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
                                 edge_default_mappings = edge_default_mappings.concat(styles);
                             }
                         });
@@ -1411,7 +1471,7 @@ angular.module('ndexServiceApp')
 
                     } else if (elementType === 'nodes'){
                         // 'bypass' setting node specific properties
-                        var nodeId = vpElement['applies_to'];
+                        var nodeId = vpElement.applies_to;
                         var nodeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
@@ -1426,7 +1486,7 @@ angular.module('ndexServiceApp')
                         
                     } else if (elementType === 'edges'){
                         // 'bypass' setting edge specific properties
-                        var edgeId = vpElement['applies_to'];
+                        var edgeId = vpElement.applies_to;
                         var edgeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
@@ -1534,9 +1594,11 @@ angular.module('ndexServiceApp')
 
 
 
+        /*
         factory.getCy = function () {
             return cy;
         };
+        */
 
         return factory;
 
