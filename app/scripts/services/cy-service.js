@@ -1153,7 +1153,6 @@ angular.module('ndexServiceApp')
             });
 
             return elements;
-
         };
 
         var passthroughMappingStyle = function (elementType, vp, def, attributeNameMap) {
@@ -1271,7 +1270,7 @@ angular.module('ndexServiceApp')
                                     defaultNodeProperties['text-wrap'] = "wrap";
                                     defaultNodeProperties['text-max-width'] = value;
 
-                                } else if ( vp === 'NODE_CUSTOMGRAPHICS_1') {
+                                } else if (vp === 'NODE_CUSTOMGRAPHICS_1') {
 
                                     if (value && !value.startsWith('org.cytoscape.PieChart')) {
                                         return; // continue the loop
@@ -1284,59 +1283,48 @@ angular.module('ndexServiceApp')
                                     var pieChartObj = JSON.parse(pieChartStr[0]);
 
                                     if (pieChartObj && pieChartObj.cy_colors && Array.isArray(pieChartObj.cy_colors)) {
-                                        //var backgroundColor = {};
-
                                         var i = 1;
 
                                         _.forEach (pieChartObj.cy_colors, function(color) {
                                             var pieSliceColor = 'pie-' + i + '-background-color';
-                                            //var pieSliceSize  = 'pie-' + i + '-background-size';
 
                                             defaultNodeProperties[pieSliceColor] = color;
-                                            //defaultNodeProperties[pieSliceSize]  =  20;
-
-                                            //defaultNodeProperties[pieSliceSize]  =
-                           //                     'mapData(' +
-//
                                             i++;
                                         });
                                     }
 
-                                    /*
+
                                     if (pieChartObj && pieChartObj.cy_dataColumns && Array.isArray(pieChartObj.cy_dataColumns)) {
 
                                         var j = 1;
 
-                                        var r1 = pieChartObj.cy_range[0];
-                                        var r2 = pieChartObj.cy_range[1];
+                                        var normalizedNames = attributeNameMap;
+                                        var pieColumns      = {};
+
+                                        for (var l=0; l<pieChartObj.cy_dataColumns.length; l++) {
+                                            pieColumns[pieChartObj.cy_dataColumns[l]] = l;
+                                        }
 
                                         _.forEach (pieChartObj.cy_dataColumns, function(column) {
+
                                             var pieSliceSize  = 'pie-' + j + '-background-size';
 
-                                            //defaultNodeProperties[pieSliceSize] =
-                                            //    'mapData(' + column + ',' + r1 + ',' + r2 + ',0, 100)';
+                                            defaultNodeProperties[pieSliceSize]  =  function(ele) {
+                                                var data     = ele.json().data;
+                                                var totalSum = 0;
 
-                                            defaultNodeProperties[pieSliceSize] =
-                                                'mapData(' + column + ',' + 0 + ',' +
-                                                pieChartObj.cy_dataColumns[0] + '+' +
-                                                pieChartObj.cy_dataColumns[1] + '+' +
-                                                pieChartObj.cy_dataColumns[2] + '+' +
-                                                pieChartObj.cy_dataColumns[3] +
-                                                pieChartObj.cy_dataColumns[4] + ',0, 100)';
+                                                for (var key in pieColumns) {
+                                                    totalSum = totalSum + data[normalizedNames[key]];
+                                                }
+
+                                                return (totalSum > 0) ? (100.0 * data[normalizedNames[column]]/totalSum) : 0;
+                                            };
 
                                             j++;
                                         });
-
-                                        defaultNodeProperties['pie-size'] = '100%';
                                     }
-                                    */
 
-                                    //defaultNodeProperties['pie-1-background-size'] = 10; //'function(ele) {  return 10; }';
-                                    //defaultNodeProperties['pie-2-background-size'] = 15; //'function(ele) {  return 15; }';
-                                    //defaultNodeProperties['pie-3-background-size'] = 20; //'function(ele) {  return 20; }';
-                                    //defaultNodeProperties['pie-4-background-size'] = 25; //'function(ele) {  return 25; }';
-                                    //defaultNodeProperties['pie-5-background-size'] = 30; //'function(ele) {  return 30; }';
-                                    defaultNodeProperties['pie-size']              = '80%';
+                                    defaultNodeProperties['pie-size'] = '80%';
                                 }
 
                             }
