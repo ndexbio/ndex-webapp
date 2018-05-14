@@ -8,7 +8,7 @@ ndexApp.controller('networkController',
                   sharedProperties, $scope, $rootScope, $routeParams, $modal, $modalStack,
                   $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST , $timeout /*, $filter /*, $location, $q */)
         {
-            var self = this;
+            //var self = this;
 
             var cy;
 
@@ -24,7 +24,7 @@ ndexApp.controller('networkController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
-            networkController.isLoggedInUser = (window.currentNdexUser != null);
+            networkController.isLoggedInUser = (window.currentNdexUser !== null);
             networkController.networkOwner = {};
 
             networkController.privilegeLevel = "None";
@@ -83,6 +83,8 @@ ndexApp.controller('networkController',
             networkController.queryEdgeLimitToShowTableOnly = 3000;
             networkController.warningShown                  = false;
 
+            var checkCytoscapeStatusTimer     = null;
+            var checkCytoscapeStatusInSeconds = 5;
 
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip();
@@ -142,7 +144,7 @@ ndexApp.controller('networkController',
                 $('#switchViewButtonId2').tooltip('hide')
                     .attr('data-original-title', message)
                     .tooltip('show');
-            };
+            }
 
             $scope.changeCytoscapeButtonTitle = function() {
                 $('#openInCytoscapeButtonId').tooltip('hide')
@@ -281,8 +283,6 @@ ndexApp.controller('networkController',
             };
 
             var localNetwork = undefined;
-
-            var spinner = undefined;
 
             networkController.hasMultipleSubNetworks = function() {
                 return (networkController.noOfSubNetworks >= 1);
@@ -700,7 +700,11 @@ ndexApp.controller('networkController',
 
             // this function gets called when user navigates away from the current Graphic View page.
             // (can also use "$locationChangeStart" instead of "$destroy"
-            $scope.$on("$destroy", function(){
+            $scope.$on("$destroy", function() {
+
+                if (checkCytoscapeStatusTimer) {
+                    clearInterval(checkCytoscapeStatusTimer);
+                }
 
                 // hide the Search menu item in Nav Bar
                 $scope.$parent.showSearchMenu = false;
@@ -3409,7 +3413,11 @@ ndexApp.controller('networkController',
                                         uiMisc.buildNetworkURL(networkController.accesskey, networkExternalId);
                                 }
 
-                                getCytoscapeAndCyRESTVersions();
+                                if (!checkCytoscapeStatusTimer) {
+                                    checkCytoscapeStatusTimer = setInterval(getCytoscapeAndCyRESTVersions,
+                                        checkCytoscapeStatusInSeconds * 1000);
+                                }
+
 
                             } else if (networkController.isNetworkOwner) {
 
@@ -3419,7 +3427,10 @@ ndexApp.controller('networkController',
 
                                 networkController.getStatusOfShareableURL(
                                     function() {
-                                        getCytoscapeAndCyRESTVersions();
+                                        if (!checkCytoscapeStatusTimer) {
+                                            checkCytoscapeStatusTimer = setInterval(getCytoscapeAndCyRESTVersions,
+                                                checkCytoscapeStatusInSeconds * 1000);
+                                        }
                                     },
                                     function() {
                                         ; // do nothing here
