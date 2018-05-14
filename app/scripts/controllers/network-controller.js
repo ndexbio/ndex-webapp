@@ -3413,6 +3413,7 @@ ndexApp.controller('networkController',
                                         uiMisc.buildNetworkURL(networkController.accesskey, networkExternalId);
                                 }
 
+                                getCytoscapeAndCyRESTVersions();
                                 if (!checkCytoscapeStatusTimer) {
                                     checkCytoscapeStatusTimer = setInterval(getCytoscapeAndCyRESTVersions,
                                         checkCytoscapeStatusInSeconds * 1000);
@@ -3427,6 +3428,7 @@ ndexApp.controller('networkController',
 
                                 networkController.getStatusOfShareableURL(
                                     function() {
+                                        getCytoscapeAndCyRESTVersions();
                                         if (!checkCytoscapeStatusTimer) {
                                             checkCytoscapeStatusTimer = setInterval(getCytoscapeAndCyRESTVersions,
                                                 checkCytoscapeStatusInSeconds * 1000);
