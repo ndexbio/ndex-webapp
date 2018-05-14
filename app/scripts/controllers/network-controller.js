@@ -24,7 +24,7 @@ ndexApp.controller('networkController',
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
-            networkController.isLoggedInUser = (window.currentNdexUser !== null);
+            networkController.isLoggedInUser = (window.currentNdexUser != null);
             networkController.networkOwner = {};
 
             networkController.privilegeLevel = "None";
