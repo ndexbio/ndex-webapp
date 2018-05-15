@@ -580,9 +580,10 @@
 
         window.googleSSO = true;
 
-        window.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) {
+     //   window.isSafari = false;
+           /*/constructor/i.test(window.HTMLElement) || (function (p) {
                 return p.toString() === "[object SafariRemoteNotification]";
-            })(!window['safari'] || safari.pushNotification);
+            })(!window['safari'] || safari.pushNotification); */
 
         if (typeof ndexSettings === 'undefined') {
             alert("Update your ndex-webapp-config.js file");

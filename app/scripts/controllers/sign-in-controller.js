@@ -16,7 +16,7 @@ ndexApp.controller('signInController', [ 'ndexService', 'ndexUtility', 'sharedPr
         $scope.signIn.newUser = {};
 
       //  var ff= navigator.userAgent;
-        $scope.isNotSafari = !window.isSafari;
+     //   $scope.isNotSafari = !window.isSafari;
 
 
         if (!$scope.googleSSO)
