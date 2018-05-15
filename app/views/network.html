@@ -181,7 +181,7 @@
                                ng-if="!isDOIPending()"
                                data-toggle="tooltip"
                                data-placement="bottom"
-                               ng-mouseover="changeTitle3(this)"
+                               ng-mouseover="changeTitle3()"
                                ngclipboard
                                data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
                                class="actionsLabel btn btn-primary btn-sm">
@@ -260,7 +260,7 @@
                                        ng-hide="!networkController.networkShareURL"
                                        data-toggle="tooltip"
                                        data-placement="bottom"
-                                       ng-mouseover="changeTitle(this)"
+                                       ng-mouseover="changeTitle()"
                                        ngclipboard
                                        data-clipboard-text="{{networkController.networkShareURL}}"
                                        class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
@@ -274,7 +274,7 @@
                                        ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
                                        data-toggle="tooltip"
                                        data-placement="bottom"
-                                       ng-mouseover="changeTitle2(this)"
+                                       ng-mouseover="changeTitle2()"
                                        ngclipboard
                                        data-clipboard-text="{{networkController.networkURL}}"
                                        class="actionsLabel btn btn-primary btn-xs">Copy URL
