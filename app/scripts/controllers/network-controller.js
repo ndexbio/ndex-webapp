@@ -76,7 +76,7 @@ ndexApp.controller('networkController',
             //$modalStack.dismissAll('close');
 
             $scope.query = null;
-            networkController.searchString = "";
+            networkController.searchString = '';
 
 
             networkController.queryEdgeLimitToShowGraph     = 1000;
@@ -113,13 +113,13 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             }
             $scope.changeTitle = function() {
-                setTooltip("Copy network share URL to clipboard");
+                setTooltip('Copy network share URL to clipboard');
             };
             $scope.changeTitle2 = function() {
-                setTooltip2("Copy network URL to clipboard");
+                setTooltip2('Copy network URL to clipboard');
             };
             $scope.changeTitle3 = function() {
-                setTooltip3("Copy network DOI to clipboard");
+                setTooltip3('Copy network DOI to clipboard');
             };
             clipboard.on('success', function() {
                 setTooltip('Copied');
@@ -183,17 +183,17 @@ ndexApp.controller('networkController',
             };
 
 
-            $scope.activeTab = "Edges";
+            $scope.activeTab = 'Edges';
 
             $scope.activateTab = function(tabName){
                 $scope.activeTab = tabName;
 
                 if ('Edges' === tabName) {
-                    $("#edgeGridId").height($(window).height() - 235);
+                    $('#edgeGridId').height($(window).height() - 235);
                     $scope.edgeGridApi.core.refresh();
 
                 } else if ('Nodes' === tabName) {
-                    $("#nodeGridId").height($(window).height() - 235);
+                    $('#nodeGridId').height($(window).height() - 235);
                     $scope.nodeGridApi.core.refresh();
                 }
             };
@@ -239,7 +239,7 @@ ndexApp.controller('networkController',
             };
 
             networkController.tabs = [
-                {"heading": "Network Info", 'active':true},
+                {'heading': 'Network Info', 'active':true},
                 {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
                 {'heading': 'Provenance', 'active': false},
                 {'heading': 'Advanced Query', 'hidden': true, 'active': false}
@@ -259,20 +259,20 @@ ndexApp.controller('networkController',
             networkController.otherProperties = [];
 
 
-            $scope.requestDOITitle           = "";
-            $scope.exportTitle               = "";
-            $scope.upgradePermissionTitle    = "";
-            $scope.shareTitle                = "";
-            $scope.deleteTitle               = "";
-            $scope.openInCytoscapeTitle      = "Checking status ...";
+            $scope.requestDOITitle           = '';
+            $scope.exportTitle               = '';
+            $scope.upgradePermissionTitle    = '';
+            $scope.shareTitle                = '';
+            $scope.deleteTitle               = '';
+            $scope.openInCytoscapeTitle      = 'Checking status ...';
 
-            $scope.disabledQueryTooltip      = "The Advanced Query feature is being improved and will be back soon!";
+            $scope.disabledQueryTooltip      = 'The Advanced Query feature is being improved and will be back soon!';
 
             $scope.disableQuery = false;
 
             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
-            var spinnerId = "spinnerId";
+            var spinnerId = 'spinnerId';
 
             $scope.showAdvancedQuery = true;
 
@@ -316,7 +316,7 @@ ndexApp.controller('networkController',
             var getCitationLink = function (identifier) {
                 //if( !networkController.hasCitation(citationId) )
                 //    return "javaScript:void(0)";
-                var retLink = "";
+                var retLink = '';
 
                 if (identifier) {
                     if (identifier.startsWith('http')) {
@@ -330,7 +330,7 @@ ndexApp.controller('networkController',
 
             var getCitations = function(citationsIDs)
             {
-                var citations = (localNetwork && localNetwork.citations) ? localNetwork.citations : "";
+                var citations = (localNetwork && localNetwork.citations) ? localNetwork.citations : '';
 
                 var result = [];
                 for (var i=0; i<citationsIDs.length; i++)
@@ -415,13 +415,13 @@ ndexApp.controller('networkController',
 
                 }
 
-                var splitString = attribute.split(":");
+                var splitString = attribute.split(':');
                 if ((splitString.length !== 2) && (splitString.length !== 3)) {
                     return attributeValue;
                 }
 
                 var prefix = splitString[0].toLowerCase();
-                var value  = (splitString.length === 3) ? (splitString[1] + ":" + splitString[2]) : splitString[1];
+                var value  = (splitString.length === 3) ? (splitString[1] + ':' + splitString[2]) : splitString[1];
                 var URI;
 
                 if (prefix in networkController.context) {
@@ -754,7 +754,7 @@ ndexApp.controller('networkController',
 
             var parseNdexMarkupValue = function ( value ) {
                 return {n:  value.replace(/(\[(.*)\])?\(.*\)$/, '$2'),
-                    id: value.replace(/(\[.*\])?\((.*)\)$/, "$2")};
+                    id: value.replace(/(\[.*\])?\((.*)\)$/, '$2')};
             };
 
             $scope.getInternalNetworkUUID = function(nodeAttributeInternalLink)
@@ -827,35 +827,35 @@ ndexApp.controller('networkController',
 
             networkController.searchDepths = [
                 {
-                    "name": "1-step",
-                    "description": "1-step",
-                    "value": 1,
-                    "id": "1"
+                    'name': '1-step',
+                    'description': '1-step',
+                    'value': 1,
+                    'id': '1'
                 },
                 {
-                    "name": "2-step",
-                    "description": "2-step",
-                    "value": 2,
-                    "id": "2"
+                    'name': '2-step',
+                    'description': '2-step',
+                    'value': 2,
+                    'id': '2'
                 },
                 {
-                    "name": "Interconnect",
-                    "description": "Interconnect",
-                    "value": 3,
-                    "id": "3"
+                    'name': 'Interconnect',
+                    'description': 'Interconnect',
+                    'value': 3,
+                    'id': '3'
                 }
             ];
 
             networkController.searchDepth = {
-                "name": "1-step",
-                "description": "1-step",
-                "value": 1,
-                "id": "1"
+                'name': '1-step',
+                'description': '1-step',
+                'value': 1,
+                'id': '1'
             };
 
 
-            $scope.currentView = "Graphic";
-            $scope.buttonLabel = "Table";
+            $scope.currentView = 'Graphic';
+            $scope.buttonLabel = 'Table';
             $scope.switchViewButtonEnabled = true;
             $scope.beforeQueryView = null;
 
@@ -869,8 +869,8 @@ ndexApp.controller('networkController',
                     return null;
                 }
 
-                var urls = "";
-                var url  = "";
+                var urls = '';
+                var url  = '';
 
                 _.forEach(attribute, function (e) {
                     var markup = parseNdexMarkupValue(e);
@@ -880,7 +880,7 @@ ndexApp.controller('networkController',
                         url = '<a target=\"_blank\" href=\"' + markup.id + '\">' + (markup.n ? markup.n : 'external link') + '</a>';
                         url = url.replace(/<br\s*\/?>/gi,'');
                         url = url.replace(/&nbsp;&nbsp;&nbsp;/gi,'&nbsp;');
-                        url = url + "&nbsp;&nbsp;&nbsp;";
+                        url = url + '&nbsp;&nbsp;&nbsp;';
 
                         urls = urls + url;
                     }
@@ -907,7 +907,7 @@ ndexApp.controller('networkController',
 
                     url = url.replace(/<br\s*\/?>/gi,'');
                     url = url.replace(/&nbsp;&nbsp;&nbsp;/gi,'&nbsp;');
-                    url = url + "&nbsp;&nbsp;&nbsp;";
+                    url = url + '&nbsp;&nbsp;&nbsp;';
                 }
 
                 return url;
@@ -939,33 +939,33 @@ ndexApp.controller('networkController',
                     }
                     catch (e) {
                         var defaultStyle = [{
-                            "selector": "node",
-                            "style": {
-                                "background-color": "#f6eecb",
-                                "background-opacity": 0.8,
-                                "width": "40px",
-                                "height": "40px",
-                                "label": "data(name)",
-                                "font-family": "Roboto, sans-serif"
+                            'selector': 'node',
+                            'style': {
+                                'background-color': '#f6eecb',
+                                'background-opacity': 0.8,
+                                'width': '40px',
+                                'height': '40px',
+                                'label': 'data(name)',
+                                'font-family': 'Roboto, sans-serif'
                             }
                         }, {
-                            "selector": "edge",
-                            "style": {
-                                "line-color": "#75736c",
-                                "width": "2px",
-                                "font-family": "Roboto, sans-serif",
-                                "text-opacity": 0.8
+                            'selector': 'edge',
+                            'style': {
+                                'line-color': '#75736c',
+                                'width': '2px',
+                                'font-family': 'Roboto, sans-serif',
+                                'text-opacity': 0.8
                             }
                         }, {
-                            "selector": "node:selected",
-                            "style": {"color": "#fb1605", "background-color": "yellow"}
+                            'selector': 'node:selected',
+                            'style': {'color': '#fb1605', 'background-color': 'yellow'}
                         }, {
-                            "selector": "edge:selected",
-                            "style": {
-                                "label": "data(interaction)",
-                                "color": "#fb1605",
-                                "line-color": "yellow",
-                                "width": 6
+                            'selector': 'edge:selected',
+                            'style': {
+                                'label': 'data(interaction)',
+                                'color': '#fb1605',
+                                'line-color': 'yellow',
+                                'width': 6
                             }
                         }];
                         cy = cytoscape({
@@ -993,12 +993,12 @@ ndexApp.controller('networkController',
                         cy.nodesSelectionTimeout = setTimeout(function () {
                             var cxNodes = [];
                             var cxEdges = [];
-                            _.forEach(cy.$("node:selected"), function (node) {
+                            _.forEach(cy.$('node:selected'), function (node) {
                                 var id = Number(node.id());
                                 cxNodes.push(networkService.getNodeInfo(id));
 
                             });
-                            _.forEach(cy.$("edge:selected"), function (edge) {
+                            _.forEach(cy.$('edge:selected'), function (edge) {
                                 var idstr = edge.id();
                                 var id = Number(idstr.substring(1));
                                 cxEdges.push(networkService.getEdgeInfo(id));
@@ -1232,7 +1232,7 @@ ndexApp.controller('networkController',
                     var nodeObj = networkService.getNodeInfo(nodeId);
                     var nodeName = networkService.getNodeName(nodeObj);
 
-                    var row = {"Name": nodeName};
+                    var row = {'Name': nodeName};
 
                     if (nodeAttributes) {
 
@@ -1247,14 +1247,14 @@ ndexApp.controller('networkController',
                                 var attributeObj = nodeAttrs[key1];
                                 var attributeObjName = attributeObj.n;
 
-                                if (attributeObjName && attributeObjName.startsWith("__")) {
+                                if (attributeObjName && attributeObjName.startsWith('__')) {
                                     continue;
                                 }
 
                                 if (attributeObjName && ((attributeObjName === 'alias') || (attributeObjName === 'relatedTo'))) {
                                     row[key1] = attributeObj;
                                 } else {
-                                    row[key1] = (attributeObj.v) ? attributeObj.v : "";
+                                    row[key1] = (attributeObj.v) ? attributeObj.v : '';
                                 }
                             }
                         }
@@ -1284,7 +1284,7 @@ ndexApp.controller('networkController',
                     return;
                 }
 
-                var longestName = "Name";
+                var longestName = 'Name';
                 for (var key in nodes) {
                     // we need to add the nodes.hasOwnProperty(key) check to
                     // silence the JSHint warning
@@ -1325,10 +1325,10 @@ ndexApp.controller('networkController',
                             cellToolTip: false,
                             enableFiltering: false,
                             enableSorting: false,
-                            cellTemplate: "<div class='text-center'><h6>" +
-                            "<a ng-click='grid.appScope.showNodeCitations(COL_FIELD)' ng-show='grid.appScope.getNumNodeCitations(COL_FIELD) > 0'>" +
-                            "{{grid.appScope.getNumNodeCitations(COL_FIELD)}}" +
-                            "</h6></div>"
+                            cellTemplate: '<div class="text-center"><h6>' +
+                            '<a ng-click="grid.appScope.showNodeCitations(COL_FIELD)" ng-show="grid.appScope.getNumNodeCitations(COL_FIELD) > 0">' +
+                            '{{grid.appScope.getNumNodeCitations(COL_FIELD)}}' +
+                            '</h6></div>'
                         };
                     columnDefs.push(citationsHeader);
                 }
@@ -1368,7 +1368,7 @@ ndexApp.controller('networkController',
 
                             var columnDef;
 
-                            if ((nodeAttributteProperty === "alias") || (nodeAttributteProperty === "relatedTo")) {
+                            if ((nodeAttributteProperty === 'alias') || (nodeAttributteProperty === 'relatedTo')) {
                                 columnDef = {
                                     field: nodeAttributteProperty,
                                     displayName: nodeAttributteProperty,
@@ -1377,26 +1377,26 @@ ndexApp.controller('networkController',
                                     enableFiltering: filteringEnabled,
                                     //cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
 
-                                    cellTemplate: "<div class='text-center'><h6>" +
-                                    "<a ng-click='grid.appScope.showNodeAttributes(COL_FIELD)' ng-show='grid.appScope.getNumNodeAttributes(COL_FIELD) > 0'>" +
-                                    "{{grid.appScope.getNumNodeAttributes(COL_FIELD)}}" +
-                                    "</a></h6></div>"
+                                    cellTemplate: '<div class="text-center"><h6>' +
+                                    '<a ng-click="grid.appScope.showNodeAttributes(COL_FIELD)" ng-show="grid.appScope.getNumNodeAttributes(COL_FIELD) > 0">' +
+                                    '{{grid.appScope.getNumNodeAttributes(COL_FIELD)}}' +
+                                    '</a></h6></div>'
                                 };
 
                             } else if (nodeAttributteProperty === ndexInternalLink) {
 
-                                var sampleUUIDToCalcFieldWidth = "cfab341c-362d-11e5-8ac5-06603eb7f303";
+                                var sampleUUIDToCalcFieldWidth = 'cfab341c-362d-11e5-8ac5-06603eb7f303';
 
                                 columnDef = {
                                     field: nodeAttributteProperty,
-                                    displayName: "View Network",
+                                    displayName: 'View Network',
                                     cellTooltip: true,
                                     minWidth: calcColumnWidth(sampleUUIDToCalcFieldWidth, false),
                                     enableFiltering: filteringEnabled,
-                                    cellTemplate: "<a class='ui-grid-cell-contents hideLongLine' " +
-                                    "ng-bind-html='grid.appScope.getInternalNetworkUUID(COL_FIELD)' " +
-                                    "ng-href='{{grid.appScope.getURLForMapNode(COL_FIELD)}}' target='_blank'>" +
-                                    "</a>"
+                                    cellTemplate: '<a class="ui-grid-cell-contents hideLongLine" ' +
+                                    'ng-bind-html="grid.appScope.getInternalNetworkUUID(COL_FIELD)" ' +
+                                    'ng-href="{{grid.appScope.getURLForMapNode(COL_FIELD)}}" target="_blank">' +
+                                    '</a>'
                                 };
 
                             } else {
@@ -1406,7 +1406,7 @@ ndexApp.controller('networkController',
                                     cellTooltip: true,
                                     minWidth: calcColumnWidth(nodeAttributteProperty, false),
                                     enableFiltering: filteringEnabled,
-                                    cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
+                                    cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>'
                                 };
                             }
                             nodeAttributesHeaders[nodeAttributteProperty] = columnDef;
@@ -1429,7 +1429,7 @@ ndexApp.controller('networkController',
                 }
 
                 var windowHeight = $(window).height() - 235;
-                $("#nodeGridId").height(windowHeight);
+                $('#nodeGridId').height(windowHeight);
                 $scope.nodeGridApi.grid.gridHeight = windowHeight;
 
                 refreshNodeTable(network);
@@ -1457,10 +1457,10 @@ ndexApp.controller('networkController',
                     var targeteNodeObj = networkService.getNodeInfo(edgeObj.t);
                     var target = networkService.getNodeName(targeteNodeObj);
 
-                    var row = {"Source Node": source, "Interaction": interaction, "Target Node": target};
+                    var row = {'Source Node': source, 'Interaction': interaction, 'Target Node': target};
 
                     if (edgeCitations) {
-                        row.citation = (edgeCitations[edgeKey]) ? edgeKey : "";
+                        row.citation = (edgeCitations[edgeKey]) ? edgeKey : '';
                     }
 
                     if (edgeAttributes) {
@@ -1469,7 +1469,7 @@ ndexApp.controller('networkController',
                             // silence the JSHint warning
                             // Warning: Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check
                             if (edgeAttributes[edgeKey].hasOwnProperty(key)) {
-                                if (key.startsWith("__")) {
+                                if (key.startsWith('__')) {
                                     continue;
                                 }
                                 if (key.toLowerCase() === 'pmid') {
@@ -1477,7 +1477,7 @@ ndexApp.controller('networkController',
                                     continue;
                                 }
                                 var attributeValue = edgeAttributes[edgeKey][key].v;
-                                row[key] = (attributeValue) ? attributeValue : "";
+                                row[key] = (attributeValue) ? attributeValue : '';
                             }
                         }
                     }
@@ -1490,9 +1490,9 @@ ndexApp.controller('networkController',
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
 
-                var longestSubject = "";    // source
-                var longestPredicate = "";
-                var longestObject = "";     // target
+                var longestSubject   = '';    // source
+                var longestPredicate = '';
+                var longestObject    = '';     // target
 
                 if (!edges) {
                     return;
@@ -1505,9 +1505,9 @@ ndexApp.controller('networkController',
                 {
                     var edgeKey = edgeKeys[i];
 
-                    var predicate = edges[edgeKey].i ? (edges[edgeKey].i) : "";
-                    var subject = network.nodes[edges[edgeKey].s].n ? network.nodes[edges[edgeKey].s].n : "";
-                    var object = network.nodes[edges[edgeKey].t].n ? network.nodes[edges[edgeKey].t].n : "";
+                    var predicate = edges[edgeKey].i ? (edges[edgeKey].i) : '';
+                    var subject = network.nodes[edges[edgeKey].s].n ? network.nodes[edges[edgeKey].s].n : '';
+                    var object = network.nodes[edges[edgeKey].t].n ? network.nodes[edges[edgeKey].t].n : '';
 
                     longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
                     longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
@@ -1555,10 +1555,10 @@ ndexApp.controller('networkController',
                             minWidth: calcColumnWidth('citation'),
                             enableFiltering: true,
                             enableSorting: true,
-                            cellTemplate: "<div class='text-center'><h6>" +
-                            "<a ng-click='grid.appScope.showEdgeCitations(COL_FIELD)' ng-show='grid.appScope.getNumEdgeCitations(COL_FIELD) > 0'>" +
-                            "{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}" +
-                            "</h6></div>"
+                            cellTemplate: '<div class="text-center"><h6>' +
+                            '<a ng-click="grid.appScope.showEdgeCitations(COL_FIELD)" ng-show="grid.appScope.getNumEdgeCitations(COL_FIELD) > 0">' +
+                            '{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}' +
+                            '</h6></div>'
                         };
                     columnDefs.push(citationsHeader);
                 }
@@ -1637,7 +1637,7 @@ ndexApp.controller('networkController',
                     }
                 }
                 var windowHeight = $(window).height() - 235;
-                $("#edgeGridId").height(windowHeight);
+                $('#edgeGridId').height(windowHeight);
                 $scope.edgeGridApi.grid.gridHeight = windowHeight;
 
                 refreshEdgeTable(network);
@@ -1648,12 +1648,12 @@ ndexApp.controller('networkController',
                     return;
                 }
 
-                if ($scope.currentView === "Graphic") {
+                if ($scope.currentView === 'Graphic') {
                     // switch to table view
-                    $scope.currentView = "Table";
-                    $scope.buttonLabel = "Graph";
+                    $scope.currentView = 'Table';
+                    $scope.buttonLabel = 'Graph';
 
-                    setTooltipForSwitchViewButton("Switch to Graphic View");
+                    setTooltipForSwitchViewButton('Switch to Graphic View');
 
                     var enableFiltering = true;
                     var setGridWidth = true;
@@ -1678,16 +1678,16 @@ ndexApp.controller('networkController',
 
                         var dismissModal = true;
 
-                        ndexNavigation.openConfirmationModal(title, message, "Switch to Graph", "Cancel", dismissModal,
+                        ndexNavigation.openConfirmationModal(title, message, 'Switch to Graph', 'Cancel', dismissModal,
                             function () {
 
                                 networkController.warningShown = true;
 
                                 // switch to graphic view
-                                $scope.currentView = "Graphic";
-                                $scope.buttonLabel = "Table";
+                                $scope.currentView = 'Graphic';
+                                $scope.buttonLabel = 'Table';
 
-                                setTooltipForSwitchViewButton("Switch to Table View");
+                                setTooltipForSwitchViewButton('Switch to Table View');
 
                                 if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -1703,10 +1703,10 @@ ndexApp.controller('networkController',
                     } else {
 
                         // switch to graphic view
-                        $scope.currentView = "Graphic";
-                        $scope.buttonLabel = "Table";
+                        $scope.currentView = 'Graphic';
+                        $scope.buttonLabel = 'Table';
 
-                        setTooltipForSwitchViewButton("Switch to Table View");
+                        setTooltipForSwitchViewButton('Switch to Table View');
 
                         if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -1743,8 +1743,8 @@ ndexApp.controller('networkController',
 
             $scope.networkToCytoscape = function() {
 
-                $scope.openInCytoscapeTitle = "Opening " + networkController.currentNetwork.name +
-                    " in Cytoscape...";
+                $scope.openInCytoscapeTitle = 'Opening ' + networkController.currentNetwork.name +
+                    ' in Cytoscape...';
 
                 var serverURL  = cyREST.getNdexServerUriHTTP();
 
@@ -1757,7 +1757,7 @@ ndexApp.controller('networkController',
                     postData.accessKey = accesskey;
 
                 } else if ((networkController.visibility === 'private') && networkController.networkShareURL) {
-                    var splitURLArray = networkController.networkShareURL.split("accesskey=");
+                    var splitURLArray = networkController.networkShareURL.split('accesskey=');
                     if (splitURLArray.length === 2) {
                         postData.accessKey = splitURLArray[1];
                     }
@@ -1766,23 +1766,23 @@ ndexApp.controller('networkController',
                 cyREST.exportNetworkToCytoscape(postData,
                     function() {
                         // show the "Opened" tooltip ...
-                        $scope.openInCytoscapeTitle = "Opened";
+                        $scope.openInCytoscapeTitle = 'Opened';
                         $scope.changeCytoscapeButtonTitle();
 
                         // remove the "Opened" after 2 secs
                         $timeout( function(){
-                            $scope.openInCytoscapeTitle = "";
+                            $scope.openInCytoscapeTitle = '';
                         }, 2000 );
                     },
                     function() {
 
                         console.log('unable to open network in Cytoscape error');
 
-                        $scope.openInCytoscapeTitle = "Unable to open this network in Cytoscape";
+                        $scope.openInCytoscapeTitle = 'Unable to open this network in Cytoscape';
                         $scope.changeCytoscapeButtonTitle();
 
                         $timeout( function(){
-                            $scope.openInCytoscapeTitle = "";
+                            $scope.openInCytoscapeTitle = '';
                         }, 2000 );
 
                     });
@@ -1795,7 +1795,7 @@ ndexApp.controller('networkController',
 
 
             var enableSimpleQueryElements = function () {
-                var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
+                var nodes = document.getElementById('simpleQueryNetworkViewId').getElementsByTagName('*');
                 for(var i = 0; i < nodes.length; i++){
                     nodes[i].disabled = false;
                 }
@@ -1805,7 +1805,7 @@ ndexApp.controller('networkController',
 
             // this function gets called when user navigates away from the current Graphic View page.
             // (can also use "$locationChangeStart" instead of "$destroy"
-            $scope.$on("$destroy", function() {
+            $scope.$on('$destroy', function() {
 
                 if (checkCytoscapeStatusTimer) {
                     clearInterval(checkCytoscapeStatusTimer);
@@ -1898,7 +1898,7 @@ ndexApp.controller('networkController',
 
                 attributeNames = _.keys(nodeAttributesMap);
                 _.forEach(attributeNames, function(attributeName) {
-                    if (attributeName && (attributeName.toLowerCase() !== ("ndex:internallink"))) {
+                    if (attributeName && (attributeName.toLowerCase() !== ('ndex:internallink'))) {
                         networkController.nodePropertyNamesForAdvancedQuery.push(attributeName);
                     }
                 });
@@ -1928,7 +1928,7 @@ ndexApp.controller('networkController',
                 networkController.tabs[3].hidden = false;
 
                 // disable all elements in the Simple Query
-                var nodes = document.getElementById("simpleQueryNetworkViewId").getElementsByTagName('*');
+                var nodes = document.getElementById('simpleQueryNetworkViewId').getElementsByTagName('*');
                 for(var j = 0; j < nodes.length; j++){
                     nodes[j].disabled = true;
                 }
@@ -1937,7 +1937,7 @@ ndexApp.controller('networkController',
             };
             
             
-            $scope.build_provenance_view = function() {
+            $scope.buildProvenanceView = function() {
                 if (networkExternalId === undefined) {
                     var prov = cxNetworkUtils.getProvenanceFromNiceCX(networkService.getCurrentNiceCX());
                     provenanceService.setProvenanceObj(prov);
@@ -2151,7 +2151,7 @@ ndexApp.controller('networkController',
                 // i.e., they are for internal use and should not be shown to the user
                 _.forEach(attributeNames, function(attribute) {
 
-                    if (attribute && !attribute.startsWith("__")) {
+                    if (attribute && !attribute.startsWith('__')) {
                         attributeNamesWithoutHiddenElements.push(attribute);
                     }
                 });
@@ -2238,7 +2238,7 @@ ndexApp.controller('networkController',
                     return null;
                 }
 
-                var attributeValue = "";
+                var attributeValue = '';
 
                 if (attribute instanceof Object) {
                     if (attribute.v && Array.isArray(attribute.v) && (attribute.v.length > 0) &&
@@ -2248,11 +2248,11 @@ ndexApp.controller('networkController',
 
                             for (var i = 0; i < 5; i++) {
                                 if (i === 0) {
-                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                        getStringAttributeValue(attribute.v[i]) + "<br>";
+                                    attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                        getStringAttributeValue(attribute.v[i]) + '<br>';
                                 } else {
-                                    attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                        getStringAttributeValue(attribute.v[i]) + "<br>";
+                                    attributeValue = attributeValue +  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                        getStringAttributeValue(attribute.v[i]) + '<br>';
                                 }
                             }
 
@@ -2260,11 +2260,11 @@ ndexApp.controller('networkController',
 
                             for (var i1 = 0; i1 < attribute.v.length; i1++) {
                                 if (i1 === 0) {
-                                    attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                        getStringAttributeValue(attribute.v[i1]) + "<br>";
+                                    attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                        getStringAttributeValue(attribute.v[i1]) + '<br>';
                                 } else {
-                                    attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                        getStringAttributeValue(attribute.v[i1]) + "<br> ";
+                                    attributeValue = attributeValue + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                        getStringAttributeValue(attribute.v[i1]) + '<br> ';
                                 }
                             }
                         }
@@ -2285,11 +2285,11 @@ ndexApp.controller('networkController',
 
                                 for (var i2 = 0; i2 < 5; i2++) {
                                     if (i2 === 0) {
-                                        attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                            getStringAttributeValue(attribute[i2]) + "<br>";
+                                        attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                            getStringAttributeValue(attribute[i2]) + '<br>';
                                     } else {
-                                        attributeValue = attributeValue +  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                            getStringAttributeValue(attribute[i2]) + "<br>";
+                                        attributeValue = attributeValue +  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                            getStringAttributeValue(attribute[i2]) + '<br>';
                                     }
                                 }
 
@@ -2297,11 +2297,11 @@ ndexApp.controller('networkController',
 
                                 for (var i3 = 0; i3 < attribute.length; i3++) {
                                     if (i3 === 0) {
-                                        attributeValue = "<br>" + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                            getStringAttributeValue(attribute[i3]) + "<br>";
+                                        attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                            getStringAttributeValue(attribute[i3]) + '<br>';
                                     } else {
-                                        attributeValue = attributeValue + " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " +
-                                            getStringAttributeValue(attribute[i3]) + "<br> ";
+                                        attributeValue = attributeValue + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                            getStringAttributeValue(attribute[i3]) + '<br> ';
                                     }
                                 }
                             }
@@ -2327,7 +2327,7 @@ ndexApp.controller('networkController',
 
                     } else {
 
-                        attributeValue = (attribute === 0) ? "0" : attribute;
+                        attributeValue = (attribute === 0) ? '0' : attribute;
                     }
                 }
 
@@ -2380,7 +2380,7 @@ ndexApp.controller('networkController',
 
                 var title = attributeName + ':';
 
-                var attributeValue = "";
+                var attributeValue = '';
 
                 if (attribute instanceof Object) {
                     if (attribute.v && Array.isArray(attribute.v)) {
@@ -2433,7 +2433,7 @@ ndexApp.controller('networkController',
                     title = attributeName + ':';
                 }
 
-                var attributeValue = "";
+                var attributeValue = '';
 
                 if (attributeObj instanceof Object) {
                     if (attributeObj.v && Array.isArray(attributeObj.v)) {
@@ -2489,7 +2489,7 @@ ndexApp.controller('networkController',
                         $scope.isEdit = isEdit;
 
                         $scope.removeContext = function(key){
-                            $scope.restoreIfCanceled.push({"namespace": key, "url": $scope.context[key]});
+                            $scope.restoreIfCanceled.push({'namespace': key, 'url': $scope.context[key]});
                             delete $scope.context[key];
                         };
 
@@ -2500,7 +2500,7 @@ ndexApp.controller('networkController',
                         };
 
                         $scope.addContext = function(){
-                            $scope.addTheseContexts.push({"namespace": "", "url": ""});
+                            $scope.addTheseContexts.push({'namespace': '', 'url': ''});
                             $scope.contextIsEmpty = false;
                         };
 
@@ -2531,16 +2531,16 @@ ndexApp.controller('networkController',
             };
 
             networkController.showContextModal = function(isEdit){
-                networkController.contextModal("title", "message", isEdit);
+                networkController.contextModal('title', 'message', isEdit);
             };
 
             $scope.getEdgeLabel = function(edge) {
 
                 if (!edge) {
-                    return "unknown";
+                    return 'unknown';
                 }
 
-                var source="source unknown", target="target unknown", predicate="->";
+                var source='source unknown', target='target unknown', predicate='->';
 
                 if (edge.s || (edge.s === 0)) {
                     var sourceNodeObj = networkService.getNodeInfo(edge.s);
@@ -2640,14 +2640,14 @@ ndexApp.controller('networkController',
                         message = error.data.message;
                     }
                     if (error.status) {
-                        message = message + "  Error Code: " + error.status + ".";
+                        message = message + '  Error Code: ' + error.status + '.';
                     }
                     if (error.statusText) {
-                        message = message + "  Error Message: " + error.statusText;
+                        message = message + '  Error Message: ' + error.statusText;
                     }
-                    networkController.errors.push("Unable to get network: " + message);
+                    networkController.errors.push('Unable to get network: ' + message);
                 } else {
-                    networkController.errors.push("Unable to get network; Server returned no error information.");
+                    networkController.errors.push('Unable to get network; Server returned no error information.');
                 }
             };
 
@@ -2792,8 +2792,8 @@ ndexApp.controller('networkController',
 
                 if ('neighborhood' === query) {
                     if (!networkController.searchString || !networkController.searchString.trim()) {
-                        networkController.searchString = "";
-                        $("#inputQueryStrId").val("");
+                        networkController.searchString = '';
+                        $('#inputQueryStrId').val('');
                         return;
                     }
                 }
@@ -2849,7 +2849,7 @@ ndexApp.controller('networkController',
                     networkService.restoreCurrentNiceCXAfterQuery();
                     networkController.successfullyQueried = false;
                     networkController.queryWarnings = [];
-                    networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                    networkController.queryWarnings.push('No nodes matching your query terms were found in this network.');
                     ndexSpinner.stopSpinner();
                     return;
                 }
@@ -2860,14 +2860,14 @@ ndexApp.controller('networkController',
                 var networkName = networkService.getCurrentNetworkName();
 
                 var resultName = (networkName) ? networkName :
-                    "Neighborhood query result on network - " + currentNetworkSummary.name;
+                    'Neighborhood query result on network - ' + currentNetworkSummary.name;
 
                 networkController.currentNetwork =
                     {name: resultName,
-                        "nodeCount": nodeCount,
-                        "edgeCount": edgeCount,
-                        "queryString": networkController.searchString,
-                        "queryDepth" : networkController.searchDepths[networkController.searchDepth.value-1].description
+                        'nodeCount': nodeCount,
+                        'edgeCount': edgeCount,
+                        'queryString': networkController.searchString,
+                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].description
                     };
 
                 cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
@@ -2892,7 +2892,7 @@ ndexApp.controller('networkController',
                 if (edgeCount <= networkController.queryEdgeLimitToShowGraph) {
                     drawCXNetworkOnCanvas(network, false);
 
-                    if ($scope.currentView === "Table") {
+                    if ($scope.currentView === 'Table') {
                         enableFiltering = true;
                         setGridWidth = false;
                         populateNodeTable(network, enableFiltering, setGridWidth);
@@ -2905,11 +2905,11 @@ ndexApp.controller('networkController',
                 } else if ((edgeCount > networkController.queryEdgeLimitToShowGraph) &&
                     (edgeCount <= networkController.queryEdgeLimitToShowTableOnly)) {
 
-                    $scope.currentView = "Table";
-                    $scope.buttonLabel = "Graph";
+                    $scope.currentView = 'Table';
+                    $scope.buttonLabel = 'Graph';
                     $scope.switchViewButtonEnabled = true;
 
-                    setTooltipForSwitchViewButton("Switch to Graphic View");
+                    setTooltipForSwitchViewButton('Switch to Graphic View');
 
 
                     enableFiltering = true;
@@ -2923,8 +2923,8 @@ ndexApp.controller('networkController',
 
                 } else if (edgeCount > networkController.queryEdgeLimitToShowTableOnly) {
 
-                    $scope.currentView = "Table";
-                    $scope.buttonLabel = "Graph";
+                    $scope.currentView = 'Table';
+                    $scope.buttonLabel = 'Graph';
                     $scope.switchViewButtonEnabled = false;
 
                     var networkIsTooLargeMessage =
@@ -2972,7 +2972,7 @@ ndexApp.controller('networkController',
                                         ' edges and cannot be executed in the browser. <br><br> ' +
                                         '<strong>Would you like to save the result directly to your account?</strong>';
 
-                                    ndexNavigation.openConfirmationModal(title, message, "Save Result", "Cancel", dismissModal,
+                                    ndexNavigation.openConfirmationModal(title, message, 'Save Result', 'Cancel', dismissModal,
                                         function () {
                                             var save = true;
                                             var errorWhenLimitIsOver = false;
@@ -2999,7 +2999,7 @@ ndexApp.controller('networkController',
 
                                     ndexSpinner.stopSpinner();
 
-                                    ndexNavigation.openConfirmationModal(title, message1, "Log in", "Close", dismissModal,
+                                    ndexNavigation.openConfirmationModal(title, message1, 'Log in', 'Close', dismissModal,
                                         function () {
 
                                             // log in - forward to Sign In page
@@ -3029,10 +3029,10 @@ ndexApp.controller('networkController',
                             ndexSpinner.stopSpinner();
                             if (error.status !== 0) {
                                 if (error.data.message &&
-                                    (error.data.message.toLowerCase().indexOf("edgelimitexceeded") > 0))
+                                    (error.data.message.toLowerCase().indexOf('edgelimitexceeded') > 0))
                                 {
                                     var edgeLimitExceededWarning =
-                                        "Query returned more than max edges (" + networkQueryEdgeLimit + "). Please refine your query.";
+                                        'Query returned more than max edges (' + networkQueryEdgeLimit + '). Please refine your query.';
                                     networkController.queryWarnings = [];
                                     networkController.queryWarnings.push(edgeLimitExceededWarning);
                                 }
@@ -3082,11 +3082,11 @@ ndexApp.controller('networkController',
                 networkService.restoreCurrentNiceCXAfterQuery();
                 localNetwork = networkService.getOriginalNiceCX();
 
-                if ($scope.currentView === "Table") {
+                if ($scope.currentView === 'Table') {
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
-                    setTooltipForSwitchViewButton("Switch to Graphic View");
+                    setTooltipForSwitchViewButton('Switch to Graphic View');
                 } else {
-                    setTooltipForSwitchViewButton("Switch to Table View");
+                    setTooltipForSwitchViewButton('Switch to Table View');
                 }
 
                 ndexSpinner.startSpinner(spinnerId);
@@ -3189,7 +3189,7 @@ ndexApp.controller('networkController',
                 var postData =
                 {
                     edgeLimit: networkQueryEdgeLimit,
-                    queryName: "Not used yet."
+                    queryName: 'Not used yet.'
                 };
 
                 _.forEach(networkController.advancedQueryEdgeProperties, function (edgeProperty) {
@@ -3237,17 +3237,17 @@ ndexApp.controller('networkController',
                             if (nodeCount === 0) {
                                 networkService.restoreCurrentNiceCXAfterQuery();
                                 networkController.queryWarnings = [];
-                                networkController.queryWarnings.push("No nodes matching your query terms were found in this network.");
+                                networkController.queryWarnings.push('No nodes matching your query terms were found in this network.');
                                 return;
                             }
 
-                            var resultName = "Advanced query result on network - " + currentNetworkSummary.name;
+                            var resultName = 'Advanced query result on network - ' + currentNetworkSummary.name;
                             networkController.successfullyQueried = true;
                             //networkController.previousNetwork = networkController.currentNetwork;
                             networkController.currentNetwork = {
                                     name: resultName,
-                                    "nodeCount": nodeCount,
-                                    "edgeCount": edgeCount
+                                    'nodeCount': nodeCount,
+                                    'edgeCount': edgeCount
                                 };
 
                             cxNetworkUtils.setNetworkProperty(localNiceCX, 'name', resultName);
@@ -3258,7 +3258,7 @@ ndexApp.controller('networkController',
 
                             networkController.selectionContainer = {};
 
-                            if ($scope.currentView === "Table") {
+                            if ($scope.currentView === 'Table') {
                                 var enableFiltering = true;
                                 var setGridWidth = false;
                                 populateNodeTable(localNiceCX, enableFiltering, setGridWidth);
@@ -3275,11 +3275,11 @@ ndexApp.controller('networkController',
 
                             if (error.status !== 0) {
                                 if (error.data && error.data.message &&
-                                    (error.data.message.toLowerCase().indexOf("edgelimitexceeded") > 0))
+                                    (error.data.message.toLowerCase().indexOf('edgelimitexceeded') > 0))
                                 {
                                     var networkQueryEdgeLimit = window.ndexSettings.networkQueryEdgeLimit;
                                     var edgeLimitExceededWarning =
-                                        "Query returned more than max edges (" + networkQueryEdgeLimit + "). Please refine your query.";
+                                        'Query returned more than max edges (' + networkQueryEdgeLimit + '). Please refine your query.';
                                     networkController.queryWarnings = [];
                                     networkController.queryWarnings.push(edgeLimitExceededWarning);
                                 }
@@ -3313,7 +3313,7 @@ ndexApp.controller('networkController',
 
                         if (networkController.networkShareURL) {
                             // network Share URL is enabled; This network can be opened in Cytoscape.
-                            $scope.openInCytoscapeTitle = "";
+                            $scope.openInCytoscapeTitle = '';
 
                             // check if Cytoscape is running and if yes if it and CyNDEX have the right versions
                             checkCytoscapeAndCyRESTVersions();
@@ -3322,16 +3322,16 @@ ndexApp.controller('networkController',
                         } else {
                             // network Share URL is disabled; This network can not be opened in Cytoscape.
                             $scope.openInCytoscapeTitle =
-                                "This feature can be used only with Public networks, or Private networks " +
-                                "with an enabled Share URL";
+                                'This feature can be used only with Public networks, or Private networks ' +
+                                'with an enabled Share URL';
                             doNothing();
 
                         }
                     },
                     function() {
-                        console.log("unable to get access key for network " + networkExternalId);
+                        console.log('unable to get access key for network ' + networkExternalId);
                         $scope.openInCytoscapeTitle =
-                            "unable to get access key for network " + networkExternalId;
+                            'unable to get access key for network ' + networkExternalId;
                     });
             };
 
@@ -3366,15 +3366,15 @@ ndexApp.controller('networkController',
             };
 
             var setTitlesForCytoscapeCollection = function () {
-                $scope.requestDOITitle = "This network is a Cytoscape collection. Cannot request DOI";
-                $scope.exportTitle     = "This network is a Cytoscape collection and cannot be exported";
+                $scope.requestDOITitle = 'This network is a Cytoscape collection. Cannot request DOI';
+                $scope.exportTitle     = 'This network is a Cytoscape collection and cannot be exported';
                 $scope.upgradePermissionTitle =
-                    "This network is a Cytoscape collection and cannot be edited in NDEx";
-                $scope.editPropertiesButtonTitle = "This network is a Cytoscape collection and cannot be edited in NDEx";
+                    'This network is a Cytoscape collection and cannot be edited in NDEx';
+                $scope.editPropertiesButtonTitle = 'This network is a Cytoscape collection and cannot be edited in NDEx';
 
                 if (!networkController.isNetworkOwner) {
-                    $scope.shareTitle  = "Unable to share this network: you do not own it";
-                    $scope.deleteTitle = "Unable to delete this network: you do not own it";
+                    $scope.shareTitle  = 'Unable to share this network: you do not own it';
+                    $scope.deleteTitle = 'Unable to delete this network: you do not own it';
                 }
             };
 
@@ -3383,25 +3383,25 @@ ndexApp.controller('networkController',
                 //      !networkController.isNetworkOwner || networkController.readOnlyChecked ||
                 //          networkController.hasMultipleSubNetworks())'
                 if (!networkController.isNetworkOwner) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: you do not own it ";
+                    $scope.requestDOITitle = 'Unable to request DOI for this network: you do not own it ';
 
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
 
                     if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
-                        $scope.requestDOITitle = "Unable to request DOI for this network: it is certified and a DOI has been assigned";
+                        $scope.requestDOITitle = 'Unable to request DOI for this network: it is certified and a DOI has been assigned';
 
                     } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
-                        $scope.requestDOITitle = "Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment";
+                        $scope.requestDOITitle = 'Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment';
 
                     }
                 } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment";
+                    $scope.requestDOITitle = 'Unable to request DOI for this network: a request has been submitted and the DOI is pending assignment';
 
                 } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: a DOI has already been assigned";
+                    $scope.requestDOITitle = 'Unable to request DOI for this network: a DOI has already been assigned';
 
                 } else if (networkController.readOnlyChecked) {
-                    $scope.requestDOITitle = "Unable to request DOI for this network: please uncheck the Read Only box and try again";
+                    $scope.requestDOITitle = 'Unable to request DOI for this network: please uncheck the Read Only box and try again';
                 }
             };
 
@@ -3409,7 +3409,7 @@ ndexApp.controller('networkController',
                 // we set Share title only if Share option of More menu is disabled:
                 // !networkController.isAdmin
                 if (!networkController.isNetworkOwner) {
-                    $scope.shareTitle = "Unable to Share this network: you do not own it ";
+                    $scope.shareTitle = 'Unable to Share this network: you do not own it ';
                 }
             };
 
@@ -3417,15 +3417,15 @@ ndexApp.controller('networkController',
                 // we set Share title only if Share option of More menu is disabled:
                 // !(networkController.isAdmin && !networkController.readOnlyChecked)
                 if (!networkController.isNetworkOwner) {
-                    $scope.deleteTitle = "Unable to Delete this network: you do not own it ";
+                    $scope.deleteTitle = 'Unable to Delete this network: you do not own it ';
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
-                    $scope.deleteTitle = "This network is certified and cannot be deleted";
+                    $scope.deleteTitle = 'This network is certified and cannot be deleted';
                 } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
-                    $scope.deleteTitle = "This network has a DOI pending and cannot be deleted ";
+                    $scope.deleteTitle = 'This network has a DOI pending and cannot be deleted ';
                 } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
-                    $scope.deleteTitle = "This network has been assigned a DOI and cannot be deleted ";
+                    $scope.deleteTitle = 'This network has been assigned a DOI and cannot be deleted ';
                 }  else if (networkController.readOnlyChecked) {
-                    $scope.deleteTitle = "Unable to Delete this network: it is read-only ";
+                    $scope.deleteTitle = 'Unable to Delete this network: it is read-only ';
                 }
             };
 
@@ -3447,9 +3447,9 @@ ndexApp.controller('networkController',
                             if (currentCytoscapeVersion < minAcceptableCSVersion) {
 
                                 $scope.openInCytoscapeTitle  =
-                                    "You need Cytoscape version 3.6.0 or later to use this feature.\n";
+                                    'You need Cytoscape version 3.6.0 or later to use this feature.\n';
                                 $scope.openInCytoscapeTitle +=
-                                    "Your version of Cytoscape is " + data.cytoscapeVersion + ".";
+                                    'Your version of Cytoscape is ' + data.cytoscapeVersion + '.';
 
                             } else {
 
@@ -3470,56 +3470,56 @@ ndexApp.controller('networkController',
                                             if (currentCyNDEXVersion < minAcceptableCyNDEXVersion) {
 
                                                 $scope.openInCytoscapeTitle =
-                                                    "You need CyNDEx-2 version 2.2.0 or later to use this feature.\n";
+                                                    'You need CyNDEx-2 version 2.2.0 or later to use this feature.\n';
                                                 $scope.openInCytoscapeTitle +=
-                                                    "Your version of CyNDEx-2 is " + data.data.appVersion + ".";
+                                                    'Your version of CyNDEx-2 is ' + data.data.appVersion + '.';
 
                                             } else {
                                                 // everything is fine: both Cytoscape and CyNDEx-2 are recent enough to
                                                 // support the Open in Cytoscape feature.  Enable this button.
-                                                $scope.openInCytoscapeTitle = "";
+                                                $scope.openInCytoscapeTitle = '';
                                             }
                                         } else {
                                             $scope.openInCytoscapeTitle =
-                                                "You need CyNDEx-2 version 2.2.0 or later to use this feature.\n" +
-                                                "Your version of CyNDEx-2 is too old.";
+                                                'You need CyNDEx-2 version 2.2.0 or later to use this feature.\n' +
+                                                'Your version of CyNDEx-2 is too old.';
                                         }
                                     },
                                     function () {
                                         $scope.openInCytoscapeTitle =
-                                            "To use this feature, you need Cytoscape 3.6.0 or higher running on " +
-                                            " your machine (default port: 1234) and the CyNDEx-2 app installed";
+                                            'To use this feature, you need Cytoscape 3.6.0 or higher running on ' +
+                                            ' your machine (default port: 1234) and the CyNDEx-2 app installed';
                                     }
                                 );
                             }
                         } else {
                             $scope.openInCytoscapeTitle =
-                                "To use this feature, you need Cytoscape 3.6.0 or higher running on " +
-                                " your machine (default port: 1234) and the CyNDEx-2 app installed";
+                                'To use this feature, you need Cytoscape 3.6.0 or higher running on ' +
+                                ' your machine (default port: 1234) and the CyNDEx-2 app installed';
                         }
                     },
                     function() {
                         $scope.openInCytoscapeTitle =
-                            "To use this feature, you need Cytoscape 3.6.0 or higher running on " +
-                            " your machine (default port: 1234) and the CyNDEx-2 app installed";
+                            'To use this feature, you need Cytoscape 3.6.0 or higher running on ' +
+                            ' your machine (default port: 1234) and the CyNDEx-2 app installed';
                     });
             };
 
             var setEditPropertiesTitle = function() {
                 // !networkController.isAdmin || networkController.hasMultipleSubNetworks()
                 if (networkController.hasMultipleSubNetworks()) {
-                    $scope.editPropertiesButtonTitle = "This network is a Cytoscape collection and cannot be edited in NDEx";
+                    $scope.editPropertiesButtonTitle = 'This network is a Cytoscape collection and cannot be edited in NDEx';
                 } else if (!networkController.isNetworkOwner) {
-                    $scope.editPropertiesButtonTitle = "Unable to edit this network: you do not have privilege to modify it";
+                    $scope.editPropertiesButtonTitle = 'Unable to edit this network: you do not have privilege to modify it';
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
-                    $scope.editPropertiesButtonTitle = "This network is certified and cannot be modified further";
+                    $scope.editPropertiesButtonTitle = 'This network is certified and cannot be modified further';
                 } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
-                    $scope.editPropertiesButtonTitle = "Unable to edit this network: DOI is pending";
+                    $scope.editPropertiesButtonTitle = 'Unable to edit this network: DOI is pending';
                 } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
-                    $scope.editPropertiesButtonTitle = "This network has been assigned a DOI and cannot be modified further. ";
-                    $scope.editPropertiesButtonTitle += "If you need to update this network please clone it.";
+                    $scope.editPropertiesButtonTitle = 'This network has been assigned a DOI and cannot be modified further. ';
+                    $scope.editPropertiesButtonTitle += 'If you need to update this network please clone it.';
                 }  else if (networkController.readOnlyChecked) {
-                    $scope.editPropertiesButtonTitle = "Unable to edit this network: it is read-only";
+                    $scope.editPropertiesButtonTitle = 'Unable to edit this network: it is read-only';
                 }
             };
 
@@ -3528,17 +3528,17 @@ ndexApp.controller('networkController',
                 // networkController.isAdmin || networkController.canEdit || networkController.hasMultipleSubNetworks()
                 if (networkController.hasMultipleSubNetworks()) {
                     $scope.upgradePermissionTitle =
-                        "This network is a Cytoscape collection and cannot be edited in NDEx";
+                        'This network is a Cytoscape collection and cannot be edited in NDEx';
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
-                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: it is certified ";
+                    $scope.upgradePermissionTitle = 'Unable to Upgrade Permission for this network: it is certified ';
                 } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
-                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: DOI is pending ";
+                    $scope.upgradePermissionTitle = 'Unable to Upgrade Permission for this network: DOI is pending ';
                 } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
-                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: it has DOI assigned to it ";
+                    $scope.upgradePermissionTitle = 'Unable to Upgrade Permission for this network: it has DOI assigned to it ';
                 } else if (networkController.isNetworkOwner) {
-                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: you already own it ";
+                    $scope.upgradePermissionTitle = 'Unable to Upgrade Permission for this network: you already own it ';
                 } else if (networkController.privilegeLevel.toLowerCase() === 'edit' ) {
-                    $scope.upgradePermissionTitle = "Unable to Upgrade Permission for this network: you already have Edit privilege ";
+                    $scope.upgradePermissionTitle = 'Unable to Upgrade Permission for this network: you already have Edit privilege ';
                 }
             };
 
@@ -3559,15 +3559,15 @@ ndexApp.controller('networkController',
 
                                 if (myMembership === 'ADMIN') {
                                     networkController.isAdmin = true;
-                                    networkController.privilegeLevel = "Admin";
+                                    networkController.privilegeLevel = 'Admin';
                                 }
                                 if (myMembership === 'WRITE') {
                                     networkController.canEdit = true;
-                                    networkController.privilegeLevel = "Edit";
+                                    networkController.privilegeLevel = 'Edit';
                                 }
                                 if (myMembership === 'READ') {
                                     networkController.canRead = true;
-                                    networkController.privilegeLevel = "Read";
+                                    networkController.privilegeLevel = 'Read';
                                 }
                                 setEditPropertiesTitle();
                                 setUpgradePermissionTitle();
@@ -3601,7 +3601,7 @@ ndexApp.controller('networkController',
                             }
 
                             if (!network.name) {
-                                networkController.currentNetwork.name = "Untitled";
+                                networkController.currentNetwork.name = 'Untitled';
                             }
 
                             // subNetworkId is the current subNetwork we are displaying
@@ -3613,12 +3613,12 @@ ndexApp.controller('networkController',
 
                             if (networkController.noOfSubNetworks >= 1) {
                                 $scope.disabledQueryTooltip =
-                                    "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx";
+                                    'This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx';
                             }
 
                             if (networkController.subNetworkId !== null) {
-                                networkController.currentNetwork.description = getNetworkPropertyFromSummary(networkController.subNetworkId, "description");
-                                networkController.currentNetwork.version = getNetworkPropertyFromSummary(networkController.subNetworkId, "version");
+                                networkController.currentNetwork.description = getNetworkPropertyFromSummary(networkController.subNetworkId, 'description');
+                                networkController.currentNetwork.version = getNetworkPropertyFromSummary(networkController.subNetworkId, 'version');
                             }
 
                             if (networkController.isLoggedInUser && (network.ownerUUID === sharedProperties.getCurrentUserId())) {
@@ -3664,8 +3664,8 @@ ndexApp.controller('networkController',
                                 // Network is private, access key is not set, we are not the owner.
                                 // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
                                 $scope.openInCytoscapeTitle =
-                                    "This feature can be used only with Public networks, or Private networks " +
-                                    "with an enabled Share URL";
+                                    'This feature can be used only with Public networks, or Private networks ' +
+                                    'with an enabled Share URL';
                             }
 
 
@@ -3728,7 +3728,7 @@ ndexApp.controller('networkController',
 
                 networkService.getNiceCXNetworkFromURL(cxURL,
                     function (niceCX) {
-                        $scope.openInCytoscapeTitle = "";
+                        $scope.openInCytoscapeTitle = '';
                         networkController.currentNetwork = cxNetworkUtils.getPartialSummaryFromNiceCX(niceCX);
                         currentNetworkSummary = networkController.currentNetwork;
 
@@ -3743,7 +3743,7 @@ ndexApp.controller('networkController',
                         networkController.noOfSubNetworks = undefined; //uiMisc.getNoOfSubNetworks(network);
 
                         $scope.disabledQueryTooltip =
-                            "This network is not in NDEx yet. Saving it to NDEx will enable more operations on it.";
+                            'This network is not in NDEx yet. Saving it to NDEx will enable more operations on it.';
 
 
 
@@ -3804,14 +3804,14 @@ ndexApp.controller('networkController',
             $scope.readOnlyChanged = function()
             {
                 ndexService.setNetworkSystemPropertiesV2(networkController.currentNetworkId,
-                    "readOnly", networkController.readOnlyChecked,
+                    'readOnly', networkController.readOnlyChecked,
                     function() {
                         setDOITitle();
                         setDeleteTitle();
                         setEditPropertiesTitle();
                     },
                     function() {
-                        console.log("unable to make network Read-Only");
+                        console.log('unable to make network Read-Only');
                     });
             };
             
@@ -3954,7 +3954,7 @@ ndexApp.controller('networkController',
                 networkService.restoreCurrentNiceCXAfterQuery();
                 localNetwork = networkService.getOriginalNiceCX();
 
-                if ("Graphic" === $scope.currentView) {
+                if ('Graphic' === $scope.currentView) {
                     // no need to call ndexSpinner.stopSpinner() here since it
                     //will be called in drawCXNetworkOnCanvas->initCyGraphFromCyjsComponents()
                     drawCXNetworkOnCanvas(localNetwork, false);
@@ -3990,7 +3990,7 @@ ndexApp.controller('networkController',
                     },
                     function (error, status) {
                         networkController.networkSets = [];
-                        console.log("unable to get network sets");
+                        console.log('unable to get network sets');
                         errorHandler(error, status);
                     });
             };
@@ -4006,15 +4006,15 @@ ndexApp.controller('networkController',
 
                 var dismissModal = false;
 
-                ndexNavigation.openConfirmationModal(title, message, "Confirm", "Cancel", dismissModal,
+                ndexNavigation.openConfirmationModal(title, message, 'Confirm', 'Cancel', dismissModal,
                     function ($modalInstance) {
 
                         $rootScope.errors = null;
                         $rootScope.confirmButtonDisabled = true;
                         $rootScope.cancelButtonDisabled = true;
-                        $rootScope.progress = "Cloning network in progress ...";
+                        $rootScope.progress = 'Cloning network in progress ...';
 
-                        var confirmationSpinnerId = "confirmationSpinnerId";
+                        var confirmationSpinnerId = 'confirmationSpinnerId';
                         ndexSpinner.startSpinner(confirmationSpinnerId);
 
                         ndexService.cloneNetworkV2(networkController.currentNetworkId,
@@ -4028,8 +4028,8 @@ ndexApp.controller('networkController',
                             },
                             function(error) {
                                 ndexSpinner.stopSpinner();
-                                title = "Unable to Clone Network";
-                                message  = networkName + " wasn't cloned to your account.";
+                                title = 'Unable to Clone Network';
+                                message  = networkName + ' wasn\'t cloned to your account.';
 
                                 if (error.message) {
                                     message = message + '<br>' + error.message;
@@ -4054,56 +4054,49 @@ ndexApp.controller('networkController',
             //----------------------------------------------------------------------------
 
             var windowHeight = $(window).height();
-            //windowHeight = windowHeight - 200;
-            var $cytoscapeCanvas = $("#cytoscape-canvas");
+            var $cytoscapeCanvas = $('#cytoscape-canvas');
             $cytoscapeCanvas.height(windowHeight - 200);
 
+            $('#divNetworkTabs').height(windowHeight);
 
-            //windowHeight = $(window).height();
-            $("#divNetworkTabs").height(windowHeight);
-
-            if ($scope.currentView === "Graphic") {
+            if ($scope.currentView === 'Graphic') {
                 //$("#queryWarningsOrErrorsId").width($("#cytoscape-canvas").width());
-                $("#queryWarningsOrErrorsId").width($cytoscapeCanvas.width());
+                $('#queryWarningsOrErrorsId').width($cytoscapeCanvas.width());
             } else {
 
-                if ($scope.activeTab === "Edges") {
-                    //windowHeight = $(window).height() - 235;
-                    var $edgeGridId = $("#edgeGridId");
+                if ($scope.activeTab === 'Edges') {
+                    var $edgeGridId = $('#edgeGridId');
                     $edgeGridId.height(windowHeight - 235);
-                    //var edgeWindowWidth = $edgeGridId.width();
-                    $("#queryWarningsOrErrorsId").width($edgeGridId.width());
+                    $('#queryWarningsOrErrorsId').width($edgeGridId.width());
                 } else {
-                    //windowHeight = $(window).height() - 235;
-                    var $nodeGridId = $("#nodeGridId");
+                    var $nodeGridId = $('#nodeGridId');
                     $nodeGridId.height(windowHeight - 235);
-                    //var nodeWindowWidth = $nodeGridId.width();
-                    $("#queryWarningsOrErrorsId").width($nodeGridId.width());
+                    $('#queryWarningsOrErrorsId').width($nodeGridId.width());
                 }
             }
 
 
             $(window).resize(function() {
 
-                var $cytoscapeCanvas = $("#cytoscape-canvas");
+                var $cytoscapeCanvas = $('#cytoscape-canvas');
 
                 $cytoscapeCanvas.height($(window).height() - 200);
                 $('#divNetworkTabs').height($(window).height() - 200);
 
-                if ($scope.currentView === "Graphic") {
-                    $("#queryWarningsOrErrorsId").width($cytoscapeCanvas.width());
+                if ($scope.currentView === 'Graphic') {
+                    $('#queryWarningsOrErrorsId').width($cytoscapeCanvas.width());
                 } else {
 
-                    if ($scope.activeTab === "Edges") {
-                        var $edgeGridId = $("#edgeGridId");
-                        $("#queryWarningsOrErrorsId").width($edgeGridId.width());
+                    if ($scope.activeTab === 'Edges') {
+                        var $edgeGridId = $('#edgeGridId');
+                        $('#queryWarningsOrErrorsId').width($edgeGridId.width());
                         $edgeGridId.height($(window).height() - 235);
                         $scope.edgeGridApi.grid.gridHeight = $edgeGridId.height();
                         $scope.edgeGridApi.core.refresh();
 
                     } else {
-                        var $nodeGridId = $("#nodeGridId");
-                        $("#queryWarningsOrErrorsId").width($nodeGridId.width());
+                        var $nodeGridId = $('#nodeGridId');
+                        $('#queryWarningsOrErrorsId').width($nodeGridId.width());
                         $nodeGridId.height($(window).height() - 235);
                         $scope.nodeGridApi.grid.gridHeight = $nodeGridId.height();
                         $scope.nodeGridApi.core.refresh();
@@ -4128,7 +4121,7 @@ ndexApp.controller('networkController',
             }
             else {
                 // TODO: Handle error
-                console.log("Unexpected route.");
+                console.log('Unexpected route.');
             }
         }
      ]
