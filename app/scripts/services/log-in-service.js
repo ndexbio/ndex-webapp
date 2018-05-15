@@ -14,7 +14,7 @@ ndexServiceApp.factory('logInService', ['sharedProperties', 'ndexUtility', 'ndex
 
                     $scope.credentials = {user: "", password: "", errorMessage: ""};
 
-                    $scope.isNotSafari = !window.isSafari;
+             //       $scope.isNotSafari = !window.isSafari;
 
                     $scope.cancel = function() {
                         $modalInstance.dismiss();

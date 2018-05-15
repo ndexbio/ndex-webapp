@@ -24,7 +24,7 @@
                         Sign in
                     </button>
                     <br><br>
-                    <div ng-show="isNotSafari">
+                    <div >
                         <div class="AlignCenter">OR</div>
 
                         <br>
@@ -76,10 +76,10 @@
 
                         <br>
                     </div>
-                    <div ng-show="!isNotSafari">
+              <!--      <div ng-show="!isNotSafari">
                         Single Sign on is not supported in this browser. Please use Chrome or Firefox if you want to use this feature.
                      <br>
-                    </div>
+                    </div> -->
                     <div>
                         <a ng-show="config.signIn.showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
                     </div>
