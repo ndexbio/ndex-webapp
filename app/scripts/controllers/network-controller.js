@@ -212,7 +212,7 @@ ndexApp.controller('networkController',
             };
 
             $scope.changeDeleteNetworkTitle  = function() {
-                $('#deleteNetwoprkTitleId').tooltip('hide')
+                $('#deleteNetworkTitleId').tooltip('hide')
                     .attr('data-original-title', $scope.deleteTitle)
                     .tooltip('show');
             };
@@ -279,7 +279,7 @@ ndexApp.controller('networkController',
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
-            var resetBackgroudColor = function () {
+            var resetBackgroundColor = function () {
                 networkController.bgColor = '#8fbdd7';
             };
 
@@ -1172,7 +1172,7 @@ ndexApp.controller('networkController',
                 var cyStyle ;
                 if (noStyle) {
                     cyStyle =  cyService.getDefaultStyle();
-                    resetBackgroudColor();
+                    resetBackgroundColor();
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
                     var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
@@ -3676,7 +3676,7 @@ ndexApp.controller('networkController',
                                     networkController.canEdit ||
                                     networkController.canRead || accesskey)
                                 {
-                                        resetBackgroudColor();
+                                        resetBackgroundColor();
                                         getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
                                 }
                             });
@@ -3757,7 +3757,7 @@ ndexApp.controller('networkController',
                         //getCytoscapeAndCyRESTVersions();
 
 
-                        resetBackgroudColor();
+                        resetBackgroundColor();
                         drawCXNetworkOnCanvas(niceCX, false);
 
                         networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
