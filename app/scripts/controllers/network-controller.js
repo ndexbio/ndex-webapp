@@ -93,8 +93,11 @@ ndexApp.controller('networkController',
             });
 
 
+            //noinspection JSCheckFunctionSignatures
             var clipboard  = new Clipboard('#copyNetworkShareURLToClipboardId1');
+            //noinspection JSCheckFunctionSignatures
             var clipboard2 = new Clipboard('#copyNetworkShareURLToClipboardId2');
+            //noinspection JSCheckFunctionSignatures
             var clipboard3 = new Clipboard('#copyNetworkShareURLToClipboardId3');
 
             function setTooltip(message) {
@@ -190,10 +193,12 @@ ndexApp.controller('networkController',
 
                 if ('Edges' === tabName) {
                     $('#edgeGridId').height($(window).height() - 235);
+                    /** @namespace $scope.edgeGridApi.core.refresh() **/
                     $scope.edgeGridApi.core.refresh();
 
                 } else if ('Nodes' === tabName) {
                     $('#nodeGridId').height($(window).height() - 235);
+                    /** @namespace $scope.nodeGridApi.core.refresh(); **/
                     $scope.nodeGridApi.core.refresh();
                 }
             };
@@ -520,15 +525,19 @@ ndexApp.controller('networkController',
                         attributeValue =
                             '<a target="_blank" href="http://identifiers.org/chebi/' + value + '">' + attribute + '</a>';
 
-                    } else if (!isNaN(value)) {
+                    }
+                    else { //noinspection JSCheckFunctionSignatures
+                        if (!isNaN(value)) {
 
-                        attributeValue =
-                            '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + value + '">' +
-                            attribute + '</a>';
+                            attributeValue =
+                                '<a target="_blank" href="http://identifiers.org/chebi/CHEBI:' + value + '">' +
+                                attribute + '</a>';
+                        }
                     }
 
                 } else if (attr.startsWith('chembl')) {
 
+                    //noinspection JSCheckFunctionSignatures
                     if (!isNaN(value)) {
 
                         // valid CHEMBL Compound Entity identifier is described by this
@@ -606,6 +615,7 @@ ndexApp.controller('networkController',
 
                     // valid BTO Entity identifier is described by this
                     // regular expression: '^BTO:\d{7}$';
+                    //noinspection JSCheckFunctionSignatures
                     var isBTOIdValid = /^BTO:\d{7}$/.test(attributeValue);
 
                     if (isBTOIdValid) {
@@ -631,6 +641,7 @@ ndexApp.controller('networkController',
 
                     //var entityId = splitString[1];
 
+                    //noinspection JSCheckFunctionSignatures
                     var isGOIdValid = /^GO:\d{7}$/.test(attributeValue);
 
                     if (isGOIdValid) {
@@ -668,7 +679,7 @@ ndexApp.controller('networkController',
 
                 if (typeof(cellContents) === 'object') {
                     // this is the case where cellContents is as list/array ... so just
-                    // return it wraped in <title>. It will be converted to a comma-separated string of values
+                    // return it wrapped in <title>. It will be converted to a comma-separated string of values
                     // returnStr =  '<span title=' + "'"+ cellContents + "'>" + cellContents + '</span>';
 
                     _.forEach(cellContents, function(element) {
@@ -796,6 +807,7 @@ ndexApp.controller('networkController',
                 {
                     $scope.edgeGridApi = gridApi;
 
+                    /** @namespace gridApi.core.on.rowsRendered **/
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
                         setTimeout($scope.edgeGridApi.core.handleWindowResize, 250);
@@ -812,6 +824,7 @@ ndexApp.controller('networkController',
                 {
                     $scope.nodeGridApi = gridApi;
 
+                    /** @namespace gridApi.core.on.rowsRendered **/
                     gridApi.core.on.rowsRendered($scope, function() {
                         // we need to call core.handleWindowResize() to fix the table layout in case it is distorted
                         setTimeout($scope.nodeGridApi.core.handleWindowResize, 250);
@@ -1200,6 +1213,7 @@ ndexApp.controller('networkController',
                     edgeCSS.css['curve-style'] = 'bezier';
                 }
 
+                /** @namespace cxNetwork.cartesianLayout **/
                 var layoutName = (cxNetwork.cartesianLayout) ? 'preset' :
                     (Object.keys(cxNetwork.edges).length <= 1000 ? 'cose' : 'circle') ;
 
@@ -1223,6 +1237,9 @@ ndexApp.controller('networkController',
 
                 $scope.nodeGridOptions.data = [];
 
+                // the @namespace network.nodeAttributes silences the 'Unresolved variable nodeAttributes'
+                // weak warning produced by WebStorm Annotator
+                /** @namespace network.nodeAttributes **/
                 var nodeAttributes = network.nodeAttributes;
 
                 for (var key in nodeKeys)
@@ -1443,6 +1460,9 @@ ndexApp.controller('networkController',
 
                 $scope.edgeGridOptions.data = [];
 
+                // the @namespace network.edgeAttributes silences the 'Unresolved variable edgeAttributes'
+                // weak warning produced by WebStorm Annotator
+                /** @namespace network.edgeAttributes **/
                 var edgeAttributes = network.edgeAttributes;
 
                 for (var i = 0; i < edgeKeys.length; i++)
@@ -1454,8 +1474,8 @@ ndexApp.controller('networkController',
                     var sourceNodeObj = networkService.getNodeInfo(edgeObj.s);
                     var source = networkService.getNodeName(sourceNodeObj);
                     var interaction = edgeObj.i;
-                    var targeteNodeObj = networkService.getNodeInfo(edgeObj.t);
-                    var target = networkService.getNodeName(targeteNodeObj);
+                    var targetNodeObj = networkService.getNodeInfo(edgeObj.t);
+                    var target = networkService.getNodeName(targetNodeObj);
 
                     var row = {'Source Node': source, 'Interaction': interaction, 'Target Node': target};
 
@@ -2147,7 +2167,7 @@ ndexApp.controller('networkController',
 
                 var attributeNamesWithoutHiddenElements = [];
 
-                // remove all attributes that start with two undescores ("__") - these attributes are "hidden",
+                // remove all attributes that start with two underscores ("__") - these attributes are "hidden",
                 // i.e., they are for internal use and should not be shown to the user
                 _.forEach(attributeNames, function(attribute) {
 
@@ -2655,6 +2675,8 @@ ndexApp.controller('networkController',
 
                 var hasLayout = networkController.currentNetwork.hasLayout;
 
+
+                /** @namespace networkController.currentNetwork.hasSample **/
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
                     (  (!hasLayout) && networkController.currentNetwork.hasSample ) ) {
                     // get sample CX network
@@ -2834,7 +2856,7 @@ ndexApp.controller('networkController',
 
                         },
                         function(error) {
-                            if (error && error.errorCode && error.errorCode === 'NDEx_Bad_Request_Exception') {
+                            if (error && error.errorCode && (error.errorCode === 'NDEx_Bad_Request_Exception')) {
                                 if (error.message) {
                                     networkController.queryErrors.push(error.message);
                                 }
@@ -3435,6 +3457,9 @@ ndexApp.controller('networkController',
                 cyREST.getCytoscapeVersion(
                     function(data) {
 
+                        // the @namespace data.cytoscapeVersion silences the 'Unresolved variable cytoscapeVersion'
+                        // weak warning produced by WebStorm Annotator
+                        /** @namespace data.cytoscapeVersion **/
                         if (data && data.cytoscapeVersion) {
 
                             var minAcceptableCSVersion = 360;
