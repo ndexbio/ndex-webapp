@@ -124,7 +124,7 @@ angular.module('ndexServiceApp')
                     // `^[^a-zA-Z_]+|[^a-zA-Z_0-9]+
 
                     var nonAlpha = attributeName.replace(/^[^a-zA-Z_]+|[^a-zA-Z_0-9]+/gi, '_');
-                    nonAlpha = nonAlpha + "_u" + uniqueCounter;
+                    nonAlpha = nonAlpha + '_u' + uniqueCounter;
                     uniqueCounter = uniqueCounter + 1;
                     attributeNameMap[attributeName] = nonAlpha;
                 }
@@ -146,7 +146,7 @@ angular.module('ndexServiceApp')
          * Get the first element from the list of elements.  Attributes of node or edge of this first element will be
          * used to style the node/edge.  This behavior simulates the behavior of Cytoscape:
          *
-         * if a node column has the type "list of ... (strings/numbers/boolens), then cytoscape uses the first element
+         * if a node column has the type "list of ... (strings/numbers/booleans), then cytoscape uses the first element
          * in the list to style the node (or edge).
          * For example, if a column has the type ['protein', 'gene'] (list of strings), then Cytoscape uses the shape of
          * 'protein' (the first element in the list) to draw this node (the shape of 'protein' in Cytoscape is 'round rectangle').
@@ -156,7 +156,7 @@ angular.module('ndexServiceApp')
         var getFirstElementFromList = function(attributeObj) {
 
             var type      = (attributeObj && attributeObj.d) ? attributeObj.d : 'list_of_string';
-            var attrValue = (attributeObj && attributeObj.v && attributeObj.v[0]) ? attributeObj.v[0] : "";
+            var attrValue = (attributeObj && attributeObj.v && attributeObj.v[0]) ? attributeObj.v[0] : '';
             var retValue;
 
             if (type === 'list_of_string' || type === 'list_of_boolean') {
@@ -288,7 +288,7 @@ angular.module('ndexServiceApp')
                     if (node) {
                         node.position = {x: element.x, y: element.y};
                     } else {
-                        console.log("no node for cartesian Node Id = " + nodeId);
+                        console.log('no node for cartesian Node Id = ' + nodeId);
                     }
                 });
             }
@@ -625,7 +625,7 @@ angular.module('ndexServiceApp')
          * where  0 = 'text-halign'  1 = 'text-valign'
          * ?
          */
-        const CYTOSCAPE_TO_JS_NODE_LABEL_COOORDINATES = {
+        const CYTOSCAPE_TO_JS_NODE_LABEL_COORDINATES = {
             'C': {
                 'C'    : {'text-halign': 'center', 'text-valign': 'center'},  //  1
                 'E'    : {'text-halign': 'left',   'text-valign': 'center'},  //  2
@@ -835,7 +835,7 @@ angular.module('ndexServiceApp')
                 }
 
                 position =
-                    CYTOSCAPE_TO_JS_NODE_LABEL_COOORDINATES[nodeAnchorCoordinate][labelAnchorCoordinate];
+                    CYTOSCAPE_TO_JS_NODE_LABEL_COORDINATES[nodeAnchorCoordinate][labelAnchorCoordinate];
             }
 
             return position;
@@ -1046,7 +1046,7 @@ angular.module('ndexServiceApp')
             return elements;
         };
 
-        var continuousMappingStyle_aux = function (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements) {
+        var continuousMappingStyleAux = function (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements) {
             var lastPointIndex = Object.keys(def.m).length - 1;
 
             // Each Continuous Mapping Point in def.m has 4 entries:
@@ -1135,7 +1135,7 @@ angular.module('ndexServiceApp')
             var elements = [];
             var cyVisualAttributeObj = getCyVisualAttributeObjForVP(vp) ; //getCyVisualAttributeForVP(vp);
             if (!cyVisualAttributeObj) {
-                console.log("no visual attribute for " + vp);
+                console.log('no visual attribute for ' + vp);
                 return elements;  // empty result, vp not handled
             }
             var ll = Object.prototype.toString.call( cyVisualAttributeObj );
@@ -1148,7 +1148,7 @@ angular.module('ndexServiceApp')
             _.forEach ( cyVisualAttributeObj, function (vAttr) {
                 var cyVisualAttribute = vAttr.att;
                 var cyVisualAttributeType = vAttr.type;
-                continuousMappingStyle_aux (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements);
+                continuousMappingStyleAux (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements);
 
             });
 
@@ -1159,7 +1159,7 @@ angular.module('ndexServiceApp')
             var elements = [];
             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
             if (!cyVisualAttribute) {
-                console.log("no visual attribute for " + vp);
+                console.log('no visual attribute for ' + vp);
                 return elements;  // empty result, vp not handled
             }
 
@@ -1189,22 +1189,27 @@ angular.module('ndexServiceApp')
             //console.log(niceCX);
             var result = null;
             var visualProps ;
-            if ( niceCX.cyVisualProperties ) {
+            /** @namespace niceCX.cyVisualProperties **/
+            if (niceCX.cyVisualProperties) {
                 visualProps = niceCX.cyVisualProperties;
             }
-            else if ( niceCX.visualProperties ) {
-                visualProps = niceCX.visualProperties;
-            }
             else {
-                return null;
+                /** @namespace niceCX.visualProperties **/
+                if (niceCX.visualProperties) {
+                    visualProps = niceCX.visualProperties;
+                } else {
+                    return null;
+                }
             }
 
             _.forEach(visualProps, function (vpAspectElement) {
                     _.forEach(vpAspectElement, function (vpElement) {
+                        /** @namespace vpElement.properties_of **/
                         var elementType = vpElement.properties_of;
                         if (elementType === 'network') {
+                            /** @namespace vpElement.properties.NETWORK_BACKGROUND_PAINT **/
                            result =  vpElement.properties.NETWORK_BACKGROUND_PAINT;
-                            return false;
+                           return false;
                         } 
                     });
             });
@@ -1215,14 +1220,14 @@ angular.module('ndexServiceApp')
         factory.cyStyleFromNiceCX = function (niceCX, attributeNameMap) {
             //console.log('style from niceCX: ' + Object.keys(niceCX).length);
 
-            var node_default_styles = [];
-            var node_default_mappings = [];
-            var node_specific_styles = [];
-            var edge_default_styles = [];
-            var edge_default_mappings = [];
-            var edge_specific_styles = [];
-            var node_selected_styles = [];
-            var edge_selected_styles = [];
+            var nodeDefaultStyles   = [];
+            var nodeDefaultMappings = [];
+            var nodeSpecificStyles  = [];
+            var edgeDefaultStyles   = [];
+            var edgeDefaultMappings = [];
+            var edgeSpecificStyles  = [];
+            var nodeSelectedStyles  = [];
+            var edgeSelectedStyles  = [];
 
 
             var visualProperties;
@@ -1246,7 +1251,7 @@ angular.module('ndexServiceApp')
                         var cyLabelPositionCoordinates = null;
                         var nodeLabelFontFace = null;
                         var defaultNodeProperties = {};
-                        var node_size = null;
+                        var nodeSize = null;
 
                         _.forEach(vpElement.properties, function(value, vp){
                             console.log('default node property ' + vp + ' = ' + value);
@@ -1261,13 +1266,13 @@ angular.module('ndexServiceApp')
                                     nodeLabelFontFace  = value;
                                 } else if (vp === 'NODE_SELECTED_PAINT'){
                                     var selectedColor = getCyVisualAttributeValue(value, 'color');
-                                    node_selected_styles.push({'selector': 'node:selected', 'css': {'background-color': selectedColor}});
+                                    nodeSelectedStyles.push({'selector': 'node:selected', 'css': {'background-color': selectedColor}});
 
                                 } else if ( vp === 'NODE_SIZE') {
-                                    node_size = value;
+                                    nodeSize = value;
 
                                 } else if ( vp === 'NODE_LABEL_WIDTH') {
-                                    defaultNodeProperties['text-wrap'] = "wrap";
+                                    defaultNodeProperties['text-wrap'] = 'wrap';
                                     defaultNodeProperties['text-max-width'] = value;
 
                                 } else if (vp === 'NODE_CUSTOMGRAPHICS_1') {
@@ -1282,6 +1287,7 @@ angular.module('ndexServiceApp')
                                     }
                                     var pieChartObj = JSON.parse(pieChartStr[0]);
 
+                                    /** @namespace pieChartObj.cy_colors **/
                                     if (pieChartObj && pieChartObj.cy_colors && Array.isArray(pieChartObj.cy_colors)) {
                                         var i = 1;
 
@@ -1293,7 +1299,7 @@ angular.module('ndexServiceApp')
                                         });
                                     }
 
-
+                                    /** @namespace pieChartObj.cy_dataColumns **/
                                     if (pieChartObj && pieChartObj.cy_dataColumns && Array.isArray(pieChartObj.cy_dataColumns)) {
 
                                         var j = 1;
@@ -1313,8 +1319,8 @@ angular.module('ndexServiceApp')
                                                 var data     = ele.json().data;
                                                 var totalSum = 0;
 
-                                                var curentColumnValue = data[normalizedNames[column]];
-                                                if (curentColumnValue <= 0) {
+                                                var currentColumnValue = data[normalizedNames[column]];
+                                                if (currentColumnValue <= 0) {
                                                     return 0;
                                                 }
 
@@ -1325,7 +1331,7 @@ angular.module('ndexServiceApp')
                                                     }
                                                 }
 
-                                                return (totalSum > 0) ? (100.0 * curentColumnValue/totalSum) : 0;
+                                                return (totalSum > 0) ? (100.0 * currentColumnValue/totalSum) : 0;
                                             };
 
                                             j++;
@@ -1338,9 +1344,10 @@ angular.module('ndexServiceApp')
                             }
                         });
 
-                        if ( node_size && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'true') {
-                            defaultNodeProperties.height = node_size;
-                            defaultNodeProperties.width = node_size;
+                        /** @namespace vpElement.dependencies.nodeSizeLocked **/
+                        if ( nodeSize && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'true') {
+                            defaultNodeProperties.height = nodeSize;
+                            defaultNodeProperties.width = nodeSize;
                         }
 
                         var nodeLabelPosition = getNodeLabelPosition(cyLabelPositionCoordinates);
@@ -1357,7 +1364,7 @@ angular.module('ndexServiceApp')
                             defaultNodeProperties['font-weight'] = 'normal';
                         }
                         var defaultNodeStyle = {'selector': 'node', 'css': defaultNodeProperties};
-                        node_default_styles.push(defaultNodeStyle);
+                        nodeDefaultStyles.push(defaultNodeStyle);
 
                         _.forEach(vpElement.mappings, function (mapping, vp) {
                             //console.log(mapping);
@@ -1370,7 +1377,7 @@ angular.module('ndexServiceApp')
 
                                 elementType = 'node';
                                 var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                                node_default_mappings = node_default_mappings.concat(styles);
+                                nodeDefaultMappings = nodeDefaultMappings.concat(styles);
                             }
                         });
 
@@ -1383,15 +1390,16 @@ angular.module('ndexServiceApp')
                             var cyVisualAttributeType = null;
                             //console.log('default node property ' + vp + ' = ' + value);
                             //special cases for locked edge color
+                            /** @namespace vpElement.dependencies.arrowColorMatchesEdge **/
                             if (vpElement.dependencies.arrowColorMatchesEdge.toLowerCase() === 'true') {
-                                if(vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" &&
-                                    vp !== "EDGE_TARGET_ARROW_UNSELECTED_PAINT" ) {
-                                    if ( vp === "EDGE_UNSELECTED_PAINT") {   // add extra handling since the color is locked
-                                        cyVisualAttribute = getCyVisualAttributeForVP("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
-                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
+                                if(vp !== 'EDGE_STROKE_UNSELECTED_PAINT' && vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
+                                    vp !== 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' ) {
+                                    if ( vp === 'EDGE_UNSELECTED_PAINT') {   // add extra handling since the color is locked
+                                        cyVisualAttribute = getCyVisualAttributeForVP('EDGE_SOURCE_ARROW_UNSELECTED_PAINT');
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp('EDGE_SOURCE_ARROW_UNSELECTED_PAINT');
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
-                                        cyVisualAttribute = getCyVisualAttributeForVP("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
-                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
+                                        cyVisualAttribute = getCyVisualAttributeForVP('EDGE_TARGET_ARROW_UNSELECTED_PAINT');
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp('EDGE_TARGET_ARROW_UNSELECTED_PAINT');
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                     }
                                     cyVisualAttribute = getCyVisualAttributeForVP(vp);
@@ -1408,7 +1416,7 @@ angular.module('ndexServiceApp')
 
                                 }
                             } else {
-                                if ( vp !== "EDGE_UNSELECTED_PAINT") {
+                                if ( vp !== 'EDGE_UNSELECTED_PAINT') {
                                     cyVisualAttribute = getCyVisualAttributeForVP(vp);
                                     if (cyVisualAttribute) {
                                         cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
@@ -1426,10 +1434,10 @@ angular.module('ndexServiceApp')
 
                         });
                         if (_.keys(selectedEdgeProperties).length > 0){
-                            edge_selected_styles.push({'selector': 'edge:selected', 'css': selectedEdgeProperties});
+                            edgeSelectedStyles.push({'selector': 'edge:selected', 'css': selectedEdgeProperties});
                         }
                         var defaultEdgeStyle = {'selector': 'edge', 'css': defaultEdgeProperties};
-                        edge_default_styles.push(defaultEdgeStyle);
+                        edgeDefaultStyles.push(defaultEdgeStyle);
 
                         _.forEach(vpElement.mappings, function (mapping, vp) {
                             //console.log(mapping);
@@ -1438,22 +1446,22 @@ angular.module('ndexServiceApp')
                             var styles = null;
 
                             if (vpElement.dependencies.arrowColorMatchesEdge ==='true' ) {
-                                if (vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
+                                if (vp !== 'EDGE_STROKE_UNSELECTED_PAINT' && vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
                                     vp !== 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' )
                                 {
                                     if (vp === 'EDGE_UNSELECTED_PAINT') {
                                         styles = mappingStyle(elementType, 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
-                                        edge_default_mappings = edge_default_mappings.concat(styles);
+                                        edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                                         styles = mappingStyle(elementType, 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
-                                        edge_default_mappings = edge_default_mappings.concat(styles);
+                                        edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                                     }
                                     styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                                    edge_default_mappings = edge_default_mappings.concat(styles);
+                                    edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                                 }
                             } else {
 
                                 styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                                edge_default_mappings = edge_default_mappings.concat(styles);
+                                edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                             }
                         });
 
@@ -1467,6 +1475,7 @@ angular.module('ndexServiceApp')
 
                     } else if (elementType === 'nodes'){
                         // 'bypass' setting node specific properties
+                        /** @namespace vpElement.applies_to **/
                         var nodeId = vpElement.applies_to;
                         var nodeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
@@ -1478,7 +1487,7 @@ angular.module('ndexServiceApp')
                         });
                         var nodeSelector = 'node[ id = \'' + nodeId + '\' ]';
                         var nodeStyle = {'selector': nodeSelector, 'css': nodeProperties};
-                        node_specific_styles.push(nodeStyle);
+                        nodeSpecificStyles.push(nodeStyle);
                         
                     } else if (elementType === 'edges'){
                         // 'bypass' setting edge specific properties
@@ -1493,19 +1502,19 @@ angular.module('ndexServiceApp')
                         });
                         var edgeSelector = 'edge[ id = \'e' + edgeId + '\' ]';
                         var edgeStyle = {'selector': edgeSelector, 'css': edgeProperties};
-                        edge_specific_styles.push(edgeStyle);
+                        edgeSpecificStyles.push(edgeStyle);
                     }
                 });
             });
 
-            return node_default_styles.concat(
-                node_default_mappings,
-                node_specific_styles,
-                edge_default_styles,
-                edge_default_mappings,
-                edge_specific_styles,
-                node_selected_styles,
-                edge_selected_styles);
+            return nodeDefaultStyles.concat(
+                nodeDefaultMappings,
+                nodeSpecificStyles,
+                edgeDefaultStyles,
+                edgeDefaultMappings,
+                edgeSpecificStyles,
+                nodeSelectedStyles,
+                edgeSelectedStyles);
         };
 
 
@@ -1585,10 +1594,7 @@ angular.module('ndexServiceApp')
 
             }
             return true;
-
         };
-
-
 
         /*
         factory.getCy = function () {
@@ -1597,6 +1603,5 @@ angular.module('ndexServiceApp')
         */
 
         return factory;
-
     }]);
 
