@@ -1313,11 +1313,19 @@ angular.module('ndexServiceApp')
                                                 var data     = ele.json().data;
                                                 var totalSum = 0;
 
-                                                for (var key in pieColumns) {
-                                                    totalSum = totalSum + data[normalizedNames[key]];
+                                                var curentColumnValue = data[normalizedNames[column]];
+                                                if (curentColumnValue <= 0) {
+                                                    return 0;
                                                 }
 
-                                                return (totalSum > 0) ? (100.0 * data[normalizedNames[column]]/totalSum) : 0;
+                                                for (var key in pieColumns) {
+                                                    var columnValue =  data[normalizedNames[key]];
+                                                    if (columnValue > 0) {
+                                                        totalSum = totalSum + columnValue;
+                                                    }
+                                                }
+
+                                                return (totalSum > 0) ? (100.0 * curentColumnValue/totalSum) : 0;
                                             };
 
                                             j++;
