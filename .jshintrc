@@ -16,6 +16,7 @@
     "$":false,
     "cytoscape":false,
     "ndexApp":false,
-    "Clipboard":false
+    "Clipboard":false,
+    "gapi":false
   }
 }

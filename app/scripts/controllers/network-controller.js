@@ -1761,7 +1761,7 @@ ndexApp.controller('networkController',
             };
 
 
-            $scope.networkToCytoscape = function() {
+            var openCurrentNetworkInCytoscape = function() {
 
                 $scope.openInCytoscapeTitle = 'Opening ' + networkController.currentNetwork.name +
                     ' in Cytoscape...';
@@ -1808,11 +1808,35 @@ ndexApp.controller('networkController',
                     });
             };
 
+            $scope.networkToCytoscape = function() {
+
+                var numberOfEdges  = networkController.currentNetwork.edgeCount;
+                var edgesThreshold = window.ndexSettings.openInCytoscapeEdgeThresholdWarning;
+
+                if (numberOfEdges < edgesThreshold) {
+                    openCurrentNetworkInCytoscape();
+
+                } else {
+
+                    var dismissModal = true;
+                    var title   = 'Performance Notice';
+                    var message = 'This network has ' + numberOfEdges  +
+                        ' edges and opening it in Cytoscape may be slow. <br><br> ' +
+                        '<strong>Would you like to open it in Cytoscape?</strong>';
+
+                    ndexNavigation.openConfirmationModal(title, message, 'Open in Cytoscape', 'Cancel', dismissModal,
+                        function () {
+                            openCurrentNetworkInCytoscape();
+                        },
+                        function () {
+
+                        });
+                }
+            };
+
             $scope.setReturnView = function(view) {
                 sharedProperties.setNetworkViewPage(view);
             };
-
-
 
             var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById('simpleQueryNetworkViewId').getElementsByTagName('*');
