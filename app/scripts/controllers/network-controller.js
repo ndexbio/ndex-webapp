@@ -1820,11 +1820,12 @@ ndexApp.controller('networkController',
 
                     var dismissModal = true;
                     var title   = 'Performance Notice';
-                    var message = 'This network has ' + numberOfEdges  +
-                        ' edges and opening it in Cytoscape may be slow. <br><br> ' +
-                        '<strong>Would you like to open it in Cytoscape?</strong>';
+                    var message = 'This is a large network and opening it in Cytoscape might take a long time or ' +
+                        ' even cause a system crash if your computer\'s hardware resources are not sufficient ' +
+                        'to complete the task. <br><br> ' +
+                        '<strong>Would you like to proceed anyway?</strong>';
 
-                    ndexNavigation.openConfirmationModal(title, message, 'Open in Cytoscape', 'Cancel', dismissModal,
+                    ndexNavigation.openConfirmationModal(title, message, 'Yes', 'Cancel', dismissModal,
                         function () {
                             openCurrentNetworkInCytoscape();
                         },
