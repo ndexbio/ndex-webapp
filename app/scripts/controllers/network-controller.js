@@ -1483,6 +1483,9 @@ ndexApp.controller('networkController',
                     }
 
                     if (edgeAttributes) {
+
+                        var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
+
                         for (var key in edgeAttributes[edgeKey]) {
                             // we need to add the  if (edgeAttributes[edgeKey].hasOwnProperty(key) check to
                             // silence the JSHint warning
@@ -1496,6 +1499,11 @@ ndexApp.controller('networkController',
                                     continue;
                                 }
                                 var attributeValue = edgeAttributes[edgeKey][key].v;
+
+                                if (_.includes(reservedEdgeTableColumnNames, key)) {
+                                    key = key + ' 2';
+                                }
+
                                 row[key] = (attributeValue) ? attributeValue : '';
                             }
                         }
@@ -1541,24 +1549,27 @@ ndexApp.controller('networkController',
                     // this is the case when we want filtering on after running simple or advance query
                     filteringEnabled = true;
                 }
+
+                var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
+
                 var columnDefs = [
                     {
-                        field: 'Source Node',
-                        displayName: 'Source Node',
+                        field: reservedEdgeTableColumnNames[0],
+                        displayName: reservedEdgeTableColumnNames[0],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestSubject, false)
                     },
                     {
-                        field: 'Interaction',
-                        displayName: 'Interaction',
+                        field: reservedEdgeTableColumnNames[1],
+                        displayName: reservedEdgeTableColumnNames[1],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestPredicate, false)
                     },
                     {
-                        field: 'Target Node',
-                        displayName: 'Target Node',
+                        field: reservedEdgeTableColumnNames[2],
+                        displayName: reservedEdgeTableColumnNames[2],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestObject, false)
@@ -1636,17 +1647,29 @@ ndexApp.controller('networkController',
 
                             } else {
 
-                                columnDef = {
-                                    field: edgeAttributteProperty,
-                                    displayName: edgeAttributteProperty,
-                                    cellTooltip: true,
-                                    minWidth: calcColumnWidth(edgeAttributteProperty, false),
-                                    enableFiltering: filteringEnabled,
-                                    cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+                                if (_.includes(reservedEdgeTableColumnNames, edgeAttributteProperty)) {
 
-                                    //'<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getAttributeValueForTable(COL_FIELD)"></div>'
-                                    //cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>'
-                                };
+                                    columnDef = {
+                                        field: edgeAttributteProperty + ' 2',
+                                        displayName: edgeAttributteProperty + ' (2)',
+                                        cellTooltip: true,
+                                        minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                        enableFiltering: filteringEnabled
+                                    };
+
+                                    edgeAttributteProperty = edgeAttributteProperty + ' 2';
+
+                                } else {
+
+                                    columnDef = {
+                                        field: edgeAttributteProperty,
+                                        displayName: edgeAttributteProperty,
+                                        cellTooltip: true,
+                                        minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                        enableFiltering: filteringEnabled,
+                                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+                                    };
+                                }
                             }
 
                             edgeAttributesHeaders[edgeAttributteProperty] = columnDef;
