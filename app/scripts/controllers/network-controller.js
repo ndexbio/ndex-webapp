@@ -876,7 +876,7 @@ ndexApp.controller('networkController',
                 return (networkController.isSample && (networkController.sampleSize > 0));
             };
 
-            var getURLsForNdexExternalLink = function(attribute) {
+            $scope.getURLsForNdexExternalLink = function(attribute) {
 
                 if (!attribute) {
                     return null;
@@ -899,11 +899,10 @@ ndexApp.controller('networkController',
                     }
                 });
 
-
                 return urls;
             };
 
-            var getURLForNdexInternalLink = function(attribute) {
+            $scope.getURLsForNdexInternalLink = function(attribute) {
 
                 if (!attribute) {
                     return null;
@@ -1077,7 +1076,7 @@ ndexApp.controller('networkController',
 
                                 _.forEach(ndexLinkList, function (e) {
 
-                                    var ndexInternalLink = getURLForNdexInternalLink(e);
+                                    var ndexInternalLink = $scope.getURLsForNdexInternalLink(e);
                                     if (ndexInternalLink) {
                                         menuList.push(ndexInternalLink);
                                     }
@@ -1090,7 +1089,7 @@ ndexApp.controller('networkController',
                                 }
 
 
-                                var ndexExternalLinks = getURLsForNdexExternalLink(extLinkList);
+                                var ndexExternalLinks = $scope.getURLsForNdexExternalLink(extLinkList);
                                 if (ndexExternalLinks) {
                                     menuList.push(ndexExternalLinks);
                                 }
@@ -1624,7 +1623,19 @@ ndexApp.controller('networkController',
                                         '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'Citations\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
                                         '{{grid.appScope.getNumEdgeNdexCitations(COL_FIELD)}}</a></h6></div>'
                                     };
+                            } else if (edgeAttributteProperty.toLowerCase() === 'ndex:externallink') {
+
+                                columnDef = {
+                                    field: edgeAttributteProperty,
+                                    displayName: edgeAttributteProperty,
+                                    cellTooltip: true,
+                                    minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                    enableFiltering: filteringEnabled,
+                                    cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
+                                };
+
                             } else {
+
                                 columnDef = {
                                     field: edgeAttributteProperty,
                                     displayName: edgeAttributteProperty,
@@ -1761,7 +1772,7 @@ ndexApp.controller('networkController',
             };
 
 
-            $scope.networkToCytoscape = function() {
+            var openCurrentNetworkInCytoscape = function() {
 
                 $scope.openInCytoscapeTitle = 'Opening ' + networkController.currentNetwork.name +
                     ' in Cytoscape...';
@@ -1831,11 +1842,36 @@ ndexApp.controller('networkController',
                     });
             };
 
+            $scope.networkToCytoscape = function() {
+
+                var numberOfEdges  = networkController.currentNetwork.edgeCount;
+                var edgesThreshold = window.ndexSettings.openInCytoscapeEdgeThresholdWarning;
+
+                if (numberOfEdges < edgesThreshold) {
+                    openCurrentNetworkInCytoscape();
+
+                } else {
+
+                    var dismissModal = true;
+                    var title   = 'Performance Notice';
+                    var message = 'This is a large network and opening it in Cytoscape might take a long time or ' +
+                        ' even cause a system crash if your computer\'s hardware resources are not sufficient ' +
+                        'to complete the task. <br><br> ' +
+                        '<strong>Would you like to proceed anyway?</strong>';
+
+                    ndexNavigation.openConfirmationModal(title, message, 'Yes', 'Cancel', dismissModal,
+                        function () {
+                            openCurrentNetworkInCytoscape();
+                        },
+                        function () {
+
+                        });
+                }
+            };
+
             $scope.setReturnView = function(view) {
                 sharedProperties.setNetworkViewPage(view);
             };
-
-
 
             var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById('simpleQueryNetworkViewId').getElementsByTagName('*');
@@ -2316,11 +2352,11 @@ ndexApp.controller('networkController',
 
                         if (attributeName.toLowerCase() === 'ndex:internallink') {
 
-                            return getURLForNdexInternalLink(attribute.v);
+                            return $scope.getURLsForNdexInternalLink(attribute.v);
 
                         } else if (attributeName.toLowerCase() === 'ndex:externallink') {
 
-                            return  getURLsForNdexExternalLink(attribute.v);
+                            return  $scope.getURLsForNdexExternalLink(attribute.v);
 
                         } else if  (Array.isArray(attribute) && attribute.length > 0) {
 
@@ -2772,11 +2808,11 @@ ndexApp.controller('networkController',
 
                         if (attributeName.toLowerCase() === 'ndex:internallink') {
 
-                            return getURLForNdexInternalLink(attribute.v);
+                            return $scope.getURLsForNdexInternalLink(attribute.v);
 
                         } else if (attributeName.toLowerCase() === 'ndex:externallink') {
 
-                            return  getURLsForNdexExternalLink(attribute.v);
+                            return  $scope.getURLsForNdexExternalLink(attribute.v);
 
                         } else if  (Array.isArray(attribute) && attribute.length > 0) {
 
