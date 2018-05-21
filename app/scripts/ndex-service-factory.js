@@ -1787,6 +1787,17 @@ ndexServiceApp.factory('cyREST', ['ndexConfigs', 'ndexService', '$http',
             this.sendHTTPRequest(config, successHandler, errorHandler);
         };
 
+        factory.postRawCXToCytoscape = function (rawCX, successHandler, errorHandler) {
+            var cyRestURL = this.getCyRESTUrl() + '/cyndex2/v1/networks/cx';
+
+            var config = this.getCyRESTPostConfig(cyRestURL, rawCX);
+
+            console.log (rawCX.toString());
+
+            this.sendHTTPRequest(config, successHandler, errorHandler);
+        };
+
+
         return factory;
     }
 ]);
