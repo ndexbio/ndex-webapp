@@ -1800,6 +1800,18 @@ ndexApp.controller('networkController',
                 $scope.openInCytoscapeTitle = 'Opening ' + networkController.currentNetwork.name +
                     ' in Cytoscape...';
 
+                // open network in Viewer
+                if ( networkController.successfullyQueried || networkExternalId === undefined) {
+                    var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getCurrentNiceCX());
+                    cyREST.postRawCXToCytoscape(rawCX, function () {
+                        console.log("opened.");
+                        },
+                        function() {
+                        console.log("failed.");
+                        });
+                    return;
+                }
+
                 var serverURL  = cyREST.getNdexServerUriHTTP();
 
                 var postData = {
@@ -1810,12 +1822,23 @@ ndexApp.controller('networkController',
                 if (accesskey) {
                     postData.accessKey = accesskey;
 
-                } else if ((networkController.visibility === 'private') && networkController.networkShareURL) {
+                } else if ( networkController.networkShareURL) {   // is this redundent to the above? -- cj
                     var splitURLArray = networkController.networkShareURL.split('accesskey=');
                     if (splitURLArray.length === 2) {
                         postData.accessKey = splitURLArray[1];
                     }
                 }
+
+                if ( window.currentSignInType=='google') {
+                    postData.idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+
+                } else if (window.currentSignInType == 'basic') {
+
+                    var userCredentials = ndexUtility.getUserCredentials();
+
+                    postData.username = userCredentials['userName'];
+                    postData.password = userCredentials['token'];
+                };
 
                 cyREST.exportNetworkToCytoscape(postData,
                     function() {
@@ -3392,7 +3415,7 @@ ndexApp.controller('networkController',
                             networkController.networkShareURL = null;
                         }
 
-                        if (networkController.networkShareURL) {
+  //                      if (networkController.networkShareURL) {
                             // network Share URL is enabled; This network can be opened in Cytoscape.
                             $scope.openInCytoscapeTitle = '';
 
@@ -3400,14 +3423,14 @@ ndexApp.controller('networkController',
                             checkCytoscapeAndCyRESTVersions();
 
 
-                        } else {
+    /*                    } else {
                             // network Share URL is disabled; This network can not be opened in Cytoscape.
                             $scope.openInCytoscapeTitle =
                                 'This feature can be used only with Public networks, or Private networks ' +
                                 'with an enabled Share URL';
                             doNothing();
 
-                        }
+                        } */
                     },
                     function() {
                         console.log('unable to get access key for network ' + networkExternalId);
@@ -3747,9 +3770,9 @@ ndexApp.controller('networkController',
                             } else {
                                 // Network is private, access key is not set, we are not the owner.
                                 // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
-                                $scope.openInCytoscapeTitle =
-                                    'This feature can be used only with Public networks, or Private networks ' +
-                                    'with an enabled Share URL';
+                                $scope.openInCytoscapeTitle = '';
+                                  /*  'This feature can be used only with Public networks, or Private networks ' +
+                                    'with an enabled Share URL'; */
                             }
 
 

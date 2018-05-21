@@ -788,6 +788,16 @@
              ng-show="networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
+            <span>
+                <img id="openInCytoscapeButtonId2" ng-show="openInCytoscapeTitle" class="cyButtonDisabled"
+                     ng-mouseover="changeCytoscapeButtonTitle()" title=""
+                     style="height: 32px;" src="images/cytoscape_logo.png">
+
+                <img ng-show="!openInCytoscapeTitle" class="cyButton" ng-click="networkToCytoscape()"
+                     data-toggle="tooltip"  title="Open this network in Cytoscape"
+                     style="height: 32px;" src="images/cytoscape_logo.png">
+            </span>
+
             <button id="converNiceCXtoTSVId" type="button" class="actionsLabel btn btn-primary"
                     data-toggle="tooltip" title="Download Result in tab-delimited text format (TSV)"
                     ng-click="saveAsTSV()"
