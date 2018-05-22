@@ -2,11 +2,11 @@ ndexApp.controller('networkController',
     ['provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$rootScope', '$routeParams', '$modal', '$modalStack',
-        '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', 'cyREST', '$timeout', /*'$filter', '$location','$q',*/
+        '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', 'cyREST', '$timeout',
         function ( provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $rootScope, $routeParams, $modal, $modalStack,
-                  $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST , $timeout /*, $filter /*, $location, $q */)
+                  $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST , $timeout)
         {
             //var self = this;
 
@@ -1803,11 +1803,12 @@ ndexApp.controller('networkController',
                 // open network in Viewer
                 if ( networkController.successfullyQueried || networkExternalId === undefined) {
                     var rawCX = cxNetworkUtils.niceCXToRawCX(networkService.getCurrentNiceCX());
-                    cyREST.postRawCXToCytoscape(rawCX, function () {
-                        console.log("opened.");
+                    cyREST.postRawCXToCytoscape(rawCX,
+                        function () {
+                            console.log('opened.');
                         },
                         function() {
-                        console.log("failed.");
+                            console.log('failed.');
                         });
                     return;
                 }
@@ -1822,23 +1823,23 @@ ndexApp.controller('networkController',
                 if (accesskey) {
                     postData.accessKey = accesskey;
 
-                } else if ( networkController.networkShareURL) {   // is this redundent to the above? -- cj
+                } else if (networkController.networkShareURL) {   // is this redundant to the above? -- cj
                     var splitURLArray = networkController.networkShareURL.split('accesskey=');
                     if (splitURLArray.length === 2) {
                         postData.accessKey = splitURLArray[1];
                     }
                 }
 
-                if ( window.currentSignInType=='google') {
+                if (window.currentSignInType === 'google') {
                     postData.idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
 
-                } else if (window.currentSignInType == 'basic') {
+                } else if (window.currentSignInType === 'basic') {
 
                     var userCredentials = ndexUtility.getUserCredentials();
 
-                    postData.username = userCredentials['userName'];
-                    postData.password = userCredentials['token'];
-                };
+                    postData.username = userCredentials.userName;
+                    postData.password = userCredentials.token;
+                }
 
                 cyREST.exportNetworkToCytoscape(postData,
                     function() {
@@ -3397,7 +3398,7 @@ ndexApp.controller('networkController',
                     );
             };
 
-            networkController.getStatusOfShareableURL = function(checkCytoscapeAndCyRESTVersions, doNothing) {
+            networkController.getStatusOfShareableURL = function(checkCytoscapeAndCyRESTVersions) {
                 ndexService.getAccessKeyOfNetworkV2(networkExternalId,
                     function(data) {
 
@@ -3755,6 +3756,10 @@ ndexApp.controller('networkController',
                                 // shareable URL.  If shareable URL is on, then check if Cytoscape is running and
                                 // its and CyNDEX's versions
 
+                                // TODO - vrynkov, 22 May 2018:
+                                // TODO - we probably do not need to check the status of share URL since now
+                                // TODO owners of private networks can open them in Cytoscape.
+                                // TODO In the past owners could only open in Cytoscape private shared networks. Confirm with Jing.
                                 networkController.getStatusOfShareableURL(
                                     function() {
                                         getCytoscapeAndCyRESTVersions();
@@ -3762,9 +3767,6 @@ ndexApp.controller('networkController',
                                             checkCytoscapeStatusTimer = setInterval(getCytoscapeAndCyRESTVersions,
                                                 checkCytoscapeStatusInSeconds * 1000);
                                         }
-                                    },
-                                    function() {
-                                        // do nothing here
                                     });
 
                             } else {
