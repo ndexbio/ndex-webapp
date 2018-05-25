@@ -1320,7 +1320,8 @@ angular.module('ndexServiceApp')
                                                 var totalSum = 0;
 
                                                 var currentColumnValue = data[normalizedNames[column]];
-                                                if (currentColumnValue <= 0) {
+                                                if ((typeof currentColumnValue === 'undefined') ||
+                                                    (currentColumnValue === null) || (currentColumnValue <= 0)) {
                                                     return 0;
                                                 }
 
