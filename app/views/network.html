@@ -235,14 +235,14 @@
                             &nbsp;&nbsp;
 
 
-                            <span class="networkPropertyName" ng-show="networkController.isAdmin  && !networkController.hasMultipleSubNetworks()">
+                            <span class="networkPropertyName" ng-show="networkController.isAdmin">
                                 <input type="checkbox"
                                     ng-model="networkController.readOnlyChecked"
                                     ng-change="readOnlyChanged()"
                                 ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only
                             </span>
                             <span id="readOnlyButtonId"  class="networkPropertyName"
-                                  ng-show="networkController.currentNetwork.externalId !==undefined && (!networkController.isAdmin || networkController.hasMultipleSubNetworks())"
+                                  ng-show="networkController.currentNetwork.externalId !==undefined && (!networkController.isAdmin)"
                                   ng-init="setToolTips()" data-toggle="tooltip" ng-mouseover="changeReadOnlyButtonTitle()" title="">
                                 <input type="checkbox" disabled ng-model="networkController.readOnlyChecked"> Read Only
                             </span>
@@ -891,10 +891,8 @@
                 <span ng-if="(networkController.currentNetwork.doi == null) || isNetworkCertified()">
                     <a class="actionsLabel btn btn-primary"
                        ng-show="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
-                                && !networkController.hasMultipleSubNetworks()"
-
+                                    && !networkController.hasMultipleSubNetworks()"
                        ng-init="setToolTips()" data-toggle="tooltip" title="Modify network properties"
-
                        ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
                        ng-click="setReturnView('network/')">
                         Edit
@@ -902,7 +900,7 @@
                     </a>
                     <a id="editButtonId" class="actionsLabelDisabled-btn btn btn-primary"
                        ng-show="!(networkController.isAdmin || networkController.canEdit) ||
-                                networkController.hasMultipleSubNetworks() || networkController.readOnlyChecked"
+                       networkController.hasMultipleSubNetworks() || networkController.readOnlyChecked"
                        ng-mouseover="changeEditButtonTitle()" title="">
                         Edit
                     </a>
