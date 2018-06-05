@@ -207,6 +207,589 @@ ndexApp.controller('myAccountController',
                 }
             };
 
+
+            // Enable or Disable Bulk Change Description, Change Reference or Change Version
+
+            var enableOrDisableEditPropertiesBulkMenu = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableEditPropertiesBulkButton = true;
+
+                var unchangeableNetworkStates = {'read' : 0, 'certified' : 0, 'failed' : 0,
+                    'processing' : 0, 'collection' : 0, 'readonly': 0};
+
+                var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    var status = row.Status;
+
+                    var disableEditBulkButton =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
+
+                    if (disableEditBulkButton) {
+                        $scope.enableEditPropertiesBulkButton = false;
+                        unchangeableNetworkStates[status.toLowerCase()] += 1;
+
+                    } else if (row.isReadOnly) {
+                        $scope.enableEditPropertiesBulkButton = false;
+                        unchangeableNetworkStates.readonly += 1;
+
+                    } else if (row.externalId in myAccountController.networksWithReadAccess) {
+                        $scope.enableEditPropertiesBulkButton = false;
+                        unchangeableNetworkStates.read += 1;
+                    }
+                });
+
+                if ($scope.enableEditPropertiesBulkButton) {
+                    $scope.changeDescriptionButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        'Change Description of the selected networks' : 'Change Description of the selected network';
+                    $scope.changeReferenceButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        'Change Reference of the selected networks' : 'Change Reference of the selected network';
+                    $scope.changeVersionButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        'Change Version of the selected networks' : 'Change Version of the selected network';
+                } else {
+                    $scope.changeDescriptionButtonTitle = 'Unable to change Description of the selected ';
+                    $scope.changeReferenceButtonTitle   = 'Unable to change Reference of the selected ';
+                    $scope.changeVersionButtonTitle     = 'Unable to change Version of the selected ';
+
+                    if (myAccountController.networkTableRowsSelected > 1) {
+                        $scope.changeDescriptionButtonTitle += 'networks: ';
+                        $scope.changeReferenceButtonTitle   += 'networks: ';
+                        $scope.changeVersionButtonTitle     += 'networks: ';
+
+
+                        if (unchangeableNetworkStates.read > 1) {
+                            $scope.changeDescriptionButtonTitle += 'you do not have privilege to modify ' +
+                                unchangeableNetworkStates.read + ' networks';
+
+                            $scope.changeReferenceButtonTitle += 'you do not have privilege to modify ' +
+                                unchangeableNetworkStates.read + ' networks';
+
+                            $scope.changeVersionButtonTitle += 'you do not have privilege to modify ' +
+                                unchangeableNetworkStates.read + ' networks';
+
+                        } else if (unchangeableNetworkStates.read === 1) {
+                            $scope.changeDescriptionButtonTitle += 'you do not have privilege to modify ' +
+                                unchangeableNetworkStates.read + ' network';
+
+                            $scope.changeReferenceButtonTitle += 'you do not have privilege to modify ' +
+                                unchangeableNetworkStates.read + ' network';
+
+                            $scope.changeVersionButtonTitle += 'you do not have privilege to modify ' +
+                                unchangeableNetworkStates.read + ' network';
+                        }
+
+                        if ((unchangeableNetworkStates.read > 0) &&
+                            ((unchangeableNetworkStates.certified > 0) || (unchangeableNetworkStates.failed > 0) ||
+                            (unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
+                            (unchangeableNetworkStates.readonly > 0))) {
+                            $scope.changeDescriptionButtonTitle += ', ';
+                            $scope.changeReferenceButtonTitle   += ', ';
+                            $scope.changeVersionButtonTitle     += ', ';
+                        }
+
+                        if (unchangeableNetworkStates.certified > 1) {
+                            $scope.changeDescriptionButtonTitle +=
+                                unchangeableNetworkStates.certified + ' networks are certified';
+
+                            $scope.changeReferenceButtonTitle +=
+                                unchangeableNetworkStates.certified + ' networks are certified';
+
+                            $scope.changeVersionButtonTitle +=
+                                unchangeableNetworkStates.certified + ' networks are certified';
+
+                        } else if (unchangeableNetworkStates.certified === 1) {
+                            $scope.changeDescriptionButtonTitle +=
+                                unchangeableNetworkStates.certified + ' network is certified';
+
+                            $scope.changeReferenceButtonTitle +=
+                                unchangeableNetworkStates.certified + ' network is certified';
+
+                            $scope.changeVersionButtonTitle +=
+                                unchangeableNetworkStates.certified + ' network is certified';
+                        }
+                        if ((unchangeableNetworkStates.certified > 0) &&
+                            ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) ||
+                            (unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
+                            $scope.changeDescriptionButtonTitle += ', ';
+                            $scope.changeReferenceButtonTitle   += ', ';
+                            $scope.changeVersionButtonTitle     += ', ';
+                        }
+                        if (unchangeableNetworkStates.failed > 1) {
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
+
+                        } else if (unchangeableNetworkStates.failed === 1) {
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.failed + ' network failed';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.failed + ' network failed';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.failed + ' network failed';
+                        }
+                        if ((unchangeableNetworkStates.failed > 0) &&
+                            ((unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
+                            (unchangeableNetworkStates.readonly > 0)))
+                        {
+                            $scope.changeDescriptionButtonTitle += ', ';
+                            $scope.changeReferenceButtonTitle   += ', ';
+                            $scope.changeVersionButtonTitle     += ', ';
+                        }
+                        if (unchangeableNetworkStates.processing > 1) {
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
+
+                        } else if (unchangeableNetworkStates.processing === 1) {
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
+                        }
+                        if ((unchangeableNetworkStates.processing > 0) &&
+                            ((unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
+                            $scope.changeDescriptionButtonTitle += ', ';
+                            $scope.changeReferenceButtonTitle   += ', ';
+                            $scope.changeVersionButtonTitle     += ', ';
+                        }
+                        if (unchangeableNetworkStates.collection > 1) {
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
+
+                        } else if (unchangeableNetworkStates.collection === 1) {
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.collection + ' networks is a Cytoscape collection';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.collection + ' networks is a Cytoscape collection';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.collection + ' networks is a Cytoscape collection';
+                        }
+                        if ((unchangeableNetworkStates.collection > 0) && (unchangeableNetworkStates.readonly > 0)) {
+                            $scope.changeDescriptionButtonTitle += ', ';
+                            $scope.changeReferenceButtonTitle   += ', ';
+                            $scope.changeVersionButtonTitle     += ', ';
+                        }
+                        if (unchangeableNetworkStates.readonly > 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
+
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
+
+                        } else if (unchangeableNetworkStates.readonly === 1) {
+                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
+                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
+                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
+                        }
+                    } else {
+                        $scope.changeDescriptionButtonTitle += 'network';
+                        $scope.changeReferenceButtonTitle   += 'network';
+                        $scope.changeVersionButtonTitle     += 'network';
+
+                        if (unchangeableNetworkStates.read > 0) {
+                            $scope.changeDescriptionButtonTitle += ': you do not have privilege to modify it ';
+                            $scope.changeReferenceButtonTitle   += ': you do not have privilege to modify it ';
+                            $scope.changeVersionButtonTitle     += ': you do not have privilege to modify it ';
+
+                        } else if (unchangeableNetworkStates.certified > 0) {
+                            $scope.changeDescriptionButtonTitle += ': it is certified ';
+                            $scope.changeReferenceButtonTitle   += ': it is certified ';
+                            $scope.changeVersionButtonTitle     += ': it is certified ';
+
+                        } else if (unchangeableNetworkStates.failed > 0) {
+                            $scope.changeDescriptionButtonTitle += ': it is failed ';
+                            $scope.changeReferenceButtonTitle   += ': it is failed ';
+                            $scope.changeVersionButtonTitle     += ': it is failed ';
+
+                        } else if (unchangeableNetworkStates.processing > 0) {
+                            $scope.changeDescriptionButtonTitle += ': it is processing ';
+                            $scope.changeReferenceButtonTitle   += ': it is processing ';
+                            $scope.changeVersionButtonTitle     += ': it is processing ';
+
+                        } else if (unchangeableNetworkStates.collection > 0) {
+                            $scope.changeDescriptionButtonTitle += ': it is a Cytoscape collection ';
+                            $scope.changeReferenceButtonTitle   += ': it is a Cytoscape collection ';
+                            $scope.changeVersionButtonTitle     += ': it is a Cytoscape collection ';
+
+                        } else if (unchangeableNetworkState.readonly > 0) {
+                            $scope.changeDescriptionButtonTitle += ': it is read-only ';
+                            $scope.changeReferenceButtonTitle   += ': it is read-only ';
+                            $scope.changeVersionButtonTitle     += ': it is read-only ';
+                        }
+                    }
+                }
+            };
+
+            var enableOrDisableChangeVisibilityBulkMenu = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableChangeVisibilityBulkButton = true;
+
+                var unchangeableNetworkStates = {'nonadmin' : 0, 'certified' : 0, 'failed' : 0,
+                    'processing' : 0, 'collection' : 0, 'readonly': 0};
+
+                var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
+                        unchangeableNetworkStates.nonadmin += 1;
+                        $scope.enableChangeVisibilityBulkButton = false;
+                        return true; // return true means "continue" in lodash's _.forEach loop
+                    }
+                    var status = row.Status;
+
+                    var disableChangeVisibilityBulkMenu =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
+
+                    if (disableChangeVisibilityBulkMenu) {
+                        $scope.enableChangeVisibilityBulkButton = false;
+                        unchangeableNetworkStates[status.toLowerCase()] += 1;
+
+                    } else if (row.isReadOnly) {
+                        $scope.enableChangeVisibilityBulkButton = false;
+                        unchangeableNetworkStates.readonly += 1;
+
+                    }
+                });
+
+                if ($scope.enableChangeVisibilityBulkButton) {
+                    $scope.changeVisibilityButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        'Change Visibility of the selected networks' : 'Change Visibility of the selected network';
+                } else {
+                    $scope.changeVisibilityButtonTitle = 'Unable to change Visiblity of the selected ';
+
+                    if (myAccountController.networkTableRowsSelected > 1) {
+                        $scope.changeVisibilityButtonTitle += 'networks: ';
+
+                        if (unchangeableNetworkStates.nonadmin > 1) {
+                            $scope.changeVisibilityButtonTitle += 'you do not own ' +
+                                unchangeableNetworkStates.nonadmin + ' networks';
+                        } else if (unchangeableNetworkStates.nonadmin === 1) {
+                            $scope.changeVisibilityButtonTitle += 'you do not own ' +
+                                unchangeableNetworkStates.nonadmin + ' network';
+                        }
+                        if ((unchangeableNetworkStates.nonadmin > 0) &&
+                            ((unchangeableNetworkStates.certified > 0) || (unchangeableNetworkStates.failed > 0) ||
+                            (unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
+                            (unchangeableNetworkStates.readonly > 0))) {
+                            $scope.changeVisibilityButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.certified > 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.certified + ' networks are certified';
+                        } else if (unchangeableNetworkStates.certified === 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.certified + ' network is certified';
+                        }
+                        if ((unchangeableNetworkStates.certified > 0) &&
+                            ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) ||
+                            (unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
+                            $scope.changeVisibilityButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.failed > 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
+                        } else if (unchangeableNetworkStates.failed === 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.failed + ' network failed';
+                        }
+                        if ((unchangeableNetworkStates.failed > 0) &&
+                            ((unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
+                            (unchangeableNetworkStates.readonly > 0))) {
+                            $scope.changeVisibilityButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.processing > 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
+                        } else if (unchangeableNetworkStates.processing === 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
+                        }
+                        if ((unchangeableNetworkStates.processing > 0) &&
+                            ((unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
+                            $scope.changeVisibilityButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.collection > 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
+                        } else if (unchangeableNetworkStates.collection === 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.collection + ' network is a Cytoscape collection';
+                        }
+                        if ((unchangeableNetworkStates.collection > 0) && (unchangeableNetworkStates.readonly > 0)) {
+                            $scope.changeVisibilityButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkState.readonly > 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
+                        } else if (unchangeableNetworkStates.readonly === 1) {
+                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
+                        }
+                    } else {
+                        $scope.changeVisibilityButtonTitle += 'network';
+
+                        if (unchangeableNetworkStates.nonadmin > 0) {
+                            $scope.changeVisibilityButtonTitle += ': you do not own it ';
+                        } else if (unchangeableNetworkStates.certified > 0) {
+                            $scope.changeVisibilityButtonTitle += ': it is certified ';
+                        } else if (unchangeableNetworkStates.failed > 0) {
+                            $scope.changeVisibilityButtonTitle += ': it is failed ';
+                        } else if (unchangeableNetworkStates.processing > 0) {
+                            $scope.changeVisibilityButtonTitle += ': it is processing ';
+                        } else if (unchangeableNetworkStates.collection > 0) {
+                            $scope.changeVisibilityButtonTitle += ': it is a Cytoscape collection ';
+                        } else if (unchangeableNetworkStates.readonly > 0) {
+                            $scope.changeVisibilityButtonTitle += ': it is read-only ';
+                        }
+                    }
+                }
+            };
+
+            var enableOrDisableSetReadOnlyBulkMenu = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableSetReadOnlyBulkButton = true;
+
+                var unchangeableNetworkStates = {"nonadmin" : 0, "certified" : 0, "failed" : 0, "processing" : 0, "collection" : 0};
+                var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
+                        unchangeableNetworkStates.nonadmin += 1;
+                        $scope.enableSetReadOnlyBulkButton = false;
+                        return true; // return true means "continue" in lodash's _.forEach loop
+                    }
+                    var status = row.Status;
+
+                    var disableSetReadOnlyBulkMenu  =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
+
+                    if (disableSetReadOnlyBulkMenu) {
+                        $scope.enableSetReadOnlyBulkButton = false;
+                        unchangeableNetworkStates[status.toLowerCase()] += 1;
+                    }
+                });
+
+                if ($scope.enableSetReadOnlyBulkButton) {
+                    $scope.setReadOnlNetworkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        'Change read-only flag of selected networks' : 'Change read-only flag of selected network';
+                } else {
+                    $scope.setReadOnlNetworkButtonTitle = 'Unable change read-only flag of selected ';
+
+                    if (myAccountController.networkTableRowsSelected > 1) {
+                        $scope.setReadOnlNetworkButtonTitle += 'networks: ';
+
+                        if (unchangeableNetworkStates.nonadmin > 1) {
+                            $scope.setReadOnlNetworkButtonTitle += 'you do not own ' +
+                                unchangeableNetworkStates.nonadmin + ' networks';
+                        } else if (unchangeableNetworkStates.nonadmin === 1) {
+                            $scope.setReadOnlNetworkButtonTitle += 'you do not own ' +
+                                unchangeableNetworkStates.nonadmin + ' network';
+                        }
+                        if ((unchangeableNetworkStates.nonadmin > 0) &&
+                            ((unchangeableNetworkStates.certified > 0)  || (unchangeableNetworkStates.failed > 0) ||
+                            (unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0))) {
+                            $scope.setReadOnlNetworkButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.certified > 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.certified + ' networks are certified';
+                        } else if (unchangeableNetworkStates.certified === 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.certified + ' network is certified';
+                        }
+                        if ((unchangeableNetworkStates.certified > 0) &&
+                            ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) ||
+                             (unchangeableNetworkStates.collection > 0))) {
+                            $scope.setReadOnlNetworkButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.failed > 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
+                        } else if (unchangeableNetworkStates.failed === 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.failed + ' network failed';
+                        }
+                        if ((unchangeableNetworkStates.failed > 0) &&
+                            ((unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0))) {
+                            $scope.setReadOnlNetworkButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.processing > 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
+                        } else if (unchangeableNetworkStates.processing === 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
+                        }
+                        if ((unchangeableNetworkStates.processing > 0) && (unchangeableNetworkStates.collection > 0)) {
+                            $scope.setReadOnlNetworkButtonTitle += ', ';
+                        }
+                        if (unchangeableNetworkStates.collection > 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
+                        } else if (unchangeableNetworkStates.collection === 1) {
+                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.collection + ' network is a Cytoscape collection';
+                        }
+                    } else {
+                        $scope.setReadOnlNetworkButtonTitle += 'network';
+
+                        if (unchangeableNetworkStates.nonadmin > 0) {
+                            $scope.setReadOnlNetworkButtonTitle += ': you do not own it ';
+                        } else if (unchangeableNetworkStates.certified > 0) {
+                            $scope.setReadOnlNetworkButtonTitle += ': it is certified ';
+                        } else if (unchangeableNetworkStates.failed > 0) {
+                            $scope.setReadOnlNetworkButtonTitle += ': it is failed ';
+                        } else if (unchangeableNetworkStates.processing > 0) {
+                            $scope.setReadOnlNetworkButtonTitle += ': it is processing ';
+                        } else if (unchangeableNetworkStates.collection > 0) {
+                            $scope.setReadOnlNetworkButtonTitle += ': it is a Cytoscape collection ';
+                        }
+                    }
+                }
+            };
+
+            var enableOrDisableDeleteBulkButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableDeleteBulkButton = true;
+
+                var undeleteableNetworkStates = {'nonadmin' : 0, 'certified' : 0, 'readonly' : 0 /*"processing" : 0*/};
+                var statesForWhichToDisable = Object.keys(undeleteableNetworkStates);
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
+                        undeleteableNetworkStates.nonadmin += 1;
+                        $scope.enableDeleteBulkButton = false;
+                        return true; // return true means "continue" in lodash's _.forEach loop
+                    }
+                    var status = row.Status;
+
+                    var disableDeleteBulkButton =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
+
+                    if (disableDeleteBulkButton) {
+                        $scope.enableDeleteBulkButton = false;
+                        undeleteableNetworkStates[status.toLowerCase()] += 1;
+
+                    } else if (row.isReadOnly) {
+                        $scope.enableDeleteBulkButton = false;
+                        undeleteableNetworkStates.readonly += 1;
+
+                    }
+                });
+
+                if ($scope.enableDeleteBulkButton) {
+                    $scope.deleteNetworkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        'Delete selected networks' : 'Delete selected network';
+                } else {
+                    $scope.deleteNetworkButtonTitle = 'Unable to delete selected ';
+
+                    if (myAccountController.networkTableRowsSelected > 1) {
+                        $scope.deleteNetworkButtonTitle += 'networks: ';
+
+                        if (undeleteableNetworkStates.nonadmin > 1) {
+                            $scope.deleteNetworkButtonTitle += 'you do not own ' +
+                                undeleteableNetworkStates.nonadmin + ' networks';
+                        } else if (undeleteableNetworkStates.nonadmin === 1) {
+                            $scope.deleteNetworkButtonTitle += 'you do not own ' +
+                                undeleteableNetworkStates.nonadmin + ' network';
+                        }
+                        if ((undeleteableNetworkStates.nonadmin > 0) &&
+                            (((undeleteableNetworkStates.certified > 0) ||
+                               undeleteableNetworkStates.readonly > 0) ||
+                              (undeleteableNetworkStates.processing > 0))) {
+                            $scope.deleteNetworkButtonTitle += ', ';
+                        }
+                        if (undeleteableNetworkStates['certified'] > 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['certified'] + " networks are certified";
+                        } else if (undeleteableNetworkStates['certified'] === 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['certified'] + " network is certified";
+                        }
+                        if ((undeleteableNetworkStates['certified'] > 0) &&
+                            ((undeleteableNetworkStates['readonly'] > 0) || (undeleteableNetworkStates['processing'] > 0))) {
+                            $scope.deleteNetworkButtonTitle += ", ";
+                        }
+                        if (undeleteableNetworkStates['readonly'] > 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['readonly'] + " networks are read-only";
+                        } else if (undeleteableNetworkStates['readonly'] === 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['readonly'] + " network is read-only";
+                        }
+                        if ((undeleteableNetworkStates['readonly'] > 0) && (undeleteableNetworkStates['processing'] > 0)) {
+                            $scope.deleteNetworkButtonTitle += ", ";
+                        }
+                        if (undeleteableNetworkStates['processing'] > 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['processing'] + " networks are processing";
+                        } else if (undeleteableNetworkStates['processing'] === 1) {
+                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['processing'] + " network is processing";
+                        }
+                    } else {
+                        $scope.deleteNetworkButtonTitle += "network";
+
+                        if (undeleteableNetworkStates['nonadmin'] > 0) {
+                            $scope.deleteNetworkButtonTitle += ": you do not own it ";
+                        } else if (undeleteableNetworkStates['certified'] > 0) {
+                            $scope.deleteNetworkButtonTitle += ": it is certified ";
+                        } else if (undeleteableNetworkStates['readonly'] > 0) {
+                            $scope.deleteNetworkButtonTitle += ": it is read-only ";
+                        } else if (undeleteableNetworkStates['processing'] > 0) {
+                            $scope.deleteNetworkButtonTitle += ": it is processing ";
+                        }
+                    }
+                }
+            };
+
+            var enableOrDisableShareBulkButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableShareBulkButton = true;
+
+                var unshareableNetworkStates = {"nonadmin" : 0, "failed" : 0, "processing" : 0};
+                var statesForWhichToDisable = Object.keys(unshareableNetworkStates);
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
+                        unshareableNetworkStates["nonadmin"] += 1;
+                        $scope.enableShareBulkButton = false;
+                        return true; // return true means "continue" in lodash's _.forEach loop
+                    }
+                    var status = row.Status;
+
+                    var disableShareBulkButton =
+                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
+
+                    if (disableShareBulkButton) {
+                        $scope.enableShareBulkButton = false;
+                        unshareableNetworkStates[status.toLowerCase()] += 1;
+                    }
+                });
+
+                if ($scope.enableShareBulkButton) {
+                    $scope.shareNetworkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        "Share selected networks" : "Share selected network"
+                } else {
+                    $scope.shareNetworkButtonTitle = "Unable to share selected ";
+
+                    if (myAccountController.networkTableRowsSelected > 1) {
+                        $scope.shareNetworkButtonTitle += "networks: ";
+
+                        if (unshareableNetworkStates['nonadmin'] > 1) {
+                            $scope.shareNetworkButtonTitle += "you do not own " +
+                                unshareableNetworkStates['nonadmin'] + " networks";
+                        } else if (unshareableNetworkStates['nonadmin'] === 1) {
+                            $scope.shareNetworkButtonTitle += "you do not own " +
+                                unshareableNetworkStates['nonadmin'] + " network";
+                        }
+                        if ((unshareableNetworkStates['nonadmin'] > 0) &&
+                            ((unshareableNetworkStates['failed'] > 0) || (unshareableNetworkStates['processing'] > 0))) {
+                            $scope.shareNetworkButtonTitle += ", ";
+                        }
+                        if (unshareableNetworkStates['failed'] > 1) {
+                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['failed'] + " networks failed";
+                        } else if (unshareableNetworkStates['failed'] === 1) {
+                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['failed'] + " network failed";
+                        }
+                        if ((unshareableNetworkStates['failed'] > 0) && (unshareableNetworkStates['processing'] > 0)) {
+                            $scope.shareNetworkButtonTitle += ", "
+                        }
+                        if (unshareableNetworkStates['processing'] > 1) {
+                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['processing'] + " networks are processing";
+                        } else if (unshareableNetworkStates['processing'] === 1) {
+                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['processing'] + " network is processing";
+                        }
+                    } else {
+                        $scope.shareNetworkButtonTitle += "network";
+
+                        if (unshareableNetworkStates['nonadmin'] > 0) {
+                            $scope.shareNetworkButtonTitle += ": you do not own it ";
+                        } else if (unshareableNetworkStates['failed'] > 0) {
+                            $scope.shareNetworkButtonTitle += ": it is failed ";
+                        } else if (unshareableNetworkStates['processing'] > 0) {
+                            $scope.shareNetworkButtonTitle += ": it is processing ";
+                        }
+                    }
+                }
+            };
+
+
             //table
             $scope.networkGridOptions =
             {
@@ -673,7 +1256,7 @@ ndexApp.controller('myAccountController',
                 }
                 var properties = {};
                 if (entity.whatType === 'task') {
-                    proipertis.newTask = false;
+                    properties.newTask = false;
                     ndexService.updateTaskPropertiesV2(entity.taskId, properties,
                         function () {
                             entity.newTask = false;
@@ -744,585 +1327,6 @@ ndexApp.controller('myAccountController',
                 var markDownFinal  = $('<html>'+markDown+'</html>').text();
 
                 return markDownFinal;
-            };
-
-
-
-            // Enable or Disable Bulk Change Description, Change Reference or Change Version
-            var enableOrDisableEditPropertiesBulkMenu = function() {
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                $scope.enableEditPropertiesBulkButton = true;
-
-                var unchangeableNetworkStates = {'read' : 0, 'certified' : 0, 'failed' : 0,
-                    'processing' : 0, 'collection' : 0, 'readonly': 0};
-
-                var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
-
-                _.forEach (selectedNetworksRows, function(row) {
-
-                    var status = row.Status;
-
-                    var disableEditBulkButton =
-                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
-
-                    if (disableEditBulkButton) {
-                        $scope.enableEditPropertiesBulkButton = false;
-                        unchangeableNetworkStates[status.toLowerCase()] += 1;
-
-                    } else if (row.isReadOnly) {
-                        $scope.enableEditPropertiesBulkButton = false;
-                        unchangeableNetworkStates.readonly += 1;
-
-                    } else if (row.externalId in myAccountController.networksWithReadAccess) {
-                        $scope.enableEditPropertiesBulkButton = false;
-                        unchangeableNetworkStates.read += 1;
-                    }
-                });
-
-                if ($scope.enableEditPropertiesBulkButton) {
-                    $scope.changeDescriptionButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
-                        'Change Description of the selected networks' : 'Change Description of the selected network';
-                    $scope.changeReferenceButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
-                        'Change Reference of the selected networks' : 'Change Reference of the selected network';
-                    $scope.changeVersionButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
-                        'Change Version of the selected networks' : 'Change Version of the selected network';
-                } else {
-                    $scope.changeDescriptionButtonTitle = 'Unable to change Description of the selected ';
-                    $scope.changeReferenceButtonTitle   = 'Unable to change Reference of the selected ';
-                    $scope.changeVersionButtonTitle     = 'Unable to change Version of the selected ';
-
-                    if (myAccountController.networkTableRowsSelected > 1) {
-                        $scope.changeDescriptionButtonTitle += 'networks: ';
-                        $scope.changeReferenceButtonTitle   += 'networks: ';
-                        $scope.changeVersionButtonTitle     += 'networks: ';
-
-
-                        if (unchangeableNetworkStates.read > 1) {
-                            $scope.changeDescriptionButtonTitle += 'you do not have privilege to modify ' +
-                                unchangeableNetworkStates.read + ' networks';
-
-                            $scope.changeReferenceButtonTitle += 'you do not have privilege to modify ' +
-                                unchangeableNetworkStates.read + ' networks';
-
-                            $scope.changeVersionButtonTitle += 'you do not have privilege to modify ' +
-                                unchangeableNetworkStates.read + ' networks';
-
-                        } else if (unchangeableNetworkStates.read === 1) {
-                            $scope.changeDescriptionButtonTitle += 'you do not have privilege to modify ' +
-                                unchangeableNetworkStates.read + ' network';
-
-                            $scope.changeReferenceButtonTitle += 'you do not have privilege to modify ' +
-                                unchangeableNetworkStates.read + ' network';
-
-                            $scope.changeVersionButtonTitle += 'you do not have privilege to modify ' +
-                                unchangeableNetworkStates.read + ' network';
-                        }
-
-                        if ((unchangeableNetworkStates.read > 0) &&
-                            ((unchangeableNetworkStates.certified > 0) || (unchangeableNetworkStates.failed > 0) ||
-                            (unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
-                            (unchangeableNetworkStates.readonly > 0))) {
-                            $scope.changeDescriptionButtonTitle += ', ';
-                            $scope.changeReferenceButtonTitle   += ', ';
-                            $scope.changeVersionButtonTitle     += ', ';
-                        }
-
-                        if (unchangeableNetworkStates.certified > 1) {
-                            $scope.changeDescriptionButtonTitle +=
-                                unchangeableNetworkStates.certified + ' networks are certified';
-
-                            $scope.changeReferenceButtonTitle +=
-                                unchangeableNetworkStates.certified + ' networks are certified';
-
-                            $scope.changeVersionButtonTitle +=
-                                unchangeableNetworkStates.certified + ' networks are certified';
-
-                        } else if (unchangeableNetworkStates.certified === 1) {
-                            $scope.changeDescriptionButtonTitle +=
-                                unchangeableNetworkStates.certified + ' network is certified';
-
-                            $scope.changeReferenceButtonTitle +=
-                                unchangeableNetworkStates.certified + ' network is certified';
-
-                            $scope.changeVersionButtonTitle +=
-                                unchangeableNetworkStates.certified + ' network is certified';
-                        }
-                        if ((unchangeableNetworkStates.certified > 0) &&
-                            ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) ||
-                            (unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
-                            $scope.changeDescriptionButtonTitle += ', ';
-                            $scope.changeReferenceButtonTitle   += ', ';
-                            $scope.changeVersionButtonTitle     += ', ';
-                        }
-                        if (unchangeableNetworkStates.failed > 1) {
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
-
-                        } else if (unchangeableNetworkStates.failed === 1) {
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.failed + ' network failed';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.failed + ' network failed';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.failed + ' network failed';
-                        }
-                        if ((unchangeableNetworkStates.failed > 0) &&
-                            ((unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
-                            (unchangeableNetworkStates.readonly > 0)))
-                        {
-                            $scope.changeDescriptionButtonTitle += ', ';
-                            $scope.changeReferenceButtonTitle   += ', ';
-                            $scope.changeVersionButtonTitle     += ', ';
-                        }
-                        if (unchangeableNetworkStates.processing > 1) {
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
-
-                        } else if (unchangeableNetworkStates.processing === 1) {
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
-                        }
-                        if ((unchangeableNetworkStates.processing > 0) &&
-                            ((unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
-                            $scope.changeDescriptionButtonTitle += ', ';
-                            $scope.changeReferenceButtonTitle   += ', ';
-                            $scope.changeVersionButtonTitle     += ', ';
-                        }
-                        if (unchangeableNetworkStates.collection > 1) {
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
-
-                        } else if (unchangeableNetworkStates.collection === 1) {
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.collection + ' networks is a Cytoscape collection';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.collection + ' networks is a Cytoscape collection';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.collection + ' networks is a Cytoscape collection';
-                        }
-                        if ((unchangeableNetworkStates.collection > 0) && (unchangeableNetworkStates.readonly > 0)) {
-                            $scope.changeDescriptionButtonTitle += ', ';
-                            $scope.changeReferenceButtonTitle   += ', ';
-                            $scope.changeVersionButtonTitle     += ', ';
-                        }
-                        if (unchangeableNetworkStates.readonly > 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
-
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
-
-                        } else if (unchangeableNetworkStates.readonly === 1) {
-                            $scope.changeDescriptionButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
-                            $scope.changeReferenceButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
-                            $scope.changeVersionButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
-                        }
-                    } else {
-                        $scope.changeDescriptionButtonTitle += 'network';
-                        $scope.changeReferenceButtonTitle   += 'network';
-                        $scope.changeVersionButtonTitle     += 'network';
-
-                        if (unchangeableNetworkStates.read > 0) {
-                            $scope.changeDescriptionButtonTitle += ': you do not have privilege to modify it ';
-                            $scope.changeReferenceButtonTitle   += ': you do not have privilege to modify it ';
-                            $scope.changeVersionButtonTitle     += ': you do not have privilege to modify it ';
-
-                        } else if (unchangeableNetworkStates.certified > 0) {
-                            $scope.changeDescriptionButtonTitle += ': it is certified ';
-                            $scope.changeReferenceButtonTitle   += ': it is certified ';
-                            $scope.changeVersionButtonTitle     += ': it is certified ';
-
-                        } else if (unchangeableNetworkStates.failed > 0) {
-                            $scope.changeDescriptionButtonTitle += ': it is failed ';
-                            $scope.changeReferenceButtonTitle   += ': it is failed ';
-                            $scope.changeVersionButtonTitle     += ': it is failed ';
-
-                        } else if (unchangeableNetworkStates.processing > 0) {
-                            $scope.changeDescriptionButtonTitle += ': it is processing ';
-                            $scope.changeReferenceButtonTitle   += ': it is processing ';
-                            $scope.changeVersionButtonTitle     += ': it is processing ';
-
-                        } else if (unchangeableNetworkStates.collection > 0) {
-                            $scope.changeDescriptionButtonTitle += ': it is a Cytoscape collection ';
-                            $scope.changeReferenceButtonTitle   += ': it is a Cytoscape collection ';
-                            $scope.changeVersionButtonTitle     += ': it is a Cytoscape collection ';
-
-                        } else if (unchangeableNetworkState.readonly > 0) {
-                            $scope.changeDescriptionButtonTitle += ': it is read-only ';
-                            $scope.changeReferenceButtonTitle   += ': it is read-only ';
-                            $scope.changeVersionButtonTitle     += ': it is read-only ';
-                        }
-                    }
-                }
-            };
-
-            var enableOrDisableChangeVisibilityBulkMenu = function() {
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                $scope.enableChangeVisibilityBulkButton = true;
-
-                var unchangeableNetworkStates = {'nonadmin' : 0, 'certified' : 0, 'failed' : 0,
-                    'processing' : 0, 'collection' : 0, 'readonly': 0};
-
-                var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
-
-                _.forEach (selectedNetworksRows, function(row) {
-
-                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
-                        unchangeableNetworkStates.nonadmin += 1;
-                        $scope.enableChangeVisibilityBulkButton = false;
-                        return true; // return true means "continue" in lodash's _.forEach loop
-                    }
-                    var status = row.Status;
-
-                    var disableChangeVisibilityBulkMenu =
-                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
-
-                    if (disableChangeVisibilityBulkMenu) {
-                        $scope.enableChangeVisibilityBulkButton = false;
-                        unchangeableNetworkStates[status.toLowerCase()] += 1;
-
-                    } else if (row.isReadOnly) {
-                        $scope.enableChangeVisibilityBulkButton = false;
-                        unchangeableNetworkStates.readonly += 1;
-
-                    }
-                });
-
-                if ($scope.enableChangeVisibilityBulkButton) {
-                    $scope.changeVisibilityButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
-                        'Change Visibility of the selected networks' : 'Change Visibility of the selected network';
-                } else {
-                    $scope.changeVisibilityButtonTitle = 'Unable to change Visiblity of the selected ';
-
-                    if (myAccountController.networkTableRowsSelected > 1) {
-                        $scope.changeVisibilityButtonTitle += 'networks: ';
-
-                        if (unchangeableNetworkStates.nonadmin > 1) {
-                            $scope.changeVisibilityButtonTitle += 'you do not own ' +
-                                unchangeableNetworkStates.nonadmin + ' networks';
-                        } else if (unchangeableNetworkStates.nonadmin === 1) {
-                            $scope.changeVisibilityButtonTitle += 'you do not own ' +
-                                unchangeableNetworkStates.nonadmin + ' network';
-                        }
-                        if ((unchangeableNetworkStates.nonadmin > 0) &&
-                            ((unchangeableNetworkStates.certified > 0) || (unchangeableNetworkStates.failed > 0) ||
-                            (unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
-                            (unchangeableNetworkStates.readonly > 0))) {
-                            $scope.changeVisibilityButtonTitle += ', ';
-                        }
-                        if (unchangeableNetworkStates.certified > 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.certified + ' networks are certified';
-                        } else if (unchangeableNetworkStates.certified === 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.certified + ' network is certified';
-                        }
-                        if ((unchangeableNetworkStates.certified > 0) &&
-                            ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) ||
-                            (unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
-                            $scope.changeVisibilityButtonTitle += ', ';
-                        }
-                        if (unchangeableNetworkStates.failed > 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.failed + ' networks failed';
-                        } else if (unchangeableNetworkStates.failed === 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.failed + ' network failed';
-                        }
-                        if ((unchangeableNetworkStates.failed > 0) &&
-                            ((unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
-                            (unchangeableNetworkStates.readonly > 0))) {
-                            $scope.changeVisibilityButtonTitle += ', ';
-                        }
-                        if (unchangeableNetworkStates.processing > 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.processing + ' networks are processing';
-                        } else if (unchangeableNetworkStates.processing === 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
-                        }
-                        if ((unchangeableNetworkStates.processing > 0) &&
-                            ((unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
-                            $scope.changeVisibilityButtonTitle += ', ';
-                        }
-                        if (unchangeableNetworkStates.collection > 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
-                        } else if (unchangeableNetworkStates.collection === 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.collection + ' network is a Cytoscape collection';
-                        }
-                        if ((unchangeableNetworkStates.collection > 0) && (unchangeableNetworkStates.readonly > 0)) {
-                            $scope.changeVisibilityButtonTitle += ', ';
-                        }
-                        if (unchangeableNetworkState.readonly > 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
-                        } else if (unchangeableNetworkStates.readonly === 1) {
-                            $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.readonly + ' network is read-only';
-                        }
-                    } else {
-                        $scope.changeVisibilityButtonTitle += 'network';
-
-                        if (unchangeableNetworkStates['nonadmin'] > 0) {
-                            $scope.changeVisibilityButtonTitle += ": you do not own it ";
-                        } else if (unchangeableNetworkStates['certified'] > 0) {
-                            $scope.changeVisibilityButtonTitle += ": it is certified ";
-                        } else if (unchangeableNetworkStates['failed'] > 0) {
-                            $scope.changeVisibilityButtonTitle += ": it is failed ";
-                        } else if (unchangeableNetworkStates['processing'] > 0) {
-                            $scope.changeVisibilityButtonTitle += ": it is processing ";
-                        } else if (unchangeableNetworkStates['collection'] > 0) {
-                            $scope.changeVisibilityButtonTitle += ": it is a Cytoscape collection ";
-                        } else if (unchangeableNetworkStates['readonly'] > 0) {
-                            $scope.changeVisibilityButtonTitle += ": it is read-only ";
-                        }
-                    }
-                }
-            };
-
-            var enableOrDisableSetReadOnlyBulkMenu = function() {
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                $scope.enableSetReadOnlyBulkButton = true;
-
-                var unchangeableNetworkStates = {"nonadmin" : 0, "certified" : 0, "failed" : 0, "processing" : 0, "collection" : 0};
-                var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
-
-                _.forEach (selectedNetworksRows, function(row) {
-
-                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
-                        unchangeableNetworkStates["nonadmin"] += 1;
-                        $scope.enableSetReadOnlyBulkButton = false;
-                        return true; // return true means "continue" in lodash's _.forEach loop
-                    }
-                    var status = row.Status;
-
-                    var disableSetReadOnlyBulkMenu  =
-                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
-
-                    if (disableSetReadOnlyBulkMenu) {
-                        $scope.enableSetReadOnlyBulkButton = false;
-                        unchangeableNetworkStates[status.toLowerCase()] += 1;
-                    }
-                });
-
-                if ($scope.enableSetReadOnlyBulkButton) {
-                    $scope.setReadOnlNetworkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
-                        "Change read-only flag of selected networks" : "Change read-only flag of selected network";
-                } else {
-                    $scope.setReadOnlNetworkButtonTitle = "Unable change read-only flag of selected ";
-
-                    if (myAccountController.networkTableRowsSelected > 1) {
-                        $scope.setReadOnlNetworkButtonTitle += "networks: ";
-
-                        if (unchangeableNetworkStates['nonadmin'] > 1) {
-                            $scope.setReadOnlNetworkButtonTitle += "you do not own " +
-                                unchangeableNetworkStates['nonadmin'] + " networks";
-                        } else if (unchangeableNetworkStates['nonadmin'] === 1) {
-                            $scope.setReadOnlNetworkButtonTitle += "you do not own " +
-                                unchangeableNetworkStates['nonadmin'] + " network";
-                        }
-                        if ((unchangeableNetworkStates['nonadmin'] > 0) &&
-                            ((unchangeableNetworkStates['certified'] > 0) || (unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0)
-                            || (unchangeableNetworkStates['collection'] > 0))) {
-                            $scope.setReadOnlNetworkButtonTitle += ", ";
-                        }
-                        if (unchangeableNetworkStates['certified'] > 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['certified'] + " networks are certified";
-                        } else if (unchangeableNetworkStates['certified'] === 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['certified'] + " network is certified";
-                        }
-                        if ((unchangeableNetworkStates['certified'] > 0) &&
-                            ((unchangeableNetworkStates['failed'] > 0) || (unchangeableNetworkStates['processing'] > 0) || (unchangeableNetworkStates['collection'] > 0))) {
-                            $scope.setReadOnlNetworkButtonTitle += ", ";
-                        }
-                        if (unchangeableNetworkStates['failed'] > 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['failed'] + " networks failed";
-                        } else if (unchangeableNetworkStates['failed'] === 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['failed'] + " network failed";
-                        }
-                        if ((unchangeableNetworkStates['failed'] > 0) &&
-                            ((unchangeableNetworkStates['processing'] > 0) || (unchangeableNetworkStates['collection'] > 0))) {
-                            $scope.setReadOnlNetworkButtonTitle += ", ";
-                        }
-                        if (unchangeableNetworkStates['processing'] > 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['processing'] + " networks are processing";
-                        } else if (unchangeableNetworkStates['processing'] === 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['processing'] + " network is processing";
-                        }
-                        if ((unchangeableNetworkStates['processing'] > 0) && (unchangeableNetworkStates['collection'] > 0)) {
-                            $scope.setReadOnlNetworkButtonTitle += ", ";
-                        }
-                        if (unchangeableNetworkStates['collection'] > 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['collection'] + " networks are Cytoscape collections";
-                        } else if (unchangeableNetworkStates['collection'] === 1) {
-                            $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates['collection'] + " network is a Cytoscape collection";
-                        }
-                    } else {
-                        $scope.setReadOnlNetworkButtonTitle += "network";
-
-                        if (unchangeableNetworkStates['nonadmin'] > 0) {
-                            $scope.setReadOnlNetworkButtonTitle += ": you do not own it ";
-                        } else if (unchangeableNetworkStates['certified'] > 0) {
-                            $scope.setReadOnlNetworkButtonTitle += ": it is certified ";
-                        } else if (unchangeableNetworkStates['failed'] > 0) {
-                            $scope.setReadOnlNetworkButtonTitle += ": it is failed ";
-                        } else if (unchangeableNetworkStates['processing'] > 0) {
-                            $scope.setReadOnlNetworkButtonTitle += ": it is processing ";
-                        } else if (unchangeableNetworkStates['collection'] > 0) {
-                            $scope.setReadOnlNetworkButtonTitle += ": it is a Cytoscape collection ";
-                        }
-                    }
-                }
-            };
-
-            var enableOrDisableDeleteBulkButton = function() {
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                $scope.enableDeleteBulkButton = true;
-
-                var undeleteableNetworkStates = {'nonadmin' : 0, 'certified' : 0, 'readonly' : 0 /*"processing" : 0*/};
-                var statesForWhichToDisable = Object.keys(undeleteableNetworkStates);
-
-                _.forEach (selectedNetworksRows, function(row) {
-
-                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
-                        undeleteableNetworkStates["nonadmin"] += 1;
-                        $scope.enableDeleteBulkButton = false;
-                        return true; // return true means "continue" in lodash's _.forEach loop
-                    }
-                    var status = row.Status;
-
-                    var disableDeleteBulkButton =
-                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
-
-                    if (disableDeleteBulkButton) {
-                        $scope.enableDeleteBulkButton = false;
-                        undeleteableNetworkStates[status.toLowerCase()] += 1;
-
-                    } else if (row.isReadOnly) {
-                        $scope.enableDeleteBulkButton = false;
-                        undeleteableNetworkStates["readonly"] += 1;
-
-                    }
-                });
-
-                if ($scope.enableDeleteBulkButton) {
-                    $scope.deleteNetworkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
-                        "Delete selected networks" : "Delete selected network"
-                } else {
-                    $scope.deleteNetworkButtonTitle = "Unable to delete selected ";
-
-                    if (myAccountController.networkTableRowsSelected > 1) {
-                        $scope.deleteNetworkButtonTitle += "networks: ";
-
-                        if (undeleteableNetworkStates['nonadmin'] > 1) {
-                            $scope.deleteNetworkButtonTitle += "you do not own " +
-                                undeleteableNetworkStates['nonadmin'] + " networks";
-                        } else if (undeleteableNetworkStates['nonadmin'] === 1) {
-                            $scope.deleteNetworkButtonTitle += "you do not own " +
-                                undeleteableNetworkStates['nonadmin'] + " network";
-                        }
-                        if ((undeleteableNetworkStates['nonadmin'] > 0) &&
-                            (((undeleteableNetworkStates['certified'] > 0) || undeleteableNetworkStates['readonly'] > 0) || (undeleteableNetworkStates['processing'] > 0))) {
-                            $scope.deleteNetworkButtonTitle += ", ";
-                        }
-                        if (undeleteableNetworkStates['certified'] > 1) {
-                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['certified'] + " networks are certified";
-                        } else if (undeleteableNetworkStates['certified'] === 1) {
-                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['certified'] + " network is certified";
-                        }
-                        if ((undeleteableNetworkStates['certified'] > 0) &&
-                            ((undeleteableNetworkStates['readonly'] > 0) || (undeleteableNetworkStates['processing'] > 0))) {
-                            $scope.deleteNetworkButtonTitle += ", ";
-                        }
-                        if (undeleteableNetworkStates['readonly'] > 1) {
-                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['readonly'] + " networks are read-only";
-                        } else if (undeleteableNetworkStates['readonly'] === 1) {
-                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['readonly'] + " network is read-only";
-                        }
-                        if ((undeleteableNetworkStates['readonly'] > 0) && (undeleteableNetworkStates['processing'] > 0)) {
-                            $scope.deleteNetworkButtonTitle += ", ";
-                        }
-                        if (undeleteableNetworkStates['processing'] > 1) {
-                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['processing'] + " networks are processing";
-                        } else if (undeleteableNetworkStates['processing'] === 1) {
-                            $scope.deleteNetworkButtonTitle += undeleteableNetworkStates['processing'] + " network is processing";
-                        }
-                    } else {
-                        $scope.deleteNetworkButtonTitle += "network";
-
-                        if (undeleteableNetworkStates['nonadmin'] > 0) {
-                            $scope.deleteNetworkButtonTitle += ": you do not own it ";
-                        } else if (undeleteableNetworkStates['certified'] > 0) {
-                            $scope.deleteNetworkButtonTitle += ": it is certified ";
-                        } else if (undeleteableNetworkStates['readonly'] > 0) {
-                            $scope.deleteNetworkButtonTitle += ": it is read-only ";
-                        } else if (undeleteableNetworkStates['processing'] > 0) {
-                            $scope.deleteNetworkButtonTitle += ": it is processing ";
-                        }
-                    }
-                }
-            };
-
-            var enableOrDisableShareBulkButton = function() {
-                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
-                $scope.enableShareBulkButton = true;
-
-                var unshareableNetworkStates = {"nonadmin" : 0, "failed" : 0, "processing" : 0};
-                var statesForWhichToDisable = Object.keys(unshareableNetworkStates);
-
-                _.forEach (selectedNetworksRows, function(row) {
-
-                    if (row.ownerUUID !== myAccountController.loggedInIdentifier) {
-                        unshareableNetworkStates["nonadmin"] += 1;
-                        $scope.enableShareBulkButton = false;
-                        return true; // return true means "continue" in lodash's _.forEach loop
-                    }
-                    var status = row.Status;
-
-                    var disableShareBulkButton =
-                        (status && statesForWhichToDisable.indexOf(status.toLowerCase()) > -1);
-
-                    if (disableShareBulkButton) {
-                        $scope.enableShareBulkButton = false;
-                        unshareableNetworkStates[status.toLowerCase()] += 1;
-                    }
-                });
-
-                if ($scope.enableShareBulkButton) {
-                    $scope.shareNetworkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
-                        "Share selected networks" : "Share selected network"
-                } else {
-                    $scope.shareNetworkButtonTitle = "Unable to share selected ";
-
-                    if (myAccountController.networkTableRowsSelected > 1) {
-                        $scope.shareNetworkButtonTitle += "networks: ";
-
-                        if (unshareableNetworkStates['nonadmin'] > 1) {
-                            $scope.shareNetworkButtonTitle += "you do not own " +
-                                unshareableNetworkStates['nonadmin'] + " networks";
-                        } else if (unshareableNetworkStates['nonadmin'] === 1) {
-                            $scope.shareNetworkButtonTitle += "you do not own " +
-                                unshareableNetworkStates['nonadmin'] + " network";
-                        }
-                        if ((unshareableNetworkStates['nonadmin'] > 0) &&
-                            ((unshareableNetworkStates['failed'] > 0) || (unshareableNetworkStates['processing'] > 0))) {
-                            $scope.shareNetworkButtonTitle += ", ";
-                        }
-                        if (unshareableNetworkStates['failed'] > 1) {
-                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['failed'] + " networks failed";
-                        } else if (unshareableNetworkStates['failed'] === 1) {
-                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['failed'] + " network failed";
-                        }
-                        if ((unshareableNetworkStates['failed'] > 0) && (unshareableNetworkStates['processing'] > 0)) {
-                            $scope.shareNetworkButtonTitle += ", "
-                        }
-                        if (unshareableNetworkStates['processing'] > 1) {
-                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['processing'] + " networks are processing";
-                        } else if (unshareableNetworkStates['processing'] === 1) {
-                            $scope.shareNetworkButtonTitle += unshareableNetworkStates['processing'] + " network is processing";
-                        }
-                    } else {
-                        $scope.shareNetworkButtonTitle += "network";
-
-                        if (unshareableNetworkStates['nonadmin'] > 0) {
-                            $scope.shareNetworkButtonTitle += ": you do not own it ";
-                        } else if (unshareableNetworkStates['failed'] > 0) {
-                            $scope.shareNetworkButtonTitle += ": it is failed ";
-                        } else if (unshareableNetworkStates['processing'] > 0) {
-                            $scope.shareNetworkButtonTitle += ": it is processing ";
-                        }
-                    }
-                }
             };
 
             var enableOrDisableExportBulkButton = function() {
