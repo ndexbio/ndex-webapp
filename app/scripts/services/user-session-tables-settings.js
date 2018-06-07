@@ -1,7 +1,7 @@
 /**
  * Created by vrynkov 4 June 2018
  *
- * This service is used to keep settings (Page Number, Sorting Column and COlumn Filters) of the
+ * This service is used to keep settings (Page Number, Sorting Column and Column Filters) of the
  * My Networks table defined on MyAccount page throughout the session.
  *
  */

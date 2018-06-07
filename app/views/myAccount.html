@@ -413,7 +413,7 @@
             </tab>
 
             <tab ng-click="onTabSelect('tasks'); updateLastTimeVisitedMyTasksTimestamp(); taskGridApi.core.handleWindowResize()"
-                 disabled="myAccountController.tasksNotificationsTabDisabled()"
+                 disabled="tasksNotificationsTabDisabled()"
                  ng-show="(myAccountController.isLoggedInUser) &&
                     (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)">
                 <tab-heading>
