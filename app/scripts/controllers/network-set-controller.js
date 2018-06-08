@@ -176,8 +176,8 @@ ndexApp.controller('networkSetController',
             { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
             //{ field: 'Format', enableFiltering: true, maxWidth:63 },
             { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-            //{ field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-            //{ field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
+            { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
+            { field: 'Tissue',  enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/tissue.html'},
             { field: 'Nodes', enableFiltering: false, maxWidth: 75,
                 sortingAlgorithm: function (a, b) {
                     if (a === b) {
@@ -278,8 +278,8 @@ ndexApp.controller('networkSetController',
             //var format    = uiMisc.getNetworkFormat(subNetworkId, network);
             var download  = "Download " + networkName;
             var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
-            //var disease   = uiMisc.getDisease(network);
-            //var tissue    = uiMisc.getTissue(network);
+            var disease   = uiMisc.getDisease(network);
+            var tissue    = uiMisc.getTissue(network);
 
             var errorMessage = network.errorMessage;
 
@@ -289,8 +289,8 @@ ndexApp.controller('networkSetController',
                 " "             :   download,
                 //"Format"        :   format,
                 "Reference"     :   reference,
-                //"Disease"       :   disease,
-                //"Tissue"        :   tissue,
+                "Disease"       :   disease,
+                "Tissue"        :   tissue,
                 "Nodes"         :   nodes,
                 "Edges"         :   edges,
                 "Visibility"    :   visibility,

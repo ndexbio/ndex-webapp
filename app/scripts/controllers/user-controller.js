@@ -194,8 +194,8 @@ ndexApp.controller('userController',
                     var format = uiMisc.getNetworkFormat(subNetworkId, network);
                     var download  = 'Download ' + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
-                    //var disease   = uiMisc.getDisease(network);
-                    //var tissue    = uiMisc.getTissue(network);
+                    var disease   = uiMisc.getDisease(network);
+                    var tissue    = uiMisc.getTissue(network);
 
                     var errorMessage = network.errorMessage;
 
@@ -205,8 +205,8 @@ ndexApp.controller('userController',
                         ' '             :   download,
                         'Format'        :   format,
                         'Reference'     :   reference,
-                        //'Disease'       :   disease,
-                        //'Tissue'        :   tissue,
+                        'Disease'       :   disease,
+                        'Tissue'        :   tissue,
                         'Nodes'         :   nodes,
                         'Edges'         :   edges,
                         'Visibility'    :   visibility,
@@ -254,8 +254,8 @@ ndexApp.controller('userController',
                         }
                     },
                     { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-                    //{ field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-                    //{ field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
+                    { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
+                    { field: 'Tissue',  enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/tissue.html'},
                     { field: 'Nodes', enableFiltering: false, maxWidth:75,
                         sortingAlgorithm: function (a, b) {
                             if (a === b) {
