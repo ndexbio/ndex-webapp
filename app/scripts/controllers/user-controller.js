@@ -254,8 +254,8 @@ ndexApp.controller('userController',
                         }
                     },
                     { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-                    { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-                    { field: 'Tissue',  enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/tissue.html'},
+                    { field: 'Disease', enableFiltering: true, width: 82, cellTemplate: 'views/gridTemplates/disease.html'},
+                    { field: 'Tissue',  enableFiltering: true, width: 75, cellTemplate: 'views/gridTemplates/tissue.html'},
                     { field: 'Nodes', enableFiltering: false, maxWidth:75,
                         sortingAlgorithm: function (a, b) {
                             if (a === b) {
