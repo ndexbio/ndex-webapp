@@ -176,10 +176,30 @@ ndexApp.controller('networkSetController',
             { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
             //{ field: 'Format', enableFiltering: true, maxWidth:63 },
             { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-            { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-            { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
-            { field: 'Nodes', enableFiltering: false, maxWidth: 70 },
-            { field: 'Edges', enableFiltering: false, maxWidth: 70 },
+            //{ field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
+            //{ field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
+            { field: 'Nodes', enableFiltering: false, maxWidth: 75,
+                sortingAlgorithm: function (a, b) {
+                    if (a === b) {
+                        return 0;
+                    }
+                    if (a > b) {
+                        return -1;
+                    }
+                    return 1;
+                }
+            },
+            { field: 'Edges', enableFiltering: false, maxWidth: 75,
+                sortingAlgorithm: function (a, b) {
+                    if (a === b) {
+                        return 0;
+                    }
+                    if (a > b) {
+                        return -1;
+                    }
+                    return 1;
+                }
+            },
             { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
             { field: 'Owner', enableFiltering: true, width:80,
                 cellTemplate: 'views/gridTemplates/ownedBy.html'},
@@ -248,8 +268,8 @@ ndexApp.controller('networkSetController',
 
             var description = $scope.stripHTML(network['description']);
             var externalId  = network['externalId'];
-            var nodes       = network['nodeCount'];
-            var edges       = network['edgeCount'];
+            var nodes       = parseInt(network.nodeCount);
+            var edges       = parseInt(network.edgeCount);
             var owner       = network['owner'];
             var indexLevel  = network['indexLevel'];
             var visibility  = network['visibility'];
@@ -258,8 +278,8 @@ ndexApp.controller('networkSetController',
             //var format    = uiMisc.getNetworkFormat(subNetworkId, network);
             var download  = "Download " + networkName;
             var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
-            var disease   = uiMisc.getDisease(network);
-            var tissue    = uiMisc.getTissue(network);
+            //var disease   = uiMisc.getDisease(network);
+            //var tissue    = uiMisc.getTissue(network);
 
             var errorMessage = network.errorMessage;
 
@@ -269,8 +289,8 @@ ndexApp.controller('networkSetController',
                 " "             :   download,
                 //"Format"        :   format,
                 "Reference"     :   reference,
-                "Disease"       :   disease,
-                "Tissue"        :   tissue,
+                //"Disease"       :   disease,
+                //"Tissue"        :   tissue,
                 "Nodes"         :   nodes,
                 "Edges"         :   edges,
                 "Visibility"    :   visibility,

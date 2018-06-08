@@ -1219,10 +1219,21 @@ ndexApp.controller('myAccountController',
                     },
 
                     { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-                    { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-                    { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
+                    //{ field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
+                    //{ field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
                     //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
-                    { field: 'Edges', enableFiltering: false, maxWidth:70 },
+                    { field: 'Edges', enableFiltering: false, maxWidth: 75,
+                        sortingAlgorithm: function (a, b) {
+                            if (a === b) {
+                                return 0;
+                            }
+                            if (a > b) {
+                                return -1;
+                            }
+                            return 1;
+                        }
+                    },
+
                     //{ field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
                     { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
                     { field: 'Owner', enableFiltering: true, width:80, cellTemplate: 'views/gridTemplates/ownedBy.html' },
@@ -1473,7 +1484,7 @@ ndexApp.controller('myAccountController',
                     var description = $scope.stripHTML(network.description);
                     var externalId = network.externalId;
                     //var nodes = network['nodeCount'];
-                    var edges = network.edgeCount;
+                    var edges = parseInt(network.edgeCount);
                     var owner = network.owner;
                     var indexLevel = network.indexLevel;
                     var visibility = network.visibility;
@@ -1484,8 +1495,8 @@ ndexApp.controller('myAccountController',
                         uiMisc.getNetworkFormatForMultipleSubNetworks(network);
                     var download  = 'Download ' + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
-                    var disease   = uiMisc.getDisease(network);
-                    var tissue    = uiMisc.getTissue(network);
+                    //var disease   = uiMisc.getDisease(network);
+                    //var tissue    = uiMisc.getTissue(network);
 
                     var errorMessage = network.errorMessage ? network.errorMessage : '';
 
@@ -1504,8 +1515,8 @@ ndexApp.controller('myAccountController',
                         'Download'      :   download,
                         'Format'        :   format,
                         'Reference'     :   reference,
-                        'Disease'       :   disease,
-                        'Tissue'        :   tissue,
+                        //'Disease'       :   disease,
+                        //'Tissue'        :   tissue,
                         //"Nodes"         :   nodes,
                         'Edges'         :   edges,
                         'Visibility'    :   visibility,
