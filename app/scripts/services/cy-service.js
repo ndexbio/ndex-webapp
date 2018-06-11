@@ -859,6 +859,7 @@ angular.module('ndexServiceApp')
             'NODE_LABEL_COLOR': {'att': 'color', 'type': 'color'},
             'NODE_LABEL_FONT_SIZE': {'att': 'font-size', 'type': 'number'},
             'NODE_LABEL_TRANSPARENCY': {'att': 'text-opacity', 'type': 'opacity'},
+            'NODE_LABEL_POSITION': {'att': 'labelPosition', 'type': 'labelPosition'},
 
             'EDGE_WIDTH': {'att' : 'width', 'type': 'number'},
             'EDGE_LABEL': {'att': 'label', 'type': 'string'},
@@ -996,6 +997,10 @@ angular.module('ndexServiceApp')
                 var fontFamilyValueMapped = FONT_FAMILY_MAP[fontFamilyValue];
 
                 return (fontFamilyValueMapped) ? fontFamilyValueMapped : fontFamilyValue;
+
+            } else if (cyVisualAttributeType === 'labelPosition') {
+
+                return getNodeLabelPosition(visualAttributeValue);
             }
             // assume string
             return visualAttributeValue;
@@ -1038,7 +1043,13 @@ angular.module('ndexServiceApp')
                     elementType + '[' + cyDataAttribute + ' = \'' + cyDataAttributeValue + '\']';
 
                 var cyVisualAttributePair = {};
-                cyVisualAttributePair[cyVisualAttribute] = cyVisualAttributeValue;
+                if (cyVisualAttribute !== 'labelPosition') {
+                    cyVisualAttributePair[cyVisualAttribute] = cyVisualAttributeValue;
+                } else {
+                    // cyVisualAttribute is 'labelPosition'
+                    cyVisualAttributePair['text-halign'] = cyVisualAttributeValue['text-halign'];
+                    cyVisualAttributePair['text-valign'] = cyVisualAttributeValue['text-valign'];
+                }
                 var element = {'selector': cySelector, 'css': cyVisualAttributePair};
                 //   console.log(element);
                 elements.push(element);
