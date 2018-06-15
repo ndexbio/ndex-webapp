@@ -788,10 +788,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
                 if(pair.predicateString === 'rights' && pair.value == "Other")
                     if (typeof pair.rightsOtherURL !== 'undefined' && pair.rightsOtherURL.length > 0){
-                        if(pair.rightsOtherURL.indexOf("http://") < 0){
+                        if((pair.rightsOtherURL.toLowerCase().indexOf("http://") < 0) &&
+                            (pair.rightsOtherURL.toLowerCase().indexOf("https://") < 0)) {
                             pair.rightsOtherURL = "http://" + pair.rightsOtherURL;
                         }
-                        pair.value = pair.rightsOther + " (<a href='" + pair.rightsOtherURL + "'>" + pair.rightsOtherURL + "</a>)";
+                        pair.value ="<a href='" + pair.rightsOtherURL + "'>" + pair.rightsOther + "</a>";
 
                     }
                     else
