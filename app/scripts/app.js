@@ -9,6 +9,26 @@ ndexApp.filter('encodeURIComponent', function() {
     return window.encodeURIComponent;
 });
 
+
+// The code below allows you to change path URL with $location.path()
+// without page reloading
+// It is taken from https://www.consolelog.io/angularjs-change-path-without-reloading/
+ndexApp.run(['$route', '$rootScope', '$location', function ($route, $rootScope, $location) {
+    var original = $location.path;
+    $location.path = function (path, reload) {
+        if (reload === false) {
+            var lastRoute = $route.current;
+            var un = $rootScope.$on('$locationChangeSuccess', function () {
+                $route.current = lastRoute;
+                un();
+            });
+        }
+        return original.apply($location, [path]);
+    };
+}]);
+
+
+
 //Internet Explorer solution???
 ndexApp.service('authInterceptor', function($q) {
     //noinspection JSUnusedGlobalSymbols
@@ -203,11 +223,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         })
 
         // route for the MyAccount page
-        .when('/myAccount', {
+        .when('/myAccount/:pageNo?', {
             templateUrl: 'views/myAccount.html',
             controller: 'myAccountController'
         })
-            
+
         // route for the group page
         .when('/group/:identifier', {
             templateUrl: 'views/group.html',

@@ -67,14 +67,31 @@ ndexApp.controller('myAccountController',
 
             var windowsHeightCorrection = 185;
 
-            var myAccountNetworkTableFiltersAndSorting = userSessionTablesSettings.initMyAccountNetworkTableFiltersAndSorting();
 
-            /*
+            var pageNo = 1;
+            if ((typeof $routeParams.pageNo !== 'undefined') && ($routeParams.pageNo !== null)) {
+                if ($routeParams.pageNo.match(/p[1-9]+[0-9]*/)) {
+                    var pageNoCastFromStr = $routeParams.pageNo.substring(1);
+
+                    pageNo = isNaN(pageNoCastFromStr) ? pageNo : Number(pageNoCastFromStr);
+                }
+            }
+            var pageNoP = 'p' + pageNo;
+
+
+            // check if page was reloaded
             if (window.performance && window.performance.navigation &&
                 (typeof window.performance.navigation.type !== 'undefined')) {
-                pageReloaded = (window.performance.navigation.type === 1);
+
+                if ((window.performance.navigation.type === 1)) {
+                    // it means that the page was reloaded; page no is to be set to 1
+                    // and location to /myAccount without reloading the page
+                    pageNoP = 'p1';
+                    pageNo  = 1;
+                    $location.path('/myAccount', false);
+                }
             }
-            */
+
 
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
@@ -83,18 +100,14 @@ ndexApp.controller('myAccountController',
                 $scope.$parent.showSearchMenu = false;
                 uiMisc.showSearchMenuItem();
 
-                if (typeof(Storage) !== 'undefined') {
-                    userSessionTablesSettings.clearLastReloadView(myAccountNetworkTableFiltersAndSorting);
 
-                    if ($rootScope.signOut) {
-                        // in case user hit Sign Out, need to clear sessionStorage since the current
-                        // $scope.$on("$destroy", function() handler might be called AFTER
-                        // signOutHandler() handler in main.js
-                        $rootScope.signOut = false;
-                        sessionStorage.clear();
-                    } else {
-                        userSessionTablesSettings.saveTableSettings(myAccountNetworkTableFiltersAndSorting);
-                    }
+                if ($rootScope.signOut) {
+                    // in case user hit Sign Out, need to clear sessionStorage since the current
+                    // $scope.$on("$destroy", function() handler might be called AFTER
+                    // signOutHandler() handler in main.js
+                    $rootScope.signOut = false;
+                    userSessionTablesSettings.clearState();
+
                 }
 
                 if ((refreshIntervalInSeconds > 0) && (timerVariable !== -1)) {
@@ -146,7 +159,7 @@ ndexApp.controller('myAccountController',
             $scope.refreshNetworksButtonDisabled = true;
             $scope.refreshTasksButtonDisabled    = true;
 
-            var networkTableDefined               = false;
+            //var networkTableDefined               = false;
             var tasksAndNotificationsTableDefined = false;
 
             var networksReceived             = false;
@@ -165,6 +178,11 @@ ndexApp.controller('myAccountController',
 
 
             myAccountController.currentTab = 'networks';
+
+
+
+            userSessionTablesSettings.initMyAccountPageStates();
+
 
             $scope.networksTasksAndRequestsReceived = function() {
                 return (networksReceived &&
@@ -188,8 +206,8 @@ ndexApp.controller('myAccountController',
             };
 
             var paginationOptions = {
-                pageNumber: myAccountNetworkTableFiltersAndSorting.pageNumber,
-                pageSize: 50,
+                pageNumber: pageNo,
+                pageSize: userSessionTablesSettings.getTablePaginationSize(),
                 sort: null,
                 networkCount: 0,
                 networkSetCount: 0
@@ -912,17 +930,41 @@ ndexApp.controller('myAccountController',
                 enableRowHeaderSelection: true,
 
                 paginationPageSizes: [25, 50, 75],
-                paginationPageSize: 50,
+                paginationPageSize: $rootScope.myAccountPageStates.table.networksPerPage,
                 useExternalPagination: true,
 
-            onRegisterApi: function( gridApi )
+                onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
 
                     /** @namespace gridApi.pagination.on.paginationChanged **/
                     gridApi.pagination.on.paginationChanged($scope, function (newPageNumber, pageSize) {
+
+                        if ((pageNo === newPageNumber) && (pageSize === $rootScope.myAccountPageStates.table.networksPerPage)) {
+                            return;
+                        }
+                        if (pageSize === $rootScope.myAccountPageStates.table.networksPerPage) {
+                            if (newPageNumber === 1) {
+                                $location.path('/myAccount', false);
+                            } else {
+                                $location.path('/myAccount/p' + newPageNumber, false);
+                            }
+                        } else {
+                            $rootScope.myAccountPageStates.table.networksPerPage = pageSize;
+                        }
+/*
+                        var stateObj   = {
+                            'page': pageNo,
+                            'locationPath': $location.path(),
+                            'locationAbs' : $location.absUrl()
+                        };
+                        history.pushState(stateObj, 'p' + pageNo);
+*/
                         paginationOptions.pageNumber = newPageNumber;
-                        myAccountNetworkTableFiltersAndSorting.pageNumber = newPageNumber;
+                        pageNo = newPageNumber;
+                        pageNoP = 'p' + pageNo;
+
+                        //myAccountNetworkTableFiltersAndSorting.pageNumber = newPageNumber;
                         paginationOptions.pageSize = pageSize;
                         myAccountController.getNoOfNetworksAndSets(
                             function() {
@@ -1043,12 +1085,10 @@ ndexApp.controller('myAccountController',
                     gridApi.core.on.sortChanged($scope, function(grid, sortColumns) {
 
                         if (Array.isArray(sortColumns) && (1 === sortColumns.length)) {
-                            myAccountNetworkTableFiltersAndSorting.sorting.name = sortColumns[0].name;
-                            myAccountNetworkTableFiltersAndSorting.sorting.direction = sortColumns[0].sort.direction;
+                            userSessionTablesSettings.setPageSorting(pageNoP, sortColumns[0].name, sortColumns[0].sort.direction);
                         }
                         else {
-                            delete myAccountNetworkTableFiltersAndSorting.sorting.name;
-                            delete myAccountNetworkTableFiltersAndSorting.sorting.direction;
+                            userSessionTablesSettings.setPageSortingToUnsorted(pageNoP);
                         }
                     });
 
@@ -1063,10 +1103,11 @@ ndexApp.controller('myAccountController',
                             var columnName = col.name;
 
                             if (filterTerm) {
-                                myAccountNetworkTableFiltersAndSorting.filters[columnName] = filterTerm;
+                                userSessionTablesSettings.setFilterForPage(pageNoP, columnName, filterTerm);
 
-                            } else if (myAccountNetworkTableFiltersAndSorting.filters.hasOwnProperty(columnName)) {
-                                delete myAccountNetworkTableFiltersAndSorting.filters[columnName];
+                            } else {
+                                userSessionTablesSettings.removeFilterFromPage(pageNoP, columnName);
+
                             }
 
                         });
@@ -1190,7 +1231,7 @@ ndexApp.controller('myAccountController',
             var defineNetworkTable = function()
             {
                 //noinspection JSUnusedGlobalSymbols
-                var columnDefs = [
+                $scope.networkGridApi.grid.options.columnDefs = [
                     { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'views/gridTemplates/networkStatusOnMyAccountPage.html'},
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'views/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
@@ -1237,9 +1278,9 @@ ndexApp.controller('myAccountController',
                     //{ field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
                     { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
                     { field: 'Owner', enableFiltering: true, width:80, cellTemplate: 'views/gridTemplates/ownedBy.html' },
-                    { field: 'Last Modified', enableFiltering: false, maxWidth:120,
-                        cellFilter: 'date:\'short\'',  sort: {direction: 'desc', priority: 5}
-                    },
+
+                    // Last Modified is default sort order set by userSessionTablesSettings.clearPreviousSortingAndSetNewOne
+                    { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: 'date:\'short\'' },
 
                     { field: 'Show', enableFiltering: false, maxWidth: 60, cellTemplate: 'views/gridTemplates/showCase.html' },
 
@@ -1254,25 +1295,18 @@ ndexApp.controller('myAccountController',
                     { field: 'indexLevel',   enableFiltering: false,  visible: false}
                 ];
 
-                if (myAccountNetworkTableFiltersAndSorting.sorting.name) {
-                    // get column for which sorting is defined
-                    var columnName = myAccountNetworkTableFiltersAndSorting.sorting.name;
-                    var columnObj  = _.find(columnDefs, {field: columnName});
+                //$scope.networkGridApi.grid.options.columnDefs = columnDefs;
 
-                    if (columnObj) {
-                        columnObj.sort = {};
-                        columnObj.sort.direction = myAccountNetworkTableFiltersAndSorting.sorting.direction;
-                        columnObj.sort.priority = 5;
-                    }
-                }
-                $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+                userSessionTablesSettings.clearPreviousSortingAndSetNewOne($scope.networkGridApi.grid.options.columnDefs, pageNoP);
 
-                if (myAccountNetworkTableFiltersAndSorting.pageNumber) {
-                    $scope.networkGridApi.grid.options.paginationCurrentPage = myAccountNetworkTableFiltersAndSorting.pageNumber;
-                }
+                //if (myAccountNetworkTableFiltersAndSorting.pageNumber) {
+                //$scope.networkGridApi.grid.options.paginationCurrentPage = pageNo; //myAccountNetworkTableFiltersAndSorting.pageNumber;
+                //}
 
                 // set filters to the Table headers, if any
-                _.forOwn(myAccountNetworkTableFiltersAndSorting.filters,
+                //_.forOwn(myAccountNetworkTableFiltersAndSorting.filters,
+               /*
+                _.forOwn(userSessionTablesSettings.getFiltersForPage(pageNoP),
                     function(columnFilter, columnName) {
                         var columnObj  = _.find(columnDefs, {field: columnName});
 
@@ -1283,6 +1317,7 @@ ndexApp.controller('myAccountController',
                         }
                     }
                 );
+                */
 
                 var $myNetworksGridId = $('#myNetworksGridId');
                 $myNetworksGridId.height($(window).height() - windowsHeightCorrection);
@@ -1534,6 +1569,42 @@ ndexApp.controller('myAccountController',
                     };
                     $scope.networkGridOptions.data.push(row);
                 }
+
+                //userSessionTablesSettings.clearPreviousSortingAndSetNewOne($scope.networkGridApi, pageNoP);
+
+                 /*
+                if (userSessionTablesSettings.isPageSorted(pageNoP)) {
+                    // get column for which sorting is defined
+                    var columnName = userSessionTablesSettings.getPageSortingColumnName(pageNoP);
+                    var columnObj  = _.find($scope.networkGridApi.grid.options.columnDefs, {field: columnName});
+
+                    if (columnObj) {
+                        columnObj.sort = {};
+                        columnObj.sort.direction = userSessionTablesSettings.getPageSortingDirection(pageNoP);
+                        columnObj.sort.priority = 5;
+                    }
+                }
+                */
+
+                $scope.networkGridApi.grid.options.paginationCurrentPage = pageNo;
+
+                //userSessionTablesSettings.clearPreviousSortingAndSetNewOne($scope.networkGridApi.grid.options.columnDefs, pageNoP);
+
+
+                // set filters to the Table headers, if any
+                //_.forOwn(myAccountNetworkTableFiltersAndSorting.filters,
+                _.forOwn(userSessionTablesSettings.getFiltersForPage(pageNoP),
+                    function(columnFilter, columnName) {
+                        var columnObj  = _.find($scope.networkGridApi.grid.options.columnDefs, {field: columnName});
+
+                        if (columnObj) {
+                            columnObj.filters = [];
+                            columnObj.filters[0] = {};
+                            columnObj.filters[0].term = columnFilter;
+                        }
+                    }
+                );
+
                 myAccountController.showNetworkTable = (_.size($scope.networkGridOptions.data) > 0);
             };
 
@@ -3291,14 +3362,18 @@ ndexApp.controller('myAccountController',
                 myAccountController.getUserAccountPageNetworks(
                     function () {
 
+/*
                         if (!networkTableDefined) {
                             networkTableDefined = true;
                             defineNetworkTable();
                         }
+*/
+
                         //if (myNetworksNewHash != myNetworksOldHash) {
                         //    populateNetworkTable();
                         //};
 
+                        defineNetworkTable();
                         populateNetworkTable();
 
                         //ndexSpinner.stopSpinner();

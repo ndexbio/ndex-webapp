@@ -1,8 +1,8 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties',
-    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', 'userSessionTablesSettings',
+    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
     function ( ndexService, ndexUtility, sharedProperties,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, userSessionTablesSettings) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -527,10 +527,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         //Whenever the browser or a tab containing the app is closed or reloaded, record the heart beat.
         window.onbeforeunload = function ()
         {
+            /*
             if ($scope.main.loggedIn) {
                 // for logged in users only, remember the View name where reload was just performed
                 userSessionTablesSettings.setLastReloadViewName();
             }
+            */
             recordHeartbeat();
         };
 
