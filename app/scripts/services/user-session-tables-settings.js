@@ -97,7 +97,7 @@ angular.module('ndexServiceApp')
                     $rootScope.myAccountPageStates.pages[pageNoP].filters = {};
                 }
 
-                $rootScope.myAccountPageStates.pages[pageNoP].filters.columnName = filterTerm;
+                $rootScope.myAccountPageStates.pages[pageNoP].filters[columnName] = filterTerm;
 
             };
 
@@ -107,7 +107,7 @@ angular.module('ndexServiceApp')
                     $rootScope.myAccountPageStates.pages[pageNoP].filters &&
                     $rootScope.myAccountPageStates.pages[pageNoP].filters.hasOwnProperty(columnName)) {
 
-                    delete $rootScope.myAccountPageStates.pages[pageNoP].filters.columnName;
+                    delete $rootScope.myAccountPageStates.pages[pageNoP].filters[columnName];
                 }
             };
 

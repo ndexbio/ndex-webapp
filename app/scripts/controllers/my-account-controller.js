@@ -1570,26 +1570,7 @@ ndexApp.controller('myAccountController',
                     $scope.networkGridOptions.data.push(row);
                 }
 
-                //userSessionTablesSettings.clearPreviousSortingAndSetNewOne($scope.networkGridApi, pageNoP);
-
-                 /*
-                if (userSessionTablesSettings.isPageSorted(pageNoP)) {
-                    // get column for which sorting is defined
-                    var columnName = userSessionTablesSettings.getPageSortingColumnName(pageNoP);
-                    var columnObj  = _.find($scope.networkGridApi.grid.options.columnDefs, {field: columnName});
-
-                    if (columnObj) {
-                        columnObj.sort = {};
-                        columnObj.sort.direction = userSessionTablesSettings.getPageSortingDirection(pageNoP);
-                        columnObj.sort.priority = 5;
-                    }
-                }
-                */
-
                 $scope.networkGridApi.grid.options.paginationCurrentPage = pageNo;
-
-                //userSessionTablesSettings.clearPreviousSortingAndSetNewOne($scope.networkGridApi.grid.options.columnDefs, pageNoP);
-
 
                 // set filters to the Table headers, if any
                 //_.forOwn(myAccountNetworkTableFiltersAndSorting.filters,
@@ -1607,7 +1588,6 @@ ndexApp.controller('myAccountController',
 
                 myAccountController.showNetworkTable = (_.size($scope.networkGridOptions.data) > 0);
             };
-
 
 
             var populateTasksAndNotificationsTable = function()
@@ -3358,6 +3338,7 @@ ndexApp.controller('myAccountController',
             var markSelectedNetworks = function() {
                 $scope.selectedRowsNetworkExternalIds = {};
                 myAccountController.networkTableRowsSelected = 0;
+                $scope.networkGridApi.grid.selection.selectedCount = 0;
 
                 if (userSessionTablesSettings.noNetworksSelected()) {
                     return;
@@ -3372,6 +3353,7 @@ ndexApp.controller('myAccountController',
                     }
                 });
                 myAccountController.networkTableRowsSelected = _.size( $scope.selectedRowsNetworkExternalIds);
+                $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
             };
 
             myAccountController.getUserNetworksAndPopulateTable = function (successHandler, errorHandler)
