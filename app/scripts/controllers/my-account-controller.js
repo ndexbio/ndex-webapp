@@ -973,10 +973,6 @@ ndexApp.controller('myAccountController',
                             function() {
                                 console.log('unable to get No of Networks and Sets for this account');
                             });
-
-                        $scope.networkGridApi.selection.clearSelectedRows();
-                        $scope.selectedRowsNetworkExternalIds = {};
-                        myAccountController.networkTableRowsSelected = 0; //_.size($scope.selectedRowsNetworkExternalIds);
                     });
 
                     gridApi.core.on.rowsRendered($scope, function() {
@@ -1026,8 +1022,10 @@ ndexApp.controller('myAccountController',
 
                         if (row.isSelected) {
                             $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = row.entity.name;
+                            userSessionTablesSettings.addUUIDToSelectedNetworks(row.entity.externalId);
                         } else {
                             delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
+                            userSessionTablesSettings.deleteUUIDFromSelectedNetworks(row.entity.externalId);
                         }
 
                         myAccountController.networkTableRowsSelected = _.size($scope.selectedRowsNetworkExternalIds);
@@ -1061,8 +1059,10 @@ ndexApp.controller('myAccountController',
                             } else {
                                 if (row.isSelected) {
                                     $scope.selectedRowsNetworkExternalIds[row.entity.externalId] = row.entity.name;
+                                    userSessionTablesSettings.addUUIDToSelectedNetworks(row.entity.externalId);
                                 } else {
                                     delete $scope.selectedRowsNetworkExternalIds[row.entity.externalId];
+                                    userSessionTablesSettings.deleteUUIDFromSelectedNetworks(row.entity.externalId);
                                 }
                             }
                         });
@@ -3355,6 +3355,24 @@ ndexApp.controller('myAccountController',
                     });
             };
 
+            var markSelectedNetworks = function() {
+                $scope.selectedRowsNetworkExternalIds = {};
+                myAccountController.networkTableRowsSelected = 0;
+
+                if (userSessionTablesSettings.noNetworksSelected()) {
+                    return;
+                }
+                _.forEach($scope.networkGridOptions.data, function(tableRowObj) {
+
+                    var networkId = tableRowObj.externalId;
+
+                    if (userSessionTablesSettings.isUUIDInSelectedNetworks(networkId)) {
+                        $scope.networkGridApi.selection.selectRow(tableRowObj, null);
+                        $scope.selectedRowsNetworkExternalIds[networkId] = tableRowObj.name;
+                    }
+                });
+                myAccountController.networkTableRowsSelected = _.size( $scope.selectedRowsNetworkExternalIds);
+            };
 
             myAccountController.getUserNetworksAndPopulateTable = function (successHandler, errorHandler)
             {
@@ -3362,21 +3380,9 @@ ndexApp.controller('myAccountController',
                 myAccountController.getUserAccountPageNetworks(
                     function () {
 
-/*
-                        if (!networkTableDefined) {
-                            networkTableDefined = true;
-                            defineNetworkTable();
-                        }
-*/
-
-                        //if (myNetworksNewHash != myNetworksOldHash) {
-                        //    populateNetworkTable();
-                        //};
-
                         defineNetworkTable();
                         populateNetworkTable();
-
-                        //ndexSpinner.stopSpinner();
+                        markSelectedNetworks();
 
                         if (successHandler) {
                             successHandler();

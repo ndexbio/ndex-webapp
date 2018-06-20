@@ -141,6 +141,19 @@ angular.module('ndexServiceApp')
                 console.log();
             };
 
+            self.addUUIDToSelectedNetworks = function(networkUUID) {
+                $rootScope.myAccountPageStates.table.selectedNetworks.add(networkUUID);
+            };
+            self.deleteUUIDFromSelectedNetworks = function(networkUUID) {
+                $rootScope.myAccountPageStates.table.selectedNetworks.delete(networkUUID);
+            };
+            self.isUUIDInSelectedNetworks = function(networkUUID) {
+                return $rootScope.myAccountPageStates.table.selectedNetworks.has(networkUUID);
+            };
+            self.noNetworksSelected = function() {
+                return $rootScope.myAccountPageStates.table.selectedNetworks.size === 0;
+            };
+
 /*
             self.getCurrentUserName = function() {
                 return sharedProperties.getCurrentUserAccountName();
