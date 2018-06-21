@@ -1,7 +1,7 @@
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties',
+ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
-    function ( ndexService, ndexUtility, sharedProperties,
+    function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
               $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
 
         $scope.$on('IdleStart', function() {
@@ -79,6 +79,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             if (typeof(Storage) !== 'undefined') {
                 sessionStorage.clear();
             }
+            userSessionTablesSettings.clearState();
 
             $scope.main.loggedIn = false;
             delete $scope.main.userName;

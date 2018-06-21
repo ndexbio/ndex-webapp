@@ -1,6 +1,8 @@
 ndexApp.controller('editNetworkPropertiesFixedFormController',
-	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal', 'sharedProperties', '$timeout', 'uiMisc', 'ndexNavigation', 'ndexUtility',
-		function($scope, $location, $routeParams, $route, ndexService, $modal, sharedProperties, $timeout, uiMisc, ndexNavigation, ndexUtility, datepicker){
+	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal',
+        'sharedProperties', '$timeout', 'uiMisc', 'ndexNavigation', 'ndexUtility', 'userSessionTablesSettings',
+		function($scope, $location, $routeParams, $route, ndexService, $modal,
+                 sharedProperties, $timeout, uiMisc, ndexNavigation, ndexUtility, userSessionTablesSettings, datepicker){
 	 //testing
 
 	//              Process the URL to get application state
@@ -189,6 +191,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
         // this may happen if user cleared browser cache/history and hut browser reload button
+        userSessionTablesSettings.clearState();
         $location.path('/signIn');
         return;
     }
@@ -591,6 +594,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
         if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
             // this may happen if user cleared browser cache/history and hut browser reload button
+            userSessionTablesSettings.clearState();
             $location.path('/signIn');
             return;
         }
@@ -758,6 +762,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
         if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
             // this may happen if user cleared browser cache/history and hut browser reload button
+            userSessionTablesSettings.clearState();
             $location.path('/signIn');
             return;
         }
