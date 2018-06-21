@@ -313,21 +313,25 @@
                             </span>
 
                             <span ng-show="networkController.currentNetwork.externalId !== undefined">
-                            <br /><br />
-                            <span class="networkPropertyName"  >Owner: </span>
-                            <a ng-href="#/user/{{networkController.networkOwner.ownerUUID}}">
-                                {{networkController.networkOwner.firstName}}
-                                {{networkController.networkOwner.lastName}}</a>
-                            <br/>
+                                <br /><br />
 
-                            <span class="networkPropertyName" >Created: </span>
-                            {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
+                                <span ng-hide="hideNetworkOwner()">
+                                    <span class="networkPropertyName"  >Owner: </span>
+                                    <a ng-href="#/user/{{networkController.networkOwner.ownerUUID}}">
+                                        {{networkController.networkOwner.firstName}}
+                                        {{networkController.networkOwner.lastName}}
+                                    </a>
+                                    <br/>
+                                </span>
 
-                            <span ng-show="(networkController.currentNetwork.creationTime) !=
-                                           (networkController.currentNetwork.modificationTime)">
-                                <span class="networkPropertyName">Last Modified: </span>
-                                {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
-                            </span>
+                                <span class="networkPropertyName" >Created: </span>
+                                {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
+
+                                <span ng-show="(networkController.currentNetwork.creationTime) !=
+                                               (networkController.currentNetwork.modificationTime)">
+                                    <span class="networkPropertyName">Last Modified: </span>
+                                    {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
+                                </span>
 
                             </span>
 

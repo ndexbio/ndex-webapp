@@ -140,6 +140,29 @@ ndexApp.controller('networkController',
             };
 
 
+            /*
+             *  We hide the network owner from Network page if
+             *
+             *      1) network is PRIVATE, and
+             *      2) it is shared via shared URL
+             *
+             *  This is to resolve NWA-198 (https://ndexbio.atlassian.net/browse/NWA-198)
+             *  'Handling of author information exposed for anonymous access?'.  Note that we
+             *  hide owners of PRIVATE and networks with access key for both anonymous
+             *  and logged in users.
+             */
+            $scope.hideNetworkOwner = function() {
+
+                var isVisibility = ((typeof networkController.currentNetwork !== 'undefined') &&
+                                    (typeof networkController.currentNetwork.visibility !== 'undefined') &&
+                                    (networkController.currentNetwork.visibility === 'PRIVATE'));
+
+                var isAccessKey = (typeof accesskey !== 'undefined');
+
+                return (isVisibility && isAccessKey);
+            };
+
+
             function setTooltipForSwitchViewButton(message) {
                 $('#switchViewButtonId1').tooltip('hide')
                     .attr('data-original-title', message)
