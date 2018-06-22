@@ -1001,6 +1001,14 @@
 
                         </li>
 
+
+                         <li id="removeFromMyAccountTitleId" style="margin: 3px 0; line-height: 1.2em"
+                             ng-class="enableRemoveFromMyAccount ? 'enabled' : 'disabled'"
+                             ng-mouseover="changeRemoveFromMyNetworksTitle()" title=''
+                             ng-click="removeFromMyNetworks()">
+                                <a>Remove from My Networks</a>
+                        </li>
+
                          <li id="deleteNetworkTitleId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
                              ng-show='networkController.isLoggedInUser && !(networkController.isAdmin &&
                                   !networkController.readOnlyChecked)'

@@ -139,6 +139,7 @@ ndexApp.controller('networkController',
                 myToolTips.tooltip();
             };
 
+            $scope.enableRemoveFromMyAccount = false;
 
             /*
              *  We hide the network owner from Network page if
@@ -239,6 +240,12 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
+            $scope.changeRemoveFromMyNetworksTitle  = function() {
+                $('#removeFromMyAccountTitleId').tooltip('hide')
+                    .attr('data-original-title', $scope.removeFromMyAccountTitle)
+                    .tooltip('show');
+            };
+
             $scope.changeDeleteNetworkTitle  = function() {
                 $('#deleteNetworkTitleId').tooltip('hide')
                     .attr('data-original-title', $scope.deleteTitle)
@@ -292,6 +299,7 @@ ndexApp.controller('networkController',
             $scope.upgradePermissionTitle    = '';
             $scope.shareTitle                = '';
             $scope.deleteTitle               = '';
+            $scope.removeFromMyAccountTitle  = '';
             $scope.openInCytoscapeTitle      = 'Checking status ...';
 
             $scope.disabledQueryTooltip      = 'The Advanced Query feature is being improved and will be back soon!';
@@ -3541,9 +3549,68 @@ ndexApp.controller('networkController',
                 }
             };
 
+            $scope.removeFromMyNetworks = function() {
+                if (!$scope.enableRemoveFromMyAccount) {
+                    return;
+                }
+
+
+                var title = 'Remove this Network from My Account';
+                var message = 'Would you like to remove this shared with you network from '  +
+                    ' the list of your networks available in ' +
+                    '<strong>My Networks</strong> tab?' ;
+
+                var dismissModal = true;
+
+                ndexNavigation.openConfirmationModal(title, message, 'Remove from My Account', 'Cancel', dismissModal,
+                    function () {
+
+                        var currentLoggedInUserId = sharedProperties.getCurrentUserId();
+                        var currentNetworkId      =  networkController.currentNetworkId;
+
+                        ndexService.deleteNetworkPermissionV2(currentNetworkId, 'user', currentLoggedInUserId,
+                            function() {
+
+                                sharedProperties.setCurrentNetworkId(null);
+                                $location.path('/myAccount');
+
+                            },
+                            function(error) {
+
+                                title   = 'Unable to Delete Network Access';
+                                message = 'Unable to remove access to network for user <strong>';
+
+                                message = message + sharedProperties.getLoggedInUserFirstAndLastNames() + '</strong>.<br><br>';
+                                message = message + error.message;
+
+                                ndexNavigation.genericInfoModal(title, message);
+                            });
+                    },
+                    function () {
+                        // user canceled - do nothing
+                    });
+            };
+
+
+            var setRemoveFromMyAccountTitle = function() {
+                $scope.enableRemoveFromMyAccount = true;
+
+                if (!networkController.isLoggedInUser) {
+                    $scope.removeFromMyAccountTitle = 'You need to be logged in to remove from My Networks table networks shared with you ';
+                    $scope.enableRemoveFromMyAccount = false;
+
+                } else if (networkController.isNetworkOwner) {
+                    $scope.removeFromMyAccountTitle = 'You are Admin of this network. You can only remove from My Networks table networks shared with you. ';
+                    $scope.enableRemoveFromMyAccount = false;
+
+                } else if (networkController.privilegeLevel === 'None') {
+                    $scope.removeFromMyAccountTitle = 'You can only remove from My Networks table networks shared with you ';
+                    $scope.enableRemoveFromMyAccount = false;
+
+                }
+            };
+
             var setDeleteTitle = function() {
-                // we set Share title only if Share option of More menu is disabled:
-                // !(networkController.isAdmin && !networkController.readOnlyChecked)
                 if (!networkController.isNetworkOwner) {
                     $scope.deleteTitle = 'Unable to Delete this network: you do not own it ';
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
@@ -3700,6 +3767,7 @@ ndexApp.controller('networkController',
                                     networkController.canRead = true;
                                     networkController.privilegeLevel = 'Read';
                                 }
+                                setRemoveFromMyAccountTitle();
                                 setEditPropertiesTitle();
                                 setUpgradePermissionTitle();
                             }
@@ -3845,6 +3913,7 @@ ndexApp.controller('networkController',
                                 setShareTitle();
                             }
                             setEditPropertiesTitle();
+                            //setRemoveFromMyAccountTitle();
                             setDeleteTitle();
                         }
                     )
@@ -3925,6 +3994,7 @@ ndexApp.controller('networkController',
                         }
 
                         setEditPropertiesTitle();
+                        //setRemoveFromMyAccountTitle();
                         setDeleteTitle();
                     },
                     function (error) {
