@@ -3862,12 +3862,13 @@ ndexApp.controller('networkController',
 
                             } else {
                                 // Network is private, access key is not set, we are not the owner.
-                                // This network cannot be opened in Cytoscape.  So, disable Open In Cytoscape button.
-                                $scope.openInCytoscapeTitle = '';
-                                  /*  'This feature can be used only with Public networks, or Private networks ' +
-                                    'with an enabled Share URL'; */
+                                // This network is shared with us. It can be opened in Cytoscape.
+                                getCytoscapeAndCyRESTVersions();
+                                if (!checkCytoscapeStatusTimer) {
+                                    checkCytoscapeStatusTimer = setInterval(getCytoscapeAndCyRESTVersions,
+                                        checkCytoscapeStatusInSeconds * 1000);
+                                }
                             }
-
 
                             getMembership(function ()
                             {
