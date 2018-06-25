@@ -166,10 +166,6 @@
                             </a>
                         </span>
 
-
-
-
-
                         <span title="{{addToMySetsButtonTitle}}" ng-show="!enableAddToMySetsBulkButton">
                             <a class="btn btn-primary customButtonWidth disabled">
                                 Add To My Sets
@@ -184,7 +180,15 @@
                         </spn>
 
 
-                        <!-- NB: title directive should be in the span element below; if it is moved to a element,
+                        <span title="{{removeFromMyNetworksButtonTitle}}">
+                            <a ng-class="enableRemoveSharedNetworksBulkButton ? 'btn btn-primary customButtonWidth' :
+                                    'btn btn-primary customButtonWidth disabled'"
+                               ng-click="myAccountController.removeSharedSelectedNetworks()">
+                                {{myAccountController.removeNetworksButtonLabel}}
+                            </a>
+                        </span>
+
+                        <!-- NB: title directive should be in the span element below; if it is moved to an element,
                             it wil not work for case when button is disabled!!!
                         -->
                         <span title="{{deleteNetworkButtonTitle}}">

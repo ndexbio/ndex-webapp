@@ -73,7 +73,7 @@ ndexApp.controller('myAccountController',
                 if ($routeParams.pageNo.match(/p[1-9]+[0-9]*/)) {
                     var pageNoCastFromStr = $routeParams.pageNo.substring(1);
 
-                    pageNo = isNaN(pageNoCastFromStr) ? pageNo : Number(pageNoCastFromStr);
+                    pageNo = Number(pageNoCastFromStr);
                 }
             }
             var pageNoP = 'p' + pageNo;
@@ -145,13 +145,18 @@ ndexApp.controller('myAccountController',
             $scope.enableAddToMySetsBulkButton = false;
             $scope.addToMySetsButtonTitle      = '';
 
+            $scope.enableRemoveSharedNetworksBulkButton  = false;
+            $scope.removeFromMyNetworksButtonTitle       = '';
+
+
             $scope.enableDeleteBulkButton   = false;
             $scope.deleteNetworkButtonTitle = '';
 
 
-            myAccountController.editProfilesLabel    = 'Edit Profile';
-            myAccountController.exportNetworksLabel  = 'Export Network';
-            myAccountController.deleteNetworksLabel  = 'Delete Network';
+            myAccountController.editProfilesLabel         = 'Edit Profile';
+            myAccountController.exportNetworksLabel       = 'Export Network';
+            myAccountController.removeNetworksButtonLabel = 'Remove from My Networks';
+            myAccountController.deleteNetworksLabel       = 'Delete Network';
 
 
             myAccountController.networkSets = [];
@@ -645,6 +650,28 @@ ndexApp.controller('myAccountController',
                 }
             };
 
+            var enableOrDisableRemoveSharedNetworksBulkButton = function() {
+                var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
+                $scope.enableRemoveSharedNetworksBulkButton = true;
+
+                _.forEach (selectedNetworksRows, function(row) {
+
+                    if (row.ownerUUID === myAccountController.loggedInIdentifier) {
+                        $scope.enableRemoveSharedNetworksBulkButton = false;
+                        return false;
+                    }
+                });
+
+                if ($scope.enableRemoveSharedNetworksBulkButton) {
+                    $scope.removeFromMyNetworksButtonTitle = (1 === selectedNetworksRows.length) ?
+                        ' Remove selected shared network from My Networks ' :
+                        ' Remove selected ' + selectedNetworksRows.length + ' shared networks from My Networks ';
+
+                } else {
+                    $scope.removeFromMyNetworksButtonTitle = ' You can only remove networks that are shared with you ';
+                }
+            };
+
             var enableOrDisableDeleteBulkButton = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableDeleteBulkButton = true;
@@ -998,6 +1025,7 @@ ndexApp.controller('myAccountController',
                         enableOrDisableExportBulkButton();
                         enableOrDisableShareBulkButton();
                         enableOrDisableAddToMySetsBulkButton();
+                        enableOrDisableRemoveSharedNetworksBulkButton();
                         enableOrDisableDeleteBulkButton();
                     });
 
@@ -1039,6 +1067,7 @@ ndexApp.controller('myAccountController',
                         enableOrDisableExportBulkButton();
                         enableOrDisableShareBulkButton();
                         enableOrDisableAddToMySetsBulkButton();
+                        enableOrDisableRemoveSharedNetworksBulkButton();
                         enableOrDisableDeleteBulkButton();
                     });
 
@@ -1078,6 +1107,7 @@ ndexApp.controller('myAccountController',
                         enableOrDisableExportBulkButton();
                         enableOrDisableShareBulkButton();
                         enableOrDisableAddToMySetsBulkButton();
+                        enableOrDisableRemoveSharedNetworksBulkButton();
                         enableOrDisableDeleteBulkButton();
                     });
 
@@ -1832,6 +1862,104 @@ ndexApp.controller('myAccountController',
                 }, Promise.resolve());
             }
 
+
+            function removeSharedNetwork(networkId) {
+                return ndexService.deleteNetworkPermissionNoHandlersV2(
+                    networkId, 'user', myAccountController.loggedInIdentifier);
+            }
+
+            myAccountController.removeSharedSelectedNetworks = function() {
+
+                var networksToRemove         = $scope.networkGridApi.selection.getSelectedRows();
+                var numberOfNetworksToRemove = $scope.networkGridApi.selection.getSelectedRows().length;
+                var dismissModal = false;
+
+                var title = (numberOfNetworksToRemove > 1) ? 'Remove Selected Shared Networks' : 'Remove Selected Shared Network';
+                var message = (numberOfNetworksToRemove > 1) ?
+                    'The selected ' + numberOfNetworksToRemove + ' shared with you networks ' :
+                    'The selected shard with you network ';
+
+                message += ' will be removed from <strong>My Networks</strong>. <br><br>';
+                message += 'Would you like to proceed?';
+
+                var cancelHit = false;
+                var errorFromServer = false;
+                var removedCount = 0;
+
+                ndexNavigation.openConfirmationModal(title, message, 'Remove', 'Cancel', dismissModal,
+                    function ($modalInstance) {
+                        $scope.isProcessing = true;
+                        $rootScope.confirmButtonDisabled = true;
+
+                        sequence(networksToRemove, function (network) {
+                            if (cancelHit|| errorFromServer) {
+                                return;
+                            }
+                            return removeSharedNetwork(network.externalId).then(function () {
+                                removedCount++;
+
+                                if (myAccountController.networkTableRowsSelected > 0) {
+                                    myAccountController.networkTableRowsSelected--;
+                                }
+                                delete $scope.selectedRowsNetworkExternalIds[network.externalId];
+                                userSessionTablesSettings.deleteUUIDFromSelectedNetworks(network.externalId);
+
+                                $rootScope.progress  = 'Removed: ' + removedCount + ' of ' + numberOfNetworksToRemove + ' selected networks';
+                                $rootScope.progress2 = 'Removed: ' + network.name;
+
+                                if ((removedCount === numberOfNetworksToRemove) || !$scope.isProcessing) {
+                                    $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
+                                    myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
+
+                                    setTimeout(function() {
+                                        delete $rootScope.progress;
+                                        delete $rootScope.progress2;
+                                        delete $rootScope.errors;
+                                        delete $rootScope.confirmButtonDisabled;
+
+                                        $scope.isProcessing = false;
+                                        $modalInstance.dismiss();
+                                    }, 1000);
+                                }
+                            });
+                        }).catch(function (reason) {
+
+                            errorFromServer = true;
+                            var errorMessage = 'Unable to remove';
+
+                            $rootScope.errors = (reason.data && reason.data.message) ?
+                                errorMessage + ': ' +  reason.data.message : '.';
+
+                            $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
+                            myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
+
+                        });
+                    },
+                    function ($modalInstance) {
+                        $scope.isProcessing = false;
+
+                        if (removedCount === 0 || errorFromServer) {
+                            $modalInstance.dismiss();
+                            delete $rootScope.progress;
+                            delete $rootScope.progress2;
+                            delete $rootScope.errors;
+                            delete $rootScope.confirmButtonDisabled;
+
+                        } else {
+
+                            cancelHit = true;
+                            setTimeout(function () {
+                                delete $rootScope.progress;
+                                delete $rootScope.progress2;
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+
+                                $modalInstance.dismiss();
+                            }, 1000);
+                        }
+                    });
+            };
+
             function deleteNetwork(network) {
                 return ndexService.deleteNetworkNoHandlersV2(network.externalId);
             }
@@ -1983,6 +2111,7 @@ ndexApp.controller('myAccountController',
                                     myAccountController.networkTableRowsSelected--;
                                 }
                                 delete $scope.selectedRowsNetworkExternalIds[network.externalId];
+                                userSessionTablesSettings.deleteUUIDFromSelectedNetworks(network.externalId);
 
                                 $rootScope.progress  = 'Deleted: ' + deletedCount + ' of ' + numberOfNetworksToDel + ' selected networks';
                                 $rootScope.progress2 = 'Deleted: ' + network.name;

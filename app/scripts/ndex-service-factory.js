@@ -1068,6 +1068,22 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.deleteNetworkPermissionNoHandlersV2 = function (networkId, type, resourceId) {
+                // Server API: Delete Network Permission
+                // DELETE /network/{networkid}/permission?(userid={uuid}|groupid={uuid})
+
+                var url = "/network/" + networkId + "/permission?";
+                if (type === 'user') {
+                    url = url + 'userid=';
+                } else if (type === 'group') {
+                    url = url + 'groupid=';
+                }
+                url = url + resourceId;
+                var config = ndexConfigs.getDeleteConfigV2(url, null);
+
+                return $http(config);
+            };
+
             factory.setNetworkPropertiesV2 = function(networkId, properties, successHandler, errorHandler) {
                 // Server API: Set Network Properties
                 // PUT /network/{networkId}/properties
@@ -1078,7 +1094,7 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.setNetworkPropertiesNoHandlersV2 = function(networkId, properties, successHandler, errorHandler) {
+            factory.setNetworkPropertiesNoHandlersV2 = function(networkId, properties) {
                 // Server API: Set Network Properties
                 // PUT /network/{networkId}/properties
 
