@@ -51,10 +51,10 @@ input[type='radio']:checked:after {
 </style>
 <div class ='row'>
 	<div class='col-sm-offset-2 col-sm-8'>
-		<p class="alert alert-danger" ng-repeat='error in editor.errors'>
+		<p class="alert alert-danger" ng-repeat='error in editor.errors' style='word-wrap:break-word'>
 			{{error}}
 			<span class="glyphicon glyphicon-remove pull-right"
-				style='cursor:pointer'
+				style='cursor:pointer;'
 				ng-click='editor.errors.splice($index,1)'>	
 			</span>
 		</p>
