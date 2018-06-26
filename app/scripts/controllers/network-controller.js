@@ -3596,15 +3596,15 @@ ndexApp.controller('networkController',
                 $scope.enableRemoveFromMyAccount = true;
 
                 if (!networkController.isLoggedInUser) {
-                    $scope.removeFromMyAccountTitle = 'You need to be logged in to remove from My Networks table networks shared with you ';
+                    $scope.removeFromMyAccountTitle = 'You need to be logged in to remove from My Networks table networks shared with you';
                     $scope.enableRemoveFromMyAccount = false;
 
                 } else if (networkController.isNetworkOwner) {
-                    $scope.removeFromMyAccountTitle = 'You are Admin of this network. You can only remove from My Networks table networks shared with you. ';
+                    $scope.removeFromMyAccountTitle = 'You can only remove networks that other NDEx users have shared with you';
                     $scope.enableRemoveFromMyAccount = false;
 
                 } else if (networkController.privilegeLevel === 'None') {
-                    $scope.removeFromMyAccountTitle = 'You can only remove from My Networks table networks shared with you ';
+                    $scope.removeFromMyAccountTitle = 'You can only remove networks that other NDEx users have shared with you';
                     $scope.enableRemoveFromMyAccount = false;
 
                 }
