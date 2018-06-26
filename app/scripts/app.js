@@ -146,6 +146,21 @@ var checkIfUserHasAccessToTheClickedNetwork =
 
                             ndexNavigation.genericInfoModal(title, message);
                             $location.path('/myAccount');
+
+                        } else if (error.errorCode && (error.errorCode === 'NDEx_Object_Not_Found_Exception')) {
+
+                            deferred.reject();
+
+                            var title1 = 'Network Not Found';
+
+                            var message1  = 'Network was not found on the NDEx server. ';
+
+                            if (error.message) {
+                                message1 = error.message;
+                            }
+
+                            ndexNavigation.genericInfoModal(title1, message1);
+                            $location.path('/myAccount');
                         }
                     });
 
@@ -181,6 +196,20 @@ var checkIfUserHasAccessToTheClickedNetwork =
                                 function() {
                                     deferred.resolve();
                                 });
+
+                        } else if (error.errorCode && (error.errorCode === 'NDEx_Object_Not_Found_Exception')) {
+
+                            deferred.reject();
+
+                            var title2 = 'Network Not Found';
+
+                            var message2  = 'Network was not found on the NDEx server. ';
+
+                            if (error.message) {
+                                message2 = error.message;
+                            }
+
+                            ndexNavigation.genericInfoModal(title2, message2);
                         }
                     });
         }
