@@ -3556,13 +3556,13 @@ ndexApp.controller('networkController',
 
 
                 var title = 'Remove this Network from My Account';
-                var message = 'Would you like to remove this shared with you network from '  +
-                    ' the list of your networks available in ' +
-                    '<strong>My Networks</strong> tab?' ;
+                var message = 'Another NDEx user has shared this network with you and removing it from your ' +
+                    'account might prevent you from accessing it in the future.<br><br>' +
+                    'Are you sure you want to remove this shared network?';
 
                 var dismissModal = true;
 
-                ndexNavigation.openConfirmationModal(title, message, 'Remove from My Account', 'Cancel', dismissModal,
+                ndexNavigation.openConfirmationModal(title, message, 'Remove', 'Cancel', dismissModal,
                     function () {
 
                         var currentLoggedInUserId = sharedProperties.getCurrentUserId();

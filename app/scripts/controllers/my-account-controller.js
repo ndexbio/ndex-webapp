@@ -665,10 +665,11 @@ ndexApp.controller('myAccountController',
                 if ($scope.enableRemoveSharedNetworksBulkButton) {
                     $scope.removeFromMyNetworksButtonTitle = (1 === selectedNetworksRows.length) ?
                         ' Remove selected shared network from My Networks ' :
-                        ' Remove selected ' + selectedNetworksRows.length + ' shared networks from My Networks ';
+                        ' Remove ' + selectedNetworksRows.length + ' selected shared networks from My Networks ';
 
                 } else {
-                    $scope.removeFromMyNetworksButtonTitle = ' You can only remove networks that are shared with you ';
+                    $scope.removeFromMyNetworksButtonTitle =
+                        ' You can only remove networks that other NDEx users have shared with you ';
                 }
             };
 
@@ -1874,13 +1875,17 @@ ndexApp.controller('myAccountController',
                 var numberOfNetworksToRemove = $scope.networkGridApi.selection.getSelectedRows().length;
                 var dismissModal = false;
 
-                var title = (numberOfNetworksToRemove > 1) ? 'Remove Selected Shared Networks' : 'Remove Selected Shared Network';
-                var message = (numberOfNetworksToRemove > 1) ?
-                    'The selected ' + numberOfNetworksToRemove + ' shared with you networks ' :
-                    'The selected shard with you network ';
+                var title   = (numberOfNetworksToRemove > 1) ?
+                    'Remove Selected Shared Networks' : 'Remove Selected Shared Network';
 
-                message += ' will be removed from <strong>My Networks</strong>. <br><br>';
-                message += 'Would you like to proceed?';
+                var message = (numberOfNetworksToRemove > 1) ?
+                    'Another NDEx user has shared these ' + numberOfNetworksToRemove + ' networks with you and ' +
+                    ' removing them from your account might prevent you from accessing them in the future. <br><br>' +
+                    'Are you sure you want to remove these shared networks?' :
+
+                    'Another NDEx user has shared this network with you and ' +
+                    ' removing it from your account might prevent you from accessing it in the future. <br><br>' +
+                    'Are you sure you want to remove this shared network?';
 
                 var cancelHit = false;
                 var errorFromServer = false;
