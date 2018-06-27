@@ -78,6 +78,10 @@ ndexApp.controller('networkController',
             $scope.query = null;
             networkController.searchString = '';
 
+            $scope.showSetSampleButton            = false;
+            $scope.showSetSampleButtonEnabled     = false;
+            $scope.noOfEdgesToShowSetSampleButton = 100;
+
 
             networkController.queryEdgeLimitToShowGraph     = 1000;
             networkController.queryEdgeLimitToShowTableOnly = 3000;
@@ -112,6 +116,11 @@ ndexApp.controller('networkController',
             }
             function setTooltip3(message) {
                 $('#copyNetworkShareURLToClipboardId3').tooltip('hide')
+                    .attr('data-original-title', message)
+                    .tooltip('show');
+            }
+            function setTooltipOnSetSampleButtonId(message) {
+                $('#setSampleButtonId').tooltip('hide')
                     .attr('data-original-title', message)
                     .tooltip('show');
             }
@@ -1951,6 +1960,7 @@ ndexApp.controller('networkController',
                 uiMisc.showSearchMenuItem();
 
                 networkService.clearNiceCX();
+                networkService.clearQueryResultInCX();
             });
 
             /*
@@ -2789,10 +2799,9 @@ ndexApp.controller('networkController',
 
                 var hasLayout = networkController.currentNetwork.hasLayout;
 
-
                 /** @namespace networkController.currentNetwork.hasSample **/
                 if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
-                    (  (!hasLayout) && networkController.currentNetwork.hasSample ) ) {
+                        networkController.currentNetwork.hasSample ) {
                     // get sample CX network
                     networkController.isSample = true;
                     networkService.getNetworkSampleV2(networkId, accesskey)
@@ -3024,6 +3033,32 @@ ndexApp.controller('networkController',
                 var setGridWidth    = false;
 
 
+                $scope.showSetSampleButton = (networkController.isAdmin); // || networkController.canEdit) &&
+                    //(networkController.previousNetwork.edgeCount > $scope.noOfEdgesToShowSetSampleButton));
+
+
+                if ($scope.showSetSampleButton) {
+
+                    if (edgeCount > 1000) {
+                        $scope.showSetSampleButtonEnabled = false;
+
+                        setTooltipOnSetSampleButtonId(
+                            'Cannot set sample for query results with more than 1000 edges');
+
+                    } else if (networkController.previousNetwork.edgeCount < $scope.noOfEdgesToShowSetSampleButton) {
+                        setTooltipOnSetSampleButtonId(
+                            'Cannot set sample for networks with less than ' + $scope.noOfEdgesToShowSetSampleButton +  ' edges');
+
+                        $scope.showSetSampleButtonEnabled = false;
+
+                    } else {
+                        setTooltipOnSetSampleButtonId('Set this query as network sample ');
+
+                        $scope.showSetSampleButtonEnabled = true;
+                    }
+                }
+
+
                 // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
                 if (edgeCount <= networkController.queryEdgeLimitToShowGraph) {
                     drawCXNetworkOnCanvas(network, false);
@@ -3100,11 +3135,11 @@ ndexApp.controller('networkController',
                             if (!queryStatus.success && ('edgelimitexceeded' === queryStatus.error.toLowerCase())) {
 
                                 var dismissModal = true;
-                                var title   = 'Query Result Exceeds Limit';
+                                var title = 'Query Result Exceeds Limit';
 
                                 if (networkController.isLoggedInUser) {
 
-                                    var message = 'Your query returned more than ' + networkQueryEdgeLimit  +
+                                    var message = 'Your query returned more than ' + networkQueryEdgeLimit +
                                         ' edges and cannot be executed in the browser. <br><br> ' +
                                         '<strong>Would you like to save the result directly to your account?</strong>';
 
@@ -3129,7 +3164,7 @@ ndexApp.controller('networkController',
                                 } else {
                                     // user is anonymous; prompt her/him to log in to save this query to her/his account
 
-                                    var message1 = 'Your query returned more than ' + networkQueryEdgeLimit  +
+                                    var message1 = 'Your query returned more than ' + networkQueryEdgeLimit +
                                         ' edges and cannot be executed in the browser. <br><br> ' +
                                         '<strong>Please log in so that the result can be saved to your NDEx account.</strong>';
 
@@ -3217,6 +3252,7 @@ ndexApp.controller('networkController',
                 networkController.currentNetwork = networkController.previousNetwork;
                 networkService.restoreCurrentNiceCXAfterQuery();
                 localNetwork = networkService.getOriginalNiceCX();
+                networkService.clearQueryResultInCX();
 
                 if ($scope.currentView === 'Table') {
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
@@ -3767,6 +3803,10 @@ ndexApp.controller('networkController',
                                     networkController.canRead = true;
                                     networkController.privilegeLevel = 'Read';
                                 }
+
+                                $scope.showSetSampleButton = (networkController.isAdmin);
+                                    //(networkController.currentNetwork.edgeCount > $scope.noOfEdgesToShowSetSampleButton));
+
                                 setRemoveFromMyAccountTitle();
                                 setEditPropertiesTitle();
                                 setUpgradePermissionTitle();
@@ -4251,6 +4291,71 @@ ndexApp.controller('networkController',
                         delete $rootScope.cancelButtonDisabled;
                         delete $rootScope.progress;
                     });
+            };
+
+            networkController.setSampleFromQuery = function() {
+
+                if (!$scope.showSetSampleButtonEnabled) {
+                    return;
+                }
+
+                var title        = 'Set Sample For This Network';
+                var message      = 'Set this query as sample for this network?';
+                var dismissModal = false;
+
+                ndexNavigation.openConfirmationModal(title, message, 'Set Sample', 'Cancel', dismissModal,
+                    function ($modalInstance) {
+
+                        $rootScope.errors = null;
+                        $rootScope.confirmButtonDisabled = true;
+                        $rootScope.cancelButtonDisabled = true;
+                        $rootScope.progress = 'Setting sample network in progress ...';
+
+                        var confirmationSpinnerId = 'confirmationSpinnerId';
+                        ndexSpinner.startSpinner(confirmationSpinnerId);
+                        var queryResultInCX = networkService.getQueryResultInCX();
+
+                        ndexService.setNetworkSampleV2(networkController.currentNetworkId, queryResultInCX,
+                            function() {
+                                networkService.setQueryResultAsOriginalNiceCX();
+
+                                networkController.previousNetwork.hasSample = true;
+                                networkController.isSamplePrevious   = true;
+                                networkController.sampleSizePrevious = networkController.currentNetwork.edgeCount;
+                                $scope.showSetSampleButton = false;
+
+                                ndexSpinner.stopSpinner();
+                                $modalInstance.dismiss();
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+                                delete $rootScope.cancelButtonDisabled;
+                                delete $rootScope.progress;
+                            },
+                            function(error) {
+                                //$location.path();
+                                ndexSpinner.stopSpinner();
+                                title = 'Unable to Set Sample';
+                                message  = 'The query result wasn\'t set as sample for this network.';
+
+                                if (error.message) {
+                                    message = message + '<br>' + error.message;
+                                }
+                                $rootScope.errors = message;
+                                delete $rootScope.progress;
+                                delete $rootScope.cancelButtonDisabled;
+
+                            });
+                    },
+                    function ($modalInstance) {
+                        // User selected Cancel; return
+                        $modalInstance.dismiss();
+                        delete $rootScope.errors;
+                        delete $rootScope.confirmButtonDisabled;
+                        delete $rootScope.cancelButtonDisabled;
+                        delete $rootScope.progress;
+                    });
+
+                //factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
             };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS

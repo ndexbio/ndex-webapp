@@ -12,8 +12,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
         var ndexServerURI = window.ndexSettings.ndexServerUri;
         
-        var currentNiceCX  = null;   // the copy of CX network that are currently displayed
-        var originalNiceCX = null;
+        var currentNiceCX   = null;   // the copy of CX network that are currently displayed
+        var originalNiceCX  = null;
+        var queryResultInCX = null;
 
         var localNetworkUUID = undefined;
 
@@ -101,6 +102,19 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         factory.clearNiceCX = function() {
             currentNiceCX  = null;
             originalNiceCX = null;
+        };
+
+        factory.getQueryResultInCX = function() {
+            return queryResultInCX;
+        };
+        factory.setQueryResultInCX = function(networkInCX) {
+            queryResultInCX = networkInCX;
+        };
+        factory.clearQueryResultInCX = function() {
+            queryResultInCX = null;
+        };
+        factory.setQueryResultAsOriginalNiceCX = function() {
+            originalNiceCX = cxNetworkUtils.rawCXtoNiceCX(queryResultInCX);
         };
 
         /* commenting out. Doesn't seem to be used anywhere -- cj
@@ -937,6 +951,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
+                        factory.setQueryResultInCX(network);
                         currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
                         handler(currentNiceCX);
                     }

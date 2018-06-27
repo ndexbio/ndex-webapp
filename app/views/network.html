@@ -815,6 +815,15 @@
                 {{buttonLabel}}
             </button>
 
+            <button id="setSampleButtonId"
+                    ng-show="showSetSampleButton"
+                    data-toggle="tooltip"
+                    title=""
+                    ng-class="showSetSampleButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
+                    ng-click="networkController.setSampleFromQuery()" >
+                Set Sample
+            </button>
+
             <button id="saveQueryButton"
                     ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary "
                     ng-click="networkController.saveQueryResult()" >
@@ -850,6 +859,18 @@
                         </i>
                       </button>
             </span>
+
+
+            <!--
+            <span ng-show='showSetSampleButton'>
+                <a class="actionsLabel btn btn-primary"
+                   data-toggle="tooltip" title="Set Sample by uploading a CX File"
+                   ng-click="networkController.setSample()">
+                        Set Sample
+                </a>
+            </span>
+            -->
+
 
             <span ng-show='networkController.isLoggedInUser && networkController.currentNetwork.externalId !== undefined'>
                 <a class="actionsLabel btn btn-primary"

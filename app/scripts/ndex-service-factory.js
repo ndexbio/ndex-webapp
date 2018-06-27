@@ -1107,6 +1107,18 @@ ndexServiceApp.factory('ndexService',
                 return $http(config);
             };
 
+            factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
+                // Server API: Set Network Sample
+                // PUT /network/{networkId}/sample
+
+                var url = '/network/' + networkId + '/sample';
+
+
+                var config = ndexConfigs.getPutConfigV2(url, sampleInCX);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.setNetworkSummaryV2 = function(networkId, summaryProperties, successHandler, errorHandler) {
                 // Server API: Set Network Properties
                 // PUT /network/{networkId}/properties
