@@ -623,6 +623,30 @@
                                 modalInstance = null;
                             };
 
+                            $scope.maxInputLength = 200;
+
+                            $scope.checkLengthOfWebsite = function() {
+                                var strLength = $scope.user.website.length;
+
+                                if (strLength >= $scope.maxInputLength) {
+                                    $scope.websiteTooLongWarning = 'The maximum length of Website field is ' +
+                                        $scope.maxInputLength + ' characters.';
+                                } else {
+                                    delete $scope.websiteTooLongWarning;
+                                }
+                            };
+
+                            $scope.checkLengthOfImageHost = function() {
+                                var strLength = $scope.user.image.length;
+
+                                if (strLength >= $scope.maxInputLength) {
+                                    $scope.imageURLTooLongWarning = 'The maximum length of Image Host field is ' +
+                                        $scope.maxInputLength + ' characters.';
+                                } else {
+                                    delete $scope.imageURLTooLongWarning;
+                                }
+                            };
+
                             $scope.submit = function () {
 
                                 ndexService.updateUserV2($scope.user,
