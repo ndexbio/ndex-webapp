@@ -109,7 +109,7 @@ ndexApp.service('authInterceptor', function($q) {
  */
 
 var checkIfUserHasAccessToTheClickedNetwork =
-    function ($q, $location, $route, ndexUtility, ndexService, ndexNavigation, logInService, $rootScope, sharedProperties) {
+    function ($q, $location, $route, ndexUtility, ndexService, ndexNavigation, logInService, $rootScope, sharedProperties, $modalStack) {
 
         //var loggedInUser = ndexUtility.getUserCredentials();
         var loggedInUserId = sharedProperties.getCurrentUserId();
@@ -144,6 +144,7 @@ var checkIfUserHasAccessToTheClickedNetwork =
                             var message  = 'You do not have permission to access this network.  ' +
                                 'Please contact the network owner and ask her/him to share this network with you.';
 
+                            $modalStack.dismissAll();
                             ndexNavigation.genericInfoModal(title, message);
                             $location.path('/myAccount');
 
@@ -159,6 +160,7 @@ var checkIfUserHasAccessToTheClickedNetwork =
                                 message1 = error.message;
                             }
 
+                            $modalStack.dismissAll();
                             ndexNavigation.genericInfoModal(title1, message1);
                             $location.path('/myAccount');
                         }
@@ -209,7 +211,9 @@ var checkIfUserHasAccessToTheClickedNetwork =
                                 message2 = error.message;
                             }
 
+                            $modalStack.dismissAll();
                             ndexNavigation.genericInfoModal(title2, message2);
+                            $location.path('/');
                         }
                     });
         }
