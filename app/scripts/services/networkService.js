@@ -1173,6 +1173,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
                 if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase()) &&
                     subNetworkId == networkProperties[i].subNetworkId) {
+                    if ((networkProperties[i].dataType === 'boolean') && (typeof networkProperties[i].value === 'string')) {
+                        return JSON.parse(networkProperties[i].value);
+                    }
                     return networkProperties[i].value ;
                 }
             }

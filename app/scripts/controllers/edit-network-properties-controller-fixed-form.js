@@ -561,7 +561,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         'version',
         'reference',
         'ndex:sourceformat',
-        'sourceformat'
+        'sourceformat',
+        'usersetsample'
     ];
 
     $scope.namesForCustom = [

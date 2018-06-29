@@ -21,9 +21,14 @@
             </div>
 
             <div id="messageOverlay"
-                 style="float:bottom; display: inline-block; position: absolute; top: 15px; right: 20px;font-size: 1.2em; color: #FF0000"
+                 style="float:bottom; display: inline-block; position: absolute; top: 15px; right: 20px;font-size: 1.6em; color: #FF0000"
                  ng-show="showNetworkSample()">
-                (Sample: {{networkController.sampleSize}} edges)
+                <span ng-show="networkController.currentNetwork.userSetSample">
+                    <strong>User-set Sample: {{networkController.sampleSize}} edges</strong>
+                </span>
+                <span ng-show="!networkController.currentNetwork.userSetSample">
+                    <strong>System Sample: {{networkController.sampleSize}} edges</strong>
+                </span>
             </div>
 
             <tabset ng-show="currentView == 'Table'">
