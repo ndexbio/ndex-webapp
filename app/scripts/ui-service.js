@@ -630,7 +630,7 @@
 
                                 if (strLength >= $scope.maxInputLength) {
                                     $scope.websiteTooLongWarning = 'The maximum length of Website field is ' +
-                                        $scope.maxInputLength + ' characters.';
+                                        $scope.maxInputLength + ' characters';
                                 } else {
                                     delete $scope.websiteTooLongWarning;
                                 }
@@ -641,7 +641,7 @@
 
                                 if (strLength >= $scope.maxInputLength) {
                                     $scope.imageURLTooLongWarning = 'The maximum length of Image Host field is ' +
-                                        $scope.maxInputLength + ' characters.';
+                                        $scope.maxInputLength + ' characters';
                                 } else {
                                     delete $scope.imageURLTooLongWarning;
                                 }
@@ -679,44 +679,6 @@
                                         $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
                                     });
                             };
-
-                            $scope.$watch("user.firstName", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.lastName", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.emailAddress", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.website", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.image", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.description", function() {
-                                delete $scope.errors;
-                            });
-
-
-                            // ndexData is undefined at first pass. This seems to be a common problem
-                            // most likey we aren't doing something the angular way, quick fix below
-
-                            /*
-                            $scope.$watch('ndexData', function (value) {
-                                $scope.user = {};
-                                // Only want copy of object.
-                                // Can acheive one way binding using '@' in the scope
-                                // but then we have to do JSON.parse(JSON.stringify(value)) on it.
-                                // and use {{value}} in invoking html.
-                                for (var key in value) {
-                                    $scope.user[key] = value[key];
-                                }
-                            });
-                            */
-
-
                         }
                     })
                 }
