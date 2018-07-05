@@ -3593,7 +3593,7 @@ ndexApp.controller('networkController',
                 }
 
 
-                var title = 'Remove this Network from My Account';
+                var title = 'Remove Shared Network';
                 var message = 'Another NDEx user has shared this network with you and removing it from your ' +
                     'account might prevent you from accessing it in the future.<br><br>' +
                     'Are you sure you want to remove this shared network?';
