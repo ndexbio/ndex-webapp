@@ -164,7 +164,6 @@ ndexApp.controller('myAccountController',
             $scope.refreshNetworksButtonDisabled = true;
             $scope.refreshTasksButtonDisabled    = true;
 
-            //var networkTableDefined               = false;
             var tasksAndNotificationsTableDefined = false;
 
             var networksReceived             = false;
@@ -945,6 +944,91 @@ ndexApp.controller('myAccountController',
                 }
             };
 
+            var defineNetworkTable = function()
+            {
+                //noinspection JSUnusedGlobalSymbols
+                $scope.networkGridApi.grid.options.columnDefs = [
+                    { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'views/gridTemplates/networkStatusOnMyAccountPage.html'},
+                    { field: 'Network Name', enableFiltering: true, cellTemplate: 'views/gridTemplates/networkName.html' },
+                    { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
+
+                    { field: 'Format', enableFiltering: true, maxWidth:77,
+                        sort: {
+                            direction: uiGridConstants.DESC,
+                            priority: 0
+                        },
+
+                        sortingAlgorithm: function(a, b) {
+                            if (a === b) {
+                                return 0;
+                            }
+                            if (a === 'Set') {
+                                return 1;
+                            }
+                            if (b === 'Set') {
+                                return -1;
+                            }
+                            if (a > b) {
+                                return -1;
+                            }
+                            return 1;
+                        }
+                    },
+
+                    { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
+                    //{ field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
+                    //{ field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
+                    //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
+                    { field: 'Edges', enableFiltering: false, maxWidth: 75,
+                        sortingAlgorithm: function (a, b) {
+                            if (a === b) {
+                                return 0;
+                            }
+                            if (a > b) {
+                                return -1;
+                            }
+                            return 1;
+                        }
+                    },
+
+                    //{ field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
+                    { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
+                    { field: 'Owner', enableFiltering: true, width:80, cellTemplate: 'views/gridTemplates/ownedBy.html' },
+
+                    // Last Modified is default sort order set by userSessionTablesSettings.clearPreviousSortingAndSetNewOne
+                    { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: 'date:\'short\'',
+                        sortingAlgorithm: function (a, b) {
+                            var dateA = new Date(a);
+                            var dateB = new Date(b);
+
+                            if (dateA === dateB) {
+                                return 0;
+                            }
+                            if (dateA > dateB) {
+                                return -1;
+                            }
+                            return 1;
+                        }
+                    },
+
+                    { field: 'Show', enableFiltering: false, maxWidth: 60, cellTemplate: 'views/gridTemplates/showCase.html' },
+
+                    { field: 'description', enableFiltering: false,  visible: false},
+                    { field: 'externalId',  enableFiltering: false,  visible: false},
+                    { field: 'ownerUUID',   enableFiltering: false,  visible: false},
+                    { field: 'name',        enableFiltering: false,  visible: false},
+
+                    { field: 'errorMessage', enableFiltering: false,  visible: false},
+                    { field: 'subnetworks',  enableFiltering: false,  visible: false},
+                    { field: 'isReadOnly',   enableFiltering: false,  visible: false},
+                    { field: 'indexLevel',   enableFiltering: false,  visible: false}
+                ];
+
+                var $myNetworksGridId = $('#myNetworksGridId');
+                $myNetworksGridId.height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $myNetworksGridId.height();
+            };
+
             //table
             $scope.networkGridOptions =
             {
@@ -961,9 +1045,13 @@ ndexApp.controller('myAccountController',
                 paginationPageSize: $rootScope.myAccountPageStates.table.networksPerPage,
                 useExternalPagination: true,
 
+                saveFocus: true,
+
                 onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
+
+                    defineNetworkTable();
 
                     /** @namespace gridApi.pagination.on.paginationChanged **/
                     gridApi.pagination.on.paginationChanged($scope, function (newPageNumber, pageSize) {
@@ -1116,7 +1204,7 @@ ndexApp.controller('myAccountController',
                     gridApi.core.on.sortChanged($scope, function(grid, sortColumns) {
 
                         if (Array.isArray(sortColumns) && (1 === sortColumns.length)) {
-                            userSessionTablesSettings.setPageSorting(pageNoP, sortColumns[0].name, sortColumns[0].sort.direction);
+                            userSessionTablesSettings.setPageSorting(pageNoP, sortColumns[0].name, sortColumns[0].sort);
                         }
                         else {
                             userSessionTablesSettings.setPageSortingToUnsorted(pageNoP);
@@ -1257,102 +1345,6 @@ ndexApp.controller('myAccountController',
                     myAccountController.sentRequests.length > 0    ||
                     myAccountController.tasks.length > 0);
 
-            };
-
-            var defineNetworkTable = function()
-            {
-                //noinspection JSUnusedGlobalSymbols
-                $scope.networkGridApi.grid.options.columnDefs = [
-                    { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'views/gridTemplates/networkStatusOnMyAccountPage.html'},
-                    { field: 'Network Name', enableFiltering: true, cellTemplate: 'views/gridTemplates/networkName.html' },
-                    { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
-
-                    { field: 'Format', enableFiltering: true, maxWidth:77,
-                        sort: {
-                            direction: uiGridConstants.DESC,
-                            priority: 0
-                        },
-
-                        sortingAlgorithm: function(a, b) {
-                            if (a === b) {
-                                return 0;
-                            }
-                            if (a === 'Set') {
-                                return 1;
-                            }
-                            if (b === 'Set') {
-                                return -1;
-                            }
-                            if (a > b) {
-                                return -1;
-                            }
-                            return 1;
-                        }
-                    },
-
-                    { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-                    //{ field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-                    //{ field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
-                    //{ field: 'Nodes', enableFiltering: false, maxWidth:70 },
-                    { field: 'Edges', enableFiltering: false, maxWidth: 75,
-                        sortingAlgorithm: function (a, b) {
-                            if (a === b) {
-                                return 0;
-                            }
-                            if (a > b) {
-                                return -1;
-                            }
-                            return 1;
-                        }
-                    },
-
-                    //{ field: 'Visibility', enableFiltering: true, maxWidth:70, cellClass: 'grid-align-cell' },
-                    { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
-                    { field: 'Owner', enableFiltering: true, width:80, cellTemplate: 'views/gridTemplates/ownedBy.html' },
-
-                    // Last Modified is default sort order set by userSessionTablesSettings.clearPreviousSortingAndSetNewOne
-                    { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: 'date:\'short\'' },
-
-                    { field: 'Show', enableFiltering: false, maxWidth: 60, cellTemplate: 'views/gridTemplates/showCase.html' },
-
-                    { field: 'description', enableFiltering: false,  visible: false},
-                    { field: 'externalId',  enableFiltering: false,  visible: false},
-                    { field: 'ownerUUID',   enableFiltering: false,  visible: false},
-                    { field: 'name',        enableFiltering: false,  visible: false},
-
-                    { field: 'errorMessage', enableFiltering: false,  visible: false},
-                    { field: 'subnetworks',  enableFiltering: false,  visible: false},
-                    { field: 'isReadOnly',   enableFiltering: false,  visible: false},
-                    { field: 'indexLevel',   enableFiltering: false,  visible: false}
-                ];
-
-                //$scope.networkGridApi.grid.options.columnDefs = columnDefs;
-
-                userSessionTablesSettings.clearPreviousSortingAndSetNewOne($scope.networkGridApi.grid.options.columnDefs, pageNoP);
-
-                //if (myAccountNetworkTableFiltersAndSorting.pageNumber) {
-                //$scope.networkGridApi.grid.options.paginationCurrentPage = pageNo; //myAccountNetworkTableFiltersAndSorting.pageNumber;
-                //}
-
-                // set filters to the Table headers, if any
-                //_.forOwn(myAccountNetworkTableFiltersAndSorting.filters,
-               /*
-                _.forOwn(userSessionTablesSettings.getFiltersForPage(pageNoP),
-                    function(columnFilter, columnName) {
-                        var columnObj  = _.find(columnDefs, {field: columnName});
-
-                        if (columnObj) {
-                            columnObj.filters = [];
-                            columnObj.filters[0] = {};
-                            columnObj.filters[0].term = columnFilter;
-                        }
-                    }
-                );
-                */
-
-                var $myNetworksGridId = $('#myNetworksGridId');
-                $myNetworksGridId.height($(window).height() - windowsHeightCorrection);
-                $scope.networkGridApi.grid.gridHeight = $myNetworksGridId.height();
             };
 
             var defineTasksAndNotificationsTable = function()
@@ -1601,23 +1593,12 @@ ndexApp.controller('myAccountController',
                     $scope.networkGridOptions.data.push(row);
                 }
 
+                myAccountController.showNetworkTable = (_.size($scope.networkGridOptions.data) > 0);
+
                 $scope.networkGridApi.grid.options.paginationCurrentPage = pageNo;
 
-                // set filters to the Table headers, if any
-                //_.forOwn(myAccountNetworkTableFiltersAndSorting.filters,
-                _.forOwn(userSessionTablesSettings.getFiltersForPage(pageNoP),
-                    function(columnFilter, columnName) {
-                        var columnObj  = _.find($scope.networkGridApi.grid.options.columnDefs, {field: columnName});
-
-                        if (columnObj) {
-                            columnObj.filters = [];
-                            columnObj.filters[0] = {};
-                            columnObj.filters[0].term = columnFilter;
-                        }
-                    }
-                );
-
-                myAccountController.showNetworkTable = (_.size($scope.networkGridOptions.data) > 0);
+                userSessionTablesSettings.clearPreviousFiltersAndSetNewOnes($scope.networkGridApi.grid, pageNoP);
+                userSessionTablesSettings.clearPreviousSortingAndSetNewOne($scope.networkGridApi.grid, pageNoP);
             };
 
 
@@ -3496,7 +3477,6 @@ ndexApp.controller('myAccountController',
                 myAccountController.getUserAccountPageNetworks(
                     function () {
 
-                        defineNetworkTable();
                         populateNetworkTable();
                         markSelectedNetworks();
 

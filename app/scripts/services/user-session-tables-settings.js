@@ -18,43 +18,6 @@ angular.module('ndexServiceApp')
             };
 
 
-
-            self.clearPreviousSortingAndSetNewOne = function(columnDefs, pageNoP) {
-
-                var pageSetup = self.getPage(pageNoP);
-
-                if (!pageSetup || ((!pageSetup.sorting || !pageSetup.sorting.name || !pageSetup.sorting.direction))) {
-                    self.setPageSorting(pageNoP, 'Last Modified', 'desc');
-                    pageSetup = self.getPage(pageNoP);
-                }
-
-                var columnName = self.getPageSortingColumnName(pageNoP);
-                var columnObj  = _.find(columnDefs, {field: columnName});
-
-                if (columnObj) {
-                    columnObj.sort = {};
-                    columnObj.sort.direction = pageSetup.sorting.direction;
-                    columnObj.sort.priority  = 5;
-                }
-
-            };
-
-
-            self.getPage = function(pageNoP) {
-
-                var pageToReturn = null;
-
-                if ($rootScope.myAccountPageStates.pages[pageNoP] &&
-                    $rootScope.myAccountPageStates.pages[pageNoP].sorting &&
-                    $rootScope.myAccountPageStates.pages[pageNoP].sorting.name &&
-                    $rootScope.myAccountPageStates.pages[pageNoP].sorting.direction)
-                {
-                    pageToReturn = $rootScope.myAccountPageStates.pages[pageNoP];
-                }
-
-                return pageToReturn;
-            };
-
             self.getPageSortingColumnName = function(pageNoP) {
                 return  $rootScope.myAccountPageStates.pages[pageNoP].sorting.name;
             };
@@ -62,9 +25,21 @@ angular.module('ndexServiceApp')
             self.getPageSortingDirection = function(pageNoP) {
                 return  $rootScope.myAccountPageStates.pages[pageNoP].sorting.direction;
             };
+            self.getPageSorting = function(pageNoP) {
+
+                if ($rootScope.hasOwnProperty('myAccountPageStates') &&
+                    $rootScope.myAccountPageStates.hasOwnProperty('pages') &&
+                    $rootScope.myAccountPageStates.pages.hasOwnProperty(pageNoP) &&
+                    $rootScope.myAccountPageStates.pages[pageNoP].hasOwnProperty('sorting'))
+                {
+                    return $rootScope.myAccountPageStates.pages[pageNoP].sorting;
+                }
+
+                return {};
+            };
 
 
-            self.setPageSorting = function(pageNoP, sortingColumnName, sortingDirection) {
+            self.setPageSorting = function(pageNoP, sortedColumnName, sortingObj) {
 
                 if (!$rootScope.myAccountPageStates.pages[pageNoP]) {
                     $rootScope.myAccountPageStates.pages[pageNoP] = {};
@@ -73,8 +48,9 @@ angular.module('ndexServiceApp')
                     $rootScope.myAccountPageStates.pages[pageNoP].sorting = {};
                 }
 
-                $rootScope.myAccountPageStates.pages[pageNoP].sorting.name      = sortingColumnName;
-                $rootScope.myAccountPageStates.pages[pageNoP].sorting.direction = sortingDirection;
+                $rootScope.myAccountPageStates.pages[pageNoP].sorting.name      = sortedColumnName;
+                $rootScope.myAccountPageStates.pages[pageNoP].sorting.direction = sortingObj.direction;
+                $rootScope.myAccountPageStates.pages[pageNoP].sorting.priority  = sortingObj.priority;
                 $rootScope.myAccountPageStates.pages[pageNoP].sorting.sorted    = true;
 
             };
@@ -85,6 +61,7 @@ angular.module('ndexServiceApp')
 
                     $rootScope.myAccountPageStates.pages[pageNoP].sorting.name      = null;
                     $rootScope.myAccountPageStates.pages[pageNoP].sorting.direction = null;
+                    $rootScope.myAccountPageStates.pages[pageNoP].sorting.prirority = null;
                     $rootScope.myAccountPageStates.pages[pageNoP].sorting.sorted    = false;
                 }
             };
@@ -112,7 +89,7 @@ angular.module('ndexServiceApp')
             };
 
 
-            self.getFiltersForPage = function(pageNoP) {
+            self.getPageFilters = function(pageNoP) {
 
                 if ($rootScope.myAccountPageStates.pages &&
                     $rootScope.myAccountPageStates.pages[pageNoP] &&
@@ -154,87 +131,57 @@ angular.module('ndexServiceApp')
                 return $rootScope.myAccountPageStates.table.selectedNetworks.size === 0;
             };
 
-/*
-            self.getCurrentUserName = function() {
-                return sharedProperties.getCurrentUserAccountName();
-            };
 
-            /*
-            self.initMyAccountNetworkTableFiltersAndSorting = function() {
 
-                var userName = self.getCurrentUserName();
+            self.clearPreviousFiltersAndSetNewOnes = function(networksGrid, pageNoP) {
 
-                var myAccountNetworkTableFiltersAndSorting =
-                    (typeof(Storage) !== 'undefined') ? JSON.parse(sessionStorage.getItem(userName)) : null;
+                var pageFilters = self.getPageFilters(pageNoP);
+                var grid        = networksGrid;
 
-                var lastReloadViewName = self.getCurrentViewName();
+                // iterate through all visible columns and clear all currently set filters
+                // while setting new ones (if any were set for this page earlier)
+                if (grid && grid.hasOwnProperty('columns')) {
+                    _.forEach(grid.columns, function(column) {
+                        if (column && (!column.hasOwnProperty('visible') || (column.visible === true))) {
 
-                if ((myAccountNetworkTableFiltersAndSorting === null) ||
-                    ((myAccountNetworkTableFiltersAndSorting.lastReloadViewName) &&
-                    (myAccountNetworkTableFiltersAndSorting.lastReloadViewName === lastReloadViewName))) {
-
-                    myAccountNetworkTableFiltersAndSorting = {};
-                    myAccountNetworkTableFiltersAndSorting.filters = {};
-                    myAccountNetworkTableFiltersAndSorting.sorting = {};
-                    myAccountNetworkTableFiltersAndSorting.pageNumber = 1;
-
-                    if (myAccountNetworkTableFiltersAndSorting.lastReloadViewName) {
-                        delete myAccountNetworkTableFiltersAndSorting.lastReloadViewName;
-                    }
-                }
-
-                return myAccountNetworkTableFiltersAndSorting;
-            };
-            */
-
-/*
-            self.saveTableSettings = function(tableSettings) {
-                if (typeof(Storage) !== 'undefined') {
-                    var userName = self.getCurrentUserName();
-                    sessionStorage.setItem(userName, JSON.stringify(tableSettings));
+                            if (column.hasOwnProperty('filters') && Array.isArray(column.filters)) {
+                                delete column.filters[0].term;
+                            }
+                            if (column.name in pageFilters) {
+                                column.filters[0].term = pageFilters[column.name];
+                            }
+                        }
+                    });
                 }
             };
 
-            self.clearLastReloadView = function(table) {
-                if (table.lastReloadViewName) {
-                    delete table.lastReloadViewName;
+            self.clearPreviousSortingAndSetNewOne = function(networksGrid, pageNoP) {
+
+                var pageSorting      = self.getPageSorting(pageNoP);
+                var grid             = networksGrid;
+
+                var sortedColumnName = pageSorting.name;
+
+
+                // iterate through all visible columns and clear all currently set filters
+                // while setting new ones (if any were set for this page earlier)
+                if (grid && grid.hasOwnProperty('columns')) {
+                    _.forEach(grid.columns, function(column) {
+                        if (column && (!column.hasOwnProperty('visible') || (column.visible === true))) {
+
+                            if (column.hasOwnProperty('sort') && column.sort.hasOwnProperty('direction')) {
+                                delete column.sort.direction;
+                                delete column.sort.priority;
+                            }
+
+                            if (column.name === sortedColumnName) {
+                                column.sort.direction = pageSorting.direction;
+                                column.sort.priority  = pageSorting.priority;
+                            }
+                        }
+                    });
                 }
+
             };
-
-            self.getCurrentViewName = function() {
-                var currentViewName = $location.path();
-
-                if (currentViewName) {
-
-                    var currentViewNameExtracted = currentViewName.split('/');
-
-                    if ((Array.isArray(currentViewNameExtracted) && (currentViewNameExtracted.length > 1))) {
-                        currentViewName = currentViewNameExtracted[1].toLowerCase();
-                    }
-                }
-                return currentViewName;
-            };
-
-
-            self.setLastReloadViewName = function () {
-
-                var currentViewName = self.getCurrentViewName();
-
-                var userName = self.getCurrentUserName();
-
-                if (typeof(Storage) !== 'undefined') {
-                    var myAccountNetworkTableFiltersAndSorting = JSON.parse(sessionStorage.getItem(userName));
-
-                    if (!myAccountNetworkTableFiltersAndSorting) {
-                        myAccountNetworkTableFiltersAndSorting = {};
-                        myAccountNetworkTableFiltersAndSorting.filters = {};
-                        myAccountNetworkTableFiltersAndSorting.sorting = {};
-                        myAccountNetworkTableFiltersAndSorting.pageNumber = 1;
-                    }
-                    myAccountNetworkTableFiltersAndSorting.lastReloadViewName = currentViewName;
-                    sessionStorage.setItem(userName, JSON.stringify(myAccountNetworkTableFiltersAndSorting));
-                }
-            };
-*/
         }
     ]);
