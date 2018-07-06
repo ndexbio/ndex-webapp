@@ -1068,20 +1068,14 @@ ndexApp.controller('myAccountController',
                         } else {
                             $rootScope.myAccountPageStates.table.networksPerPage = pageSize;
                         }
-/*
-                        var stateObj   = {
-                            'page': pageNo,
-                            'locationPath': $location.path(),
-                            'locationAbs' : $location.absUrl()
-                        };
-                        history.pushState(stateObj, 'p' + pageNo);
-*/
+
                         paginationOptions.pageNumber = newPageNumber;
                         pageNo = newPageNumber;
                         pageNoP = 'p' + pageNo;
 
                         //myAccountNetworkTableFiltersAndSorting.pageNumber = newPageNumber;
                         paginationOptions.pageSize = pageSize;
+                        ndexSpinner.startSpinner(spinnerMyAccountPageId);
                         myAccountController.getNoOfNetworksAndSets(
                             function() {
                                 myAccountController.loadNetworks();
@@ -3717,6 +3711,19 @@ ndexApp.controller('myAccountController',
 
             myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo = function() {
 
+                myAccountController.getNoOfNetworksAndSets(
+                    function() {
+                        myAccountController.loadNetworks();
+                    },
+                    function() {
+                        console.log('unable to get No of Networks and Sets for this account');
+                    }
+                );
+
+            };
+
+            $scope.checkAndRefreshMyNetworksTableAndDiskInfo = function() {
+
                 if ($scope.refreshNetworksButtonDisabled) {
                     // we need this check to safeguard against rapid multiple hits of refresh button,
                     // in which case it may start multiple refresh timers
@@ -3727,20 +3734,19 @@ ndexApp.controller('myAccountController',
                     clearInterval(timerVariable);
                 }
 
-                myAccountController.getNoOfNetworksAndSets(
-                    function() {
-                        myAccountController.loadNetworks();
-                    },
-                    function() {
-                        console.log('unable to get No of Networks and Sets for this account');
-                    }
-                );
-
-                //myAccountController.loadNetworks();
+                // start spinner if it is not already started
+                ndexSpinner.startSpinner(spinnerMyAccountPageId);
+                myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
             };
+
+
 
             myAccountController.checkAndRefreshMyTaskAndNotification = function() {
 
+                myAccountController.loadTasksAndRequests();
+            };
+
+            $scope.checkAndRefreshMyTaskAndNotification = function() {
                 if ($scope.refreshTasksButtonDisabled) {
                     // we need this check to safeguard against rapid multiple hits of refresh button,
                     // in which case it may start multiple refresh timers
@@ -3751,7 +3757,7 @@ ndexApp.controller('myAccountController',
                     clearInterval(timerVariable);
                 }
 
-                myAccountController.loadTasksAndRequests();
+                myAccountController.checkAndRefreshMyTaskAndNotification();
             };
 
             myAccountController.refreshMyNetworksTableAndDiskInfo = function(successHandler, errorHandler) {
@@ -3816,7 +3822,7 @@ ndexApp.controller('myAccountController',
                 $scope.refreshNetworksButtonDisabled = true;
 
                 // start spinner if it is not already started
-                ndexSpinner.startSpinner(spinnerMyAccountPageId);
+                // ndexSpinner.startSpinner(spinnerMyAccountPageId);
 
                 myAccountController.refreshMyNetworksTableAndDiskInfo(
                     function() {
@@ -3845,7 +3851,7 @@ ndexApp.controller('myAccountController',
                 $scope.refreshTasksButtonDisabled = true;
 
                 // start spinner if it is not already started
-                ndexSpinner.startSpinner(spinnerMyAccountPageId);
+                //ndexSpinner.startSpinner(spinnerMyAccountPageId);
 
                 //get tasks
                 myAccountController.getTasks(
@@ -3896,6 +3902,7 @@ ndexApp.controller('myAccountController',
                 },
                 true);
 
+            ndexSpinner.startSpinner(spinnerMyAccountPageId);
 
             myAccountController.getNoOfNetworksAndSets(
                 function() {
