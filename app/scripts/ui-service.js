@@ -421,7 +421,7 @@
                     $scope.networkSet['description'] = $scope.networkSetController.displayedSet.description;
                     $scope.networkSet['properties']  = {reference: ""};
 
-                    $scope.title = $attrs.triggerEditNetworkSetModal + ' ' +  $scope.networkSet['name'];
+                    $scope.title = 'Edit Network Set ' + $scope.networkSet['name'];
 
                     if ($scope.networkSetController.displayedSet['properties'] &&
                         $scope.networkSetController.displayedSet['properties']['reference']) {
@@ -623,6 +623,30 @@
                                 modalInstance = null;
                             };
 
+                            $scope.maxInputLength = 200;
+
+                            $scope.checkLengthOfWebsite = function() {
+                                var strLength = $scope.user.website.length;
+
+                                if (strLength >= $scope.maxInputLength) {
+                                    $scope.websiteTooLongWarning = 'The maximum length of Website field is ' +
+                                        $scope.maxInputLength + ' characters';
+                                } else {
+                                    delete $scope.websiteTooLongWarning;
+                                }
+                            };
+
+                            $scope.checkLengthOfImageHost = function() {
+                                var strLength = $scope.user.image.length;
+
+                                if (strLength >= $scope.maxInputLength) {
+                                    $scope.imageURLTooLongWarning = 'The maximum length of Image Host field is ' +
+                                        $scope.maxInputLength + ' characters';
+                                } else {
+                                    delete $scope.imageURLTooLongWarning;
+                                }
+                            };
+
                             $scope.submit = function () {
 
                                 ndexService.updateUserV2($scope.user,
@@ -655,44 +679,6 @@
                                         $scope.errors = uiMisc.formatErrorMessage(errorMessage, error);
                                     });
                             };
-
-                            $scope.$watch("user.firstName", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.lastName", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.emailAddress", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.website", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.image", function() {
-                                delete $scope.errors;
-                            });
-                            $scope.$watch("user.description", function() {
-                                delete $scope.errors;
-                            });
-
-
-                            // ndexData is undefined at first pass. This seems to be a common problem
-                            // most likey we aren't doing something the angular way, quick fix below
-
-                            /*
-                            $scope.$watch('ndexData', function (value) {
-                                $scope.user = {};
-                                // Only want copy of object.
-                                // Can acheive one way binding using '@' in the scope
-                                // but then we have to do JSON.parse(JSON.stringify(value)) on it.
-                                // and use {{value}} in invoking html.
-                                for (var key in value) {
-                                    $scope.user[key] = value[key];
-                                }
-                            });
-                            */
-
-
                         }
                     })
                 }

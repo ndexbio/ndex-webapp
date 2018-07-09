@@ -39,6 +39,8 @@ ndexApp.controller('networkSetController',
     var activateURLLabel   = "Enable Share URL";
     var deActivateURLLabel = "Disable Share URL";
 
+    var windowsHeightCorrection = 185;
+
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -174,10 +176,30 @@ ndexApp.controller('networkSetController',
             { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
             //{ field: 'Format', enableFiltering: true, maxWidth:63 },
             { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-            { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-            { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
-            { field: 'Nodes', enableFiltering: false, maxWidth: 70 },
-            { field: 'Edges', enableFiltering: false, maxWidth: 70 },
+            { field: 'Disease', enableFiltering: true, width: 82, cellTemplate: 'views/gridTemplates/disease.html'},
+            { field: 'Tissue',  enableFiltering: true, width: 75, cellTemplate: 'views/gridTemplates/tissue.html'},
+            { field: 'Nodes', enableFiltering: false, maxWidth: 75,
+                sortingAlgorithm: function (a, b) {
+                    if (a === b) {
+                        return 0;
+                    }
+                    if (a > b) {
+                        return -1;
+                    }
+                    return 1;
+                }
+            },
+            { field: 'Edges', enableFiltering: false, maxWidth: 75,
+                sortingAlgorithm: function (a, b) {
+                    if (a === b) {
+                        return 0;
+                    }
+                    if (a > b) {
+                        return -1;
+                    }
+                    return 1;
+                }
+            },
             { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
             { field: 'Owner', enableFiltering: true, width:80,
                 cellTemplate: 'views/gridTemplates/ownedBy.html'},
@@ -185,6 +207,10 @@ ndexApp.controller('networkSetController',
             { field: 'indexLevel',   enableFiltering: false,  visible: false}
         ];
         $scope.networkGridApi.grid.options.columnDefs = columnDefs;
+
+        $("#myNetworksOfSetGridId").height($(window).height() - windowsHeightCorrection);
+        $scope.networkGridApi.grid.gridHeight = $("#myNetworksOfSetGridId").height();
+
         refreshNetworkTable();
     };
 
@@ -242,8 +268,8 @@ ndexApp.controller('networkSetController',
 
             var description = $scope.stripHTML(network['description']);
             var externalId  = network['externalId'];
-            var nodes       = network['nodeCount'];
-            var edges       = network['edgeCount'];
+            var nodes       = parseInt(network.nodeCount);
+            var edges       = parseInt(network.edgeCount);
             var owner       = network['owner'];
             var indexLevel  = network['indexLevel'];
             var visibility  = network['visibility'];
@@ -574,6 +600,13 @@ ndexApp.controller('networkSetController',
     //------------------------------------------------------------------------------------
 
     networkSetController.getNetworksOfNetworkSet();
+
+    $(window).resize(function() {
+
+        $("#myNetworksOfSetGridId").height($(window).height() - windowsHeightCorrection);
+        $scope.networkGridApi.grid.gridHeight = $("#myNetworksOfSetGridId").height();
+        $scope.networkGridApi.core.refresh();
+    })
 
     //------------------------------------------------------------------------------------//
 }]);

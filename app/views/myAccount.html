@@ -3,7 +3,7 @@
 
     <div class="col-md-2">
         <div class="row">
-            <div class='row'>
+            <div class='row' ng-show="myAccountController.displayedUser.image">
                 <ndex-account-image
                         ndex-class="'col-md-10'"
                         ndex-src="myAccountController.displayedUser.image">
@@ -166,10 +166,6 @@
                             </a>
                         </span>
 
-
-
-
-
                         <span title="{{addToMySetsButtonTitle}}" ng-show="!enableAddToMySetsBulkButton">
                             <a class="btn btn-primary customButtonWidth disabled">
                                 Add To My Sets
@@ -184,7 +180,15 @@
                         </spn>
 
 
-                        <!-- NB: title directive should be in the span element below; if it is moved to a element,
+                        <span title="{{removeFromMyNetworksButtonTitle}}">
+                            <a ng-class="enableRemoveSharedNetworksBulkButton ? 'btn btn-primary customButtonWidth' :
+                                    'btn btn-primary customButtonWidth disabled'"
+                               ng-click="myAccountController.removeSharedSelectedNetworks()">
+                                {{myAccountController.removeNetworksButtonLabel}}
+                            </a>
+                        </span>
+
+                        <!-- NB: title directive should be in the span element below; if it is moved to an element,
                             it wil not work for case when button is disabled!!!
                         -->
                         <span title="{{deleteNetworkButtonTitle}}">
@@ -315,7 +319,7 @@
                     My Networks &nbsp;
 
                     <span class="glyphicon glyphicon-refresh" aria-hidden="true"
-                          ng-click="myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();"
+                          ng-click="checkAndRefreshMyNetworksTableAndDiskInfo();"
                           title="Refresh My Networks"
                           ng-disabled="refreshNetworksButtonDisabled"
                           ng-style="refreshNetworksButtonDisabled ? {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
@@ -329,7 +333,8 @@
                  the selected rows on the Networks page get unselected if you select a different tab (i.e., Groups)
                  and come back to Networks tab. -->
                 <div ng-show='myAccountController.showNetworkTable'>
-                    <div ui-grid-selection
+                    <div id="myNetworksGridId"
+                         ui-grid-selection
                          ui-grid="networkGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize
@@ -412,14 +417,14 @@
             </tab>
 
             <tab ng-click="onTabSelect('tasks'); updateLastTimeVisitedMyTasksTimestamp(); taskGridApi.core.handleWindowResize()"
-                 disabled="myAccountController.tasksNotificationsTabDisabled()"
+                 disabled="tasksNotificationsTabDisabled()"
                  ng-show="(myAccountController.isLoggedInUser) &&
                     (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)">
                 <tab-heading>
                     My Tasks & Notifications &nbsp;
 
                     <span class="glyphicon glyphicon-refresh" aria-hidden="true"
-                          ng-click="myAccountController.checkAndRefreshMyTaskAndNotification();"
+                          ng-click="checkAndRefreshMyTaskAndNotification();"
                           title="Refresh My Tasks & Notifications"
                           ng-disabled="refreshTasksButtonDisabled"
                           ng-style="refreshTasksButtonDisabled ?
@@ -432,7 +437,8 @@
                 </tab-heading>
 
                 <div ng-show='showTasksAndRequestsTable()'>
-                    <div ui-grid-selection
+                    <div id="myTasksAndRequestsGridId"
+                         ui-grid-selection
                          ui-grid="tasksAndRequestsGridOptions"
                          ui-grid-resize-columns
                          ui-grid-auto-resize

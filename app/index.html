@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>NDEx WebApp v2.2</title>
+    <title>NDEx WebApp v2.3</title>
     <meta name="description" content="NDEx, the Network Data Exchange, is a collaborative software infrastructure for storing, sharing and publishing biological network knowledge; NDEx is developed in tight association with Cytoscape at the UC San Diego School of Medicine.">
     <meta name="viewport" content="width=device-width">
 
@@ -33,8 +33,8 @@
 
     <!-- build:js(app) scripts/vendor.js -->
     <!-- bower:js -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-animate/angular-animate.js"></script>
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
@@ -49,7 +49,7 @@
     <script src="bower_components/qtip2/basic/jquery.qtip.js"></script>
     <script src="bower_components/cytoscape-qtip/cytoscape-qtip.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
-    <script src="bower_components/angular-file-upload/angular-file-upload.min.js"></script>
+    <script src="bower_components/angular-file-upload/dist/angular-file-upload.min.js"></script>
     <script src="bower_components/rangy/rangy-core.js"></script>
     <script src="bower_components/rangy/rangy-classapplier.js"></script>
     <script src="bower_components/rangy/rangy-highlighter.js"></script>
@@ -102,6 +102,7 @@
     <script src="scripts/services/ui-misc.js"></script>
     <script src="scripts/services/log-in-service.js"></script>
     <script src="scripts/services/spinner-service.js"></script>
+    <script src="scripts/services/user-session-tables-settings.js"></script>
 
     <!-- page controllers -->
     <script src="scripts/controllers/main.js"></script>
@@ -116,9 +117,10 @@
     <script src="scripts/controllers/manage-network-access.js"></script>
     <script src="scripts/controllers/manage-bulk-network-access.js"></script>
     <script src="scripts/controllers/manage-group-access.js"></script>
-    <script src="scripts/controllers/api-controller.js"></script>
+ <!--   <script src="scripts/controllers/api-controller.js"></script>  -->
     <script src="scripts/controllers/home-controller.js"></script>
     <script src="scripts/controllers/my-account-controller.js"></script>
+
 
     <!-- endbuild -->
 
@@ -251,22 +253,9 @@
                                            ng-model="main.searchTermExpansionSelected">
                                             &nbsp;
                                             <span ng-style="searchTermExpansionEnabled ?
-                                            {'color':'black', 'font-size':'1.15em'} : {'color':'red', 'font-size':'1.15em'}">
-                                                <strong>{{main.searchTitle}}</strong>
+                                                {'color':'black', 'font-size':'1.15em'} : {'color':'red', 'font-size':'1.15em'}">
+                                                    <strong>{{main.searchTitle}}</strong>
                                             </span>
-
-<!--
-<span ng-style="networkSetController.networkSetShareableURL ? {color:'green'} : {color:'black'}">
-
-                                    <i disabled ng-show="searchTermExpansion.selected" style="color: green;"
-                                       class="fa fa-check-square fa-lg" aria-hidden="true"></i>
-                                    <i disabled ng-show="!searchTermExpansion.selected"
-                                       class="fa fa-square-o fa-lg" aria-hidden="true"></i>
-
-                                    <span ng-style="searchTermExpansion.selected ? {'font-size':'1.1em', 'color':'black'} : {'font-size':'1.1em', 'color':'#878787'}">
-                                        &nbsp;Perform Search Term Expansion (genes and proteins only)
-                                    </span>
- -->
                                 </div>
 
                             </td>
@@ -365,7 +354,7 @@
                        ng-click="collapseHamburgerMenuAfterMs(750);"
                        data-toggle="tooltip"
                        data-placement="bottom"
-                       ng-mouseover="changeTitle(this)"
+                       ng-mouseover="changeTitle()"
                        ng-init="setToolTips()"
                        ngclipboard
                        data-clipboard-text="{{NDEx.citation}}">
@@ -453,12 +442,41 @@
 <!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
      disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
 <div ng-show='showFooter' id="hiddenElementId3" style="display: none">
-    <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter"  >
+    <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignLeft"  >
         <div class='footer-content' >
-            Copyright &copy; 2013-<script type="text/javascript">var d = new Date(); document.write(d.getFullYear());</script>,
-            The Regents of the University of California, The Cytoscape Consortium.
-            All rights reserved.
-            &nbsp;<a href="https://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
+
+            <div class="row">
+
+                <div class="col-md-10" style="padding-top: 6px;">
+                    <span style="margin-left: 28px">
+                        Copyright &copy; 2013-<script type="text/javascript">var d = new Date(); document.write(d.getFullYear());</script>,
+                        The Regents of the University of California, The Cytoscape Consortium.
+                        All rights reserved.
+                        &nbsp;<a href="https://home.ndexbio.org/disclaimer-license/" style="color:#0272c9">Terms & Conditions</a>
+                    </span>
+                </div>
+
+                <div class="col-md-2">
+                    <ul class="social AlignRight" style="margin-right: 12px">
+                        <li class="twitter">
+                            <a href="https://twitter.com/NDExProject">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+                        </li>
+                        <li class="youtube">
+                            <a href="https://www.youtube.com/channel/UCc7J1020F7e25F-zWEMtM0A">
+                                <i class="fa fa-youtube"></i>
+                            </a>
+                        </li>
+                        <li class="linkedin">
+                            <a href="https://www.linkedin.com/company/3991823">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </nav>
 </div>
@@ -494,23 +512,23 @@
             } catch(e) {
                 //already loaded; do not do anything here; we use the try .. catch block to silence up
                 // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
-            };
-        };
-    };
+            }
+        }
+    }
 
   function initClient() {
       gapi.client.init({
           clientId: ndexSettings.googleClientId,
           scope: 'profile email',
       }).then(function () {
-          var initInjector = angular.injector(["ng"]);
-          var $http = initInjector.get("$http");
+          const initInjector = angular.injector(["ng"]);
+          const $http = initInjector.get("$http");
 
           isSignedIn = gapi.auth2.getAuthInstance().isSignedIn.get();
 
           if (isSignedIn) {
-              var curUser = gapi.auth2.getAuthInstance().currentUser.get();
-              var id_token = curUser.getAuthResponse().id_token;
+              const curUser = gapi.auth2.getAuthInstance().currentUser.get();
+              const id_token = curUser.getAuthResponse().id_token;
 
               $http({
                   method: 'GET',
@@ -531,7 +549,7 @@
 
               logInUserWithBasicAuth();
 
-          };
+          }
       }, function(error) {
 
           // this is the case where 3rd parties cookies are blocked by the browser.
@@ -549,13 +567,13 @@
       if ( signedInUser !=null ) {
           window.currentNdexUser = signedInUser;
           window.currentSignInType = type;
-      };
+      }
       try {
           angular.bootstrap(document, ['ndexApp']);
       } catch(e) {
           //already loaded; do not do anything here; we use the try .. catch block to silence up
           // an error message in case angular.bootstrap(document, ['ndexApp']); throws an exception
-      };
+      }
   }
 
 
@@ -564,15 +582,16 @@
 
         window.googleSSO = true;
 
-        window.isSafari = /constructor/i.test(window.HTMLElement) || (function (p) {
+     //   window.isSafari = false;
+           /*/constructor/i.test(window.HTMLElement) || (function (p) {
                 return p.toString() === "[object SafariRemoteNotification]";
-            })(!window['safari'] || safari.pushNotification);
+            })(!window['safari'] || safari.pushNotification); */
 
         if (typeof ndexSettings === 'undefined') {
             alert("Update your ndex-webapp-config.js file");
         } else {
             gapi.load('client:auth2', initClient);
-        };
+        }
 
     } else {
 
@@ -583,7 +602,7 @@
             'Cookies are blocked by your browser. <br>' +
             'NDEx requires that cookies be unblocked. <br>' +
             'Please unblock cookies and try again. </div>';
-    };
+    }
 
 
 </script>

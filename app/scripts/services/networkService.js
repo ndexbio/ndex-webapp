@@ -8,13 +8,13 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
         var factory = {};
         
-        var currentNetworkSummary = undefined;
+     //   var currentNetworkSummary = undefined;
 
         var ndexServerURI = window.ndexSettings.ndexServerUri;
-
-        //var localNiceCXNetwork ;  // the copy of CX network that we use for display
         
-        var localNiceCX;   // the copy of CX network that are currently displayed. It can be a subnetwork from query
+        var currentNiceCX   = null;   // the copy of CX network that are currently displayed
+        var originalNiceCX  = null;
+        var queryResultInCX = null;
 
         var localNetworkUUID = undefined;
 
@@ -52,7 +52,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        currentNetworkSummary = network;
+  //                      currentNetworkSummary = network;
                         handler(network);
                     }
                 );
@@ -88,23 +88,46 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         };
 
 
-        factory.getCurrentNetworkSummary = function () {
+     /*   factory.getCurrentNetworkSummary = function () {
             return currentNetworkSummary;
+        }; */
+
+        factory.getCurrentNiceCX = function () {
+            return currentNiceCX;
+        };
+        factory.setCurrentNiceCX = function (networkInNiceCX) {
+            currentNiceCX = networkInNiceCX;
         };
 
-        factory.getNiceCX = function () {
-            return localNiceCX;
+        factory.clearNiceCX = function() {
+            currentNiceCX  = null;
+            originalNiceCX = null;
         };
 
-        factory.getOriginalCXNetwork = function () {
-          return localNiceCXNetwork;
+        factory.getQueryResultInCX = function() {
+            return queryResultInCX;
+        };
+        factory.setQueryResultInCX = function(networkInCX) {
+            queryResultInCX = networkInCX;
+        };
+        factory.clearQueryResultInCX = function() {
+            queryResultInCX = null;
+        };
+        factory.setQueryResultAsOriginalNiceCX = function() {
+            originalNiceCX = cxNetworkUtils.rawCXtoNiceCX(queryResultInCX);
         };
 
-        /*
-        factory.resetNetwork = function () {
-            localNiceCX = localNiceCXNetwork;
+        /* commenting out. Doesn't seem to be used anywhere -- cj
+        factory.saveOriginalNiceCX = function(originalNetworkInNiceCX) {
+            originalNiceCX = originalNetworkInNiceCX;
+        }; */
+
+        factory.getOriginalNiceCX = function() {
+            return originalNiceCX;
         };
-        */
+        factory.restoreCurrentNiceCXAfterQuery = function() {
+            currentNiceCX = originalNiceCX;
+        };
 
         factory.getLocalNetworkUUID = function() {
             return localNetworkUUID;
@@ -114,19 +137,550 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             localNetworkUUID = networkUUID;
         };
 
-        factory.getNodeInfo = function (nodeId) {
-            if (!localNiceCX) return null;
+        factory.getNodeName = function(node) {
+            return node['_cydefaultLabel'];
+        };
 
-            var node = localNiceCX.nodes[nodeId];
+        var removeTabsAndPipesFromString = function(strToNormalize) {
+            var strWithoutTabsOrPipes = strToNormalize.replace(/\t/g, ' ').replace(/\|/g, ' ');
+            return strWithoutTabsOrPipes;
+        };
+
+        factory.getCurrentNetworkName = function() {
+            var networkNameFromNiceCX = null;
+
+            var networkAttributes = (currentNiceCX && currentNiceCX.networkAttributes) ?
+                currentNiceCX.networkAttributes : null;
+
+            if ((networkAttributes == null) || !(networkAttributes.elements) ||
+                !Array.isArray(networkAttributes.elements) || (networkAttributes.elements.length == 0)) {
+                return networkNameFromNiceCX;
+            }
+
+            var networkNameObj = _.find(networkAttributes.elements, {n:'name'});
+
+            if (networkNameObj && networkNameObj.v) {
+                networkNameFromNiceCX = networkNameObj.v;
+            }
+
+            return networkNameFromNiceCX;
+        };
+
+
+        factory.getTSVOfCurrentNiceCX = function() {
+
+            /*
+             Source		Node name (if Node Name missing, then represents, node Id)
+             Interaction
+             Target		Node name (if Node Name missing, then represents, node Id)
+             Source Id
+             Source Alias
+             Source Properties 1,2,3
+             Target Id
+             Target Alias
+             Target Properties 1,2,3
+             Citation
+             Edge Properties 1,2,3
+
+             cx edge id
+             cx source node id
+             cx target node id
+             */
+
+            var network = currentNiceCX;
+
+            var edges = network.edges;
+            var edgeKeys = Object.keys(edges);
+
+
+            data = [];
+            var row = {};
+
+            var edgeAttributes = network.edgeAttributes;
+
+            var headers = {'Source Node': 0, Interaction: 1, 'Target Node': 2, 'Source ID': 3, 'Source Alias': 4};
+            var sourceAliasOrder = headers['Source Alias'];
+            var headersSize = 0;
+
+
+            var nodes = network.nodes;
+
+            // in this loop, build headers for Node: Source NAme (s.n), Source Represents (s.r),
+            // Target Name (t.n), Target Represents (t.r)
+            /*
+            _.forEach(nodes, function(node) {
+
+                if (node) {
+                    if (node['n'] && !('s.n' in headers)) {
+                        headers['s.n'] = _.size(headers);
+                    }
+                    if (node['r'] && !('s.r' in headers)) {
+                        headers['s.r'] = _.size(headers);
+                    }
+                    if (node['n'] && !('t.n' in headers)) {
+                        headers['t.n'] = _.size(headers);
+                    }
+                    if (node['r'] && !('t.r' in headers)) {
+                        headers['t.r'] = _.size(headers);
+                    }
+                }
+            });
+            */
+
+            var nodeKeys = Object.keys(nodes);
+            var nodeAttributes = network.nodeAttributes;
+            var aliasColumnHeader = null;
+
+            for (var key in nodeKeys)
+            {
+                var nodeId = nodeKeys[key];
+
+                //var nodeObj = networkService.getNodeInfo(nodeId);
+                //var nodeName = networkService.getNodeName(nodeObj);
+
+                if (nodeAttributes) {
+
+                    var nodeAttrs = nodeAttributes[nodeId];
+
+                    for (var key1 in nodeAttrs) {
+                        var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+
+                        var attributeObjName = removeTabsAndPipesFromString(attributeObj['n']);
+
+                        var attributeObjNameSource = 'Source ' + attributeObjName;
+
+                        if (attributeObjName && (attributeObjName.toLowerCase() == 'alias')) {
+                            aliasColumnHeader = attributeObjName;
+                            if (!(attributeObjNameSource in headers)) {
+                                delete headers['Source Alias'];
+                                headers[attributeObjNameSource] = sourceAliasOrder;
+                            }
+                        }
+                        //var attributeObjNameTarget = 'Target ' + attributeObjName;
+
+                        if (!(attributeObjNameSource in headers)) {
+                            headers[attributeObjNameSource] = _.size(headers);
+                        }
+
+                        //if (!(attributeObjNameTarget in headers)) {
+                        //    headers[attributeObjNameTarget] = _.size(headers);
+                        //}
+                    }
+                }
+            }
+
+            headers['Target ID']    = _.size(headers);
+            headers['Target Alias'] = _.size(headers);
+            var targetAliasOrder    = headers['Target Alias'];
+
+
+
+            for (var key in nodeKeys)
+            {
+                var nodeId = nodeKeys[key];
+
+                if (nodeAttributes) {
+
+                    var nodeAttrs = nodeAttributes[nodeId];
+
+                    for (var key1 in nodeAttrs) {
+                        var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+
+                        var attributeObjName = removeTabsAndPipesFromString(attributeObj['n']);
+
+                        var attributeObjNameTarget = 'Target ' + attributeObjName;
+
+                        if (attributeObjName && (attributeObjName.toLowerCase() == 'alias')) {
+                            if (!(attributeObjNameTarget in headers)) {
+                                delete headers['Target Alias'];
+                                headers[attributeObjNameTarget] = targetAliasOrder;
+                            }
+                        }
+
+                        if (!(attributeObjNameTarget in headers)) {
+                            headers[attributeObjNameTarget] = _.size(headers);
+                        }
+                    }
+                }
+            }
+
+            headers['Citation'] = _.size(headers);
+            var citationOrder   = headers['Citation'];
+
+            for( i = 0; i < edgeKeys.length; i++ )
+            {
+                var edgeKey = edgeKeys[i];
+
+                if (edgeAttributes) {
+                    for (var key in edgeAttributes[edgeKey]) {
+
+                        var keySanitized = removeTabsAndPipesFromString(key);
+
+                        if (keySanitized && (keySanitized.toLowerCase() == 'citation')) {
+                            if (!(keySanitized in headers)) {
+                                delete headers['Citation'];
+                                headers[keySanitized] = citationOrder;
+                            }
+                        }
+
+                        if (!(keySanitized in headers)) {
+                            headers[keySanitized] = _.size(headers);
+                        }
+                    }
+                }
+            }
+
+            headers['cx edge id']        = _.size(headers);
+            headers['cx source node id'] = _.size(headers);
+            headers['cx target node id'] = _.size(headers);
+
+
+            var headersKeysSorted = Object.keys(headers);
+            headersKeysSorted.sort(function(a, b) {
+                return headers[a] - headers[b];
+            });
+            var headerKeysJoined = headersKeysSorted.join('\t') + '\n';
+
+
+
+          //  var headersInverted = _.invert(headers);
+            var fileString      = headerKeysJoined;
+
+            var row = {};
+
+            var nodeAttributesAlreadyProcessed = {'n':0,  'r':0, 'id':0, '_cydefaultLabel':0};
+            var edgeAttributesAlreadyProcessed = {'id':0, 's':0, 't':0,  'i':0};
+
+            // Generate Source Node, Source Node Represents, Target Node, Target Node Represents,
+            // if present
+            for( i = 0; i < edgeKeys.length; i++ )
+            {
+                for (key in headers) {
+                    row[key] = '';
+                };
+
+                var rowStringTemp = '';
+                var edgeKey       = edgeKeys[i];
+                var edgeObj       = factory.getEdgeInfo(edgeKey);
+
+
+                row['cx edge id']        = (edgeObj && edgeObj.id) ? edgeObj.id : '';
+                row['cx source node id'] = (edgeObj && (edgeObj.s || edgeObj.s == 0)) ? edgeObj.s  : '';
+                row['Interaction']       = (edgeObj && edgeObj.i)  ? edgeObj.i  : '';
+                row['cx target node id'] = (edgeObj && (edgeObj.t || edgeObj.t == 0)) ? edgeObj.t  : '';
+
+
+                var sourceNodeObj = factory.getNodeInfo(edgeObj['s']);
+                var targetNodeObj = factory.getNodeInfo(edgeObj['t']);
+
+                row['Source Node']    = getNodeNameFromNodeObj(sourceNodeObj);
+                row['Source ID'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
+                row['Target Node']    = getNodeNameFromNodeObj(targetNodeObj);
+                row['Target ID'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';
+
+                // get Source Node attributes
+                for (var nodeAttr in sourceNodeObj) {
+                    var nodeAttrNormalized = removeTabsAndPipesFromString(nodeAttr);
+                    if (nodeAttrNormalized in nodeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row['Source ' + nodeAttrNormalized] = getAttributeValue(sourceNodeObj[nodeAttr]);
+                }
+                // get Target Node attributes
+                for (nodeAttr in targetNodeObj) {
+                    var nodeAttrNormalized1 = removeTabsAndPipesFromString(nodeAttr);
+                    if (nodeAttrNormalized1 in nodeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row['Target ' + nodeAttrNormalized1] = getAttributeValue(targetNodeObj[nodeAttr]);
+                }
+
+                // get edge attributes
+                for (var edgeAttr in edgeObj) {
+                    var edgeAttrNormalized = removeTabsAndPipesFromString(edgeAttr);
+                    if (edgeAttrNormalized in edgeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row[edgeAttrNormalized] = getAttributeValue(edgeObj[edgeAttr]);
+                }
+
+                var tabSeparatedRow = '';
+                for (key in headersKeysSorted) {
+                    var rowElement = row[headersKeysSorted[key]];
+                    tabSeparatedRow = tabSeparatedRow + rowElement + '\t';
+                }
+                // replace last \t (tab) in tabSeparatedRow with \n (new line)
+                tabSeparatedRow = tabSeparatedRow.slice(0, -1) + '\n';
+
+                fileString = fileString + tabSeparatedRow;
+
+            }
+
+            return fileString;
+        };
+
+        /*
+        factory.getTSVOfCurrentNiceCX1 = function() {
+
+
+                // Source		Node name (if Node Name missing, then represents, node Id)
+                // Interaction
+                // Target		Node name (if Node Name missing, then represents, node Id)
+                // Source Id
+                // Source Alias
+                // Source Properties 1,2,3
+                // Target Id
+                // Target Alias
+                // Target Properties 1,2,3
+                // Citation
+                // Edge Properties 1,2,3
+
+                // cx edge id
+                // cx source node id
+                // cx target node id
+
+
+            var network = currentNiceCX;
+
+            var edges = network.edges;
+            var edgeKeys = Object.keys(edges);
+
+
+            data = [];
+            var row = {};
+
+            var edgeAttributes = network.edgeAttributes;
+
+            var headers = {edge_id: 0, Source: 1, Interaction: 2, Target: 3};
+            var headersSize = 0;
+
+
+            var nodes = network.nodes;
+
+            // in this loop, build headers for Node: Source NAme (s.n), Source Represents (s.r),
+            // Target Name (t.n), Target Represents (t.r)
+            _.forEach(nodes, function(node) {
+
+                if (node) {
+                    if (node['n'] && !('s.n' in headers)) {
+                        headers['s.n'] = _.size(headers);
+                    }
+                    if (node['r'] && !('s.r' in headers)) {
+                        headers['s.r'] = _.size(headers);
+                    }
+                    if (node['n'] && !('t.n' in headers)) {
+                        headers['t.n'] = _.size(headers);
+                    }
+                    if (node['r'] && !('t.r' in headers)) {
+                        headers['t.r'] = _.size(headers);
+                    }
+                }
+            });
+
+            var nodeKeys = Object.keys(nodes);
+            var nodeAttributes = network.nodeAttributes;
+
+            for (var key in nodeKeys)
+            {
+                var nodeId = nodeKeys[key];
+
+                //var nodeObj = networkService.getNodeInfo(nodeId);
+                //var nodeName = networkService.getNodeName(nodeObj);
+
+                if (nodeAttributes) {
+
+                    var nodeAttrs = nodeAttributes[nodeId];
+
+                    for (var key1 in nodeAttrs) {
+                        var attributeObj = (nodeAttrs[key1]) ? (nodeAttrs[key1]) : "";
+
+                        var attributeObjName = removeTabsAndPipesFromString(attributeObj['n']);
+
+                        var attributeObjNameSource = 'Source_' + attributeObjName;
+                        var attributeObjNameTarget = 'Target_' + attributeObjName;
+
+                        if (!(attributeObjNameSource in headers)) {
+                            headers[attributeObjNameSource] = _.size(headers);
+                        }
+                        if (!(attributeObjNameTarget in headers)) {
+                            headers[attributeObjNameTarget] = _.size(headers);
+                        }
+                    }
+                }
+            }
+
+            for( i = 0; i < edgeKeys.length; i++ )
+            {
+                var edgeKey = edgeKeys[i];
+
+                if (edgeAttributes) {
+                    for (var key in edgeAttributes[edgeKey]) {
+
+                        var keySanitized = removeTabsAndPipesFromString(key);
+
+                        if (!(keySanitized in headers)) {
+                            headers[keySanitized] = _.size(headers);
+                        }
+                    }
+                }
+            }
+
+            var headersKeysSorted = Object.keys(headers);
+            headersKeysSorted.sort(function(a, b) {
+                return headers[a] - headers[b];
+            });
+            var headerKeysJoined = headersKeysSorted.join('\t') + '\n';
+
+
+            var headersInverted = _.invert(headers);
+            var fileString      = headerKeysJoined;
+
+            var row = {};
+
+            var nodeAttributesAlreadyProcessed = {'n':0,  'r':0, 'id':0, '_cydefaultLabel':0};
+            var edgeAttributesAlreadyProcessed = {'id':0, 's':0, 't':0,  'i':0};
+
+            // Generate Source Node, Source Node Represents, Target Node, Target Node Represents,
+            // if present
+            for( i = 0; i < edgeKeys.length; i++ )
+            {
+                for (key in headers) {
+                    row[key] = '';
+                };
+
+                var rowStringTemp = '';
+                edgeKey           = edgeKeys[i];
+                var edgeObj       = factory.getEdgeInfo(edgeKey);
+
+
+                row['edge_id']     = (edgeObj && edgeObj.id) ? edgeObj.id : '';
+                row['Source']      = (edgeObj && (edgeObj.s || edgeObj.s == 0)) ? edgeObj.s  : '';
+                row['Interaction'] = (edgeObj && edgeObj.i)  ? edgeObj.i  : '';
+                row['Target']      = (edgeObj && (edgeObj.t || edgeObj.t == 0)) ? edgeObj.t  : '';
+
+
+                var sourceNodeObj = factory.getNodeInfo(edgeObj['s']);
+                var targetNodeObj = factory.getNodeInfo(edgeObj['t']);
+
+                if (headers['s.n']) {
+                    row['s.n'] = (sourceNodeObj && sourceNodeObj.n) ? sourceNodeObj.n : '';
+                }
+                if (headers['s.r']) {
+                    row['s.r'] = (sourceNodeObj && sourceNodeObj.r) ? sourceNodeObj.r : '';
+                }
+                if (headers['t.n']) {
+                    row['t.n'] = (targetNodeObj && targetNodeObj.n) ? targetNodeObj.n : '';
+                }
+                if (headers['t.r']) {
+                    row['t.r'] = (targetNodeObj && targetNodeObj.r) ? targetNodeObj.r : '';
+                }
+
+
+                // get Source Node attributes
+                for (var nodeAttr in sourceNodeObj) {
+                    var nodeAttrNormalized = removeTabsAndPipesFromString(nodeAttr);
+                    if (nodeAttrNormalized in nodeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row['Source_' + nodeAttrNormalized] = getAttributeValue(sourceNodeObj[nodeAttr]);
+                }
+                // get Target Node attributes
+                for (nodeAttr in targetNodeObj) {
+                    var nodeAttrNormalized1 = removeTabsAndPipesFromString(nodeAttr);
+                    if (nodeAttrNormalized1 in nodeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row['Target_' + nodeAttrNormalized1] = getAttributeValue(targetNodeObj[nodeAttr]);
+                }
+
+                // get edge attributes
+                for (var edgeAttr in edgeObj) {
+                    var edgeAttrNormalized = removeTabsAndPipesFromString(edgeAttr);
+                    if (edgeAttrNormalized in edgeAttributesAlreadyProcessed) {
+                        continue;
+                    }
+                    row[edgeAttrNormalized] = getAttributeValue(edgeObj[edgeAttr]);
+                }
+
+                var tabSeparatedRow = '';
+                for (key in headersKeysSorted) {
+                    var rowElement = row[headersKeysSorted[key]];
+                    tabSeparatedRow = tabSeparatedRow + rowElement + '\t';
+                }
+                // replace last \t (tab) in tabSeparatedRow with \n (new line)
+                tabSeparatedRow = tabSeparatedRow.slice(0, -1) + '\n';
+
+                fileString = fileString + tabSeparatedRow;
+            }
+
+            console.log(fileString);
+            return fileString;
+        };
+*/
+        var getNodeNameFromNodeObj = function(nodeObj) {
+
+            var nodeName = 'No Name';
+
+            if (nodeObj) {
+
+                if (nodeObj.n) {
+                    nodeName = nodeObj.n;
+
+                } else if (nodeObj.id) {
+                    nodeName = nodeObj.id;
+                }
+            }
+            return nodeName;
+        };
+
+        var getAttributeValue = function(attribute)
+        {
+            var returnStr = '';
+
+            if (typeof(attribute) === 'undefined' || attribute === '' || attribute == null) {
+                return returnStr;
+            }
+            if (typeof(attribute) === 'string') {
+                return attribute;
+            }
+
+
+            if (typeof(attribute) === 'object') {
+
+                if (attribute.v) {
+
+                    if (Array.isArray(attribute.v)) {
+
+                        for (var i = 0; i < attribute.v.length; i++) {
+                            attribute.v[i] = removeTabsAndPipesFromString(attribute.v[i]);
+                        }
+
+                        returnStr = attribute.v.join('|');
+
+                    } else if (typeof(attribute.v) === 'string') {
+
+                        returnStr = attribute.v;
+                    }
+                }
+            }
+
+            return returnStr;
+        };
+
+
+        factory.getNodeInfo = function (nodeId) {
+            if (!currentNiceCX) return null;
+
+            var node = currentNiceCX.nodes[nodeId];
             
             var nodeInfo = {'id': nodeId,
-                             '_cydefaultLabel': cxNetworkUtils.getDefaultNodeLabel(localNiceCX,node),
+                             '_cydefaultLabel': cxNetworkUtils.getDefaultNodeLabel(currentNiceCX,node),
                             'n': node.n,
                             'r': node.r
                             };
             var counter =1;
-            if ( localNiceCX.nodeAttributes && localNiceCX.nodeAttributes[nodeId]) {
-                var nodeAttrs = localNiceCX.nodeAttributes[nodeId];
+            if ( currentNiceCX.nodeAttributes && currentNiceCX.nodeAttributes[nodeId]) {
+                var nodeAttrs = currentNiceCX.nodeAttributes[nodeId];
                 _.forEach(nodeAttrs, function(value, pname) {
                     if ( pname != "selected") {
                         if ( !nodeInfo[pname] ) {
@@ -149,42 +703,42 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
 
         factory.getNodeAttributes = function ( nodeId) { 
-            if ( !localNiceCX) return null;
-            return localNiceCX.nodeAttributes[nodeId];
+            if ( !currentNiceCX) return null;
+            return currentNiceCX.nodeAttributes[nodeId];
         };
         
         factory.getEdgeAttributes = function (edgeId) { 
-            if ( !localNiceCX) return null;
+            if ( !currentNiceCX) return null;
             
-            return localNiceCX.edgeAttributes[edgeId];
+            return currentNiceCX.edgeAttributes[edgeId];
         };
         
         factory.getNodeAttr = function (nodeId, propName ) {
-            if ( localNiceCX && localNiceCX.nodeAttributes[nodeId] ) {
-                return localNiceCX.nodeAttributes[nodeId][propName];
+            if ( currentNiceCX && currentNiceCX.nodeAttributes[nodeId] ) {
+                return currentNiceCX.nodeAttributes[nodeId][propName];
             }
             return null;
         };
         
         factory.getEdgeAttr = function ( edgeId, propName) {
-           if ( localNiceCX && localNiceCX.edgeAttributes[edgeId]) {
-               return localNiceCX.edgeAttributes[edgeId][propName];
+           if ( currentNiceCX && currentNiceCX.edgeAttributes[edgeId]) {
+               return currentNiceCX.edgeAttributes[edgeId][propName];
            }
             
             return null;
         };
         
         factory.getEdgeInfo = function (edgeId) {
-            if ( !localNiceCX) return null;
+            if ( !currentNiceCX) return null;
 
-            var edge = localNiceCX.edges[edgeId];
+            var edge = currentNiceCX.edges[edgeId];
             var edgeInfo = { 'id': edgeId,
                             s: edge.s,
                             t: edge.t,
                             i: edge.i};
             var counter;
-            if ( localNiceCX.edgeAttributes && localNiceCX.edgeAttributes[edgeId]) {
-                var edgeAttrs = localNiceCX.edgeAttributes[edgeId];
+            if ( currentNiceCX.edgeAttributes && currentNiceCX.edgeAttributes[edgeId]) {
+                var edgeAttrs = currentNiceCX.edgeAttributes[edgeId];
                 _.forEach(edgeAttrs, function(value, pname) {
                     if ( pname != 'selected') {
                         if ( !edgeInfo[pname]) {
@@ -200,17 +754,31 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 });
             }
 
-            if ( localNiceCX.edgeCitations && localNiceCX.edgeCitations[edgeId]) {
+            if ( currentNiceCX.edgeCitations && currentNiceCX.edgeCitations[edgeId]) {
                 var citationList = [];
-                _.forEach(localNiceCX.edgeCitations[edgeId], function ( citationId) {
-                    citationList.push ( localNiceCX.citations[citationId]);
+                _.forEach(currentNiceCX.edgeCitations[edgeId], function ( citationId) {
+                    citationList.push ( currentNiceCX.citations[citationId]);
                 });
                 if (citationList.length >0 )
                     edgeInfo['citations'] = citationList;
             }
 
             return edgeInfo;
-        }
+        };
+
+        factory.getNiceCXNetworkFromURL = function (url, successCallBack, errorCallback) {
+
+            $http.get(url).then(
+                function suc_init(response) {
+                    var rawcx = response.data;
+                    currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(rawcx);
+                    originalNiceCX = currentNiceCX;
+                    successCallBack(currentNiceCX);
+                },
+                errorCallback
+            );
+        };
+
 
         factory.getCompleteNetworkInCXV2 = function (networkId, accesskey) {
 
@@ -241,9 +809,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        //localNiceCXNetwork = localNiceCX;
-                        handler(localNiceCX);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        originalNiceCX = currentNiceCX;
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;
@@ -302,9 +870,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
-                        //localNiceCXNetwork = localNiceCX;
-                        handler(localNiceCX);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        originalNiceCX = currentNiceCX;
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;
@@ -339,15 +907,29 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         };
 
         factory.neighborhoodQuery = function (networkId, accesskey, searchString, searchDepth, edgeLimit) {
-            // Server API : Querey Network As CX
-            // POST /search/network/{networkId}/query?accesskey={accesskey}
+            // Server API : Query Network As CX
+            // POST /search/network/{networkId}/query?accesskey={accesskey} or
+            // POST /search/network/{networkId}/interconnectquery?accesskey={accesskey}
 
-            var url = "/search/network/" + networkId + "/query";
-            var postData = {
-                searchString: searchString,
-                searchDepth: searchDepth,
-                edgeLimit: edgeLimit
+            if (3 == searchDepth) {
+
+                // this is 1-step Interconnect
+                var url = "/search/network/" + networkId + "/interconnectquery";
+                var postData = {
+                    searchString: searchString,
+                    edgeLimit: edgeLimit
+                };
+
+            } else {
+                var url = "/search/network/" + networkId + "/query";
+                var postData = {
+                    searchString: searchString,
+                    searchDepth: searchDepth,
+                    edgeLimit: edgeLimit
+                };
             };
+
+            postData['errorWhenLimitIsOver'] = true;
 
             if (accesskey) {
                 url = url + "?accesskey=" + accesskey;
@@ -369,9 +951,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
-                        //localNiceCXNetwork = localNiceCX;
-                        handler(localNiceCX);
+                        factory.setQueryResultInCX(network);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;
@@ -404,7 +986,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             return promise;
         };
-
+        
         var extractUuidFromUri = function( uri )
         {
             var uuidRegExPattern = /[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}/i;
@@ -414,121 +996,6 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             return uuid;
         };
-
-
-        // TODO: delete factory.saveQueryResults -- it is obsolete.  No need to add Provenance Event to
-        // the network created by search since service already adds this event to provenance
-        factory.saveQueryResults = function (currentNetworkSummary, currentSubNetwork, rawCX, onSuccess, onError) {
-
-            // let's get provenance from rawCX
-
-            factory.createCXNetwork(rawCX, function(newNetworkURL) {
-
-                provenanceService.getNetworkProvenance(currentNetworkSummary.externalId,
-                    function (provenance) {
-
-                    var eventProperties= [];
-
-                    if (currentSubNetwork['queryString']) { // is neighborhood query
-                        eventProperties = [
-                            {
-                                name: 'query terms',
-                                value: currentSubNetwork['queryString'],
-                                type: 'SimplePropertyValuePair'
-                            },
-                            {
-                                name: 'query depth',
-                                value: currentSubNetwork['queryDepth'],
-                                type: 'SimplePropertyValuePair'
-                            }
-                        ];
-                    } else {
-
-                        if (currentSubNetwork.edgeFilter && currentSubNetwork.edgeFilter.propertySpecifications.length > 0) {
-                            _.forEach(currentSubNetwork.edgeFilter.propertySpecifications, function (filter) {
-                                var prop = {
-                                    'name': 'Edge Filter',
-                                    'value': filter.name + '=' + filter.value,
-                                    'type': 'SimplePropertyValuePair'
-                                };
-
-                                eventProperties.push(prop);
-                            });
-                        }
-
-                        if (currentSubNetwork.nodeFilter && currentSubNetwork.nodeFilter.propertySpecifications.length > 0) {
-                            _.forEach(currentSubNetwork.nodeFilter.propertySpecifications, function (filter) {
-                                var prop = {
-                                    'name': 'node Filter',
-                                    'value': filter.name + '=' + filter.value,
-                                    'type': 'SimplePropertyValuePair'
-                                };
-                                eventProperties.push(prop);
-                            });
-
-                        }
-                    }
-
-                    var newProvenance =
-                    {
-                        uri: ndexServerURI + '/network/' + currentNetworkSummary.externalId,
-                        properties: [
-                            {
-                                name: 'edge count',
-                                value: currentNetworkSummary.edgeCount,
-                                type: 'SimplePropertyValuePair'
-                            },
-                            {
-                                name: 'node count',
-                                value: currentNetworkSummary.nodeCount,
-                                type: 'SimplePropertyValuePair'
-                            },
-                            {
-                                name: 'dc:title',
-                                value: currentNetworkSummary.name,
-                                type: 'SimplePropertyValuePair'
-                            }
-                        ],
-                        creationEvent: {
-                            startedAtTime: currentNetworkSummary.creationTime,
-                            endedAtTime: currentNetworkSummary.creationTime,
-                            inputs: [provenance],
-                            type: 'ProvenanceEvent',
-                            eventType: 'Query',
-                            properties: eventProperties
-
-                        }
-                    };
-
-                    if (currentNetworkSummary.description) {
-                        newProvenance.properties.push({
-                            name: 'description',
-                            value: currentNetworkSummary.description,
-                            type: 'SimplePropertyValuePair'
-                        })
-                    }
-                    if (currentNetworkSummary.version) {
-                        newProvenance.properties.push({
-                            name: 'version',
-                            value: currentNetworkSummary.version,
-                            type: 'SimplePropertyValuePair'
-                        })
-                    }
-
-                    var newUUID = extractUuidFromUri(newNetworkURL);
-
-                    ndexService.setNetworkProvenanceV2(newUUID, newProvenance,
-                        function(success){
-                            onSuccess(success);
-                        },
-                        function(error){
-                            onError(error);
-                        })
-                },
-                 onError)
-                },
-                onError);
-        }
 
         factory.updateNetworkContextFromNdexV2 = function (contextArray, networkId, onSuccess, onError) {
             var rawCX = [
@@ -649,8 +1116,8 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
             promise.success = function (handler) {
                 request.success(
                     function (network) {
-                        localNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
-                        handler(localNiceCX);
+                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
+                        handler(currentNiceCX);
                     }
                 );
                 return promise;
@@ -695,7 +1162,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
          * @returns {undefined}
          */
 
-        factory.getNetworkProperty = function( subNetworkId, propertyName)
+        factory.getNetworkProperty = function(currentNetworkSummary, subNetworkId, propertyName)
         {
             if ('undefined'===typeof(currentNetworkSummary) || !propertyName) {
                 return undefined;
@@ -706,13 +1173,16 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
                 if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase()) &&
                     subNetworkId == networkProperties[i].subNetworkId) {
+                    if ((networkProperties[i].dataType === 'boolean') && (typeof networkProperties[i].value === 'string')) {
+                        return JSON.parse(networkProperties[i].value);
+                    }
                     return networkProperties[i].value ;
                 }
             }
             return undefined;
         }
 
-        factory.getPropertiesExcluding = function (subNetworkId, excludeList) {
+        factory.getPropertiesExcluding = function (currentNetworkSummary, subNetworkId, excludeList) {
 
             var result = [];
             var excludeSet = new Set();
@@ -743,8 +1213,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
 
             return result;
         };
-        
-        factory.setNetworkProperty = function ( propertyName, propertyValue, propertyValueType ) {
+
+
+     /*   factory.setNetworkProperty = function ( propertyName, propertyValue, propertyValueType ) {
 
             var propObject = { "predicateString": propertyName, "value": propertyValue,
                 "dataType": (typeof propertyValueType !== 'undefined ') ? b : 'string'  };
@@ -759,7 +1230,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
                 }
                 networkProperties.push(propObject);
             }
-        }
+        } */
         
         return factory;
 

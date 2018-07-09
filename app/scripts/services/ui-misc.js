@@ -39,7 +39,7 @@ angular.module('ndexServiceApp')
                 }
              }
 
-             var title = (status == 'failed') ? "Failed Error Message" : "Warnings";
+             var title = (status === 'failed') ? "Failed Error Message" : "Warnings";
 
              ndexNavigation.genericInfoModal(title, message);
         };
@@ -833,6 +833,30 @@ angular.module('ndexServiceApp')
         // returns true if network is certified, false otherwise
         self.isNetworkCertified = function(networkSummary) {
             return (networkSummary && (networkSummary.isCertified != 'undefined') && networkSummary.isCertified);
+        };
+
+
+        self.addNetworkProperty = function (propertyName, propertyValue, propertyType, propertyList, subNetworkId) {
+            var newProp = {
+                "predicateString" : propertyName,
+                "value"           : propertyValue,
+                "dataType"        : propertyType,
+                "subNetworkId"    : subNetworkId
+            };
+
+            for (var i = 0; i < propertyList.length; i++) {
+                var property = propertyList[i];
+                if (property.predicateString && property.predicateString.toLowerCase() == propertyName.toLowerCase())
+                {
+                    if ((property["subNetworkId"] && property["subNetworkId"] == subNetworkId) ||
+                        (!property["subNetworkId"] || property["subNetworkId"] == null) && (!subNetworkId || subNetworkId == null)) {
+                        propertyList.splice(i, 1);
+                        break;
+                    };
+                };
+            };
+
+            propertyList.push(newProp);
         };
 
     }

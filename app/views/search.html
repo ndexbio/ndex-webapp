@@ -1,16 +1,28 @@
-<div class="row" ng-show="networkSearch.errors.length > 0">
-    <div class="col-md-12">
-        <div>
-            <p class="alert alert-danger" ng-repeat='error in networkSearch.errors'>
-                {{error}}
-              <span class="glyphicon glyphicon-remove pull-right"
-                    style='cursor:pointer'
-                    ng-click='networkSearch.errors.splice($index,1)'>
-              </span>
-            </p>
-        </div>
-    </div>
-</div>
+<span class="row" ng-show="searcher.networkErrors.length > 0">
+    <span class="col-md-12">
+        <p class="alert alert-success" style='word-wrap:break-word; margin-bottom: 0;' ng-repeat='error in searcher.networkErrors'>
+            {{error}}
+          <span class="glyphicon glyphicon-remove pull-right"
+                style='cursor:pointer'
+                ng-click='searcher.networkErrors.splice($index,1)'>
+          </span>
+        </p>
+        <p class="alert alert-danger" style='margin-bottom: 0;' ng-repeat='error in searcher.userErrors'>
+            {{error}}
+            <span class="glyphicon glyphicon-remove pull-right"
+                  style='cursor:pointer'
+                  ng-click='searcher.userErrors.splice($index,1)'>
+          </span>
+        </p>
+        <p class="alert alert-danger" style='margin-bottom: 0;' ng-repeat='error in searcher.groupErrors'>
+            {{error}}
+            <span class="glyphicon glyphicon-remove pull-right"
+                  style='cursor:pointer'
+                  ng-click='searcher.groupErrors.splice($index,1)'>
+          </span>
+        </p>
+    </span>
+</span>
 
 
 <div class="row">
@@ -43,7 +55,7 @@
                     active="activeTab.Networks">
                 <div ng-show='searcher.networkSearchInProgress'><i>Finding Networks...</i></div>
                 <div ng-show='searcher.networkSearchNoResults'><i>No Networks Found.</i></div>
-                <div ng-show='searcher.showNetworkTable' ui-grid-selection ui-grid="networkSearchGridOptions"
+                <div id="foundNetworksTableId" ng-show='searcher.showNetworkTable' ui-grid-selection ui-grid="networkSearchGridOptions"
                      ui-grid-resize-columns style="height:540px;"></div>
 
             </tab>
@@ -53,7 +65,7 @@
                     active="activeTab.Users">
                 <div ng-show='searcher.userSearchInProgress'><i>Finding Users...</i></div>
                 <div ng-show='searcher.userSearchNoResults'><i>No Users Found.</i></div>
-                <div ng-show='searcher.userSearchResults' ui-grid-selection ui-grid="userSearchGridOptions"
+                <div id="foundUsersTableId" ng-show='searcher.userSearchResults' ui-grid-selection ui-grid="userSearchGridOptions"
                      ui-grid-resize-columns style="height:540px;"></div>
             </tab>
             <tab
@@ -62,7 +74,7 @@
                     active="activeTab.Groups">
                 <div ng-show='searcher.groupSearchInProgress'><i>Finding Groups...</i></div>
                 <div ng-show='searcher.groupSearchNoResults'><i>No Groups Found.</i></div>
-                <div ng-show='searcher.groupSearchResults' ui-grid-selection ui-grid="groupSearchGridOptions"
+                <div id="foundGroupsTableId" ng-show='searcher.groupSearchResults' ui-grid-selection ui-grid="groupSearchGridOptions"
                      ui-grid-resize-columns style="height:540px;"></div>
             </tab>
         </tabset>

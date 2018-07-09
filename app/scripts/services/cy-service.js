@@ -1,4 +1,4 @@
-//'use strict';   //comment out this line because Safari doesn' allow using const in strict mood.
+//'use strict';   //comment out this line because Safari doesn't allow using const in strict mood.
 
 /**
  * @ngdoc service
@@ -41,7 +41,17 @@ angular.module('ndexServiceApp')
                     'width': '2px',
                  //   'label': 'data(interaction)',
                     'font-family': 'Roboto, sans-serif',
-                    'text-opacity': 0.8
+                    'text-opacity': 0.8,
+
+                    /*
+                     * NB:
+                     * setting "curve-style" to "bezier" for the "edge" selector in Cytoscape.js 3.2.9 shows
+                     * all multiple edges between two nodes separately;
+                     * in other words, if you do not specify 'curve-style': 'bezier', then multiple edges
+                     * between any two nodes will be shown on top of one another creating a deceptive visibility
+                     * of only one edge ...
+                     */
+                    'curve-style': 'bezier'
                 }
             },
             {
@@ -66,23 +76,6 @@ angular.module('ndexServiceApp')
             return DEF_VISUAL_STYLE;
         };
 
-        var getCyAttributeName = function (attributeName, attributeNameMap) {
-
-            var cyAttributeName = attributeNameMap[attributeName];
-
-            if (!cyAttributeName) {
-                cyAttributeName = specialCaseAttributeMap[attributeName];
-                if(cyAttributeName)
-                    return cyAttributeName;
-
-                attributeNameMap[attributeName] = attributeName; // direct mapping
-                cyAttributeName = attributeName;
-            }
-
-            return cyAttributeName;
-
-        };
-
         // The attributeNameMap maps attribute names in niceCX to attribute names in cyjs.
         // In some cases, such as 'id', 'source', and 'target', cyjs uses reserved names and
         // any attribute names that conflict must be mapped.
@@ -94,6 +87,25 @@ angular.module('ndexServiceApp')
             'shared interaction': 'interaction'
 
         };
+
+        var getCyAttributeName = function (attributeName, attributeNameMap) {
+
+            var cyAttributeName = attributeNameMap[attributeName];
+
+            if (!cyAttributeName) {
+                cyAttributeName = specialCaseAttributeMap[attributeName];
+                if(cyAttributeName) {
+                    return cyAttributeName;
+                }
+
+                attributeNameMap[attributeName] = attributeName; // direct mapping
+                cyAttributeName = attributeName;
+            }
+
+            return cyAttributeName;
+
+        };
+
 
         var sanitizeAttributeNameMap = function (attributeNameMap){
             var attributeNames = _.keys(attributeNameMap);
@@ -112,7 +124,7 @@ angular.module('ndexServiceApp')
                     // `^[^a-zA-Z_]+|[^a-zA-Z_0-9]+
 
                     var nonAlpha = attributeName.replace(/^[^a-zA-Z_]+|[^a-zA-Z_0-9]+/gi, '_');
-                    nonAlpha = nonAlpha + "_u" + uniqueCounter;
+                    nonAlpha = nonAlpha + '_u' + uniqueCounter;
                     uniqueCounter = uniqueCounter + 1;
                     attributeNameMap[attributeName] = nonAlpha;
                 }
@@ -121,7 +133,7 @@ angular.module('ndexServiceApp')
 
         };
 
-        const CX_NUMBER_DATATYPES = ['byte', 'char', 'double', 'float', 'integer', 'long', 'short'];
+        const CX_NUMBER_DATATYPES = ['byte', 'double', 'float', 'integer', 'long', 'short'];
 
         const CX_LIST_DATATYPES =
             ['list_of_string', 'list_of_boolean',
@@ -134,7 +146,7 @@ angular.module('ndexServiceApp')
          * Get the first element from the list of elements.  Attributes of node or edge of this first element will be
          * used to style the node/edge.  This behavior simulates the behavior of Cytoscape:
          *
-         * if a node column has the type "list of ... (strings/numbers/boolens), then cytoscape uses the first element
+         * if a node column has the type "list of ... (strings/numbers/booleans), then cytoscape uses the first element
          * in the list to style the node (or edge).
          * For example, if a column has the type ['protein', 'gene'] (list of strings), then Cytoscape uses the shape of
          * 'protein' (the first element in the list) to draw this node (the shape of 'protein' in Cytoscape is 'round rectangle').
@@ -144,18 +156,18 @@ angular.module('ndexServiceApp')
         var getFirstElementFromList = function(attributeObj) {
 
             var type      = (attributeObj && attributeObj.d) ? attributeObj.d : 'list_of_string';
-            var attrValue = (attributeObj && attributeObj.v && attributeObj.v[0]) ? attributeObj.v[0] : "";
+            var attrValue = (attributeObj && attributeObj.v && attributeObj.v[0]) ? attributeObj.v[0] : '';
             var retValue;
 
-            if (type == 'list_of_string') {
+            if (type === 'list_of_string' || type === 'list_of_boolean') {
                 retValue = attrValue;
 
-            } else if (type == 'list_of_boolean') {
+         /*   } else if (type == 'list_of_boolean') {
                 // N.B.: for list of booleans, we take the first value and return it as
                 // a String ('true' or 'false'), and not as an actual Boolean (true or false),
                 // since Cytoscape.js expects 'true' or 'false'.
-                retValue = attrValue;
-
+                retValue = (attrValue.toLowerCase() === 'true'); //attrValue;
+*/
             } else {
                 // this is a numeric type, one of CX_NUMBER_DATATYPES
                 retValue = parseFloat(attrValue);
@@ -244,23 +256,23 @@ angular.module('ndexServiceApp')
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 node.data[cyAttributeName] = getFirstElementFromList(attributeObject);
 
-                            } else if (dataType && dataType === 'boolean') {
+                          /*  } else if (dataType && dataType === 'boolean') {
 
                                 // N.B.: for Boolean, Cytoscape.js expects 'true' or 'false' (string),
                                 // and not true or false (actual Boolean).
                                 // Thus, we just use attributeObject.v to pass to Cytoscape.js.
-                                node.data[cyAttributeName] = attributeObject.v;
+                                //node.data[cyAttributeName] = attributeObject.v;
 
-                                /*
+
                                 if (attributeObject.v === 'true'){
                                     node.data[cyAttributeName] = true;
                                 } else if (attributeObject.v === 'false') {
                                     node.data[cyAttributeName] = false;
                                 }
-                                */
+*/
 
                             } else {
-                                // Default to String
+                                // Default to String && boolean
                                 node.data[cyAttributeName] = attributeObject.v;
                             }
                         });
@@ -276,8 +288,8 @@ angular.module('ndexServiceApp')
                     if (node) {
                         node.position = {x: element.x, y: element.y};
                     } else {
-                        console.log("no node for cartesian Node Id = " + nodeId);
-                    };
+                        console.log('no node for cartesian Node Id = ' + nodeId);
+                    }
                 });
             }
 
@@ -316,12 +328,12 @@ angular.module('ndexServiceApp')
                             } else if (dataType && _.includes(CX_LIST_DATATYPES, dataType.toLowerCase())) {
                                 edge.data[cyAttributeName] = getFirstElementFromList(attributeObject);
 
-                            } else if (dataType && dataType === 'boolean') {
+                      /*      } else if (dataType && dataType === 'boolean') {
 
                                 // N.B.: for Boolean, Cytoscape.js expects 'true' or 'false' (string),
                                 // and not true or false (actual Boolean).
                                 // Thus, we just use attributeObject.v to pass to Cytoscape.js.
-                                edge.data[cyAttributeName] =  attributeObject.v;
+                                edge.data[cyAttributeName] =  attributeObject.v.toLowerCase() === 'true';
 
                                 /*
                                 if (attributeObject.v === 'true'){
@@ -332,7 +344,7 @@ angular.module('ndexServiceApp')
                                 */
 
                             }   else {
-                                // Default to String
+                                // Default to String and boolean
                                 edge.data[cyAttributeName] = attributeObject.v;
                             }
                         });
@@ -425,8 +437,8 @@ angular.module('ndexServiceApp')
          */
         var commaDelimitedListStringToStringList2 = function(list) {
 
-            var mapping = {};
-            var def = {m: mapping};
+            //var mapping = {};
+            //var def = {m: mapping};
 
             var result = [];
 
@@ -442,7 +454,7 @@ angular.module('ndexServiceApp')
             });
 
             return result;
-        }
+        };
 
 
 
@@ -527,55 +539,306 @@ angular.module('ndexServiceApp')
             return def;
         };
 
+        // there are 9 types of Node Shapes in Cytoscape 3.6.1 and 18 types of Node Shapes in Cytoscape.js 3.2.9;
+        // all Node Shapes of Cytoscape 3.6.1 map nicely to Node Body Shapes of Cytoscape.js 3.2.9.
         const NODE_SHAPE_MAP = {
-            'RECTANGLE': 'rectangle',
-            'ROUND_RECTANGLE': 'roundrectangle',
-            'TRIANGLE': 'triangle',
-            'PARALLELOGRAM': 'rectangle',
-            'DIAMOND': 'diamond',
-            'ELLIPSE': 'ellipse',
-            'HEXAGON': 'hexagon',
-            'OCTAGON': 'octagon',
-            'VEE':	'vee'
+            'DIAMOND'         : 'diamond',
+            'ELLIPSE'         : 'ellipse',
+            'HEXAGON'         : 'hexagon',
+            'OCTAGON'         : 'octagon',
+            'PARALLELOGRAM'   : 'rhomboid',
+            'RECTANGLE'       : 'rectangle',
+            'ROUND_RECTANGLE' : 'roundrectangle',
+            'TRIANGLE'        : 'triangle',
+            'VEE'             : 'vee'
         };
 
+        // there are 22 arrow shapes in Cytoscape 3.6.1 and 10 arrow shapes in Cytoscape.js 3.2.9
         const ARROW_SHAPE_MAP = {
-            'T': 'tee',
-            'DELTA' : 'triangle',
-            'CIRCLE' : 'circle',
-            'DIAMOND': 'diamond',
-            'ARROW': 'triangle',
-            'HALF_BOTTOM': 'triangle',
-            'HALF_TOP': 'triangle',
-            'NONE': 'none'
+            'ARROW'            : 'triangle',
+            'ARROW_SHORT'      : 'triangle',
+            'CIRCLE'           : 'circle',
+            'CROSS_DELTA'      : 'triangle-tee',
+            'CROSS_OPEN_DELTA' : 'triangle-tee',
+            'DELTA'            : 'triangle',
+            'DELTA_SHORT_1'    : 'triangle',
+            'DELTA_SHORT_2'    : 'triangle',
+            'DIAMOND'          : 'diamond',
+            'DIAMOND_SHORT_1'  : 'diamond',
+            'DIAMOND_SHORT_2'  : 'diamond',
+            'HALF_BOTTOM'      : 'triangle',
+            'HALF_CIRCLE'      : 'triangle',
+            'HALF_TOP'         : 'triangle',
+            'NONE'             : 'none',
+            'OPEN_CIRCLE'      : 'triangle',
+            'OPEN_DELTA'       : 'triangle',
+            'OPEN_DIAMOND'     : 'diamond',
+            'OPEN_HALF_CIRCLE' : 'triangle',
+            'OPEN_SQUARE'      : 'square',
+            'SQUARE'           : 'square',
+            'T'                : 'tee'
         };
 
+        // there are 16 line styles in Cytoscape 3.6.1 and 3 line styles in Cytoscape.js 3.2.9
         const LINE_STYLE_MAP = {
-            'SOLID': 'solid',
-            'DOT': 'dotted',
-            'DASH_DOT': 'dotted',
-            'LONG_DASH': 'dashed',
-            'EQUAL_DASH': 'dashed',
-            'MARQUEE_DASH': 'dashed'
+            'BACKWARD_SLASH'  : 'dashed',
+            'CONTIGUOUS_ARROW': 'solid',
+            'LONG_DASH'       : 'dashed',
+            'DASH_DOT'        : 'dotted',
+            'DOT'             : 'dotted',
+            'EQUAL_DASH'      : 'dashed',
+            'FORWARD_SLASH'   : 'dashed',
+            'MARQUEE_DASH'    : 'dashed',
+            'MARQUEE_DASH_DOT': 'dotted',
+            'MARQUEE_EQUAL'   : 'dashed',
+            'PARALLEL_LINES'  : 'solid',
+            'SEPARATE_ARROW'  : 'dashed',
+            'SINEWAVE'        : 'solid',
+            'SOLID'           : 'solid',
+            'VERTICAL_SLASH'  : 'dashed',
+            'ZIGZAG'          : 'solid'
         };
 
-        const TEXT_ALIGN_MAP = {
-            'C' : 'center',
-            'T' : 'top',
-            'B' : 'bottom',
-            'L' : 'left',
-            'R' : 'right'
+        const VALID_NODE_LABEL_POSITIONS = {
+            'NW'   :  0,
+            'N'    :  1,
+            'NE'   :  2,
+
+            'W'    :  3,
+            'C'    :  4,
+            'E'    :  5,
+
+            'SW'   :  6,
+            'S'    :  7,
+            'SE'   :  8,
+
+            'NONE' :  9
         };
 
-        var getTextAlign = function(align){
-            if (!align){
-                return 'center';
+        /*
+         * Shall we replace
+         *      {'text-halign' : 'left', 'text-valign' : 'center'}
+         *
+         * with more compact
+         *      {0: 'left', 1: 'center'}
+         *
+         * where  0 = 'text-halign'  1 = 'text-valign'
+         * ?
+         */
+        const CYTOSCAPE_TO_JS_NODE_LABEL_COORDINATES = {
+            'C': {
+                'C'    : {'text-halign': 'center', 'text-valign': 'center'},  //  1
+                'E'    : {'text-halign': 'left',   'text-valign': 'center'},  //  2
+                'NONE' : {'text-halign': 'center', 'text-valign': 'center'},  //  3
+
+                'N'    : {'text-halign': 'center', 'text-valign': 'center'},  //  4
+                'NE'   : {'text-halign': 'left',   'text-valign': 'center'},  //  5
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'},  //  6
+
+                'S'    : {'text-halign': 'center', 'text-valign': 'center'},  //  7
+                'SE'   : {'text-halign': 'left',   'text-valign': 'center'},  //  8
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  //  9
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'center'}   // 10
+            },
+            'E': {
+                'C'    : {'text-halign': 'right',  'text-valign': 'center'},  // 11
+                'E'    : {'text-halign': 'center', 'text-valign': 'center'},  // 12
+                'NONE' : {'text-halign': 'right',  'text-valign': 'center'},  // 13
+
+                'N'    : {'text-halign': 'right',  'text-valign': 'center'},  // 14
+                'NE'   : {'text-halign': 'center', 'text-valign': 'center'},  // 15
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 16
+
+                'S'    : {'text-halign': 'right',  'text-valign': 'center'},  // 17
+                'SE'   : {'text-halign': 'center', 'text-valign': 'center'},  // 18
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 19
+
+                'W'   : {'text-halign': 'right',   'text-valign': 'center'}   // 20
+            },
+            'NONE': {
+                'C'    : {'text-halign': 'center', 'text-valign': 'center'},  // 21
+                'E'    : {'text-halign': 'left',   'text-valign': 'center'},  // 22
+                'NONE' : {'text-halign': 'center', 'text-valign': 'center'},  // 23
+
+                'N'    : {'text-halign': 'center', 'text-valign': 'center'},  // 24
+                'NE'   : {'text-halign': 'left',   'text-valign': 'center'},  // 25
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 26
+
+                'S'    : {'text-halign': 'center', 'text-valign': 'center'},  // 27
+                'SE'   : {'text-halign': 'left',   'text-valign': 'center'},  // 28
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 29
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'center'}   // 30
+            },
+            'N': {
+                'C'    : {'text-halign': 'center', 'text-valign': 'top'},    // 31
+                'E'    : {'text-halign': 'left',   'text-valign': 'top'},    // 32
+                'NONE' : {'text-halign': 'center', 'text-valign': 'top'},    // 33
+
+                'N'    : {'text-halign': 'center', 'text-valign': 'center'}, // 34
+                'NE'   : {'text-halign': 'left',   'text-valign': 'top'},    // 35
+                'NW'   : {'text-halign': 'right',  'text-valign': 'top'},    // 36
+
+                'S'    : {'text-halign': 'center', 'text-valign': 'top'},    // 37
+                'SE'   : {'text-halign': 'left',   'text-valign': 'top'},    // 38
+                'SW'   : {'text-halign': 'right',  'text-valign': 'top'},    // 39
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'top'}     // 40
+            },
+            'NE': {
+                'C'    : {'text-halign': 'right',  'text-valign': 'top'},    // 41
+                'E'    : {'text-halign': 'center', 'text-valign': 'top'},    // 42
+                'NONE' : {'text-halign': 'right',  'text-valign': 'top'},    // 43
+
+                'N'    : {'text-halign': 'right',  'text-valign': 'center'}, // 44
+                'NE'   : {'text-halign': 'center', 'text-valign': 'center'}, // 45
+                'NW'   : {'text-halign': 'right',  'text-valign': 'center'}, // 46
+
+                'S'    : {'text-halign': 'right',  'text-valign': 'top'},    // 47
+                'SE'   : {'text-halign': 'center', 'text-valign': 'top'},    // 48
+                'SW'   : {'text-halign': 'right',  'text-valign': 'top'},    // 49
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'top'}     // 50
+            },
+            'NW': {
+                'C'    : {'text-halign': 'left',  'text-valign': 'top'},     // 51
+                'E'    : {'text-halign': 'left',  'text-valign': 'top'},     // 52
+                'NONE' : {'text-halign': 'left',  'text-valign': 'top'},     // 53
+
+                'N'    : {'text-halign': 'left',  'text-valign': 'center'},  // 54
+                'NE'   : {'text-halign': 'left',  'text-valign': 'center'},  // 55
+                'NW'   : {'text-halign': 'center','text-valign': 'center'},  // 56
+
+                'S'    : {'text-halign': 'left',  'text-valign': 'top'},     // 57
+                'SE'   : {'text-halign': 'left',  'text-valign': 'top'},     // 58
+                'SW'   : {'text-halign': 'center','text-valign': 'top'},     // 59
+
+                'W'    : {'text-halign': 'center','text-valign': 'top'}      // 60
+            },
+            'S': {
+                'C'    : {'text-halign': 'center','text-valign': 'bottom'},  // 61
+                'E'    : {'text-halign': 'left',  'text-valign': 'bottom'},  // 62
+                'NONE' : {'text-halign': 'center','text-valign': 'bottom'},  // 63
+
+                'N'    : {'text-halign': 'center','text-valign': 'bottom'},  // 64
+                'NE'   : {'text-halign': 'left',  'text-valign': 'bottom'},  // 65
+                'NW'   : {'text-halign': 'right', 'text-valign': 'bottom'},  // 66
+
+                'S'    : {'text-halign': 'center','text-valign': 'center'},  // 67
+                'SE'   : {'text-halign': 'left',  'text-valign': 'bottom'},  // 68
+                'SW'   : {'text-halign': 'right', 'text-valign': 'bottom'},  // 69
+
+                'W'    : {'text-halign': 'right', 'text-valign': 'bottom'}   // 70
+            },
+            'SE': {
+                'C'    : {'text-halign': 'right',  'text-valign': 'bottom'},  // 71
+                'E'    : {'text-halign': 'center', 'text-valign': 'bottom'},  // 72
+                'NONE' : {'text-halign': 'right',  'text-valign': 'bottom'},  // 73
+
+                'N'    : {'text-halign': 'right',  'text-valign': 'bottom'},  // 74
+                'NE'   : {'text-halign': 'center', 'text-valign': 'bottom'},  // 75
+                'NW'   : {'text-halign': 'right',  'text-valign': 'bottom'},  // 76
+
+                'S'    : {'text-halign': 'right',  'text-valign': 'center'},  // 77
+                'SE'   : {'text-halign': 'center', 'text-valign': 'center'},  // 78
+                'SW'   : {'text-halign': 'right',  'text-valign': 'center'},  // 79
+
+                'W'    : {'text-halign': 'right',  'text-valign': 'bottom'}   // 80
+            },
+            'SW': {
+                'C'    : {'text-halign': 'left', 'text-valign': 'bottom'},    // 81
+                'E'    : {'text-halign': 'left', 'text-valign': 'bottom'},    // 82
+                'NONE' : {'text-halign': 'left', 'text-valign': 'bottom'},    // 83
+
+                'N'    : {'text-halign': 'left',  'text-valign': 'bottom'},   // 84
+                'NE'   : {'text-halign': 'left',  'text-valign': 'bottom'},   // 85
+                'NW'   : {'text-halign': 'center','text-valign': 'bottom'},   // 86
+
+                'S'    : {'text-halign': 'left',  'text-valign': 'center'},   // 87
+                'SE'   : {'text-halign': 'left',  'text-valign': 'center'},   // 88
+                'SW'   : {'text-halign': 'center','text-valign': 'center'},   // 89
+
+                'W'    : {'text-halign': 'center','text-valign': 'bottom'}    // 90
+            },
+            'W': {
+                'C'    : {'text-halign': 'left', 'text-valign': 'center'},    // 91
+                'E'    : {'text-halign': 'left', 'text-valign': 'center'},    // 92
+                'NONE' : {'text-halign': 'left', 'text-valign': 'center'},    // 93
+
+                'N'    : {'text-halign': 'left',  'text-valign': 'center'},   // 94
+                'NE'   : {'text-halign': 'left',  'text-valign': 'center'},   // 95
+                'NW'   : {'text-halign': 'center','text-valign': 'center'},   // 96
+
+                'S'    : {'text-halign': 'left',  'text-valign': 'center'},   // 97
+                'SE'   : {'text-halign': 'left',  'text-valign': 'center'},   // 98
+                'SW'   : {'text-halign': 'center','text-valign': 'center'},   // 99
+
+                'W'    : {'text-halign': 'center','text-valign': 'center'}   // 100
             }
-            var ta = TEXT_ALIGN_MAP[align];
-            if (ta){
-                return ta;
+        };
+
+        /*
+         * This function gets a string with 5 Cytoscape Node Label coordinates in the form
+         *
+         *  <Node Anchor>, <Label Anchor>, <Label Justification>, <X Offset>, <Y Offset>
+         *
+         *  where
+         *
+         *     <Node Anchor>         - one of the values from VALID_NODE_LABEL_POSITIONS
+         *     <Label Anchor>        - one of the values from VALID_NODE_LABEL_POSITIONS
+         *     <Label Justification> - one of the values: l, c, or r (for 'left', 'center' or 'right', respectively)
+         *     <X Offset>            - float number (negative or positive)
+         *     <Y Offset>            - float number (negative or positive)
+         *
+         *  example of cyLabelCoordinates: 'N,SW,c,0.00,0.00'
+         *
+         *  As of 9 May 2018, we only support/process/(extract from cyLabelCoordinates) <Node Anchor> and <Label Anchor>.
+         *
+         *  The function returns a javascript map with Javascript.js Node Label coordinates in the form
+         *
+         *      {
+         *          'text-halign' : <halign>,   // halign is in ['left', 'center', 'right']
+         *          'text-valign' : <valign>    // valign is in ['top',  'center', 'bottom']
+         *      }
+         *
+         */
+
+        var getNodeLabelPosition = function(cyLabelCoordinates){
+            var position = {
+                'text-halign' : 'center',
+                'text-valign' : 'center'
+            };
+
+            if (!cyLabelCoordinates){
+                return position;
             }
-            return 'center';
+
+            var cyLabelCoordinatesArray = cyLabelCoordinates.split(',');
+
+            if (cyLabelCoordinatesArray.length >= 2) {
+
+                var nodeAnchorCoordinate  = cyLabelCoordinatesArray[0];
+                var labelAnchorCoordinate = cyLabelCoordinatesArray[1];
+
+                if (nodeAnchorCoordinate) {
+                    nodeAnchorCoordinate = nodeAnchorCoordinate.toUpperCase();
+                }
+                if (labelAnchorCoordinate) {
+                    labelAnchorCoordinate = labelAnchorCoordinate.toUpperCase();
+                }
+                if (!(nodeAnchorCoordinate in VALID_NODE_LABEL_POSITIONS)) {
+                    nodeAnchorCoordinate = 'C';
+                }
+                if (!(labelAnchorCoordinate in VALID_NODE_LABEL_POSITIONS)) {
+                    labelAnchorCoordinate = 'C';
+                }
+
+                position =
+                    CYTOSCAPE_TO_JS_NODE_LABEL_COORDINATES[nodeAnchorCoordinate][labelAnchorCoordinate];
+            }
+
+            return position;
         };
 
         const visualPropertyMap = {
@@ -590,16 +853,19 @@ angular.module('ndexServiceApp')
             'NODE_BORDER_WIDTH': {'att': 'border-width', 'type': 'number'},
             'NODE_SIZE' : [{'att': 'width','type': 'number'},{'att': 'height', 'type': 'number'}],
 
+            'NODE_LABEL_FONT_FACE': {'att': 'font-family', 'type': 'fontFamily'},
+
             'NODE_LABEL': {'att': 'content', 'type': 'string'},
             'NODE_LABEL_COLOR': {'att': 'color', 'type': 'color'},
             'NODE_LABEL_FONT_SIZE': {'att': 'font-size', 'type': 'number'},
             'NODE_LABEL_TRANSPARENCY': {'att': 'text-opacity', 'type': 'opacity'},
+            'NODE_LABEL_POSITION': {'att': 'labelPosition', 'type': 'labelPosition'},
 
             'EDGE_WIDTH': {'att' : 'width', 'type': 'number'},
             'EDGE_LABEL': {'att': 'label', 'type': 'string'},
             'EDGE_LABEL_COLOR': {'att': 'color', 'type': 'color'},
             'EDGE_LABEL_FONT_SIZE': {'att': 'font-size', 'type': 'number'},
-            'EDGE_LABEL_FONT_FACE': {'att': 'font-size', 'type': 'fontFamily'},
+            'EDGE_LABEL_FONT_FACE': {'att': 'font-family', 'type': 'fontFamily'},
             'EDGE_LABEL_TRANSPARENCY': {'att': 'text-opacity', 'type': 'opacity'},
             'EDGE_LINE_TYPE': {'att': 'line-style', 'type': 'line'},
             'EDGE_STROKE_UNSELECTED_PAINT': {'att': 'line-color', 'type': 'color'},
@@ -609,6 +875,75 @@ angular.module('ndexServiceApp')
             'EDGE_TARGET_ARROW_SHAPE': {'att': 'target-arrow-shape', 'type': 'arrow'},
             'EDGE_TARGET_ARROW_UNSELECTED_PAINT': {'att': 'target-arrow-color', 'type': 'color'},
             'EDGE_SOURCE_ARROW_UNSELECTED_PAINT': {'att': 'source-arrow-color', 'type': 'color'}
+        };
+
+        // https://www.cssfontstack.com/
+        const FONT_FAMILY_MAP = {
+
+             // Sans-serif font stack
+            'Arial'                 : 'Arial,Helvetica Neue,Helvetica,sans-serif',
+            'Arial-Black'           : 'Arial Black,Arial Bold,Gadget,sans-serif',
+            'ArialNarrow'           : 'Arial Narrow,Arial,sans-serif',
+            'ArialRoundedMTBold'    : 'Arial Rounded MT Bold,Helvetica Rounded,Arial,sans-serif',
+
+            'AvantGarde'            : 'Avant Garde,Avantgarde,Century Gothic,CenturyGothic,AppleGothic,sans-serif',
+            'Calibri'               : 'Calibri,Candara,Segoe,Segoe UI,Optima,Arial,sans-serif',
+            'Candara'               : 'Candara,Calibri,Segoe,Segoe UI,Optima,Arial,sans-serif',
+            'CenturyGothic'         : 'Century Gothic,CenturyGothic,AppleGothic,sans-serif',
+
+            'FranklinGothic-Medium' : 'Franklin Gothic Medium,Franklin Gothic,ITC Franklin Gothic,Arial,sans-serif',
+            'Futura'                : 'Futura,Trebuchet MS,Arial,sans-serif',
+            'Geneva'                : 'Geneva,Tahoma,Verdana,sans-serif',
+            'GillSans'              : 'Gill Sans,Gill Sans MT,Calibri,sans-serif',
+
+            'HelveticaNeue'         : 'Helvetica Neue,Helvetica,Arial,sans-serif',
+            'Impact'                : 'Impact,Haettenschweiler,Franklin Gothic Bold,Charcoal,Helvetica Inserat,Bitstream Vera Sans Bold,Arial Black,sans-serif',
+            'LucidaGrande'          : 'Lucida Grande,Lucida Sans Unicode,Lucida Sans,Geneva,Verdana,sans-serif',
+            'Optima'                : 'Optima,Segoe,Segoe UI,Candara,Calibri,Arial,sans-serif',
+
+            'Segoe UI'              : 'Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif',
+            'SegoeUI'               : 'Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif',
+            'Tahoma'                : 'Tahoma,Verdana,Segoe,sans-serif',
+            'TrebuchetMS'           : 'Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif',
+            'Verdana'               : 'Verdana,Geneva,sans-serif',
+
+             // Serif font stack
+            'BigCaslon'             : 'Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif',
+            'BodoniMT'              : 'Bodoni MT,Didot,Didot LT STD,Hoefler Text,Garamond,Times New Roman,serif',
+            'BookAntiqua'           : 'Book Antiqua,Palatino,Palatino Linotype,Palatino LT STD,Georgia,serif',
+            'CalistoMT'             : 'Calisto MT,Bookman Old Style,Bookman,Goudy Old Style,Garamond,Hoefler Text,Bitstream Charter,Georgia,serif',
+
+            'Cambria'               : 'Cambria,Georgia,serif',
+            'Didot'                 : 'Didot,Didot LT STD,Hoefler Text,Garamond,Times New Roman,serif',
+            'Garamond'              : 'Garamond,Baskerville,Baskerville Old Face,Hoefler Text,Times New Roman,serif',
+            'Georgia'               : 'Georgia,Times,Times New Roman,serif',
+
+            'GoudyOldStyle'         : 'Goudy Old Style,Garamond,Big Caslon,Times New Roman,serif',
+            'HoeflerText'           : 'Hoefler Text,Baskerville Old Face,Garamond,Times New Roman,serif',
+            'LucidaBright'          : 'Lucida Bright,Georgia,serif',
+            'Palatino'              : 'Palatino,Palatino Linotype,Palatino LT STD,Book Antiqua,Georgia,serif',
+
+            'Perpetua'              : 'Perpetua,Baskerville,Big Caslon,Palatino Linotype,Palatino,URW Palladio L,Nimbus Roman No9 L,serif',
+            'Rockwell'              : 'Rockwell,Courier Bold,Courier,Georgia,Times,Times New Roman,serif',
+            'Rockwell-ExtraBold'    : 'Rockwell Extra Bold,Rockwell Bold,monospace,serif',
+            'Baskerville'           : 'Baskerville,Baskerville Old Face,Hoefler Text,Garamond,Times New Roman,serif',
+
+            'TimesNewRoman'         : 'TimesNewRoman,Times New Roman,Times,Baskerville,Georgia,serif',
+
+             // Monospaced font stack
+            'Consolas'              : 'Consolas,monaco,monospace',
+            'CourierNew'            : 'Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace',
+            'LucidaConsole'         : 'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
+            'LucidaSans-Typewriter' : 'Lucida Sans Typewriter,Lucida Console,monaco,Bitstream Vera Sans Mono,monospace',
+            'Monaco'                : 'monaco,Consolas,Lucida Console,monospace',
+            'AndaleMono'            : 'Andale Mono,AndaleMono,monospace',
+
+             // Fantasy font stack
+            'Copperplate'           : 'Copperplate,Copperplate Gothic Light,fantasy',
+            'Papyrus'               : 'Papyrus,fantasy',
+
+             // Script font stack
+            'BrushScriptMT'         : 'Brush Script MT,cursive'
         };
 
         var getCyVisualAttributeForVP = function (vp) {
@@ -632,17 +967,6 @@ angular.module('ndexServiceApp')
             return attProps.type;
         };
 
-        var mappingStyle = function (elementType, vp, type, definition, attributeNameMap) {
-            var def = parseMappingDefinition(definition);
-            if (type === 'DISCRETE') {
-                return discreteMappingStyle(elementType, vp, def, attributeNameMap);
-            } else if (type === 'CONTINUOUS') {
-                return continuousMappingStyle(elementType, vp, def, attributeNameMap);
-            } else if (type === 'PASSTHROUGH') {
-                return passthroughMappingStyle(elementType, vp, def, attributeNameMap);
-            }
-        };
-
         var getCyVisualAttributeValue = function(visualAttributeValue, cyVisualAttributeType){
             if (cyVisualAttributeType === 'number') {
                 return cyNumberFromString(visualAttributeValue);
@@ -656,6 +980,7 @@ angular.module('ndexServiceApp')
                     return shapeValue;
                 }
             } else if (cyVisualAttributeType === 'arrow') {
+                //console.log(visualAttributeValue);
                 var arrowValue = ARROW_SHAPE_MAP[visualAttributeValue];
                 if (arrowValue){
                     return arrowValue;
@@ -665,6 +990,17 @@ angular.module('ndexServiceApp')
                 if (lineValue){
                     return lineValue;
                 }
+            } else if (cyVisualAttributeType === 'fontFamily') {
+
+                var fontFamilyValue = visualAttributeValue.split(',').shift();
+
+                var fontFamilyValueMapped = FONT_FAMILY_MAP[fontFamilyValue];
+
+                return (fontFamilyValueMapped) ? fontFamilyValueMapped : fontFamilyValue;
+
+            } else if (cyVisualAttributeType === 'labelPosition') {
+
+                return getNodeLabelPosition(visualAttributeValue);
             }
             // assume string
             return visualAttributeValue;
@@ -687,8 +1023,10 @@ angular.module('ndexServiceApp')
             // the cytoscape column is mapped to the cyjs attribute name
             var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
-            var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
-            var regExToCheckIfFloatNumber = /^-{0,1}\d+\.\d*$/;
+            var colDataType = def.T;
+
+            //    var regExToCheckIfIntNumber   = /^-{0,1}\d+$/;
+            //    var regExToCheckIfFloatNumber = /^-{0,1}\d+\.\d*$/;
 
             _.forEach(def.m, function (pair) {
                 var cyDataAttributeValue = pair.K;
@@ -696,25 +1034,30 @@ angular.module('ndexServiceApp')
                 var cyVisualAttributeValue = getCyVisualAttributeValue(visualAttributeValue, cyVisualAttributeType);
 
                 // check if cyDataAttributeValue is a valid number (float or integer)
-                var isValidNumber =
-                    regExToCheckIfIntNumber.test(cyDataAttributeValue) ||
-                    regExToCheckIfFloatNumber.test(cyDataAttributeValue);
+                //      var isValidNumber =
+                //          regExToCheckIfIntNumber.test(cyDataAttributeValue) ||
+                //          regExToCheckIfFloatNumber.test(cyDataAttributeValue);
 
-                var cySelector = (isValidNumber) ?
+                var cySelector =  colDataType !== 'string' && colDataType !== 'boolean' ?
                     elementType + '[' + cyDataAttribute + ' = ' + cyDataAttributeValue + ']'  :
                     elementType + '[' + cyDataAttribute + ' = \'' + cyDataAttributeValue + '\']';
 
                 var cyVisualAttributePair = {};
-                cyVisualAttributePair[cyVisualAttribute] = cyVisualAttributeValue;
+                if (cyVisualAttribute !== 'labelPosition') {
+                    cyVisualAttributePair[cyVisualAttribute] = cyVisualAttributeValue;
+                } else {
+                    // cyVisualAttribute is 'labelPosition'
+                    cyVisualAttributePair['text-halign'] = cyVisualAttributeValue['text-halign'];
+                    cyVisualAttributePair['text-valign'] = cyVisualAttributeValue['text-valign'];
+                }
                 var element = {'selector': cySelector, 'css': cyVisualAttributePair};
-             //   console.log(element);
+                //   console.log(element);
                 elements.push(element);
             });
             return elements;
         };
 
-
-        var continuousMappingStyle_aux = function (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements) {
+        var continuousMappingStyleAux = function (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements) {
             var lastPointIndex = Object.keys(def.m).length - 1;
 
             // Each Continuous Mapping Point in def.m has 4 entries:
@@ -803,32 +1146,31 @@ angular.module('ndexServiceApp')
             var elements = [];
             var cyVisualAttributeObj = getCyVisualAttributeObjForVP(vp) ; //getCyVisualAttributeForVP(vp);
             if (!cyVisualAttributeObj) {
-                console.log("no visual attribute for " + vp);
+                console.log('no visual attribute for ' + vp);
                 return elements;  // empty result, vp not handled
             }
             var ll = Object.prototype.toString.call( cyVisualAttributeObj );
-            if(  ll != '[object Array]' ) {
+            if(  ll !== '[object Array]' ) {
                 cyVisualAttributeObj = [ cyVisualAttributeObj];
-            };
+            }
 
             var cyDataAttribute = getCyAttributeName(def.COL, attributeNameMap);
 
             _.forEach ( cyVisualAttributeObj, function (vAttr) {
                 var cyVisualAttribute = vAttr.att;
                 var cyVisualAttributeType = vAttr.type;
-                continuousMappingStyle_aux (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements);
+                continuousMappingStyleAux (cyVisualAttribute, cyVisualAttributeType, elementType, def, cyDataAttribute, elements);
 
             });
 
             return elements;
-
         };
 
         var passthroughMappingStyle = function (elementType, vp, def, attributeNameMap) {
             var elements = [];
             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
             if (!cyVisualAttribute) {
-                console.log("no visual attribute for " + vp);
+                console.log('no visual attribute for ' + vp);
                 return elements;  // empty result, vp not handled
             }
 
@@ -842,26 +1184,43 @@ angular.module('ndexServiceApp')
             return elements;
         };
 
-
+        var mappingStyle = function (elementType, vp, type, definition, attributeNameMap) {
+            var def = parseMappingDefinition(definition);
+            if (type === 'DISCRETE') {
+                return discreteMappingStyle(elementType, vp, def, attributeNameMap);
+            } else if (type === 'CONTINUOUS') {
+                return continuousMappingStyle(elementType, vp, def, attributeNameMap);
+            } else if (type === 'PASSTHROUGH') {
+                return passthroughMappingStyle(elementType, vp, def, attributeNameMap);
+            }
+        };
 
         // get the color from the network visual property and convert it to CSS format
         factory.cyBackgroundColorFromNiceCX = function (niceCX) {
             //console.log(niceCX);
             var result = null;
             var visualProps ;
-            if ( niceCX.cyVisualProperties )
+            /** @namespace niceCX.cyVisualProperties **/
+            if (niceCX.cyVisualProperties) {
                 visualProps = niceCX.cyVisualProperties;
-            else if ( niceCX.visualProperties )
-                visualProps = niceCX.visualProperties;
-            else
-                return null;
+            }
+            else {
+                /** @namespace niceCX.visualProperties **/
+                if (niceCX.visualProperties) {
+                    visualProps = niceCX.visualProperties;
+                } else {
+                    return null;
+                }
+            }
 
             _.forEach(visualProps, function (vpAspectElement) {
                     _.forEach(vpAspectElement, function (vpElement) {
-                        var elementType = vpElement['properties_of'];
+                        /** @namespace vpElement.properties_of **/
+                        var elementType = vpElement.properties_of;
                         if (elementType === 'network') {
+                            /** @namespace vpElement.properties.NETWORK_BACKGROUND_PAINT **/
                            result =  vpElement.properties.NETWORK_BACKGROUND_PAINT;
-                            return false;
+                           return false;
                         } 
                     });
             });
@@ -872,14 +1231,14 @@ angular.module('ndexServiceApp')
         factory.cyStyleFromNiceCX = function (niceCX, attributeNameMap) {
             //console.log('style from niceCX: ' + Object.keys(niceCX).length);
 
-            var node_default_styles = [];
-            var node_default_mappings = [];
-            var node_specific_styles = [];
-            var edge_default_styles = [];
-            var edge_default_mappings = [];
-            var edge_specific_styles = [];
-            var node_selected_styles = [];
-            var edge_selected_styles = [];
+            var nodeDefaultStyles   = [];
+            var nodeDefaultMappings = [];
+            var nodeSpecificStyles  = [];
+            var edgeDefaultStyles   = [];
+            var edgeDefaultMappings = [];
+            var edgeSpecificStyles  = [];
+            var nodeSelectedStyles  = [];
+            var edgeSelectedStyles  = [];
 
 
             var visualProperties;
@@ -887,8 +1246,9 @@ angular.module('ndexServiceApp')
                 visualProperties = niceCX.cyVisualProperties;
             } else if ( niceCX.visualProperties ) {
                visualProperties = niceCX.visualProperties;
-            } else
+            } else {
                 return DEF_VISUAL_STYLE;
+            }
 
             // TODO handle cases with multiple views
 
@@ -896,13 +1256,13 @@ angular.module('ndexServiceApp')
             _.forEach(visualProperties, function (vpAspectElement) {
                 _.forEach(vpAspectElement, function (vpElement) {
                     //console.log(vpElement);
-                    var elementType = vpElement['properties_of'];
+                    var elementType = vpElement.properties_of;
                     if (elementType === 'nodes:default') {
 
-                        var nodeLabelPosition = null;
+                        var cyLabelPositionCoordinates = null;
                         var nodeLabelFontFace = null;
                         var defaultNodeProperties = {};
-                        var node_size = null;
+                        var nodeSize = null;
 
                         _.forEach(vpElement.properties, function(value, vp){
                             console.log('default node property ' + vp + ' = ' + value);
@@ -912,59 +1272,124 @@ angular.module('ndexServiceApp')
                                     defaultNodeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                             } else {
                                 if (vp === 'NODE_LABEL_POSITION'){
-                                    nodeLabelPosition = value;
+                                    cyLabelPositionCoordinates = value;
                                 } else if (vp === 'NODE_LABEL_FONT_FACE'){
                                     nodeLabelFontFace  = value;
                                 } else if (vp === 'NODE_SELECTED_PAINT'){
                                     var selectedColor = getCyVisualAttributeValue(value, 'color');
-                                    node_selected_styles.push({'selector': 'node:selected', 'css': {'background-color': selectedColor}});
+                                    nodeSelectedStyles.push({'selector': 'node:selected', 'css': {'background-color': selectedColor}});
 
                                 } else if ( vp === 'NODE_SIZE') {
-                                    node_size = value;
+                                    nodeSize = value;
+
                                 } else if ( vp === 'NODE_LABEL_WIDTH') {
-                                    defaultNodeProperties['text-wrap'] = "wrap";
+                                    defaultNodeProperties['text-wrap'] = 'wrap';
                                     defaultNodeProperties['text-max-width'] = value;
+
+                                } else if (vp === 'NODE_CUSTOMGRAPHICS_1') {
+
+                                    if (value && !value.startsWith('org.cytoscape.PieChart')) {
+                                        return; // continue the loop
+                                    }
+                                    var pieChartStr = value.match(/{.*}/);
+
+                                    if (!pieChartStr) {
+                                        return; // continue the loop
+                                    }
+                                    var pieChartObj = JSON.parse(pieChartStr[0]);
+
+                                    /** @namespace pieChartObj.cy_colors **/
+                                    if (pieChartObj && pieChartObj.cy_colors && Array.isArray(pieChartObj.cy_colors)) {
+                                        var i = 1;
+
+                                        _.forEach (pieChartObj.cy_colors, function(color) {
+                                            var pieSliceColor = 'pie-' + i + '-background-color';
+
+                                            defaultNodeProperties[pieSliceColor] = color;
+                                            i++;
+                                        });
+                                    }
+
+                                    /** @namespace pieChartObj.cy_dataColumns **/
+                                    if (pieChartObj && pieChartObj.cy_dataColumns && Array.isArray(pieChartObj.cy_dataColumns)) {
+
+                                        var j = 1;
+
+                                        var normalizedNames = attributeNameMap;
+                                        var pieColumns      = {};
+
+                                        for (var l=0; l<pieChartObj.cy_dataColumns.length; l++) {
+                                            pieColumns[pieChartObj.cy_dataColumns[l]] = l;
+                                        }
+
+                                        _.forEach (pieChartObj.cy_dataColumns, function(column) {
+
+                                            var pieSliceSize  = 'pie-' + j + '-background-size';
+
+                                            defaultNodeProperties[pieSliceSize]  =  function(ele) {
+                                                var data     = ele.json().data;
+                                                var totalSum = 0;
+
+                                                var currentColumnValue = data[normalizedNames[column]];
+                                                if ((typeof currentColumnValue === 'undefined') ||
+                                                    (currentColumnValue === null) || (currentColumnValue <= 0)) {
+                                                    return 0;
+                                                }
+
+                                                for (var key in pieColumns) {
+                                                    var columnValue =  data[normalizedNames[key]];
+                                                    if (columnValue > 0) {
+                                                        totalSum = totalSum + columnValue;
+                                                    }
+                                                }
+
+                                                return (totalSum > 0) ? (100.0 * currentColumnValue/totalSum) : 0;
+                                            };
+
+                                            j++;
+                                        });
+                                    }
+
+                                    defaultNodeProperties['pie-size'] = '80%';
                                 }
 
                             }
                         });
 
-                        if ( node_size && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'true') {
-                            defaultNodeProperties['height'] = node_size;
-                            defaultNodeProperties['width'] = node_size;
+                        /** @namespace vpElement.dependencies.nodeSizeLocked **/
+                        if ( nodeSize && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'true') {
+                            defaultNodeProperties.height = nodeSize;
+                            defaultNodeProperties.width = nodeSize;
                         }
-                        if (nodeLabelPosition){
-                            var position = nodeLabelPosition.split(',');
-                            defaultNodeProperties['text-valign'] = getTextAlign(position[0]);
-                            defaultNodeProperties['text-halign'] = getTextAlign(position[1]);
-                        } else {
-                            defaultNodeProperties['text-valign'] = 'center';
-                            defaultNodeProperties['text-halign'] = 'center';
-                        }
+
+                        var nodeLabelPosition = getNodeLabelPosition(cyLabelPositionCoordinates);
+
+                        defaultNodeProperties['text-valign'] = nodeLabelPosition['text-valign'];
+                        defaultNodeProperties['text-halign'] = nodeLabelPosition['text-halign'];
+
                         if (nodeLabelFontFace){
                             var font = nodeLabelFontFace.split(',');
                             defaultNodeProperties['font-family'] = font[0];
                             defaultNodeProperties['font-weight'] = font[1];
                         } else {
-                            defaultNodeProperties['font-family'] = 'SansSerif';
+                            defaultNodeProperties['font-family'] = 'sans-serif';
                             defaultNodeProperties['font-weight'] = 'normal';
                         }
                         var defaultNodeStyle = {'selector': 'node', 'css': defaultNodeProperties};
-                        node_default_styles.push(defaultNodeStyle);
+                        nodeDefaultStyles.push(defaultNodeStyle);
 
                         _.forEach(vpElement.mappings, function (mapping, vp) {
                             //console.log(mapping);
                             //console.log('VP = ' + vp);
                             // need to check if the nodeSizedLocked is true for NODE_HEIGHT, NODE_WIDTH, and NODE_SIZE
-                            if ( !((vp ==='NODE_HEIGHT' || vp ==='NODE_HEIGHT')
-                                       && vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'true') &&
-
-                                !(vp ==='NODE_SIZE' &&( !vpElement.dependencies.nodeSizeLocked || (vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked == 'false')))
+                            if ( !((vp ==='NODE_HEIGHT' || vp ==='NODE_HEIGHT') &&
+                                vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'true') &&
+                                !(vp ==='NODE_SIZE' &&( !vpElement.dependencies.nodeSizeLocked || (vpElement.dependencies.nodeSizeLocked && vpElement.dependencies.nodeSizeLocked === 'false')))
                             ) {
 
                                 elementType = 'node';
                                 var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                                node_default_mappings = node_default_mappings.concat(styles);
+                                nodeDefaultMappings = nodeDefaultMappings.concat(styles);
                             }
                         });
 
@@ -973,22 +1398,25 @@ angular.module('ndexServiceApp')
                         var defaultEdgeProperties = {};
                         var selectedEdgeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
+                            var cyVisualAttribute = null;
+                            var cyVisualAttributeType = null;
                             //console.log('default node property ' + vp + ' = ' + value);
                             //special cases for locked edge color
-                            if (vpElement.dependencies.arrowColorMatchesEdge.toLowerCase() == 'true') {
-                                if(vp !== "EDGE_STROKE_UNSELECTED_PAINT" && vp !== "EDGE_SOURCE_ARROW_UNSELECTED_PAINT" &&
-                                    vp !== "EDGE_TARGET_ARROW_UNSELECTED_PAINT" ) {
-                                    if ( vp == "EDGE_UNSELECTED_PAINT") {   // add extra handling since the color is locked
-                                        var cyVisualAttribute = getCyVisualAttributeForVP("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
-                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_SOURCE_ARROW_UNSELECTED_PAINT");
+                            /** @namespace vpElement.dependencies.arrowColorMatchesEdge **/
+                            if (vpElement.dependencies.arrowColorMatchesEdge.toLowerCase() === 'true') {
+                                if(vp !== 'EDGE_STROKE_UNSELECTED_PAINT' && vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
+                                    vp !== 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' ) {
+                                    if ( vp === 'EDGE_UNSELECTED_PAINT') {   // add extra handling since the color is locked
+                                        cyVisualAttribute = getCyVisualAttributeForVP('EDGE_SOURCE_ARROW_UNSELECTED_PAINT');
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp('EDGE_SOURCE_ARROW_UNSELECTED_PAINT');
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
-                                        cyVisualAttribute = getCyVisualAttributeForVP("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
-                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp("EDGE_TARGET_ARROW_UNSELECTED_PAINT");
+                                        cyVisualAttribute = getCyVisualAttributeForVP('EDGE_TARGET_ARROW_UNSELECTED_PAINT');
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp('EDGE_TARGET_ARROW_UNSELECTED_PAINT');
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                     }
-                                    var cyVisualAttribute = getCyVisualAttributeForVP(vp);
+                                    cyVisualAttribute = getCyVisualAttributeForVP(vp);
                                     if (cyVisualAttribute) {
-                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                     } else if (vp === 'EDGE_STROKE_SELECTED_PAINT'){
                                         selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
@@ -1000,10 +1428,10 @@ angular.module('ndexServiceApp')
 
                                 }
                             } else {
-                                if ( vp != "EDGE_UNSELECTED_PAINT") {
-                                    var cyVisualAttribute = getCyVisualAttributeForVP(vp);
+                                if ( vp !== 'EDGE_UNSELECTED_PAINT') {
+                                    cyVisualAttribute = getCyVisualAttributeForVP(vp);
                                     if (cyVisualAttribute) {
-                                        var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
+                                        cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
                                         defaultEdgeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
                                     } else if (vp === 'EDGE_STROKE_SELECTED_PAINT') {
                                         selectedEdgeProperties['line-color'] = getCyVisualAttributeValue(value, 'color');
@@ -1018,33 +1446,34 @@ angular.module('ndexServiceApp')
 
                         });
                         if (_.keys(selectedEdgeProperties).length > 0){
-                            edge_selected_styles.push({'selector': 'edge:selected', 'css': selectedEdgeProperties});
+                            edgeSelectedStyles.push({'selector': 'edge:selected', 'css': selectedEdgeProperties});
                         }
                         var defaultEdgeStyle = {'selector': 'edge', 'css': defaultEdgeProperties};
-                        edge_default_styles.push(defaultEdgeStyle);
+                        edgeDefaultStyles.push(defaultEdgeStyle);
 
                         _.forEach(vpElement.mappings, function (mapping, vp) {
                             //console.log(mapping);
                             //console.log('VP = ' + vp);
                             elementType = 'edge';
+                            var styles = null;
 
-                            if (vpElement.dependencies.arrowColorMatchesEdge ) {
-                                if (vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
+                            if (vpElement.dependencies.arrowColorMatchesEdge ==='true' ) {
+                                if (vp !== 'EDGE_STROKE_UNSELECTED_PAINT' && vp !== 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' &&
                                     vp !== 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' )
                                 {
                                     if (vp === 'EDGE_UNSELECTED_PAINT') {
-                                        var styles = mappingStyle(elementType, 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
-                                        edge_default_mappings = edge_default_mappings.concat(styles);
+                                        styles = mappingStyle(elementType, 'EDGE_TARGET_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
+                                        edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                                         styles = mappingStyle(elementType, 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT' , mapping.type, mapping.definition, attributeNameMap);
-                                        edge_default_mappings = edge_default_mappings.concat(styles);
+                                        edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                                     }
-                                    var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                                    edge_default_mappings = edge_default_mappings.concat(styles);
+                                    styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
+                                    edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                                 }
                             } else {
 
-                                var styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
-                                edge_default_mappings = edge_default_mappings.concat(styles);
+                                styles = mappingStyle(elementType, vp, mapping.type, mapping.definition, attributeNameMap);
+                                edgeDefaultMappings = edgeDefaultMappings.concat(styles);
                             }
                         });
 
@@ -1058,7 +1487,8 @@ angular.module('ndexServiceApp')
 
                     } else if (elementType === 'nodes'){
                         // 'bypass' setting node specific properties
-                        var nodeId = vpElement['applies_to'];
+                        /** @namespace vpElement.applies_to **/
+                        var nodeId = vpElement.applies_to;
                         var nodeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
@@ -1069,11 +1499,11 @@ angular.module('ndexServiceApp')
                         });
                         var nodeSelector = 'node[ id = \'' + nodeId + '\' ]';
                         var nodeStyle = {'selector': nodeSelector, 'css': nodeProperties};
-                        node_specific_styles.push(nodeStyle);
+                        nodeSpecificStyles.push(nodeStyle);
                         
                     } else if (elementType === 'edges'){
                         // 'bypass' setting edge specific properties
-                        var edgeId = vpElement['applies_to'];
+                        var edgeId = vpElement.applies_to;
                         var edgeProperties = {};
                         _.forEach(vpElement.properties, function(value, vp){
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
@@ -1084,23 +1514,19 @@ angular.module('ndexServiceApp')
                         });
                         var edgeSelector = 'edge[ id = \'e' + edgeId + '\' ]';
                         var edgeStyle = {'selector': edgeSelector, 'css': edgeProperties};
-                        edge_specific_styles.push(edgeStyle);
-
-
+                        edgeSpecificStyles.push(edgeStyle);
                     }
                 });
             });
 
-
-            // concatenate all of the style elements in order of specificity
-            return node_default_styles.concat(
-                node_default_mappings,
-                node_specific_styles,
-                edge_default_styles,
-                edge_default_mappings,
-                edge_specific_styles,
-                node_selected_styles,
-                edge_selected_styles);
+            return nodeDefaultStyles.concat(
+                nodeDefaultMappings,
+                nodeSpecificStyles,
+                edgeDefaultStyles,
+                edgeDefaultMappings,
+                edgeSpecificStyles,
+                nodeSelectedStyles,
+                edgeSelectedStyles);
         };
 
 
@@ -1180,16 +1606,14 @@ angular.module('ndexServiceApp')
 
             }
             return true;
-
         };
 
-
-
+        /*
         factory.getCy = function () {
             return cy;
         };
+        */
 
         return factory;
-
     }]);
 

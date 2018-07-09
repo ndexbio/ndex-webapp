@@ -16,23 +16,60 @@
             </div>
           </div>
           <div class="form-group">
-              <label class="col-sm-3 control-label">Email</label>
+              <label class="col-sm-3 control-label">Email <span style="color:red">*</span></label>
               <div class="col-sm-8">
-                  <input  type="email" class="form-control"
+                  <input  type="email" name="userEmail" class="form-control"
                           placeholder="e.g., myemail@yahoo.com" ng-model='user.emailAddress' required>
+
+                  <div ng-show="editPersonalInfo.userEmail.$error.required"
+                       style="color:red; font-weight:bold; margin-top: 0.5em">E-mail is required
+                  </div>
+
+                  <div ng-show="editPersonalInfo.userEmail.$invalid && !editPersonalInfo.userEmail.$error.required"
+                       style="color:red; font-weight:bold; margin-top: 0.5em">Invalid e-mail
+                  </div>
               </div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Website</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" placeholder="e.g. www.ndexbio.com" ng-model='user.website'>
+              <input type="url" class="form-control"
+                     placeholder="e.g. www.ndexbio.com"
+                     name="userWebsite"
+                     ng-model='user.website'
+                     ng-change='checkLengthOfWebsite()'
+                     maxlength="{{maxInputLength}}">
+
+                <div ng-show="websiteTooLongWarning"
+                     style="color:red; font-weight:bold; margin-top: 0.5em"
+                     ng-bind-html="websiteTooLongWarning">
+                </div>
+
+                <div ng-show="editPersonalInfo.userWebsite.$invalid"
+                     style="color:red; font-weight:bold; margin-top: 0.5em">Invalid URL
+                </div>
+
             </div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Image Host</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" placeholder="e.g. http://i.imgur.com/09oVvZg.jpg"  
-                ng-model='user.image'>
+              <input type="url" class="form-control"
+                     placeholder="e.g. http://i.imgur.com/09oVvZg.jpg"
+                     name="imageHost"
+                     ng-model='user.image'
+                     ng-change='checkLengthOfImageHost()'
+                     maxlength="{{maxInputLength}}">
+
+                <div ng-show="imageURLTooLongWarning"
+                     style="color:red; font-weight:bold; margin-top: 0.5em"
+                     ng-bind-html="imageURLTooLongWarning">
+                </div>
+
+                <div ng-show="editPersonalInfo.imageHost.$invalid"
+                     style="color:red; font-weight:bold; margin-top: 0.5em">Invalid URL
+                </div>
+
             </div>
           </div>
 

@@ -1,29 +1,33 @@
 // create the controller and inject Angular's $scope
-ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', '$route',
-    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', 'ndexNavigation',
-    function ( ndexService, ndexUtility, sharedProperties, $route,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, ndexNavigation) {
+ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
+    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
+    function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
 
         $scope.$on('IdleStart', function() {
-            if ( window.currentSignInType == 'basic')
+            if (window.currentSignInType === 'basic') {
                 $scope.main.signout();
+            }
         });
 
 
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
         });
-        $scope.changeTitle = function(obj) {
-            setTooltip("Copy the NDEx citation information to the clipboard");
-        };
-
-        var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
 
         function setTooltip(message) {
             $('#copyNDExCitationToClipboardId').tooltip('hide')
                 .attr('data-original-title', message)
                 .tooltip('show');
+        }
+
+        $scope.changeTitle = function() {
+            setTooltip('Copy the NDEx citation information to the clipboard');
         };
+
+        //noinspection JSCheckFunctionSignatures
+        var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
+
         /*
         function hideTooltip() {
             setTimeout(function() {
@@ -31,7 +35,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }, 1000);
         };
         */
-        clipboard.on('success', function(e) {
+        clipboard.on('success', function() {
             setTooltip('Copied');
         });
         $scope.setToolTips = function(){
@@ -49,6 +53,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.main.loggedIn = false;
         $scope.main.showSignIn = true;
 
+        var showUserGreeting = function() {
+            var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
+            $scope.main.userFirstAndLastNames = userFirstAndLastNames ? 'Hi, ' + userFirstAndLastNames : 'MyAccount';
+        };
+
         var signInHandler = function () {
             //listener for changes in log in.
             $scope.main.loggedIn = true;
@@ -60,34 +69,40 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             if ($rootScope.reloadRoute) {
                 delete $rootScope.reloadRoute;
                 $route.reload();
-            };
+            }
         };
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
         var signOutHandler = function () {
+            $rootScope.signOut = true;
+            if (typeof(Storage) !== 'undefined') {
+                sessionStorage.clear();
+            }
+            userSessionTablesSettings.clearState();
+
             $scope.main.loggedIn = false;
             delete $scope.main.userName;
-            if ( window.currentSignInType == "basic") {
+            if (window.currentSignInType === 'basic') {
                 ndexUtility.clearUserCredentials();
-                delete $http.defaults.headers.common['Authorization'];
+                delete $http.defaults.headers.common.Authorization;
             } else {
-                gapi.auth2.getAuthInstance().signOut();
-            };
+                /** @namespace gapi.auth2.getAuthInstance() **/
+                var authInstanceObj =  gapi.auth2.getAuthInstance();
+                if (authInstanceObj) {
+                    /** @namespace authInstanceObj.signOut() **/
+                    authInstanceObj.signOut();
+                }
+                //gapi.auth2.getAuthInstance().signOut();
+            }
 	        window.currentNdexUser = null;
             window.currentSignInType = null;
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
             $scope.main.showSignIn = true;
-        }
+        };
 
         $scope.$on('LOGGED_OUT', signOutHandler);
-
-
-        var showUserGreeting = function() {
-            var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
-            $scope.main.userFirstAndLastNames = userFirstAndLastNames ? "Hi, " + userFirstAndLastNames : "MyAccount";
-        };
 
         $rootScope.$on('SHOW_UPDATED_USER_NAME', showUserGreeting);
 
@@ -96,13 +111,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.strLength = 0;
         $scope.maxSearchInputLength = 250;
 
-        $scope.notAllowedInSearchExpansion      = [" NOT ", " OR ", " AND ", ":"];
-        $scope.notAllowedInSearchExpansionStart = ["NOT ",  "OR ",  "AND "];
-        $scope.notAllowedInSearchExpansionEnd   = [" NOT",  " OR",  " AND"];
-        $scope.notAllowedInSearchExpansionEqual = ["NOT",   "OR",   "AND", ":"];
+        $scope.notAllowedInSearchExpansion      = [' NOT ', ' OR ', ' AND ', ':'];
+        $scope.notAllowedInSearchExpansionStart = ['NOT ',  'OR ',  'AND '];
+        $scope.notAllowedInSearchExpansionEnd   = [' NOT',  ' OR',  ' AND'];
+        $scope.notAllowedInSearchExpansionEqual = ['NOT',   'OR',   'AND', ':'];
 
-        $scope.arrayOfValsForSearchExpansion = ["ALL", "NETWORKS"];
-        var searchTitle = "Perform Search Term Expansion (Genes and Proteins only)";
+        $scope.arrayOfValsForSearchExpansion = ['ALL', 'NETWORKS'];
+        var searchTitle = 'Perform Search Term Expansion (Genes and Proteins only)';
 
         $scope.main.searchTermExpansionSelected = false;
 
@@ -113,24 +128,19 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             var strLength = $scope.main.searchString.length;
             //console.log("strLength = " + strLength);
             if (strLength >= $scope.maxSearchInputLength) {
-                $scope.stringTooLongWarning = "The maximum length for this field is " +
-                    $scope.maxSearchInputLength + " characters.";
+                $scope.stringTooLongWarning = 'The maximum length for this field is ' +
+                    $scope.maxSearchInputLength + ' characters.';
             } else {
                 delete $scope.stringTooLongWarning;
-            };
+            }
         };
 
 
-        if( $location.path() == '/' || $location.path() == '/signIn')
-            $scope.main.hideSearchBar = true;
-        else
-            $scope.main.hideSearchBar = false;
+        $scope.main.hideSearchBar = ($location.path() === '/' || $location.path() === '/signIn');
+
 
         $scope.$on('$routeChangeSuccess',function(){
-            if( $location.path() == '/' || $location.path() == '/signIn')
-                $scope.main.hideSearchBar = true;
-            else
-                $scope.main.hideSearchBar = false;
+            $scope.main.hideSearchBar = ($location.path() === '/' || $location.path() === '/signIn');
         });
 
         $scope.showSearchMenu = false;
@@ -144,23 +154,235 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.main.goToCurrentUser = function(){
             if (sharedProperties.currentUserId) {
                 //$location.path("/user/" + sharedProperties.currentUserId);
-                $location.path("/myAccount");
+                $location.path('/myAccount');
             }
         };
 
         $scope.isActiveNetworkView = function (viewLocation) {
             var locationPath = $location.path();
             var viewLocationPath = viewLocation + sharedProperties.getCurrentNetworkId();
-            var active = (viewLocationPath === locationPath);
-            return active;
+            return viewLocationPath === locationPath;
         };
 
         $scope.isActiveUserView = function (viewLocation) {
             var locationPath = $location.path();
             var viewLocationPath = viewLocation + sharedProperties.getCurrentUserId();
-            var active = (viewLocationPath === locationPath);
-            return active;
+            return viewLocationPath === locationPath;
         };
+
+
+        function initMissingConfigParams(config) {
+
+            // check configuration parameters loaded from ndex-webapp-config.js;
+            // if any of config parameters missing, assign default values
+            if (typeof config.requireAuthentication === 'undefined') {
+                config.requireAuthentication = false;
+            }
+            if (typeof config.welcome === 'undefined') {
+                config.welcome = 'NDEx Web App deployed at My Company';
+            }
+            if (typeof config.networkQueryEdgeLimit === 'undefined') {
+                config.networkQueryEdgeLimit = 50000;
+            }
+            if (typeof config.networkTableLimit === 'undefined') {
+                config.networkTableLimit = 500;
+            }
+            if (typeof config.idleTime === 'undefined') {
+                config.idleTime = 3600;
+            }
+            if (typeof config.uploadSizeLimit === 'undefined') {
+                config.uploadSizeLimit = 'none';
+            }
+
+            if (typeof config.messages === 'undefined') {
+                config.messages = {};
+            }
+            if (typeof config.messages.serverDown === 'undefined') {
+                config.messages.serverDown = '<img src="images/maintenance.png">';
+            }
+
+            //if (typeof config.contactUs === 'undefined') {
+            //    config.contactUs = {};
+            //}
+            //if (typeof config.contactUs.name === 'undefined') {
+            //    config.contactUs.name = "Contact Us";
+            //}
+            //if (typeof config.contactUs.href === 'undefined') {
+            //    config.contactUs.href = "http://www.ndexbio.org/contact-us";
+            //}
+            //if (typeof config.contactUs.target === 'undefined') {
+            //    config.contactUs.target = "NDEx Home";
+            //}
+
+            if (typeof config.signIn === 'undefined') {
+                config.signIn = {};
+            }
+            if (typeof config.signIn.header === 'undefined') {
+                config.signIn.header = 'Sign in to your NDEx account';
+            }
+            if (typeof config.signIn.footer === 'undefined') {
+                config.signIn.footer = 'Need an account?';
+            }
+            if (typeof config.signIn.showForgotPassword === 'undefined') {
+                config.signIn.showForgotPassword = true;
+            }
+            if (typeof config.signIn.showSignup === 'undefined') {
+                config.signIn.showSignup = true;
+            }
+            if (typeof config.ndexServerUri === 'undefined') {
+                // ndexServerUri is a required parameter -- give an error message;
+                // replace the messages.serverDown message
+                config.messages.serverDown = 'Error in ndex-webapp-config.js:<br>' +
+                    'The parameter ndexServerUri is required.<br>' +
+                    'Please edit the configuration file to provide this URI.'   ;
+            }
+
+
+            // check if any of configurable Navigation Bar links are missing
+            // and assign default values if yes
+            if (typeof config.logoLink === 'undefined') {
+                config.logoLink = {};
+            }
+            if (typeof config.logoLink.href === 'undefined') {
+                config.logoLink.href = 'http://preview.ndexbio.org';
+            }
+            if (typeof config.logoLink.warning === 'undefined') {
+                config.logoLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
+            }
+            if (typeof config.logoLink.showWarning === 'undefined') {
+                config.logoLink.showWarning = false;
+            }
+
+
+            if (typeof config.newsLink === 'undefined') {
+                config.newsLink = {};
+            }
+            if (typeof config.newsLink.label === 'undefined') {
+                config.newsLink.label = 'News';
+            }
+            if (typeof config.newsLink.href === 'undefined') {
+                config.newsLink.href = 'http://www.home.ndexbio.org/index';
+            }
+            if (typeof config.newsLink.warning === 'undefined') {
+                config.newsLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
+            }
+            if (typeof config.newsLink.showWarning === 'undefined') {
+                config.newsLink.showWarning = false;
+            }
+
+            if (typeof config.aboutLink === 'undefined') {
+                config.aboutLink = {};
+            }
+            if (typeof config.aboutLink.label === 'undefined') {
+                config.aboutLink.label = 'About';
+            }
+            if (typeof config.aboutLink.href === 'undefined') {
+                config.aboutLink.href = 'http://home.ndexbio.org/about-ndex';
+            }
+            if (typeof config.aboutLink.warning === 'undefined') {
+                config.logoLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
+            }
+            if (typeof config.aboutLink.showWarning === 'undefined') {
+                config.aboutLink.showWarning = false;
+            }
+
+            if (typeof config.documentationLink === 'undefined') {
+                config.documentationLink = {};
+            }
+            if (typeof config.documentationLink.label === 'undefined') {
+                config.documentationLink.label = 'Docs';
+            }
+            if (typeof config.documentationLink.href === 'undefined') {
+                config.documentationLink.href = 'http://home.ndexbio.org/quick-start';
+            }
+            if (typeof config.documentationLink.warning === 'undefined') {
+                config.documentationLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
+            }
+            if (typeof config.documentationLink.showWarning === 'undefined') {
+                config.documentationLink.showWarning = false;
+            }
+            if ((typeof config.refreshIntervalInSeconds === 'undefined') ||
+                (typeof config.refreshIntervalInSeconds !== 'number') ||
+                config.refreshIntervalInSeconds < 0) {
+                // refresh interval defaults to 0 seconds (disabled) in case it is not explicitly defined,
+                // defined as non-number or negative number
+                config.refreshIntervalInSeconds = 0;
+            }
+
+            /*
+             if (typeof config.apiLink === 'undefined') {
+             config.apiLink = {};
+             }
+             if (typeof config.apiLink.label === 'undefined') {
+             config.apiLink.label = "API";
+             }
+             if (typeof config.apiLink.href === 'undefined') {
+             //config.apiLink.href = "http://public.ndexbio.org/#/api";
+             config.apiLink.href = "#/api";
+             }
+             if (typeof config.apiLink.warning === 'undefined') {
+             config.apiLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
+             }
+             if (typeof config.apiLink.warn === 'undefined') {
+             config.apiLink.warn = false;
+             }
+             */
+
+            if (typeof config.reportBugLink === 'undefined') {
+                config.reportBugLink = {};
+            }
+            if (typeof config.reportBugLink.label === 'undefined') {
+                config.reportBugLink.label = 'Report Bug';
+            }
+            if (typeof config.reportBugLink.href === 'undefined') {
+                config.reportBugLink.href = 'http://home.ndexbio.org/report-a-bug';
+            }
+            if (typeof config.reportBugLink.warning === 'undefined') {
+                config.reportBugLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
+            }
+            if (typeof config.reportBugLink.showWarning === 'undefined') {
+                config.reportBugLink.showWarning = false;
+            }
+
+            if (typeof config.contactUsLink === 'undefined') {
+                config.contactUsLink = {};
+            }
+            if (typeof config.contactUsLink.label === 'undefined') {
+                config.contactUsLink.label = 'Contact Us';
+            }
+            if (typeof config.contactUsLink.href === 'undefined') {
+                config.contactUsLink.href = 'http://home.ndexbio.org/contact-us/';
+            }
+            if (typeof config.contactUsLink.warning === 'undefined') {
+                config.contactUsLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
+            }
+            if (typeof config.contactUsLink.showWarning === 'undefined') {
+                config.contactUsLink.showWarning = false;
+            }
+
+
+            if (typeof config.searchDocLink === 'undefined') {
+                config.searchDocLink = {};
+            }
+            if (typeof config.searchDocLink.label === 'undefined') {
+                config.searchDocLink.label = 'Documentation on Searching in NDEx';
+            }
+            if (typeof config.searchDocLink.href === 'undefined') {
+                config.searchDocLink.href = 'http://home.ndexbio.org/finding-and-querying-networks/';
+            }
+            if (typeof config.searchDocLink.warning === 'undefined') {
+                config.searchDocLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
+            }
+            if (typeof config.searchDocLink.showWarning === 'undefined') {
+                config.searchDocLink.showWarning = false;
+            }
+
+            if ((typeof config.openInCytoscapeEdgeThresholdWarning === 'undefined') ||
+                (typeof config.openInCytoscapeEdgeThresholdWarning !== 'number') ||
+                config.openInCytoscapeEdgeThresholdWarning < 0) {
+                config.openInCytoscapeEdgeThresholdWarning = 300000;
+            }
+        }
         
         // check configuration parameters loaded from ndex-webapp-config.js;
         // if any of config parameters missing, assign default values
@@ -169,7 +391,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         // "Cite NDEx" menu item is not configurable.
         window.ndexSettings.citeNDEx = {};
-        window.ndexSettings.citeNDEx.label = "Cite NDEx";
+        window.ndexSettings.citeNDEx.label = 'Cite NDEx';
 
 
         $scope.config = window.ndexSettings;
@@ -178,42 +400,45 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.main.serverIsDown = null;
 
         $scope.main.ndexServerVersion = null;
-
+        window.navigator.ndexServerVersion = 'ndex-webapp/';
 
         ndexService.getServerStatus('full',
-            function(data, status, headers, config) {
+            function(data) {
                 // this callback will be called asynchronously
                 // when the response is available
                 if (data && data.properties) {
                     if (data.properties.ImporterExporters && data.properties.ImporterExporters.length > 0) {
                         $scope.$parent.ImporterExporters = JSON.parse(JSON.stringify(data.properties.ImporterExporters));
-                    };
+                    }
+                    /** @namespace data.properties.ServerVersion **/
                     if (data.properties.ServerVersion) {
                         $scope.main.ndexServerVersion = data.properties.ServerVersion;
-                    };
+                        window.navigator.ndexServerVersion += data.properties.ServerVersion;
+                    }
                 }
                 $scope.main.serverIsDown = false;
 
-                document.getElementById("hiddenElementId").style.display  = "";
-                document.getElementById("hiddenElementId1").style.display = "";
-                document.getElementById("hiddenElementId2").style.display = "";
-                document.getElementById("hiddenElementId3").style.display = "";
+                document.getElementById('hiddenElementId').style.display  = '';
+                document.getElementById('hiddenElementId1').style.display = '';
+                document.getElementById('hiddenElementId2').style.display = '';
+                document.getElementById('hiddenElementId3').style.display = '';
             },
-            function(data, status, headers, config) {
+            function() {
                 $scope.main.serverIsDown = true;
+                window.navigator.ndexServerVersion += 'unknown';
 
-                document.getElementById("hiddenElementId").style.display  = "";
-                document.getElementById("hiddenElementId1").style.display = "";
-                document.getElementById("hiddenElementId2").style.display = "";
-                document.getElementById("hiddenElementId3").style.display = "";
+                document.getElementById('hiddenElementId').style.display  = '';
+                document.getElementById('hiddenElementId1').style.display = '';
+                document.getElementById('hiddenElementId2').style.display = '';
+                document.getElementById('hiddenElementId3').style.display = '';
 
                 // this will remove (hide) NDEx logo from the top left in the Navigation Bar
-                document.getElementById("hiddenElementId").style.background  = "transparent";
+                document.getElementById('hiddenElementId').style.background  = 'transparent';
             });
 
         $scope.main.startSignIn = function()
         {
-            $location.path("/signIn");
+            $location.path('/signIn');
         };
 
         
@@ -223,15 +448,15 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
          */
         $scope.main.isSupportedBrowserUsed = function() {
 
-            if (navigator.userAgent.indexOf("Chrome") != -1) {
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
                 return true;
             }
 
-            if (navigator.userAgent.indexOf("Firefox") != -1) {
+            if (navigator.userAgent.indexOf('Firefox') !== -1) {
                 return true;
             }
 
-            if (navigator.userAgent.indexOf("Safari") != -1) {
+            if (navigator.userAgent.indexOf('Safari') !== -1) {
                 return true;
             }
 
@@ -245,36 +470,39 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.main.signout = function (noRedirectToHome) {
             $scope.$emit('LOGGED_OUT');
             if (!noRedirectToHome){
-                $location.path("/");
+                $location.path('/');
             }
         };
 
         $scope.main.handleStorageEvent = function(event)
         {
-            if( event.key == "loggedInUser" )
+            if (event.key === 'loggedInUser')
             {
-                if( event.newValue == null || event.newValue == "null" )
+                // we need to use  /** @type {boolean} */ below to silence up Webstorm's
+                // "Binary operation argument type string is not compatible with type null" warning
+                if (event.newValue === /** @type {boolean} */null || event.newValue === 'null')
                 {
                     $scope.main.signout();
                 }
-            };
+            }
         };
 
         if (window.addEventListener)
         {
-            window.addEventListener("storage", $scope.main.handleStorageEvent, false);
+            window.addEventListener('storage', $scope.main.handleStorageEvent, false);
         }
         else
         {
-            window.attachEvent("onstorage", $scope.main.handleStorageEvent);
+            window.attachEvent('onstorage', $scope.main.handleStorageEvent);
         }
 
         //The purpose of the heart beat is measure the time since the app was last used.
         var lastHeartbeat = localStorage.getItem('last-heartbeat');
-        if( lastHeartbeat && window.currentSignInType == 'basic')
+        if( lastHeartbeat && window.currentSignInType === 'basic')
         {
-            if( Date.now() - lastHeartbeat > $scope.config.idleTime * 1000 )
+            if( Date.now() - lastHeartbeat > $scope.config.idleTime * 1000 ) {
                 $scope.main.signout(true); // true = no redirect to home
+            }
         }
 
         var recordHeartbeat = function()
@@ -283,27 +511,29 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
 
-        var setItemToLocalStorage = function(item, value) {
-            if (typeof(Storage)) {
-                localStorage.setItem(item, value);
-            }
-        };
-
+        /*
         $scope.getItemFromLocalStorage = function(item) {
             if (typeof(Storage)) {
-                var v = JSON.parse(localStorage.getItem(item));
-                return v;
+                return JSON.parse(localStorage.getItem(item));
             }
             return 'undefined';
         };
+        */
 
         //Hard-coding the heartbeat as a ratio of the idle time for now. So, a heart-beat will be set
-        if (window.currentSignInType == 'basic')
-            $interval(recordHeartbeat, $scope.config.idleTime * 10 );
+        if (window.currentSignInType === 'basic') {
+            $interval(recordHeartbeat, $scope.config.idleTime * 10);
+        }
 
-        //Whenever the browser or a tab containing the app is closed, record the heart beat.
-        window.onbeforeunload = function (event)
+        //Whenever the browser or a tab containing the app is closed or reloaded, record the heart beat.
+        window.onbeforeunload = function ()
         {
+            /*
+            if ($scope.main.loggedIn) {
+                // for logged in users only, remember the View name where reload was just performed
+                userSessionTablesSettings.setLastReloadViewName();
+            }
+            */
             recordHeartbeat();
         };
 
@@ -327,16 +557,16 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         $scope.main.searchType = 'All';
         const SEARCH_PLACEHOLDER_TEXT_MAP = {
-            All : "Search for networks, users, and groups",
-            Networks : "Search for networks",
-            Users : "Search for users",
-            Groups : "Search for groups"
+            All : 'Search for networks, users, and groups',
+            Networks : 'Search for networks',
+            Users : 'Search for users',
+            Groups : 'Search for groups'
         };
 
         /*
         $scope.main.searchUsersExamples = [
             {
-                description: 'Any occurance of "NCI" the name of the user',
+                description: 'Any occurrence of "NCI" the name of the user',
                 searchString: 'NCI',
                 searchType: 'Users'
             }
@@ -357,7 +587,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             // in the search field and thus runs the search with an empty
             var searchStringEncoded = encodeURIComponent($scope.main.searchString);
             var searchURL = '/search';
-            if ($location.path() != searchURL) {
+            if ($location.path() !== searchURL) {
                 $location.path(searchURL);
             }
             var urlBeforePathChange = $location.absUrl();
@@ -376,12 +606,15 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 // the user is re-issuing the last search, and we need to reload
                 // the route to enforce search
                 $route.reload();
-            };
+            }
         };
 
         // make search type sticky
-        if ($location.path() == '/search')
+        /*
+        if ($location.path() === '/search') {
             $scope.main.searchType = $location.search().searchType;
+        }
+        */
 
 /*
         $scope.main.searchAllExamples = [
@@ -406,7 +639,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             },
 
             {
-                description: 'With "AND" for co-occurance : "TP53 AND BARD1"',
+                description: 'With "AND" for co-occurrence : "TP53 AND BARD1"',
                 searchString: 'TP53 AND BARD1',
                 searchType: 'Networks'
             },
@@ -466,10 +699,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $scope.main.search();
         };
 
-        //end Search code
-
-        //initializions for page refresh
-
         /*----------------------------------------------
          Citing NDEx
          ----------------------------------------------*/
@@ -486,12 +715,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         //    "http://www.cell.com/cell-systems/abstract/S2405-4712(15)00147-7";
 
 
-        $scope.NDEx.citation = "Dexter Pratt, Jing Chen, David Welker, Ricardo Rivas, Rudolf Pillich, Vladimir Rynkov, " +
-            "Keiichiro Ono, Carol Miello, Lyndon Hicks, Sandor Szalma, Aleksandar Stojmirovic, Radu Dobrin, " +
-            "Michael Braxenthaler, Jan Kuentzer, Barry Demchak, Trey Ideker. NDEx, the Network Data Exchange. " +
-            "Cell Systems, Volume 1, Issue 4, 302-305 (2015). DOI:/10.1016/j.cels.2015.10.001";
+        $scope.NDEx.citation = 'Dexter Pratt, Jing Chen, David Welker, Ricardo Rivas, Rudolf Pillich, Vladimir Rynkov, ' +
+            'Keiichiro Ono, Carol Miello, Lyndon Hicks, Sandor Szalma, Aleksandar Stojmirovic, Radu Dobrin, ' +
+            'Michael Braxenthaler, Jan Kuentzer, Barry Demchak, Trey Ideker. NDEx, the Network Data Exchange. ' +
+            'Cell Systems, Volume 1, Issue 4, 302-305 (2015). DOI:/10.1016/j.cels.2015.10.001';
 
-        // ctation that will be copied to clipboard; we replace HTML new break line chars (<br>) with ascii "\n"
+        // citation that will be copied to clipboard; we replace HTML new break line chars (<br>) with ascii "\n"
         // $scope.NDEx.citationProcessed = $scope.NDEx.citation.replace(/<br>/g, "\n");
 
         $scope.NDEx.openQuoteNDExModal = function () {
@@ -521,7 +750,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.redirectToExternalLink = function(redirectObj) {
 
             if (redirectObj.showWarning) {
-                var choice = confirm(redirectObj.warning + "\n" + redirectObj.href);
+                var choice = window.confirm(redirectObj.warning + '\n' + redirectObj.href);
                 if (!choice) {
                     // user chose not to follow the link (not to redirect to
                     // external site); don't do anything
@@ -549,7 +778,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
 
         $scope.collapseHamburgerMenu = function() {
-            $(".navbar-collapse.in").collapse('hide');
+            $('.navbar-collapse.in').collapse('hide');
         };
         $scope.collapseHamburgerMenuAfterMs = function(timeInMs) {
             setTimeout(function() {
@@ -561,7 +790,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
          $scope.showSearchBar = function() {
 
-             var  modalInstance = $modal.open({
+             $modal.open({
                  templateUrl: 'views/search-modal.html',
                  //keyboard: true,
                  scope: $scope,
@@ -578,7 +807,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                      $scope.closeModal = function() {
                          $modalInstance.close();
                      };
-                     
                  }
              });
          };
@@ -590,34 +818,33 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
              $scope.searchTermExpansionEnabled = false;
 
 
-             if ($scope.main.searchType.toUpperCase() == "USERS") {
-                 $scope.main.searchTitle = "Search Term Expansion is not available when performing a User search";
+             if ($scope.main.searchType.toUpperCase() === 'USERS') {
+                 $scope.main.searchTitle = 'Search Term Expansion is not available when performing a User search';
                  return true;
-             };
-             if ($scope.main.searchType.toUpperCase() == "GROUPS") {
-                 $scope.main.searchTitle = "Search Term Expansion is not available when performing a Group search";
+             }
+             if ($scope.main.searchType.toUpperCase() === 'GROUPS') {
+                 $scope.main.searchTitle = 'Search Term Expansion is not available when performing a Group search';
                  return true;
-             };
-
+             }
 
              if (!$scope.main.searchTermExpansionSelected) {
                  $scope.main.searchTitle = searchTitle;
                  $scope.searchTermExpansionEnabled = true;
                  return false;
-             };
+             }
 
 
              _.forEach($scope.notAllowedInSearchExpansionEqual, function(term) {
-                 if ($scope.main.searchString.trim() == term) {
+                 if ($scope.main.searchString.trim() === term) {
                      foundNotAllowedInSearchExpansion = true;
                      // the return false;  statement breaks out of the current lodash _.forEach loop
                      return false;
-                 };
+                 }
              });
              if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
                  return true;
-             };
+             }
 
 
              _.forEach($scope.notAllowedInSearchExpansionStart, function(term) {
@@ -626,12 +853,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                      foundNotAllowedInSearchExpansion = true;
                      // the return false;  statement breaks out of the current lodash _.forEach loop
                      return false;
-                 };
+                 }
              });
              if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
                  return true;
-             };
+             }
 
              _.forEach($scope.notAllowedInSearchExpansion, function(term) {
 
@@ -639,12 +866,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                      foundNotAllowedInSearchExpansion = true;
                      // the return false;  statement breaks out of the current lodash _.forEach loop
                      return false;
-                 };
+                 }
              });
              if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
                  return true;
-             };
+             }
 
 
              _.forEach($scope.notAllowedInSearchExpansionEnd, function(term) {
@@ -652,12 +879,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                      foundNotAllowedInSearchExpansion = true;
                      // the return false;  statement breaks out of the current lodash _.forEach loop
                      return false;
-                 };
+                 }
              });
              if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = "Search Term Expansion is not compatible with Lucene syntax (Boolean operators)";
+                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
                  return true;
-             };
+             }
 
              $scope.main.searchTitle = searchTitle;
              $scope.searchTermExpansionEnabled = true;
@@ -669,228 +896,17 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
          Ensure that Config Parameters have valid values
          ----------------------------------------------*/
 
-        function initMissingConfigParams(config) {
-
-            // check configuration parameters loaded from ndex-webapp-config.js;
-            // if any of config parameters missing, assign default values
-            if (typeof config.requireAuthentication === 'undefined') {
-                config.requireAuthentication = false;
-            }
-            if (typeof config.welcome === 'undefined') {
-                config.welcome = "NDEx Web App deployed at My Company";
-            }
-            if (typeof config.networkQueryLimit === 'undefined') {
-                config.networkQueryLimit = 1500;
-            }
-            if (typeof config.networkTableLimit === 'undefined') {
-                config.networkTableLimit = 500;
-            }
-            if (typeof config.idleTime === 'undefined') {
-                config.idleTime = 3600;
-            }
-            if (typeof config.uploadSizeLimit === 'undefined') {
-                config.uploadSizeLimit = "none";
-            }
-
-            if (typeof config.messages === 'undefined') {
-                config.messages = {};
-            }
-            if (typeof config.messages.serverDown === 'undefined') {
-                config.messages.serverDown = "<img src='images/maintenance.png'>";
-            }
-
-            //if (typeof config.contactUs === 'undefined') {
-            //    config.contactUs = {};
-            //}
-            //if (typeof config.contactUs.name === 'undefined') {
-            //    config.contactUs.name = "Contact Us";
-            //}
-            //if (typeof config.contactUs.href === 'undefined') {
-            //    config.contactUs.href = "http://www.ndexbio.org/contact-us";
-            //}
-            //if (typeof config.contactUs.target === 'undefined') {
-            //    config.contactUs.target = "NDEx Home";
-            //}
-
-            if (typeof config.signIn === 'undefined') {
-                config.signIn = {};
-            }
-            if (typeof config.signIn.header === 'undefined') {
-                config.signIn.header = "Sign in to your NDEx account";
-            }
-            if (typeof config.signIn.footer === 'undefined') {
-                config.signIn.footer = "Need an account?";
-            }
-            if (typeof config.signIn.showForgotPassword === 'undefined') {
-                config.signIn.showForgotPassword = true;
-            }
-            if (typeof config.signIn.showSignup === 'undefined') {
-                config.signIn.showSignup = true;
-            }
-            if (typeof config.ndexServerUri === 'undefined') {
-                // ndexServerUri is a required parameter -- give an error message;
-                // replace the messages.serverDown message
-                config.messages.serverDown = "Error in ndex-webapp-config.js:<br>" +
-                    "The parameter ndexServerUri is required.<br>" +
-                    "Please edit the configuration file to provide this URI."   ;
-            }
-
-
-            // check if any of configurable Navigation Bar links are missing
-            // and assign default values if yes
-            if (typeof config.logoLink === 'undefined') {
-                config.logoLink = {};
-            }
-            if (typeof config.logoLink.href === 'undefined') {
-                config.logoLink.href = "http://preview.ndexbio.org";
-            }
-            if (typeof config.logoLink.warning === 'undefined') {
-                config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.logoLink.showWarning === 'undefined') {
-                config.logoLink.showWarning = false;
-            }
-
-
-            if (typeof config.newsLink === 'undefined') {
-                config.newsLink = {};
-            }
-            if (typeof config.newsLink.label === 'undefined') {
-                config.newsLink.label = "News";
-            }
-            if (typeof config.newsLink.href === 'undefined') {
-                config.newsLink.href = "http://www.home.ndexbio.org/index";
-            }
-            if (typeof config.newsLink.warning === 'undefined') {
-                config.newsLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.newsLink.showWarning === 'undefined') {
-                config.newsLink.showWarning = false;
-            }
-
-            if (typeof config.aboutLink === 'undefined') {
-                config.aboutLink = {};
-            }
-            if (typeof config.aboutLink.label === 'undefined') {
-                config.aboutLink.label = "About";
-            }
-            if (typeof config.aboutLink.href === 'undefined') {
-                config.aboutLink.href = "http://home.ndexbio.org/about-ndex";
-            }
-            if (typeof config.aboutLink.warning === 'undefined') {
-                config.logoLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.aboutLink.showWarning === 'undefined') {
-                config.aboutLink.showWarning = false;
-            }
-
-            if (typeof config.documentationLink === 'undefined') {
-                config.documentationLink = {};
-            }
-            if (typeof config.documentationLink.label === 'undefined') {
-                config.documentationLink.label = "Docs";
-            }
-            if (typeof config.documentationLink.href === 'undefined') {
-                config.documentationLink.href = "http://home.ndexbio.org/quick-start";
-            }
-            if (typeof config.documentationLink.warning === 'undefined') {
-                config.documentationLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.documentationLink.showWarning === 'undefined') {
-                config.documentationLink.showWarning = false;
-            }
-            if ((typeof config.refreshIntervalInSeconds === 'undefined') ||
-                (typeof config.refreshIntervalInSeconds != 'number') ||
-                config.refreshIntervalInSeconds < 0) {
-                // refresh interval defaults to 0 seconds (disabled) in case it is not explicitly defined,
-                // defined as non-number or negative number
-                config.refreshIntervalInSeconds = 0;
-            };
-
-
-            /*
-            if (typeof config.apiLink === 'undefined') {
-                config.apiLink = {};
-            }
-            if (typeof config.apiLink.label === 'undefined') {
-                config.apiLink.label = "API";
-            }
-            if (typeof config.apiLink.href === 'undefined') {
-                //config.apiLink.href = "http://public.ndexbio.org/#/api";
-                config.apiLink.href = "#/api";
-            }
-            if (typeof config.apiLink.warning === 'undefined') {
-                config.apiLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.apiLink.warn === 'undefined') {
-                config.apiLink.warn = false;
-            }
-            */
-
-            if (typeof config.reportBugLink === 'undefined') {
-                config.reportBugLink = {};
-            }
-            if (typeof config.reportBugLink.label === 'undefined') {
-                config.reportBugLink.label = "Report Bug";
-            }
-            if (typeof config.reportBugLink.href === 'undefined') {
-                config.reportBugLink.href = "http://home.ndexbio.org/report-a-bug";
-            }
-            if (typeof config.reportBugLink.warning === 'undefined') {
-                config.reportBugLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.reportBugLink.showWarning === 'undefined') {
-                config.reportBugLink.showWarning = false;
-            }
-
-            if (typeof config.contactUsLink === 'undefined') {
-                config.contactUsLink = {};
-            }
-            if (typeof config.contactUsLink.label === 'undefined') {
-                config.contactUsLink.label = "Contact Us";
-            }
-            if (typeof config.contactUsLink.href === 'undefined') {
-                config.contactUsLink.href = "http://home.ndexbio.org/contact-us/";
-            }
-            if (typeof config.contactUsLink.warning === 'undefined') {
-                config.contactUsLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.contactUsLink.showWarning === 'undefined') {
-                config.contactUsLink.showWarning = false;
-            }
-
-            
-            if (typeof config.searchDocLink === 'undefined') {
-                config.searchDocLink = {};
-            }
-            if (typeof config.searchDocLink.label === 'undefined') {
-                config.searchDocLink.label = "Documentation on Searching in NDEx";
-            }
-            if (typeof config.searchDocLink.href === 'undefined') {
-                config.searchDocLink.href = "http://home.ndexbio.org/finding-and-querying-networks/";
-            }
-            if (typeof config.searchDocLink.warning === 'undefined') {
-                config.searchDocLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-            }
-            if (typeof config.searchDocLink.showWarning === 'undefined') {
-                config.searchDocLink.showWarning = false;
-            }
-        }
-
-
-        function registerSignedInUser(data, type) {
+        function registerSignedInUser(data) {
             sharedProperties.setCurrentUser(data.externalId, data.userName);
 
             $rootScope.$emit('LOGGED_IN');
-            if ( $scope.signIn != null) {
+            if ($scope.signIn) {
                 $scope.signIn.userName = null;
                 $scope.signIn.password = null;
             }
         }
 
-        if (window.currentSignInType != null ) {
-            registerSignedInUser(window.currentNdexUser, window.currentSignInType);
+        if (window.currentSignInType) {
+            registerSignedInUser(window.currentNdexUser);
         }
-
-
     }]);

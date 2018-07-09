@@ -11,7 +11,7 @@ ndexServiceApp.factory('ndexSpinner', [
         var factory = {};
 
         var spinnerPageId = undefined;
-        var spinnerObj    = {'spinner' : undefined};
+        var spinnerObj    = {'spinner' : null};
 
         factory.startSpinner = function (spinnerId) {
 
@@ -37,22 +37,23 @@ ndexServiceApp.factory('ndexSpinner', [
                     , shadow: true // Whether to render a shadow
                     , hwaccel: false // Whether to use hardware acceleration
                     , position: 'absolute' // Element positioning
-                }
-
-                var target = document.getElementById(spinnerId);
-                if (target) {
-                    spinnerObj.spinner = new Spinner(opts).spin(target);
                 };
 
+                var target  = document.getElementById(spinnerId);
+                if (target) {
+                    spinnerObj.spinner = new Spinner(opts).spin(target);
+                }
+
             } else {
-                var target = document.getElementById(spinnerId);
-                spinnerObj.spinner.spin(target);
-            };
+
+                return;
+            }
         };
 
         factory.stopSpinner = function() {
             if (spinnerObj.spinner) {
                 spinnerObj.spinner.stop();
+                spinnerObj.spinner = null;
             };
         };
 

@@ -441,7 +441,7 @@ textarea
     color: rgba(255, 255, 255, 0.8);
     -webkit-tap-highlight-color: red;
     font-family: 'Open Sans', sans-serif;
-    font-size: 1.1em;
+    font-size: 1em;
     padding-top: 10px;
     padding-bottom: 10px;
 
@@ -822,7 +822,7 @@ ul.ndex-nav-pills > li > a:hover {
 /* this sets the width of all vertically-stacked buttons on MyAccount,
     Network and Group Pages to be the same */
 .customButtonWidth {
-    width: 150px !important;
+    width: 195px !important;
 }
 
 /* this adds some space after <HR> on Network page */
@@ -979,10 +979,6 @@ ul.ndex-nav-pills > li > a:hover {
 
 .popup_search_bar_modal .modal-dialog {
     width: 75%;
-}
-
-.table_view_grid_height {
-    height: 425px;
 }
 
 .selected-navbar-item {
@@ -1315,3 +1311,23 @@ span.glyphicon-refresh {
 .showTooltipOnDisabledElement {
     pointer-events: none;
 }
+
+
+
+/* start: this is for styling Twitter, YouTube and LinkedIn buttons on the bottom of the Front Page */
+.social{margin:0 0 0 0;padding:0;list-style:none;}
+.social li{display:inline-block;margin:0 12px 0 0;padding:0;list-style-type:none;}
+.social li a{color:#fff;display:inline-block;font-size:16px;margin:0;padding:7px 7px 7px 7px;border-radius:50%;}
+.social li a:hover i{color:#fff;}
+.social .twitter a{font-size:18px;padding:7px 7px 7px 12px;}
+.social .twitter a i{margin-left:-2px}
+.social .youtube  a{font-size:18px;padding:7px 9px 7px 9px;}
+.social .linkedin a{font-size:18px;padding:7px 9px 7px 12px;}
+
+.twitter a{background-color:#1cb7eb;}
+.linkedin a{background-color:#1686b0;}
+.youtube a{background-color:#ca3737;}
+.twitter a:hover{background-color:#0f9de2;}
+.linkedin a:hover{background-color:#0c6694;}
+.youtube a:hover{background-color:#b52121;}
+/* start: this is for styling Twitter, YouTube and LinkedIn buttons on the bottom of the Front Page */

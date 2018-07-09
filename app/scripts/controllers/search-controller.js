@@ -1,17 +1,20 @@
 ndexApp.controller('searchController',
     [ 'ndexService', 'sharedProperties', '$scope', '$rootScope', 'ndexSpinner',
-        '$location', '$modal', 'ndexNavigation', 'uiMisc', 'ndexUtility',
+        '$location', '$modal', 'ndexNavigation', 'uiMisc',
         function (ndexService, sharedProperties, $scope, $rootScope, ndexSpinner,
-                  $location, $modal, ndexNavigation, uiMisc, ndexUtility) {
+                  $location, $modal, ndexNavigation, uiMisc) {
 
 
             //              Controller Declarations/Initializations
             //---------------------------------------------------------------------
             $scope.searcher = {};
             var searchController = $scope.searcher;
-            searchController.isLoggedInUser = (window.currentNdexUser != null);
+            searchController.isLoggedInUser = !!window.currentNdexUser; //(window.currentNdexUser != null);
 
-            searchController.errors = [];
+            searchController.networkErrors = [];
+            searchController.userErrors = [];
+            searchController.groupErrors = [];
+
             searchController.pageSize = 1000000;
             
             searchController.networkSearchResults = [];
@@ -35,16 +38,16 @@ ndexApp.controller('searchController',
             // extract value of 'networks' from URI; URI looks something like
             // http://localhost:63342/ndex-webapp/index.html#/search?networks=test
             // NOTE: searchString can be 'undefined' in  case 'networks' name in the search portion of URI was
-            // manually replaced with a non-existant value (i.e., 'abccba'); URI in this case may look like
+            // manually replaced with a non-existent value (i.e., 'abccba'); URI in this case may look like
             // http://localhost:63342/ndex-webapp/index.html#/search?abccba=test
             searchController.searchString = decodeURIComponent($location.search().searchString);
             searchController.searchType = decodeURIComponent($location.search().searchType);
             searchController.searchTermExpansionSelected =
-                (decodeURIComponent($location.search().searchTermExpansion) == 'true');
+                (decodeURIComponent($location.search().searchTermExpansion) === 'true');
 
             // Ensure that we have "search for all" as the default if no parameters are provided
-            searchController.searchString = (searchController.searchString.toLowerCase() === 'undefined') ? "" : searchController.searchString;
-            searchController.searchType = (searchController.searchType.toLowerCase() === 'undefined') ? "All" : searchController.searchType;
+            searchController.searchString = (searchController.searchString.toLowerCase() === 'undefined') ? '' : searchController.searchString;
+            searchController.searchType = (searchController.searchType.toLowerCase() === 'undefined') ? 'All' : searchController.searchType;
 
 
             // set $scope.main.searchString to searchController.searchString; - this ensures that $scope.main.searchString
@@ -59,19 +62,23 @@ ndexApp.controller('searchController',
             searchController.loggedInUserId = sharedProperties.getCurrentUserId();
 
             searchController.showNetworkTable = false;
-            var spinnerSearchPageId = "spinnerSearchPageId";
+            var spinnerSearchPageId = 'spinnerSearchPageId';
 
+            var windowsHeightCorrection = 285;
+
+
+            //var tableOptions = {};
+            //tableOptions.user = searchController.loggedInUserId ? searchController.loggedInUserId : 'anonymous';
 
             $(document).ready(function() {
                 if (!searchController.loggedInUserId) {
                     document.getElementById('searchResultTableId').className = 'col-md-12';
-                };
+                }
             });
-
 
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
-            $scope.$on("$destroy", function(){
+            $scope.$on('$destroy', function(){
                ndexSpinner.stopSpinner();
             });
 
@@ -79,7 +86,7 @@ ndexApp.controller('searchController',
 
                 if (!rowEntity && !rowEntity.externalId) {
                     return;
-                };
+                }
 
                 var networkUUID = rowEntity.externalId;
                 var networkSummary = _.find(searchController.networkSearchResults, {externalId:networkUUID});
@@ -87,10 +94,10 @@ ndexApp.controller('searchController',
                 // make a copy of network summary object since we are going to modify it
                 var network = JSON.parse(JSON.stringify(networkSummary));
 
-                if (rowEntity['Status'] && (rowEntity['Status'].toLowerCase() == "collection")) {
-                    network['collection'] = true;
-                    network['subnetworks'] = rowEntity['subnetworks'];
-                };
+                if (rowEntity.Status && (rowEntity.Status.toLowerCase() === 'collection')) {
+                    network.collection = true;
+                    network.subnetworks = rowEntity.subnetworks;
+                }
 
                 uiMisc.showNetworkInfo(network);
             };
@@ -103,10 +110,10 @@ ndexApp.controller('searchController',
             var stripHTML = function(html) {
 
                 if (!html) {
-                    return "";
+                    return '';
                 }
 
-                return $("<html>"+html+"</html>").text();
+                return $('<html>' + html + '</html>').text();
 
                 /*
                 // convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
@@ -180,11 +187,11 @@ ndexApp.controller('searchController',
                 onRegisterApi: function( gridApi )
                 {
                     $scope.networkGridApi = gridApi;
-                    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                    gridApi.selection.on.rowSelectionChanged($scope,function(){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         searchController.networkTableRowsSelected = selectedRows.length;
                     });
-                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
+                    gridApi.selection.on.rowSelectionChangedBatch($scope,function(){
                         var selectedRows = gridApi.selection.getSelectedRows();
                         searchController.networkTableRowsSelected = selectedRows.length;
                     });
@@ -196,6 +203,38 @@ ndexApp.controller('searchController',
                             //ndexSpinner.stopSpinner();
                         }, 250);
                     });
+
+
+/*
+                    gridApi.core.on.sortChanged( $scope, function(grid, sortColumns){
+
+                        // sortColumns is an array containing just the column sorted in the grid
+                        var name = sortColumns[0].name; // the name of the first column sorted
+                        var direction = sortColumns[0].sort.direction; // the direction of the first column sorted: "desc" or "asc"
+
+                        console.log('sort event captured; name=' + name + '  direction=' + direction);
+
+                        // Your logic to do the server sorting
+                    });
+
+
+                    gridApi.core.on.filterChanged( $scope, function() {
+
+                        var grid = this.grid;
+
+                        // Define behavior for cancel filtering
+
+                        $scope.isfilterclear = true;
+
+                        angular.forEach(grid.columns, function( col ) {
+                            if(col.filters[0].term){
+                                console.log('filter NOT clear');
+                            }
+                        });
+
+                    });
+*/
+
                 }
             };
             
@@ -205,14 +244,34 @@ ndexApp.controller('searchController',
                 { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
                 //{ field: 'Format', enableFiltering: true, maxWidth:63 },
                 { field: 'Ref.', enableFiltering: false, maxWidth: 45, cellTemplate: 'views/gridTemplates/reference.html' },
-                { field: 'Disease', enableFiltering: true, width: 68, cellTemplate: 'views/gridTemplates/disease.html'},
-                { field: 'Tissue',  enableFiltering: true, maxWidth: 65, cellTemplate: 'views/gridTemplates/tissue.html'},
-                { field: 'Nodes', enableFiltering: false, maxWidth:70 },
-                { field: 'Edges', enableFiltering: false, maxWidth:70 },
+                { field: 'Disease', enableFiltering: true, width: 82, cellTemplate: 'views/gridTemplates/disease.html'},
+                { field: 'Tissue',  enableFiltering: true, width: 75, cellTemplate: 'views/gridTemplates/tissue.html'},
+                { field: 'Nodes', enableFiltering: false, maxWidth:75,
+                    sortingAlgorithm: function (a, b) {
+                        if (a === b) {
+                            return 0;
+                        }
+                        if (a > b) {
+                            return -1;
+                        }
+                        return 1;
+                    }
+                },
+                { field: 'Edges', enableFiltering: false, maxWidth:75,
+                    sortingAlgorithm: function (a, b) {
+                        if (a === b) {
+                            return 0;
+                        }
+                        if (a > b) {
+                            return -1;
+                        }
+                        return 1;
+                    }
+                },
                 { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
                 { field: 'Owner', enableFiltering: true, width:80,
                     cellTemplate: 'views/gridTemplates/ownedBy.html'},
-                { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" },
+                { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: 'date:\'short\'' },
 
                 { field: 'description',  enableFiltering: false,  visible: false},
                 { field: 'externalId',   enableFiltering: false,  visible: false},
@@ -223,11 +282,6 @@ ndexApp.controller('searchController',
                 { field: 'indexLevel',   enableFiltering: false,  visible: false}
             ];
 
-            var populateNetworkTable = function()
-            {
-                $scope.networkGridApi.grid.options.columnDefs = NETWORK_COLUMN_FIELDS;
-                refreshNetworkTable();
-            };
 
             var refreshNetworkTable = function()
             {
@@ -238,40 +292,40 @@ ndexApp.controller('searchController',
                     var network = searchController.networkSearchResults[i];
 
                     var subNetworkInfo  = uiMisc.getSubNetworkInfo(network);
-                    var noOfSubNetworks = subNetworkInfo['numberOfSubNetworks'];
-                    var subNetworkId    = subNetworkInfo['id'];
+                    var noOfSubNetworks = subNetworkInfo.numberOfSubNetworks;
+                    var subNetworkId    = subNetworkInfo.id;
 
-                    var networkStatus = "success";
+                    var networkStatus = 'success';
                     if (network.errorMessage) {
-                        networkStatus = "failed";
+                        networkStatus = 'failed';
                     } else if (!network.isValid) {
-                        networkStatus = "processing";
+                        networkStatus = 'processing';
                     } else if (network.isCertified) {
-                        networkStatus = "certified";
-                    };
+                        networkStatus = 'certified';
+                    }
 
-                    if ((networkStatus == "success") && network.warnings && network.warnings.length > 0) {
-                        networkStatus = "warning";
-                    };
+                    if ((networkStatus === 'success') && network.warnings && network.warnings.length > 0) {
+                        networkStatus = 'warning';
+                    }
 
-                    var networkName = (!network['name']) ? "No name; UUID : " + network.externalId : network['name'];
-                    if (networkStatus == "failed") {
-                        networkName = "Invalid Network. UUID: " + network.externalId;
+                    var networkName = (!network.name) ? 'No name; UUID : ' + network.externalId : network.name;
+                    if (networkStatus === 'failed') {
+                        networkName = 'Invalid Network. UUID: ' + network.externalId;
                     } else if (noOfSubNetworks >= 1) {
-                        networkStatus = "collection";
-                    };
+                        networkStatus = 'collection';
+                    }
 
-                    var description = stripHTML(network['description']);
-                    var externalId = network['externalId'];
-                    var nodes = network['nodeCount'];
-                    var edges = network['edgeCount'];
-                    var owner = network['owner'];
-                    var indexLevel = network['indexLevel'];
-                    var visibility = network['visibility'];
-                    var modified = new Date( network['modificationTime'] );
+                    var description = stripHTML(network.description);
+                    var externalId = network.externalId;
+                    var nodes = parseInt(network.nodeCount);
+                    var edges = parseInt(network.edgeCount);
+                    var owner = network.owner;
+                    var indexLevel = network.indexLevel;
+                    var visibility = network.visibility;
+                    var modified = new Date(network.modificationTime);
 
                     //var format = uiMisc.getNetworkFormat(subNetworkId, network);
-                    var download = "Download " + networkName;
+                    var download = 'Download ' + networkName;
                     var reference = uiMisc.getNetworkReferenceObj(subNetworkId, network);
                     var disease   = uiMisc.getDisease(network);
                     var tissue    = uiMisc.getTissue(network);
@@ -279,35 +333,46 @@ ndexApp.controller('searchController',
                     var errorMessage = network.errorMessage;
 
                     var row = {
-                        "Status"        :   networkStatus,
-                        "Network Name"  :   networkName,
-                        " "             :   download,
-                        //"Format"        :   format,
-                        "Reference"     :   reference,
-                        "Disease"       :   disease,
-                        "Tissue"        :   tissue,
-                        "Nodes"         :   nodes,
-                        "Edges"         :   edges,
-                        "Visibility"    :   visibility,
-                        "Owner"         :   owner,
-                        "Last Modified" :   modified,
-                        "description"   :   description,
-                        "externalId"    :   externalId,
-                        "ownerUUID"     :   network['ownerUUID'],
-                        "name"          :   networkName,
-                        "errorMessage"  :   errorMessage,
-                        "subnetworks"   :   noOfSubNetworks,
-                        "indexLevel"    :   indexLevel
+                        'Status'        :   networkStatus,
+                        'Network Name'  :   networkName,
+                        ' '             :   download,
+                        //'Format'        :   format,
+                        'Reference'     :   reference,
+                        'Disease'       :   disease,
+                        'Tissue'        :   tissue,
+                        'Nodes'         :   nodes,
+                        'Edges'         :   edges,
+                        'Visibility'    :   visibility,
+                        'Owner'         :   owner,
+                        'Last Modified' :   modified,
+                        'description'   :   description,
+                        'externalId'    :   externalId,
+                        'ownerUUID'     :   network.ownerUUID,
+                        'name'          :   networkName,
+                        'errorMessage'  :   errorMessage,
+                        'subnetworks'   :   noOfSubNetworks,
+                        'indexLevel'    :   indexLevel
                     };
 
                     $scope.networkSearchGridOptions.data.push(row);
-                };
+                }
 
                 searchController.showNetworkTable = (_.size($scope.networkSearchGridOptions.data) > 0);
             };
 
+            var populateNetworkTable = function()
+            {
+                $scope.networkGridApi.grid.options.columnDefs = NETWORK_COLUMN_FIELDS;
+
+                var $foundNetworksTableId = $('#foundNetworksTableId');
+                $foundNetworksTableId.height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $foundNetworksTableId.height();
+
+                refreshNetworkTable();
+            };
+
             searchController.setAndDisplayCurrentNetwork = function (networkId) {
-                $location.path("/network/" + networkId);
+                $location.path('/network/' + networkId);
             };
 
 
@@ -317,7 +382,9 @@ ndexApp.controller('searchController',
                 searchController.networkSearchInProgress = true;
                 searchController.networkSearchNoResults = false;
 
-                networkQuery = {
+                searchController.networkErrors = [];
+
+                var networkQuery = {
                     'accountName': searchController.userName,
                     'searchString': searchController.searchString,
                     'includeGroups': true
@@ -336,31 +403,28 @@ ndexApp.controller('searchController',
 
                             if (searchController.isLoggedInUser) {
                                 searchController.getAllNetworkSetsOwnedByUser(
-                                    // success handler
-                                    function(data) {
-                                        ;
-                                    },
-                                    function(data, status) {
-                                        ;
-                                    });
-                            };
+                                    function() {}, // success handler
+                                    function() {}  // failure handler
+                                );
+                            }
 
                         } else {
                             searchController.networkSearchNoResults = true;
                             searchController.networkSearchInProgress = false;
-                        };
+                        }
                         ndexSpinner.stopSpinner();
                     },
                     function (error)
                     {
                         ndexSpinner.stopSpinner();
                         if (error) {
-
                             searchController.networkSearchResults = [];
-                            searchController.errors.push(error.message);
+                            var errorMessage = 'No networks found: ' + error.message;
+                            searchController.networkErrors.push(errorMessage);
+
                             searchController.networkSearchInProgress = false;
                             searchController.networkSearchNoResults = true;
-                        };
+                        }
                     });
             };
 
@@ -370,7 +434,7 @@ ndexApp.controller('searchController',
                 searchController.networkSearchInProgress = true;
                 searchController.networkSearchNoResults = false;
 
-                networkQuery = {
+                var networkQuery = {
                     'searchString': searchController.searchString
                 };
 
@@ -387,19 +451,15 @@ ndexApp.controller('searchController',
 
                             if (searchController.isLoggedInUser) {
                                 searchController.getAllNetworkSetsOwnedByUser(
-                                    // success handler
-                                    function(data) {
-                                        ; // console.log("getAllNetworkSetsOwnedByUser - success");
-                                    },
-                                    function(data, status) {
-                                        ; // console.log("getAllNetworkSetsOwnedByUser - failed");;
-                                    });
-                            };
+                                    function() {}, // success handler
+                                    function() {}  // failure handler
+                                );
+                            }
 
                         } else {
                             searchController.networkSearchNoResults = true;
                             searchController.networkSearchInProgress = false;
-                        };
+                        }
                         ndexSpinner.stopSpinner();
                     },
                     function (error)
@@ -407,7 +467,8 @@ ndexApp.controller('searchController',
                         ndexSpinner.stopSpinner();
                         if (error) {
                             searchController.networkSearchResults = [];
-                            searchController.errors.push(error.message);
+                            var errorMessage = 'No networks found: ' + error.message;
+                            searchController.networkErrors.push(errorMessage);
                             searchController.networkSearchInProgress = false;
                             searchController.networkSearchNoResults = true;
                         }
@@ -419,9 +480,9 @@ ndexApp.controller('searchController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 
                 _.forEach(selectedNetworksRows, function(row) {
-                    if (row.Status.toLowerCase() != "set") {
-                        selectedIds.push(row['externalId']);
-                    };
+                    if (row.Status.toLowerCase() !== 'set') {
+                        selectedIds.push(row.externalId);
+                    }
                 });
                 
                 return selectedIds;
@@ -429,8 +490,8 @@ ndexApp.controller('searchController',
 
             searchController.getAllNetworkSetsOwnedByUser = function (successHandler, errorHandler) {
                 var userId = sharedProperties.getCurrentUserId(); // ndexUtility.getLoggedInUserExternalId();
-                var offset = undefined;
-                var limit  = undefined;
+                var offset = -1;
+                var limit  = -1;
                 
                 ndexService.getAllNetworkSetsOwnedByUserV2(userId, offset, limit,
                     function (networkSets) {
@@ -440,7 +501,7 @@ ndexApp.controller('searchController',
                     },
                     function (error, status) {
                         searchController.networkSets = [];
-                        console.log("unable to get network sets");
+                        console.log('unable to get network sets');
                         errorHandler(error, status);
                     });
             };
@@ -461,7 +522,7 @@ ndexApp.controller('searchController',
                     }
                     return 'Users (' + numUsers + pageLimitPlusSign + ')';
                 }  else if (searchController.userSearchNoResults) {
-                    return 'Users (0)'
+                    return 'Users (0)';
                 } else {
                     return 'Users';
                 }
@@ -482,6 +543,7 @@ ndexApp.controller('searchController',
                 onRegisterApi: function( gridApi )
                 {
                     $scope.userGridApi = gridApi;
+                    /*
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
 
@@ -489,8 +551,9 @@ ndexApp.controller('searchController',
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
                     });
-
+                    */
                 }
+
             };
 
 
@@ -505,13 +568,6 @@ ndexApp.controller('searchController',
 
             ];
 
-            var populateUserTable = function()
-            {
-                $scope.userGridApi.grid.options.columnDefs = USER_COLUMN_FIELDS;
-                refreshUserTable();
-                //console.log($scope.userSearchGridOptions.data);
-
-            };
 
             var refreshUserTable = function()
             {
@@ -521,19 +577,18 @@ ndexApp.controller('searchController',
                 {
                     var user = searchController.userSearchResults[i];
 
-                    var userName = user['userName'];
-                    var description = stripHTML(user['description']);
-                    var externalId = user['externalId'];
-                    var firstName = user['firstName'];
-                    var lastName = user['lastName'];
-
+                    var userName = user.userName;
+                    var description = stripHTML(user.description);
+                    var externalId = user.externalId;
+                    var firstName = user.firstName;
+                    var lastName = user.lastName;
 
                     var row = {
-                        "User Name"  :   userName,
-                        "Description" :   description,
-                        "externalId" : externalId,
-                        "First Name" : firstName,
-                        "Last Name" : lastName
+                        'User Name'   : userName,
+                        'Description' : description,
+                        'externalId'  : externalId,
+                        'First Name'  : firstName,
+                        'Last Name'   : lastName
                     };
 
                     $scope.userSearchGridOptions.data.push(row);
@@ -541,11 +596,25 @@ ndexApp.controller('searchController',
                 $scope.userGridApi.core.handleWindowResize();
             };
 
+            var populateUserTable = function()
+            {
+                $scope.userGridApi.grid.options.columnDefs = USER_COLUMN_FIELDS;
+
+                var $foundUsersTableId = $('#foundUsersTableId');
+                $foundUsersTableId.height($(window).height() - windowsHeightCorrection);
+                $scope.userGridApi.grid.gridHeight = $foundUsersTableId.height();
+
+                refreshUserTable();
+                //console.log($scope.userSearchGridOptions.data);
+
+            };
+
             searchController.submitUserSearch = function(){
                 var searchString = searchController.searchString;
                 searchController.userSearchResults = null;
                 searchController.userSearchInProgress = true;
                 searchController.userSearchNoResults = false;
+                searchController.userErrors = [];
                 // We find only one page of users. No paging.
                 ndexService.searchUsersV2(
                     searchString,
@@ -558,18 +627,22 @@ ndexApp.controller('searchController',
                             populateUserTable();
                         } else {
                             searchController.userSearchNoResults = true;
-                        };
+                        }
                         searchController.userSearchInProgress = false;
-                        if (searchController.searchType.toLowerCase() != "all") {
+                        if (searchController.searchType.toLowerCase() !== 'all') {
                             ndexSpinner.stopSpinner();
-                        };
+                        }
 
                     },
                     function (error) {
-                        if (searchController.searchType.toLowerCase() != "all") {
+                        if (searchController.searchType.toLowerCase() !== 'all') {
                             ndexSpinner.stopSpinner();
-                        };
-                        searchController.errors.push(error.data);
+                        }
+
+                        if (error.errorMessage && error.errorMessage !== 'NDEx_Bad_Request_Exception') {
+                            var errorMessage = 'No networks found: ' + error.message;
+                            searchController.userErrors.push(errorMessage);
+                        }
                         searchController.userSearchInProgress = false;
                     });
             };
@@ -591,7 +664,7 @@ ndexApp.controller('searchController',
                     }
                     return 'Groups (' + numGroups + pageLimitPlusSign + ')';
                 } else if (searchController.groupSearchNoResults) {
-                    return 'Groups (0)'
+                    return 'Groups (0)';
                 } else {
                     return 'Groups';
                 }
@@ -613,6 +686,7 @@ ndexApp.controller('searchController',
                 onRegisterApi: function( gridApi )
                 {
                     $scope.groupGridApi = gridApi;
+                    /*
                     gridApi.selection.on.rowSelectionChanged($scope,function(row){
                         var selectedRows = gridApi.selection.getSelectedRows();
 
@@ -620,6 +694,7 @@ ndexApp.controller('searchController',
                     gridApi.selection.on.rowSelectionChangedBatch($scope,function(rows){
                         var selectedRows = gridApi.selection.getSelectedRows();
                     });
+                    */
 
                 }
             };
@@ -638,13 +713,6 @@ ndexApp.controller('searchController',
 
             ];
 
-            var populateGroupTable = function()
-            {
-                $scope.groupGridApi.grid.options.columnDefs = GROUP_COLUMN_FIELDS;
-                refreshGroupTable();
-
-            };
-
             var refreshGroupTable = function()
             {
                 $scope.groupSearchGridOptions.data = [];
@@ -652,19 +720,15 @@ ndexApp.controller('searchController',
                 for(var i = 0; i < searchController.groupSearchResults.length; i++ )
                 {
                     var group = searchController.groupSearchResults[i];
-                    var groupName = group['groupName'];
-                    var description = stripHTML(group['description']);
-                    var externalId = group['externalId'];
+                    var groupName = group.groupName;
+                    var description = stripHTML(group.description);
+                    var externalId = group.externalId;
                     //var userName = group['userName'];
                     
                     var row = {
-                        "Group Name"  :   groupName,
-                        "Description" :   description,
-                        "externalId"  :   externalId
-
-                        /*
-                        "Group Account"   :   userName
-                        */
+                        'Group Name'  :   groupName,
+                        'Description' :   description,
+                        'externalId'  :   externalId
                     };
 
                     $scope.groupSearchGridOptions.data.push(row);
@@ -672,11 +736,24 @@ ndexApp.controller('searchController',
                 }
             };
 
+            var populateGroupTable = function()
+            {
+                $scope.groupGridApi.grid.options.columnDefs = GROUP_COLUMN_FIELDS;
+
+                var $foundGroupsTableId = $('#foundGroupsTableId');
+                $foundGroupsTableId.height($(window).height() - windowsHeightCorrection);
+                $scope.groupGridApi.grid.gridHeight = $foundGroupsTableId.height();
+
+                refreshGroupTable();
+
+            };
+
 
             searchController.submitGroupSearch = function(){
                 searchController.groupSearchResults = null;
                 searchController.groupSearchInProgress = true;
                 searchController.groupSearchNoResults = false;
+                searchController.groupErrors = [];
                 // We find only one page of groups. No paging.
                 ndexService.searchGroupsV2(
                     searchController.searchString,
@@ -691,15 +768,19 @@ ndexApp.controller('searchController',
                             searchController.groupSearchNoResults = true;
                         }
                         searchController.groupSearchInProgress = false;
-                        if (searchController.searchType.toLowerCase() != "all") {
+                        if (searchController.searchType.toLowerCase() !== 'all') {
                             ndexSpinner.stopSpinner();
-                        };
+                        }
                     },
                     function (error) {
-                        if (searchController.searchType.toLowerCase() != "all") {
+                        if (searchController.searchType.toLowerCase() !== 'all') {
                             ndexSpinner.stopSpinner();
-                        };
-                        searchController.errors.push(error.data);
+                        }
+
+                        if (error.errorMessage && error.errorMessage !== 'NDEx_Bad_Request_Exception') {
+                            var errorMessage = 'No groups found: ' + error.message;
+                            searchController.groupErrors.push(errorMessage);
+                        }
                         searchController.groupSearchInProgress = false;
                         searchController.groupSearchNoResults = true;
                     });
@@ -713,16 +794,16 @@ ndexApp.controller('searchController',
                 }
 
                 if (rowEntity.subnetworks && (rowEntity.subnetworks >= 1)) {
-                    var title = "Warning";
-                    var message = "This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx.";
+                    var title = 'Warning';
+                    var message = 'This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx.';
                     ndexNavigation.genericInfoModal(title, message);
                 } else {
                     uiMisc.showNetworkWarningsOrErrors(rowEntity, searchController.networkSearchResults);
-                };
+                }
             };
 
             $scope.getNetworkURL = function(networkUUID) {
-                return "#/network/" + networkUUID;
+                return '#/network/' + networkUUID;
             };
 
        /*     $scope.getNetworkDownloadLink = function(rowEntity) {
@@ -733,7 +814,7 @@ ndexApp.controller('searchController',
 
                 uiMisc.downloadCXNetwork(rowEntity.externalId);
 
-            }
+            };
             /*---------------------------
 
              Perform the Search
@@ -752,7 +833,7 @@ ndexApp.controller('searchController',
                      searchController.submitGeneProteinSearch();
                  } else {
                      searchController.submitNetworkSearch();
-                 };
+                 }
                 searchController.submitGroupSearch();
                 searchController.submitUserSearch();
                 $scope.activateTab('Networks');
@@ -762,7 +843,7 @@ ndexApp.controller('searchController',
                      searchController.submitGeneProteinSearch();
                  } else {
                      searchController.submitNetworkSearch();
-                 };
+                 }
                  searchController.submitNetworkSearch();
                  $scope.activateTab('Networks');
 
@@ -774,6 +855,24 @@ ndexApp.controller('searchController',
                 searchController.submitGroupSearch();
                 $scope.activateTab('Groups');
 
-            };
+            }
+
+            $(window).resize(function() {
+
+                var $foundNetworksTableId = $('#foundNetworksTableId');
+                $foundNetworksTableId.height($(window).height() - windowsHeightCorrection);
+                $scope.networkGridApi.grid.gridHeight = $foundNetworksTableId.height();
+                $scope.networkGridApi.core.refresh();
+
+                var $foundUsersTableId = $('#foundUsersTableId');
+                $foundUsersTableId.height($(window).height() - windowsHeightCorrection);
+                $scope.userGridApi.grid.gridHeight = $foundUsersTableId.height();
+                $scope.userGridApi.core.refresh();
+
+                var $foundGroupsTableId = $('#foundGroupsTableId');
+                $foundGroupsTableId.height($(window).height() - windowsHeightCorrection);
+                $scope.groupGridApi.grid.gridHeight = $foundGroupsTableId.height();
+                $scope.groupGridApi.core.refresh();
+            });
         }]);
 

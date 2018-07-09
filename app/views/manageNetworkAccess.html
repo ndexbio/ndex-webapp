@@ -1,7 +1,7 @@
 
 <div class ='row'>
 	<div class='col-sm-offset-2 col-sm-8'>
-		<p class="alert alert-danger" ng-repeat='error in networkManager.errors'>
+		<p class="alert alert-danger" ng-repeat='error in networkManager.errors' style='word-wrap:break-word'>
 			{{error}}
 			<span class="glyphicon glyphicon-remove pull-right"
 				style='cursor:pointer'
@@ -124,7 +124,7 @@
 				<span ng-show="progressMessage">
 					<strong><span style="color: green; font-size: 1.3em" ng-bind-html="progressMessage"></span></strong>
 				</span>
-				<span ng-show="errorMessage">
+				<span ng-show="errorMessage" style='word-wrap:break-word'>
 					<strong><span style="color: red; font-size: 1.3em" ng-bind-html="errorMessage"></span></strong>
 				</span>
 			</div>
