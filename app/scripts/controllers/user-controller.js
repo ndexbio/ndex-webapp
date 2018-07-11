@@ -1,8 +1,8 @@
 ndexApp.controller('userController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
-    '$routeParams', '$route', '$modal', 'uiMisc', 'uiGridConstants', 'ndexNavigation',
+    '$routeParams', '$route', '$modal', 'uiMisc', 'uiGridConstants', 'ndexNavigation', '$rootScope',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location,
-                  $routeParams, $route, $modal, uiMisc, uiGridConstants, ndexNavigation)
+                  $routeParams, $route, $modal, uiMisc, uiGridConstants, ndexNavigation, $rootScope)
         {
 
             //              Process the URL to get application state
@@ -60,6 +60,12 @@ ndexApp.controller('userController',
                 return result > 250 ? 250 : result;
             };
             */
+
+            // this function gets called when user navigates away from the current page.
+            // (can also use "$locationChangeStart" instead of "$destroy"
+            $scope.$on('$destroy', function() {
+                delete $rootScope.user;
+            });
 
             var enableOrDisableUpgradePermissionButton = function() {
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
@@ -748,49 +754,44 @@ ndexApp.controller('userController',
 
             } else {
 
-                ndexService.getUserByUUIDV2(userController.identifier)
-                    .success(
-                    function (user)
-                    {
-                        userController.displayedUser = user;
+                userController.displayedUser = $rootScope.user;
 
-                        // get all network sets owned by user visiting this page
-                        userController.getAllNetworkSetsOwnedByVisitingUser();
+                // get all network sets owned by user visiting this page
+                userController.getAllNetworkSetsOwnedByVisitingUser();
 
-                        // get groups. Server-side API requires authentication,
-                        // so only show groups if a user is logged in.
-                        if (userController.isLoggedInUser) {
-                            var member = null;
-                            userController.getUserGroupMemberships(member);
-                        }
+                // get groups. Server-side API requires authentication,
+                // so only show groups if a user is logged in.
+                if (userController.isLoggedInUser) {
+                    var member = null;
+                    userController.getUserGroupMemberships(member);
+                }
 
-                        // get networks
-                        userController.getUserShowcaseNetworks(
-                            function() {
-                                var offset = -1;
-                                var limit  = -1;
+                // get networks
+                userController.getUserShowcaseNetworks(
+                    function() {
+                        var offset = -1;
+                        var limit  = -1;
 
-                                ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier, offset, limit,
+                        ndexService.getAllNetworkSetsOwnedByUserV2(userController.identifier, offset, limit,
 
-                                    function (networkSets) {
-                                        userController.networkSetsOwnerOfPage = _.orderBy(networkSets, ['modificationTime'], ['desc']);
+                            function (networkSets) {
+                                userController.networkSetsOwnerOfPage = _.orderBy(networkSets, ['modificationTime'], ['desc']);
 
-                                        _.forEach( userController.networkSetsOwnerOfPage, function(networkSet) {
+                                _.forEach( userController.networkSetsOwnerOfPage, function(networkSet) {
 
-                                            if (networkSet.showcased) {
-                                                userController.addNetworkSetToTable(networkSet);
-                                            }
-                                        });
-                                    },
-                                    function () {
-                                        console.log('unable to get network sets');
-                                    });
+                                    if (networkSet.showcased) {
+                                        userController.addNetworkSetToTable(networkSet);
+                                    }
+                                });
                             },
-                            function() {
-                                console.log('unable to get showcased networks for user');
-                            }
-                        );
-                    });
+                            function () {
+                                console.log('unable to get network sets');
+                            });
+                            },
+                        function() {
+                            console.log('unable to get showcased networks for user');
+                        }
+                    );
                 }
 
                 $(window).resize(function() {
