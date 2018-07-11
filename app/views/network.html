@@ -22,7 +22,7 @@
 
             <div id="messageOverlay"
                  ng-show="showNetworkSample()"
-                 style="
+                 style='
                     float:bottom;
                     display: inline-block;
                     border-radius: 5px;
@@ -33,12 +33,17 @@
                     background-color: #FCCB29;
                     padding:0.3em 1em;
                     border-style: ridge;
-                    border-width: 4px">
+                    border-width: 4px'>
+                <!--
                 <span ng-show="networkController.currentNetwork.userSetSample">
                     <strong>User-set sample: {{networkController.sampleSize}} edges</strong>
                 </span>
                 <span ng-show="!networkController.currentNetwork.userSetSample">
                     <strong>System sample: {{networkController.sampleSize}} edges</strong>
+                </span>
+                -->
+                <span>
+                    <strong>Sample: {{networkController.sampleSize}} edges</strong>
                 </span>
             </div>
 

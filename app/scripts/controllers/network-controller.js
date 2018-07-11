@@ -3006,15 +3006,15 @@ ndexApp.controller('networkController',
 
                 var resultName = (networkName) ? networkName :
                     'Neighborhood query result on network - ' + currentNetworkSummary.name;
-                var userSetSample = networkController.currentNetwork.userSetSample;
+                //var userSetSample = networkController.currentNetwork.userSetSample;
 
                 networkController.currentNetwork =
                     {name: resultName,
                         'nodeCount': nodeCount,
                         'edgeCount': edgeCount,
                         'queryString': networkController.searchString,
-                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].description,
-                        'userSetSample' : userSetSample
+                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].description
+                        //'userSetSample' : userSetSample
                     };
 
                 cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
@@ -3935,18 +3935,18 @@ ndexApp.controller('networkController',
                             networkController.currentNetwork.reference = getNetworkPropertyFromSummary(networkController.subNetworkId, 'Reference');
                             networkController.currentNetwork.rightsHolder = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rightsHolder');
                             networkController.currentNetwork.rights = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rights');
-
+/*
                             networkController.currentNetwork.userSetSample = getNetworkPropertyFromSummary(networkController.subNetworkId, 'userSetSample');
 
                             if (typeof networkController.currentNetwork.userSetSample === 'undefined') {
                                 networkController.currentNetwork.userSetSample = false;
                             }
                             currentNetworkSummary.userSetSample = networkController.currentNetwork.userSetSample;
-
+*/
                             networkController.otherProperties =
                                 _.sortBy(
                                     networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
-                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version', 'userSetSample']), 'predicateString');
+                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
 
                             //TODO: need to move this to 'add to my set' modal.
                             networkController.getAllNetworkSetsOwnedByUser(
@@ -4022,16 +4022,17 @@ ndexApp.controller('networkController',
                         networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId, 'Reference');
                         networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId, 'rightsHolder');
                         networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
+                        /*
                         networkController.currentNetwork.userSetSample = getNetworkPropertyFromSummary(networkController.subNetworkId, 'userSetSample');
                         if (typeof networkController.currentNetwork.userSetSample === 'undefined') {
                             networkController.currentNetwork.userSetSample = false;
                         }
                         currentNetworkSummary.userSetSample = networkController.currentNetwork.userSetSample;
-
+                        */
                         networkController.otherProperties =
                             _.sortBy(
                                 networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
-                                    'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version', 'userSetSample']), 'predicateString');
+                                    'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
 
 
 
@@ -4311,6 +4312,7 @@ ndexApp.controller('networkController',
                     });
             };
 
+            /*
             var setUserSetSampleProperty = function() {
                 // sets userSetSample network property on the server
                 // if it is not already set
@@ -4332,7 +4334,7 @@ ndexApp.controller('networkController',
 
                     });
             };
-
+*/
             networkController.setSampleFromQuery = function() {
 
                 if (!$scope.showSetSampleButtonEnabled) {
@@ -4357,12 +4359,12 @@ ndexApp.controller('networkController',
 
                         ndexService.setNetworkSampleV2(networkController.currentNetworkId, queryResultInCX,
                             function() {
-                                setUserSetSampleProperty();
+                                //setUserSetSampleProperty();
                                 networkService.setQueryResultAsOriginalNiceCX();
 
                                 networkController.previousNetwork.hasSample     = true;
-                                networkController.previousNetwork.userSetSample = true;
-                                networkController.currentNetwork.userSetSample  = true;
+                                //networkController.previousNetwork.userSetSample = true;
+                                //networkController.currentNetwork.userSetSample  = true;
                                 networkController.isSamplePrevious              = true;
                                 networkController.sampleSizePrevious = networkController.currentNetwork.edgeCount;
 
