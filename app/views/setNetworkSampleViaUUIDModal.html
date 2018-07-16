@@ -1,0 +1,45 @@
+<div class='modal-content'>
+
+    <form name="setNetworkSample" class="form-horizontal" role="form" ng-submit='submit()'>
+
+        <div class="modal-header">
+            <h4 class="modal-title" ng-bind-html="title"></h4>
+        </div>
+
+        <div class="modal-body" style="margin-top: 1em; margin-bottom: -1em">
+
+            <div class="form-group">
+<!--
+              <div class='col-sm-12' style="font-size: 1.2em" ng-bind-html='text'></div>
+-->
+              <label class="col-sm-4 control-label">Sample Network UUID <span style="color:red">*</span></label>
+              <div class="col-sm-8">
+                  <input type="text" name="networkUUID" class="form-control"
+                         placeholder="e.g., b3cb16df-8527-11e8-8b82-525400c25d22" ng-model='networkUUID'
+                         ng-pattern="/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/"
+                         required>
+
+                  <div ng-show="setNetworkSample.networkUUID.$error.required && !setNetworkSample.networkUUID.$pristine"
+                       style="color:red; font-weight:bold; margin-top: 1em">Network UUID required
+                  </div>
+
+                  <div ng-show="setNetworkSample.networkUUID.$invalid && !setNetworkSample.networkUUID.$error.required"
+                       style="color:red; font-weight:bold; margin-top: 1em">Invalid Network UUID
+                  </div>
+              </div>
+            </div>
+
+            <div style="margin-left: 1.8em; color: red">
+                <strong>{{errors}}</strong>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default" type='button' ng-click='cancel()'>Cancel</button>
+            <button class="btn btn-primary" type='submit' ng-disabled='errors || setNetworkSample.$invalid'>Set Sample</button>
+        </div>
+
+    </form>
+
+</div>

@@ -1022,6 +1022,14 @@
 
                         </li>
 
+                         <li id="setSampleViaUUID" style="margin: 3px 0; line-height: 1.2em"
+                             ng-class="enableSetSampleViaUUID ? 'enabled' : 'disabled'"
+                             ng-mouseover="changeSetSampleViaUUIDTitle()" title=''
+                             ng-click="setNetworkSampleViaUUID()">
+                                <a>Set Network Sample </a>
+                        </li>
+
+
                         <li id="upgradePermissionTitleId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
                             ng-show='networkController.isLoggedInUser &&
                                 (networkController.isAdmin || networkController.canEdit ||

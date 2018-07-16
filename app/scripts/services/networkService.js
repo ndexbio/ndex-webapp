@@ -98,7 +98,9 @@ ndexServiceApp.factory('networkService', ['sharedProperties','cxNetworkUtils', '
         factory.setCurrentNiceCX = function (networkInNiceCX) {
             currentNiceCX = networkInNiceCX;
         };
-
+        factory.setOriginalNiceCX = function (networkInNiceCX) {
+            originalNiceCX = networkInNiceCX;
+        };
         factory.clearNiceCX = function() {
             currentNiceCX  = null;
             originalNiceCX = null;
