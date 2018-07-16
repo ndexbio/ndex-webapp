@@ -189,13 +189,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     var loggedInUser = ndexUtility.getUserCredentials();
     var loggedInUserName = (loggedInUser && loggedInUser.userName) ? loggedInUser.userName : null;
 
-    if (loggedInUser === null || loggedInUserName === null) {
-        // this may happen if user cleared browser cache/history and hut browser reload button
-        userSessionTablesSettings.clearState();
-        $location.path('/signIn');
-        return;
-    }
-
     editor.doiInfo = {
         'user': {'username': loggedInUserName},
         'visibility': 'PUBLIC',
@@ -592,13 +585,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     editor.saveAndSubmitDOI = function(){
 
-        if (loggedInUser === null || loggedInUserName === null) {
-            // this may happen if user cleared browser cache/history and hut browser reload button
-            userSessionTablesSettings.clearState();
-            $location.path('/signIn');
-            return;
-        }
-
         if(editor.errors.length < 1){
             if(editor.checkDOIRequirements()){
                 var title = 'Submit DOI Request';
@@ -759,13 +745,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     };
 
     editor.save = function(requestDOI, showThesePropertiesInEmail) {
-
-        if (loggedInUser === null || loggedInUserName === null) {
-            // this may happen if user cleared browser cache/history and hut browser reload button
-            userSessionTablesSettings.clearState();
-            $location.path('/signIn');
-            return;
-        }
 
         if(editor.checkPublicRequirements()){
 
