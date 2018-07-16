@@ -3077,12 +3077,18 @@ ndexApp.controller('networkController',
 
                         $scope.showSetSampleButtonEnabled = false;
 
-                    } else {
-                        setTooltipOnSetSampleButtonId('Set this query as network sample ');
+                    } else if ((networkController.previousNetwork.edgeCount <= 12000) && networkController.previousNetwork.hasLayout) {
+                        setTooltipOnSetSampleButtonId('This feature is not yet implemented');
 
-                        $scope.showSetSampleButtonEnabled = true;
+                        $scope.showSetSampleButtonEnabled = false;
+
                     }
-                }
+                    else {
+                            setTooltipOnSetSampleButtonId('Set this query as network sample ');
+
+                            $scope.showSetSampleButtonEnabled = true;
+                        }
+                    }
 
 
                 // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
