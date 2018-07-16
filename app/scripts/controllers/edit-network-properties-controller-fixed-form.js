@@ -189,7 +189,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     var loggedInUser = ndexUtility.getUserCredentials();
     var loggedInUserName = (loggedInUser && loggedInUser.userName) ? loggedInUser.userName : null;
 
-    if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
+    if (loggedInUser === null || loggedInUserName === null) {
         // this may happen if user cleared browser cache/history and hut browser reload button
         userSessionTablesSettings.clearState();
         $location.path('/signIn');
@@ -592,7 +592,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     editor.saveAndSubmitDOI = function(){
 
-        if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
+        if (loggedInUser === null || loggedInUserName === null) {
             // this may happen if user cleared browser cache/history and hut browser reload button
             userSessionTablesSettings.clearState();
             $location.path('/signIn');
@@ -760,7 +760,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     editor.save = function(requestDOI, showThesePropertiesInEmail) {
 
-        if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
+        if (loggedInUser === null || loggedInUserName === null) {
             // this may happen if user cleared browser cache/history and hut browser reload button
             userSessionTablesSettings.clearState();
             $location.path('/signIn');
