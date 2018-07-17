@@ -790,8 +790,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                             (pair.rightsOtherURL.toLowerCase().indexOf('https://') < 0)) {
                             pair.rightsOtherURL = 'http://' + pair.rightsOtherURL;
                         }
-                        pair.value = '<a href=\'' + pair.rightsOtherURL + '\'>' + pair.rightsOther + '</a>';
-
+                        pair.value = pair.rightsOtherURL + '|' + pair.rightsOther;
+                        //pair.value = '<a href=\'' + pair.rightsOtherURL + '\'>' + pair.rightsOther + '</a>';
                     }
                     else {
                         pair.value = pair.rightsOther;
@@ -1143,6 +1143,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                            (network.properties[i].subNetworkId === subNetworkId) )
                     {
                         network.properties[i].labelValue = network.properties[i].predicateString;
+                        if(network.properties[i].predicateString === 'rights' && network.properties[i].value.indexOf('|') > -1){
+                            var rightsTemp = network.properties[i].value;
+                            network.properties[i].value = 'Other';
+                            var rightsArray = rightsTemp.split('|');
+                            if(rightsArray.length > 1){
+                                network.properties[i].rightsOtherURL = rightsArray[0];
+                                network.properties[i].rightsOther = rightsArray[1];
+                            }
+                        }
                         editor.propertyValuePairs.push(network.properties[i]);
                         editor.propertyValuePairsIndex[network.properties[i].predicateString] = propIndex;
                         propIndex++;
