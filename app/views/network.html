@@ -21,13 +21,29 @@
             </div>
 
             <div id="messageOverlay"
-                 style="float:bottom; display: inline-block; position: absolute; top: 0px; right: 0px;font-size: 1.6em; color: #FF0000; background-color: gold; padding:0.3em; border-style: solid"
-                 ng-show="showNetworkSample()">
+                 ng-show="showNetworkSample()"
+                 style='
+                    float:bottom;
+                    display: inline-block;
+                    border-radius: 5px;
+                    position: absolute;
+                    top:5px;
+                    right:4px;
+                    font-size: 1.1em;
+                    background-color: #FCCB29;
+                    padding:0.3em 1em;
+                    border-style: ridge;
+                    border-width: 4px'>
+                <!--
                 <span ng-show="networkController.currentNetwork.userSetSample">
-                    <strong>User-set Sample: {{networkController.sampleSize}} edges</strong>
+                    <strong>User-set sample: {{networkController.sampleSize}} edges</strong>
                 </span>
                 <span ng-show="!networkController.currentNetwork.userSetSample">
-                    <strong>System Sample: {{networkController.sampleSize}} edges</strong>
+                    <strong>System sample: {{networkController.sampleSize}} edges</strong>
+                </span>
+                -->
+                <span>
+                    <strong>Sample: {{networkController.sampleSize}} edges</strong>
                 </span>
             </div>
 
@@ -1005,6 +1021,14 @@
                             </show-network-sets-modal>
 
                         </li>
+
+                         <li id="setSampleViaUUID" style="margin: 3px 0; line-height: 1.2em"
+                             ng-class="enableSetSampleViaUUID ? 'enabled' : 'disabled'"
+                             ng-mouseover="changeSetSampleViaUUIDTitle()" title=''
+                             ng-click="setNetworkSampleViaUUID()">
+                                <a>Set Network Sample </a>
+                        </li>
+
 
                         <li id="upgradePermissionTitleId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
                             ng-show='networkController.isLoggedInUser &&

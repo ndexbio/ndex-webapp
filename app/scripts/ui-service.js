@@ -356,6 +356,8 @@
                                 //var networkSetId = url.split('/').pop();
                                 modalInstance.close();
 
+                                // getAllNetworkSetsOwnedByUser is a misnomer.  It returns the newest (latest) created
+                                // network set and should be called/renamed appropriately
                                 $scope.myAccountController.getAllNetworkSetsOwnedByUser(
                                     // success handler
                                     function(newNetworkSet) {
@@ -364,20 +366,39 @@
 
                                         if ($scope.signalNewSetCreation) {
                                             $rootScope.$emit('NEW_NETWORK_SET_CREATED');
-                                        };
+                                        }
+/*
                                         if ($scope.myAccountController.addNetworkSetToTable) {
                                             $scope.myAccountController.addNetworkSetToTable(newNetworkSet);
                                         };
-                                        if (($scope.myAccountController.networkSets.length == 1) &&
+*/
+
+                                        if (($scope.myAccountController.networkSets.length === 1) &&
                                             ($scope.myAccountController.networkSearchResults) &&
-                                            ($scope.myAccountController.networkSearchResults.length == 0)) {
+                                            ($scope.myAccountController.networkSearchResults.length === 0)) {
                                             // we are on My Account page and there is only one set there that we
                                             // just created; referesh the whole page to prevent Network Table deformation
                                             $route.reload();
-                                        };
+
+                                        } else {
+
+                                            if ($scope.myAccountController.getNoOfNetworksAndSets) {
+                                                $scope.myAccountController.getNoOfNetworksAndSets(
+                                                    function () {
+                                                        if ($scope.myAccountController.loadNetworks) {
+                                                            $scope.myAccountController.loadNetworks();
+                                                        }
+                                                    },
+                                                    function () {
+                                                        console.log('unable to get No of Networks and Sets for this account');
+                                                    }
+                                                );
+                                            }
+                                        }
+
                                         $scope.isProcessing = false;
                                     },
-                                    function(data, status) {
+                                    function() {
                                         //$scope.main.serverIsDown = true;
                                         $scope.isProcessing = false;
                                     });

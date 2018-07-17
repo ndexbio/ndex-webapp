@@ -189,13 +189,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     var loggedInUser = ndexUtility.getUserCredentials();
     var loggedInUserName = (loggedInUser && loggedInUser.userName) ? loggedInUser.userName : null;
 
-    if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
-        // this may happen if user cleared browser cache/history and hut browser reload button
-        userSessionTablesSettings.clearState();
-        $location.path('/signIn');
-        return;
-    }
-
     editor.doiInfo = {
         'user': {'username': loggedInUserName},
         'visibility': 'PUBLIC',
@@ -561,8 +554,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         'version',
         'reference',
         'ndex:sourceformat',
-        'sourceformat',
-        'usersetsample'
+        'sourceformat'
     ];
 
     $scope.namesForCustom = [
@@ -592,13 +584,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     };
 
     editor.saveAndSubmitDOI = function(){
-
-        if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
-            // this may happen if user cleared browser cache/history and hut browser reload button
-            userSessionTablesSettings.clearState();
-            $location.path('/signIn');
-            return;
-        }
 
         if(editor.errors.length < 1){
             if(editor.checkDOIRequirements()){
@@ -760,13 +745,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     };
 
     editor.save = function(requestDOI, showThesePropertiesInEmail) {
-
-        if (loggedInUser === null || loggedInUserName === null || ndexUtility.getLoggedInUserAuthToken() === null) {
-            // this may happen if user cleared browser cache/history and hut browser reload button
-            userSessionTablesSettings.clearState();
-            $location.path('/signIn');
-            return;
-        }
 
         if(editor.checkPublicRequirements()){
 

@@ -1444,7 +1444,7 @@ ndexServiceApp.factory('ndexService',
                 // Server API: Search Users
                 // POST /search/user?start={number}&size={number}
 
-                if (searchString === null) {
+                if ((typeof searchString === 'undefined') || (searchString === null)) {
                     searchString = '';
                 }
 
@@ -1461,7 +1461,7 @@ ndexServiceApp.factory('ndexService',
                 // Server API: Search Groups
                 // POST /search/group?start={skipBlocks}&size={blockSize}
 
-                if (searchString === null) {
+                if ((typeof searchString === 'undefined') || (searchString === null)) {
                     searchString = '';
                 }
 
@@ -1478,7 +1478,7 @@ ndexServiceApp.factory('ndexService',
                 // Server API: Search Networks
                 // POST /search/network?start={number}&size={number}
 
-                if (query.searchString === null) {
+                if ((typeof query.searchString === 'undefined') || (query.searchString === null)) {
                     query.searchString = '';
                 }
 

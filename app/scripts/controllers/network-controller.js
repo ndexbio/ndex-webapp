@@ -148,6 +148,7 @@ ndexApp.controller('networkController',
                 myToolTips.tooltip();
             };
 
+            $scope.enableSetSampleViaUUID    = false;
             $scope.enableRemoveFromMyAccount = false;
 
             /*
@@ -249,6 +250,12 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
+            $scope.changeSetSampleViaUUIDTitle  = function() {
+                $('#setSampleViaUUID').tooltip('hide')
+                    .attr('data-original-title', $scope.setNetworkSampleViaUUIDTitle)
+                    .tooltip('show');
+            };
+
             $scope.changeRemoveFromMyNetworksTitle  = function() {
                 $('#removeFromMyAccountTitleId').tooltip('hide')
                     .attr('data-original-title', $scope.removeFromMyAccountTitle)
@@ -308,6 +315,7 @@ ndexApp.controller('networkController',
             $scope.upgradePermissionTitle    = '';
             $scope.shareTitle                = '';
             $scope.deleteTitle               = '';
+            $scope.setNetworkSampleViaUUIDTitle     = '';
             $scope.removeFromMyAccountTitle  = '';
             $scope.openInCytoscapeTitle      = 'Checking status ...';
 
@@ -2800,8 +2808,24 @@ ndexApp.controller('networkController',
                 var hasLayout = networkController.currentNetwork.hasLayout;
 
                 /** @namespace networkController.currentNetwork.hasSample **/
-                if (  (hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
-                        networkController.currentNetwork.hasSample ) {
+                if (hasLayout && networkController.currentNetwork.edgeCount <= 12000) {
+                    // get complete CX stream and build the CX network object.
+                    networkController.isSample = false;
+                    networkService.getCompleteNetworkInCXV2(networkId, accesskey)
+                        .success(
+                            function (network) {
+                                callback(network, false);
+                            }
+                        )
+                        .error(
+                            function (error) {
+                                displayErrorMessage(error);
+                            }
+                        );
+                }
+
+                else if ((hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
+                        networkController.currentNetwork.hasSample) {
                     // get sample CX network
                     networkController.isSample = true;
                     networkService.getNetworkSampleV2(networkId, accesskey)
@@ -3006,15 +3030,15 @@ ndexApp.controller('networkController',
 
                 var resultName = (networkName) ? networkName :
                     'Neighborhood query result on network - ' + currentNetworkSummary.name;
-                var userSetSample = networkController.currentNetwork.userSetSample;
+                //var userSetSample = networkController.currentNetwork.userSetSample;
 
                 networkController.currentNetwork =
                     {name: resultName,
                         'nodeCount': nodeCount,
                         'edgeCount': edgeCount,
                         'queryString': networkController.searchString,
-                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].description,
-                        'userSetSample' : userSetSample
+                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].description
+                        //'userSetSample' : userSetSample
                     };
 
                 cxNetworkUtils.setNetworkProperty(network, 'name', resultName);
@@ -3053,12 +3077,18 @@ ndexApp.controller('networkController',
 
                         $scope.showSetSampleButtonEnabled = false;
 
-                    } else {
-                        setTooltipOnSetSampleButtonId('Set this query as network sample ');
+                    } else if ((networkController.previousNetwork.edgeCount <= 12000) && networkController.previousNetwork.hasLayout) {
+                        setTooltipOnSetSampleButtonId('This feature is not yet implemented');
 
-                        $scope.showSetSampleButtonEnabled = true;
+                        $scope.showSetSampleButtonEnabled = false;
+
                     }
-                }
+                    else {
+                            setTooltipOnSetSampleButtonId('Set this query as network sample ');
+
+                            $scope.showSetSampleButtonEnabled = true;
+                        }
+                    }
 
 
                 // re-draw network in Cytoscape Canvas regardless of whether we are in Table or Graph View
@@ -3587,11 +3617,136 @@ ndexApp.controller('networkController',
                 }
             };
 
+            $scope.setNetworkSampleViaUUID = function() {
+                if (!$scope.enableSetSampleViaUUID) {
+                    return;
+                }
+                var parentScope = $scope;
+
+                $modal.open({
+                    templateUrl: 'views/setNetworkSampleViaUUIDModal.html',
+                    backdrop: 'static',
+
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.title       = 'Set Network Sample';
+                        //$scope.text        = 'Please enter UUID of network to be used as sample below.<br><br>';
+                        $scope.networkUUID = '';
+
+                        $scope.cancel = function() {
+                            $modalInstance.dismiss();
+                            delete $scope.networkUUID;
+                            delete $scope.errors;
+                        };
+
+                        $scope.$watch('networkUUID', function() {
+                            delete $scope.errors;
+                        });
+
+                        $scope.submit = function() {
+                            var accessKey = null;
+
+                            if ($scope.networkUUID === networkController.currentNetworkId) {
+                                $scope.errors = 'The sample and target are the same network.  Please select a different sample.';
+                                return;
+                            }
+
+                            networkService.getNetworkSummaryFromNdexV2($scope.networkUUID, accessKey)
+                                .success(
+                                    function (network) {
+
+                                        var sampleNetworkEdgeCount = network.edgeCount;
+                                        //var currentNetworkEdgeCount = networkController.currentNetwork.edgeCount;
+                                        var limitForSettingNetwrokSample = 1000;
+
+                                        if (sampleNetworkEdgeCount > limitForSettingNetwrokSample) {
+                                            $scope.errors = 'The network with UUID ' + $scope.networkUUID + ' has ' +
+                                                sampleNetworkEdgeCount + ' edges. Cannot set as sample networks with more than ' +
+                                                limitForSettingNetwrokSample + ' edges.';
+                                            return;
+                                        }
+
+
+                                        ndexService.getCompleteNetworkInCXV2($scope.networkUUID, accessKey,
+
+                                            function (network) {
+
+                                                ndexService.setNetworkSampleV2(networkController.currentNetworkId, network,
+                                                    function () {
+                                                        var sampleInNiceCX = cxNetworkUtils.rawCXtoNiceCX(network);
+
+                                                        networkController.isSample = true;
+                                                        networkController.sampleSize = (sampleInNiceCX.edges) ? _.size(sampleInNiceCX.edges) : 0;
+
+                                                        networkService.setCurrentNiceCX(sampleInNiceCX);
+                                                        networkService.setOriginalNiceCX(sampleInNiceCX);
+
+                                                        drawCXNetworkOnCanvas(sampleInNiceCX, false);
+
+                                                        if (parentScope.currentView === 'Table') {
+                                                            var enableFiltering = true;
+                                                            var setGridWidth = false;
+                                                            populateNodeTable(sampleInNiceCX, enableFiltering, setGridWidth);
+                                                            populateEdgeTable(sampleInNiceCX, enableFiltering, setGridWidth);
+                                                            parentScope.drawCXNetworkOnCanvasWhenViewSwitched = true;
+                                                        } else {
+                                                            parentScope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+                                                        }
+
+                                                        $modalInstance.dismiss();
+                                                    },
+                                                    function (error) {
+                                                        if (error && error.hasOwnProperty('data') &&
+                                                            error.data.hasOwnProperty('message')) {
+
+                                                            $scope.errors = 'Unable to set network ' + $scope.networkUUID +
+                                                                ' as sample: ' + error.data.message;
+
+                                                        } else {
+
+                                                            $scope.errors = 'Unable to set network ' + $scope.networkUUID + ' as sample.';
+                                                        }
+
+                                                    });
+                                                },
+
+                                            function (error) {
+                                                if (error && error.hasOwnProperty('data') &&
+                                                    error.data.hasOwnProperty('message')) {
+
+                                                    $scope.errors = 'Unable to set network ' + $scope.networkUUID +
+                                                        ' as sample: ' + error.data.message;
+
+                                                } else {
+
+                                                    $scope.errors = 'Unable to set network ' + $scope.networkUUID + ' as sample.';
+                                                }
+                                            });
+                                    })
+                                .error(
+                                    function (error) {
+
+                                        if (error && error.hasOwnProperty('data') &&
+                                            error.data.hasOwnProperty('message')) {
+
+                                            $scope.errors = 'Unable to set network ' + $scope.networkUUID +
+                                                ' as sample: ' + error.data.message;
+
+                                        } else {
+
+                                            $scope.errors = 'Unable to set network ' + $scope.networkUUID + ' as sample.';
+                                        }
+                                    }
+                                );
+                        };
+                    }
+                });
+            };
+
             $scope.removeFromMyNetworks = function() {
                 if (!$scope.enableRemoveFromMyAccount) {
                     return;
                 }
-
 
                 var title = 'Remove Shared Network';
                 var message = 'Another NDEx user has shared this network with you and removing it from your ' +
@@ -3629,6 +3784,29 @@ ndexApp.controller('networkController',
                     });
             };
 
+
+            var setEnableSetSampleViaUUID = function() {
+                $scope.enableSetSampleViaUUID = true;
+
+                if (!networkController.isLoggedInUser) {
+                    $scope.setNetworkSampleViaUUIDTitle = 'You need to be logged in to set network sample';
+                    $scope.enableSetSampleViaUUID = false;
+
+                } else if (!networkController.isNetworkOwner) {
+                    $scope.setNetworkSampleViaUUIDTitle = 'Cannot set sample for networks you do not own';
+                    $scope.enableSetSampleViaUUID = false;
+
+                } else if (networkController.currentNetwork.edgeCount < $scope.noOfEdgesToShowSetSampleButton) {
+                    $scope.setNetworkSampleViaUUIDTitle =
+                        'Cannot set sample for networks with less than ' + $scope.noOfEdgesToShowSetSampleButton + ' edges';
+                    $scope.enableSetSampleViaUUID = false;
+
+                } else if ((networkController.currentNetwork.edgeCount <= 12000) &&
+                    networkController.currentNetwork.hasLayout) {
+                    $scope.setNetworkSampleViaUUIDTitle = 'This feature is not yet implememted';
+                    $scope.enableSetSampleViaUUID = false;
+                }
+            };
 
             var setRemoveFromMyAccountTitle = function() {
                 $scope.enableRemoveFromMyAccount = true;
@@ -3809,6 +3987,8 @@ ndexApp.controller('networkController',
                                 $scope.showSetSampleButton = (networkController.isAdmin);
                                     //(networkController.currentNetwork.edgeCount > $scope.noOfEdgesToShowSetSampleButton));
 
+
+                                setEnableSetSampleViaUUID();
                                 setRemoveFromMyAccountTitle();
                                 setEditPropertiesTitle();
                                 setUpgradePermissionTitle();
@@ -3935,18 +4115,18 @@ ndexApp.controller('networkController',
                             networkController.currentNetwork.reference = getNetworkPropertyFromSummary(networkController.subNetworkId, 'Reference');
                             networkController.currentNetwork.rightsHolder = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rightsHolder');
                             networkController.currentNetwork.rights = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rights');
-
+/*
                             networkController.currentNetwork.userSetSample = getNetworkPropertyFromSummary(networkController.subNetworkId, 'userSetSample');
 
                             if (typeof networkController.currentNetwork.userSetSample === 'undefined') {
                                 networkController.currentNetwork.userSetSample = false;
                             }
                             currentNetworkSummary.userSetSample = networkController.currentNetwork.userSetSample;
-
+*/
                             networkController.otherProperties =
                                 _.sortBy(
                                     networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
-                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version', 'userSetSample']), 'predicateString');
+                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
 
                             //TODO: need to move this to 'add to my set' modal.
                             networkController.getAllNetworkSetsOwnedByUser(
@@ -4022,16 +4202,17 @@ ndexApp.controller('networkController',
                         networkController.currentNetwork.reference = networkService.getNetworkProperty(networkController.subNetworkId, 'Reference');
                         networkController.currentNetwork.rightsHolder = networkService.getNetworkProperty(networkController.subNetworkId, 'rightsHolder');
                         networkController.currentNetwork.rights = networkService.getNetworkProperty(networkController.subNetworkId, 'rights');
+                        /*
                         networkController.currentNetwork.userSetSample = getNetworkPropertyFromSummary(networkController.subNetworkId, 'userSetSample');
                         if (typeof networkController.currentNetwork.userSetSample === 'undefined') {
                             networkController.currentNetwork.userSetSample = false;
                         }
                         currentNetworkSummary.userSetSample = networkController.currentNetwork.userSetSample;
-
+                        */
                         networkController.otherProperties =
                             _.sortBy(
                                 networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
-                                    'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version', 'userSetSample']), 'predicateString');
+                                    'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
 
 
 
@@ -4311,6 +4492,7 @@ ndexApp.controller('networkController',
                     });
             };
 
+            /*
             var setUserSetSampleProperty = function() {
                 // sets userSetSample network property on the server
                 // if it is not already set
@@ -4332,7 +4514,7 @@ ndexApp.controller('networkController',
 
                     });
             };
-
+*/
             networkController.setSampleFromQuery = function() {
 
                 if (!$scope.showSetSampleButtonEnabled) {
@@ -4357,12 +4539,12 @@ ndexApp.controller('networkController',
 
                         ndexService.setNetworkSampleV2(networkController.currentNetworkId, queryResultInCX,
                             function() {
-                                setUserSetSampleProperty();
+                                //setUserSetSampleProperty();
                                 networkService.setQueryResultAsOriginalNiceCX();
 
                                 networkController.previousNetwork.hasSample     = true;
-                                networkController.previousNetwork.userSetSample = true;
-                                networkController.currentNetwork.userSetSample  = true;
+                                //networkController.previousNetwork.userSetSample = true;
+                                //networkController.currentNetwork.userSetSample  = true;
                                 networkController.isSamplePrevious              = true;
                                 networkController.sampleSizePrevious = networkController.currentNetwork.edgeCount;
 

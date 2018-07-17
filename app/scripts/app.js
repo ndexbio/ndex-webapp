@@ -221,6 +221,54 @@ var checkIfUserHasAccessToTheClickedNetwork =
         return deferred.promise;
     };
 
+var checkIfUserExists =
+    function ($q, $location, $route, ndexService, ndexNavigation, sharedProperties, $modalStack, $rootScope) {
+
+        //var loggedInUser = ndexUtility.getUserCredentials();
+        var loggedInUserId = sharedProperties.getCurrentUserId();
+        var userUUID       =  $route.current.params.identifier;
+
+        var deferred = $q.defer();
+        if ((loggedInUserId === userUUID) && (loggedInUserId !== null) && (userUUID !== null)) {
+            $location.path('/myAccount');
+            return deferred.resolve();
+        }
+
+        ndexService.getUserByUUIDV2(userUUID)
+            .success(
+                function (user)
+                {
+                    $rootScope.user = user;
+                    return deferred.resolve();
+                })
+            .error(
+                function(error) {
+
+                    if (error.errorCode && (error.errorCode === 'NDEx_Object_Not_Found_Exception')) {
+
+                        deferred.reject();
+
+                        var title = 'User Not Found';
+                        var message = 'User was not found on the NDEx server. ';
+
+                        if (error.message) {
+                            message = error.message;
+                        }
+
+                        $modalStack.dismissAll();
+                        ndexNavigation.genericInfoModal(title, message);
+
+                        if (loggedInUserId) {
+                            $location.path('/myAccount');
+                        } else {
+                            $location.path('/');
+                        }
+                    }
+                }
+            );
+
+        return deferred.promise;
+    };
 
 // configure our routes
 ndexApp.config(['$routeProvider', function ($routeProvider) {
@@ -252,7 +300,11 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         // route for the user page
         .when('/user/:identifier', {
             templateUrl: 'views/user.html',
-            controller: 'userController'
+            controller: 'userController',
+            resolve: {
+                //"check": checkRouting
+                factory: checkIfUserExists
+            }
         })
 
         // route for the MyAccount page

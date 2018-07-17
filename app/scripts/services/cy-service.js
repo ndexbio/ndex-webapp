@@ -1118,7 +1118,22 @@ angular.module('ndexServiceApp')
                     middleSelector = elementType + '[' + cyDataAttribute + ' > ' + previousTranslatedPoint.mappedDataValue + ']' + '[' + cyDataAttribute + ' < ' + translatedPoint.mappedDataValue + ']'  ;
 
                     //"width": "mapData(weight,0,70,1.0,8.0)"
-                    middleCSS[cyVisualAttribute] = 'mapData(' + cyDataAttribute + ',' + previousTranslatedPoint.mappedDataValue + ',' + translatedPoint.mappedDataValue + ',' + previousTranslatedPoint.equalValue  + ',' + translatedPoint.equalValue + ')';
+                    if (previousTranslatedPoint.equalValue ===  translatedPoint.equalValue) {
+                        // here, if previousTranslatedPoint.equalValue and translatedPoint.equalValue are same,
+                        // then Cytoscape.js' mapData() fails to correctly set the values, for example,
+                        // if previousTranslatedPoint.equalValue ===  translatedPoint.equalValue ===  rgb(255,255,0),
+                        // then mapData() of Cytoscape.js incorrectly sets the color to gray instead of rgb(255,255,0) yellow.
+                        // A bug for Cytoscape.js has been filed: https://github.com/cytoscape/cytoscape.js/issues/2152
+
+                        // this is a workaround to resolve https://ndexbio.atlassian.net/browse/NWA-267
+                        // Translation of continuous mapping style problems.
+
+                        middleCSS[cyVisualAttribute] = previousTranslatedPoint.equalValue;
+                    } else {
+                        middleCSS[cyVisualAttribute] = 'mapData(' + cyDataAttribute + ',' +
+                            previousTranslatedPoint.mappedDataValue + ',' + translatedPoint.mappedDataValue + ',' +
+                            previousTranslatedPoint.equalValue + ',' + translatedPoint.equalValue + ')';
+                    }
                     elements.push({'selector': middleSelector, 'css': middleCSS});
 
                     // output a style for values equal to this point
