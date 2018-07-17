@@ -3874,7 +3874,7 @@ ndexApp.controller('networkController',
 
                                         if (data && data.data && data.data.appVersion) {
 
-                                            var minAcceptableCyNDEXVersion = 220;
+                                            var minAcceptableCyNDEXVersion = 223;
 
                                             var cyNDEXVersionStr = data.data.appVersion;
                                             cyNDEXVersionStr = cyNDEXVersionStr.replace(/\./g,'');
@@ -3884,7 +3884,7 @@ ndexApp.controller('networkController',
                                             if (currentCyNDEXVersion < minAcceptableCyNDEXVersion) {
 
                                                 $scope.openInCytoscapeTitle =
-                                                    'You need CyNDEx-2 version 2.2.0 or later to use this feature.\n';
+                                                    'You need CyNDEx-2 version 2.2.3 or later to use this feature.\n';
                                                 $scope.openInCytoscapeTitle +=
                                                     'Your version of CyNDEx-2 is ' + data.data.appVersion + '.';
 
@@ -3895,7 +3895,7 @@ ndexApp.controller('networkController',
                                             }
                                         } else {
                                             $scope.openInCytoscapeTitle =
-                                                'You need CyNDEx-2 version 2.2.0 or later to use this feature.\n' +
+                                                'You need CyNDEx-2 version 2.2.3 or later to use this feature.\n' +
                                                 'Your version of CyNDEx-2 is too old.';
                                         }
                                     },
