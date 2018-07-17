@@ -381,14 +381,19 @@
                                             $route.reload();
 
                                         } else {
-                                            $scope.myAccountController.getNoOfNetworksAndSets(
-                                                function() {
-                                                    $scope.myAccountController.loadNetworks();
-                                                },
-                                                function() {
-                                                    console.log('unable to get No of Networks and Sets for this account');
-                                                }
-                                            );
+
+                                            if ($scope.myAccountController.getNoOfNetworksAndSets) {
+                                                $scope.myAccountController.getNoOfNetworksAndSets(
+                                                    function () {
+                                                        if ($scope.myAccountController.loadNetworks) {
+                                                            $scope.myAccountController.loadNetworks();
+                                                        }
+                                                    },
+                                                    function () {
+                                                        console.log('unable to get No of Networks and Sets for this account');
+                                                    }
+                                                );
+                                            }
                                         }
 
                                         $scope.isProcessing = false;
