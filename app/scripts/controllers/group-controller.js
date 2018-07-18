@@ -41,6 +41,15 @@ ndexApp.controller('groupController',
         $location.path("/network/" + identifier);
     };
 
+    $scope.getNumberOfNetworks = function() {
+        return (groupController.networkSearchResults.length === 0) ? '' :  ' (' +
+            groupController.networkSearchResults.length + ')';
+    };
+    $scope.getNumberOfMembers = function() {
+        return (groupController.userSearchResults.length === 0) ? '' :  ' (' +
+            groupController.userSearchResults.length + ')';
+    };
+
     var getUsersUUIDs = function(users) {
         var usersUUIDs = [];
 

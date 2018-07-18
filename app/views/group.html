@@ -78,7 +78,7 @@
     <div id="divgroupTabs" class="col-md-9" ng-show="groupController.displayedGroup">
 
         <tabset justified="true">
-            <tab heading="Networks">
+            <tab heading="Networks {{getNumberOfNetworks()}}">
                 <div id="divNetworks" ng-show='groupController.networkSearchResults.length > 0'>
                     <div id="userGroupsGridId"
                          ui-grid-selection
@@ -122,7 +122,7 @@
                     <p class='text-center text-muted'>No networks to display</p>
                 </div>
             </tab>
-            <tab heading="Members">
+            <tab heading="Members {{getNumberOfMembers()}}">
                 <div id="divGroups">
                     <div class='row center-block'>
                         <hr>
