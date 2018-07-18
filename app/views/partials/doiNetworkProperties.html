@@ -124,8 +124,12 @@
                         <div>
                             <input type="checkbox" id="referenceChange3" style="margin-right: 0px;" name="referenceChange3" ng-model="editor.isCertified" value="Let me add/modify the reference later." />
                             <label for="referenceChange3">Let me add/modify the reference later.</label> &nbsp;&nbsp;
-                            <a data-toggle="tooltip"
-                               title="A reference is not required to request a DOI. If you want the ability to add or modify a reference later on, please indicate your intentions by checking this box to the left. If you don't check this box, the network will be permenantly locked, made publicly visible and no further changes will be allowed."
+                            <a href="http://home.ndexbio.org/publishing-in-ndex/#addref"
+                                data-toggle="tooltip"
+                               title="A reference is not required to request a DOI. If you want the ability to add or
+                               modify a reference later on, please indicate your intentions by checking this box to the left.
+                               If you don't check this box, the network will be permenantly locked, made publicly visible and no
+                               further changes will be allowed."
                                style="text-decoration: none; font-weight: normal;"><i class="fa fa-info-circle"></i></a>
                         </div>
 
@@ -167,7 +171,7 @@
         <div class="col-sm-offset-1 col-sm-5">
             <div class="form-group rowWithOneLineTopPad" ng-repeat="property in editor.propertyValuePairs" ng-if="property.predicateString == 'rights'">
                 <label class="col-sm-3 control-label">rights &nbsp;&nbsp;
-                    <a href="http://home.ndexbio.org/publishing-in-ndex/"
+                    <a href="http://home.ndexbio.org/publishing-in-ndex/#rights"
                        data-toggle="tooltip" title="Click for more information about specific licenses"
                        style="text-decoration: none; font-weight: normal;" target="_blank" ng-init="setToolTips()"><i class="fa fa-info-circle"></i></a>
                     &nbsp;&nbsp;&nbsp;
