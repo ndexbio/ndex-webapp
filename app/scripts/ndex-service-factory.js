@@ -353,7 +353,7 @@ ndexServiceApp.factory('ndexService',
                         group.website = 'http://' + group.website;
                     }
                 }
-                var url = 'group';
+                var url = '/group';
 
                 var config = ndexConfigs.getPostConfigV2(url, group);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
