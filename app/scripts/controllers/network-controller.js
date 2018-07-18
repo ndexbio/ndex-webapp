@@ -4115,6 +4115,17 @@ ndexApp.controller('networkController',
                             networkController.currentNetwork.reference = getNetworkPropertyFromSummary(networkController.subNetworkId, 'Reference');
                             networkController.currentNetwork.rightsHolder = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rightsHolder');
                             networkController.currentNetwork.rights = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rights');
+
+                            if(networkController.currentNetwork.rights.indexOf('|') > -1){
+                                var rightsTemp = networkController.currentNetwork.rights;
+
+                                var rightsArray = rightsTemp.split('|');
+                                if(rightsArray.length > 1){
+                                    networkController.currentNetwork.rights = "<a href='" + rightsArray[0] + "'>" + rightsArray[1] + "</a>";
+
+                                }
+                            }
+
 /*
                             networkController.currentNetwork.userSetSample = getNetworkPropertyFromSummary(networkController.subNetworkId, 'userSetSample');
 
