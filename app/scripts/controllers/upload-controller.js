@@ -243,66 +243,6 @@ ndexApp.controller('uploadController',
             //console.info('uploader', uploader);
 
 
-            $scope.tsvUpload = function (rawCX, importPlan, onSuccess, onError) {
-                //var ndexServerURI = "http://dev.ndexbio.org/v2";
-                //var url = ndexServerURI + '/network';
-                var ndexServerURI = ""; //"http://localhost:8183";
-                var url = ndexServerURI + "/upload?save_plan=" + $scope.saveHelper.savePlan.toString();
-
-                var XHR = new XMLHttpRequest();
-                var FD  = new FormData();
-
-                var content = JSON.stringify(rawCX);
-
-                var blob2 = new Blob([$scope.fileContent], { type: "text/plain"});
-
-                // data.append("myfile", myBlob, "filename.txt");
-                //FD.append('CXNetworkStream', blob);
-                FD.append('upload', blob2);
-                FD.append('name', 'Test upload');
-                console.log($scope.searchResults.selectedTemplate);
-                if($scope.searchResults.selectedTemplate.hasOwnProperty('uuid')){
-                    FD.append('template', $scope.searchResults.selectedTemplate.uuid);
-                    console.log("Style template found");
-                } else {
-                    FD.append('template', "");
-                    console.log("No style template found");
-                }
-                FD.append('description', 'Test upload description');
-
-                console.log("here");
-
-                //FD.append('tsvFile', blob2);
-                //FD.append('importPlan', blob2);
-
-                XHR.addEventListener('load', function(event) {
-
-                    if (XHR.readyState === XHR.DONE) {
-                        if (XHR.status === 200 || XHR.status === 201) {
-                            var newUUID = XHR.responseText;
-                            onSuccess(XHR.responseText);
-                        }
-                    }
-                    //    alert('Yeah! Data sent and response loaded.');
-                });
-
-                // We define what will happen in case of error
-                XHR.addEventListener('error', function(event) {
-                    //   alert('Oups! Something goes wrong.');
-                    onError(XHR.responseText);
-                });
-
-                XHR.open('POST', url);
-                XHR.setRequestHeader("Authorization", "Basic " + btoa("scratch:scratch"));
-
-                // We just send our FormData object, HTTP headers are set automatically
-                //var foo =  XHR.send({'files': {"upload": "ABC", "plan": "xyz"}});
-                var foo =  XHR.send(FD);
-
-            };
-
-
-
             $scope.getUserAndDiskInfo();
 
             $scope.refreshTasks();
