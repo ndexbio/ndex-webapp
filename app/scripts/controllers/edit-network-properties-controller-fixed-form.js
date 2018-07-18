@@ -1151,6 +1151,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                                 network.properties[i].rightsOtherURL = rightsArray[0];
                                 network.properties[i].rightsOther = rightsArray[1];
                             }
+                        } else if(network.properties[i].predicateString === 'rights' && network.properties[i].value.indexOf('href=') > -1) {
+                            var rightsTemp = network.properties[i].value;
+                            network.properties[i].value = 'Other';
+                            rightsTemp = rightsTemp.replace("<a href='http://", "").replace("</a>", "");
+                            var rightsArray = rightsTemp.split("'>");
+                            if(rightsArray.length > 1){
+                                network.properties[i].rightsOtherURL = rightsArray[0];
+                                network.properties[i].rightsOther = rightsArray[1];
+                            }
                         }
                         editor.propertyValuePairs.push(network.properties[i]);
                         editor.propertyValuePairsIndex[network.properties[i].predicateString] = propIndex;
