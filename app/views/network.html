@@ -1087,6 +1087,10 @@
             </span>
 
             <span ng-show='!networkController.isLoggedInUser'>
+                <!--
+                this commented out code was added on 4/30/18 by chenjing -- it broke the previous functionality and resulted in a
+                'Blocker Bug NWA-301 Tool tip on "Log in" button in network page is still the old type (very slow)'
+                filed by rpillich on 7/18/18
 
                 <a
                    class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
@@ -1094,19 +1098,19 @@
                    ng-attr-title="{{ networkController.hasMultipleSubNetworks() && 'Log in to your account' || 'Log in to operate on this network'  }}">
                     Log in
                 </a>
+                -->
 
-            <!--
                 <a ng-show="!networkController.hasMultipleSubNetworks()"
                    class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
                    data-toggle="tooltip" title="Log in to operate on this network">
                     Log in
                 </a>
 
-              <a ng-show="networkController.hasMultipleSubNetworks()"
-                   class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
-                   data-toggle="tooltip" title="Log in to your account">
+                <a ng-show="networkController.hasMultipleSubNetworks()"
+                    class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
+                    data-toggle="tooltip" title="Log in to your account">
                     Log in
-                </a>  -->
+                </a>
 
             </span>
 
