@@ -1283,12 +1283,15 @@ angular.module('ndexServiceApp')
                             console.log('default node property ' + vp + ' = ' + value);
                             var cyVisualAttribute = getCyVisualAttributeForVP(vp);
                             if (cyVisualAttribute) {
+                                if (vp === 'NODE_LABEL_POSITION') {
+                                    cyLabelPositionCoordinates = value;
+
+                                } else {
                                     var cyVisualAttributeType = getCyVisualAttributeTypeForVp(vp);
                                     defaultNodeProperties[cyVisualAttribute] = getCyVisualAttributeValue(value, cyVisualAttributeType);
+                                }
                             } else {
-                                if (vp === 'NODE_LABEL_POSITION'){
-                                    cyLabelPositionCoordinates = value;
-                                } else if (vp === 'NODE_LABEL_FONT_FACE'){
+                                if (vp === 'NODE_LABEL_FONT_FACE') {
                                     nodeLabelFontFace  = value;
                                 } else if (vp === 'NODE_SELECTED_PAINT'){
                                     var selectedColor = getCyVisualAttributeValue(value, 'color');
