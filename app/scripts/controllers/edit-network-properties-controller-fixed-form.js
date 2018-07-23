@@ -190,10 +190,14 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     var loggedInUserName = (loggedInUser && loggedInUser.userName) ? loggedInUser.userName : null;
 
     editor.doiInfo = {
-        'user': {'username': loggedInUserName},
+        'user': {'username': loggedInUserName, 'email': ''},
         'visibility': 'PUBLIC',
         'pubDate': ''
     };
+
+    if (window.currentNdexUser && window.currentNdexUser.emailAddress) {
+        editor.doiInfo.user.email = window.currentNdexUser.emailAddress;
+    }
 
 
     $scope.updatecalendar = function(){
@@ -1264,22 +1268,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             function(error) {
                 editor.errors.push(error);
             }
-        )
-        .then(
-            ndexService.getUserByUserNameV2(editor.doiInfo.user.username,
-                function(data) {
-                    var userId = (data && data.externalId) ? data.externalId : null;
-                    if (userId) {
-                        editor.doiInfo.user.email = data.emailAddress;
-                    }
-                    else {
-                        $scope.forgot.errorMsg = 'Unable to get User Id for user ' + $scope.forgot.accountName +
-                            ' and request password reset.';
-                    }
-                },
-                function(error){
-                    editor.errors.push(error);
-                })
         );
 
     var userId = sharedProperties.getCurrentUserId();
