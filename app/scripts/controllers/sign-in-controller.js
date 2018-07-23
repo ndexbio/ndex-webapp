@@ -175,20 +175,19 @@ ndexApp.controller('signInController', [ 'ndexService', 'ndexUtility', 'sharedPr
 
                     if (url) {
                         var newUserId = url.split('/').pop();
-                        var userName  = $scope.signIn.newUser.userName;
-                        var firstName = $scope.signIn.newUser.firstName;
-                        var lastName  = $scope.signIn.newUser.lastName;
-                        var password  = $scope.signIn.newUser.password;
+                        var data = {};
 
-                        sharedProperties.setCurrentUser(newUserId, userName);
-                        ndexUtility.setUserInfo(userName, firstName, lastName, newUserId, password);
+                        data.userName          = $scope.signIn.newUser.userName;
+                        data.firstName         = $scope.signIn.newUser.firstName;
+                        data.lastName          = $scope.signIn.newUser.lastName;
+                        data.externalId        = newUserId;
 
-                        $scope.signIn.cancelSignUp();// doesnt really cancel
-                        ndexService.authenticateUserV2(userName,password,basicAuthSuccessHandler,
-                             function (error ) {
-                                $scope.signIn.message = "Unexpect error from server: " + error;
-                                $scope.isProcessing=false;
-                            });
+                        $scope.signIn.password = $scope.signIn.newUser.password;
+
+                        $scope.signIn.cancelSignUp();  // doesnt really cancel; closes modal, clears structures
+
+                        basicAuthSuccessHandler(data);
+
                     } else {
 
                         $scope.isProcessing = false;
