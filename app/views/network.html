@@ -436,7 +436,8 @@
                 </tab>
 
                 <!-- node/edge tab -->
-                <tab disabled="networkController.tabs[1].disabled" active="networkController.tabs[1].active">
+                <tab id='nodesEdgesTabId' disabled="networkController.tabs[1].disabled" active="networkController.tabs[1].active"
+                     data-toggle="tooltip" ng-mouseover="changeNodesEdgesTabTitle()" data-placement="bottom" title="">
                     <tab-heading>{{ networkController.tabs[1].heading }}</tab-heading>
 
                     <div>

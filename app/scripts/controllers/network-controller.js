@@ -219,6 +219,14 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
+            $scope.changeNodesEdgesTabTitle = function() {
+                var title = networkController.tabs[1].disabled ?
+                    'Select nodes or edges in the graph to enable this tab' : '';
+
+                $('#nodesEdgesTabId').tooltip('hide')
+                    .attr('data-original-title', title)
+                    .tooltip('show');
+            };
 
             $scope.activeTab = 'Edges';
 
@@ -289,12 +297,11 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
-            networkController.tabs = [
-                {'heading': 'Network Info', 'active':true},
-                {'heading': 'Nodes/Edges', 'active': false, 'disabled': true},
-                {'heading': 'Provenance', 'active': false},
-                {'heading': 'Advanced Query', 'hidden': true, 'active': false}
-            ];
+            networkController.tabs    = new Array(4);
+            networkController.tabs[0] = {'heading': 'Network Info',   'active': true};
+            networkController.tabs[1] = {'heading': 'Nodes/Edges',    'active': false, 'disabled': true};
+            networkController.tabs[2] = {'heading': 'Provenance',     'active': false};
+            networkController.tabs[3] = {'heading': 'Advanced Query', 'active': false, 'hidden': true};
 
             networkController.queryWarnings = [];
             networkController.queryErrors   = [];
@@ -1069,10 +1076,13 @@ ndexApp.controller('networkController',
                                 networkController.selectionContainer = {'nodes': cxNodes, 'edges': cxEdges}; //{'nodes': selectedNodes, 'edges': selectedEdges};
 
                                 if (cxNodes.length === 0 && cxEdges.length === 0) {
-                                    networkController.tabs[0].active = true;
+
+                                    if (networkController.tabs[1].active) {
+                                        networkController.tabs[0].active = true;
+                                    }
                                     networkController.tabs[1].disabled = true;
                                     networkController.tabs[1].active = false;
-                                    networkController.tabs[2].active = false;
+
                                 } else if (!networkController.tabs[1].active ) {
                                     networkController.tabs[1].active = true;
                                     networkController.tabs[1].disabled = false;
