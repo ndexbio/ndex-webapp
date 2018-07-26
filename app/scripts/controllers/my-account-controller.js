@@ -442,7 +442,7 @@ ndexApp.controller('myAccountController',
                 $scope.enableChangeVisibilityBulkButton = true;
 
                 var unchangeableNetworkStates = {'nonadmin' : 0, 'certified' : 0, 'failed' : 0,
-                    'processing' : 0, 'collection' : 0, 'readonly': 0};
+                    'processing' : 0, /*'collection' : 0, */ 'readonly': 0};
 
                 var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
 
@@ -487,7 +487,7 @@ ndexApp.controller('myAccountController',
                         }
                         if ((unchangeableNetworkStates.nonadmin > 0) &&
                             ((unchangeableNetworkStates.certified > 0) || (unchangeableNetworkStates.failed > 0) ||
-                            (unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
+                            (unchangeableNetworkStates.processing > 0) || //(unchangeableNetworkStates.collection > 0) ||
                             (unchangeableNetworkStates.readonly > 0))) {
                             $scope.changeVisibilityButtonTitle += ', ';
                         }
@@ -498,7 +498,7 @@ ndexApp.controller('myAccountController',
                         }
                         if ((unchangeableNetworkStates.certified > 0) &&
                             ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) ||
-                            (unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
+                            /*(unchangeableNetworkStates.collection > 0) || */ (unchangeableNetworkStates.readonly > 0))) {
                             $scope.changeVisibilityButtonTitle += ', ';
                         }
                         if (unchangeableNetworkStates.failed > 1) {
@@ -507,7 +507,7 @@ ndexApp.controller('myAccountController',
                             $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.failed + ' network failed';
                         }
                         if ((unchangeableNetworkStates.failed > 0) &&
-                            ((unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0) ||
+                            ((unchangeableNetworkStates.processing > 0) || //(unchangeableNetworkStates.collection > 0) ||
                             (unchangeableNetworkStates.readonly > 0))) {
                             $scope.changeVisibilityButtonTitle += ', ';
                         }
@@ -517,9 +517,10 @@ ndexApp.controller('myAccountController',
                             $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
                         }
                         if ((unchangeableNetworkStates.processing > 0) &&
-                            ((unchangeableNetworkStates.collection > 0) || (unchangeableNetworkStates.readonly > 0))) {
+                            (/*(unchangeableNetworkStates.collection > 0) || */ (unchangeableNetworkStates.readonly > 0))) {
                             $scope.changeVisibilityButtonTitle += ', ';
                         }
+                        /*
                         if (unchangeableNetworkStates.collection > 1) {
                             $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.collection + ' networks are Cytoscape collections';
                         } else if (unchangeableNetworkStates.collection === 1) {
@@ -528,6 +529,7 @@ ndexApp.controller('myAccountController',
                         if ((unchangeableNetworkStates.collection > 0) && (unchangeableNetworkStates.readonly > 0)) {
                             $scope.changeVisibilityButtonTitle += ', ';
                         }
+                        */
                         if (unchangeableNetworkStates.readonly > 1) {
                             $scope.changeVisibilityButtonTitle += unchangeableNetworkStates.readonly + ' networks are read-only';
                         } else if (unchangeableNetworkStates.readonly === 1) {
@@ -544,8 +546,8 @@ ndexApp.controller('myAccountController',
                             $scope.changeVisibilityButtonTitle += ': it is failed ';
                         } else if (unchangeableNetworkStates.processing > 0) {
                             $scope.changeVisibilityButtonTitle += ': it is processing ';
-                        } else if (unchangeableNetworkStates.collection > 0) {
-                            $scope.changeVisibilityButtonTitle += ': it is a Cytoscape collection ';
+                        //} else if (unchangeableNetworkStates.collection > 0) {
+                        //    $scope.changeVisibilityButtonTitle += ': it is a Cytoscape collection ';
                         } else if (unchangeableNetworkStates.readonly > 0) {
                             $scope.changeVisibilityButtonTitle += ': it is read-only ';
                         }
@@ -557,7 +559,7 @@ ndexApp.controller('myAccountController',
                 var selectedNetworksRows = $scope.networkGridApi.selection.getSelectedRows();
                 $scope.enableSetReadOnlyBulkButton = true;
 
-                var unchangeableNetworkStates = {'nonadmin' : 0, 'certified' : 0, 'failed' : 0, 'processing' : 0, 'collection' : 0};
+                var unchangeableNetworkStates = {'nonadmin' : 0, 'certified' : 0, 'failed' : 0, 'processing' : 0 /*, 'collection' : 0*/ };
                 var statesForWhichToDisable = Object.keys(unchangeableNetworkStates);
 
                 _.forEach (selectedNetworksRows, function(row) {
@@ -596,7 +598,7 @@ ndexApp.controller('myAccountController',
                         }
                         if ((unchangeableNetworkStates.nonadmin > 0) &&
                             ((unchangeableNetworkStates.certified > 0)  || (unchangeableNetworkStates.failed > 0) ||
-                            (unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0))) {
+                            (unchangeableNetworkStates.processing > 0) /* || (unchangeableNetworkStates.collection > 0)*/)) {
                             $scope.setReadOnlNetworkButtonTitle += ', ';
                         }
                         if (unchangeableNetworkStates.certified > 1) {
@@ -605,8 +607,8 @@ ndexApp.controller('myAccountController',
                             $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.certified + ' network is certified';
                         }
                         if ((unchangeableNetworkStates.certified > 0) &&
-                            ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) ||
-                             (unchangeableNetworkStates.collection > 0))) {
+                            ((unchangeableNetworkStates.failed > 0) || (unchangeableNetworkStates.processing > 0) /*||
+                             (unchangeableNetworkStates.collection > 0)*/ )) {
                             $scope.setReadOnlNetworkButtonTitle += ', ';
                         }
                         if (unchangeableNetworkStates.failed > 1) {
@@ -615,7 +617,7 @@ ndexApp.controller('myAccountController',
                             $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.failed + ' network failed';
                         }
                         if ((unchangeableNetworkStates.failed > 0) &&
-                            ((unchangeableNetworkStates.processing > 0) || (unchangeableNetworkStates.collection > 0))) {
+                            ((unchangeableNetworkStates.processing > 0) /*|| (unchangeableNetworkStates.collection > 0)*/)) {
                             $scope.setReadOnlNetworkButtonTitle += ', ';
                         }
                         if (unchangeableNetworkStates.processing > 1) {
@@ -623,7 +625,8 @@ ndexApp.controller('myAccountController',
                         } else if (unchangeableNetworkStates.processing === 1) {
                             $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.processing + ' network is processing';
                         }
-                        if ((unchangeableNetworkStates.processing > 0) && (unchangeableNetworkStates.collection > 0)) {
+                        /*
+                        if ((unchangeableNetworkStates.processing > 0) && (unchangeableNetworkStates.collection > 0) ) {
                             $scope.setReadOnlNetworkButtonTitle += ', ';
                         }
                         if (unchangeableNetworkStates.collection > 1) {
@@ -631,6 +634,7 @@ ndexApp.controller('myAccountController',
                         } else if (unchangeableNetworkStates.collection === 1) {
                             $scope.setReadOnlNetworkButtonTitle += unchangeableNetworkStates.collection + ' network is a Cytoscape collection';
                         }
+                        */
                     } else {
                         $scope.setReadOnlNetworkButtonTitle += 'network';
 
@@ -642,8 +646,8 @@ ndexApp.controller('myAccountController',
                             $scope.setReadOnlNetworkButtonTitle += ': it is failed ';
                         } else if (unchangeableNetworkStates.processing > 0) {
                             $scope.setReadOnlNetworkButtonTitle += ': it is processing ';
-                        } else if (unchangeableNetworkStates.collection > 0) {
-                            $scope.setReadOnlNetworkButtonTitle += ': it is a Cytoscape collection ';
+                        //} else if (unchangeableNetworkStates.collection > 0) {
+                        //    $scope.setReadOnlNetworkButtonTitle += ': it is a Cytoscape collection ';
                         }
                     }
                 }
