@@ -184,9 +184,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             if (typeof config.networkQueryEdgeLimit === 'undefined') {
                 config.networkQueryEdgeLimit = 50000;
             }
-            if (typeof config.networkTableLimit === 'undefined') {
-                config.networkTableLimit = 500;
-            }
             if (typeof config.idleTime === 'undefined') {
                 config.idleTime = 3600;
             }
@@ -308,26 +305,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 // defined as non-number or negative number
                 config.refreshIntervalInSeconds = 0;
             }
-
-            /*
-             if (typeof config.apiLink === 'undefined') {
-             config.apiLink = {};
-             }
-             if (typeof config.apiLink.label === 'undefined') {
-             config.apiLink.label = "API";
-             }
-             if (typeof config.apiLink.href === 'undefined') {
-             //config.apiLink.href = "http://public.ndexbio.org/#/api";
-             config.apiLink.href = "#/api";
-             }
-             if (typeof config.apiLink.warning === 'undefined') {
-             config.apiLink.warning = "Warning! You are about to leave your organization's domain. Follow this link?";
-             }
-             if (typeof config.apiLink.warn === 'undefined') {
-             config.apiLink.warn = false;
-             }
-             */
-
             if (typeof config.reportBugLink === 'undefined') {
                 config.reportBugLink = {};
             }
