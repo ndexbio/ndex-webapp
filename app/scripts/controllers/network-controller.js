@@ -228,6 +228,12 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
+            $scope.isEdgesAndNodesTabDisabled = function() {
+                return networkController.tabs[1].disabled ? 'disabled' : 'enabled';
+            };
+
+
+
             $scope.activeTab = 'Edges';
 
             $scope.activateTab = function(tabName){
