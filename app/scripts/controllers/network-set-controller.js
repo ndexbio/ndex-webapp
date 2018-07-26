@@ -183,7 +183,7 @@ ndexApp.controller('networkSetController',
                     if (a === b) {
                         return 0;
                     }
-                    if (a > b) {
+                    if (a < b) {
                         return -1;
                     }
                     return 1;
@@ -194,7 +194,7 @@ ndexApp.controller('networkSetController',
                     if (a === b) {
                         return 0;
                     }
-                    if (a > b) {
+                    if (a < b) {
                         return -1;
                     }
                     return 1;

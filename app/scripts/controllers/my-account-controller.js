@@ -968,7 +968,7 @@ ndexApp.controller('myAccountController',
                             if (b === 'Set') {
                                 return -1;
                             }
-                            if (a > b) {
+                            if (a < b) {
                                 return -1;
                             }
                             return 1;
@@ -984,7 +984,7 @@ ndexApp.controller('myAccountController',
                             if (a === b) {
                                 return 0;
                             }
-                            if (a > b) {
+                            if (a < b) {
                                 return -1;
                             }
                             return 1;
@@ -1004,7 +1004,7 @@ ndexApp.controller('myAccountController',
                             if (dateA === dateB) {
                                 return 0;
                             }
-                            if (dateA > dateB) {
+                            if (dateA < dateB) {
                                 return -1;
                             }
                             return 1;

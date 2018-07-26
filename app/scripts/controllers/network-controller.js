@@ -1494,7 +1494,7 @@ ndexApp.controller('networkController',
                                             if (parsedA === parsedB) {
                                                 return 0;
                                             }
-                                            if (parsedA > parsedB) {
+                                            if (parsedA < parsedB) {
                                                 return -1;
                                             }
                                             return 1;
@@ -1503,7 +1503,7 @@ ndexApp.controller('networkController',
                                             if (a === b) {
                                                 return 0;
                                             }
-                                            if (a > b) {
+                                            if (a < b) {
                                                 return -1;
                                             }
                                             return 1;
@@ -1763,7 +1763,7 @@ ndexApp.controller('networkController',
                                                 if (parsedA === parsedB) {
                                                     return 0;
                                                 }
-                                                if (parsedA > parsedB) {
+                                                if (parsedA < parsedB) {
                                                     return -1;
                                                 }
                                                 return 1;
@@ -1772,7 +1772,7 @@ ndexApp.controller('networkController',
                                                 if (a === b) {
                                                     return 0;
                                                 }
-                                                if (a > b) {
+                                                if (a < b) {
                                                     return -1;
                                                 }
                                                 return 1;
