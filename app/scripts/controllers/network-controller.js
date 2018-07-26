@@ -1486,6 +1486,29 @@ ndexApp.controller('networkController',
                                     cellTooltip: true,
                                     minWidth: calcColumnWidth(nodeAttributteProperty, false),
                                     enableFiltering: filteringEnabled,
+                                    sortingAlgorithm: function (a, b) {
+                                        if (!isNaN(a) && !isNaN(b)) {
+                                            var parsedA = parseFloat(a);
+                                            var parsedB = parseFloat(b);
+
+                                            if (parsedA === parsedB) {
+                                                return 0;
+                                            }
+                                            if (parsedA > parsedB) {
+                                                return -1;
+                                            }
+                                            return 1;
+
+                                        } else {
+                                            if (a === b) {
+                                                return 0;
+                                            }
+                                            if (a > b) {
+                                                return -1;
+                                            }
+                                            return 1;
+                                        }
+                                    },
                                     cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>'
                                 };
                             }
@@ -1731,7 +1754,30 @@ ndexApp.controller('networkController',
                                         cellTooltip: true,
                                         minWidth: calcColumnWidth(edgeAttributteProperty, false),
                                         enableFiltering: filteringEnabled,
-                                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+                                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html',
+                                        sortingAlgorithm: function (a, b) {
+                                            if (!isNaN(a) && !isNaN(b)) {
+                                                var parsedA = parseFloat(a);
+                                                var parsedB = parseFloat(b);
+
+                                                if (parsedA === parsedB) {
+                                                    return 0;
+                                                }
+                                                if (parsedA > parsedB) {
+                                                    return -1;
+                                                }
+                                                return 1;
+
+                                            } else {
+                                                if (a === b) {
+                                                    return 0;
+                                                }
+                                                if (a > b) {
+                                                    return -1;
+                                                }
+                                                return 1;
+                                            }
+                                        }
                                     };
                                 }
                             }
