@@ -293,6 +293,7 @@ angular.module('ndexServiceApp')
                 var password = userCredentials['token'];
 
                 link = link.replace("http://", "http://" + userName + ":" + password + "@");
+                console.log('in downloadCXNetwork link=' + link);
             };
 
             anchor.setAttribute('href', link);
@@ -301,6 +302,7 @@ angular.module('ndexServiceApp')
             document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
+            console.log('end of downloadCXNetwork');
         };
 
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
