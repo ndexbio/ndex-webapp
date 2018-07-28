@@ -302,7 +302,7 @@ angular.module('ndexServiceApp')
             document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
-            console.log('end of downloadCXNetwork');
+            //console.log('end of downloadCXNetwork');
         };
 
         self.getNetworkDownloadLink = function(accountController, rowEntity) {
