@@ -1981,7 +1981,7 @@ ndexApp.controller('networkController',
                 var numberOfEdges  = networkController.currentNetwork.edgeCount;
                 var edgesThreshold = window.ndexSettings.openInCytoscapeEdgeThresholdWarning;
 
-                if (numberOfEdges < edgesThreshold) {
+                if ((edgesThreshold === 0) || (numberOfEdges < edgesThreshold)) {
                     openCurrentNetworkInCytoscape();
 
                 } else {
