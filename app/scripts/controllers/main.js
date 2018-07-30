@@ -357,7 +357,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             if ((typeof config.openInCytoscapeEdgeThresholdWarning === 'undefined') ||
                 (typeof config.openInCytoscapeEdgeThresholdWarning !== 'number') ||
                 config.openInCytoscapeEdgeThresholdWarning < 0) {
-                config.openInCytoscapeEdgeThresholdWarning = 300000;
+                config.openInCytoscapeEdgeThresholdWarning = 100000;
             }
         }
         
