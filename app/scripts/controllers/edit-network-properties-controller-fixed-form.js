@@ -1239,19 +1239,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.isOwner = (networkOwnerUUID === loggedInUserUUID);
 
 
-                if(!$routeParams.doi) {
-                    editor.viewfilter.state = 'MAIN';
-                }
-                /*
                 if($routeParams.doi){
-                    editor.viewfilter.state = "DOI";
-
-                    var closeModalInterval = 15000; // ms
+                    editor.viewfilter.state = 'DOI';
+/*
+                   var closeModalInterval = 15000; // ms
 
                     var title    = "Important information";
                     var message  = "Please be aware that requesting a DOI will permanently lock this network and no further editing will be possible. " +
                         "You will still have a one-time opportunity to add a reference or update it later if you select the corresponding checkbox.";
-
+*/
                     //Please be aware that requesting a DOI will permanently lock this network and no further editing will be possible. " +
                     //" Please make sure all information is correct before proceeding.
 
@@ -1260,7 +1256,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 } else {
                     editor.viewfilter.state = 'MAIN';
                 }
-                */
+
 
             }
         )
