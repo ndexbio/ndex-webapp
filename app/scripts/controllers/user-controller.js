@@ -725,10 +725,6 @@ ndexApp.controller('userController',
                 return '#/network/' + networkUUID;
             };
 
- /*           $scope.getNetworkDownloadLink = function(rowEntity) {
-                return uiMisc.getNetworkDownloadLink(userController, rowEntity);
-            }; */
-
             $scope.downloadNetwork= function(rowEntity) {
 
                 uiMisc.downloadCXNetwork(rowEntity.externalId);

@@ -477,9 +477,6 @@ ndexApp.controller('networkSetController',
         return url;
     };
 
- /*   $scope.getNetworkDownloadLink = function(rowEntity) {
-        return uiMisc.getNetworkDownloadLink(networkSetController, rowEntity);
-    }; */
 
     $scope.downloadNetwork= function(rowEntity) {
         uiMisc.downloadCXNetwork(rowEntity.externalId);

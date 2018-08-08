@@ -2201,18 +2201,6 @@ ndexApp.controller('networkController',
             };
             */
 
-       /*     $scope.getNetworkDownloadLink = function(currentNetwork) {
-                //var visibility = networkController.currentNetwork.visibility;
-                if (currentNetwork) {
-                    var rowEntity = {
-                        'Visibility': currentNetwork.visibility,
-                        'externalId': currentNetwork.externalId
-                    };
-                    return uiMisc.getNetworkDownloadLink(networkController, rowEntity);
-                };
-
-                return;
-            }; */
 
             $scope.downloadNetwork = function () {
                 uiMisc.downloadCXNetwork(networkExternalId);

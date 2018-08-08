@@ -1391,10 +1391,10 @@ ndexApp.controller('myAccountController',
 
                 else if (window.currentSignInType === 'basic') {
                     var userCredentials = ndexUtility.getUserCredentials();
-                    anchor.setAttribute('href', link);
-                    anchor.setAttribute('id', myId);
-                    anchor.username = userCredentials.userName;
-                    anchor.password = userCredentials.token;
+                    anchor.setAttribute('href', link + '&auth_token=' +  btoa(userCredentials['userName'] + ':' +userCredentials['token']));
+                 //   anchor.setAttribute('id', myId);
+                //    anchor.username = userCredentials.userName;
+                //    anchor.password = userCredentials.token;
                 }
 
                 anchor.setAttribute('type', 'hidden');
@@ -3608,9 +3608,6 @@ ndexApp.controller('myAccountController',
 
             };
 
-      /*      $scope.getNetworkDownloadLink = function(rowEntity) {
-                return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
-            }; */
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)
             {

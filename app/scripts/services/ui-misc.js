@@ -289,10 +289,7 @@ angular.module('ndexServiceApp')
 
                 var userCredentials = ndexUtility.getUserCredentials();
 
-                var userName = userCredentials['userName'];
-                var password = userCredentials['token'];
-
-                link = link.replace("http://", "http://" + userName + ":" + password + "@");
+                link = link + "&auth_token=" + btoa(userCredentials['userName'] + ':' +userCredentials['token']);
                 //console.log('in downloadCXNetwork link=' + link);
             };
 
@@ -302,27 +299,13 @@ angular.module('ndexServiceApp')
             document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
-            //console.log('end of downloadCXNetwork');
         };
 
-        self.getNetworkDownloadLink = function(accountController, rowEntity) {
+ /*       self.getNetworkDownloadLink = function(accountController, rowEntity) {
 
             var link =
                 ndexService.getNdexServerUri() + "/network/" + rowEntity.externalId + "?download=true";
 
-/*            if (accountController.isLoggedInUser && rowEntity.Visibility &&
-                (rowEntity.Visibility.toLowerCase() == 'private'))
-            {
-                var userCredentials = ndexUtility.getUserCredentials();
-
-                if (!userCredentials || !userCredentials['userName'] || !userCredentials['token']) {
-                    return link;
-                }
-                var userName = userCredentials['userName'];
-                var password = userCredentials['token'];
-
-                link = link.replace("http://", "http://" + userName + ":" + password + "@");
-            }; */
 
             if (window.currentSignInType == 'basic')
             {
@@ -341,7 +324,7 @@ angular.module('ndexServiceApp')
             }
 
           return link;
-        };
+        }; */
 
         self.showSetInfo = function(set) {
 
