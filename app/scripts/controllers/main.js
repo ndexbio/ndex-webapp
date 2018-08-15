@@ -1,8 +1,8 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
-    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
+    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -413,11 +413,360 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 document.getElementById('hiddenElementId').style.background  = 'transparent';
             });
 
-        $scope.main.startSignIn = function()
-        {
-            $location.path('/signIn');
-        };
 
+
+        $scope.main.showSignInOptions = function() {
+            $uibModal.open({
+                templateUrl: 'views/signInSignUpModal.html',
+
+                controller: function ($scope, $uibModalInstance) {
+
+                    $scope.header             = window.ndexSettings.signIn.header;
+                    $scope.showForgotPassword = window.ndexSettings.signIn.showForgotPassword;
+                    $scope.cancelLabel        = 'Cancel';
+                    $scope.confirmLabel       = 'Sign In';
+
+                    $scope.googleSSO          = window.googleSSO;
+
+
+                    $scope.signIn         = {'userName': '', 'password': ''};
+                    $scope.signIn.newUser = {};
+
+                    $scope.cancelButtonDisabled  = false;
+                    $scope.confirmButtonDisabled = true;
+
+                    delete $scope.errors;
+
+                    $scope.close = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+
+
+                    /* ------------------------------------------------------------------------------------------- */
+                    $scope.signIn.showBasicAuthSigIn = function() {
+                        $uibModalInstance.dismiss();
+
+                        $uibModal.open({
+                            templateUrl: 'showBasicAuthSigIn.html',
+                            controller: function ($scope, $uibModalInstance) {
+
+                                $scope.header             = window.ndexSettings.signIn.header;
+                                $scope.showForgotPassword = window.ndexSettings.signIn.showForgotPassword;
+                                $scope.cancelLabel        = 'Cancel';
+                                $scope.confirmLabel       = 'Sign In';
+
+                                $scope.needAnAcoount      = window.ndexSettings.signIn.footer;
+                                $scope.showSignUp         = window.ndexSettings.signIn.showSignup;
+
+                                $scope.cancel = function () {
+                                    $uibModalInstance.dismiss();
+                                };
+
+                                $scope.$watch('signIn.userName', function() {
+                                    delete $scope.errors;
+                                });
+                                $scope.$watch('signIn.password', function() {
+                                    delete $scope.errors;
+                                });
+
+                                var basicAuthSuccessHandler = function(data) {
+                                    sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
+
+                                    window.currentNdexUser = data;
+                                    window.currentSignInType = 'basic';
+
+                                    $rootScope.$emit('LOGGED_IN');
+                                    $location.path('/myAccount');
+                                    $scope.signIn.userName = null;
+                                    $scope.signIn.password = null;
+
+                                    $uibModalInstance.dismiss();
+                                };
+
+                                $scope.submitSignIn = function () {
+                                    ndexUtility.clearUserCredentials();
+
+                                    var userName = $scope.signIn.userName;
+                                    var password = $scope.signIn.password;
+
+                                    ndexService.authenticateUserV2(userName, password,
+                                        basicAuthSuccessHandler,
+                                        function(error) { //.error(function (data, status, headers, config, statusText) {
+
+                                            if (error && error.message) {
+                                                $scope.errors = error.message;
+                                            } else {
+                                                $scope.errors = 'Unexpected error during sign-in with status ' + error.status;
+                                            }
+                                        });
+                                };
+
+
+                                $scope.openBasicAuthSignUp = function () {
+                                    $uibModalInstance.dismiss();
+
+                                    $uibModal.open({
+                                        templateUrl: 'signUp.html',
+                                        backdrop: 'static',
+
+                                        controller: function ($scope, $uibModalInstance) {
+                                            $scope.cancel = function () {
+                                                $uibModalInstance.dismiss();
+                                            };
+
+                                            $scope.$watch('signIn.userName', function () {
+                                                delete $scope.signIn.message;
+                                            });
+                                            $scope.$watch('signIn.password', function () {
+                                                delete $scope.signIn.message;
+                                            });
+
+                                            $scope.$watch('signIn.newUser.firstName', function () {
+                                                delete $scope.signIn.signUpErrors;
+                                            });
+                                            $scope.$watch('signIn.newUser.lastName', function () {
+                                                delete $scope.signIn.signUpErrors;
+                                            });
+                                            $scope.$watch('signIn.newUser.emailAddress', function () {
+                                                delete $scope.signIn.signUpErrors;
+                                            });
+                                            $scope.$watch('signIn.newUser.userName', function () {
+                                                delete $scope.signIn.signUpErrors;
+                                            });
+                                            $scope.$watch('signIn.newUser.password', function () {
+                                                delete $scope.signIn.signUpErrors;
+                                            });
+                                            $scope.$watch('signIn.newUser.passwordConfirm', function () {
+                                                delete $scope.signIn.signUpErrors;
+                                            });
+
+                                            $scope.basicAuthSignUp = function () {
+                                                //check if passwords match, else throw error
+                                                if ($scope.signIn.newUser.password !== $scope.signIn.newUser.passwordConfirm) {
+                                                    $scope.signIn.signUpErrors = 'Passwords do not match';
+                                                    return;
+                                                }
+
+                                                var basicAuthSuccessHandler = function(data) {
+                                                    sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                                                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
+
+                                                    window.currentNdexUser = data;
+                                                    window.currentSignInType = 'basic';
+
+                                                    $rootScope.$emit('LOGGED_IN');
+                                                    $location.path('/myAccount');
+                                                    $scope.signIn.userName = null;
+                                                    $scope.signIn.password = null;
+
+                                                    $uibModalInstance.dismiss();
+                                                };
+
+                                                ndexService.createUserV2($scope.signIn.newUser,
+                                                    function (url) {
+
+                                                        if (url) {
+                                                            var newUserId = url.split('/').pop();
+                                                            var data = {};
+
+                                                            data.userName          = $scope.signIn.newUser.userName;
+                                                            data.firstName         = $scope.signIn.newUser.firstName;
+                                                            data.lastName          = $scope.signIn.newUser.lastName;
+                                                            data.externalId        = newUserId;
+
+                                                            $scope.signIn.password = $scope.signIn.newUser.password;
+
+                                                            basicAuthSuccessHandler(data);
+
+                                                        } else {
+                                                            $uibModalInstance.dismiss();
+
+                                                            // display modal asking to check email in order to activate the account
+                                                            $uibModal.open({
+                                                                templateUrl: 'signUpSuccess.html',
+                                                                backdrop: 'static'
+                                                            });
+                                                        }
+                                                    },
+                                                    function (error) {
+                                                        $scope.signIn.signUpErrors = error.message;
+                                                    });
+                                            };
+                                        }
+
+                                    });
+                                };
+
+                                $scope.forgot = {};
+
+                                $scope.forgotPassword = function () {
+                                    $uibModalInstance.dismiss();
+
+                                    $uibModal.open({
+                                        templateUrl: 'forgotPassword.html',
+                                        controller: function ($scope, $uibModalInstance, $log, forgot) {
+                                            $scope.forgot = forgot;
+                                            $scope.resetPassword = function () {
+
+                                                ndexService.getUserByUserNameV2($scope.forgot.accountName,
+                                                    function(data) {
+                                                        var userId = (data && data.externalId) ? data.externalId : null;
+                                                        if (userId) {
+
+                                                            ndexService.emailNewPasswordV2(userId,
+                                                                function () {
+                                                                    forgot.done = true;
+                                                                    forgot.errorMsg = null;
+                                                                    forgot.successMsg = 'A new password has been sent to the email of record.';
+                                                                },
+                                                                function (error) {
+                                                                    forgot.errorMsg = error.message;
+                                                                });
+                                                        }
+                                                        else {
+                                                            forgot.errorMsg = 'Unable to get User Id for user ' +
+                                                                $scope.forgot.accountName + ' and request password reset.';
+                                                        }
+                                                    },
+                                                    function(error){
+                                                        forgot.errorMsg =  error.message;
+                                                    });
+
+                                            };
+
+                                            $scope.cancel = function () {
+                                                $uibModalInstance.dismiss('cancel');
+                                            };
+                                        },
+                                        resolve: {
+                                            forgot: function () {
+                                                return $scope.forgot;
+                                            }
+                                        }
+                                    });
+
+                                    uibModalInstance.result.finally(function () {
+                                        $scope.forgot = {};
+                                    });
+
+                                };
+
+                            }
+                        });
+                    };
+                    /* ------------------------------------------------------------------------------------------- */
+
+
+                    var googleUserHandler = function (curUser) {
+
+                        ndexService.authenticateUserWithGoogleIdToken(
+                            function(data) {
+                                sharedProperties.setCurrentUser(data.externalId, data.userName);
+
+                                window.currentNdexUser = data;
+                                window.currentSignInType = 'google';
+
+                                $rootScope.$emit('LOGGED_IN');
+
+                                $location.path('/myAccount');
+                                $scope.signIn.userName = null;
+                                $scope.signIn.password = null;
+
+                                $uibModalInstance.dismiss();
+
+                            },
+                            function(error) {
+
+                                if (error) {
+                                    if (error.errorCode === 'NDEx_Object_Not_Found_Exception') {
+
+                                        $uibModalInstance.dismiss();
+                                        $uibModal.open({
+                                            templateUrl: 'createNewAccountViaGoogle.html',
+                                            controller: function ($scope, $uibModalInstance) {
+
+                                                $scope.title = 'Create New Account';
+                                                $scope.message =
+                                                    'No account was found in NDEx for the selected email address, ' +
+                                                    'so we are creating one for you.<br><br>  ' +
+                                                    'Please review and accept our ' +
+                                                    '<a target="_blank" href="http://home.ndexbio.org/disclaimer-license">Terms and Conditions</a>' +
+                                                    ' and then click the blue Sign Up button to complete your registration.';
+
+                                                $scope.cancel = function() {
+                                                    $uibModalInstance.dismiss();
+                                                };
+
+                                                $scope.signUpWithGoogle = function() {
+                                                    $scope.isProcessing = true;
+
+
+                                                    var spinner = 'spinnerCreateNewAccountViaGoogleId';
+                                                    ndexSpinner.startSpinner(spinner);
+
+                                                    ndexService.createUserWithGoogleIdTokenV2(
+                                                        function() {
+                                                            ndexService.authenticateUserWithGoogleIdToken(
+                                                                function(data) {
+                                                                    $uibModalInstance.dismiss();
+                                                                    $scope.isProcessing = false;
+                                                                    sharedProperties.setCurrentUser(data.externalId, data.userName);
+
+                                                                    window.currentNdexUser = data;
+                                                                    window.currentSignInType = 'google';
+
+                                                                    $rootScope.$emit('LOGGED_IN');
+                                                                    $location.path('/myAccount');
+                                                                    ndexSpinner.stopSpinner();
+                                                                },
+                                                                function(error) {
+                                                                    $scope.isProcessing = false;
+                                                                    ndexSpinner.stopSpinner();
+                                                                    $scope.errors = error.errorMsg;
+                                                                });
+                                                        },
+                                                        function(error) {
+                                                            $scope.isProcessing = false;
+                                                            ndexSpinner.stopSpinner();
+                                                            $scope.errors = error.errorMsg;
+                                                        });
+                                                };
+
+                                            }
+                                        });
+
+                                    } else if (error.message) {
+                                        $scope.errors = error.message;
+                                    } else {
+                                        $scope.errors = 'Unexpected error during sign-in with status ' + error.status;
+                                    }
+                                }
+                            });
+
+                    };
+
+                    var googleFailureHandler = function (err) {
+                        if (err.error !== 'popup_closed_by_user') {
+                            $scope.errors = 'Failed to authenticate with google: ' + err.error;
+                        }
+                    };
+
+                    $scope.signIn.SignInWithGoogle = function () {
+                        ndexUtility.clearUserCredentials();
+                        delete $scope.errors;
+                        $scope.signIn.userName = null;
+                        $scope.signIn.password = null;
+
+                        gapi.auth2.getAuthInstance().signIn({prompt:'consent select_account'}).then(googleUserHandler, googleFailureHandler);
+                    };
+                }
+            });
+/**/
+        }
         
         /*
          * Only Google Chrome, Firefox or Safari browsers are supported.

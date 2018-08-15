@@ -116,6 +116,17 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.createUserWithGoogleIdTokenV2 = function (successHandler, errorHandler) {
+                // Server API: Create User with google token
+                // POST /user?idtoken={GoogleIdToken}
+
+                var res = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
+                var url = '/user?idtoken=' + res.id_token;
+
+                var config = ndexConfigs.getPostConfigV2(url, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.deleteUserV2 = function(successHandler, errorHandler){
                 // Server API: Delete User
                 // DELETE /user/{userId}
@@ -169,7 +180,7 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.authenticateUserWithGoogleIdToken = function ( successHandler, errorHandler) {
+            factory.authenticateUserWithGoogleIdToken = function (successHandler, errorHandler) {
                 // Server API: Authenticate User
                 // GET /user?valid=true&setAuthHeader=false
 
@@ -1888,7 +1899,7 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', function ( ndexUtility) {
         var config = {
             method: 'POST',
             url: ndexServerURI + url,
-            data: angular.toJson(postData),
+            data: postData ? angular.toJson(postData) : {},
             headers: {
                 'NDEx-application': window.navigator.ndexServerVersion
             }
