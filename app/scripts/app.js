@@ -282,7 +282,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         // route for the home page (where sign-in is handled)
         .when('/signIn', {
             templateUrl: 'views/home.html',
-            controller: 'homeController'
+            controller: 'signInController'
         })
 
         // route for the api page

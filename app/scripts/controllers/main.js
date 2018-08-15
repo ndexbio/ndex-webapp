@@ -1235,4 +1235,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         if (window.currentSignInType) {
             registerSignedInUser(window.currentNdexUser);
         }
+
+
+        var showSignInSignUpEventHandler = function() {
+            $scope.collapseHamburgerMenu();
+            $scope.main.showSignInOptions();
+        };
+
+        $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);
+
     }]);

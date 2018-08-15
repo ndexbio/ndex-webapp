@@ -1,7 +1,10 @@
-ndexApp.controller('signInController', ['$scope', '$location',
-    function ($scope, $location) {
+ndexApp.controller('signInController', ['$location', '$rootScope',
+    function ($location, $rootScope) {
 
-        //$rootScope.showSignIn = true;
-        $location.path('/');
+        var userLoggedIn = !!window.currentNdexUser;
 
+        if (!userLoggedIn) {
+            $location.path('/');
+            $rootScope.$emit('SHOW_SIGN_IN_SIGN_UP_MODAL');
+        }
     }]);
