@@ -415,7 +415,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
 
 
-        $scope.main.showSignInOptions = function() {
+        $scope.main.showSignInSignUpOptions = function() {
             $uibModal.open({
                 templateUrl: 'views/signInSignUpModal.html',
 
@@ -426,8 +426,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     $scope.cancelLabel        = 'Cancel';
                     $scope.confirmLabel       = 'Sign In';
 
-                    $scope.googleSSO          = window.googleSSO;
+                    $scope.needAnAccount      = window.ndexSettings.signIn.footer + '&nbsp;';
+                    $scope.showSignUp         = window.ndexSettings.signIn.showSignup;
 
+                    $scope.googleSSO          = window.googleSSO;
 
                     $scope.signIn         = {'userName': '', 'password': ''};
                     $scope.signIn.newUser = {};
@@ -444,222 +446,217 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                         $uibModalInstance.dismiss();
                     };
 
+                    $scope.$watch('signIn.userName', function() {
+                        delete $scope.errors;
+                    });
+                    $scope.$watch('signIn.password', function() {
+                        delete $scope.errors;
+                    });
 
-                    /* ------------------------------------------------------------------------------------------- */
-                    $scope.signIn.showBasicAuthSigIn = function() {
+                    var basicAuthSuccessHandler = function(data) {
+                        sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                        ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
+
+                        window.currentNdexUser = data;
+                        window.currentSignInType = 'basic';
+
+                        $rootScope.$emit('LOGGED_IN');
+                        $location.path('/myAccount');
+                        $scope.signIn.userName = null;
+                        $scope.signIn.password = null;
+
+                        $uibModalInstance.dismiss();
+                    };
+
+                    $scope.submitSignIn = function () {
+                        ndexUtility.clearUserCredentials();
+
+                        var userName = $scope.signIn.userName;
+                        var password = $scope.signIn.password;
+
+                        ndexService.authenticateUserV2(userName, password,
+                            basicAuthSuccessHandler,
+                            function(error) { //.error(function (data, status, headers, config, statusText) {
+
+                                if (error && error.message) {
+                                    $scope.errors = error.message;
+                                } else {
+                                    $scope.errors = 'Unexpected error during sign-in with status ' + error.status;
+                                }
+                            });
+                    };
+
+                    $scope.openBasicAuthSignUp = function () {
+
+                        var signInOptionsModalInstance = $uibModalInstance;
+
+                        $uibModal.open({
+                            templateUrl: 'signUp.html',
+                            backdrop: 'static',
+
+                            controller: function ($scope, $uibModalInstance) {
+                                $scope.signIn         = {'userName': '', 'password': ''};
+                                $scope.signIn.newUser = {};
+
+                                $scope.cancel = function () {
+                                    signInOptionsModalInstance.dismiss();
+                                    $uibModalInstance.dismiss();
+                                };
+
+                                $scope.back = function () {
+                                    $uibModalInstance.dismiss();
+                                };
+
+                                $scope.$watch('signIn.newUser.firstName', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.lastName', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.emailAddress', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.userName', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.password', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.passwordConfirm', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+
+                                $scope.basicAuthSignUp = function () {
+                                    //check if passwords match, else throw error
+                                    if ($scope.signIn.newUser.password !== $scope.signIn.newUser.passwordConfirm) {
+                                        $scope.signIn.signUpErrors = 'Passwords do not match';
+                                        return;
+                                    }
+
+                                    var basicAuthSuccessHandler = function(data) {
+                                        sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                                        ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
+
+                                        window.currentNdexUser = data;
+                                        window.currentSignInType = 'basic';
+
+                                        $rootScope.$emit('LOGGED_IN');
+                                        $location.path('/myAccount');
+                                        $scope.signIn.userName = null;
+                                        $scope.signIn.password = null;
+
+                                        $scope.cancel();  // basically, close modals
+                                    };
+
+                                    ndexService.createUserV2($scope.signIn.newUser,
+                                        function (url) {
+
+                                            if (url) {
+                                                var newUserId = url.split('/').pop();
+                                                var data = {};
+
+                                                data.userName          = $scope.signIn.newUser.userName;
+                                                data.firstName         = $scope.signIn.newUser.firstName;
+                                                data.lastName          = $scope.signIn.newUser.lastName;
+                                                data.externalId        = newUserId;
+
+                                                $scope.signIn.password = $scope.signIn.newUser.password;
+
+                                                basicAuthSuccessHandler(data);
+
+                                            } else {
+                                                $scope.cancel();  // basically, close modals
+
+                                                // display modal asking to check email in order to activate the account
+                                                $uibModal.open({
+                                                    templateUrl: 'signUpSuccess.html',
+                                                    backdrop: 'static'
+                                                });
+                                            }
+                                        },
+                                        function (error) {
+                                            $scope.signIn.signUpErrors = error.message;
+                                        });
+                                };
+                            }
+
+                        });
+                    };
+
+
+                    $scope.forgot = {};
+
+                    $scope.forgotPassword = function () {
                         $uibModalInstance.dismiss();
 
                         $uibModal.open({
-                            templateUrl: 'showBasicAuthSigIn.html',
-                            controller: function ($scope, $uibModalInstance) {
+                            templateUrl: 'forgotPassword.html',
+                            controller: function ($scope, $uibModalInstance, $log, forgot) {
+                                $scope.forgot = forgot;
+                                $scope.resetPassword = function () {
+                                    $scope.isProcessing = true;
 
-                                $scope.header             = window.ndexSettings.signIn.header;
-                                $scope.showForgotPassword = window.ndexSettings.signIn.showForgotPassword;
-                                $scope.cancelLabel        = 'Cancel';
-                                $scope.confirmLabel       = 'Sign In';
+                                    var spinner = 'spinnerResetPasswordId';
+                                    ndexSpinner.startSpinner(spinner);
 
-                                $scope.needAnAcoount      = window.ndexSettings.signIn.footer;
-                                $scope.showSignUp         = window.ndexSettings.signIn.showSignup;
+                                    ndexService.getUserByUserNameV2($scope.forgot.accountName,
+                                        function(data) {
+                                            var userId = (data && data.externalId) ? data.externalId : null;
+                                            if (userId) {
+
+                                                ndexService.emailNewPasswordV2(userId,
+                                                    function () {
+                                                        ndexSpinner.stopSpinner();
+                                                        forgot.done = true;
+                                                        forgot.errorMsg = null;
+                                                        forgot.successMsg = 'A new password has been sent to the email of record.';
+                                                        $scope.isProcessing = false;
+                                                    },
+                                                    function (error) {
+                                                        ndexSpinner.stopSpinner();
+                                                        forgot.errorMsg = error.message;
+                                                        $scope.isProcessing = false;
+                                                    });
+                                            }
+                                            else {
+                                                ndexSpinner.stopSpinner();
+                                                forgot.errorMsg = 'Unable to get User Id for user ' +
+                                                    $scope.forgot.accountName + ' and request password reset.';
+                                                $scope.isProcessing = false;
+                                            }
+                                        },
+                                        function(error){
+                                            ndexSpinner.stopSpinner();
+                                            forgot.errorMsg =  error.message;
+                                            $scope.isProcessing = false;
+                                        });
+                                };
 
                                 $scope.cancel = function () {
                                     $uibModalInstance.dismiss();
                                 };
+                                $scope.back = function () {
+                                    $rootScope.$emit('SHOW_SIGN_IN_SIGN_UP_MODAL');
+                                    $uibModalInstance.dismiss();
+                                };
 
-                                $scope.$watch('signIn.userName', function() {
-                                    delete $scope.errors;
+                                $scope.$watch('forgot.accountName', function() {
+                                    delete $scope.forgot.successMsg;
+                                    delete $scope.forgot.errorMsg;
                                 });
-                                $scope.$watch('signIn.password', function() {
-                                    delete $scope.errors;
-                                });
-
-                                var basicAuthSuccessHandler = function(data) {
-                                    sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-                                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
-
-                                    window.currentNdexUser = data;
-                                    window.currentSignInType = 'basic';
-
-                                    $rootScope.$emit('LOGGED_IN');
-                                    $location.path('/myAccount');
-                                    $scope.signIn.userName = null;
-                                    $scope.signIn.password = null;
-
-                                    $uibModalInstance.dismiss();
-                                };
-
-                                $scope.submitSignIn = function () {
-                                    ndexUtility.clearUserCredentials();
-
-                                    var userName = $scope.signIn.userName;
-                                    var password = $scope.signIn.password;
-
-                                    ndexService.authenticateUserV2(userName, password,
-                                        basicAuthSuccessHandler,
-                                        function(error) { //.error(function (data, status, headers, config, statusText) {
-
-                                            if (error && error.message) {
-                                                $scope.errors = error.message;
-                                            } else {
-                                                $scope.errors = 'Unexpected error during sign-in with status ' + error.status;
-                                            }
-                                        });
-                                };
-
-
-                                $scope.openBasicAuthSignUp = function () {
-                                    $uibModalInstance.dismiss();
-
-                                    $uibModal.open({
-                                        templateUrl: 'signUp.html',
-                                        backdrop: 'static',
-
-                                        controller: function ($scope, $uibModalInstance) {
-                                            $scope.cancel = function () {
-                                                $uibModalInstance.dismiss();
-                                            };
-
-                                            $scope.$watch('signIn.userName', function () {
-                                                delete $scope.signIn.message;
-                                            });
-                                            $scope.$watch('signIn.password', function () {
-                                                delete $scope.signIn.message;
-                                            });
-
-                                            $scope.$watch('signIn.newUser.firstName', function () {
-                                                delete $scope.signIn.signUpErrors;
-                                            });
-                                            $scope.$watch('signIn.newUser.lastName', function () {
-                                                delete $scope.signIn.signUpErrors;
-                                            });
-                                            $scope.$watch('signIn.newUser.emailAddress', function () {
-                                                delete $scope.signIn.signUpErrors;
-                                            });
-                                            $scope.$watch('signIn.newUser.userName', function () {
-                                                delete $scope.signIn.signUpErrors;
-                                            });
-                                            $scope.$watch('signIn.newUser.password', function () {
-                                                delete $scope.signIn.signUpErrors;
-                                            });
-                                            $scope.$watch('signIn.newUser.passwordConfirm', function () {
-                                                delete $scope.signIn.signUpErrors;
-                                            });
-
-                                            $scope.basicAuthSignUp = function () {
-                                                //check if passwords match, else throw error
-                                                if ($scope.signIn.newUser.password !== $scope.signIn.newUser.passwordConfirm) {
-                                                    $scope.signIn.signUpErrors = 'Passwords do not match';
-                                                    return;
-                                                }
-
-                                                var basicAuthSuccessHandler = function(data) {
-                                                    sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
-                                                    ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
-
-                                                    window.currentNdexUser = data;
-                                                    window.currentSignInType = 'basic';
-
-                                                    $rootScope.$emit('LOGGED_IN');
-                                                    $location.path('/myAccount');
-                                                    $scope.signIn.userName = null;
-                                                    $scope.signIn.password = null;
-
-                                                    $uibModalInstance.dismiss();
-                                                };
-
-                                                ndexService.createUserV2($scope.signIn.newUser,
-                                                    function (url) {
-
-                                                        if (url) {
-                                                            var newUserId = url.split('/').pop();
-                                                            var data = {};
-
-                                                            data.userName          = $scope.signIn.newUser.userName;
-                                                            data.firstName         = $scope.signIn.newUser.firstName;
-                                                            data.lastName          = $scope.signIn.newUser.lastName;
-                                                            data.externalId        = newUserId;
-
-                                                            $scope.signIn.password = $scope.signIn.newUser.password;
-
-                                                            basicAuthSuccessHandler(data);
-
-                                                        } else {
-                                                            $uibModalInstance.dismiss();
-
-                                                            // display modal asking to check email in order to activate the account
-                                                            $uibModal.open({
-                                                                templateUrl: 'signUpSuccess.html',
-                                                                backdrop: 'static'
-                                                            });
-                                                        }
-                                                    },
-                                                    function (error) {
-                                                        $scope.signIn.signUpErrors = error.message;
-                                                    });
-                                            };
-                                        }
-
-                                    });
-                                };
-
-                                $scope.forgot = {};
-
-                                $scope.forgotPassword = function () {
-                                    $uibModalInstance.dismiss();
-
-                                    $uibModal.open({
-                                        templateUrl: 'forgotPassword.html',
-                                        controller: function ($scope, $uibModalInstance, $log, forgot) {
-                                            $scope.forgot = forgot;
-                                            $scope.resetPassword = function () {
-
-                                                ndexService.getUserByUserNameV2($scope.forgot.accountName,
-                                                    function(data) {
-                                                        var userId = (data && data.externalId) ? data.externalId : null;
-                                                        if (userId) {
-
-                                                            ndexService.emailNewPasswordV2(userId,
-                                                                function () {
-                                                                    forgot.done = true;
-                                                                    forgot.errorMsg = null;
-                                                                    forgot.successMsg = 'A new password has been sent to the email of record.';
-                                                                },
-                                                                function (error) {
-                                                                    forgot.errorMsg = error.message;
-                                                                });
-                                                        }
-                                                        else {
-                                                            forgot.errorMsg = 'Unable to get User Id for user ' +
-                                                                $scope.forgot.accountName + ' and request password reset.';
-                                                        }
-                                                    },
-                                                    function(error){
-                                                        forgot.errorMsg =  error.message;
-                                                    });
-
-                                            };
-
-                                            $scope.cancel = function () {
-                                                $uibModalInstance.dismiss('cancel');
-                                            };
-                                        },
-                                        resolve: {
-                                            forgot: function () {
-                                                return $scope.forgot;
-                                            }
-                                        }
-                                    });
-
-                                    uibModalInstance.result.finally(function () {
-                                        $scope.forgot = {};
-                                    });
-
-                                };
-
+                            },
+                            resolve: {
+                                forgot: function () {
+                                    return $scope.forgot;
+                                }
                             }
                         });
-                    };
-                    /* ------------------------------------------------------------------------------------------- */
 
+                        $uibModalInstance.result.finally(function () {
+                            $scope.forgot = {};
+                        });
+
+                    };
 
                     var googleUserHandler = function (curUser) {
 
@@ -684,7 +681,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                 if (error) {
                                     if (error.errorCode === 'NDEx_Object_Not_Found_Exception') {
 
-                                        $uibModalInstance.dismiss();
+                                        //var previousModalInstance = $uibModalInstance;
+                                        $uibModalInstance.close();
+
                                         $uibModal.open({
                                             templateUrl: 'createNewAccountViaGoogle.html',
                                             controller: function ($scope, $uibModalInstance) {
@@ -701,9 +700,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                     $uibModalInstance.dismiss();
                                                 };
 
+                                                $scope.back = function() {
+                                                    $uibModalInstance.dismiss();
+                                                    $rootScope.$emit('SHOW_SIGN_IN_SIGN_UP_MODAL');
+                                                };
+
                                                 $scope.signUpWithGoogle = function() {
                                                     $scope.isProcessing = true;
-
 
                                                     var spinner = 'spinnerCreateNewAccountViaGoogleId';
                                                     ndexSpinner.startSpinner(spinner);
@@ -712,7 +715,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                         function() {
                                                             ndexService.authenticateUserWithGoogleIdToken(
                                                                 function(data) {
-                                                                    $uibModalInstance.dismiss();
+                                                                    $scope.cancel(); // close modal
                                                                     $scope.isProcessing = false;
                                                                     sharedProperties.setCurrentUser(data.externalId, data.userName);
 
@@ -765,9 +768,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     };
                 }
             });
-/**/
         }
-        
+
         /*
          * Only Google Chrome, Firefox or Safari browsers are supported.
          * Check if the currently used browser is supported.
@@ -1239,7 +1241,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         var showSignInSignUpEventHandler = function() {
             $scope.collapseHamburgerMenu();
-            $scope.main.showSignInOptions();
+            $scope.main.showSignInSignUpOptions();
         };
 
         $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);

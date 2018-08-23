@@ -1127,22 +1127,26 @@ span.glyphicon-refresh {
 }
 
 .google-sign-in-button {
+
     align-items: baseline;
     -webkit-box-align: baseline;
     -ms-flex-align: baseline;
     -webkit-align-items: baseline;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
-    border-radius: 3px;
+    border-radius: 24px;
     border-width: 0;
     width: 100%;
     color: #505F79 ;
     cursor: default;
+    /*
     display: -webkit-box;
     display: -moz-box;
     display: -ms-inline-flexbox;
     display: -webkit-inline-flex;
     display: inline-flex;
+    */
+    display: block;
     margin: 0;
     outline: none ;
     pointer-events: auto;
@@ -1156,17 +1160,18 @@ span.glyphicon-refresh {
     -ms-user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
-    vertical-align: middle;
-    white-space: nowrap;
+    white-space: normal;
 
     background: #FFFFFF ;
     box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.2) ;
-    font-weight: bold;
-    font-size: 1.4em;
+    /*font-weight: bold;*/
+    font-size: 1.2em;
     font-style: normal;
+    line-height: 1.5em;
 
-    height: 60px;
-    line-height: 60px !important;
+    overflow: hidden;
+
+    height: 220px;
 }
 
 
@@ -1175,15 +1180,20 @@ span.glyphicon-refresh {
     align-self: center;
     -ms-flex-item-align: center;
     -webkit-align-self: center;
+    /*
     display: -webkit-box;
     display: -moz-box;
     display: -ms-inline-flexbox;
     display: -webkit-inline-flex;
     display: inline-flex;
+/*
     flex-wrap: nowrap;
     -webkit-box-lines: nowrap;
     -ms-flex-wrap: nowrap;
     -webkit-flex-wrap: nowrap;
+*/
+    display: block;
+
     max-width: 100%;
     width: 100%;
     justify-content: center;
@@ -1205,7 +1215,9 @@ span.glyphicon-refresh {
     overflow: hidden;
     pointer-events: none;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
+    white-space: normal;
+    text-align: center;
 }
 
 .google-button button:hover {
@@ -1321,4 +1333,53 @@ span.glyphicon-refresh {
 .twitter a:hover{background-color:#0f9de2;}
 .linkedin a:hover{background-color:#0c6694;}
 .youtube a:hover{background-color:#b52121;}
-/* start: this is for styling Twitter, YouTube and LinkedIn buttons on the bottom of the Front Page */
+/* end: this is for styling Twitter, YouTube and LinkedIn buttons on the bottom of the Front Page */
+
+/* start: taken from https://www.bootply.com/rY3MGdh1HO */
+.vertical-divider {
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: 50%;
+    line-height: 0;
+    text-align:center;
+    text-transform: uppercase;
+    transform: translateX(-50%);
+    font-size: 1.4em;
+}
+.row-divided > .vertical-divider,
+.row-divided > .vertical-divider {
+    height: calc(56% - 1rem);
+}
+.vertical-divider:before,
+.vertical-divider:after {
+    position: absolute;
+    left: 50%;
+    content: '';
+    z-index: 9;
+    border-left: 1px solid rgba(34,36,38,.15);
+    border-right: 1px solid rgba(255,255,255,.1);
+    width: 0;
+    height: calc(100% - 1rem);
+}
+.vertical-divider:before {
+    top: -100%;
+}
+.vertical-divider:after {
+    top: auto;
+    bottom: 0;
+}
+.row-divided {
+    position:relative;
+}
+
+.row-divided > [class^="col-"],
+.row-divided > [class*=" col-"] {
+    padding-left: 30px;  /* gutter width (give a little extra room) */
+    padding-right: 30px; /* gutter width (give a little extra room) */
+}
+/* start: taken from https://www.bootply.com/rY3MGdh1HO */

@@ -1,140 +1,129 @@
+<style>
+.modal-dialog {
+    width: 600px;
+    max-width:100%;
+}
+</style>
+
+
 <div class="modal-content">
 
-    <form name="signInForm">
+    <div class="modal-header">
+        <h4 class="modal-title"><strong><span ng-bind-html="header"></span></strong></h4>
+    </div>
 
+    <div class="modal-body" style="margin-top:0.5em; margin-bottom:-1em;">
 
-        <div class="modal-header">
-            <h4 class="modal-title"><strong><span ng-bind-html="header"></span></strong></h4>
-        </div>
+        <div class="form-group">
 
-        <div class="modal-body">
+            <div class="row row-divided">
+                <div class="col-xs-6">
 
-            <div class="form-group">
+                    <div class="google-button">
+                        <button id="googleSignInButtonId"
+                                ng-show="!googleSSO"
+                                class="google-sign-in-button"
+                                style="color: #B6B6B6; background-color: #FFF; cursor: not-allowed"
+                                data-toggle="tooltip"
+                                title="Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser.
+                                To use the Google Sign In feature you can do one of two things:
+    1. Add 'accounts.google.com' to the list of websites allowed to write/read THIRD-PARTY COOKIES, or
+    2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings."
+                                data-placement="bottom"
+                                style="cursor: not-allowed">
 
-                <div class="google-button">
-                    <button id="googleSignInButtonId"
-                            ng-show="!googleSSO"
-                            class="google-sign-in-button"
-                            style="color: #B6B6B6; background-color: #FFF; cursor: not-allowed"
-                            data-toggle="tooltip"
-                            title="Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser.
-                            To use the Google Sign In feature you can do one of two things:
-1. Add 'accounts.google.com' to the list of websites allowed to write/read THIRD-PARTY COOKIES, or
-2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings."
-                            data-placement="bottom"
-                            style="cursor: not-allowed">
+                                    <span class="google-sign-in-button-span">
+                                        <img src="images/google-logo-disabled.svg"
+                                             alt="" style="height: 70px; width: 70px; max-height: 100%; max-width: 100%;">
+                                        <div style="margin-top: 1.5em; margin-left: 3em; margin-right: 3em">Sign In / Sign Up with Google</div>
+                                    </span>
+                        </button>
 
-                                <span class="google-sign-in-button-span">
-                                    <img src="images/google-logo-disabled.svg" alt="" style="height: 35px; width: 35px; margin-right: 8px; vertical-align: middle;">
-                                    <span>Sign In or Sign Up with Google</span>
-                                </span>
-                    </button>
+                        <button ng-show="googleSSO"
+                                autofocus
+                                class="google-sign-in-button"
+                                type="button"
+                                style="cursor: pointer;"
+                                ng-click="signIn.SignInWithGoogle()">
+                                    <span class="google-sign-in-button-span">
+                                        <img src="images/google-logo.svg"
+                                             alt="" style="height: 70px; width: 70px; max-height: 100%; max-width: 100%;">
+                                        <div style="margin-top: 1.5em; margin-left: 3em; margin-right: 3em">Sign In / Sign Up with Google</div>
+                                    </span>
+                        </button>
 
-                    <button ng-show="googleSSO"
-                            autofocus
-                            class="google-sign-in-button"
-                            type="button"
-                            style="cursor: pointer"
-                            ng-click="signIn.SignInWithGoogle()">
-                                <span class="google-sign-in-button-span">
-                                    <img src="images/google-logo.svg" alt="" style="height: 35px; width: 35px; margin-right: 8px; vertical-align: middle;">
-                                    <span>Sign In / Sign Up with Google</span>
-                                </span>
-                    </button>
-
-
-                    <br><br>
-<!--
-                    <div class="AlignCenter" style="font-size: 1.2em"><strong>OR</strong> </div>
-                    <br>
-
--->
-                    <button class="google-sign-in-button"
-                            type="button"
-                            style="cursor: pointer; font-size: 1.2em; font-weight: normal"
-                            ng-click="signIn.showBasicAuthSigIn()">
-                            <span class="google-sign-in-button-span">
-                                <span>Sign In / Sign Up with User Name and Password</span>
-                            </span>
-                    </button>
-
+                    </div>
                 </div>
 
-                <!--
-                <div class="AlignCenter" style="font-size: 1.2em"><strong>OR</strong> provide Name and Password:</div>
+                <div class="vertical-divider"><strong>OR</strong></div>
 
-                -->
+                <div class="col-xs-6">
 
-            </div>
+                    <form name="basicAuthSignIn">
 
-<!--
-            <div class="form-group">
-                <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
-                       required  ng-model="signIn.userName">
-            </div>
-            <div class="form-group">
-                <input name="password" type="password" class="form-control" placeholder="Password"
-                       required ng-model="signIn.password">
-            </div>
+                        <div class="form-group">
+                            <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
+                                   required  ng-model="signIn.userName">
+                        </div>
+                        <div class="form-group">
+                            <input name="password" type="password" class="form-control" placeholder="Password"
+                                   required ng-model="signIn.password">
+                        </div>
 
-            <div>
-                <a ng-show="showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
-            </div>
--->
-            <div ng-if="errors" class='text-danger' style='word-wrap:break-word'>
-                <br>
-                <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
-                <br>
-            </div>
+                        <div>
+                            <a ng-show="showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
+                        </div>
 
-<!--
-            <div style="text-align: center;">
-                <button class="btn btn-danger" ng-click="cancel()" type="button">
-                    {{cancelLabel}}
-                </button>
-                <button type="button"  ng-class="errors || !signInForm.accountName.$valid || !signInForm.password.$valid ? 'btn btn-primary disabled' : 'btn btn-primary' "
-                        autofocus ng-click="submitSignIn()">
-                    {{confirmLabel}}
-                </button>
+
+                        <div ng-show="showSignUp">
+                            <br>
+                            <span ng-bind-html="needAnAccount"></span><a ng-click="openBasicAuthSignUp()">Click here to sign up!</a>
+                        </div>
+
+                        <div ng-if="errors" class='text-danger' style='word-wrap:break-word'>
+                            <br>
+                            <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
+                        </div>
+
+                        <hr>
+
+                        <div class="AlignRight" style="margin-top:1em">
+                            <button class="btn btn-default" ng-click="cancel()" type="button" >
+                                {{cancelLabel}}
+                            </button>
+
+                            <button ng-class="errors || !basicAuthSignIn.accountName.$valid || !basicAuthSignIn.password.$valid ?
+                                'btn btn-primary disabled' : 'btn btn-primary'" autofocus ng-click="submitSignIn()">
+                                {{confirmLabel}}
+                            </button>
+                        </div>
+                    </form>
+
+
+                </div>
             </div>
--->
 
         </div>
 
 
-        <div class="modal-footer" style="margin-top: -0.5em">
-
-            <button class="btn btn-default" ng-click="cancel()" type="button">
-                {{cancelLabel}}
-            </button>
-            <!--
-            <button ng-class="errors || !signInForm.accountName.$valid || !signInForm.password.$valid ? 'btn btn-primary disabled' : 'btn btn-primary' "
-                    autofocus ng-click="submitSignIn()">
-                {{confirmLabel}}
-            </button>
-            -->
-
-        </div>
-
-
-    </form>
+    </div>
 
 </div>
 
 
-
-
 <script type="text/ng-template" id="forgotPassword.html">
     <div class="modal-header">
-        <h3 class="modal-title">Forgot Password?</h3>
+        <h4 class="modal-title">Reset Password</h4>
     </div>
     <div class="modal-body">
-        <form ng-show="!forgot.done" ng-submit="resetPassword()" role="form">
+
+        <div class="row">
+            <div id="spinnerResetPasswordId"></div>
+        </div>
+
+        <form role="form">
             <div class="form-group">
                 <input class="form-control" placeholder="Account Name" required ng-model="forgot.accountName"/>
-            </div>
-            <div class="AlignRight">
-                <button class="btn btn-primary" type="submit">Reset Password</button>
             </div>
         </form>
         <div class='text-danger'>
@@ -144,69 +133,17 @@
             <strong> {{forgot.successMsg}} </strong>
         </div>
     </div>
-    <div class="modal-footer">
-        <button ng-show="!forgot.done" class="btn btn-danger" ng-click="cancel()">Cancel</button>
-        <button id="forgotPasswordDoneButton" ng-show="forgot.done" class="btn btn-primary" ng-click="cancel()">Done
+
+    <div class="modal-footer" style="margin-top: -0.5em">
+        <a class="btn btn-primary" ng-click="back()"   ng-disabled="isProcessing">Back</a>
+        <a class="btn btn-default" ng-click="cancel()" ng-disabled="isProcessing">Cancel</a>
+        <button class="btn btn-primary" type="submit"
+                ng-click="resetPassword()"
+                ng-disabled="!forgot.accountName || isProcessing || forgot.errorMsg || forgot.successMsg">
+            Reset Password
         </button>
     </div>
-</script>
 
-
-
-<script type="text/ng-template" id="showBasicAuthSigIn.html">
-    <div class="modal-content">
-
-        <form name="basicAuthSignIn">
-
-            <div class="modal-header">
-                <h4 class="modal-title"><strong><span ng-bind-html="header"></span></strong></h4>
-            </div>
-
-            <div class="modal-body">
-
-                <div class="form-group">
-                    <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
-                           required  ng-model="signIn.userName">
-                </div>
-                <div class="form-group">
-                    <input name="password" type="password" class="form-control" placeholder="Password"
-                           required ng-model="signIn.password">
-                </div>
-
-                <div>
-                    <a ng-show="showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
-                </div>
-
-                <div ng-show="showSignUp">
-                    <br>
-                    <span ng-bind-html="needAnAcoount"></span><a ng-click="openBasicAuthSignUp()"> Click here to sign up!</a>
-                </div>
-
-                <div ng-if="errors" class='text-danger' style='word-wrap:break-word'>
-                    <br>
-                    <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
-                    <br>
-                </div>
-
-            </div>
-
-
-            <div class="modal-footer" style="margin-top: -0.5em">
-
-                <button class="btn btn-default" ng-click="cancel()" type="button">
-                    {{cancelLabel}}
-                </button>
-
-                <button ng-class="errors || !basicAuthSignIn.accountName.$valid || !basicAuthSignIn.password.$valid ?
-                    'btn btn-primary disabled' : 'btn btn-primary'" autofocus ng-click="submitSignIn()">
-                    {{confirmLabel}}
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
 </script>
 
 
@@ -263,9 +200,10 @@
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <a class="btn btn-sm btn-danger" ng-click="cancel()">Cancel</a>
-                <button class="btn btn-sm btn-default" type="submit"
+            <div class="modal-footer" style="margin-top: -0.5em">
+                <a class="btn btn-primary" ng-click="back()">Back</a>
+                <a class="btn btn-default" ng-click="cancel()">Cancel</a>
+                <button class="btn btn-primary" type="submit"
                         ng-click="basicAuthSignUp()"
                         ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
                         || !signUpForm.accountName.$valid  || !signUpForm.email.$valid
@@ -336,6 +274,11 @@
         </div>
 
         <div class="modal-footer" style="margin-top: -0.5em">
+            <button class="btn btn-primary"
+                    ng-click="back()"
+                    ng-disabled="isProcessing">
+                Back
+            </button>
             <button class="btn btn-default"
                     ng-click="cancel()"
                     ng-disabled="isProcessing">Cancel</button>
