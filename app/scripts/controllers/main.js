@@ -658,10 +658,15 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                     };
 
+
                     var googleUserHandler = function (curUser) {
+
+                        var spinner = 'spinnerSignInWithGoogleId';
+                        ndexSpinner.startSpinner(spinner);
 
                         ndexService.authenticateUserWithGoogleIdToken(
                             function(data) {
+                                ndexSpinner.stopSpinner();
                                 sharedProperties.setCurrentUser(data.externalId, data.userName);
 
                                 window.currentNdexUser = data;
@@ -674,9 +679,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                 $scope.signIn.password = null;
 
                                 $uibModalInstance.dismiss();
-
                             },
                             function(error) {
+                                ndexSpinner.stopSpinner();
 
                                 if (error) {
                                     if (error.errorCode === 'NDEx_Object_Not_Found_Exception') {
@@ -759,6 +764,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     };
 
                     $scope.signIn.SignInWithGoogle = function () {
+
                         ndexUtility.clearUserCredentials();
                         delete $scope.errors;
                         $scope.signIn.userName = null;
