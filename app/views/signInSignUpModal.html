@@ -269,7 +269,7 @@
                 </label>
             </div>
 
-            <div ng-if="errors" class='text-danger' style='word-wrap:break-word'>
+            <div ng-show="errors" class='text-danger text-left' style='word-wrap:break-word'>
                 <br>
                 <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
                 <br>
@@ -288,7 +288,7 @@
                     ng-disabled="isProcessing">Cancel</button>
             <button class="btn btn-primary"
                     ng-click="signUpWithGoogle()"
-                    ng-disabled="!termsAndConditionsChecked || isProcessing">
+                    ng-disabled="!termsAndConditionsChecked || isProcessing || errors">
                 Sign Up
             </button>
 

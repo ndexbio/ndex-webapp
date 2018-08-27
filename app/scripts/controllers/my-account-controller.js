@@ -43,6 +43,16 @@ ndexApp.controller('myAccountController',
             //tasks
             myAccountController.tasks = [];
 
+            $scope.getClassForMyTasksTab = function() {
+                var retValue =
+                    (myAccountController.tasks.length === 0) &&
+                    (myAccountController.pendingRequests.length === 0) &&
+                    (myAccountController.sentRequests.length === 0);
+
+                return retValue ? 'disabled' : 'enabled';
+            };
+
+
             // map of network IDs of all networks for which the current user has ADMIN access and therefore can delete
             myAccountController.networksWithAdminAccess = {};
 
@@ -1784,12 +1794,6 @@ ndexApp.controller('myAccountController',
                     return $scope.networkGridApi.selection.getSelectedRows().length;
                 }
                 return 0;
-            };
-
-            $scope.tasksNotificationsTabDisabled = function() {
-                return (myAccountController.tasks.length === 0) &&
-                    (myAccountController.pendingRequests.length === 0) &&
-                    (myAccountController.sentRequests.length === 0);
             };
 
             myAccountController.getTaskFileExt = function(task)

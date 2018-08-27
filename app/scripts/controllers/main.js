@@ -1,8 +1,9 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
+    '$window',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $window) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -100,6 +101,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
             $scope.main.showSignIn = true;
+
+            $window.location.href = '#/';  // same as $location.path('/');, but causes page reload
         };
 
         $scope.$on('LOGGED_OUT', signOutHandler);
@@ -701,6 +704,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                     '<a target="_blank" href="http://home.ndexbio.org/disclaimer-license">Terms and Conditions</a>' +
                                                     ' and then click the blue Sign Up button to complete your registration.';
 
+                                                delete $scope.errors;
+
                                                 $scope.cancel = function() {
                                                     $uibModalInstance.dismiss();
                                                 };
@@ -712,6 +717,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                                 $scope.signUpWithGoogle = function() {
                                                     $scope.isProcessing = true;
+                                                    delete $scope.errors;
 
                                                     var spinner = 'spinnerCreateNewAccountViaGoogleId';
                                                     ndexSpinner.startSpinner(spinner);
@@ -734,13 +740,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                                 function(error) {
                                                                     $scope.isProcessing = false;
                                                                     ndexSpinner.stopSpinner();
-                                                                    $scope.errors = error.errorMsg;
+                                                                    $scope.errors = error.message;
                                                                 });
                                                         },
                                                         function(error) {
                                                             $scope.isProcessing = false;
                                                             ndexSpinner.stopSpinner();
-                                                            $scope.errors = error.errorMsg;
+                                                            $scope.errors = error.message;
                                                         });
                                                 };
 
@@ -801,11 +807,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
 
-        $scope.main.signout = function (noRedirectToHome) {
-            $scope.$emit('LOGGED_OUT');
-            if (!noRedirectToHome){
-                $location.path('/');
-            }
+        $scope.main.signout = function () {
+            signOutHandler();
         };
 
         $scope.main.handleStorageEvent = function(event)
@@ -835,7 +838,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         if( lastHeartbeat && window.currentSignInType === 'basic')
         {
             if( Date.now() - lastHeartbeat > $scope.config.idleTime * 1000 ) {
-                $scope.main.signout(true); // true = no redirect to home
+                $scope.main.signout();
             }
         }
 
