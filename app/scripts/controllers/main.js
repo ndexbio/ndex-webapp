@@ -442,6 +442,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                     delete $scope.errors;
 
+                    $scope.setToolTips = function(){
+                        var myToolTips = $('[data-toggle="tooltip"]');
+                        myToolTips.tooltip();
+                    };
+
                     $scope.close = function () {
                         $uibModalInstance.dismiss();
                     };

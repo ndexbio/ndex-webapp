@@ -28,6 +28,8 @@
                                 ng-show="!googleSSO"
                                 class="google-sign-in-button"
                                 style="color: #B6B6B6; background-color: #FFF; cursor: not-allowed"
+                                ng-init="setToolTips()"
+                                data-placement="bottom"
                                 data-toggle="tooltip"
                                 title="Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser.
                                 To use the Google Sign In feature you can do one of two things:
