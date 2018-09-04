@@ -299,8 +299,9 @@ textarea
 
 .marginsForNGView {
     margin-left: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
+    margin-right: 20px;
+    //padding-left: 20px;
+    //padding-right: 20px;
 }
 
 
@@ -1287,11 +1288,11 @@ span.glyphicon-refresh {
     width: 800px;
 }
 
-
+/*
 .homeContainer{
     height: 100%;
 }
-
+*/
 /*
 .center-vertically-logo {
     position: relative;
@@ -1335,51 +1336,22 @@ span.glyphicon-refresh {
 .youtube a:hover{background-color:#b52121;}
 /* end: this is for styling Twitter, YouTube and LinkedIn buttons on the bottom of the Front Page */
 
-/* start: taken from https://www.bootply.com/rY3MGdh1HO */
-.vertical-divider {
-    position: absolute;
-    z-index: 10;
-    top: 50%;
-    left: 50%;
-    margin: 0;
-    padding: 0;
-    width: auto;
-    height: 50%;
-    line-height: 0;
-    text-align:center;
-    text-transform: uppercase;
-    transform: translateX(-50%);
-    font-size: 1.4em;
-}
-.row-divided > .vertical-divider,
-.row-divided > .vertical-divider {
-    height: calc(56% - 1rem);
-}
-.vertical-divider:before,
-.vertical-divider:after {
-    position: absolute;
-    left: 50%;
-    content: '';
-    z-index: 9;
-    border-left: 1px solid rgba(34,36,38,.15);
-    border-right: 1px solid rgba(255,255,255,.1);
-    width: 0;
-    height: calc(100% - 1rem);
-}
-.vertical-divider:before {
-    top: -100%;
-}
-.vertical-divider:after {
-    top: auto;
-    bottom: 0;
-}
-.row-divided {
-    position:relative;
+.login-button {
+    border-radius: 5px;
+    margin-top: 0.6em;
+    margin-right: 0.3em;
+    margin-left: 2em;
+    margin-bottom: 0.5em;
 }
 
-.row-divided > [class^="col-"],
-.row-divided > [class*=" col-"] {
-    padding-left: 30px;  /* gutter width (give a little extra room) */
-    padding-right: 30px; /* gutter width (give a little extra room) */
+
+/*
+ * shadow is generated with the help of
+ *      http://css3studio.com/page-css3/css-box-shadow.php
+ */
+.login-page-shadow {
+    background: #F8F8F8;
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
 }
-/* start: taken from https://www.bootply.com/rY3MGdh1HO */

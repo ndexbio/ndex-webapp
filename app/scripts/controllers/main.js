@@ -73,6 +73,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         };
 
+        $scope.featuredCollectionDefined = true;
+
         $rootScope.$on('LOGGED_IN', signInHandler);
 
         var signOutHandler = function () {
@@ -137,16 +139,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 delete $scope.stringTooLongWarning;
             }
         };
-
-
-        $scope.main.hideSearchBar = ($location.path() === '/' || $location.path() === '/signIn');
-
-
-        $scope.$on('$routeChangeSuccess',function(){
-            $scope.main.hideSearchBar = ($location.path() === '/' || $location.path() === '/signIn');
-        });
-
-        $scope.showSearchMenu = false;
 
         $scope.main.goToNetworkView = function(path){
             if (sharedProperties.currentNetworkId) {
@@ -792,6 +784,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
          * Check if the currently used browser is supported.
          */
         $scope.main.isSupportedBrowserUsed = function() {
+
+            $scope.main.showSignIn = true;
 
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
                 return true;

@@ -63,17 +63,6 @@ ndexApp.controller('networkSetController',
         myToolTips.tooltip();
     };
 
-
-    $scope.$on("$destroy", function(){
-        // hide the Search menu item in Nav Bar
-        $scope.$parent.showSearchMenu = false;
-        uiMisc.showSearchMenuItem();
-    });
-
-    uiMisc.hideSearchMenuItem();
-    $scope.$parent.showSearchMenu = true;
-
-
     networkSetController.getNetworksOfNetworkSet = function() {
 
         // need network sets owned by logged in user in order to show them in case user

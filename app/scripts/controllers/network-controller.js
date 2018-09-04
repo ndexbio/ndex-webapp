@@ -43,9 +43,6 @@ ndexApp.controller('networkController',
 
             networkController.successfullyQueried = false;
 
-            // turn on (show) Search menu item on the Nav Bar
-            $scope.$parent.showSearchMenu = true;
-
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
 
             networkController.advancedQueryNodeCriteria = 'Source';
@@ -2023,11 +2020,6 @@ ndexApp.controller('networkController',
                 if (checkCytoscapeStatusTimer) {
                     clearInterval(checkCytoscapeStatusTimer);
                 }
-
-                // hide the Search menu item in Nav Bar
-                $scope.$parent.showSearchMenu = false;
-
-                uiMisc.showSearchMenuItem();
 
                 networkService.clearNiceCX();
                 networkService.clearQueryResultInCX();
@@ -4703,8 +4695,6 @@ ndexApp.controller('networkController',
             $(window).trigger('resize');
 
             ndexSpinner.startSpinner(spinnerId);
-
-            uiMisc.hideSearchMenuItem();
 
             if ($routeParams.identifier !== undefined) {
                 initialize();

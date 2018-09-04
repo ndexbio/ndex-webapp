@@ -369,7 +369,7 @@
                  disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
             <ul id="hiddenElementId2" class="nav navbar-nav navbar-right" style="display: none">
 
-                <li ng-show="showSearchMenu">
+                <li ng-show="main.loggedIn">
                     <a ng-click="collapseHamburgerMenu(); showSearchBar()">
                         <div style="
                             background-image: url('images/search-icon.png');
@@ -394,11 +394,20 @@
                 </li>
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); main.signout()">Sign Out</a>
+                    <button type="button" class="btn btn-primary login-button"
+                            ng-click="collapseHamburgerMenu();
+                            main.signout()">
+                        Logout
+                    </button>
                 </li>
 
+
                 <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
-                    <a ng-click="collapseHamburgerMenu(); main.showSignInSignUpOptions()">Sign In / Sign Up</a>
+                    <button type="button" class="btn btn-primary login-button"
+                       ng-click="collapseHamburgerMenu();
+                             main.showSignInSignUpOptions()">
+                        Login/Register
+                    </button>
                 </li>
 
             </ul>
@@ -413,6 +422,7 @@
     <!-- angular templating -->
     <!-- this is where content will be injected -->
 
+    <!--
     <div id="searchBarId" ng-hide="main.hideSearchBar"
          class="marginsForNGView" style="background-color: white;  ">
         <div style="max-width: 1000px; margin-left: auto; margin-right: auto;">
@@ -420,8 +430,10 @@
         </div>
 
     </div>
+-->
 
     <div ng-view class="marginsForNGView"></div>
+
 
 </div>
 

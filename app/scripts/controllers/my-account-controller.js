@@ -106,10 +106,6 @@ ndexApp.controller('myAccountController',
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on('$destroy', function(){
-                // hide the Search menu item in Nav Bar
-                $scope.$parent.showSearchMenu = false;
-                uiMisc.showSearchMenuItem();
-
 
                 if ($rootScope.signOut) {
                     // in case user hit Sign Out, need to clear sessionStorage since the current
@@ -128,10 +124,6 @@ ndexApp.controller('myAccountController',
             $scope.diskSpaceInfo = {};
 
             myAccountController.showNetworkTable = false;
-
-            uiMisc.hideSearchMenuItem();
-            $scope.$parent.showSearchMenu = true;
-
 
             $scope.editProfileDropDownBulkButtonTitle = '';
             $scope.enableEditPropertiesBulkButton = false;
