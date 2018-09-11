@@ -1337,11 +1337,17 @@ span.glyphicon-refresh {
 /* end: this is for styling Twitter, YouTube and LinkedIn buttons on the bottom of the Front Page */
 
 .login-button {
-    border-radius: 5px;
     margin-top: 0.6em;
     margin-right: 0.3em;
     margin-left: 2em;
     margin-bottom: 0.5em;
+}
+
+.search-examples-button {
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+    width: 130px
 }
 
 
@@ -1350,8 +1356,11 @@ span.glyphicon-refresh {
  *      http://css3studio.com/page-css3/css-box-shadow.php
  */
 .login-page-shadow {
-    background: #F8F8F8;
     box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
     -webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
     -moz-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.inputHeight {
+    height: 30px;
 }

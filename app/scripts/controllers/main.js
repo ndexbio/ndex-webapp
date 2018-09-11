@@ -73,7 +73,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         };
 
-        $scope.featuredCollectionDefined = true;
+        $scope.featuredCollectionDefined = window.featuredCollections && window.featuredCollections.length > 0;
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
@@ -136,7 +136,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 $scope.stringTooLongWarning = 'The maximum length for this field is ' +
                     $scope.maxSearchInputLength + ' characters.';
             } else {
-                delete $scope.stringTooLongWarning;
+                if ($scope.stringTooLongWarning) {
+                    delete $scope.stringTooLongWarning;
+                }
             }
         };
 
