@@ -73,7 +73,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         };
 
-        $scope.featuredCollectionDefined = window.featuredCollections && window.featuredCollections.length > 0;
+        $scope.featuredContentDefined =
+            window.featuredContent && window.featuredContent.hasOwnProperty('items') && window.featuredContent.items.length > 0;
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
@@ -1255,5 +1256,153 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);
+
+
+
+
+        if ($scope.featuredContentDefined) {
+
+            $scope.carouselInterval =  window.featuredContent['scrollIntervalInMs'];
+            $scope.noWrapSlides = false;
+            $scope.active = 0;
+            var slides = $scope.slides = [];
+            var currIndex = 0;
+
+            var featuredGroupsUUIDs = _.map(_.filter(window.featuredContent.items, ['account', 'group']), 'UUID');
+            var featuredUsersUUIDs  = _.map(_.filter(window.featuredContent.items, ['account', 'user']), 'UUID');
+
+            var featuredGroupsDefined = featuredGroupsUUIDs.length > 0;
+            var featuredUsersDefined  = featuredUsersUUIDs.length  > 0;
+
+            if (featuredGroupsDefined) {
+                ndexService.getGroupsByUUIDsV2(featuredGroupsUUIDs)
+                    .success(
+                        function (groupList) {
+                            $scope.featuredGroupsReceived = groupList;
+                        })
+                    .error(
+                        function(error) {
+                            $scope.featuredGroupsReceived = [];
+                            console.log("unable to get featured groups");
+                        }
+                    );
+            } else {
+                $scope.featuredGroupsReceived = [];
+            }
+
+            if (featuredUsersDefined) {
+                ndexService.getUsersByUUIDsV2(featuredUsersUUIDs)
+                    .success(
+                        function (userList) {
+                            $scope.featuredUsersReceived = userList;
+                        })
+                    .error(
+                        function() {
+                            $scope.featuredUsersReceived = [];
+                            console.log("unable to get featured users");
+                        }
+                    );
+            } else {
+                $scope.featuredUsersReceived = [];
+            }
+
+
+            $scope.$watchGroup(['featuredGroupsReceived', 'featuredUsersReceived'],
+                function () {
+                    if ($scope.featuredGroupsReceived && $scope.featuredUsersReceived) {
+
+                        _.forEach(window.featuredContent.items, function(featuredItem) {
+
+                            var type = featuredItem['account'];
+                            var uuid = featuredItem['UUID'];
+                            var link;
+
+                            var item;
+                            if ('group' === type) {
+                                item =
+                                    _.find($scope.featuredGroupsReceived, {'externalId':uuid});
+
+                                link = '#/group/' + uuid;
+
+                            } else if ('user' === type) {
+                                item =
+                                    _.find($scope.featuredUsersReceived, {'externalId': uuid});
+
+                                link = '#/user/' + uuid;
+                            }
+
+                            slides.push({
+                                image: item['image'],
+                                text: item['description'],
+                                link: link,
+                                id: currIndex++
+                            });
+
+/*
+                            slides.push({
+                                image: '//unsplash.it/' + newWidth + '/300',
+                                text: ['Nice image','Awesome photograph','That is so cool','I love that'][slides.length % 4],
+                                id: currIndex++
+                            });
+*/
+
+                            //console.log('type = ' + type);
+
+                        });
+                    }
+                },
+                true);
+            /*
+            $scope.addSlide = function() {
+                var newWidth = 600 + slides.length + 1;
+                slides.push({
+                    image: '//unsplash.it/' + newWidth + '/300',
+                    text: ['Nice image','Awesome photograph','That is so cool','I love that'][slides.length % 4],
+                    id: currIndex++
+                });
+            };
+
+
+            $scope.randomize = function() {
+                var indexes = generateIndexesArray();
+                assignNewIndexesToSlides(indexes);
+            };
+
+            for (var i = 0; i < 4; i++) {
+                $scope.addSlide();
+            }
+
+            // Randomize logic below
+            function assignNewIndexesToSlides(indexes) {
+                for (var i = 0, l = slides.length; i < l; i++) {
+                    slides[i].id = indexes.pop();
+                }
+            }
+
+            function generateIndexesArray() {
+                var indexes = [];
+                for (var i = 0; i < currIndex; ++i) {
+                    indexes[i] = i;
+                }
+                return shuffle(indexes);
+            }
+
+            // http://stackoverflow.com/questions/962802#962890
+            function shuffle(array) {
+                var tmp, current, top = array.length;
+
+                if (top) {
+                    while (--top) {
+                        current = Math.floor(Math.random() * (top + 1));
+                        tmp = array[current];
+                        array[current] = array[top];
+                        array[top] = tmp;
+                    }
+                }
+
+                return array;
+            }
+            */
+        }
 
     }]);

@@ -1,27 +1,37 @@
-var featuredCollections =
-[
-    {
-        name: 'Pathway Interaction Database (NCI-PID)',
-        UUID: '57d8a906-746e-11e6-9178-06832d634f41',
-        account: 'user',
-        image: 'NCI Pathway Interaction Database - Final Revision.png'
-    },
-    {
-        name: 'Cancer Cell Maps Initiative (CCMI)',
-        UUID: '76645b00-44c3-11e8-9218-525400c25d22',
-        account: 'user',
-        image: 'Cancer Cell Maps Initiative (CCMI).png'
-    },
-    {
-        name: 'The NDEx Butler',
-        UUID: '08cd9aae-08af-11e6-b550-06603eb7f303',
-        account: 'user',
-        image: 'The NDEx Butler.png'
-    },
-    {
-        name: 'NetPath',
-        UUID: 'ab10afd9-e488-11e4-951c-000c29cb28fb',
-        account: 'user',
-        image: 'NetPath.png'
-    }
-];
+var featuredContent = {
+
+    scrollIntervalInMs : 3000,
+
+    items : [
+        {
+            name: 'Center for Cancer Systems Biology',
+            UUID: '0978d212-a2d7-11e6-94ac-06832d634f41',
+            account: 'user'
+        },
+        {
+            name: 'Max Paine',
+            UUID: '286fa4a0-7062-11e6-9178-06832d634f41',
+            account: 'user'
+        },
+        {
+            name: 'evil league of evil',
+            UUID: 'cce4dcb3-af98-11e7-b51d-06832d634f41',
+            account: 'group'
+        },
+        {
+            name: 'vvv vvv',
+            UUID: 'dd4de550-90a2-11e6-80cf-06832d634f41',
+            account: 'user'
+        },
+        {
+            name: 'Doctor Horrible',
+            UUID: '662d2d42-7d24-11e6-9265-06832d634f41',
+            account: 'user'
+        },
+        {
+            name: 'Center for Computational Biology & Bioinformatics',
+            UUID: 'c7e2c763-4652-11e7-96f7-06832d634f41',
+            account: 'user'
+        }
+    ]
+}

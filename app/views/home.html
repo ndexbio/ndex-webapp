@@ -1,16 +1,6 @@
 <script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
-
-
-        $('#myCarousel').carousel({
-            interval: 2000
-        })
-
-        $('#myCarousel').on('slid.bs.carousel', function() {
-            alert("slid");
-        });
-
     });
 
 
@@ -23,51 +13,65 @@
         text-align: center;
     }
     .centerFeaturedCollection {
-
         text-align: center;
     }
 
-    .thumbnail {
-        display: block;
-        padding: 4px;
-        margin-bottom: 20px;
-        line-height: 1.42857143;
-        -webkit-transition: all .2s ease-in-out;
-        transition: all .2s ease-in-out;
-        border-radius: 0;
-        border: none;
-        background-color: none;
+
+
+    img {
+        width: auto;
+        max-height: 100%;
+        float: left;
+        margin-right: 20px;
     }
 
-    .carousel-control {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 15%;
-        opacity: .5;
-        font-size: 20px;
-        color: #fff;
+    .carousel-inner {
+        background-color: white; //#C1E0FF;
+    }
+
+    .carousel-caption {
+        font-size: 2em;
+        right: 10%;
+        left: 60%;
+        top: 30%;
+        bottom: 30%;
+        text-align: left;
+        text-shadow: none;
+    }
+    .carousel-indicators {
+        font-size: 2em;
+        bottom: -20%;
         text-align: center;
         text-shadow: none;
     }
-    .carousel-control.left {
-        background-image: none;
+
+    /* coor of carousel indicators/dots */
+    .carousel-indicators li {
+        background: #C1E0FF;
     }
-    .carousel-control.right {
-        left: auto;
-        right: 0;
-        background-image: none;
+    .carousel-indicators .active {
+        background: #3576BE;
     }
 
-    .carousel-control {
-        padding-top:10.25%;
-        width:5%;
+    .carousel-control.left{ opacity:1 !important; color: #3576BE;}
+    .carousel-control.right{ opacity:1 !important; color: #3576BE;}
+
+    /* remove gradient grey from left and roight of carousel */
+    .carousel-control.left, .carousel-control.right {
+        background-image: none
     }
 
-    table, tr, td {
-        border: 1px solid green;
+    .contain {
+        object-fit: contain;
     }
+
+    div.featureCollectionDescriptionArea {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+        border: 1px solid white;
+    }
+
 </style>
 
 <div class="container" style="width:100%; max-width: 1800px; min-width: 1100px; margin-bottom: 2em">
@@ -75,87 +79,46 @@
 
         <div ng-show="main.isSupportedBrowserUsed()">
 
-            <div class='row' ng-show="!featuredCollectionDefined">
-                <div class='login-page-shadow col-md-12' style="border: 2px solid #3576BE; border-radius: 20px; height: 150px" >
+            <div class='row' ng-show="!featuredContentDefined">
+                <div class='login-page-shadow col-md-12' style="border: 3px solid #3576BE; border-radius: 20px; height: 150px" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 1em;" ng-include="'home_search_bar.html'"></div>
 
                 </div>
             </div>
 
-            <div class='row' ng-show="featuredCollectionDefined">
+            <div class='row' ng-show="featuredContentDefined">
 
                 <div class='login-page-shadow col-7 col-xs-7 col-sm-7 col-md-7'
-                     style="width: 55%; border: 2px solid #3576BE; border-radius: 20px; height: 150px;" >
+                     style="width: 55%; border: 3px solid #3576BE; border-radius: 20px; height: 150px;" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 1em;" ng-include="'home_search_bar.html'"></div>
 
                 </div>
 
                 <div class='login-page-shadow col-5 col-xs-5 col-sm-5 col-md-5 pull-right'
-                     style="width: 43%; border: 2px solid #3576BE; border-radius: 20px; margin: auto; padding-bottom: 2em; height: 150px">
+                     style="width: 43%; border: 3px solid #3576BE; border-radius: 20px; margin: auto; padding-bottom: 2em; height: 150px;">
+
 
                     <div class='centerFeaturedCollection' style="color: #3576BE">
-                        <h3>Featured Content</h3>
+                        <h4>Featured Content</h4>
                     </div>
 
-                    <!-- https://www.bootply.com/wXSCqoA51s -->
-                    <div class="no-well">
-                        <div id="myCarousel" class="carousel slide">
+                    <!-- the code below is taken from https://angular-ui.github.io/bootstrap/ -->
+                    <!-- https://www.jquery-az.com/bootstrap-carousel-5-single-multiple-horizontal-and-vertical-sliding-demos/ -->
+                    <!-- https://www.jquery-az.com/boots/demo.php?ex=8.0_3 -->
 
-                            <!-- Carousel items -->
-                            <div class="carousel-inner">
-                                <div class="item active">
-                                    <div class="row">
-                                        <div class="col-sm-3 col-xs-6"><a href="#x"><img src="http://placehold.it/250x250" height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                    </div>
-                                    <!--/row-->
-                                </div>
-                                <!--/item-->
-                                <div class="item">
-                                    <div class="row">
-                                        <div class="col-sm-3 col-xs-6"><a href="#x col-xs-6" class="thumbnail"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x" class="thumbnail"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x" class="thumbnail"><img src="http://placehold.it/250x250"  height=height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x" class="thumbnail"><img src="http://placehold.it/250x250"  height=height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                    </div>
-                                    <!--/row-->
-                                </div>
-                                <!--/item-->
-                                <div class="item">
-                                    <div class="row">
-                                        <div class="col-sm-3 col-xs-6"><a href="#x" class="thumbnail"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x" class="thumbnail"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x" class="thumbnail"><img src="http://placehold.it/250x250"  height='70' width='70'alt="Image" class="img-responsive"></a>
-                                        </div>
-                                        <div class="col-sm-3 col-xs-6"><a href="#x" class="thumbnail"><img src="http://placehold.it/250x250"  height='70' width='70' alt="Image" class="img-responsive"></a>
-                                        </div>
-                                    </div>
-                                    <!--/row-->
-                                </div>
-                                <!--/item-->
-                            </div>
-                            <!--/carousel-inner-->
-                            <a class="left carousel-control" href="#myCarousel" ng-non-bindable data-slide="prev"><i class="fa fa-chevron-left fa-4"></i></a>
 
-                            <a class="right carousel-control" href="#myCarousel" ng-non-bindable data-slide="next"><i class="fa fa-chevron-right fa-4"></i></a>
+                    <div uib-carousel active="active" interval="carouselInterval" nowrap="noWrapSlides">
+                        <div uib-slide ng-repeat="slide in slides track by slide.id" index="slide.id" style='height: 90px;'>
+
+                            <a ng-href="{{slide.link}}">
+                                <img ng-src="{{slide.image}}">
+                                <div ng-bind-html="slide.text" class='featureCollectionDescriptionArea'></div>
+                            </a>
                         </div>
-                        <!--/myCarousel-->
+
                     </div>
-                    <!--/well-->
 
                 </div>
 
@@ -164,18 +127,18 @@
             <div class='row' style="margin-top: 2em">
                 <div class='col-10 col-xs-10 col-sm-10 col-md-10' style="width: 73%; height:49em;" >
 
-                    <div class='login-page-shadow row' style="border: 2px solid #3576BE; border-radius: 20px; height:35em;">
+                    <div class='login-page-shadow row' style="border: 3px solid #3576BE; border-radius: 20px; height:35em;">
                         row 1
                     </div>
 
-                    <div class='login-page-shadow row' style="border: 2px solid #3576BE; border-radius: 20px; height:12em; margin-top:2em">
+                    <div class='login-page-shadow row' style="border: 3px solid #3576BE; border-radius: 20px; height:12em; margin-top:2em">
                         row 2
                     </div>
                 </div>
 
 
                 <div class='login-page-shadow col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
-                     style="width: 25%; border: 2px solid #3576BE; border-radius: 35px; height: 49em">
+                     style="width: 25%; border: 3px solid #3576BE; border-radius: 35px; height: 49em">
 
                     <br>
 
