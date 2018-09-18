@@ -1258,13 +1258,17 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);
 
 
+        var fillInFeaturedContentChannel = function() {
 
-
-        if ($scope.featuredContentDefined) {
-
-            $scope.carouselInterval =  window.featuredContent['scrollIntervalInMs'];
+            $scope.carouselInterval =  window.featuredContent.scrollIntervalInMs;
             $scope.noWrapSlides = false;
-            $scope.active = 0;
+
+            if (typeof $rootScope.activeSlideNo === 'undefined') {
+                $rootScope.activeSlideNo = 0;
+            }
+            $scope.active = $rootScope.activeSlideNo;
+
+
             var slides = $scope.slides = [];
             var currIndex = 0;
 
@@ -1306,6 +1310,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 $scope.featuredUsersReceived = [];
             }
 
+            $scope.saveSlideId = function(slideIndex) {
+                $rootScope.activeSlideNo = slideIndex;
+            }
 
             $scope.$watchGroup(['featuredGroupsReceived', 'featuredUsersReceived'],
                 function () {
@@ -1313,96 +1320,104 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                         _.forEach(window.featuredContent.items, function(featuredItem) {
 
-                            var type = featuredItem['account'];
-                            var uuid = featuredItem['UUID'];
-                            var link;
+                            var type = featuredItem.account;
+                            var uuid = featuredItem.UUID;
 
                             var item;
-                            if ('group' === type) {
-                                item =
-                                    _.find($scope.featuredGroupsReceived, {'externalId':uuid});
 
-                                link = '#/group/' + uuid;
+                            if ('group' === type) {
+                                item = _.find($scope.featuredGroupsReceived, {'externalId':uuid});
 
                             } else if ('user' === type) {
-                                item =
-                                    _.find($scope.featuredUsersReceived, {'externalId': uuid});
-
-                                link = '#/user/' + uuid;
+                                item = _.find($scope.featuredUsersReceived, {'externalId': uuid});
                             }
 
+                            var link = '#' + type + '/' + uuid;
+
                             slides.push({
-                                image: item['image'],
-                                text: item['description'],
+                                image: item.image,
+                                text: item.description,
                                 link: link,
                                 id: currIndex++
                             });
 
-/*
-                            slides.push({
-                                image: '//unsplash.it/' + newWidth + '/300',
-                                text: ['Nice image','Awesome photograph','That is so cool','I love that'][slides.length % 4],
-                                id: currIndex++
-                            });
-*/
-
-                            //console.log('type = ' + type);
-
                         });
                     }
-                },
-                true);
-            /*
-            $scope.addSlide = function() {
-                var newWidth = 600 + slides.length + 1;
-                slides.push({
-                    image: '//unsplash.it/' + newWidth + '/300',
-                    text: ['Nice image','Awesome photograph','That is so cool','I love that'][slides.length % 4],
-                    id: currIndex++
-                });
-            };
+                }, true
+            );
+        };
 
-
-            $scope.randomize = function() {
-                var indexes = generateIndexesArray();
-                assignNewIndexesToSlides(indexes);
-            };
-
-            for (var i = 0; i < 4; i++) {
-                $scope.addSlide();
-            }
-
-            // Randomize logic below
-            function assignNewIndexesToSlides(indexes) {
-                for (var i = 0, l = slides.length; i < l; i++) {
-                    slides[i].id = indexes.pop();
-                }
-            }
-
-            function generateIndexesArray() {
-                var indexes = [];
-                for (var i = 0; i < currIndex; ++i) {
-                    indexes[i] = i;
-                }
-                return shuffle(indexes);
-            }
-
-            // http://stackoverflow.com/questions/962802#962890
-            function shuffle(array) {
-                var tmp, current, top = array.length;
-
-                if (top) {
-                    while (--top) {
-                        current = Math.floor(Math.random() * (top + 1));
-                        tmp = array[current];
-                        array[current] = array[top];
-                        array[top] = tmp;
-                    }
-                }
-
-                return array;
-            }
-            */
+        if ($scope.featuredContentDefined) {
+            fillInFeaturedContentChannel();
         }
+
+
+        var fillInMainChannel = function() {
+
+            while (window.mainContent.length > 4) {
+                window.mainContent.pop();
+            }
+
+            //$scope.mainContent = window.mainContent;
+            var noOfMainContentItems = window.mainContent.length;
+
+
+            var mainContentClass = 'col-12 col-xs-12 col-sm-12 col-md-12';
+
+            if (2 === noOfMainContentItems) {
+                mainContentClass = 'col-6 col-xs-6 col-sm-6 col-md-6';
+
+            } else if (3 === noOfMainContentItems) {
+                mainContentClass = 'col-4 col-xs-4 col-sm-4 col-md-4';
+
+            } else if (4 === noOfMainContentItems) {
+                mainContentClass = 'col-3 col-xs-3 col-sm-3 col-md-3';
+            }
+
+            $scope.mainContentClass = mainContentClass;
+
+            var mainContent = $scope.mainContent = [];
+
+            _.forEach(window.mainContent, function(mainItem) {
+
+                var title   = mainItem.title;
+                var content = mainItem.content;
+                var href    = mainItem.href;
+
+                mainContent.push({
+                    'title': title,
+                    'content': content,
+                    'href' : href
+                });
+            });
+
+        };
+
+        fillInMainChannel();
+
+
+        var fillInLogosChannel = function() {
+
+            var noOfLogosItems = window.logos.length;
+
+            var logos = $scope.logos = [];
+
+            _.forEach(window.logos, function(logo) {
+
+                var image = logo.image;
+                var title = logo.title;
+                var href  = logo.href;
+
+                logos.push({
+                    'image': image,
+                    'title': title,
+                    'href' : href
+                });
+            });
+
+            //console.log();
+        };
+
+        fillInLogosChannel();
 
     }]);

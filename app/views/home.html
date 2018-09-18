@@ -18,7 +18,7 @@
 
 
 
-    img {
+    .slideImage {
         width: auto;
         max-height: 100%;
         float: left;
@@ -53,23 +53,68 @@
         background: #3576BE;
     }
 
+
+    a.right.carousel-control {
+        position: absolute !important;
+        /*top: 10%;*/
+        /*width: 385px;*/
+        right: 1px;
+        /*height: 39px;*/
+        z-index: 2;
+        margin-right: -2.5em;
+    }
+    a.left.carousel-control {
+        position: absolute !important;
+        /*top: 10%;*/
+        /*width: 385px;*/
+        left: 1px;
+        /*height: 39px;*/
+        z-index: 2;
+        margin-left: -2em;
+    }
+
     .carousel-control.left{ opacity:1 !important; color: #3576BE;}
     .carousel-control.right{ opacity:1 !important; color: #3576BE;}
 
-    /* remove gradient grey from left and roight of carousel */
+    /* remove gradient grey from left and right of carousel */
     .carousel-control.left, .carousel-control.right {
         background-image: none
     }
 
-    .contain {
-        object-fit: contain;
-    }
-
-    div.featureCollectionDescriptionArea {
+    div.featuredCollectionDescriptionArea {
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: left;
-        border: 1px solid white;
+        /*border: 1px solid white;*/
+    }
+    p.mainArea {
+        overflow-y: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+        /*border: 1px solid white;*/
+    }
+
+    .logosStyle {
+        width: auto;
+        height: 100%;
+        max-height: 75%;
+        /*float: left;*/
+
+        margin-right: 20px;
+        margin-left: 20px;
+
+        margin-top: 3em;
+    }
+
+    #logoContainer {
+        /*background-color: #aaa;*/
+        height: 8em;
+
+        margin-left: 2em;
+        margin-right: 2em;
+        text-align: center;
+
+        overflow: hidden;
     }
 
 </style>
@@ -80,7 +125,7 @@
         <div ng-show="main.isSupportedBrowserUsed()">
 
             <div class='row' ng-show="!featuredContentDefined">
-                <div class='login-page-shadow col-md-12' style="border: 3px solid #3576BE; border-radius: 20px; height: 150px" >
+                <div class='login-page-shadow col-md-12' style="border: 1px solid #3576BE; border-radius: 20px; height: 150px" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 1em;" ng-include="'home_search_bar.html'"></div>
 
@@ -88,17 +133,15 @@
             </div>
 
             <div class='row' ng-show="featuredContentDefined">
-
                 <div class='login-page-shadow col-7 col-xs-7 col-sm-7 col-md-7'
-                     style="width: 55%; border: 3px solid #3576BE; border-radius: 20px; height: 150px;" >
+                     style="width: 55%; border: 1px solid #3576BE; border-radius: 20px; height: 150px;" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 1em;" ng-include="'home_search_bar.html'"></div>
 
                 </div>
 
                 <div class='login-page-shadow col-5 col-xs-5 col-sm-5 col-md-5 pull-right'
-                     style="width: 43%; border: 3px solid #3576BE; border-radius: 20px; margin: auto; padding-bottom: 2em; height: 150px;">
-
+                     style="width: 43%; border: 1px solid #3576BE; border-radius: 20px; margin: auto; padding-bottom: 2em; height: 150px;">
 
                     <div class='centerFeaturedCollection' style="color: #3576BE">
                         <h4>Featured Content</h4>
@@ -108,37 +151,62 @@
                     <!-- https://www.jquery-az.com/bootstrap-carousel-5-single-multiple-horizontal-and-vertical-sliding-demos/ -->
                     <!-- https://www.jquery-az.com/boots/demo.php?ex=8.0_3 -->
 
-
                     <div uib-carousel active="active" interval="carouselInterval" nowrap="noWrapSlides">
                         <div uib-slide ng-repeat="slide in slides track by slide.id" index="slide.id" style='height: 90px;'>
-
-                            <a ng-href="{{slide.link}}">
-                                <img ng-src="{{slide.image}}">
-                                <div ng-bind-html="slide.text" class='featureCollectionDescriptionArea'></div>
+                            <a ng-href="{{slide.link}}" ng-click="saveSlideId(slide.id)">
+                                <img ng-src="{{slide.image}}" class="slideImage">
+                                <div ng-bind-html="slide.text" class='featuredCollectionDescriptionArea'></div>
                             </a>
                         </div>
-
                     </div>
 
                 </div>
-
             </div>
 
             <div class='row' style="margin-top: 2em">
                 <div class='col-10 col-xs-10 col-sm-10 col-md-10' style="width: 73%; height:49em;" >
 
                     <div class='login-page-shadow row' style="border: 3px solid #3576BE; border-radius: 20px; height:35em;">
-                        row 1
+
+                        <div ng-repeat="item in mainContent">
+
+                            <div class='{{mainContentClass}}'>
+                                <!--<a ng-href="{{item.href}}" target="_blank"> -->
+                                    <h3 style='color:#428bca;' ng-bind-html="item.title"></h3>
+                                    <p ng-bind-html="item.content" style="height:23em;" class="mainArea"></p>
+                                    <a ng-href="{{item.href}}" target="_blank"> more ...</a>
+                                <!--</a>-->
+                            </div>
+                        </div>
                     </div>
 
+
+
                     <div class='login-page-shadow row' style="border: 3px solid #3576BE; border-radius: 20px; height:12em; margin-top:2em">
-                        row 2
+
+                        <div class="row" ng-show="!config.requireAuthentication && !main.serverIsDown">
+
+                            <div id='logoContainer'>
+                                <span ng-repeat="logo in logos">
+                                    <a ng-href="{{logo.href}}" target="_blank">
+                                        <img class="logosStyle"
+                                             src="{{logo.image}}"
+                                             data-toggle="tooltip"
+                                             title="{{logo.title}}">
+                                    </a>
+                                </span>
+
+                            </div>
+                        </div>
+
                     </div>
+
                 </div>
 
 
+                <!-- Tweets -->
                 <div class='login-page-shadow col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
-                     style="width: 25%; border: 3px solid #3576BE; border-radius: 35px; height: 49em">
+                     style="width: 25%; border: 3px solid #3576BE; border-radius: 20px; height: 49em">
 
                     <br>
 
@@ -312,96 +380,6 @@
                 </div>
 
             </table>
-                            <!--
-                            <input type="checkbox"
-                                   style="margin-left: 1em;"
-                                   ng-hide="checkSearchTypeAndTermExpansion()"
-                                   title="{{main.searchTitle}}"
-                                   ng-model="main.searchTermExpansionSelected">
-                            --
-
-
-                            &nbsp;
-                            <span ng-style="searchTermExpansionEnabled ?
-                                {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}">
-                                <strong>Term expansion</strong>
-                            </span>
-
-                        </td>
-                    </tr>
-
-<!--
-                    <tr ng-show="stringTooLongWarning" style="text-align: left">
-                        <td bgcolor="#FFFFFF">
-                            <div style="color:red; font-size:1.3em; font-weight:bold; margin-left: 1em; margin-top: 1em"
-                                 ng-bind-html="stringTooLongWarning">
-                            </div>
-                        </td>
-                    </tr>
-
-<!--
-                    <tr style="border:hidden">
-
-                        <td bgcolor="blue" style="text-align:left;">
-                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle search-examples-button"
-                                    data-toggle="dropdown" style="margin-left: 2em; width: 120px">
-                                Browse
-                            </button>
-
-                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle search-examples-button"
-                                    data-toggle="dropdown" style="margin-left: 2em; width: 120px">
-                                Featured Content
-                            </button>
-
-                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle search-examples-button"
-                                    data-toggle="dropdown" style="margin-left: 120px">
-                                Examples <span class="caret"></span>
-                            </button>
-
-
-                            <ul class="dropdown-menu" role="menu">
-
-                                <li class="AlignLeft" style="padding-left: 5px;"
-                                    ng-repeat="item in main.searchNetworksExamples">
-                                    <a ng-click="main.runSearchExample(item); closeModal()">
-                                        {{item.description}}
-                                    </a>
-                                </li>
-
-                                <li class="AlignLeft" ng-show="config.searchDocLink">
-                                    <a style="color:#428bca; background-color:white;"
-                                       ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
-                                        <u>{{config.searchDocLink.label}}</u>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </td>
-                        <td bgcolor="blue" style="text-align:left;">
-
-                            <input type="checkbox"
-                                   style="margin-left: 1em;"
-                                   ng-hide="checkSearchTypeAndTermExpansion()"
-                                   title="{{main.searchTitle}}"
-                                   ng-model="main.searchTermExpansionSelected">
-
-                            <!--
-                            <input type="checkbox"
-                                   style="margin-left: 1em;"
-                                   ng-hide="checkSearchTypeAndTermExpansion()"
-                                   title="{{main.searchTitle}}"
-                                   ng-model="main.searchTermExpansionSelected">
-                            --
-
-
-                            &nbsp;
-                            <span ng-style="searchTermExpansionEnabled ?
-                                {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}">
-                                <strong>Term expansion</strong>
-                            </span>
-                        </td>
-                    </tr>
-                    -->
 
         </form>
     </div>

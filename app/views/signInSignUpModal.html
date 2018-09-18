@@ -72,8 +72,20 @@
                 <div class="col-xs-6">
 
                     <div class="google-button">
+                        <button ng-if="googleSSO"
+                                autofocus
+                                class="google-sign-in-button"
+                                type="button"
+                                style="cursor: pointer;"
+                                ng-click="signIn.SignInWithGoogle()">
+                                    <span class="google-sign-in-button-span">
+                                        <img src="images/google-logo.svg"
+                                             alt="" style="height: 70px; width: 70px; max-height: 100%; max-width: 100%;">
+                                        <div style="margin-top: 1.5em; margin-left: 3em; margin-right: 3em">Sign In / Sign Up with Google</div>
+                                    </span>
+                        </button>
                         <button id="googleSignInButtonId"
-                                ng-show="!googleSSO"
+                                ng-if="!googleSSO"
                                 class="google-sign-in-button"
                                 style="color: #B6B6B6; background-color: #FFF; cursor: not-allowed"
                                 ng-init="setToolTips()"
@@ -92,20 +104,6 @@
                                         <div style="margin-top: 1.5em; margin-left: 3em; margin-right: 3em">Sign In / Sign Up with Google</div>
                                     </span>
                         </button>
-
-                        <button ng-show="googleSSO"
-                                autofocus
-                                class="google-sign-in-button"
-                                type="button"
-                                style="cursor: pointer;"
-                                ng-click="signIn.SignInWithGoogle()">
-                                    <span class="google-sign-in-button-span">
-                                        <img src="images/google-logo.svg"
-                                             alt="" style="height: 70px; width: 70px; max-height: 100%; max-width: 100%;">
-                                        <div style="margin-top: 1.5em; margin-left: 3em; margin-right: 3em">Sign In / Sign Up with Google</div>
-                                    </span>
-                        </button>
-
                     </div>
                 </div>
 

@@ -72,6 +72,8 @@ ndexApp.controller('networkController',
             // from the "Network Cloned" information modal.
             //$modalStack.dismissAll('close');
 
+            $scope.fullScreen = false;
+
             $scope.query = null;
             networkController.searchString = '';
 
@@ -4635,6 +4637,76 @@ ndexApp.controller('networkController',
                     });
 
                 //factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
+            };
+
+            var resizeCanvas = function() {
+                cy.destroy();
+                localNetwork = networkService.getCurrentNiceCX();
+
+                setTimeout(
+                    function () {
+                        drawCXNetworkOnCanvas(localNetwork, false);
+                    }, 200);
+            }
+
+            $scope.openInFullScreenMode = function(mode) {
+                // the code below is taken from
+                // https://hacks.mozilla.org/2012/01/using-the-fullscreen-api-in-web-browsers/
+
+                var docElm;
+
+                // console.log('cy.width() = ' + cy.width()  + '  cy.height() = ' + cy.height());
+
+                if (mode) {
+                    if ('canvas' === mode) {
+                        docElm = document.getElementById("cytoscape-canvas");
+                    } else if ('page' === mode) {
+                        docElm = document.documentElement;
+                    }
+                }
+
+                if (docElm.requestFullscreen) {
+                    docElm.requestFullscreen();
+                }
+                else if (docElm.mozRequestFullScreen) {
+                    docElm.mozRequestFullScreen();
+                }
+                else if (docElm.webkitRequestFullScreen) {
+                    docElm.webkitRequestFullScreen();
+                }
+                else if (docElm.msRequestFullscreen) {
+                    docElm.msRequestFullscreen();
+                }
+            };
+
+            var setListenerForFullScreenChange = function() {
+                var docElm = document.documentElement;
+
+
+                if (docElm.requestFullscreen) {
+                    document.addEventListener("fullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                }
+                else if (docElm.mozRequestFullScreen) {
+                    document.addEventListener("mozfullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                }
+                else if (docElm.webkitRequestFullScreen) {
+                    document.addEventListener("webkitfullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                }
+                else if (docElm.msRequestFullscreen) {
+                    document.addEventListener("msfullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                };
+            };
+
+            if ($scope.fullScreen) {
+                setListenerForFullScreenChange();
             };
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS

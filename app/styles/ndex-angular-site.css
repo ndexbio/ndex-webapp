@@ -608,6 +608,7 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
     .img-sizer{
         height: 50px;
         padding-right: 50px;
+        margin: auto
     }
 
     .ndex-featured-collections {
@@ -1363,4 +1364,10 @@ span.glyphicon-refresh {
 
 .inputHeight {
     height: 30px;
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

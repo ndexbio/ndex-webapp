@@ -34,18 +34,27 @@
                     padding:0.3em 1em;
                     border-style: ridge;
                     border-width: 4px'>
-                <!--
-                <span ng-show="networkController.currentNetwork.userSetSample">
-                    <strong>User-set sample: {{networkController.sampleSize}} edges</strong>
-                </span>
-                <span ng-show="!networkController.currentNetwork.userSetSample">
-                    <strong>System sample: {{networkController.sampleSize}} edges</strong>
-                </span>
-                -->
                 <span>
                     <strong>Sample: {{networkController.sampleSize}} edges</strong>
                 </span>
             </div>
+
+
+            <div id="switchCanvasToFullScreenId"
+                 style='
+                    display: inline-block;
+                    position: absolute;
+                    bottom: 50px;
+                    right: 10px;
+                    font-size: 1.1em;'
+                 ng-show="fullScreen && currentView == 'Graphic'">
+
+                <button type="button" class="actionsLabel btn btn-primary" ng-click="openInFullScreenMode('canvas')">
+                    Full Screen
+                </button>
+
+            </div>
+
 
             <tabset ng-show="currentView == 'Table'">
                 <tab heading="Edges" ng-click="activateTab('Edges'); edgeGridApi.core.handleWindowResize()">
@@ -814,6 +823,11 @@
              ng-show="networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
+            <button ng-show="fullScreen"
+                    type="button" class="actionsLabel btn btn-primary"
+                    ng-click="openInFullScreenMode('page')">
+                Full Screen
+            </button>
             <span>
                 <img id="openInCytoscapeButtonId2" ng-show="openInCytoscapeTitle" class="cyButtonDisabled"
                      ng-mouseover="changeCytoscapeButtonTitle()" title=""
@@ -858,6 +872,10 @@
 
         <div class="networkActionsSection pull-right" ng-show="!networkController.successfullyQueried || networkController.accesskey">
 
+            <button ng-show="fullScreen"
+                    type="button" class="actionsLabel btn btn-primary" ng-click="openInFullScreenMode('page')">
+                Full Screen
+            </button>
             <span>
                 <img id="openInCytoscapeButtonId" ng-show="openInCytoscapeTitle" class="cyButtonDisabled"
                      ng-mouseover="changeCytoscapeButtonTitle()" title=""

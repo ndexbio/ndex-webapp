@@ -88,6 +88,8 @@
 
 
     <script src="landing_page_content/v2_4_0/featured.js"></script>
+    <script src="landing_page_content/v2_4_0/mainContent.js"></script>
+    <script src="landing_page_content/v2_4_0/logos.js"></script>
 
     <!--
         <script src="landing_page_content/v2_4_0/ndex-webapp-config.js"></script>
@@ -150,7 +152,7 @@
 <!-- define angular controller -->
 <body ng-controller="mainController" style="height: 100%;">
 
-<!-- template for search bar -->
+<!-- template for search bar --
 <script type="text/ng-template" id="search_bar.html">
     <div class="" style="background-color:white; color:black;">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
@@ -226,7 +228,7 @@
                                                maxlength="{{maxSearchInputLength}}"
                                                ng-change="checkLengthOfSearchString()">
 
-                                        <!--!$scope.main.searchString-->
+                                        <!--!$scope.main.searchString--
 
                                         <span class="input-group-btn">
                                             <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();" class="btn btn-default">
@@ -276,6 +278,8 @@
         </form>
     </div>
 </script>
+-->
+
 
 <!-- Nav Bar -->
 <nav class="navbar navbar-fixed-top">
@@ -468,17 +472,17 @@
 
             <div class="row">
 
-                <div class="col-md-10" style="padding-top: 6px;">
-                    <span style="margin-left: 28px">
+                <div class="col-10 col-xs-10 col-sm-10 col-md-10" style="padding-top: 6px;">
+                    <div style="margin-left: 28px" class="ellipsis">
                         Copyright &copy; 2013-<script type="text/javascript">var d = new Date(); document.write(d.getFullYear());</script>,
                         The Regents of the University of California, The Cytoscape Consortium.
                         All rights reserved.
                         &nbsp;<a href="https://home.ndexbio.org/disclaimer-license/" style="color:#0272c9">Terms & Conditions</a>
-                    </span>
+                    </div>
                 </div>
 
-                <div class="col-md-2">
-                    <ul class="social AlignRight" style="margin-right: 12px">
+                <div class="col-2 col-xs-2 col-sm-2 col-md-2">
+                    <ul class="social pull-right" style="min-width: 154px; max-width: 154px; width: 100%">
                         <li class="twitter">
                             <a href="https://twitter.com/NDExProject">
                                 <i class="fa fa-twitter"></i>
