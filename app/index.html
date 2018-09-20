@@ -152,7 +152,7 @@
 <!-- define angular controller -->
 <body ng-controller="mainController" style="height: 100%;">
 
-<!-- template for search bar --
+<!-- template for search bar -->
 <script type="text/ng-template" id="search_bar.html">
     <div class="" style="background-color:white; color:black;">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
@@ -228,7 +228,7 @@
                                                maxlength="{{maxSearchInputLength}}"
                                                ng-change="checkLengthOfSearchString()">
 
-                                        <!--!$scope.main.searchString--
+                                        <!--!$scope.main.searchString-->
 
                                         <span class="input-group-btn">
                                             <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();" class="btn btn-default">
@@ -278,8 +278,6 @@
         </form>
     </div>
 </script>
--->
-
 
 <!-- Nav Bar -->
 <nav class="navbar navbar-fixed-top">
@@ -435,33 +433,9 @@
     <!-- angular templating -->
     <!-- this is where content will be injected -->
 
-    <!--
-    <div id="searchBarId" ng-hide="main.hideSearchBar"
-         class="marginsForNGView" style="background-color: white;  ">
-        <div style="max-width: 1000px; margin-left: auto; margin-right: auto;">
-            <ng-include src="'search_bar.html'"></ng-include>
-        </div>
-
-    </div>
--->
-
     <div ng-view class="marginsForNGView"></div>
 
-
 </div>
-
-
-<!--
-<div ng-show='showFooter'>
-    <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter"  >
-        <div class='footer-content' >
-            Copyright &copy; 2016 Regents of the University of California and The Cytoscape Consortium. All rights
-            reserved.
-            &nbsp;<a href="http://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
-        </div>
-    </nav>
-</div>
--->
 
 
 <!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are

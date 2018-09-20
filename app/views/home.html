@@ -27,6 +27,8 @@
 
     .carousel-inner {
         background-color: white; //#C1E0FF;
+        width: 90%;
+        margin: auto;
     }
 
     .carousel-caption {
@@ -40,7 +42,7 @@
     }
     .carousel-indicators {
         font-size: 2em;
-        bottom: -20%;
+        bottom: -0.75em;
         text-align: center;
         text-shadow: none;
     }
@@ -56,25 +58,27 @@
 
     a.right.carousel-control {
         position: absolute !important;
-        /*top: 10%;*/
-        /*width: 385px;*/
         right: 1px;
-        /*height: 39px;*/
         z-index: 2;
         margin-right: -2.5em;
     }
     a.left.carousel-control {
         position: absolute !important;
-        /*top: 10%;*/
-        /*width: 385px;*/
         left: 1px;
-        /*height: 39px;*/
         z-index: 2;
         margin-left: -2em;
     }
 
-    .carousel-control.left{ opacity:1 !important; color: #3576BE;}
-    .carousel-control.right{ opacity:1 !important; color: #3576BE;}
+    .carousel-control.left {
+        opacity:1 !important;
+        color: #3576BE;
+        /*background-image: none;*/
+    }
+    .carousel-control.right {
+        opacity:1 !important;
+        color: #3576BE;
+        /*background-image: none;*/
+    }
 
     /* remove gradient grey from left and right of carousel */
     .carousel-control.left, .carousel-control.right {
@@ -86,6 +90,7 @@
         text-overflow: ellipsis;
         text-align: left;
         /*border: 1px solid white;*/
+        height: 80%;
     }
     p.mainArea {
         overflow-y: hidden;
@@ -166,7 +171,7 @@
             <div class='row' style="margin-top: 2em">
                 <div class='col-10 col-xs-10 col-sm-10 col-md-10' style="width: 73%; height:49em;" >
 
-                    <div class='login-page-shadow row' style="border: 3px solid #3576BE; border-radius: 20px; height:35em;">
+                    <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:35em;">
 
                         <div ng-repeat="item in mainContent">
 
@@ -182,7 +187,7 @@
 
 
 
-                    <div class='login-page-shadow row' style="border: 3px solid #3576BE; border-radius: 20px; height:12em; margin-top:2em">
+                    <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:12em; margin-top:2em">
 
                         <div class="row" ng-show="!config.requireAuthentication && !main.serverIsDown">
 
@@ -206,7 +211,7 @@
 
                 <!-- Tweets -->
                 <div class='login-page-shadow col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
-                     style="width: 25%; border: 3px solid #3576BE; border-radius: 20px; height: 49em">
+                     style="width: 25%; border: 1px solid #3576BE; border-radius: 20px; height: 49em">
 
                     <br>
 
