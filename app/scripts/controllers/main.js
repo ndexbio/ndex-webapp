@@ -45,7 +45,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
 
-        $scope.showFooter = true;
+        $scope.showFooter = false;
 
         $scope.main = {};
 

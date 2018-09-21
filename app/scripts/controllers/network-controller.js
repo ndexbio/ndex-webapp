@@ -19,8 +19,6 @@ ndexApp.controller('networkController',
 
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
-            $scope.showFooter = false;
-
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
