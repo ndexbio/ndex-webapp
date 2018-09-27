@@ -1,14 +1,17 @@
 ndexApp.controller('networkController',
-    ['provenanceService','networkService', 'ndexService', 'ndexConfigs', 'cyService','cxNetworkUtils',
+    ['provenanceService','networkService', 'ndexService', 'ndexConfigs',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$rootScope', '$routeParams', '$modal', '$modalStack',
         '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', 'cyREST', '$timeout',
-        function ( provenanceService, networkService, ndexService, ndexConfigs, cyService, cxNetworkUtils,
+        function ( provenanceService, networkService, ndexService, ndexConfigs,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $rootScope, $routeParams, $modal, $modalStack,
                   $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST , $timeout)
         {
             //var self = this;
+            
+            var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
+            var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
 
             var cy;
 
