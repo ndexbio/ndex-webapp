@@ -3,13 +3,15 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
     '$window',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $window) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner,
+               $window) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
                 $scope.main.signout();
             }
         });
+
 
 
         $(document).ready(function(){
@@ -48,6 +50,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.showFooter = false;
 
         $scope.main = {};
+        $scope.main.ndexServerVersion = null;
 
         $scope.main.url = $location; //expose the service to the scope for nav
 
@@ -105,7 +108,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             sharedProperties.currentUserId = null;
             $scope.main.showSignIn = true;
 
-            $window.location.href = '#/';  // same as $location.path('/');, but causes page reload
+            $location.path('/');
+            //$window.location.href = '#/';
+            //$window.location.reload();
         };
 
         $scope.$on('LOGGED_OUT', signOutHandler);
@@ -248,23 +253,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 config.logoLink.showWarning = false;
             }
 
-
-            if (typeof config.newsLink === 'undefined') {
-                config.newsLink = {};
-            }
-            if (typeof config.newsLink.label === 'undefined') {
-                config.newsLink.label = 'News';
-            }
-            if (typeof config.newsLink.href === 'undefined') {
-                config.newsLink.href = 'http://www.home.ndexbio.org/index';
-            }
-            if (typeof config.newsLink.warning === 'undefined') {
-                config.newsLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.newsLink.showWarning === 'undefined') {
-                config.newsLink.showWarning = false;
-            }
-
             if (typeof config.aboutLink === 'undefined') {
                 config.aboutLink = {};
             }
@@ -363,6 +351,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // if any of config parameters missing, assign default values
 
         initMissingConfigParams(window.ndexSettings);
+        $scope.linkToReleaseDocs = window.ndexSettings.welcome.linkToReleaseDocs;
 
         // "Cite NDEx" menu item is not configurable.
         window.ndexSettings.citeNDEx = {};
@@ -374,7 +363,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         //Test whether the server is up or not.
         $scope.main.serverIsDown = null;
 
-        $scope.main.ndexServerVersion = null;
+
         window.navigator.ndexServerVersion = 'ndex-webapp/';
 
         ndexService.getServerStatus('full',
@@ -1396,6 +1385,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         fillInMainChannel();
 
 
+
         var fillInLogosChannel = function() {
 
             var noOfLogosItems = window.logos.length;
@@ -1404,7 +1394,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             _.forEach(window.logos, function(logo) {
 
-                var image = logo.image;
+                var image = 'landing_page_content/' + window.ndexSettings.version + '/' + logo.image;
                 var title = logo.title;
                 var href  = logo.href;
 
@@ -1414,8 +1404,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     'href' : href
                 });
             });
+        };
 
-            //console.log();
+        $scope.logosDefined = function() {
+            return $scope.logos.length > 0;
         };
 
         fillInLogosChannel();

@@ -92,7 +92,7 @@
 
 
 
-    p.mainArea {
+    .mainAreaLandingPage {
         overflow-y: hidden;
         text-overflow: ellipsis;
         text-align: left;
@@ -100,17 +100,22 @@
     }
     .logosStyle {
         width: auto;
-        height: 100%;
-        max-height: 75%;
-        /*float: left;*/
+
         margin-right: 20px;
         margin-left: 20px;
-        margin-top: 2em;
+
+        transform: scale(0.75, 0.75);
+        -ms-transform: scale(0.75, 0.75);
+        -webkit-transform: scale(0.75, 0.75);
+
     }
 
     #logoContainer {
         /*background-color: #aaa;*/
-        height: 8em;
+        /*height: 8em;*/
+
+
+        margin-top: 10px;
 
         margin-left: 2em;
         margin-right: 2em;
@@ -119,7 +124,7 @@
     }
 
 
-    /* https://code.sololearn.com/WdA8QcVCZXqz/?ref=app#html */
+    /* https://code.sololearn.com/WdA8QcVCZXqz/?ref=app#html *
     .marquee {
         line-height: 50px;
         color: Black;
@@ -136,14 +141,33 @@
         0%   { transform: translate(0, 0); }
         100% { transform: translate(-100%, 0); }
     }
+*/
 
-
-
-
+/*
+    @-webkit-keyframes scroll {
+        0% {
+            -webkit-transform: translate(0, 0);
+        }
+        100% {
+            -webkit-transform: translate(-100%, 0);
+        }
+    }
+    .marquee {
+        display: block;
+        width: auto;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .marquee img {
+        display: inline-block;
+        //padding-left: 100%;
+        -webkit-animation: scroll 10s infinite linear;
+    }
+  */
 
 </style>
 
-<div class="container" style="width:100%; max-width: 1800px; min-width: 1100px; margin-bottom: 1em; margin-top: -0.5em">
+<div class="container" style="width:100%; max-width: 1800px; min-width: 1100px; margin-bottom: 1em;">
     <div class="row" ng-show="!main.serverIsDown">
 
         <div ng-show="main.isSupportedBrowserUsed()">
@@ -192,16 +216,29 @@
 
                     <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:36em;">
 
+
                         <div ng-repeat="item in mainContent">
 
-                            <div class='{{mainContentClass}}'>
-                                <!--<a ng-href="{{item.href}}" target="_blank"> -->
-                                    <h3 style='color:#428bca;' ng-bind-html="item.title"></h3>
-                                    <p ng-bind-html="item.content" style="height:28em;" class="mainArea"></p>
+                             <div class='{{mainContentClass}}'>
+
+<!--
+                                    <span ng-bind-html="item.title"></span>
+                                    <p ng-bind-html="item.content" class="mainArea"></p>
                                     <a ng-href="{{item.href}}" target="_blank"> more ...</a>
-                                <!--</a>-->
+-->
+
+<!--
+                                    <h3 style='color:#428bca;' ng-bind-html="item.title"></h3>
+-->
+                                     <p class="mainAreaLandingPage" style="height:32em;">
+                                        <ng-include src="item.content""></ng-include>
+                                     </p>
+                                    <a ng-href="{{item.href}}" target="_blank"> more ...</a>
+
                             </div>
+
                         </div>
+
                     </div>
                 </div>
 
@@ -223,7 +260,8 @@
             </div>
 
 
-            <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:110px; margin-top:1em">
+            <div ng-show="logosDefined()"
+                    class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:110px; margin-top:1em">
 
 <!--
                 <div class="marquee">
@@ -235,26 +273,56 @@
                 </div>
 
 -->
+
                 <div id='logoContainer'>
 
-                    <span ng-repeat="logo in logos">
+                    <marquee>
+                        <span ng-repeat="logo in logos">
+                            <a ng-href="{{logo.href}}" target="_blank">
 
-                        <a ng-href="{{logo.href}}" target="_blank">
+                                <img class="logosStyle"
+                                     src="{{logo.image}}"
+                                     data-toggle="tooltip"
+                                     data-placement="right"
+                                     title="{{logo.title}}">
+                            </a>
+                        </span>
+                    </marquee>
 
-                            <img class="logosStyle"
-                                 src="{{logo.image}}"
-                                 data-toggle="tooltip"
-                                 title="{{logo.title}}">
+                </div>
 
-                        </a>
+<!--
 
-                </span>
+                <div id='logoContainer' class="marquee">
+
+                        <span ng-repeat="logo in logos">
+                            <a ng-href="{{logo.href}}" target="_blank">
+
+                                <img class="logosStyle"
+                                     src="{{logo.image}}"
+                                     data-toggle="tooltip"
+                                     title="{{logo.title}}">
+                            </a>
+                        </span>
+
+                </div>
 
             </div>
 
+<!--
+            <div uib-carousel active="active" interval="carouselInterval*2" nowrap="noWrapSlides">
+                <span uib-slide ng-repeat="logo in logos" >
+                    <a ng-href="{{logo.link}}">
+                        <img ng-src="{{logo.image}}" class="slideImage">
+                        <div ng-bind-html="logo.text" class='featuredCollectionDescriptionArea'></div>
+                    </a>
+                </span>
+            </div>
+-->
+
+
+
         </div>
-
-
     </div>
 </div>
 
