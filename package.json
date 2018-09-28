@@ -2,7 +2,6 @@
   "name": "ndexWebApp",
   "private": true,
   "dependencies": {
-    "cytoscape-cx2js": "file:../cx2js-slush",
     "time-grunt": "^1.4.0"
   },
   "devDependencies": {
