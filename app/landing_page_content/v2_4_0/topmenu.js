@@ -1,12 +1,4 @@
 var topMenu = [
-    /*
-    {
-        'label':       'Logo',
-        'href':        'http://preview.ndexbio.org',
-        'warning':     'Warning! Dragons ahead... Click OK to proceed at your own risk or click CANCEL to go back to safety.',
-        'showWarning': false
-    },
-    */
     {
         'label':       'Documentation',
         'href':        'http://www.home.ndexbio.org/quick-start',

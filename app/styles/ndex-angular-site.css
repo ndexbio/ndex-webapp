@@ -288,7 +288,7 @@ textarea
  ******************************************************************************/
 
 .marginsForNGView {
-    /*margin-top: 5px;*/
+    margin-top: 10px;
     margin-left: 30px;
     margin-right: 30px;
 }
@@ -507,11 +507,17 @@ textarea
     font-size: 16px;
     letter-spacing:0px;
 }
-/*
-.navbar-top-height {
-    height: 75px;
+.navbar-ndex-bottom
+{
+    font-size: 14px;
+    letter-spacing: 0px;
 }
-*/
+
+
+.navbar-top-height {
+    height: 65px;
+}
+
 
 /* the color of the collapsed menu bar in the header; this is for NDEX-662 */
 .icon-bar {
@@ -522,7 +528,7 @@ textarea
     .login-button {
         margin-right: 5px;
         margin-left: 10px;
-        margin-top: 8px;
+        margin-top: 10px;
     }
     .marginForCollapsedMode {
        margin-left: 0;
@@ -1370,7 +1376,7 @@ span.glyphicon-refresh {
     margin-left: 1em;
     margin-right: 1em;
     margin-bottom: 0.5em;
-    width: 130px
+    width: 150px;
 }
 
 
@@ -1397,3 +1403,39 @@ span.glyphicon-refresh {
 .navbar-brand {
     padding: 15px 0 15px 15px
 }
+
+
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sidenav_right */
+/*
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    margin-left: 50px;
+}
+*/

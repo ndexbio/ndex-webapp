@@ -101,19 +101,17 @@
     .logosStyle {
         width: auto;
 
-        margin-right: 20px;
-        margin-left: 20px;
+        margin-right: 10px;
+        margin-left: 10px;
 
         transform: scale(0.75, 0.75);
         -ms-transform: scale(0.75, 0.75);
         -webkit-transform: scale(0.75, 0.75);
-
     }
 
     #logoContainer {
         /*background-color: #aaa;*/
         /*height: 8em;*/
-
 
         margin-top: 10px;
 
@@ -175,7 +173,7 @@
             <div class='row' ng-show="!featuredContentDefined">
                 <div class='login-page-shadow col-md-12' style="border: 1px solid #3576BE; border-radius: 20px; height: 150px" >
 
-                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 1em;" ng-include="'home_search_bar.html'"></div>
+                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'home_search_bar.html'"></div>
 
                 </div>
             </div>
@@ -184,17 +182,24 @@
                 <div class='login-page-shadow col-7 col-xs-7 col-sm-7 col-md-7'
                      style="width: 56%; border: 1px solid #3576BE; border-radius: 20px; height: 150px;" >
 
-                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 1em;" ng-include="'home_search_bar.html'"></div>
+                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'home_search_bar.html'"></div>
 
                 </div>
 
                 <div class='login-page-shadow col-5 col-xs-5 col-sm-5 col-md-5 pull-right'
                      style="width: 43%; border: 1px solid #3576BE; border-radius: 20px; padding-left: 2px; padding-right: 2px; height: 150px;">
 
+
+                    <legend class='centerFeaturedCollection' style="color: #3576BE; border: none; margin-bottom: 7px; padding-top: 5px">Featured Content</legend>
+
+<!--
+                    <legend style="color:blue;font-weight:bold;">General Information</legend>
+-->
+<!--
                     <div class='centerFeaturedCollection' style="color: #3576BE;">
                         <h4 style="margin-bottom: 1px; z-index: 10">Featured Content</h4>
                     </div>
-
+-->
                     <!-- the code below is taken from https://angular-ui.github.io/bootstrap/ -->
                     <!-- https://www.jquery-az.com/bootstrap-carousel-5-single-multiple-horizontal-and-vertical-sliding-demos/ -->
                     <!-- https://www.jquery-az.com/boots/demo.php?ex=8.0_3 -->
@@ -208,6 +213,7 @@
                         </div>
                     </div>
 
+
                 </div>
             </div>
 
@@ -216,25 +222,13 @@
 
                     <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:36em;">
 
-
                         <div ng-repeat="item in mainContent">
 
                              <div class='{{mainContentClass}}'>
-
-<!--
-                                    <span ng-bind-html="item.title"></span>
-                                    <p ng-bind-html="item.content" class="mainArea"></p>
-                                    <a ng-href="{{item.href}}" target="_blank"> more ...</a>
--->
-
-<!--
-                                    <h3 style='color:#428bca;' ng-bind-html="item.title"></h3>
--->
                                      <p class="mainAreaLandingPage" style="height:32em;">
                                         <ng-include src="item.content""></ng-include>
                                      </p>
                                     <a ng-href="{{item.href}}" target="_blank"> more ...</a>
-
                             </div>
 
                         </div>
@@ -374,38 +368,44 @@
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
               ng-submit="main.search()">
 
-            <table class="table">
+            <table class="table" >
 
                 <div class="input-group">
 
                     <tr>
-
                         <!-- #adff2f -->
-                        <td bgcolor="white" width="15%;" style="border:hidden;">
+                        <td bgcolor="white" width="15%;" style="border:hidden">
 
                             <div class="row">
-                                <button type="button" class="btn btn-sm btn-primary search-examples-button"
+                                <button type="button" class="btn btn-primary search-examples-button"
                                         ng-click="main.browse(); closeModal()">
                                     Browse
                                 </button>
                             </div>
 
                             <div class="row">
-                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle search-examples-button"
+                                <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
                                         data-toggle="dropdown">
-                                    Featured Content
+                                    Featured Content <span class="caret"></span>
                                 </button>
+
+                                <ul class="dropdown-menu" role="menu">
+                                    <li class="AlignLeft" style="padding-left: 5px;"
+                                        ng-repeat="item in slides">
+                                        <a ng-href="item.link">
+                                            {{item.text}}
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
 
                             <div class="row">
-                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle search-examples-button"
+                                <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
                                         data-toggle="dropdown">
                                     Examples <span class="caret"></span>
                                 </button>
 
-
                                 <ul class="dropdown-menu" role="menu">
-
                                     <li class="AlignLeft" style="padding-left: 5px;"
                                         ng-repeat="item in main.searchNetworksExamples">
                                         <a ng-click="main.runSearchExample(item); closeModal()">
@@ -426,7 +426,7 @@
                         </td>
 
                         <!-- #87cefa -->
-                        <td bgcolor="white" width="85%" style="border:hidden;">
+                        <td bgcolor="white" width="85%" style="border:hidden">
                             <div class='row' style="margin-left: 1em; margin-right: 0">
                                 <div class="input-group">
 
@@ -484,3 +484,5 @@
         </form>
     </div>
 </script>
+
+</div>

@@ -5,43 +5,57 @@ var featuredContent = {
     items : [
         {
             // aaa aaa
-            account: 'user',
-            UUID: '0291083e-add4-11e6-b140-06832d634f41'
+            'account': 'user',
+            'link': 'http://dev.ndexbio.org/v2/user/0291083e-add4-11e6-b140-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/user/0291083e-add4-11e6-b140-06832d634f41'
+
         } ,
         {
             // Bill Gates
-            account: 'user',
-            UUID: 'cb2899c8-adda-11e6-913c-06832d634f41'
+            'account': 'user',
+            'link': 'http://dev.ndexbio.org/v2/user/cb2899c8-adda-11e6-913c-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/user/cb2899c8-adda-11e6-913c-06832d634f41'
         },
         {
             // Center for Cancer Systems Biology
-            UUID: '0978d212-a2d7-11e6-94ac-06832d634f41',
-            account: 'user'
+            'account': 'user',
+            'link': 'http://dev.ndexbio.org/v2/user/0978d212-a2d7-11e6-94ac-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/user/0978d212-a2d7-11e6-94ac-06832d634f41'
         },
         {
             // Max Paine
-            UUID: '286fa4a0-7062-11e6-9178-06832d634f41',
-            account: 'user'
+            'account': 'user',
+            'link': 'http://dev.ndexbio.org/v2/user/286fa4a0-7062-11e6-9178-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/user/286fa4a0-7062-11e6-9178-06832d634f41'
+
         },
         {
             // evil league of evil
-            UUID: 'cce4dcb3-af98-11e7-b51d-06832d634f41',
-            account: 'group'
+            'account': 'group',
+            'link': 'http://dev.ndexbio.org/v2/group/cce4dcb3-af98-11e7-b51d-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/group/cce4dcb3-af98-11e7-b51d-06832d634f41'
+
         },
         {
             // vvv vvv
-            UUID: 'dd4de550-90a2-11e6-80cf-06832d634f41',
-            account: 'user'
+            'account': 'user',
+            'link': 'http://dev.ndexbio.org/v2/user/dd4de550-90a2-11e6-80cf-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/user/dd4de550-90a2-11e6-80cf-06832d634f41'
+
         },
         {
             // Doctor Horrible
-            UUID: '662d2d42-7d24-11e6-9265-06832d634f41',
-            account: 'user'
+            'account': 'user',
+            'link': 'http://dev.ndexbio.org/v2/user/662d2d42-7d24-11e6-9265-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/user/662d2d42-7d24-11e6-9265-06832d634f41'
+
         },
         {
             // Center for Computational Biology & Bioinformatics
-            UUID: 'c7e2c763-4652-11e7-96f7-06832d634f41',
-            account: 'user'
+            'account': 'user',
+            'link': 'http://dev.ndexbio.org/v2/user/c7e2c763-4652-11e7-96f7-06832d634f41',
+            'userLink': 'http://dev.ndexbio.org/#/user/c7e2c763-4652-11e7-96f7-06832d634f41'
+
         }
     ]
 }

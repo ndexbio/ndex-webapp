@@ -405,6 +405,12 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.getObjectViaEndPointV2 = function (endPoint, successHandler, errorHandler) {
+
+                var config = ndexConfigs.getGetConfigWithEndPointV2(endPoint, null);
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
             factory.addOrUpdateGroupMemberV2 = function (groupId, userId, type, successHandler, errorHandler) {
                 // Server API: Add or Update a Group Member
                 // /group/{groupid}/membership?userid={userid}&type={GROUPADMIN|MEMBER}
@@ -1889,6 +1895,23 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', function ( ndexUtility) {
         if (queryArgs) {
             config.data = JSON.stringify(queryArgs);
         }
+        return config;
+    };
+
+    factory.getGetConfigWithEndPointV2 = function (endPoint, queryArgs) {
+        var config = {
+            method: 'GET',
+            url: endPoint,
+            headers: {
+                'NDEx-application': window.navigator.ndexServerVersion
+            }
+        };
+
+        setAuthorizationHeader(config);
+        if (queryArgs) {
+            config.data = JSON.stringify(queryArgs);
+        }
+
         return config;
     };
 

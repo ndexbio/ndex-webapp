@@ -12,9 +12,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         });
 
-
-
-        $(document).ready(function(){
+        $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
         });
 
@@ -47,7 +45,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
 
-        $scope.showFooter = false;
+        $scope.showFooter = true;
 
         $scope.main = {};
         $scope.main.ndexServerVersion = null;
@@ -76,8 +74,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         };
 
-        $scope.featuredContentDefined =
-            window.featuredContent && window.featuredContent.hasOwnProperty('items') && window.featuredContent.items.length > 0;
+        $scope.featuredContentDefined = false;
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
@@ -1247,163 +1244,290 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);
 
 
-        var fillInFeaturedContentChannel = function() {
+        var fillInTopMenu = function() {
+            var script = document.createElement('script');
+            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'topmenu.js';
+            document.body.appendChild(script);
 
-            $scope.carouselInterval =  window.featuredContent.scrollIntervalInMs;
-            $scope.noWrapSlides = false;
+            var topMenu = $scope.topMenu = [];
 
-            if (typeof $rootScope.activeSlideNo === 'undefined') {
-                $rootScope.activeSlideNo = 0;
-            }
-            $scope.active = $rootScope.activeSlideNo;
+            $scope.$watch(
+                function watchTopMenu(scope) {
+                    return window.topMenu;
+                },
+                function processTopMenu(newValue, oldValue) {
 
+                    _.forEach(window.topMenu, function (menuItem) {
 
-            var slides = $scope.slides = [];
-            var currIndex = 0;
+                        var label = menuItem.label;
+                        var href = menuItem.href;
+                        var showWarning = (typeof menuItem.showWarning === 'undefined') ? false : menuItem.showWarning;
+                        var warning = showWarning ? menuItem.warning : null;
 
-            var featuredGroupsUUIDs = _.map(_.filter(window.featuredContent.items, ['account', 'group']), 'UUID');
-            var featuredUsersUUIDs  = _.map(_.filter(window.featuredContent.items, ['account', 'user']), 'UUID');
-
-            var featuredGroupsDefined = featuredGroupsUUIDs.length > 0;
-            var featuredUsersDefined  = featuredUsersUUIDs.length  > 0;
-
-            if (featuredGroupsDefined) {
-                ndexService.getGroupsByUUIDsV2(featuredGroupsUUIDs)
-                    .success(
-                        function (groupList) {
-                            $scope.featuredGroupsReceived = groupList;
-                        })
-                    .error(
-                        function(error) {
-                            $scope.featuredGroupsReceived = [];
-                            console.log("unable to get featured groups");
-                        }
-                    );
-            } else {
-                $scope.featuredGroupsReceived = [];
-            }
-
-            if (featuredUsersDefined) {
-                ndexService.getUsersByUUIDsV2(featuredUsersUUIDs)
-                    .success(
-                        function (userList) {
-                            $scope.featuredUsersReceived = userList;
-                        })
-                    .error(
-                        function() {
-                            $scope.featuredUsersReceived = [];
-                            console.log("unable to get featured users");
-                        }
-                    );
-            } else {
-                $scope.featuredUsersReceived = [];
-            }
-
-            $scope.saveSlideId = function(slideIndex) {
-                $rootScope.activeSlideNo = slideIndex;
-            }
-
-            $scope.$watchGroup(['featuredGroupsReceived', 'featuredUsersReceived'],
-                function () {
-                    if ($scope.featuredGroupsReceived && $scope.featuredUsersReceived) {
-
-                        _.forEach(window.featuredContent.items, function(featuredItem) {
-
-                            var type = featuredItem.account;
-                            var uuid = featuredItem.UUID;
-
-                            var item;
-
-                            if ('group' === type) {
-                                item = _.find($scope.featuredGroupsReceived, {'externalId':uuid});
-
-                            } else if ('user' === type) {
-                                item = _.find($scope.featuredUsersReceived, {'externalId': uuid});
-                            }
-
-                            var link = '#' + type + '/' + uuid;
-
-                            slides.push({
-                                image: item.image,
-                                text: item.description,
-                                link: link,
-                                id: currIndex++
-                            });
-
+                        topMenu.push({
+                            'label': label,
+                            'href': href,
+                            'showWarning': showWarning,
+                            'warning': warning
                         });
-                    }
-                }, true
+                    });
+                }
             );
         };
 
-        if ($scope.featuredContentDefined) {
+        fillInTopMenu();
+
+
+        var fillInFeaturedContentChannel = function() {
+
+            var script = document.createElement('script');
+
+            //script.src = window.ndexSettings.landingPageConfigServer + '/' + 'featured.js';
+
+            script.src = 'landing_page_content/v2_4_0/featured.js';
+            document.body.appendChild(script);
+
+
+
+            //window.featuredContent && window.featuredContent.hasOwnProperty('items') && window.featuredContent.items.length > 0;
+            $scope.featuredContentDefined = false;
+
+            $scope.$watch(
+                function watchFeaturedContent(scope) {
+                    return window.featuredContent;
+                },
+                function processFeaturedContent(newValue, oldValue) {
+
+                    $scope.carouselInterval =  window.featuredContent.scrollIntervalInMs;
+                    $scope.noWrapSlides = false;
+
+                    if (typeof $rootScope.activeSlideNo === 'undefined') {
+                        $rootScope.activeSlideNo = 0;
+                    }
+                    $scope.active = $rootScope.activeSlideNo;
+
+                    var slides = $scope.slides = [];
+                    var currIndex = 0;
+
+
+                    /* remove this once http://staging.ndexbio.org/landing_page_content/v2_4_0/featured.js is fixed */
+                    _.forEach(window.featuredContent.items, function(item) {
+                        item.link = item.link.replace('#', 'v2');
+                    });
+                    /* remove this once http://staging.ndexbio.org/landing_page_content/v2_4_0/featured.js is fixed */
+
+
+                    var featuredGroupsURLs = _.map(_.filter(window.featuredContent.items, ['account', 'group']), 'link');
+                    var featuredUsersURLs  = _.map(_.filter(window.featuredContent.items, ['account', 'user']), 'link');
+
+
+                    var featuredGroupsDefined = featuredGroupsURLs.length;
+                    var featuredUsersDefined  = featuredUsersURLs.length;
+
+                    var featuredGroupsReceivedCounter = 0;
+                    var featuredUsersReceivedCounter  = 0;
+
+                    var featuredGroupsReceived = [];
+                    var featuredUsersReceived  = [];
+
+
+                    if (featuredGroupsDefined > 0) {
+
+                        _.forEach(featuredGroupsURLs, function (featuredGroupURL) {
+
+                            ndexService.getObjectViaEndPointV2(featuredGroupURL,
+                                function (groupObj) {
+
+                                    featuredGroupsReceived.push(groupObj);
+                                    featuredGroupsReceivedCounter += 1;
+                                    if (featuredGroupsReceivedCounter === featuredGroupsDefined) {
+                                        $scope.featuredGroupsReceived = featuredGroupsReceived;
+                                    }
+                                },
+                                function (error) {
+
+                                    console.log('unable to get featured groups');
+                                    featuredGroupsReceivedCounter += 1;
+                                    if (featuredGroupsReceivedCounter === featuredGroupsDefined) {
+                                        $scope.featuredGroupsReceived = featuredGroupsReceived;
+                                    }
+                                });
+                        });
+
+                    } else {
+                        $scope.featuredGroupsReceived = [];
+                    }
+
+
+                    if (featuredUsersDefined > 0) {
+
+                        _.forEach(featuredUsersURLs, function (featuredUserURL) {
+
+                            ndexService.getObjectViaEndPointV2(featuredUserURL,
+                                function (userObj) {
+
+                                    featuredUsersReceived.push(userObj);
+                                    featuredUsersReceivedCounter += 1;
+                                    if (featuredUsersReceivedCounter === featuredUsersDefined) {
+                                        $scope.featuredUsersReceived = featuredUsersReceived;
+                                    }
+                                },
+                                function (error) {
+
+                                    console.log('unable to get featured user');
+                                    featuredUsersReceivedCounter += 1;
+                                    if (featuredUsersReceivedCounter === featuredUsersDefined) {
+                                        $scope.featuredUsersReceived = featuredUsersReceived;
+                                    }
+                                });
+                        });
+
+                    } else {
+                        $scope.featuredUsersReceived = [];
+                    }
+
+
+                    $scope.saveSlideId = function(slideIndex) {
+                        $rootScope.activeSlideNo = slideIndex;
+                    }
+
+                    $scope.$watchGroup(['featuredGroupsReceived', 'featuredUsersReceived'],
+                        function () {
+                            if ($scope.featuredGroupsReceived && $scope.featuredUsersReceived) {
+                                _.forEach(window.featuredContent.items, function(featuredItem) {
+
+                                    var type = featuredItem.account;
+                                    //var link = featuredItem.link;
+                                    var uuidArray = featuredItem.link.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+
+
+                                    if (!Array.isArray(uuidArray) || uuidArray.length !== 1) {
+                                        return;
+                                    }
+
+                                    var uuid = uuidArray[0];
+                                    var item;
+
+                                    if ('group' === type) {
+                                        item = _.find($scope.featuredGroupsReceived, {'externalId':uuid});
+
+                                    } else if ('user' === type) {
+                                        item = _.find($scope.featuredUsersReceived, {'externalId': uuid});
+                                    }
+
+                                    slides.push({
+                                        image: item.image,
+                                        text: item.description,
+                                        link: featuredItem.userLink,
+                                        id:   currIndex++
+                                    });
+
+                                });
+
+                                $scope.featuredContentDefined = slides.length > 0;
+                            }
+
+                        }, true
+                    );
+                }
+            );
+
+
+
+
+        };
+
+        //if ($scope.featuredContentDefined) {
             fillInFeaturedContentChannel();
-        }
+       // }
 
 
         var fillInMainChannel = function() {
 
-            while (window.mainContent.length > 4) {
-                window.mainContent.pop();
-            }
-
-            //$scope.mainContent = window.mainContent;
-            var noOfMainContentItems = window.mainContent.length;
-
-
-            var mainContentClass = 'col-12 col-xs-12 col-sm-12 col-md-12';
-
-            if (2 === noOfMainContentItems) {
-                mainContentClass = 'col-6 col-xs-6 col-sm-6 col-md-6';
-
-            } else if (3 === noOfMainContentItems) {
-                mainContentClass = 'col-4 col-xs-4 col-sm-4 col-md-4';
-
-            } else if (4 === noOfMainContentItems) {
-                mainContentClass = 'col-3 col-xs-3 col-sm-3 col-md-3';
-            }
-
-            $scope.mainContentClass = mainContentClass;
+            var script = document.createElement('script');
+            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'main.js';
+            document.body.appendChild(script);
 
             var mainContent = $scope.mainContent = [];
 
-            _.forEach(window.mainContent, function(mainItem) {
+            $scope.$watch(
+                function watchMainContent(scope) {
+                    return window.mainContent;
+                },
+                function processMainContent(newValue, oldValue) {
 
-                var title   = mainItem.title;
-                var content = mainItem.content;
-                var href    = mainItem.href;
+                    while (window.mainContent.length > 4) {
+                        window.mainContent.pop();
+                    }
 
-                mainContent.push({
-                    'title': title,
-                    'content': content,
-                    'href' : href
-                });
-            });
+                    //$scope.mainContent = window.mainContent;
+                    var noOfMainContentItems = window.mainContent.length;
 
+
+                    var mainContentClass = 'col-12 col-xs-12 col-sm-12 col-md-12';
+
+                    if (2 === noOfMainContentItems) {
+                        mainContentClass = 'col-6 col-xs-6 col-sm-6 col-md-6';
+
+                    } else if (3 === noOfMainContentItems) {
+                        mainContentClass = 'col-4 col-xs-4 col-sm-4 col-md-4';
+
+                    } else if (4 === noOfMainContentItems) {
+                        mainContentClass = 'col-3 col-xs-3 col-sm-3 col-md-3';
+                    }
+
+                    $scope.mainContentClass = mainContentClass;
+
+
+                    _.forEach(window.mainContent, function(mainItem) {
+
+                        var title   = mainItem.title;
+                        var content = mainItem.content;
+                        var href    = mainItem.href;
+
+                        mainContent.push({
+                            'title': title,
+                            'content': content,
+                            'href' : href
+                        });
+                    });
+                }
+            );
         };
 
         fillInMainChannel();
 
 
+        $scope.logos = [];
 
         var fillInLogosChannel = function() {
 
-            var noOfLogosItems = window.logos.length;
+            var script = document.createElement('script');
+            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'logos.js';
+            document.body.appendChild(script);
 
             var logos = $scope.logos = [];
 
-            _.forEach(window.logos, function(logo) {
+            $scope.$watch(
+                function watchLogos(scope) {
+                    return window.logos;
+                },
+                function processLogos(newValue, oldValue) {
 
-                var image = 'landing_page_content/' + window.ndexSettings.version + '/' + logo.image;
-                var title = logo.title;
-                var href  = logo.href;
+                    _.forEach(window.logos, function(logo) {
 
-                logos.push({
-                    'image': image,
-                    'title': title,
-                    'href' : href
-                });
-            });
+                        var image = 'landing_page_content/' + window.ndexSettings.version + '/' + logo.image;
+                        var title = logo.title;
+                        var href  = logo.href;
+
+                        logos.push({
+                            'image': image,
+                            'title': title,
+                            'href' : href
+                        });
+                    });
+                }
+            );
         };
 
         $scope.logosDefined = function() {
@@ -1412,4 +1536,35 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         fillInLogosChannel();
 
+
+        var fillInFooter = function() {
+
+            var script = document.createElement('script');
+            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'footer.js';
+            document.body.appendChild(script);
+
+
+            var footer = $scope.footerNav = [];
+
+            $scope.$watch(
+                function watchFooterMenu(scope) {
+                    return window.footerNav;
+                },
+                function processFooterMenu(newValue, oldValue) {
+
+                    _.forEach(window.footerNav, function(footerItem) {
+
+                        var label = footerItem.label;
+                        var href  = (typeof footerItem.href === 'undefined') ?  '' : footerItem.href;
+
+                        footer.push({
+                            'label': label,
+                            'href' : href,
+                        });
+                    });
+                }
+            );
+        };
+
+        fillInFooter();
     }]);
