@@ -1288,9 +1288,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             document.body.appendChild(script);
 
 
-
-            //window.featuredContent && window.featuredContent.hasOwnProperty('items') && window.featuredContent.items.length > 0;
             $scope.featuredContentDefined = false;
+
+            $scope.featuredContentDropDown = [];
 
             $scope.$watch(
                 function watchFeaturedContent(scope) {
@@ -1407,12 +1407,15 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                     var uuid = uuidArray[0];
                                     var item;
+                                    var itemDescriptionForDropDown;
 
                                     if ('group' === type) {
                                         item = _.find($scope.featuredGroupsReceived, {'externalId':uuid});
+                                        itemDescriptionForDropDown = item.groupName;
 
                                     } else if ('user' === type) {
                                         item = _.find($scope.featuredUsersReceived, {'externalId': uuid});
+                                        itemDescriptionForDropDown = item.firstName + ' ' + item.lastName;
                                     }
 
                                     slides.push({
@@ -1421,6 +1424,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                         link: featuredItem.userLink,
                                         id:   currIndex++
                                     });
+
+                                    $scope.featuredContentDropDown.push(
+                                        {
+                                            'description': itemDescriptionForDropDown,
+                                            'href':       featuredItem.userLink
+                                        });
 
                                 });
 

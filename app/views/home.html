@@ -384,17 +384,17 @@
                             </div>
 
                             <div class="row">
-                                <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
+                                <button type="button"
+                                        ng-class="featuredContentDefined?
+                                            'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
                                         data-toggle="dropdown">
                                     Featured Content <span class="caret"></span>
                                 </button>
 
                                 <ul class="dropdown-menu" role="menu">
                                     <li class="AlignLeft" style="padding-left: 5px;"
-                                        ng-repeat="item in slides">
-                                        <a ng-href="item.link">
-                                            {{item.text}}
-                                        </a>
+                                        ng-repeat="item in featuredContentDropDown">
+                                        <a ng-href="{{item.href}}" ng-bind-html="item.description"></a>
                                     </li>
                                 </ul>
                             </div>
