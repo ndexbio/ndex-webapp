@@ -272,7 +272,7 @@
 
 <!-- Nav Bar -->
 <nav class="navbar navbar-fixed-top">
-    <div class="navbar-ndex navbar-ndex-top" style="padding-right: 20px;">
+    <div class="navbar-ndex navbar-ndex-top">
         <div class="navbar-header navbar-top-height">
 
             <button ng-show="(main.serverIsDown != null) && !main.serverIsDown"
@@ -280,8 +280,7 @@
                     class="navbar-toggle"
                     data-toggle="collapse"
                     data-target="#myNavbar"
-
-                    style="padding-top: 15px">
+                    style="padding-top: 21px">
 
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -291,25 +290,21 @@
 
             <a class="navbar-brand"
                ng-href="{{$location.path()}}"
-               ng-click="collapseHamburgerMenu(); redirectToCurrentServer()"
-               style="max-height: 65px; padding-top: 6px; padding-bottom: 0; margin-right: 0">
+               ng-click="collapseHamburgerMenu(); redirectToCurrentServer()">
 
                 <div id="hiddenElementId" style="
                     display: none;
-                    background-image: url('images/new_landing_page_logo.png');
+                    background-image: url('images/NDEx-horizontal-transparent.png');
                     background-repeat: no-repeat;
-                    background-position: 0px 10px;
-                    width: 120px;
-                    height: 65px;
-                    margin-left: 5px;
-                    margin-right: 0px;
-                    background-size: 120px 30px;">
+                    width: 185px;
+                    height: 55px;
+                    background-size: 185px 55px;">
                 </div>
             </a>
 
 
             <div class="ndexServerVersion"
-                 style="margin-left: 145px;  padding-top: 32px; height: 65px; width: 65px">
+                 style="margin-left: 175px;  padding-top: 42px; height: 65px; width: 65px">
                 <a id="ndexServerVersionId"
                     ng-href="{{linkToReleaseDocs}}"
                    target="release_tab"
@@ -327,7 +322,7 @@
 
             <!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
                 disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId1" class="nav navbar-nav navbar-left" style="display: none; padding-top: 6px"
+            <ul id="hiddenElementId1" class="nav navbar-nav navbar-left" style="display: none; padding-top: 14px"
                 ng-show="(main.serverIsDown != null) && !main.serverIsDown">
 
                 <li ng-repeat="item in topMenu">
@@ -340,7 +335,7 @@
 
             <!-- even though we use ng-show directives, we still set style display to none: in case third parties cookies are
                  disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId2" class="nav navbar-nav navbar-right" style="display: none; padding-top: 6px">
+            <ul id="hiddenElementId2" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
 
                 <li ng-show="main.loggedIn">
                     <a ng-click="collapseHamburgerMenu(); showSearchBar()">

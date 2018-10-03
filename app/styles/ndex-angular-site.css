@@ -288,7 +288,7 @@ textarea
  ******************************************************************************/
 
 .marginsForNGView {
-    margin-top: 10px;
+    margin-top: 20px;
     margin-left: 30px;
     margin-right: 30px;
 }
@@ -515,7 +515,7 @@ textarea
 
 
 .navbar-top-height {
-    height: 65px;
+    height: 75px;
 }
 
 
@@ -526,9 +526,9 @@ textarea
 
 @media (min-width: 1151px) {
     .login-button {
-        margin-right: 5px;
+        margin-right: 25px;
         margin-left: 10px;
-        margin-top: 10px;
+        margin-top: 7px;
     }
     .marginForCollapsedMode {
        margin-left: 0;

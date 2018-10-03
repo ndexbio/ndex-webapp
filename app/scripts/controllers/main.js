@@ -1281,10 +1281,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         var fillInFeaturedContentChannel = function() {
 
             var script = document.createElement('script');
-
-            //script.src = window.ndexSettings.landingPageConfigServer + '/' + 'featured.js';
-
-            script.src = 'landing_page_content/v2_4_0/featured.js';
+            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'featured.js';
+            //script.src = 'landing_page_content/v2_4_0/featured.js';
             document.body.appendChild(script);
 
 
