@@ -24,7 +24,8 @@
     "vis": "3.10.0",
     "eonasdan-bootstrap-datetimepicker": "4.17.47",
     "moment": "2.19.2",
-    "components-font-awesome": "^4.7.0"
+    "components-font-awesome": "^4.7.0",
+    "angular-slick": "^0.2.1"
   },
   "appPath": "app",
   "moduleName": "ndexApp",

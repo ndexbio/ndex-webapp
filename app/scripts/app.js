@@ -3,7 +3,8 @@
 var ndexApp = angular.module('ndexApp',
     ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp',//'ngDialog',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
-     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ui.grid.pagination', 'ngclipboard', 'textAngular', 'ngtweet', 'ngAnimate']);
+     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ui.grid.pagination',
+      'ngclipboard', 'textAngular', 'ngtweet', 'ngAnimate', 'slick']);
 
 ndexApp.filter('encodeURIComponent', function() {
     return window.encodeURIComponent;

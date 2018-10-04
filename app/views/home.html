@@ -99,25 +99,13 @@
         /*border: 1px solid white;*/
     }
     .logosStyle {
-        width: auto;
-
-        margin-right: 10px;
-        margin-left: 10px;
-
         transform: scale(0.75, 0.75);
         -ms-transform: scale(0.75, 0.75);
         -webkit-transform: scale(0.75, 0.75);
     }
 
     #logoContainer {
-        /*background-color: #aaa;*/
-        /*height: 8em;*/
-
         margin-top: 10px;
-
-        margin-left: 2em;
-        margin-right: 2em;
-        text-align: center;
         overflow: hidden;
     }
 
@@ -257,65 +245,27 @@
             <div ng-show="logosDefined()"
                     class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:110px; margin-top:1em">
 
-<!--
-                <div class="marquee">
-                    <p><b>HI THERE!</b></p>
-                </div>
---
-                <div class="marquee">
-                    <p><b>HI THERE!</b></p>
-                </div>
-
--->
-
                 <div id='logoContainer'>
+                    <slick ng-if="logosLoaded" init-onload="true"
+                           data="logosLoaded"
+                           settings="slickConfig"
+                           slides-to-show="8"
+                           slides-to-scroll="1"
+                           dots="false"
+                           variable-width="true"
+                           autoplay="true">
 
-                    <marquee>
-                        <span ng-repeat="logo in logos">
-                            <a ng-href="{{logo.href}}" target="_blank">
-
-                                <img class="logosStyle"
-                                     src="{{logo.image}}"
-                                     data-toggle="tooltip"
-                                     data-placement="right"
-                                     title="{{logo.title}}">
-                            </a>
-                        </span>
-                    </marquee>
-
+                            <div ng-repeat='logo in logos'>
+                                <a ng-href="{{logo.href}}" target="_blank">
+                                    <img class="logosStyle"
+                                         src="{{logo.image}}"
+                                         data-toggle="tooltip"
+                                         data-placement="right"
+                                         title="{{logo.title}}">
+                                </a>
+                            </div>
+                    </slick>
                 </div>
-
-<!--
-
-                <div id='logoContainer' class="marquee">
-
-                        <span ng-repeat="logo in logos">
-                            <a ng-href="{{logo.href}}" target="_blank">
-
-                                <img class="logosStyle"
-                                     src="{{logo.image}}"
-                                     data-toggle="tooltip"
-                                     title="{{logo.title}}">
-                            </a>
-                        </span>
-
-                </div>
-
-            </div>
-
-<!--
-            <div uib-carousel active="active" interval="carouselInterval*2" nowrap="noWrapSlides">
-                <span uib-slide ng-repeat="logo in logos" >
-                    <a ng-href="{{logo.link}}">
-                        <img ng-src="{{logo.image}}" class="slideImage">
-                        <div ng-bind-html="logo.text" class='featuredCollectionDescriptionArea'></div>
-                    </a>
-                </span>
-            </div>
--->
-
-
-
         </div>
     </div>
 </div>

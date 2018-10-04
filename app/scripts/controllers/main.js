@@ -26,6 +26,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             setTooltip('Copy the NDEx citation information to the clipboard');
         };
 
+        $scope.logosLoaded = false;
+
         //noinspection JSCheckFunctionSignatures
         var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
 
@@ -44,6 +46,20 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             myToolTips.tooltip();
         };
 
+        $scope.slickConfig = {
+            enabled: true,
+            autoplay: true,
+            draggable: false,
+            autoplaySpeed: 1000,
+            method: {},
+            initialSlide: 0,
+            event: {
+                beforeChange: function (event, slick, currentSlide, nextSlide) {
+                },
+                afterChange: function (event, slick, currentSlide, nextSlide) {
+                }
+            }
+        };
 
         $scope.showFooter = true;
 
@@ -1297,6 +1313,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 },
                 function processFeaturedContent(newValue, oldValue) {
 
+                    if (typeof window.featuredContent === 'undefined') {
+                        return;
+                    }
+
                     $scope.carouselInterval =  window.featuredContent.scrollIntervalInMs;
                     $scope.noWrapSlides = false;
 
@@ -1365,6 +1385,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                     var item = _.find($scope.featuredObjectsReceived, {'externalId':uuid});
                                     var itemDescriptionForDropDown;
 
+                                    if (typeof item === 'undefined') {
+                                        return;
+                                    }
+
                                     if (item.hasOwnProperty('groupName')) {
                                         itemDescriptionForDropDown = item.groupName;
 
@@ -1413,6 +1437,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     return window.mainContent;
                 },
                 function processMainContent(newValue, oldValue) {
+
+                    if (typeof window.mainContent === 'undefined') {
+                        return;
+                    }
 
                     while (window.mainContent.length > 4) {
                         window.mainContent.pop();
@@ -1472,6 +1500,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 },
                 function processLogos(newValue, oldValue) {
 
+                    if (typeof window.logos === 'undefined') {
+                        return;
+                    }
+
                     _.forEach(window.logos, function(logo) {
 
                         var image = 'landing_page_content/' + window.ndexSettings.version + '/' + logo.image;
@@ -1484,6 +1516,19 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                             'href' : href
                         });
                     });
+
+
+                    if (logos.length > 0) {
+                        $scope.logosLoaded = true;
+
+                        /*
+                        setTimeout(function ($scope) {
+                            $('slickId').slickGoTo(2);
+                        }, 10);
+                        */
+
+                    }
+
                 }
             );
         };
