@@ -375,6 +375,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     if (data.properties.ServerVersion) {
                         $scope.main.ndexServerVersion = data.properties.ServerVersion;
                         window.navigator.ndexServerVersion += data.properties.ServerVersion;
+                        document.getElementById('ndexServerVersionId').style.color = '#149FEC';
                     }
                 }
                 $scope.main.serverIsDown = false;
@@ -1307,120 +1308,75 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     var slides = $scope.slides = [];
                     var currIndex = 0;
 
+                    //var featuredGroupsURLs = _.map(_.filter(window.featuredContent.items, ['account', 'group']), 'link');
+                    //var featuredUsersURLs  = _.map(_.filter(window.featuredContent.items, ['account', 'user']), 'link');
+                    var featuredURLs  = _.map(window.featuredContent.items, 'link');
 
-                    /* remove this once http://staging.ndexbio.org/landing_page_content/v2_4_0/featured.js is fixed */
-                    _.forEach(window.featuredContent.items, function(item) {
-                        item.link = item.link.replace('#', 'v2');
-                    });
-                    /* remove this once http://staging.ndexbio.org/landing_page_content/v2_4_0/featured.js is fixed */
+                    var noOfFeaturedObjectsDefined   = featuredURLs.length;
+                    var noOfFeaturedObjectsRetrieved = 0;
 
+                    var featuredObjectsReceived = [];
 
-                    var featuredGroupsURLs = _.map(_.filter(window.featuredContent.items, ['account', 'group']), 'link');
-                    var featuredUsersURLs  = _.map(_.filter(window.featuredContent.items, ['account', 'user']), 'link');
+                    if (noOfFeaturedObjectsDefined > 0) {
 
+                        _.forEach(featuredURLs, function (featuredURL) {
 
-                    var featuredGroupsDefined = featuredGroupsURLs.length;
-                    var featuredUsersDefined  = featuredUsersURLs.length;
+                            ndexService.getObjectViaEndPointV2(featuredURL,
+                                function (featuredObject) {
 
-                    var featuredGroupsReceivedCounter = 0;
-                    var featuredUsersReceivedCounter  = 0;
+                                    featuredObjectsReceived.push(featuredObject);
 
-                    var featuredGroupsReceived = [];
-                    var featuredUsersReceived  = [];
+                                    noOfFeaturedObjectsRetrieved += 1;
 
-
-                    if (featuredGroupsDefined > 0) {
-
-                        _.forEach(featuredGroupsURLs, function (featuredGroupURL) {
-
-                            ndexService.getObjectViaEndPointV2(featuredGroupURL,
-                                function (groupObj) {
-
-                                    featuredGroupsReceived.push(groupObj);
-                                    featuredGroupsReceivedCounter += 1;
-                                    if (featuredGroupsReceivedCounter === featuredGroupsDefined) {
-                                        $scope.featuredGroupsReceived = featuredGroupsReceived;
+                                    if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
+                                        $scope.featuredObjectsReceived = featuredObjectsReceived;
                                     }
                                 },
                                 function (error) {
 
-                                    console.log('unable to get featured groups');
-                                    featuredGroupsReceivedCounter += 1;
-                                    if (featuredGroupsReceivedCounter === featuredGroupsDefined) {
-                                        $scope.featuredGroupsReceived = featuredGroupsReceived;
+                                    noOfFeaturedObjectsRetrieved += 1;
+
+                                    if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
+                                        $scope.featuredObjectsReceived = featuredObjectsReceived;
                                     }
                                 });
                         });
 
                     } else {
-                        $scope.featuredGroupsReceived = [];
+                        $scope.featuredObjectsReceived = [];
                     }
-
-
-                    if (featuredUsersDefined > 0) {
-
-                        _.forEach(featuredUsersURLs, function (featuredUserURL) {
-
-                            ndexService.getObjectViaEndPointV2(featuredUserURL,
-                                function (userObj) {
-
-                                    featuredUsersReceived.push(userObj);
-                                    featuredUsersReceivedCounter += 1;
-                                    if (featuredUsersReceivedCounter === featuredUsersDefined) {
-                                        $scope.featuredUsersReceived = featuredUsersReceived;
-                                    }
-                                },
-                                function (error) {
-
-                                    console.log('unable to get featured user');
-                                    featuredUsersReceivedCounter += 1;
-                                    if (featuredUsersReceivedCounter === featuredUsersDefined) {
-                                        $scope.featuredUsersReceived = featuredUsersReceived;
-                                    }
-                                });
-                        });
-
-                    } else {
-                        $scope.featuredUsersReceived = [];
-                    }
-
 
                     $scope.saveSlideId = function(slideIndex) {
                         $rootScope.activeSlideNo = slideIndex;
                     }
 
-                    $scope.$watchGroup(['featuredGroupsReceived', 'featuredUsersReceived'],
+                    $scope.$watchGroup(['featuredObjectsReceived'],
                         function () {
-                            if ($scope.featuredGroupsReceived && $scope.featuredUsersReceived) {
+                            if ($scope.featuredObjectsReceived) {
                                 _.forEach(window.featuredContent.items, function(featuredItem) {
 
-                                    var type = featuredItem.account;
-                                    //var link = featuredItem.link;
                                     var uuidArray = featuredItem.link.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-
 
                                     if (!Array.isArray(uuidArray) || uuidArray.length !== 1) {
                                         return;
                                     }
 
                                     var uuid = uuidArray[0];
-                                    var item;
+                                    var item = _.find($scope.featuredObjectsReceived, {'externalId':uuid});
                                     var itemDescriptionForDropDown;
 
-                                    if ('group' === type) {
-                                        item = _.find($scope.featuredGroupsReceived, {'externalId':uuid});
+                                    if (item.hasOwnProperty('groupName')) {
                                         itemDescriptionForDropDown = item.groupName;
 
-                                    } else if ('user' === type) {
-                                        item = _.find($scope.featuredUsersReceived, {'externalId': uuid});
+                                    } else if (item.hasOwnProperty('userName')) {
                                         itemDescriptionForDropDown = item.firstName + ' ' + item.lastName;
                                     }
 
                                     slides.push({
                                         image: item.image,
-                                        text: item.description,
-                                        link: featuredItem.userLink,
-                                        id:   currIndex++
+                                        text:  item.description,
+                                        link:  featuredItem.userLink,
+                                        id:    currIndex++
                                     });
 
                                     $scope.featuredContentDropDown.push(
@@ -1428,7 +1384,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                             'description': itemDescriptionForDropDown,
                                             'href':       featuredItem.userLink
                                         });
-
                                 });
 
                                 $scope.featuredContentDefined = slides.length > 0;
@@ -1439,14 +1394,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 }
             );
 
-
-
-
         };
 
-        //if ($scope.featuredContentDefined) {
-            fillInFeaturedContentChannel();
-       // }
+
+        fillInFeaturedContentChannel();
 
 
         var fillInMainChannel = function() {
