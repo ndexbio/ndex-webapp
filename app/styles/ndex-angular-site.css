@@ -530,11 +530,27 @@ textarea
         margin-left: 10px;
         margin-top: 7px;
     }
-    .marginForCollapsedMode {
-       margin-left: 0;
+    /*
+    .container-fluid {
+       padding-left: 0;
+    }
+    */
+}
+/*
+@media (min-width: 1800px) {
+    .login-button {
+        margin-right: 0px;
+        margin-left: 0px;
+        margin-top: 7px;
+    }
+    .navbar-ndex-logo-margin {
+        margin-left: 0px;
     }
 }
-
+*/
+.navbar-ndex-logo-margin {
+    margin-left: 35px;
+}
 
 .ndexServerVersion {
     font-size: 14px;

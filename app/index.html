@@ -279,7 +279,12 @@
 <!-- Nav Bar -->
 <nav class="navbar navbar-fixed-top">
     <div class="navbar-ndex navbar-ndex-top">
-        <div class="navbar-header navbar-top-height">
+
+        <!--
+        <div class="container-fluid" style="width:100%; max-width: 1800px; min-width: 1100px;">
+-->
+
+        <div class="navbar-header navbar-top-height navbar-ndex-logo-margin">
 
             <button ng-show="(main.serverIsDown != null) && !main.serverIsDown"
                     type="button"
@@ -295,22 +300,23 @@
             </button>
 
             <a class="navbar-brand"
+               style="padding: 5px 0 5px 0px"
                ng-href="{{$location.path()}}"
                ng-click="collapseHamburgerMenu(); redirectToCurrentServer()">
 
                 <div id="hiddenElementId" style="
                     display: none;
-                    background-image: url('images/NDEx-horizontal-transparent.png');
+                    background-image: url('images/new_landing_page_logo.png');
                     background-repeat: no-repeat;
-                    width: 185px;
-                    height: 55px;
-                    background-size: 185px 55px;">
+                    width: 310px;
+                    height: 65px;
+                    background-size: 310px 65px;">
                 </div>
             </a>
 
 
             <div class="ndexServerVersion"
-                 style="margin-left: 175px;  padding-top: 42px; height: 65px; width: 65px;">
+                 style="margin-left: 320px;  padding-top: 42px; height: 65px; width: 65px;">
                 <a id="ndexServerVersionId"
                    style='color: black'
                     ng-href="{{linkToReleaseDocs}}"
@@ -390,7 +396,6 @@
             </ul>
 
         </div>
-
     </div>
 
 </nav>
