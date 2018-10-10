@@ -1601,5 +1601,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         });
 
-
+        // when navigating away from this page, close right nav bar if it is opened
+        $scope.$on('$locationChangeStart', function(){
+            hideRightNavBar();
+        });
     }]);
