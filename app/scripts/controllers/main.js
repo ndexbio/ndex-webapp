@@ -400,6 +400,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 document.getElementById('hiddenElementId1').style.display = '';
                 document.getElementById('hiddenElementId2').style.display = '';
                 document.getElementById('hiddenElementId3').style.display = '';
+
+                document.getElementById('hiddenElementId4').style.display = '';
+                document.getElementById('hiddenElementId5').style.display = '';
             },
             function() {
                 $scope.main.serverIsDown = true;
@@ -409,6 +412,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 document.getElementById('hiddenElementId1').style.display = '';
                 document.getElementById('hiddenElementId2').style.display = '';
                 document.getElementById('hiddenElementId3').style.display = '';
+
+                document.getElementById('hiddenElementId4').style.display = '';
+                document.getElementById('hiddenElementId5').style.display = '';
 
                 // this will remove (hide) NDEx logo from the top left in the Navigation Bar
                 document.getElementById('hiddenElementId').style.background  = 'transparent';
@@ -1570,4 +1576,30 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         fillInFooter();
+
+        $scope.collapsedMenuOpened = false;
+
+        var hideRightNavBar = function() {
+            var myNavBarElement =  document.getElementById('myNavbar1');
+            $scope.collapsedMenuOpened  = false;
+            myNavBarElement.style.width = '0';
+        };
+        var showRightNavBar = function() {
+            var myNavBarElement =  document.getElementById('myNavbar1');
+            $scope.collapsedMenuOpened  = true;
+            myNavBarElement.style.width = '250px';
+        };
+
+        $scope.switchNav = function(event) {
+            event.stopPropagation();
+            return $scope.collapsedMenuOpened ? hideRightNavBar() : showRightNavBar();
+        };
+
+        window.addEventListener('resize', function() {
+            if ($(window).width() >= 1151) {
+                hideRightNavBar();
+            }
+        });
+
+
     }]);

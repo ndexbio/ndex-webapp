@@ -279,8 +279,7 @@
 <!-- Nav Bar -->
 <nav class="navbar navbar-fixed-top">
     <div class="navbar-ndex navbar-ndex-top">
-
-        <!--
+<!--
         <div class="container-fluid" style="width:100%; max-width: 1800px; min-width: 1100px;">
 -->
 
@@ -291,6 +290,7 @@
                     class="navbar-toggle"
                     data-toggle="collapse"
                     data-target="#myNavbar"
+                    ng-click="switchNav($event)"
                     style="padding-top: 21px">
 
                 <span class="sr-only">Toggle navigation</span>
@@ -314,7 +314,6 @@
                 </div>
             </a>
 
-
             <div class="ndexServerVersion"
                  style="margin-left: 320px;  padding-top: 42px; height: 65px; width: 65px;">
                 <a id="ndexServerVersionId"
@@ -326,10 +325,7 @@
                    data-placement="bottom"> v{{main.ndexServerVersion}}
                 </a>
             </div>
-
-
         </div>
-
 
         <div class="navbar-collapse collapse" id="myNavbar">
 
@@ -388,6 +384,73 @@
                 <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
                     <button type="button" class="btn btn-primary login-button"
                        ng-click="collapseHamburgerMenu();
+                             main.showSignInSignUpOptions()">
+                        Login/Register
+                    </button>
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div class="sidenav" id="myNavbar1">
+
+            <!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
+                disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
+            <ul id="hiddenElementId4" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px"
+                ng-show="(main.serverIsDown != null) && !main.serverIsDown">
+
+                <li ng-repeat="item in topMenu">
+                    <a ng-href="{{$location.path()}}"
+                       ng-click="switchNav($event); redirectToExternalLink(item)">
+                        {{item.label}}
+                    </a>
+                </li>
+            </ul>
+
+            <!-- even though we use ng-show directives, we still set style display to none: in case third parties cookies are
+                 disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
+            <ul id="hiddenElementId5" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px">
+
+                <li ng-show="main.loggedIn">
+                    <a ng-click="switchNav($event); showSearchBar()">
+                        <div style="
+                            background-image: url('images/search-icon.png');
+                            margin-top: -5px;
+                            margin-bottom: -5px;
+                            width: 30px;
+                            height: 30px;
+                            background-size: 30px 30px;"
+                             class="marginForCollapsedMode">
+                        </div>
+                    </a>
+                </li>
+
+
+                <li ng-show="main.loggedIn">
+                    <a ng-click="switchNav($event); main.goToCurrentUser()"
+                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
+
+                        <img src="images/home.png"
+                             style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
+                             class="marginForCollapsedMode">
+                        &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
+                    </a>
+                </li>
+
+                <li ng-show="main.loggedIn">
+                    <button type="button" class="btn btn-primary login-button"
+                            ng-click="switchNav($event);
+                            main.signout()">
+                        Logout
+                    </button>
+                </li>
+
+
+                <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
+                    <button type="button" class="btn btn-primary login-button"
+                            ng-click="switchNav($event);
                              main.showSignInSignUpOptions()">
                         Login/Register
                     </button>

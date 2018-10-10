@@ -530,12 +530,9 @@ textarea
         margin-left: 10px;
         margin-top: 7px;
     }
-    /*
-    .container-fluid {
-       padding-left: 0;
-    }
-    */
 }
+
+
 /*
 @media (min-width: 1800px) {
     .login-button {
@@ -680,13 +677,19 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
 
     .login-button {
         margin-right: 5px;
-        margin-left: 25px;
+        margin-left: 15px;
         margin-top: 8px;
         margin-bottom: 10px;
     }
+    /*
     .marginForCollapsedMode {
-        margin-left: 15px;
+        margin-left: 0;
     }
+    #hiddenElementId4 {
+        width: 0;
+    }
+    */
+
 }
 
 .ndex-search-control > a {
@@ -1422,36 +1425,52 @@ span.glyphicon-refresh {
 
 
 /* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sidenav_right */
-/*
 .sidenav {
-    height: 100%;
+    height: auto;
     width: 0;
     position: fixed;
     z-index: 1;
-    top: 0;
-    right: 0;
-    background-color: #111;
+    top: 75px;
+    background-color: #222;
     overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 60px;
+    transition: 0.3s;
+    right: 0
 }
-
 .sidenav a {
-    padding: 8px 8px 8px 32px;
+    /*padding: 8px 8px 8px 32px;*/
     text-decoration: none;
-    color: #818181;
     display: block;
     transition: 0.3s;
 }
-
 .sidenav a:hover {
     color: #f1f1f1;
 }
 
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    margin-left: 50px;
+
+@media screen and (max-width:767px) {
+    .sidenav a {
+        margin-left: 15px;
+    }
+    .login-button {
+        margin-left: 25px;
+        margin-top: 8px;
+        margin-bottom: 2px;
+    }
+}
+
+
+
+
+/*
+body   { background-color: #F60; }
+
+/* Tablet targetted size *
+@media screen and (min-width:768px) and (max-width:1024px) {
+    body   { background-color: #0F0 }
+}
+
+/* Desktop size *
+@media screen and (min-width:1025px) {
+    body   { background-color: #06F }
 }
 */
