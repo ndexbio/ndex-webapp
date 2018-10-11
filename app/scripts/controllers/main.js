@@ -1474,7 +1474,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     _.forEach(window.mainContent, function(mainItem) {
 
                         var title   = mainItem.title;
-                        var content = mainItem.content;
+                        var content =
+                            window.ndexSettings.landingPageConfigServer + '/'+ mainItem.content;
                         var href    = mainItem.href;
 
                         mainContent.push({
@@ -1512,7 +1513,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                     _.forEach(window.logos, function(logo) {
 
-                        var image = 'landing_page_content/' + window.ndexSettings.version + '/' + logo.image;
+                        var image = window.ndexSettings.landingPageConfigServer + '/' + logo.image;
                         var title = logo.title;
                         var href  = logo.href;
 
@@ -1523,18 +1524,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                         });
                     });
 
-
                     if (logos.length > 0) {
                         $scope.logosLoaded = true;
-
-                        /*
-                        setTimeout(function ($scope) {
-                            $('slickId').slickGoTo(2);
-                        }, 10);
-                        */
-
                     }
-
                 }
             );
         };

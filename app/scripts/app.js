@@ -28,6 +28,11 @@ ndexApp.run(['$route', '$rootScope', '$location', function ($route, $rootScope, 
     };
 }]);
 
+ndexApp.config(function($sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+        '**'
+    ]);
+});
 
 
 //Internet Explorer solution???
