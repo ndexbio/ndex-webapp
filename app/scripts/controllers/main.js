@@ -1300,135 +1300,128 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         fillInTopMenu();
 
-
-        var fillInFeaturedContentChannel = function() {
-
-            var script = document.createElement('script');
-            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'featured.js';
-            //script.src = 'landing_page_content/v2_4_0/featured.js';
-            document.body.appendChild(script);
-
+        function fillInFeaturedContentChannelAndDropDown() {
 
             $scope.featuredContentDefined = false;
 
             $scope.featuredContentDropDown = [];
 
-            $scope.$watch(
-                function watchFeaturedContent(scope) {
-                    return window.featuredContent;
-                },
-                function processFeaturedContent(newValue, oldValue) {
+            if (typeof window.featuredContent === 'undefined') {
+                return;
+            }
 
-                    if (typeof window.featuredContent === 'undefined') {
-                        return;
-                    }
+            $scope.carouselInterval = window.featuredContent.scrollIntervalInMs;
+            $scope.noWrapSlides     = false;
 
-                    $scope.carouselInterval =  window.featuredContent.scrollIntervalInMs;
-                    $scope.noWrapSlides = false;
+            if (typeof $rootScope.activeSlideNo === 'undefined') {
+                $rootScope.activeSlideNo = 0;
+            }
+            $scope.active = $rootScope.activeSlideNo;
 
-                    if (typeof $rootScope.activeSlideNo === 'undefined') {
-                        $rootScope.activeSlideNo = 0;
-                    }
-                    $scope.active = $rootScope.activeSlideNo;
+            var slides = $scope.slides = [];
+            var currIndex = 0;
 
-                    var slides = $scope.slides = [];
-                    var currIndex = 0;
+            // these are REST endpoints to get featured objects (currently users and groups)
+            var featuredObjectsRestEndpoints = _.map(window.featuredContent.items, 'link');
 
-                    //var featuredGroupsURLs = _.map(_.filter(window.featuredContent.items, ['account', 'group']), 'link');
-                    //var featuredUsersURLs  = _.map(_.filter(window.featuredContent.items, ['account', 'user']), 'link');
-                    var featuredURLs  = _.map(window.featuredContent.items, 'link');
+            var noOfFeaturedObjectsDefined   = featuredObjectsRestEndpoints.length;
+            var noOfFeaturedObjectsRetrieved = 0;
 
-                    var noOfFeaturedObjectsDefined   = featuredURLs.length;
-                    var noOfFeaturedObjectsRetrieved = 0;
+            var featuredObjectsReceived = [];
 
-                    var featuredObjectsReceived = [];
+            if (noOfFeaturedObjectsDefined > 0) {
 
-                    if (noOfFeaturedObjectsDefined > 0) {
+                _.forEach(featuredObjectsRestEndpoints, function (featuredURL) {
 
-                        _.forEach(featuredURLs, function (featuredURL) {
+                    // get user or group from NDEx, i.e.,
+                    //    http://dev.ndexbio.org/v2/user/cb2899c8-adda-11e6-913c-06832d634f41
+                    // or http://dev.ndexbio.org/v2/group/cce4dcb3-af98-11e7-b51d-06832d634f41
 
-                            ndexService.getObjectViaEndPointV2(featuredURL,
-                                function (featuredObject) {
+                    ndexService.getObjectViaEndPointV2(featuredURL,
+                        function (featuredObject) {
 
-                                    featuredObjectsReceived.push(featuredObject);
+                            featuredObjectsReceived.push(featuredObject);
 
-                                    noOfFeaturedObjectsRetrieved += 1;
+                            noOfFeaturedObjectsRetrieved += 1;
 
-                                    if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
-                                        $scope.featuredObjectsReceived = featuredObjectsReceived;
-                                    }
-                                },
-                                function (error) {
+                            if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
+                                $scope.featuredObjectsReceived = featuredObjectsReceived;
+                            }
+                        },
+                        function (error) {
 
-                                    noOfFeaturedObjectsRetrieved += 1;
+                            noOfFeaturedObjectsRetrieved += 1;
 
-                                    if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
-                                        $scope.featuredObjectsReceived = featuredObjectsReceived;
-                                    }
+                            if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
+                                $scope.featuredObjectsReceived = featuredObjectsReceived;
+                            }
+                        });
+                });
+
+            } else {
+                $scope.featuredObjectsReceived = [];
+            }
+
+            $scope.saveSlideId = function(slideIndex) {
+                $rootScope.activeSlideNo = slideIndex;
+            }
+
+            $scope.$watchGroup(['featuredObjectsReceived'],
+                function () {
+                    if ($scope.featuredObjectsReceived) {
+                        _.forEach(window.featuredContent.items, function(featuredItem) {
+
+                            var uuidArray = featuredItem.link.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+
+                            if (!Array.isArray(uuidArray) || uuidArray.length !== 1) {
+                                return;
+                            }
+
+                            var uuid = uuidArray[0];
+                            var item = _.find($scope.featuredObjectsReceived, {'externalId':uuid});
+                            var itemDescriptionForDropDown;
+
+                            if (typeof item === 'undefined') {
+                                return;
+                            }
+
+                            if (item.hasOwnProperty('groupName')) {
+                                itemDescriptionForDropDown = item.groupName;
+
+                            } else if (item.hasOwnProperty('userName')) {
+                                itemDescriptionForDropDown = item.firstName + ' ' + item.lastName;
+                            }
+
+                            slides.push({
+                                image: item.image,
+                                text:  item.description,
+                                link:  featuredItem.userLink,
+                                id:    currIndex++
+                            });
+
+                            $scope.featuredContentDropDown.push(
+                                {
+                                    'description': itemDescriptionForDropDown,
+                                    'href':       featuredItem.userLink
                                 });
                         });
 
-                    } else {
-                        $scope.featuredObjectsReceived = [];
+                        $scope.featuredContentDefined = slides.length > 0;
                     }
 
-                    $scope.saveSlideId = function(slideIndex) {
-                        $rootScope.activeSlideNo = slideIndex;
-                    }
-
-                    $scope.$watchGroup(['featuredObjectsReceived'],
-                        function () {
-                            if ($scope.featuredObjectsReceived) {
-                                _.forEach(window.featuredContent.items, function(featuredItem) {
-
-                                    var uuidArray = featuredItem.link.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-
-                                    if (!Array.isArray(uuidArray) || uuidArray.length !== 1) {
-                                        return;
-                                    }
-
-                                    var uuid = uuidArray[0];
-                                    var item = _.find($scope.featuredObjectsReceived, {'externalId':uuid});
-                                    var itemDescriptionForDropDown;
-
-                                    if (typeof item === 'undefined') {
-                                        return;
-                                    }
-
-                                    if (item.hasOwnProperty('groupName')) {
-                                        itemDescriptionForDropDown = item.groupName;
-
-                                    } else if (item.hasOwnProperty('userName')) {
-                                        itemDescriptionForDropDown = item.firstName + ' ' + item.lastName;
-                                    }
-
-                                    slides.push({
-                                        image: item.image,
-                                        text:  item.description,
-                                        link:  featuredItem.userLink,
-                                        id:    currIndex++
-                                    });
-
-                                    $scope.featuredContentDropDown.push(
-                                        {
-                                            'description': itemDescriptionForDropDown,
-                                            'href':       featuredItem.userLink
-                                        });
-                                });
-
-                                $scope.featuredContentDefined = slides.length > 0;
-                            }
-
-                        }, true
-                    );
-                }
+                }, true
             );
 
+        }
+
+        var getFeaturedContentChannel = function() {
+            var script = document.createElement('script');
+            script.src = window.ndexSettings.landingPageConfigServer + 'featured.js';
+            document.body.appendChild(script);
+            script.onload = fillInFeaturedContentChannelAndDropDown;
         };
 
-
-        fillInFeaturedContentChannel();
-
+        getFeaturedContentChannel();
 
         var fillInMainChannel = function() {
 

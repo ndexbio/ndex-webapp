@@ -407,7 +407,7 @@ ndexServiceApp.factory('ndexService',
 
             factory.getObjectViaEndPointV2 = function (endPoint, successHandler, errorHandler) {
 
-                var config = ndexConfigs.getGetConfigWithEndPointV2(endPoint, null);
+                var config = ndexConfigs.getGetConfigWithEndPointV2(endPoint);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
@@ -1898,20 +1898,11 @@ ndexServiceApp.factory('ndexConfigs', [ 'ndexUtility', function ( ndexUtility) {
         return config;
     };
 
-    factory.getGetConfigWithEndPointV2 = function (endPoint, queryArgs) {
+    factory.getGetConfigWithEndPointV2 = function (endPoint) {
         var config = {
             method: 'GET',
-            url: endPoint,
-            headers: {
-                'NDEx-application': window.navigator.ndexServerVersion
-            }
+            url: endPoint
         };
-
-        setAuthorizationHeader(config);
-        if (queryArgs) {
-            config.data = JSON.stringify(queryArgs);
-        }
-
         return config;
     };
 
