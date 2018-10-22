@@ -39,7 +39,7 @@
                 </span>
             </div>
 
-
+<!--
             <div id="switchCanvasToFullScreenId"
                  style='
                     display: inline-block;
@@ -52,10 +52,8 @@
                 <button type="button" class="actionsLabel btn btn-primary" ng-click="openInFullScreenMode('canvas')">
                     Full Screen
                 </button>
-
             </div>
-
-
+-->
             <tabset ng-show="currentView == 'Table'">
                 <tab heading="Edges" ng-click="activateTab('Edges'); edgeGridApi.core.handleWindowResize()">
                     <div id="edgeGridId"
@@ -823,11 +821,13 @@
              ng-show="networkController.successfullyQueried &&
                      ((networkController.currentNetwork.edgeCount > 0) || (networkController.currentNetwork.nodeCount > 0))">
 
+<!--
             <button ng-show="fullScreen"
                     type="button" class="actionsLabel btn btn-primary"
                     ng-click="openInFullScreenMode('page')">
                 Full Screen
             </button>
+-->
             <span>
                 <img id="openInCytoscapeButtonId2" ng-show="openInCytoscapeTitle" class="cyButtonDisabled"
                      ng-mouseover="changeCytoscapeButtonTitle()" title=""

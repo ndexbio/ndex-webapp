@@ -1,114 +1,10 @@
+<!--
 <script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
-
-<style>
-    .center {
-        padding-top: 2em;
-        text-align: center;
-    }
-    .centerFeaturedCollection {
-        text-align: center;
-    }
-
-    .slideImage {
-        width: auto;
-        max-height: 100%;
-        float: left;
-    }
-
-    .carousel-inner {
-        background-color: white; //#C1E0FF;
-        width: 90%;
-        margin: auto;
-    }
-    .carousel-indicators {
-        font-size: 2em;
-        bottom: -0.75em;
-        text-align: center;
-        text-shadow: none;
-    }
-
-    /* color of carousel indicators/dots */
-    .carousel-indicators li {
-        background: #C1E0FF;
-    }
-    .carousel-indicators .active {
-        background: #3576BE;
-    }
-
-    a.right.carousel-control {
-        position: absolute !important;
-        z-index: 2;
-        width: 5%;
-    }
-    a.left.carousel-control {
-        position: absolute !important;
-        z-index: 2;
-        width: 5%;
-    }
-
-    .carousel-control.left {
-        opacity:1 !important;
-        color: #3576BE;
-        background-image: none;
-    }
-    .carousel-control.right {
-        opacity:1 !important;
-        color: #3576BE;
-        background-image: none;
-    }
-
-    /* remove gradient grey from left and right of carousel */
-    /*
-    .carousel-control.left, .carousel-control.right {
-        background-image: none;
-    }
-    */
-    .carousel-control.left .glyphicon {
-        left: 0;
-        margin-left: 0;
-        padding-top: 5px;
-        font-size: 16px;
-    }
-    .carousel-control.right .glyphicon {
-        right: 0;
-        margin-right: 0;
-        padding-top: 5px;
-        font-size: 16px;
-    }
-
-
-    div.featuredCollectionDescriptionArea {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: left;
-        /*border: 1px solid red;*/
-        height: 85%;
-        padding-left: 20px;
-    }
-
-
-
-    .mainAreaLandingPage {
-        overflow-y: hidden;
-        text-overflow: ellipsis;
-        text-align: left;
-        /*border: 1px solid white;*/
-    }
-    .logosStyle {
-        transform: scale(0.75, 0.75);
-        -ms-transform: scale(0.75, 0.75);
-        -webkit-transform: scale(0.75, 0.75);
-    }
-
-    #logoContainer {
-        margin-top: 10px;
-        overflow: hidden;
-    }
-</style>
+-->
 
 <div class="container" style="width:100%; max-width: 1800px; min-width: 1100px; margin-bottom: 1em; margin-top: 5px">
     <div class="row" ng-show="!main.serverIsDown">
@@ -160,11 +56,19 @@
 
                         <div ng-repeat="item in mainContent">
 
-                             <div class='{{mainContentClass}}'>
-                                     <p class="mainAreaLandingPage" style="height:32em;">
-                                        <ng-include src="item.content""></ng-include>
-                                     </p>
-                                    <a ng-href="{{item.href}}" target="_blank"> more ...</a>
+                             <div class='{{mainContentClass}}' style="word-wrap: break-word">
+
+<!--
+                                 <div class="mainAreaLandingPage" style="height: 32em;" ng-bind-html="lorum">
+                                 </div>
+
+-->
+
+                                     <div class="mainAreaLandingPage" style="height:32em;">
+                                         <ng-include src="item.content"></ng-include>
+                                     </div>
+                                     <a ng-href="{{item.href}}" target="_blank"> more ...</a>
+
                             </div>
 
                         </div>

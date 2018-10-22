@@ -70,7 +70,7 @@ ndexApp.controller('networkController',
             // from the "Network Cloned" information modal.
             //$modalStack.dismissAll('close');
 
-            $scope.fullScreen = false;
+            //$scope.fullScreen = false;
 
             $scope.query = null;
             networkController.searchString = '';
@@ -4647,6 +4647,7 @@ ndexApp.controller('networkController',
                     }, 200);
             }
 
+            /*
             $scope.openInFullScreenMode = function(mode) {
                 // the code below is taken from
                 // https://hacks.mozilla.org/2012/01/using-the-fullscreen-api-in-web-browsers/
@@ -4706,6 +4707,7 @@ ndexApp.controller('networkController',
             if ($scope.fullScreen) {
                 setListenerForFullScreenChange();
             };
+            */
 
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------

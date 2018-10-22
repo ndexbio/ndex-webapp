@@ -880,6 +880,10 @@ ul.ndex-nav-pills > li > a:hover {
     width: 195px !important;
 }
 
+.customButtonWidthOnSearchPage {
+    width: 145px !important;
+}
+
 /* this adds some space after <HR> on Network page */
 .hrMarginRight {
     margin-right: 15px;
@@ -1474,3 +1478,123 @@ body   { background-color: #F60; }
     body   { background-color: #06F }
 }
 */
+
+
+
+
+
+
+
+.center {
+    padding-top: 2em;
+    text-align: center;
+}
+.centerFeaturedCollection {
+    text-align: center;
+}
+
+.slideImage {
+    width: auto;
+    max-height: 100%;
+    float: left;
+}
+
+.carousel-inner {
+    background-color: white; /*#C1E0FF;*/
+    width: 90%;
+    margin: auto;
+}
+.carousel-indicators {
+    font-size: 2em;
+    bottom: -0.75em;
+    text-align: center;
+    text-shadow: none;
+}
+
+/* color of carousel indicators/dots */
+.carousel-indicators li {
+    background: #C1E0FF;
+}
+.carousel-indicators .active {
+    background: #3576BE;
+}
+
+a.right.carousel-control {
+    position: absolute !important;
+    z-index: 2;
+    width: 5%;
+}
+a.left.carousel-control {
+    position: absolute !important;
+    z-index: 2;
+    width: 5%;
+}
+
+.carousel-control.left {
+    opacity:1 !important;
+    color: #3576BE;
+    background-image: none;
+}
+.carousel-control.right {
+    opacity:1 !important;
+    color: #3576BE;
+    background-image: none;
+}
+
+/* remove gradient grey from left and right of carousel */
+/*
+.carousel-control.left, .carousel-control.right {
+    background-image: none;
+}
+*/
+.carousel-control.left .glyphicon {
+    left: 0;
+    margin-left: 0;
+    padding-top: 5px;
+    font-size: 16px;
+}
+.carousel-control.right .glyphicon {
+    right: 0;
+    margin-right: 0;
+    padding-top: 5px;
+    font-size: 16px;
+}
+
+
+div.featuredCollectionDescriptionArea {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    /*border: 1px solid red;*/
+    height: 85%;
+    padding-left: 20px;
+}
+
+
+/*
+.mainAreaLandingPage {
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    /*border: 1px solid white;*
+}
+*/
+
+.mainAreaLandingPage {
+    overflow-y: hidden;
+    /*overflow-x: hidden;*/
+    text-overflow: ellipsis;
+    text-align: left;
+    overflow-wrap: break-word;
+    /*border: 1px solid red;*/
+}
+.logosStyle {
+    transform: scale(0.75, 0.75);
+    -ms-transform: scale(0.75, 0.75);
+    -webkit-transform: scale(0.75, 0.75);
+}
+
+#logoContainer {
+    margin-top: 10px;
+    overflow: hidden;
+}

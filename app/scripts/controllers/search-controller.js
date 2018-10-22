@@ -72,7 +72,7 @@ ndexApp.controller('searchController',
 
             $(document).ready(function() {
                 if (!searchController.loggedInUserId) {
-                    document.getElementById('searchResultTableId').className = 'col-md-12';
+                    document.getElementById('searchResultTableId').className = 'col-12 col-xs-12 col-sm-12 col-md-12';
                 }
             });
 

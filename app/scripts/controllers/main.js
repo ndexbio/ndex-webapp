@@ -792,12 +792,31 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         }
 
         /*
-         * Only Google Chrome, Firefox or Safari browsers are supported.
-         * Check if the currently used browser is supported.
+         * Check what browser is used.
+         *
+         * We do not support MS Internet Explorer
+         * (list of IE user agents is here: http://www.useragentstring.com/pages/useragentstring.php?name=Internet+Explorer).
+         *
+         * We support Chrome, FireFox, Safari, Opera and MS Edge.
+         *
+         * This function returns true if Chrome, FireFox, Safari, Opera, MS Edge, or compatible with them browser is used.
+         * It returns false for MS IE.
+         *
+         * Please see link below on how to detect user agent:
+         * https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
+         *
+         *
+         * The function was tested with the following browsers/user agents:
+         *   Chrome:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36
+         *   FireFox: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:62.0) Gecko/20100101 Firefox/62.0
+         *   Safari:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15
+         *   Opera:   Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36 OPR/56.0.3051.43
+         *
          */
         $scope.main.isSupportedBrowserUsed = function() {
 
             $scope.main.showSignIn = true;
+
 
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
                 return true;
@@ -813,7 +832,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             $scope.main.showSignIn = false;
 
-            // other browsers are not supported
             return false;
         };
 
@@ -1267,300 +1285,304 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);
 
 
-        var fillInTopMenu = function() {
-            var script = document.createElement('script');
-            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'topmenu.js';
-            document.body.appendChild(script);
+        var fillInTopMenu = function(content) {
+
+            if (!(content.hasOwnProperty('topMenu') && Array.isArray(content.topMenu) && content.topMenu.length > 0)) {
+                return;
+            }
 
             var topMenu = $scope.topMenu = [];
 
-            $scope.$watch(
-                function watchTopMenu(scope) {
-                    return window.topMenu;
+            _.forEach(content.topMenu, function (menuItem) {
+
+                var label = menuItem.label;
+                var href = menuItem.href;
+                var showWarning = false;
+                if (menuItem.showWarning !== 'undefined') {
+                    showWarning = (menuItem.showWarning.toLowerCase() === 'true');
+                }
+
+                var warning = showWarning ? menuItem.warning : null;
+
+                topMenu.push({
+                    'label': label,
+                    'href': href,
+                    'showWarning': showWarning,
+                    'warning': warning
+                });
+            });
+        };
+
+
+        var getTopMenu = function() {
+            var topMenuConfig  = window.ndexSettings.landingPageConfigServer + '/topmenu.json';
+
+            ndexService.getObjectViaEndPointV2(topMenuConfig,
+                function(content) {
+                    fillInTopMenu(content);
                 },
-                function processTopMenu(newValue, oldValue) {
-
-                    _.forEach(window.topMenu, function (menuItem) {
-
-                        var label = menuItem.label;
-                        var href = menuItem.href;
-                        var showWarning = (typeof menuItem.showWarning === 'undefined') ? false : menuItem.showWarning;
-                        var warning = showWarning ? menuItem.warning : null;
-
-                        topMenu.push({
-                            'label': label,
-                            'href': href,
-                            'showWarning': showWarning,
-                            'warning': warning
-                        });
-                    });
+                function(error) {
+                    console.log('unable to get Top Menu configuration file ' + topMenuConfig);
                 }
             );
         };
 
-        fillInTopMenu();
+        getTopMenu();
 
-        function fillInFeaturedContentChannelAndDropDown() {
+        function fillInFeaturedContentChannelAndDropDown(featuredContent) {
 
             $scope.featuredContentDefined = false;
 
             $scope.featuredContentDropDown = [];
 
-            if (typeof window.featuredContent === 'undefined') {
-                return;
-            }
-
-            $scope.carouselInterval = window.featuredContent.scrollIntervalInMs;
-            $scope.noWrapSlides     = false;
-
-            if (typeof $rootScope.activeSlideNo === 'undefined') {
-                $rootScope.activeSlideNo = 0;
-            }
-            $scope.active = $rootScope.activeSlideNo;
+            $scope.noWrapSlides = false;
 
             var slides = $scope.slides = [];
             var currIndex = 0;
 
-            // these are REST endpoints to get featured objects (currently users and groups)
-            var featuredObjectsRestEndpoints = _.map(window.featuredContent.items, 'link');
+            if (!(featuredContent.hasOwnProperty('items') && Array.isArray(featuredContent.items) && featuredContent.items.length > 0)) {
+                return;
+            }
 
-            var noOfFeaturedObjectsDefined   = featuredObjectsRestEndpoints.length;
-            var noOfFeaturedObjectsRetrieved = 0;
+            $scope.carouselInterval = window.ndexSettings.featuredContentScrollIntervalInMs;
 
-            var featuredObjectsReceived = [];
+            var featuredContentTypes = new Set(['user', 'group', 'networkset', 'network', 'webpage', 'publication']);
 
-            if (noOfFeaturedObjectsDefined > 0) {
+            var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
+            if (ndexServer && !ndexServer.endsWith('/')) {
+                ndexServer = ndexServer + '/';
+            }
 
-                _.forEach(featuredObjectsRestEndpoints, function (featuredURL) {
+            _.forEach(featuredContent.items, function(featuredItem) {
 
-                    // get user or group from NDEx, i.e.,
-                    //    http://dev.ndexbio.org/v2/user/cb2899c8-adda-11e6-913c-06832d634f41
-                    // or http://dev.ndexbio.org/v2/group/cce4dcb3-af98-11e7-b51d-06832d634f41
+                var type = featuredItem.hasOwnProperty('type') ? featuredItem.type.toLowerCase() : null;
 
-                    ndexService.getObjectViaEndPointV2(featuredURL,
-                        function (featuredObject) {
+                if (!(featuredContentTypes.has(type))) {
+                    // unknown type or null - return, i.e., get the next element from featuredContent.items
+                    return;
+                }
 
-                            featuredObjectsReceived.push(featuredObject);
+                var imageUrl = featuredItem.hasOwnProperty('imageURL') ?  featuredItem.imageURL : null;
+                var text     = featuredItem.title + '<br>' + featuredItem.text;
+                var link     = null;
+                var itemDescriptionForDropDown = ' dropdown item ';
 
-                            noOfFeaturedObjectsRetrieved += 1;
 
-                            if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
-                                $scope.featuredObjectsReceived = featuredObjectsReceived;
-                            }
-                        },
-                        function (error) {
+                var includeInDropDown = false;
+                if (featuredItem.hasOwnProperty('includeInDropDownMenu')) {
+                    includeInDropDown = (featuredItem.includeInDropDownMenu.toLowerCase() === 'true');
+                }
 
-                            noOfFeaturedObjectsRetrieved += 1;
+                switch(type) {
 
-                            if (noOfFeaturedObjectsDefined === noOfFeaturedObjectsRetrieved) {
-                                $scope.featuredObjectsReceived = featuredObjectsReceived;
-                            }
-                        });
+                    case 'user':
+                        link = ndexServer + 'user/' +  featuredItem.UUID;
+                        break;
+
+                    case 'group':
+                        link = ndexServer + 'group/' +  featuredItem.UUID;
+                        break;
+
+                    case 'networkset':
+                        link = ndexServer + 'networkset/' +  featuredItem.UUID;
+                        break;
+
+                    case 'network':
+                        link = ndexServer + 'network/' +  featuredItem.UUID;
+                        break;
+
+                    case 'webpage':
+                        link = featuredItem.URL;
+                        break;
+
+                    case 'publication':
+                        link = featuredItem.DOI;
+                        break;
+
+                    default:
+                        // this should never happen since feature type is validated at this point
+                        return;
+                }
+
+                slides.push({
+                    'image': imageUrl,
+                    'text':  text,
+                    'link':  link,
+                    'id':    currIndex++
                 });
 
-            } else {
-                $scope.featuredObjectsReceived = [];
-            }
-
-            $scope.saveSlideId = function(slideIndex) {
-                $rootScope.activeSlideNo = slideIndex;
-            }
-
-            $scope.$watchGroup(['featuredObjectsReceived'],
-                function () {
-                    if ($scope.featuredObjectsReceived) {
-                        _.forEach(window.featuredContent.items, function(featuredItem) {
-
-                            var uuidArray = featuredItem.link.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-
-                            if (!Array.isArray(uuidArray) || uuidArray.length !== 1) {
-                                return;
-                            }
-
-                            var uuid = uuidArray[0];
-                            var item = _.find($scope.featuredObjectsReceived, {'externalId':uuid});
-                            var itemDescriptionForDropDown;
-
-                            if (typeof item === 'undefined') {
-                                return;
-                            }
-
-                            if (item.hasOwnProperty('groupName')) {
-                                itemDescriptionForDropDown = item.groupName;
-
-                            } else if (item.hasOwnProperty('userName')) {
-                                itemDescriptionForDropDown = item.firstName + ' ' + item.lastName;
-                            }
-
-                            slides.push({
-                                image: item.image,
-                                text:  item.description,
-                                link:  featuredItem.userLink,
-                                id:    currIndex++
-                            });
-
-                            $scope.featuredContentDropDown.push(
-                                {
-                                    'description': itemDescriptionForDropDown,
-                                    'href':       featuredItem.userLink
-                                });
+                if (includeInDropDown) {
+                    var ddItem = itemDescriptionForDropDown + ' ' + (currIndex-1);
+                    $scope.featuredContentDropDown.push(
+                        {
+                            'description': ddItem,
+                            'href':         link
                         });
 
-                        $scope.featuredContentDefined = slides.length > 0;
-                    }
+                }
+            });
 
-                }, true
-            );
+            $scope.featuredContentDefined = slides.length > 0;
 
         }
 
         var getFeaturedContentChannel = function() {
-            var script = document.createElement('script');
-            script.src = window.ndexSettings.landingPageConfigServer + 'featured.js';
-            document.body.appendChild(script);
-            script.onload = fillInFeaturedContentChannelAndDropDown;
+            var featuredContentConfig  = window.ndexSettings.landingPageConfigServer + '/featured.json';
+
+            ndexService.getObjectViaEndPointV2(featuredContentConfig,
+                function(featuredContent) {
+                    fillInFeaturedContentChannelAndDropDown(featuredContent);
+                },
+                function(error) {
+                    console.log('unable to get Featured Content configuration file ' + featuredContentConfig);
+                }
+            );
         };
 
         getFeaturedContentChannel();
 
-        var fillInMainChannel = function() {
+        var fillInMainChannel = function(content) {
 
-            var script = document.createElement('script');
-            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'main.js';
-            document.body.appendChild(script);
+            if (!(content.hasOwnProperty('mainContent') && Array.isArray(content.mainContent) && content.mainContent.length > 0)) {
+                return;
+            }
 
             var mainContent = $scope.mainContent = [];
 
-            $scope.$watch(
-                function watchMainContent(scope) {
-                    return window.mainContent;
+            while (content.mainContent.length > 4) {
+                content.mainContent.pop();
+            }
+
+            //$scope.mainContent = window.mainContent;
+            var noOfMainContentItems = content.mainContent.length;
+            var mainContentClass = 'col-12 col-xs-12 col-sm-12 col-md-12 wrapLongLine';
+
+            if (2 === noOfMainContentItems) {
+                mainContentClass = 'col-6 col-xs-6 col-sm-6 col-md-6 wrapLongLine';
+
+            } else if (3 === noOfMainContentItems) {
+                mainContentClass = 'col-4 col-xs-4 col-sm-4 col-md-4 wrapLongLine';
+
+            } else if (4 === noOfMainContentItems) {
+                mainContentClass = 'col-3 col-xs-3 col-sm-3 col-md-3 wrapLongLine';
+            }
+
+            $scope.mainContentClass = mainContentClass;
+
+            _.forEach(content.mainContent, function(mainItem) {
+
+                var title   = mainItem.title;
+                var content =
+                    window.ndexSettings.landingPageConfigServer + '/'+ mainItem.content;
+                var href    = mainItem.href;
+
+                mainContent.push({
+                    'title': title,
+                    'content': content,
+                    'href' : href
+                });
+            });
+
+        };
+
+        var getMainChannel = function() {
+            var mainContentConfig  = window.ndexSettings.landingPageConfigServer + '/main.json';
+
+            ndexService.getObjectViaEndPointV2(mainContentConfig,
+                function(mainContent) {
+                    fillInMainChannel(mainContent);
                 },
-                function processMainContent(newValue, oldValue) {
-
-                    if (typeof window.mainContent === 'undefined') {
-                        return;
-                    }
-
-                    while (window.mainContent.length > 4) {
-                        window.mainContent.pop();
-                    }
-
-                    //$scope.mainContent = window.mainContent;
-                    var noOfMainContentItems = window.mainContent.length;
-
-
-                    var mainContentClass = 'col-12 col-xs-12 col-sm-12 col-md-12';
-
-                    if (2 === noOfMainContentItems) {
-                        mainContentClass = 'col-6 col-xs-6 col-sm-6 col-md-6';
-
-                    } else if (3 === noOfMainContentItems) {
-                        mainContentClass = 'col-4 col-xs-4 col-sm-4 col-md-4';
-
-                    } else if (4 === noOfMainContentItems) {
-                        mainContentClass = 'col-3 col-xs-3 col-sm-3 col-md-3';
-                    }
-
-                    $scope.mainContentClass = mainContentClass;
-
-
-                    _.forEach(window.mainContent, function(mainItem) {
-
-                        var title   = mainItem.title;
-                        var content =
-                            window.ndexSettings.landingPageConfigServer + '/'+ mainItem.content;
-                        var href    = mainItem.href;
-
-                        mainContent.push({
-                            'title': title,
-                            'content': content,
-                            'href' : href
-                        });
-                    });
+                function(error) {
+                    console.log('unable to get Main Content configuration file ' + mainContentConfig);
                 }
             );
         };
 
-        fillInMainChannel();
+        getMainChannel();
 
 
         $scope.logos = [];
 
-        var fillInLogosChannel = function() {
+        var fillInLogosChannel = function(content) {
 
-            var script = document.createElement('script');
-            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'logos.js';
-            document.body.appendChild(script);
+            if (!(content.hasOwnProperty('logos') && Array.isArray(content.logos) && content.logos.length > 0)) {
+                return;
+            }
 
             var logos = $scope.logos = [];
 
-            $scope.$watch(
-                function watchLogos(scope) {
-                    return window.logos;
-                },
-                function processLogos(newValue, oldValue) {
+            _.forEach(content.logos, function(logo) {
 
-                    if (typeof window.logos === 'undefined') {
-                        return;
-                    }
+                var image = window.ndexSettings.landingPageConfigServer + '/' + logo.image;
+                var title = logo.title;
+                var href  = logo.href;
 
-                    _.forEach(window.logos, function(logo) {
+                logos.push({
+                    'image': image,
+                    'title': title,
+                    'href' : href
+                });
+            });
 
-                        var image = window.ndexSettings.landingPageConfigServer + '/' + logo.image;
-                        var title = logo.title;
-                        var href  = logo.href;
-
-                        logos.push({
-                            'image': image,
-                            'title': title,
-                            'href' : href
-                        });
-                    });
-
-                    if (logos.length > 0) {
-                        $scope.logosLoaded = true;
-                    }
-                }
-            );
+            if (logos.length > 0) {
+                $scope.logosLoaded = true;
+            }
         };
 
         $scope.logosDefined = function() {
             return $scope.logos.length > 0;
         };
 
-        fillInLogosChannel();
+        var getLogos = function() {
+            var logosConfig  = window.ndexSettings.landingPageConfigServer + '/logos.json';
 
-
-        var fillInFooter = function() {
-
-            var script = document.createElement('script');
-            script.src = window.ndexSettings.landingPageConfigServer + '/' + 'footer.js';
-            document.body.appendChild(script);
-
-
-            var footer = $scope.footerNav = [];
-
-            $scope.$watch(
-                function watchFooterMenu(scope) {
-                    return window.footerNav;
+            ndexService.getObjectViaEndPointV2(logosConfig,
+                function(content) {
+                    fillInLogosChannel(content);
                 },
-                function processFooterMenu(newValue, oldValue) {
-
-                    _.forEach(window.footerNav, function(footerItem) {
-
-                        var label = footerItem.label;
-                        var href  = (typeof footerItem.href === 'undefined') ?  '' : footerItem.href;
-
-                        footer.push({
-                            'label': label,
-                            'href' : href,
-                        });
-                    });
+                function(error) {
+                    console.log('unable to get Logos Content configuration file ' + logosConfig);
                 }
             );
         };
+        getLogos();
 
-        fillInFooter();
+
+        var fillInFooter = function(content) {
+
+            if (!(content.hasOwnProperty('footerNav') && Array.isArray(content.footerNav) && content.footerNav.length > 0)) {
+                return;
+            }
+
+            var footer = $scope.footerNav = [];
+
+            _.forEach(content.footerNav, function(footerItem) {
+
+                var label = footerItem.label;
+                var href = (typeof footerItem.href === 'undefined') ? '' : footerItem.href;
+
+                footer.push({
+                    'label': label,
+                    'href': href,
+                });
+            });
+        };
+
+        var getFooter = function() {
+            var footerConfig  = window.ndexSettings.landingPageConfigServer + '/footer.json';
+
+            ndexService.getObjectViaEndPointV2(footerConfig,
+                function(content) {
+                    fillInFooter(content);
+                },
+                function(error) {
+                    console.log('unable to get Footer configuration file ' + footerConfig);
+                }
+            );
+
+        };
+
+        getFooter();
 
         $scope.collapsedMenuOpened = false;
 
