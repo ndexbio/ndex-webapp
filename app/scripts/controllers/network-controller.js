@@ -4637,6 +4637,7 @@ ndexApp.controller('networkController',
                 //factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
             };
 
+            /*
             var resizeCanvas = function() {
                 cy.destroy();
                 localNetwork = networkService.getCurrentNiceCX();

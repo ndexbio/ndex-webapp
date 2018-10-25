@@ -28,9 +28,10 @@ ndexApp.run(['$route', '$rootScope', '$location', function ($route, $rootScope, 
     };
 }]);
 
+var safeURLs = window.ndexSettings.landingPageConfigServer + '**';
 ndexApp.config(function($sceDelegateProvider) {
     $sceDelegateProvider.resourceUrlWhitelist([
-        '**'
+        'self', safeURLs
     ]);
 });
 

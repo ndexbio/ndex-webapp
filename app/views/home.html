@@ -119,31 +119,6 @@
     </div>
 </div>
 
-
-<script type="text/ng-template" id="quoteNDEx.html">
-    <div class="modal-content">
-
-        <div class="modal-header">
-            <h4 class="modal-title">NDEx Citation Information Ready for Pasting</h4>
-        </div>
-
-        <div class="modal-body">
-            <div>
-                <strong>The following citation information is available for pasting from clipboard:</strong>
-                <br><br>
-                <span ng-bind-html="NDEx.citation" id="ndexCitationId"></span>
-                <br><br>
-                <strong>To paste it using keyboard use Ctrl-V, or using mouse Right-Click and select Paste</strong>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn btn-default" ng-click="NDEx.closeModal()">Close</button>
-        </div>
-
-    </div>
-</script>
-
 <script type="text/ng-template" id="generic-info-modal.html">
     <div class="modal-content">
 
@@ -261,7 +236,7 @@
                                     {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}"
 
                                       title="Only applied when searching networks"
-                                      ng-init="setToolTips()">&nbsp;
+                                      ng-init="setToolTips()">
                                         <strong>{{main.searchTitle}}</strong>
                                      &nbsp;
                                     <i data-toggle="tooltip" data-placement="bottom"
@@ -283,5 +258,31 @@
         </form>
     </div>
 </script>
+
+<!--
+<script type="text/ng-template" id="quoteNDEx.html">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h4 class="modal-title">NDEx Citation Information Ready for Pasting</h4>
+        </div>
+
+        <div class="modal-body">
+            <div>
+                <strong>The following citation information is available for pasting from clipboard:</strong>
+                <br><br>
+                <span ng-bind-html="NDEx.citation" id="ndexCitationId"></span>
+                <br><br>
+                <strong>To paste it using keyboard use Ctrl-V, or using mouse Right-Click and select Paste</strong>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default" ng-click="NDEx.closeModal()">Close</button>
+        </div>
+
+    </div>
+</script>
+-->
 
 </div>

@@ -273,7 +273,7 @@
 </script>
 
 <!-- Nav Bar -->
-<nav class="navbar navbar-fixed-top">
+<nav id="topNavBarId" class="navbar navbar-fixed-top" style="display: none;">
     <div class="navbar-ndex navbar-ndex-top">
 <!--
         <div class="container-fluid" style="width:100%; max-width: 1800px; min-width: 1100px;">
@@ -300,7 +300,7 @@
                ng-href="{{$location.path()}}"
                ng-click="collapseHamburgerMenu(); redirectToCurrentServer()">
 
-                <div id="hiddenElementId" style="
+                <div id="ndexLogoId" style="
                     display: none;
                     background-image: url('images/new_landing_page_logo.png');
                     background-repeat: no-repeat;
@@ -325,9 +325,7 @@
 
         <div class="navbar-collapse collapse" id="myNavbar">
 
-            <!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
-                disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId1" class="nav navbar-nav navbar-left" style="display: none; padding-top: 14px"
+            <ul id="topMenuId" class="nav navbar-nav navbar-left" style="display: none; padding-top: 14px"
                 ng-show="(main.serverIsDown != null) && !main.serverIsDown">
 
                 <li ng-repeat="item in topMenu">
@@ -338,11 +336,9 @@
                 </li>
             </ul>
 
-            <!-- even though we use ng-show directives, we still set style display to none: in case third parties cookies are
-                 disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId2" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
+            <ul id="searchMyAccountNameLoginId" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
 
-                <li ng-show="main.loggedIn">
+                <li ng-show="isSearchIconVisible()">
                     <a ng-click="collapseHamburgerMenu(); showSearchBar()">
                         <div style="
                             background-image: url('images/search-icon.png');
@@ -390,11 +386,9 @@
         </div>
 
 
-        <div class="sidenav" id="myNavbar1">
+        <div class="sidenav" id="slidingRightMenuDivId">
 
-            <!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
-                disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId4" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px"
+            <ul id="slidingRightMenuId" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px"
                 ng-show="(main.serverIsDown != null) && !main.serverIsDown">
 
                 <li ng-repeat="item in topMenu">
@@ -405,11 +399,10 @@
                 </li>
             </ul>
 
-            <!-- even though we use ng-show directives, we still set style display to none: in case third parties cookies are
-                 disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId5" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px">
+            <ul id="slidingRightMenuSearchMyAccountNameLoginId"
+                class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px">
 
-                <li ng-show="main.loggedIn">
+                <li ng-show="isSearchIconVisible()">
                     <a ng-click="switchNav($event); showSearchBar()">
                         <div style="
                             background-image: url('images/search-icon.png');
@@ -468,9 +461,7 @@
 </div>
 
 
-<!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
-     disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-<div id="hiddenElementId3" style="display: none;">
+<div id="footerId" style="display: none;">
     <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignLeft">
         <div class='footer-content' >
 
@@ -497,7 +488,6 @@
                         style="margin-left: 30px; color: #149FEC;">
                         Citing NDEx
                     </a>
-
                 </div>
 
                 <div class="col-2 col-xs-2 col-sm-2 col-md-2">

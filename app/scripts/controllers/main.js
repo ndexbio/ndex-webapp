@@ -1,10 +1,8 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
-    '$window',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner,
-               $window) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -153,7 +151,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             //console.log("strLength = " + strLength);
             if (strLength >= $scope.maxSearchInputLength) {
                 $scope.stringTooLongWarning = 'The maximum length for this field is ' +
-                    $scope.maxSearchInputLength + ' characters.';
+                    $scope.maxSearchInputLength + ' characters';
             } else {
                 if ($scope.stringTooLongWarning) {
                     delete $scope.stringTooLongWarning;
@@ -253,87 +251,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             // check if any of configurable Navigation Bar links are missing
             // and assign default values if yes
-            if (typeof config.logoLink === 'undefined') {
-                config.logoLink = {};
-            }
-            if (typeof config.logoLink.href === 'undefined') {
-                config.logoLink.href = 'http://preview.ndexbio.org';
-            }
-            if (typeof config.logoLink.warning === 'undefined') {
-                config.logoLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.logoLink.showWarning === 'undefined') {
-                config.logoLink.showWarning = false;
-            }
 
-            if (typeof config.aboutLink === 'undefined') {
-                config.aboutLink = {};
-            }
-            if (typeof config.aboutLink.label === 'undefined') {
-                config.aboutLink.label = 'About';
-            }
-            if (typeof config.aboutLink.href === 'undefined') {
-                config.aboutLink.href = 'http://home.ndexbio.org/about-ndex';
-            }
-            if (typeof config.aboutLink.warning === 'undefined') {
-                config.logoLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.aboutLink.showWarning === 'undefined') {
-                config.aboutLink.showWarning = false;
-            }
-
-            if (typeof config.documentationLink === 'undefined') {
-                config.documentationLink = {};
-            }
-            if (typeof config.documentationLink.label === 'undefined') {
-                config.documentationLink.label = 'Docs';
-            }
-            if (typeof config.documentationLink.href === 'undefined') {
-                config.documentationLink.href = 'http://home.ndexbio.org/quick-start';
-            }
-            if (typeof config.documentationLink.warning === 'undefined') {
-                config.documentationLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.documentationLink.showWarning === 'undefined') {
-                config.documentationLink.showWarning = false;
-            }
             if ((typeof config.refreshIntervalInSeconds === 'undefined') ||
                 (typeof config.refreshIntervalInSeconds !== 'number') ||
                 config.refreshIntervalInSeconds < 0) {
                 // refresh interval defaults to 0 seconds (disabled) in case it is not explicitly defined,
                 // defined as non-number or negative number
                 config.refreshIntervalInSeconds = 0;
-            }
-            if (typeof config.reportBugLink === 'undefined') {
-                config.reportBugLink = {};
-            }
-            if (typeof config.reportBugLink.label === 'undefined') {
-                config.reportBugLink.label = 'Report Bug';
-            }
-            if (typeof config.reportBugLink.href === 'undefined') {
-                config.reportBugLink.href = 'http://home.ndexbio.org/report-a-bug';
-            }
-            if (typeof config.reportBugLink.warning === 'undefined') {
-                config.reportBugLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.reportBugLink.showWarning === 'undefined') {
-                config.reportBugLink.showWarning = false;
-            }
-
-            if (typeof config.contactUsLink === 'undefined') {
-                config.contactUsLink = {};
-            }
-            if (typeof config.contactUsLink.label === 'undefined') {
-                config.contactUsLink.label = 'Contact Us';
-            }
-            if (typeof config.contactUsLink.href === 'undefined') {
-                config.contactUsLink.href = 'http://home.ndexbio.org/contact-us/';
-            }
-            if (typeof config.contactUsLink.warning === 'undefined') {
-                config.contactUsLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.contactUsLink.showWarning === 'undefined') {
-                config.contactUsLink.showWarning = false;
             }
 
 
@@ -364,7 +288,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // if any of config parameters missing, assign default values
 
         initMissingConfigParams(window.ndexSettings);
-        $scope.linkToReleaseDocs = window.ndexSettings.welcome.linkToReleaseDocs;
+        $scope.linkToReleaseDocs = window.ndexSettings.linkToReleaseDocs;
 
         // "Cite NDEx" menu item is not configurable.
         window.ndexSettings.citeNDEx = {};
@@ -396,28 +320,30 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 }
                 $scope.main.serverIsDown = false;
 
-                document.getElementById('hiddenElementId').style.display  = '';
-                document.getElementById('hiddenElementId1').style.display = '';
-                document.getElementById('hiddenElementId2').style.display = '';
-                document.getElementById('hiddenElementId3').style.display = '';
+                document.getElementById('topNavBarId').style.display                = '';
+                document.getElementById('ndexLogoId').style.display                 = '';
+                document.getElementById('topMenuId').style.display                  = '';
+                document.getElementById('searchMyAccountNameLoginId').style.display = '';
+                document.getElementById('footerId').style.display                   = '';
 
-                document.getElementById('hiddenElementId4').style.display = '';
-                document.getElementById('hiddenElementId5').style.display = '';
+                document.getElementById('slidingRightMenuId').style.display         = '';
+                document.getElementById('slidingRightMenuSearchMyAccountNameLoginId').style.display = '';
             },
             function() {
                 $scope.main.serverIsDown = true;
                 window.navigator.ndexServerVersion += 'unknown';
 
-                document.getElementById('hiddenElementId').style.display  = '';
-                document.getElementById('hiddenElementId1').style.display = '';
-                document.getElementById('hiddenElementId2').style.display = '';
-                document.getElementById('hiddenElementId3').style.display = '';
+                document.getElementById('topNavBarId').style.display                = '';
+                document.getElementById('ndexLogoId').style.display                 = '';
+                document.getElementById('topMenuId').style.display                  = '';
+                document.getElementById('searchMyAccountNameLoginId').style.display = '';
+                document.getElementById('footerId').style.display                   = '';
 
-                document.getElementById('hiddenElementId4').style.display = '';
-                document.getElementById('hiddenElementId5').style.display = '';
+                document.getElementById('slidingRightMenuId').style.display         = '';
+                document.getElementById('slidingRightMenuSearchMyAccountNameLoginId').style.display = '';
 
                 // this will remove (hide) NDEx logo from the top left in the Navigation Bar
-                document.getElementById('hiddenElementId').style.background  = 'transparent';
+                document.getElementById('ndexLogoId').style.background  = 'transparent';
             });
 
 
@@ -1089,6 +1015,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // citation that will be copied to clipboard; we replace HTML new break line chars (<br>) with ascii "\n"
         // $scope.NDEx.citationProcessed = $scope.NDEx.citation.replace(/<br>/g, "\n");
 
+/*
         $scope.NDEx.openQuoteNDExModal = function () {
             $scope.NDEx.modalInstance = $modal.open({
                 templateUrl: 'quoteNDEx.html',
@@ -1101,15 +1028,14 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $scope.NDEx.modalInstance.close();
             $scope.NDEx.modalInstance = null;
         };
-
+*/
 
         /*----------------------------------------------
          External Link Handling
          ----------------------------------------------*/
         /*
-         * As argument, this function takes one of configurable navigation bar
-         * menu objects specified in ndex-webapp-config.js (i.e., logoLink, aboutLink,
-         * documentationLink, etc), and checks whether this navigation link
+         * As argument, this function takes one of navigation bar
+         * menu objects and checks whether this navigation link
          * was configured to follow the link "silently" or warn user about navigating
          * to an external domain.
          */
@@ -1322,7 +1248,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     fillInTopMenu(content);
                 },
                 function(error) {
-                    console.log('unable to get Top Menu configuration file ' + topMenuConfig);
+                    alert('unable to get Top Menu configuration file ' + topMenuConfig);
                 }
             );
         };
@@ -1331,7 +1257,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         function fillInFeaturedContentChannelAndDropDown(featuredContent) {
 
-            $scope.featuredContentDefined = false;
+            //$scope.featuredContentDefined = false;
 
             $scope.featuredContentDropDown = [];
 
@@ -1434,7 +1360,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     fillInFeaturedContentChannelAndDropDown(featuredContent);
                 },
                 function(error) {
-                    console.log('unable to get Featured Content configuration file ' + featuredContentConfig);
+                    alert('unable to get Featured Content configuration file ' + featuredContentConfig);
                 }
             );
         };
@@ -1493,7 +1419,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     fillInMainChannel(mainContent);
                 },
                 function(error) {
-                    console.log('unable to get Main Content configuration file ' + mainContentConfig);
+                    alert('unable to get Main Content configuration file ' + mainContentConfig);
                 }
             );
         };
@@ -1541,7 +1467,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     fillInLogosChannel(content);
                 },
                 function(error) {
-                    console.log('unable to get Logos Content configuration file ' + logosConfig);
+                    alert('unable to get Logos Content configuration file ' + logosConfig);
                 }
             );
         };
@@ -1576,7 +1502,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     fillInFooter(content);
                 },
                 function(error) {
-                    console.log('unable to get Footer configuration file ' + footerConfig);
+                    alert('unable to get Footer configuration file ' + footerConfig);
                 }
             );
 
@@ -1587,12 +1513,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.collapsedMenuOpened = false;
 
         var hideRightNavBar = function() {
-            var myNavBarElement =  document.getElementById('myNavbar1');
+            var myNavBarElement         = document.getElementById('slidingRightMenuDivId');
             $scope.collapsedMenuOpened  = false;
             myNavBarElement.style.width = '0';
         };
         var showRightNavBar = function() {
-            var myNavBarElement =  document.getElementById('myNavbar1');
+            var myNavBarElement         = document.getElementById('slidingRightMenuDivId');
             $scope.collapsedMenuOpened  = true;
             myNavBarElement.style.width = '250px';
         };
@@ -1612,4 +1538,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.$on('$locationChangeStart', function(){
             hideRightNavBar();
         });
+
+
+        $scope.isSearchIconVisible = function() {
+            //we want Magnifying glass icon on top menu to be visible everywhere except '/'
+            return $location.path() !== '/';
+        };
+
     }]);
