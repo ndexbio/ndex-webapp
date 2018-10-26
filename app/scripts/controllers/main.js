@@ -1,8 +1,9 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
+    '$modalStack',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $modalStack) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -1537,6 +1538,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // when navigating away from this page, close right nav bar if it is opened
         $scope.$on('$locationChangeStart', function(){
             hideRightNavBar();
+            $modalStack.dismissAll('close');
         });
 
 
