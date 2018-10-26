@@ -14,7 +14,7 @@
             <div class='row' ng-show="!featuredContentDefined">
                 <div class='login-page-shadow col-md-12' style="border: 1px solid #3576BE; border-radius: 20px; height: 150px" >
 
-                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'home_search_bar.html'"></div>
+                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'search_bar.html'"></div>
 
                 </div>
             </div>
@@ -23,7 +23,7 @@
                 <div class='login-page-shadow col-7 col-xs-7 col-sm-7 col-md-7'
                      style="width: 56%; border: 1px solid #3576BE; border-radius: 20px; height: 150px;" >
 
-                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'home_search_bar.html'"></div>
+                    <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'search_bar.html'"></div>
 
                 </div>
 
@@ -137,127 +137,6 @@
     </div>
 </script>
 
-<script type="text/ng-template" id="home_search_bar.html">
-    <div class="" style="background-color:white; color:black;">
-        <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-              ng-submit="main.search()">
-
-            <table class="table" >
-
-                <div class="input-group">
-
-                    <tr>
-                        <!-- #adff2f -->
-                        <td bgcolor="white" width="15%;" style="border:hidden">
-
-                            <div class="row">
-                                <button type="button" class="btn btn-primary search-examples-button"
-                                        ng-click="main.browse(); closeModal()">
-                                    Browse
-                                </button>
-                            </div>
-
-                            <div class="row">
-                                <button type="button"
-                                        ng-class="featuredContentDefined?
-                                            'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
-                                        data-toggle="dropdown">
-                                    Featured Content <span class="caret"></span>
-                                </button>
-
-                                <ul class="dropdown-menu" role="menu">
-                                    <li class="AlignLeft" style="padding-left: 5px;"
-                                        ng-repeat="item in featuredContentDropDown">
-                                        <a ng-href="{{item.href}}" ng-bind-html="item.description"></a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="row">
-                                <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
-                                        data-toggle="dropdown">
-                                    Examples <span class="caret"></span>
-                                </button>
-
-                                <ul class="dropdown-menu" role="menu">
-                                    <li class="AlignLeft" style="padding-left: 5px;"
-                                        ng-repeat="item in main.searchNetworksExamples">
-                                        <a ng-click="main.runSearchExample(item); closeModal()">
-                                            {{item.description}}
-                                        </a>
-                                    </li>
-
-                                    <li class="AlignLeft" ng-show="config.searchDocLink">
-                                        <a style="color:#428bca; background-color:white;"
-                                           ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
-                                            <u>{{config.searchDocLink.label}}</u>
-                                        </a>
-                                    </li>
-
-                                </ul>
-                            </div>
-
-                        </td>
-
-                        <!-- #87cefa -->
-                        <td bgcolor="white" width="85%" style="border:hidden">
-                            <div class='row' style="margin-left: 1em; margin-right: 0">
-                                <div class="input-group">
-
-                                    <input type="text"
-                                           class="form-control inputHeight"
-                                           style="font-size:1.3em;"
-                                           placeholder="{{main.getSearchPlaceholder()}}"
-                                           ng-model="main.searchString"
-                                           maxlength="{{maxSearchInputLength}}"
-                                           ng-change="checkLengthOfSearchString()">
-
-                                    <span class="input-group-btn">
-                                        <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();"
-                                                ng-class="main.searchString ? 'btn btn-primary inputHeight' : 'btn btn-default inputHeight'">
-                                            <span class="glyphicon glyphicon-search"></span>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class='row' style="margin-left: 1em; margin-top: 1.5em">
-
-                                <div ng-show='stringTooLongWarning' style="color:red; font-size:1.1em; font-weight:bold; margin-bottom: 1em"
-                                     ng-bind-html="stringTooLongWarning">
-                                </div>
-
-                                <input type="checkbox"
-                                       ng-hide="checkSearchTypeAndTermExpansion()"
-                                       title="{{main.searchTitle}}"
-                                       ng-model="main.searchTermExpansionSelected">
-
-                                <span ng-style="searchTermExpansionEnabled ?
-                                    {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}"
-
-                                      title="Only applied when searching networks"
-                                      ng-init="setToolTips()">
-                                        <strong>{{main.searchTitle}}</strong>
-                                     &nbsp;
-                                    <i data-toggle="tooltip" data-placement="bottom"
-                                       title="Only applied when searching networks"  ng-init="setToolTips()"
-                                       class="fa fa-info-circle" style="color: #3576BE; cursor: pointer;"
-                                              ng-if="searchTermExpansionEnabled">
-
-                                    </i>
-                                </span>
-
-
-                            </div>
-                        </td>
-                    </tr>
-                </div>
-
-            </table>
-
-        </form>
-    </div>
-</script>
 
 <!--
 <script type="text/ng-template" id="quoteNDEx.html">
