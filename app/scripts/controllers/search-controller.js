@@ -137,6 +137,30 @@ ndexApp.controller('searchController',
             $scope.activateTab = function(tabName){
                 $scope.activeTab = {};
                 $scope.activeTab[tabName] = true;
+
+                switch (tabName.toLowerCase()) {
+
+                    case 'networks':
+                        if ($scope.networkGridApi) {
+                            setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
+                        }
+                        break;
+
+                    case 'users':
+                        if ($scope.userGridApi) {
+                            setTimeout($scope.userGridApi.core.handleWindowResize, 250);
+                        }
+                        break;
+
+                    case 'groups':
+                        if ($scope.groupGridApi) {
+                            setTimeout($scope.groupGridApi.core.handleWindowResize, 250);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
             };
 
 

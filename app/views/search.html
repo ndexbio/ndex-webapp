@@ -48,7 +48,7 @@
 
             <tab
                     heading='{{networkTabHeading()}}'
-                    ng-click="activateTab('Networks'); networkGridApi.core.handleWindowResize()"
+                    ng-click="activateTab('Networks')"
                     active="activeTab.Networks">
                 <div ng-show='searcher.networkSearchInProgress'><i>Finding Networks...</i></div>
                 <div ng-show='searcher.networkSearchNoResults'><i>No Networks Found.</i></div>
@@ -58,7 +58,7 @@
             </tab>
             <tab
                     heading='{{userTabHeading()}}'
-                    ng-click="activateTab('Users'); userGridApi.core.handleWindowResize(); "
+                    ng-click="activateTab('Users')"
                     active="activeTab.Users">
                 <div ng-show='searcher.userSearchInProgress'><i>Finding Users...</i></div>
                 <div ng-show='searcher.userSearchNoResults'><i>No Users Found.</i></div>
@@ -67,7 +67,7 @@
             </tab>
             <tab
                     heading='{{groupTabHeading()}}'
-                    ng-click="activateTab('Groups'); groupGridApi.core.handleWindowResize()"
+                    ng-click="activateTab('Groups')"
                     active="activeTab.Groups">
                 <div ng-show='searcher.groupSearchInProgress'><i>Finding Groups...</i></div>
                 <div ng-show='searcher.groupSearchNoResults'><i>No Groups Found.</i></div>
