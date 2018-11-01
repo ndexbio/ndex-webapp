@@ -237,12 +237,12 @@ ndexApp.controller('networkController',
                 $scope.activeTab = tabName;
 
                 if ('Edges' === tabName) {
-                    $('#edgeGridId').height($(window).height() - 235);
+                    $('#edgeGridId').height($(window).height() - 195);
                     /** @namespace $scope.edgeGridApi.core.refresh() **/
                     $scope.edgeGridApi.core.refresh();
 
                 } else if ('Nodes' === tabName) {
-                    $('#nodeGridId').height($(window).height() - 235);
+                    $('#nodeGridId').height($(window).height() - 195);
                     /** @namespace $scope.nodeGridApi.core.refresh(); **/
                     $scope.nodeGridApi.core.refresh();
                 }
@@ -1528,7 +1528,7 @@ ndexApp.controller('networkController',
                     }
                 }
 
-                var windowHeight = $(window).height() - 235;
+                var windowHeight = $(window).height() - 195;
                 $('#nodeGridId').height(windowHeight);
                 $scope.nodeGridApi.grid.gridHeight = windowHeight;
 
@@ -1797,7 +1797,7 @@ ndexApp.controller('networkController',
                         $scope.edgeGridApi.grid.gridWidth = cytoscapeCanvasWidth;
                     }
                 }
-                var windowHeight = $(window).height() - 235;
+                var windowHeight = $(window).height() - 195;
                 $('#edgeGridId').height(windowHeight);
                 $scope.edgeGridApi.grid.gridHeight = windowHeight;
 
@@ -4713,9 +4713,11 @@ ndexApp.controller('networkController',
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
+
+            /*
             var windowHeight = $(window).height();
             var $cytoscapeCanvas = $('#cytoscape-canvas');
-            $cytoscapeCanvas.height(windowHeight - 200);
+            $cytoscapeCanvas.height(windowHeight - 160);
 
             $('#divNetworkTabs').height(windowHeight);
 
@@ -4734,14 +4736,15 @@ ndexApp.controller('networkController',
                     $('#queryWarningsOrErrorsId').width($nodeGridId.width());
                 }
             }
+            */
 
 
             $(window).resize(function() {
 
                 var $cytoscapeCanvas = $('#cytoscape-canvas');
 
-                $cytoscapeCanvas.height($(window).height() - 200);
-                $('#divNetworkTabs').height($(window).height() - 200);
+                $cytoscapeCanvas.height($(window).height() - 160);
+                $('#divNetworkTabs').height($(window).height() - 160);
 
                 if ($scope.currentView === 'Graphic') {
                     $('#queryWarningsOrErrorsId').width($cytoscapeCanvas.width());
@@ -4750,14 +4753,14 @@ ndexApp.controller('networkController',
                     if ($scope.activeTab === 'Edges') {
                         var $edgeGridId = $('#edgeGridId');
                         $('#queryWarningsOrErrorsId').width($edgeGridId.width());
-                        $edgeGridId.height($(window).height() - 235);
+                        $edgeGridId.height($(window).height() - 195);
                         $scope.edgeGridApi.grid.gridHeight = $edgeGridId.height();
                         $scope.edgeGridApi.core.refresh();
 
                     } else {
                         var $nodeGridId = $('#nodeGridId');
                         $('#queryWarningsOrErrorsId').width($nodeGridId.width());
-                        $nodeGridId.height($(window).height() - 235);
+                        $nodeGridId.height($(window).height() - 195);
                         $scope.nodeGridApi.grid.gridHeight = $nodeGridId.height();
                         $scope.nodeGridApi.core.refresh();
                     }

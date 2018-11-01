@@ -46,7 +46,7 @@ ndexApp.controller('userController',
             userController.networkSetsOwnerOfPage = [];
             userController.networkSets = [];
 
-            var windowsHeightCorrection = 200;
+            var windowsHeightCorrection = 170;
 
 
             /*

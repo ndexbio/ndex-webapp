@@ -12,12 +12,19 @@
     font-family: "Helvetica Neue", Helvetica, Geneva, Arial, Verdana, sans-serif;
 }
 
+html, body {
+    height: 100%;
+}
+
 body
 {
+    display: flex;
+    flex-direction: column;
+
 
     margin: 0;
     padding-top: 70px;
-    padding-bottom: 50px;
+    /*padding-bottom: 50px;*/
     padding-left: 0;
     padding-right:0;
     color: #333;
@@ -27,7 +34,6 @@ body
     font-weight: normal;
     line-height: 18px;
     -webkit-font-smoothing: subpixel-antialiased;
-    height: 100%;
 }
 
 a:hover
@@ -1319,4 +1325,17 @@ div.featuredCollectionDescriptionArea {
 #logoContainer {
     margin-top: 10px;
     overflow: hidden;
+}
+
+
+.flexContent {
+    flex: 1 0 auto;
+}
+.ndexFooter {
+    flex-shrink: 0;
+}
+.ndexFooterProps {
+    background-color: #292c2f;
+    padding: 45px;
+    margin-top: 40px;
 }

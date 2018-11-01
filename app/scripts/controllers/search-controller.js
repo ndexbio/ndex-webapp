@@ -64,7 +64,7 @@ ndexApp.controller('searchController',
             searchController.showNetworkTable = false;
             var spinnerSearchPageId = 'spinnerSearchPageId';
 
-            var windowsHeightCorrection = 200;
+            var windowsHeightCorrection = 170;
 
 
             //var tableOptions = {};

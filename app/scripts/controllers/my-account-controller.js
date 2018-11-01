@@ -75,7 +75,7 @@ ndexApp.controller('myAccountController',
             //var myNetworksOldHash = 0;
 
 
-            var windowsHeightCorrection = 200;
+            var windowsHeightCorrection = 170;
 
 
             var pageNo = 1;

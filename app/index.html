@@ -448,7 +448,7 @@
 
 </nav>
 
-<div id="main" class="container-fluid marginsForNGView">
+<div id="main" class="container-fluid marginsForNGView flexContent">
     <!-- angular templating -->
     <!-- this is where content will be injected -->
 
@@ -456,7 +456,13 @@
 
 </div>
 
+<footer class="ndexFooter ndexFooterProps" id="footerId" style="display: none; height: 440px" ng-if="footerHtml">
 
+    <ng-include src="footerHtml"></ng-include>
+
+</footer>
+
+<!--
 <div id="footerId" style="display: none;">
     <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignLeft">
         <div class='footer-content' >
@@ -510,7 +516,7 @@
         </div>
     </nav>
 </div>
-
+-->
 
 
 <script>

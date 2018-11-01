@@ -30,6 +30,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         //noinspection JSCheckFunctionSignatures
         var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
 
+        $scope.footerHtml = null;
+
         /*
         function hideTooltip() {
             setTimeout(function() {
@@ -1474,7 +1476,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
         getLogos();
 
-
+        /*
         var fillInFooter = function(content) {
 
             if (!(content.hasOwnProperty('footerNav') && Array.isArray(content.footerNav) && content.footerNav.length > 0)) {
@@ -1494,9 +1496,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 });
             });
         };
-
         var getFooter = function() {
-            var footerConfig  = window.ndexSettings.landingPageConfigServer + '/footer.json';
+            var footerConfig = window.ndexSettings.landingPageConfigServer + '/footer.json';
 
             ndexService.getObjectViaEndPointV2(footerConfig,
                 function(content) {
@@ -1506,10 +1507,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     alert('unable to get Footer configuration file ' + footerConfig);
                 }
             );
-
         };
-
         getFooter();
+        */
 
         $scope.collapsedMenuOpened = false;
 
@@ -1541,10 +1541,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $modalStack.dismissAll('close');
         });
 
-
         $scope.isSearchIconVisible = function() {
             //we want Magnifying glass icon on top menu to be visible everywhere except '/'
             return $location.path() !== '/';
         };
+
+        $scope.footerHtml = window.ndexSettings.landingPageConfigServer + '/footer.html';
 
     }]);

@@ -39,7 +39,7 @@ ndexApp.controller('networkSetController',
     var activateURLLabel   = "Enable Share URL";
     var deActivateURLLabel = "Disable Share URL";
 
-    var windowsHeightCorrection = 200;
+    var windowsHeightCorrection = 170;
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
