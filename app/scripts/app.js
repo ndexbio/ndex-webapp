@@ -341,7 +341,18 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
                 factory: checkIfUserHasAccessToTheClickedNetwork
             }
         })
-            
+
+        // route for the alternative network view page for fixing the routing issue that JP's network link has
+        .when('/newNetwork/:identifier', {
+            templateUrl: 'views/network.html',
+            controller: 'networkController',
+
+            resolve: {
+                //"check": checkRouting
+                factory: checkIfUserHasAccessToTheClickedNetwork
+            }
+        })
+
         // route for the upload page
         .when('/upload', {
             templateUrl: 'views/upload.html',
