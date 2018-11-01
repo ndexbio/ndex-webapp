@@ -27,7 +27,7 @@
 
 <div class="row">
 
-    <div class="col-2 col-xs-2 col-sm-2 col-md-2 hideLongLine" ng-if="searcher.isLoggedInUser" style="min-width: 165px; margin-bottom: 10px">
+    <div class="col-2 col-xs-2 col-sm-2 col-md-2 col-lg-2 hideLongLine" ng-if="searcher.isLoggedInUser" style="min-width: 165px; margin-bottom: 10px">
         <h5><strong>Bulk Actions:</strong></h5>
             <show-network-sets-modal
                     controller-name='searcher'
@@ -37,12 +37,11 @@
             </show-network-sets-modal>
     </div>
 
-    <div id="searchResultTableId" class="col-12 col-xs-12 col-sm-12 col-md-12 col-lg-10">
+    <div id="searchResultTableId" class='{{searchViewClass}}'>
 
         <div class="row">
             <div id="spinnerSearchPageId" style="position:relative; top:16em"></div>
         </div>
-
 
         <tabset>
 

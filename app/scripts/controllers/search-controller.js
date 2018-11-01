@@ -69,12 +69,17 @@ ndexApp.controller('searchController',
 
             //var tableOptions = {};
             //tableOptions.user = searchController.loggedInUserId ? searchController.loggedInUserId : 'anonymous';
-
+/*
             $(document).ready(function() {
                 if (!searchController.loggedInUserId) {
                     document.getElementById('searchResultTableId').className = 'col-12 col-xs-12 col-sm-12 col-md-12';
                 }
             });
+*/
+
+            $scope.searchViewClass = searchController.loggedInUserId ?
+                'col-10 col-xs-10 col-sm-10 col-md-10 col-lg-10' :
+                'col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12';
 
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
