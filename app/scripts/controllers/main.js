@@ -30,7 +30,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         //noinspection JSCheckFunctionSignatures
         var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
 
-        $scope.footerHtml = null;
+        $scope.footerHtml = window.ndexSettings.landingPageConfigServer + '/footer.html';
+        //$scope.footerHtml = 'v2/footer.html';
 
         /*
         function hideTooltip() {
@@ -1545,7 +1546,5 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             //we want Magnifying glass icon on top menu to be visible everywhere except '/'
             return $location.path() !== '/';
         };
-
-        $scope.footerHtml = window.ndexSettings.landingPageConfigServer + '/footer.html';
 
     }]);

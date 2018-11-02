@@ -145,7 +145,7 @@
 <!-- define angular controller -->
 <body ng-controller="mainController" style="height: 100%;">
 
-
+<!-- template for search bar -->
 <script type="text/ng-template" id="search_bar.html">
     <div class="" style="background-color:white; color:black;">
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
@@ -456,7 +456,7 @@
 
 </div>
 
-<footer class="ndexFooter ndexFooterProps" id="footerId" style="display: none; height: 440px" ng-if="footerHtml">
+<footer class="ndexFooter ndexFooterProps" id="footerId" style="display: none;" ng-if="footerHtml">
 
     <ng-include src="footerHtml"></ng-include>
 
