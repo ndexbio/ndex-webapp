@@ -12,12 +12,19 @@
     font-family: "Helvetica Neue", Helvetica, Geneva, Arial, Verdana, sans-serif;
 }
 
+html, body {
+    height: 100%;
+}
+
 body
 {
+    display: flex;
+    flex-direction: column;
+
 
     margin: 0;
     padding-top: 70px;
-    padding-bottom: 50px;
+    /*padding-bottom: 50px;*/
     padding-left: 0;
     padding-right:0;
     color: #333;
@@ -27,7 +34,6 @@ body
     font-weight: normal;
     line-height: 18px;
     -webkit-font-smoothing: subpixel-antialiased;
-    height: 100%;
 }
 
 a:hover
@@ -107,150 +113,6 @@ section
     }
 }
 
-@media (min-height: 741px) {
-    .show-small{
-        display: none;
-    }
-    .show-large{
-        display: inherit;
-    }
-    .hx6 {
-        font-size: 18px;
-        line-height: 1.4em;
-        margin-bottom: 4em;
-    }
-    .hx3 {
-        font-family: "Open Sans";
-        font-size: 30px;
-        color: black; /*#0088D2;*/
-        margin-bottom: 2em;
-        text-align: center;
-    }
-    .ndexServerVersion {
-        font-family: "Open Sans";
-        font-size: 24px;
-        color: #0088D2;
-    }
-
-    /*
-    .v-center-calc {
-        margin-top: calc(5vh);
-    }
-    .v-center-calc-small {
-        padding-top: calc(2vh);
-    }
-    */
-
-    .img-sizer{
-        height: 100px;
-        padding-right: 80px;
-    }
-
-    .ndex-featured-collections {
-        font-size: 1.2em;
-        line-height: 1.5em;
-        margin: 1em;
-        text-align: center;
-        margin-top: 4em;
-    }
-
-    .center-vertically {
-        position: fixed;
-
-        top: 30%;
-
-        /*transform: translateY(50%);
-        */
-        margin-top: 3em;
-
-        left: 0;
-        right: 0;
-        height: 0;
-
-        text-align: center;
-    }
-
-    #logos-citation-above-footer {
-        bottom: 3em;
-        position: fixed;
-
-        width: 100%;
-        margin: 0 0 0 0;
-
-        padding-bottom: 4em;
-        background-color: white;
-    }
-}
-
-@media (max-height: 740px) {
-    .show-small{
-        display: inherit;
-    }
-
-    .show-large{
-        display: none;
-    }
-
-    .hx6 {
-        font-size: 12px;
-        line-height: 1.4em;
-        margin-bottom: 2em;
-    }
-
-    .hx3 {
-        font-family: "Open Sans";
-        font-size: 24px;
-        color: black; /*#0088D2;*/
-        margin-bottom: 1em;
-        text-align: center;
-    }
-    .ndexServerVersion {
-        font-family: "Open Sans";
-        font-size: 18px;
-        color: #0088D2;
-    }
-
-    /*
-    .v-center-calc {
-        margin-top: calc(2vh);
-    }
-    .v-center-calc-small {
-        padding-top: calc(1vh);
-    }
-    */
-    .img-sizer{
-        height: 50px;
-        padding-right: 50px;
-    }
-
-    .ndex-featured-collections {
-        font-size: 1em;
-        line-height: 1.5em;
-        margin: 1em;
-        text-align: center;
-
-        margin-top: 3em;
-        margin-bottom: 5em;
-    }
-
-    .center-vertically {
-        position: relative;
-        margin-top: 7em;
-        margin-bottom: 5em;
-    }
-
-    #logos-citation-above-footer {
-        bottom: 0;
-        position: fixed;
-
-        width: 100%;
-        margin: 0 0 3em 0;
-
-        padding-bottom: 3em;
-        background-color: white;
-    }
-}
-
 tbody > tr:nth-child(odd)
 {
     background: #EEE;
@@ -298,9 +160,9 @@ textarea
  ******************************************************************************/
 
 .marginsForNGView {
-    margin-left: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
+    margin-top: 20px;
+    margin-left: 30px;
+    margin-right: 30px;
 }
 
 
@@ -479,7 +341,6 @@ textarea
 {
     color: rgba(255, 255, 255, 0.8);
     font-family: 'Open Sans', sans-serif;
-
 }
 
 /* nav bar links */
@@ -489,6 +350,12 @@ textarea
     padding-bottom: 15px;
 }
 
+/*
+.navbar-toggle .icon-bar{
+    width: 40px !important;
+    /*height:3px !important;*
+}
+*/
 
 
 /* highlight nav bar links on focus or hover with a lightened black background */
@@ -505,18 +372,56 @@ textarea
 
 .navbar-ndex-top
 {
-    font-size: 1.1em;
-    vertical-align: top;
+    font-size: 16px;
     letter-spacing:0px;
-    /* margin-bottom is part of the hack to make the content start at the bottom of the nav bar?? */
-    /*margin-bottom: 120px;*/
 }
+.navbar-ndex-bottom
+{
+    font-size: 14px;
+    letter-spacing: 0px;
+}
+
+
+.navbar-top-height {
+    height: 75px;
+}
+
 
 /* the color of the collapsed menu bar in the header; this is for NDEX-662 */
 .icon-bar {
     background-color: lightgrey !important;
 }
 
+@media (min-width: 1151px) {
+    .login-button {
+        margin-right: 25px;
+        margin-left: 10px;
+        margin-top: 7px;
+    }
+}
+
+
+/*
+@media (min-width: 1800px) {
+    .login-button {
+        margin-right: 0px;
+        margin-left: 0px;
+        margin-top: 7px;
+    }
+    .navbar-ndex-logo-margin {
+        margin-left: 0px;
+    }
+}
+*/
+.navbar-ndex-logo-margin {
+    margin-left: 35px;
+}
+
+.ndexServerVersion {
+    font-size: 14px;
+    color: white;
+    /*background-color: blue;*/
+}
 
 /* this makes the header menu "collapse" into a menu button when
 max-width of the browser reaches the specified value; this is for NDEX-662 */
@@ -536,12 +441,17 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
 
     .navbar-toggle {
         display: block;
+
+        /*
+        padding: 0;
+        margin: 13px 0 0 0;
+        */
     }
 
     .navbar-collapse {
         border-top: 1px solid transparent;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        max-height: 700px;
+        max-height: 800px;
     }
 
     .navbar-fixed-top {
@@ -571,69 +481,11 @@ max-width of the browser reaches the specified value; this is for NDEX-662 */
         display: block !important;
     }
 
-
-
-    /*
-     * this portion is the same as  @media (max-height: 740px):
-     * we switch the Landing page to the "small" mode
-     */
-     .show-small{
-         display: inherit;
-     }
-
-    .show-large{
-        display: none;
-    }
-
-    .hx6 {
-        font-size: 12px;
-        line-height: 1.4em;
-        margin-bottom: 2em;
-    }
-
-    .hx3 {
-        font-family: "Open Sans";
-        font-size: 24px;
-        color: black; /*#0088D2;*/
-        margin-bottom: 1em;
-        text-align: center;
-    }
-    .ndexServerVersion {
-        font-family: "Open Sans";
-        font-size: 18px;
-        color: #0088D2;
-    }
-
-    .img-sizer{
-        height: 50px;
-        padding-right: 50px;
-    }
-
-    .ndex-featured-collections {
-        font-size: 1em;
-        line-height: 1.5em;
-        margin: 1em;
-        text-align: center;
-
-        margin-top: 3em;
-        margin-bottom: 5em;
-    }
-
-    .center-vertically {
-        position: relative;
-        margin-top: 7em;
-        margin-bottom: 5em;
-    }
-
-    #logos-citation-above-footer {
-        bottom: 0;
-        position: fixed;
-
-        width: 100%;
-        margin: 0 0 3em 0;
-
-        padding-bottom: 3em;
-        background-color: white;
+    .login-button {
+        margin-right: 5px;
+        margin-left: 15px;
+        margin-top: 8px;
+        margin-bottom: 10px;
     }
 }
 
@@ -825,6 +677,10 @@ ul.ndex-nav-pills > li > a:hover {
     width: 195px !important;
 }
 
+.customButtonWidthOnSearchPage {
+    width: 145px !important;
+}
+
 /* this adds some space after <HR> on Network page */
 .hrMarginRight {
     margin-right: 15px;
@@ -867,33 +723,6 @@ ul.ndex-nav-pills > li > a:hover {
     text-align: right;
     padding-bottom: 1em;
 }
-
-/*
-.ndex-featured-collections {
-    font-size: 1.2em;
-    line-height: 1.5em;
-    margin: 1em;
-    text-align: center;
-    margin-top: 4em;
-}
-*/
-
-/* the following classes (ta-toolbar, ta-toolbar.focussed ) only show textAngular toolbar when a
- * textAngular-edited field (i.e., Description or Reference in Edit Profile Modal) is in focus.
- // this is taken from https://stackoverflow.com/questions/27070859/show-textangular-toolbar-only-when-editor-is-in-focus-for-multiple-editors-with
-.ta-toolbar {
-    display: none;
-}
-.ta-toolbar.focussed {
-    display: block;
-}
-*/
-/*
-.networkViewFrame {
-    border-style: solid;
-    border-color: #287EC7;
-}
-*/
 
 .networkViewActionsSectionFrame {
     padding-left: 10px;
@@ -979,6 +808,7 @@ ul.ndex-nav-pills > li > a:hover {
 
 .popup_search_bar_modal .modal-dialog {
     width: 75%;
+    min-width: 640px;
 }
 
 .selected-navbar-item {
@@ -1005,30 +835,6 @@ ul.ndex-nav-pills > li > a:hover {
 .grid-align-cell {
     text-align: center;
 }
-
-/*
-#logos-citation-above-footer {
-    bottom: 3em;
-    position: fixed;
-
-    width: 100%;
-    margin: 0 0 0 0;
-
-    padding-bottom: 4em;
-    background-color: white;
-}
-
-/*
-#logos-citation-above-footer {
-    bottom: 3em;
-    position: fixed;
-
-    width: 80%;
-    margin: 0 0 0 -40%;
-    left: 50%;
-}
-*/
-
 
 .btn {
     border-radius: 24px;
@@ -1287,25 +1093,6 @@ span.glyphicon-refresh {
     width: 800px;
 }
 
-
-.homeContainer{
-    height: 100%;
-}
-
-/*
-.center-vertically-logo {
-    position: relative;
-    top: 5%;
-    /*transform: translateY(-5%);
-}
-/*
-.center-vertically {
-    position: relative;
-    top: 50%;
-    transform: translateY(50%);
-    padding-top: 2em;
-}
-*/
 .fa-disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -1335,51 +1122,220 @@ span.glyphicon-refresh {
 .youtube a:hover{background-color:#b52121;}
 /* end: this is for styling Twitter, YouTube and LinkedIn buttons on the bottom of the Front Page */
 
-/* start: taken from https://www.bootply.com/rY3MGdh1HO */
-.vertical-divider {
-    position: absolute;
-    z-index: 10;
-    top: 50%;
-    left: 50%;
-    margin: 0;
-    padding: 0;
-    width: auto;
-    height: 50%;
-    line-height: 0;
-    text-align:center;
-    text-transform: uppercase;
-    transform: translateX(-50%);
-    font-size: 1.4em;
-}
-.row-divided > .vertical-divider,
-.row-divided > .vertical-divider {
-    height: calc(56% - 1rem);
-}
-.vertical-divider:before,
-.vertical-divider:after {
-    position: absolute;
-    left: 50%;
-    content: '';
-    z-index: 9;
-    border-left: 1px solid rgba(34,36,38,.15);
-    border-right: 1px solid rgba(255,255,255,.1);
-    width: 0;
-    height: calc(100% - 1rem);
-}
-.vertical-divider:before {
-    top: -100%;
-}
-.vertical-divider:after {
-    top: auto;
-    bottom: 0;
-}
-.row-divided {
-    position:relative;
+
+.search-examples-button {
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+    width: 150px;
 }
 
-.row-divided > [class^="col-"],
-.row-divided > [class*=" col-"] {
-    padding-left: 30px;  /* gutter width (give a little extra room) */
-    padding-right: 30px; /* gutter width (give a little extra room) */
+
+/*
+ * shadow is generated with the help of
+ *      http://css3studio.com/page-css3/css-box-shadow.php
+ */
+.login-page-shadow {
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
 }
-/* start: taken from https://www.bootply.com/rY3MGdh1HO */
+
+.inputHeight {
+    height: 30px;
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.navbar-brand {
+    padding: 15px 0 15px 15px
+}
+
+
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sidenav_right */
+.sidenav {
+    height: auto;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 75px;
+    background-color: #222;
+    overflow-x: hidden;
+    transition: 0.3s;
+    right: 0
+}
+.sidenav a {
+    /*padding: 8px 8px 8px 32px;*/
+    text-decoration: none;
+    display: block;
+    transition: 0.3s;
+}
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+
+@media screen and (max-width:767px) {
+    .sidenav a {
+        margin-left: 15px;
+    }
+    .login-button {
+        margin-left: 25px;
+        margin-top: 8px;
+        margin-bottom: 2px;
+    }
+}
+
+
+
+
+/*
+body   { background-color: #F60; }
+
+/* Tablet targetted size *
+@media screen and (min-width:768px) and (max-width:1024px) {
+    body   { background-color: #0F0 }
+}
+
+/* Desktop size *
+@media screen and (min-width:1025px) {
+    body   { background-color: #06F }
+}
+*/
+
+
+
+
+
+
+
+.center {
+    padding-top: 2em;
+    text-align: center;
+}
+.centerFeaturedCollection {
+    text-align: center;
+}
+
+.slideImage {
+    width: auto;
+    max-height: 100%;
+    float: left;
+}
+
+.carousel-inner {
+    background-color: white; /*#C1E0FF;*/
+    width: 90%;
+    margin: auto;
+}
+.carousel-indicators {
+    font-size: 2em;
+    bottom: -0.75em;
+    text-align: center;
+    text-shadow: none;
+}
+
+/* color of carousel indicators/dots */
+.carousel-indicators li {
+    background: #C1E0FF;
+}
+.carousel-indicators .active {
+    background: #3576BE;
+}
+
+a.right.carousel-control {
+    position: absolute !important;
+    z-index: 2;
+    width: 5%;
+}
+a.left.carousel-control {
+    position: absolute !important;
+    z-index: 2;
+    width: 5%;
+}
+
+.carousel-control.left {
+    opacity:1 !important;
+    color: #3576BE;
+    background-image: none;
+}
+.carousel-control.right {
+    opacity:1 !important;
+    color: #3576BE;
+    background-image: none;
+}
+
+/* remove gradient grey from left and right of carousel */
+/*
+.carousel-control.left, .carousel-control.right {
+    background-image: none;
+}
+*/
+.carousel-control.left .glyphicon {
+    left: 0;
+    margin-left: 0;
+    padding-top: 5px;
+    font-size: 16px;
+}
+.carousel-control.right .glyphicon {
+    right: 0;
+    margin-right: 0;
+    padding-top: 5px;
+    font-size: 16px;
+}
+
+
+div.featuredCollectionDescriptionArea {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    /*border: 1px solid red;*/
+    height: 85%;
+    padding-left: 20px;
+}
+
+
+/*
+.mainAreaLandingPage {
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    /*border: 1px solid white;*
+}
+*/
+
+.mainAreaLandingPage {
+    overflow-y: hidden;
+    /*overflow-x: hidden;*/
+    text-overflow: ellipsis;
+    text-align: left;
+    overflow-wrap: break-word;
+    /*border: 1px solid red;*/
+}
+.logosStyle {
+    transform: scale(0.75, 0.75);
+    -ms-transform: scale(0.75, 0.75);
+    -webkit-transform: scale(0.75, 0.75);
+}
+
+#logoContainer {
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+
+.flexContent {
+    flex: 1 0 auto;
+}
+.ndexFooter {
+    flex-shrink: 0;
+}
+.ndexFooterProps {
+    background-color: #000000;
+    padding: 45px;
+    margin-top: 40px;
+}

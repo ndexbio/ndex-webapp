@@ -3,18 +3,17 @@ ndexApp.controller('homeController', ['sharedProperties', '$scope', 'uiMisc',
 
         $scope.homeController = {};
         var homeController = $scope.homeController;
-        homeController.featuredCollections = [];
+        homeController.featuredContent = [];
         homeController.URL = uiMisc.getCurrentServerURL();
-        homeController.welcomeHeader = window.ndexSettings.welcome.header;
-        homeController.welcomeMessage = window.ndexSettings.welcome.message;
-        homeController.linkToReleaseDocs = window.ndexSettings.welcome.linkToReleaseDocs;
 
-        if (window.ndexSettings.featuredCollections) {
-            homeController.featuredCollections = window.ndexSettings.featuredCollections;
+        if (window.featuredContent) {
+            homeController.featuredContent = window.featuredContent;
         }
 
         homeController.getURLOfFeaturedCollection = function(collection) {
-            return homeController.URL + collection.account + '/' + collection.UUID;
+            return '#/' + collection.account + '/' + collection.UUID;
+
+            //return homeController.URL + collection.account + '/' + collection.UUID;
         };
     }
 ]);
