@@ -4161,7 +4161,7 @@ ndexApp.controller('networkController',
                             networkController.currentNetwork.rightsHolder = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rightsHolder');
                             networkController.currentNetwork.rights = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rights');
 
-                            if(networkController.currentNetwork.rights.indexOf('|') > -1){
+                            if ((undefined !== networkController.currentNetwork.rights) && networkController.currentNetwork.rights.indexOf('|') > -1){
                                 var rightsTemp = networkController.currentNetwork.rights;
 
                                 var rightsArray = rightsTemp.split('|');
