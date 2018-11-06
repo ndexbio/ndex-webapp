@@ -1333,9 +1333,18 @@ div.featuredCollectionDescriptionArea {
 }
 .ndexFooter {
     flex-shrink: 0;
+    background: #000;
 }
 .ndexFooterProps {
-    background-color: #000000;
     padding: 45px;
     margin-top: 40px;
+
+    width:100%;
+    min-width: 1170px;
 }
+
+.footerColor {
+    color: #fff;
+    background: #000;
+}
+
