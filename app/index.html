@@ -349,9 +349,7 @@
 
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()"
-                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
-
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()">
                         <img src="images/home.png"
                              style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
                              class="marginForCollapsedMode">
@@ -413,9 +411,7 @@
 
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="switchNav($event); main.goToCurrentUser()"
-                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
-
+                    <a ng-click="switchNav($event); main.goToCurrentUser()">
                         <img src="images/home.png"
                              style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
                              class="marginForCollapsedMode">

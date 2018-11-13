@@ -1,9 +1,10 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
-    '$modalStack',
+    '$modalStack', '$window',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $modalStack) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $modalStack,
+                $window) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -73,6 +74,14 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.main.loggedIn = false;
         $scope.main.showSignIn = true;
 
+        var windowElement = angular.element($window);
+        windowElement.on('beforeunload', function (event) {
+            if ($scope.main.loggedIn && $route.current.loadedTemplateUrl &&
+                $route.current.loadedTemplateUrl.endsWith('myAccount.html')) {
+                sessionStorage.setItem('pageReloaded', 'true');
+            }
+        });
+
         var showUserGreeting = function() {
             var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
             $scope.main.userFirstAndLastNames = userFirstAndLastNames ? 'Hi, ' + userFirstAndLastNames : 'MyAccount';
@@ -124,8 +133,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $scope.main.showSignIn = true;
 
             $location.path('/');
-            //$window.location.href = '#/';
-            //$window.location.reload();
         };
 
         $scope.$on('LOGGED_OUT', signOutHandler);
@@ -175,19 +182,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 $location.path('/myAccount');
             }
         };
-
-        $scope.isActiveNetworkView = function (viewLocation) {
-            var locationPath = $location.path();
-            var viewLocationPath = viewLocation + sharedProperties.getCurrentNetworkId();
-            return viewLocationPath === locationPath;
-        };
-
-        $scope.isActiveUserView = function (viewLocation) {
-            var locationPath = $location.path();
-            var viewLocationPath = viewLocation + sharedProperties.getCurrentUserId();
-            return viewLocationPath === locationPath;
-        };
-
 
         function initMissingConfigParams(config) {
 

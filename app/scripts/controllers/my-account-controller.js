@@ -3927,5 +3927,10 @@ ndexApp.controller('myAccountController',
             // get groups
             var member = null;
             myAccountController.getUserGroupMemberships(member);
+
+            angular.element(document).ready(function () {
+                $(window).trigger('resize');
+            });
+
         }]);
             //------------------------------------------------------------------------------------//
