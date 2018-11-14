@@ -166,43 +166,47 @@
                             </div>
 
                             <div class="row">
-                                <button type="button"
-                                        ng-class="featuredContentDefined?
-                                            'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
-                                        data-toggle="dropdown">
-                                    Featured Content <span class="caret"></span>
-                                </button>
+                                <div class="dropdown">
+                                    <button type="button"
+                                            ng-class="featuredContentDropDownEnabled?
+                                                'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
+                                            data-toggle="dropdown">
+                                        Featured Content <span class="caret"></span>
+                                    </button>
 
-                                <ul class="dropdown-menu" role="menu">
-                                    <li class="AlignLeft" style="padding-left: 5px;"
-                                        ng-repeat="item in featuredContentDropDown">
-                                        <a ng-href="{{item.href}}" ng-bind-html="item.description"></a>
-                                    </li>
-                                </ul>
+                                    <ul class="dropdown-menu">
+                                        <li ng-repeat="item in featuredContentDropDown">
+                                            <a ng-href="{{item.href}}">{{item.description}}</a>
+                                        </li>
+                                    </ul>
+
+                                </div>
                             </div>
 
                             <div class="row">
-                                <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
-                                        data-toggle="dropdown">
-                                    Examples <span class="caret"></span>
-                                </button>
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
+                                            data-toggle="dropdown">
+                                        Examples <span class="caret"></span>
+                                    </button>
 
-                                <ul class="dropdown-menu" role="menu">
-                                    <li class="AlignLeft" style="padding-left: 5px;"
-                                        ng-repeat="item in main.searchNetworksExamples">
-                                        <a ng-click="main.runSearchExample(item); closeModal()">
-                                            {{item.description}}
-                                        </a>
-                                    </li>
+                                    <ul class="dropdown-menu">
+                                        <li class="AlignLeft" style="padding-left: 5px;"
+                                            ng-repeat="item in main.searchNetworksExamples">
+                                            <a ng-click="main.runSearchExample(item); closeModal()">
+                                                {{item.description}}
+                                            </a>
+                                        </li>
 
-                                    <li class="AlignLeft" ng-show="config.searchDocLink">
-                                        <a style="color:#428bca; background-color:white;"
-                                           ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
-                                            <u>{{config.searchDocLink.label}}</u>
-                                        </a>
-                                    </li>
+                                        <li class="AlignLeft" ng-show="config.searchDocLink">
+                                            <a style="color:#428bca; background-color:white;"
+                                               ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
+                                                <u>{{config.searchDocLink.label}}</u>
+                                            </a>
+                                        </li>
 
-                                </ul>
+                                    </ul>
+                                </div>
                             </div>
 
                         </td>
@@ -292,9 +296,7 @@
 
             <a class="navbar-brand"
                style="padding: 5px 0 5px 0px"
-               ng-href="{{$location.path()}}"
-               ng-click="collapseHamburgerMenu(); redirectToCurrentServer()">
-
+               ng-click="collapseHamburgerMenu(); goToLandingPage()">
                 <div id="ndexLogoId" style="
                     display: none;
                     background-image: url('images/new_landing_page_logo.png');
@@ -349,9 +351,7 @@
 
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()"
-                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
-
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()">
                         <img src="images/home.png"
                              style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
                              class="marginForCollapsedMode">
@@ -413,9 +413,7 @@
 
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="switchNav($event); main.goToCurrentUser()"
-                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
-
+                    <a ng-click="switchNav($event); main.goToCurrentUser()">
                         <img src="images/home.png"
                              style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
                              class="marginForCollapsedMode">

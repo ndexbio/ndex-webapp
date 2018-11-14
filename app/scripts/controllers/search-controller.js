@@ -142,7 +142,7 @@ ndexApp.controller('searchController',
             $scope.activateTab = function(tabName){
                 $scope.activeTab = {};
                 $scope.activeTab[tabName] = true;
-
+/*
                 switch (tabName.toLowerCase()) {
 
                     case 'networks':
@@ -166,6 +166,7 @@ ndexApp.controller('searchController',
                     default:
                         break;
                 }
+*/
             };
 
 
