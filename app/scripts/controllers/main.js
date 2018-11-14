@@ -101,7 +101,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         };
 
-        $scope.featuredContentDefined = false;
+        $scope.featuredContentDefined         = false;
+        $scope.featuredContentDropDownEnabled = false;
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
@@ -1253,6 +1254,15 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         getTopMenu();
 
+        /*
+         * stripHTML removes html from a string (using jQuery) an returns text.
+         * In case string contains no html, the function returns empty string; to avoid
+         * returning empty string, we wrap string in '<html> ... </html>' tags.
+         */
+        var stripHTML = function(html) {
+            return $('<html>'+html+'</html>').text();
+        };
+
         function fillInFeaturedContentChannelAndDropDown(featuredContent) {
 
             //$scope.featuredContentDefined = false;
@@ -1289,8 +1299,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 var imageUrl = featuredItem.hasOwnProperty('imageURL') ?  featuredItem.imageURL : null;
                 var text     = featuredItem.title + '<br>' + featuredItem.text;
                 var link     = null;
-                var itemDescriptionForDropDown = ' dropdown item ';
-
 
                 var includeInDropDown = false;
                 if (featuredItem.hasOwnProperty('includeInDropDownMenu')) {
@@ -1309,6 +1317,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                     case 'networkset':
                         link = ndexServer + 'networkset/' +  featuredItem.UUID;
+                        if (null === imageUrl) {
+                            imageUrl = 'images/default_networkSet.png';
+                        }
                         break;
 
                     case 'network':
@@ -1336,11 +1347,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 });
 
                 if (includeInDropDown) {
-                    var ddItem = itemDescriptionForDropDown + ' ' + (currIndex-1);
+                    var dropDownItem = featuredItem.hasOwnProperty('title') ?
+                        stripHTML(featuredItem.title) : 'drop down item ' + (currIndex-1);
                     $scope.featuredContentDropDown.push(
                         {
-                            'description': ddItem,
-                            'href':         link
+                            'description': dropDownItem,
+                            'href':        link
                         });
 
                 }
@@ -1348,6 +1360,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             $scope.featuredContentDefined = slides.length > 0;
 
+            $scope.featuredContentDropDownEnabled = $scope.featuredContentDropDown.length > 0;
         }
 
         var getFeaturedContentChannel = function() {
