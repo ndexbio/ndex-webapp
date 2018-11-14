@@ -18,15 +18,11 @@ ndexApp.run(['$route', '$rootScope', '$location', function ($route, $rootScope, 
     var original = $location.path;
     $location.path = function (path, reload) {
         if (reload === false) {
-            if (sessionStorage.getItem('pageReloaded') === 'true') {
-                sessionStorage.setItem('pageReloaded', 'false');
-            } else {
-                var lastRoute = $route.current;
-                var un = $rootScope.$on('$locationChangeSuccess', function () {
-                    $route.current = lastRoute;
-                    un();
-                });
-            }
+            var lastRoute = $route.current;
+            var un = $rootScope.$on('$locationChangeSuccess', function () {
+                $route.current = lastRoute;
+                un();
+            });
         }
         return original.apply($location, [path]);
     };

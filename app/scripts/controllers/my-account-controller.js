@@ -79,6 +79,7 @@ ndexApp.controller('myAccountController',
 
 
             var pageNo = 1;
+
             if ((typeof $routeParams.pageNo !== 'undefined') && ($routeParams.pageNo !== null)) {
                 if ($routeParams.pageNo.match(/p[1-9]+[0-9]*/)) {
                     var pageNoCastFromStr = $routeParams.pageNo.substring(1);
@@ -95,10 +96,10 @@ ndexApp.controller('myAccountController',
 
                 if ((window.performance.navigation.type === 1)) {
                     // it means that the page was reloaded; page no is to be set to 1
-                    // and location to /myAccount without reloading the page
+                    // and location to /myAccount
                     pageNoP = 'p1';
                     pageNo  = 1;
-                    $location.path('/myAccount', false);
+                    $location.path('/myAccount');
                 }
             }
 

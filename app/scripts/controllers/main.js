@@ -1,10 +1,9 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
     '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
-    '$modalStack', '$window',
+    '$modalStack',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $modalStack,
-                $window) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $modalStack) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -73,14 +72,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         $scope.main.loggedIn = false;
         $scope.main.showSignIn = true;
-
-        var windowElement = angular.element($window);
-        windowElement.on('beforeunload', function (event) {
-            if ($scope.main.loggedIn && $route.current.loadedTemplateUrl &&
-                $route.current.loadedTemplateUrl.endsWith('myAccount.html')) {
-                sessionStorage.setItem('pageReloaded', 'true');
-            }
-        });
 
         var showUserGreeting = function() {
             var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
