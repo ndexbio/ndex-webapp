@@ -1057,16 +1057,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         };
 
-        /*
-         * Similar to redirectToExternalLink(), but redirects to the current server
-         * after clicking on NDEx logo.
-         */
-        $scope.redirectToCurrentServer = function() {
-            var currentServerURL = uiMisc.getCurrentServerURL();
-            var win = window.open(currentServerURL, '_self');
-            win.focus();
+        $scope.goToLandingPage = function() {
+            $location.path('/');
         };
-
 
         $scope.collapseHamburgerMenu = function() {
             $('.navbar-collapse.in').collapse('hide');
