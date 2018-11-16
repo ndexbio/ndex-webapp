@@ -362,10 +362,12 @@ textarea
 .navbar-nav>li>a:focus
 {
     background-color: rgb(38,38,38);
+    font-size: 1.1em;
 }
 
 .navbar-nav>li>a:hover {
     background-color: rgb(38, 38, 38);
+    font-size: 1.1em;
 }
 
 /* styles for the top black bar only */
