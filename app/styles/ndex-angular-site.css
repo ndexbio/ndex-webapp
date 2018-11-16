@@ -339,7 +339,7 @@ textarea
 
 .navbar-ndex a
 {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(255, 255, 255);
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -1348,3 +1348,9 @@ div.featuredCollectionDescriptionArea {
     background: #000;
 }
 
+/* in popup tooltips, make text align on the left. If this is not specified,
+ *  text is centered on every line
+ */
+.tooltip-inner {
+    text-align: left;
+}

@@ -245,14 +245,13 @@
                                        ng-model="main.searchTermExpansionSelected">
 
                                 <span ng-style="searchTermExpansionEnabled ?
-                                    {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}"
-
-                                      title="Only applied when searching networks"
-                                      ng-init="setToolTips()">
+                                    {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}">
                                         <strong>{{main.searchTitle}}</strong>
                                      &nbsp;
-                                    <i data-toggle="tooltip" data-placement="bottom"
-                                       title="Only applied when searching networks"  ng-init="setToolTips()"
+                                    <i data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="{{popupTitleInSearchModal}}"
+                                       onmouseenter="$(this).tooltip('show')"
                                        class="fa fa-info-circle" style="color: #3576BE; cursor: pointer;"
                                        ng-if="searchTermExpansionEnabled">
 

@@ -144,6 +144,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.arrayOfValsForSearchExpansion = ['ALL', 'NETWORKS'];
         var searchTitle = 'Perform Search Term Expansion (Genes and Proteins only)';
 
+        $scope.popupTitleInSearchModal =
+            'This option expands the search term(s) to include all known aliases for a "human" gene(s)/protein(s). ' +
+            'For example, searching for AKT1 will retrieve all networks where the term AKT1 is mentioned either ' +
+            ' in the network name, description or in any of the node names. ' +
+            'When the Search Term Expansion option is enabled, search results will also include networks ' +
+            ' where a node\'s name is "PKB-ALPHA", "P31749", "HGNC:391", etc. ';
+
         $scope.main.searchTermExpansionSelected = false;
 
         $scope.searchTermExpansionEnabled = false;
