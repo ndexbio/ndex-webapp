@@ -39,7 +39,7 @@ ndexApp.controller('networkSetController',
     var activateURLLabel   = "Enable Share URL";
     var deActivateURLLabel = "Disable Share URL";
 
-    var windowsHeightCorrection = 185;
+    var windowsHeightCorrection = 170;
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
@@ -62,17 +62,6 @@ ndexApp.controller('networkSetController',
         var myToolTips = $('[data-toggle="tooltip"]');
         myToolTips.tooltip();
     };
-
-
-    $scope.$on("$destroy", function(){
-        // hide the Search menu item in Nav Bar
-        $scope.$parent.showSearchMenu = false;
-        uiMisc.showSearchMenuItem();
-    });
-
-    uiMisc.hideSearchMenuItem();
-    $scope.$parent.showSearchMenu = true;
-
 
     networkSetController.getNetworksOfNetworkSet = function() {
 
@@ -477,9 +466,6 @@ ndexApp.controller('networkSetController',
         return url;
     };
 
- /*   $scope.getNetworkDownloadLink = function(rowEntity) {
-        return uiMisc.getNetworkDownloadLink(networkSetController, rowEntity);
-    }; */
 
     $scope.downloadNetwork= function(rowEntity) {
         uiMisc.downloadCXNetwork(rowEntity.externalId);

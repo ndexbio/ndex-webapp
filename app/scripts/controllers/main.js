@@ -1,8 +1,9 @@
 // create the controller and inject Angular's $scope
 ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProperties', 'userSessionTablesSettings',
-    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope',
+    '$scope', '$location', '$modal', '$route', '$http', '$interval', 'uiMisc', '$rootScope', '$uibModal', 'ndexSpinner',
+    '$modalStack',
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
-              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope) {
+              $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $modalStack) {
 
         $scope.$on('IdleStart', function() {
             if (window.currentSignInType === 'basic') {
@@ -10,8 +11,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         });
 
-
-        $(document).ready(function(){
+        $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
         });
 
@@ -25,8 +25,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             setTooltip('Copy the NDEx citation information to the clipboard');
         };
 
+        $scope.logosLoaded = false;
+
         //noinspection JSCheckFunctionSignatures
         var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
+
+        $scope.footerHtml = window.ndexSettings.landingPageConfigServer + '/footer.html';
+        //$scope.footerHtml = 'v2/footer.html';
 
         /*
         function hideTooltip() {
@@ -43,10 +48,25 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             myToolTips.tooltip();
         };
 
+        $scope.slickConfig = {
+            enabled: true,
+            autoplay: true,
+            draggable: false,
+            autoplaySpeed: 1000,
+            method: {},
+            initialSlide: 0,
+            event: {
+                beforeChange: function (event, slick, currentSlide, nextSlide) {
+                },
+                afterChange: function (event, slick, currentSlide, nextSlide) {
+                }
+            }
+        };
 
         $scope.showFooter = true;
 
         $scope.main = {};
+        $scope.main.ndexServerVersion = null;
 
         $scope.main.url = $location; //expose the service to the scope for nav
 
@@ -71,6 +91,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 $route.reload();
             }
         };
+
+        $scope.featuredContentDefined         = false;
+        $scope.featuredContentDropDownEnabled = false;
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
@@ -100,6 +123,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
             $scope.main.showSignIn = true;
+
+            $location.path('/');
         };
 
         $scope.$on('LOGGED_OUT', signOutHandler);
@@ -129,21 +154,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             //console.log("strLength = " + strLength);
             if (strLength >= $scope.maxSearchInputLength) {
                 $scope.stringTooLongWarning = 'The maximum length for this field is ' +
-                    $scope.maxSearchInputLength + ' characters.';
+                    $scope.maxSearchInputLength + ' characters';
             } else {
-                delete $scope.stringTooLongWarning;
+                if ($scope.stringTooLongWarning) {
+                    delete $scope.stringTooLongWarning;
+                }
             }
         };
-
-
-        $scope.main.hideSearchBar = ($location.path() === '/' || $location.path() === '/signIn');
-
-
-        $scope.$on('$routeChangeSuccess',function(){
-            $scope.main.hideSearchBar = ($location.path() === '/' || $location.path() === '/signIn');
-        });
-
-        $scope.showSearchMenu = false;
 
         $scope.main.goToNetworkView = function(path){
             if (sharedProperties.currentNetworkId) {
@@ -157,19 +174,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 $location.path('/myAccount');
             }
         };
-
-        $scope.isActiveNetworkView = function (viewLocation) {
-            var locationPath = $location.path();
-            var viewLocationPath = viewLocation + sharedProperties.getCurrentNetworkId();
-            return viewLocationPath === locationPath;
-        };
-
-        $scope.isActiveUserView = function (viewLocation) {
-            var locationPath = $location.path();
-            var viewLocationPath = viewLocation + sharedProperties.getCurrentUserId();
-            return viewLocationPath === locationPath;
-        };
-
 
         function initMissingConfigParams(config) {
 
@@ -237,104 +241,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             // check if any of configurable Navigation Bar links are missing
             // and assign default values if yes
-            if (typeof config.logoLink === 'undefined') {
-                config.logoLink = {};
-            }
-            if (typeof config.logoLink.href === 'undefined') {
-                config.logoLink.href = 'http://preview.ndexbio.org';
-            }
-            if (typeof config.logoLink.warning === 'undefined') {
-                config.logoLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.logoLink.showWarning === 'undefined') {
-                config.logoLink.showWarning = false;
-            }
 
-
-            if (typeof config.newsLink === 'undefined') {
-                config.newsLink = {};
-            }
-            if (typeof config.newsLink.label === 'undefined') {
-                config.newsLink.label = 'News';
-            }
-            if (typeof config.newsLink.href === 'undefined') {
-                config.newsLink.href = 'http://www.home.ndexbio.org/index';
-            }
-            if (typeof config.newsLink.warning === 'undefined') {
-                config.newsLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.newsLink.showWarning === 'undefined') {
-                config.newsLink.showWarning = false;
-            }
-
-            if (typeof config.aboutLink === 'undefined') {
-                config.aboutLink = {};
-            }
-            if (typeof config.aboutLink.label === 'undefined') {
-                config.aboutLink.label = 'About';
-            }
-            if (typeof config.aboutLink.href === 'undefined') {
-                config.aboutLink.href = 'http://home.ndexbio.org/about-ndex';
-            }
-            if (typeof config.aboutLink.warning === 'undefined') {
-                config.logoLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.aboutLink.showWarning === 'undefined') {
-                config.aboutLink.showWarning = false;
-            }
-
-            if (typeof config.documentationLink === 'undefined') {
-                config.documentationLink = {};
-            }
-            if (typeof config.documentationLink.label === 'undefined') {
-                config.documentationLink.label = 'Docs';
-            }
-            if (typeof config.documentationLink.href === 'undefined') {
-                config.documentationLink.href = 'http://home.ndexbio.org/quick-start';
-            }
-            if (typeof config.documentationLink.warning === 'undefined') {
-                config.documentationLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.documentationLink.showWarning === 'undefined') {
-                config.documentationLink.showWarning = false;
-            }
             if ((typeof config.refreshIntervalInSeconds === 'undefined') ||
                 (typeof config.refreshIntervalInSeconds !== 'number') ||
                 config.refreshIntervalInSeconds < 0) {
                 // refresh interval defaults to 0 seconds (disabled) in case it is not explicitly defined,
                 // defined as non-number or negative number
                 config.refreshIntervalInSeconds = 0;
-            }
-            if (typeof config.reportBugLink === 'undefined') {
-                config.reportBugLink = {};
-            }
-            if (typeof config.reportBugLink.label === 'undefined') {
-                config.reportBugLink.label = 'Report Bug';
-            }
-            if (typeof config.reportBugLink.href === 'undefined') {
-                config.reportBugLink.href = 'http://home.ndexbio.org/report-a-bug';
-            }
-            if (typeof config.reportBugLink.warning === 'undefined') {
-                config.reportBugLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.reportBugLink.showWarning === 'undefined') {
-                config.reportBugLink.showWarning = false;
-            }
-
-            if (typeof config.contactUsLink === 'undefined') {
-                config.contactUsLink = {};
-            }
-            if (typeof config.contactUsLink.label === 'undefined') {
-                config.contactUsLink.label = 'Contact Us';
-            }
-            if (typeof config.contactUsLink.href === 'undefined') {
-                config.contactUsLink.href = 'http://home.ndexbio.org/contact-us/';
-            }
-            if (typeof config.contactUsLink.warning === 'undefined') {
-                config.contactUsLink.warning = 'Warning! You are about to leave your organization\'s domain. Follow this link?';
-            }
-            if (typeof config.contactUsLink.showWarning === 'undefined') {
-                config.contactUsLink.showWarning = false;
             }
 
 
@@ -365,6 +278,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // if any of config parameters missing, assign default values
 
         initMissingConfigParams(window.ndexSettings);
+        $scope.linkToReleaseDocs = window.ndexSettings.linkToReleaseDocs;
 
         // "Cite NDEx" menu item is not configurable.
         window.ndexSettings.citeNDEx = {};
@@ -376,7 +290,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         //Test whether the server is up or not.
         $scope.main.serverIsDown = null;
 
-        $scope.main.ndexServerVersion = null;
+
         window.navigator.ndexServerVersion = 'ndex-webapp/';
 
         ndexService.getServerStatus('full',
@@ -391,39 +305,434 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     if (data.properties.ServerVersion) {
                         $scope.main.ndexServerVersion = data.properties.ServerVersion;
                         window.navigator.ndexServerVersion += data.properties.ServerVersion;
+                        document.getElementById('ndexServerVersionId').style.color = '#149FEC';
                     }
                 }
                 $scope.main.serverIsDown = false;
 
-                document.getElementById('hiddenElementId').style.display  = '';
-                document.getElementById('hiddenElementId1').style.display = '';
-                document.getElementById('hiddenElementId2').style.display = '';
-                document.getElementById('hiddenElementId3').style.display = '';
+                document.getElementById('topNavBarId').style.display                = '';
+                document.getElementById('ndexLogoId').style.display                 = '';
+                document.getElementById('topMenuId').style.display                  = '';
+                document.getElementById('searchMyAccountNameLoginId').style.display = '';
+                document.getElementById('footerId').style.display                   = '';
+
+                document.getElementById('slidingRightMenuId').style.display         = '';
+                document.getElementById('slidingRightMenuSearchMyAccountNameLoginId').style.display = '';
             },
             function() {
                 $scope.main.serverIsDown = true;
                 window.navigator.ndexServerVersion += 'unknown';
 
-                document.getElementById('hiddenElementId').style.display  = '';
-                document.getElementById('hiddenElementId1').style.display = '';
-                document.getElementById('hiddenElementId2').style.display = '';
-                document.getElementById('hiddenElementId3').style.display = '';
+                document.getElementById('topNavBarId').style.display                = '';
+                document.getElementById('ndexLogoId').style.display                 = '';
+                document.getElementById('topMenuId').style.display                  = '';
+                document.getElementById('searchMyAccountNameLoginId').style.display = '';
+                document.getElementById('footerId').style.display                   = '';
+
+                document.getElementById('slidingRightMenuId').style.display         = '';
+                document.getElementById('slidingRightMenuSearchMyAccountNameLoginId').style.display = '';
 
                 // this will remove (hide) NDEx logo from the top left in the Navigation Bar
-                document.getElementById('hiddenElementId').style.background  = 'transparent';
+                document.getElementById('ndexLogoId').style.background  = 'transparent';
             });
 
-        $scope.main.startSignIn = function()
-        {
-            $location.path('/signIn');
-        };
 
-        
+
+        $scope.main.showSignInSignUpOptions = function() {
+            $uibModal.open({
+                templateUrl: 'views/signInSignUpModal.html',
+
+                controller: function ($scope, $uibModalInstance) {
+
+                    $scope.header             = window.ndexSettings.signIn.header;
+                    $scope.showForgotPassword = window.ndexSettings.signIn.showForgotPassword;
+                    $scope.cancelLabel        = 'Cancel';
+                    $scope.confirmLabel       = 'Sign In';
+
+                    $scope.needAnAccount      = window.ndexSettings.signIn.footer + '&nbsp;';
+                    $scope.showSignUp         = window.ndexSettings.signIn.showSignup;
+
+                    $scope.googleSSO          = window.googleSSO;
+
+                    $scope.signIn         = {'userName': '', 'password': ''};
+                    $scope.signIn.newUser = {};
+
+                    $scope.cancelButtonDisabled  = false;
+                    $scope.confirmButtonDisabled = true;
+
+                    delete $scope.errors;
+
+                    $scope.setToolTips = function(){
+                        var myToolTips = $('[data-toggle="tooltip"]');
+                        myToolTips.tooltip();
+                    };
+
+                    $scope.close = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                    $scope.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+
+                    $scope.$watch('signIn.userName', function() {
+                        delete $scope.errors;
+                    });
+                    $scope.$watch('signIn.password', function() {
+                        delete $scope.errors;
+                    });
+
+                    var basicAuthSuccessHandler = function(data) {
+                        sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                        ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
+
+                        window.currentNdexUser = data;
+                        window.currentSignInType = 'basic';
+
+                        $rootScope.$emit('LOGGED_IN');
+                        $location.path('/myAccount');
+                        $scope.signIn.userName = null;
+                        $scope.signIn.password = null;
+
+                        $uibModalInstance.dismiss();
+                    };
+
+                    $scope.submitSignIn = function () {
+                        ndexUtility.clearUserCredentials();
+
+                        var userName = $scope.signIn.userName;
+                        var password = $scope.signIn.password;
+
+                        ndexService.authenticateUserV2(userName, password,
+                            basicAuthSuccessHandler,
+                            function(error) { //.error(function (data, status, headers, config, statusText) {
+
+                                if (error && error.message) {
+                                    $scope.errors = error.message;
+                                } else {
+                                    $scope.errors = 'Unexpected error during sign-in with status ' + error.status;
+                                }
+                            });
+                    };
+
+                    $scope.openBasicAuthSignUp = function () {
+
+                        var signInOptionsModalInstance = $uibModalInstance;
+
+                        $uibModal.open({
+                            templateUrl: 'signUp.html',
+                            backdrop: 'static',
+
+                            controller: function ($scope, $uibModalInstance) {
+                                $scope.signIn         = {'userName': '', 'password': ''};
+                                $scope.signIn.newUser = {};
+
+                                $scope.cancel = function () {
+                                    signInOptionsModalInstance.dismiss();
+                                    $uibModalInstance.dismiss();
+                                };
+
+                                $scope.back = function () {
+                                    $uibModalInstance.dismiss();
+                                };
+
+                                $scope.$watch('signIn.newUser.firstName', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.lastName', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.emailAddress', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.userName', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.password', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+                                $scope.$watch('signIn.newUser.passwordConfirm', function () {
+                                    $scope.signIn.signUpErrors = null;
+                                });
+
+                                $scope.basicAuthSignUp = function () {
+                                    //check if passwords match, else throw error
+                                    if ($scope.signIn.newUser.password !== $scope.signIn.newUser.passwordConfirm) {
+                                        $scope.signIn.signUpErrors = 'Passwords do not match';
+                                        return;
+                                    }
+
+                                    var basicAuthSuccessHandler = function(data) {
+                                        sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
+                                        ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
+
+                                        window.currentNdexUser = data;
+                                        window.currentSignInType = 'basic';
+
+                                        $rootScope.$emit('LOGGED_IN');
+                                        $location.path('/myAccount');
+                                        $scope.signIn.userName = null;
+                                        $scope.signIn.password = null;
+
+                                        $scope.cancel();  // basically, close modals
+                                    };
+
+                                    ndexService.createUserV2($scope.signIn.newUser,
+                                        function (url) {
+
+                                            if (url) {
+                                                var newUserId = url.split('/').pop();
+                                                var data = {};
+
+                                                data.userName          = $scope.signIn.newUser.userName;
+                                                data.firstName         = $scope.signIn.newUser.firstName;
+                                                data.lastName          = $scope.signIn.newUser.lastName;
+                                                data.externalId        = newUserId;
+
+                                                $scope.signIn.password = $scope.signIn.newUser.password;
+
+                                                basicAuthSuccessHandler(data);
+
+                                            } else {
+                                                $scope.cancel();  // basically, close modals
+
+                                                // display modal asking to check email in order to activate the account
+                                                $uibModal.open({
+                                                    templateUrl: 'signUpSuccess.html',
+                                                    backdrop: 'static'
+                                                });
+                                            }
+                                        },
+                                        function (error) {
+                                            $scope.signIn.signUpErrors = error.message;
+                                        });
+                                };
+                            }
+
+                        });
+                    };
+
+
+                    $scope.forgot = {};
+
+                    $scope.forgotPassword = function () {
+                        $uibModalInstance.dismiss();
+
+                        $uibModal.open({
+                            templateUrl: 'forgotPassword.html',
+                            controller: function ($scope, $uibModalInstance, $log, forgot) {
+                                $scope.forgot = forgot;
+                                $scope.resetPassword = function () {
+                                    $scope.isProcessing = true;
+
+                                    var spinner = 'spinnerResetPasswordId';
+                                    ndexSpinner.startSpinner(spinner);
+
+                                    ndexService.getUserByUserNameV2($scope.forgot.accountName,
+                                        function(data) {
+                                            var userId = (data && data.externalId) ? data.externalId : null;
+                                            if (userId) {
+
+                                                ndexService.emailNewPasswordV2(userId,
+                                                    function () {
+                                                        ndexSpinner.stopSpinner();
+                                                        forgot.done = true;
+                                                        forgot.errorMsg = null;
+                                                        forgot.successMsg = 'A new password has been sent to the email of record.';
+                                                        $scope.isProcessing = false;
+                                                    },
+                                                    function (error) {
+                                                        ndexSpinner.stopSpinner();
+                                                        forgot.errorMsg = error.message;
+                                                        $scope.isProcessing = false;
+                                                    });
+                                            }
+                                            else {
+                                                ndexSpinner.stopSpinner();
+                                                forgot.errorMsg = 'Unable to get User Id for user ' +
+                                                    $scope.forgot.accountName + ' and request password reset.';
+                                                $scope.isProcessing = false;
+                                            }
+                                        },
+                                        function(error){
+                                            ndexSpinner.stopSpinner();
+                                            forgot.errorMsg =  error.message;
+                                            $scope.isProcessing = false;
+                                        });
+                                };
+
+                                $scope.cancel = function () {
+                                    $uibModalInstance.dismiss();
+                                };
+                                $scope.back = function () {
+                                    $rootScope.$emit('SHOW_SIGN_IN_SIGN_UP_MODAL');
+                                    $uibModalInstance.dismiss();
+                                };
+
+                                $scope.$watch('forgot.accountName', function() {
+                                    delete $scope.forgot.successMsg;
+                                    delete $scope.forgot.errorMsg;
+                                });
+                            },
+                            resolve: {
+                                forgot: function () {
+                                    return $scope.forgot;
+                                }
+                            }
+                        });
+
+                        $uibModalInstance.result.finally(function () {
+                            $scope.forgot = {};
+                        });
+
+                    };
+
+
+                    var googleUserHandler = function (curUser) {
+
+                        var spinner = 'spinnerSignInWithGoogleId';
+                        ndexSpinner.startSpinner(spinner);
+
+                        ndexService.authenticateUserWithGoogleIdToken(
+                            function(data) {
+                                ndexSpinner.stopSpinner();
+                                sharedProperties.setCurrentUser(data.externalId, data.userName);
+
+                                window.currentNdexUser = data;
+                                window.currentSignInType = 'google';
+
+                                $rootScope.$emit('LOGGED_IN');
+
+                                $location.path('/myAccount');
+                                $scope.signIn.userName = null;
+                                $scope.signIn.password = null;
+
+                                $uibModalInstance.dismiss();
+                            },
+                            function(error) {
+                                ndexSpinner.stopSpinner();
+
+                                if (error) {
+                                    if (error.errorCode === 'NDEx_Object_Not_Found_Exception') {
+
+                                        //var previousModalInstance = $uibModalInstance;
+                                        $uibModalInstance.close();
+
+                                        $uibModal.open({
+                                            templateUrl: 'createNewAccountViaGoogle.html',
+                                            controller: function ($scope, $uibModalInstance) {
+
+                                                $scope.title = 'Create New Account';
+                                                $scope.message =
+                                                    'No account was found in NDEx for the selected email address, ' +
+                                                    'so we are creating one for you.<br><br>  ' +
+                                                    'Please review and accept our ' +
+                                                    '<a target="_blank" href="http://home.ndexbio.org/disclaimer-license">Terms and Conditions</a>' +
+                                                    ' and then click the blue Sign Up button to complete your registration.';
+
+                                                delete $scope.errors;
+
+                                                $scope.cancel = function() {
+                                                    $uibModalInstance.dismiss();
+                                                };
+
+                                                $scope.back = function() {
+                                                    $uibModalInstance.dismiss();
+                                                    $rootScope.$emit('SHOW_SIGN_IN_SIGN_UP_MODAL');
+                                                };
+
+                                                $scope.signUpWithGoogle = function() {
+                                                    $scope.isProcessing = true;
+                                                    delete $scope.errors;
+
+                                                    var spinner = 'spinnerCreateNewAccountViaGoogleId';
+                                                    ndexSpinner.startSpinner(spinner);
+
+                                                    ndexService.createUserWithGoogleIdTokenV2(
+                                                        function() {
+                                                            ndexService.authenticateUserWithGoogleIdToken(
+                                                                function(data) {
+                                                                    $scope.cancel(); // close modal
+                                                                    $scope.isProcessing = false;
+                                                                    sharedProperties.setCurrentUser(data.externalId, data.userName);
+
+                                                                    window.currentNdexUser = data;
+                                                                    window.currentSignInType = 'google';
+
+                                                                    $rootScope.$emit('LOGGED_IN');
+                                                                    $location.path('/myAccount');
+                                                                    ndexSpinner.stopSpinner();
+                                                                },
+                                                                function(error) {
+                                                                    $scope.isProcessing = false;
+                                                                    ndexSpinner.stopSpinner();
+                                                                    $scope.errors = error.message;
+                                                                });
+                                                        },
+                                                        function(error) {
+                                                            $scope.isProcessing = false;
+                                                            ndexSpinner.stopSpinner();
+                                                            $scope.errors = error.message;
+                                                        });
+                                                };
+
+                                            }
+                                        });
+
+                                    } else if (error.message) {
+                                        $scope.errors = error.message;
+                                    } else {
+                                        $scope.errors = 'Unexpected error during sign-in with status ' + error.status;
+                                    }
+                                }
+                            });
+
+                    };
+
+                    var googleFailureHandler = function (err) {
+                        if (err.error !== 'popup_closed_by_user') {
+                            $scope.errors = 'Failed to authenticate with google: ' + err.error;
+                        }
+                    };
+
+                    $scope.signIn.SignInWithGoogle = function () {
+
+                        ndexUtility.clearUserCredentials();
+                        delete $scope.errors;
+                        $scope.signIn.userName = null;
+                        $scope.signIn.password = null;
+
+                        gapi.auth2.getAuthInstance().signIn({prompt:'consent select_account'}).then(googleUserHandler, googleFailureHandler);
+                    };
+                }
+            });
+        }
+
         /*
-         * Only Google Chrome, Firefox or Safari browsers are supported.
-         * Check if the currently used browser is supported.
+         * Check what browser is used.
+         *
+         * We do not support MS Internet Explorer
+         * (list of IE user agents is here: http://www.useragentstring.com/pages/useragentstring.php?name=Internet+Explorer).
+         *
+         * We support Chrome, FireFox, Safari, Opera and MS Edge.
+         *
+         * This function returns true if Chrome, FireFox, Safari, Opera, MS Edge, or compatible with them browser is used.
+         * It returns false for MS IE.
+         *
+         * Please see link below on how to detect user agent:
+         * https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
+         *
+         *
+         * The function was tested with the following browsers/user agents:
+         *   Chrome:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36
+         *   FireFox: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:62.0) Gecko/20100101 Firefox/62.0
+         *   Safari:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15
+         *   Opera:   Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36 OPR/56.0.3051.43
+         *
          */
         $scope.main.isSupportedBrowserUsed = function() {
+
+            $scope.main.showSignIn = true;
+
 
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
                 return true;
@@ -439,16 +748,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             $scope.main.showSignIn = false;
 
-            // other browsers are not supported
             return false;
         };
 
 
-        $scope.main.signout = function (noRedirectToHome) {
-            $scope.$emit('LOGGED_OUT');
-            if (!noRedirectToHome){
-                $location.path('/');
-            }
+        $scope.main.signout = function () {
+            signOutHandler();
         };
 
         $scope.main.handleStorageEvent = function(event)
@@ -478,7 +783,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         if( lastHeartbeat && window.currentSignInType === 'basic')
         {
             if( Date.now() - lastHeartbeat > $scope.config.idleTime * 1000 ) {
-                $scope.main.signout(true); // true = no redirect to home
+                $scope.main.signout();
             }
         }
 
@@ -700,6 +1005,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // citation that will be copied to clipboard; we replace HTML new break line chars (<br>) with ascii "\n"
         // $scope.NDEx.citationProcessed = $scope.NDEx.citation.replace(/<br>/g, "\n");
 
+/*
         $scope.NDEx.openQuoteNDExModal = function () {
             $scope.NDEx.modalInstance = $modal.open({
                 templateUrl: 'quoteNDEx.html',
@@ -712,15 +1018,14 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $scope.NDEx.modalInstance.close();
             $scope.NDEx.modalInstance = null;
         };
-
+*/
 
         /*----------------------------------------------
          External Link Handling
          ----------------------------------------------*/
         /*
-         * As argument, this function takes one of configurable navigation bar
-         * menu objects specified in ndex-webapp-config.js (i.e., logoLink, aboutLink,
-         * documentationLink, etc), and checks whether this navigation link
+         * As argument, this function takes one of navigation bar
+         * menu objects and checks whether this navigation link
          * was configured to follow the link "silently" or warn user about navigating
          * to an external domain.
          */
@@ -743,16 +1048,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         };
 
-        /*
-         * Similar to redirectToExternalLink(), but redirects to the current server
-         * after clicking on NDEx logo.
-         */
-        $scope.redirectToCurrentServer = function() {
-            var currentServerURL = uiMisc.getCurrentServerURL();
-            var win = window.open(currentServerURL, '_self');
-            win.focus();
+        $scope.goToLandingPage = function() {
+            $location.path('/');
         };
-
 
         $scope.collapseHamburgerMenu = function() {
             $('.navbar-collapse.in').collapse('hide');
@@ -886,4 +1184,358 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         if (window.currentSignInType) {
             registerSignedInUser(window.currentNdexUser);
         }
+
+
+        var showSignInSignUpEventHandler = function() {
+            $scope.collapseHamburgerMenu();
+            $scope.main.showSignInSignUpOptions();
+        };
+
+        $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);
+
+
+        var fillInTopMenu = function(content) {
+
+            if (!(content.hasOwnProperty('topMenu') && Array.isArray(content.topMenu) && content.topMenu.length > 0)) {
+                return;
+            }
+
+            var topMenu = $scope.topMenu = [];
+
+            _.forEach(content.topMenu, function (menuItem) {
+
+                var label = menuItem.label;
+                var href = menuItem.href;
+                var showWarning = false;
+                if (menuItem.showWarning !== 'undefined') {
+                    showWarning = (menuItem.showWarning.toLowerCase() === 'true');
+                }
+
+                var warning = showWarning ? menuItem.warning : null;
+
+                topMenu.push({
+                    'label': label,
+                    'href': href,
+                    'showWarning': showWarning,
+                    'warning': warning
+                });
+            });
+        };
+
+
+        var getTopMenu = function() {
+            var topMenuConfig  = window.ndexSettings.landingPageConfigServer + '/topmenu.json';
+
+            ndexService.getObjectViaEndPointV2(topMenuConfig,
+                function(content) {
+                    fillInTopMenu(content);
+                },
+                function(error) {
+                    alert('unable to get Top Menu configuration file ' + topMenuConfig);
+                }
+            );
+        };
+
+        getTopMenu();
+
+        /*
+         * stripHTML removes html from a string (using jQuery) an returns text.
+         * In case string contains no html, the function returns empty string; to avoid
+         * returning empty string, we wrap string in '<html> ... </html>' tags.
+         */
+        var stripHTML = function(html) {
+            return $('<html>'+html+'</html>').text();
+        };
+
+        function fillInFeaturedContentChannelAndDropDown(featuredContent) {
+
+            //$scope.featuredContentDefined = false;
+
+            $scope.featuredContentDropDown = [];
+
+            $scope.noWrapSlides = false;
+
+            var slides = $scope.slides = [];
+            var currIndex = 0;
+
+            if (!(featuredContent.hasOwnProperty('items') && Array.isArray(featuredContent.items) && featuredContent.items.length > 0)) {
+                return;
+            }
+
+            $scope.carouselInterval = window.ndexSettings.featuredContentScrollIntervalInMs;
+
+            var featuredContentTypes = new Set(['user', 'group', 'networkset', 'network', 'webpage', 'publication']);
+
+            var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
+            if (ndexServer && !ndexServer.endsWith('/')) {
+                ndexServer = ndexServer + '/';
+            }
+
+            _.forEach(featuredContent.items, function(featuredItem) {
+
+                var type = featuredItem.hasOwnProperty('type') ? featuredItem.type.toLowerCase() : null;
+
+                if (!(featuredContentTypes.has(type))) {
+                    // unknown type or null - return, i.e., get the next element from featuredContent.items
+                    return;
+                }
+
+                var imageUrl = featuredItem.hasOwnProperty('imageURL') ?  featuredItem.imageURL : null;
+                var text     = featuredItem.title + '<br>' + featuredItem.text;
+                var link     = null;
+
+                var includeInDropDown = false;
+                if (featuredItem.hasOwnProperty('includeInDropDownMenu')) {
+                    includeInDropDown = (featuredItem.includeInDropDownMenu.toLowerCase() === 'true');
+                }
+
+                switch(type) {
+
+                    case 'user':
+                        link = ndexServer + 'user/' +  featuredItem.UUID;
+                        break;
+
+                    case 'group':
+                        link = ndexServer + 'group/' +  featuredItem.UUID;
+                        break;
+
+                    case 'networkset':
+                        link = ndexServer + 'networkset/' +  featuredItem.UUID;
+                        if (null === imageUrl) {
+                            imageUrl = 'images/default_networkSet.png';
+                        }
+                        break;
+
+                    case 'network':
+                        link = ndexServer + 'network/' +  featuredItem.UUID;
+                        break;
+
+                    case 'webpage':
+                        link = featuredItem.URL;
+                        break;
+
+                    case 'publication':
+                        link = featuredItem.DOI;
+                        break;
+
+                    default:
+                        // this should never happen since feature type is validated at this point
+                        return;
+                }
+
+                slides.push({
+                    'image': imageUrl,
+                    'text':  text,
+                    'link':  link,
+                    'id':    currIndex++
+                });
+
+                if (includeInDropDown) {
+                    var dropDownItem = featuredItem.hasOwnProperty('title') ?
+                        stripHTML(featuredItem.title) : 'drop down item ' + (currIndex-1);
+                    $scope.featuredContentDropDown.push(
+                        {
+                            'description': dropDownItem,
+                            'href':        link
+                        });
+
+                }
+            });
+
+            $scope.featuredContentDefined = slides.length > 0;
+
+            $scope.featuredContentDropDownEnabled = $scope.featuredContentDropDown.length > 0;
+        }
+
+        var getFeaturedContentChannel = function() {
+            var featuredContentConfig  = window.ndexSettings.landingPageConfigServer + '/featured.json';
+
+            ndexService.getObjectViaEndPointV2(featuredContentConfig,
+                function(featuredContent) {
+                    fillInFeaturedContentChannelAndDropDown(featuredContent);
+                },
+                function(error) {
+                    alert('unable to get Featured Content configuration file ' + featuredContentConfig);
+                }
+            );
+        };
+
+        getFeaturedContentChannel();
+
+        var fillInMainChannel = function(content) {
+
+            if (!(content.hasOwnProperty('mainContent') && Array.isArray(content.mainContent) && content.mainContent.length > 0)) {
+                return;
+            }
+
+            var mainContent = $scope.mainContent = [];
+
+            while (content.mainContent.length > 4) {
+                content.mainContent.pop();
+            }
+
+            //$scope.mainContent = window.mainContent;
+            var noOfMainContentItems = content.mainContent.length;
+            var mainContentClass = 'col-12 col-xs-12 col-sm-12 col-md-12 wrapLongLine';
+
+            if (2 === noOfMainContentItems) {
+                mainContentClass = 'col-6 col-xs-6 col-sm-6 col-md-6 wrapLongLine';
+
+            } else if (3 === noOfMainContentItems) {
+                mainContentClass = 'col-4 col-xs-4 col-sm-4 col-md-4 wrapLongLine';
+
+            } else if (4 === noOfMainContentItems) {
+                mainContentClass = 'col-3 col-xs-3 col-sm-3 col-md-3 wrapLongLine';
+            }
+
+            $scope.mainContentClass = mainContentClass;
+
+            _.forEach(content.mainContent, function(mainItem) {
+
+                var title   = mainItem.title;
+                var content =
+                    window.ndexSettings.landingPageConfigServer + '/'+ mainItem.content;
+                var href    = mainItem.href;
+
+                mainContent.push({
+                    'title': title,
+                    'content': content,
+                    'href' : href
+                });
+            });
+
+        };
+
+        var getMainChannel = function() {
+            var mainContentConfig  = window.ndexSettings.landingPageConfigServer + '/main.json';
+
+            ndexService.getObjectViaEndPointV2(mainContentConfig,
+                function(mainContent) {
+                    fillInMainChannel(mainContent);
+                },
+                function(error) {
+                    alert('unable to get Main Content configuration file ' + mainContentConfig);
+                }
+            );
+        };
+
+        getMainChannel();
+
+
+        $scope.logos = [];
+
+        var fillInLogosChannel = function(content) {
+
+            if (!(content.hasOwnProperty('logos') && Array.isArray(content.logos) && content.logos.length > 0)) {
+                return;
+            }
+
+            var logos = $scope.logos = [];
+
+            _.forEach(content.logos, function(logo) {
+
+                var image = window.ndexSettings.landingPageConfigServer + '/' + logo.image;
+                var title = logo.title;
+                var href  = logo.href;
+
+                logos.push({
+                    'image': image,
+                    'title': title,
+                    'href' : href
+                });
+            });
+
+            if (logos.length > 0) {
+                $scope.logosLoaded = true;
+            }
+        };
+
+        $scope.logosDefined = function() {
+            return $scope.logos.length > 0;
+        };
+
+        var getLogos = function() {
+            var logosConfig  = window.ndexSettings.landingPageConfigServer + '/logos.json';
+
+            ndexService.getObjectViaEndPointV2(logosConfig,
+                function(content) {
+                    fillInLogosChannel(content);
+                },
+                function(error) {
+                    alert('unable to get Logos Content configuration file ' + logosConfig);
+                }
+            );
+        };
+        getLogos();
+
+        /*
+        var fillInFooter = function(content) {
+
+            if (!(content.hasOwnProperty('footerNav') && Array.isArray(content.footerNav) && content.footerNav.length > 0)) {
+                return;
+            }
+
+            var footer = $scope.footerNav = [];
+
+            _.forEach(content.footerNav, function(footerItem) {
+
+                var label = footerItem.label;
+                var href = (typeof footerItem.href === 'undefined') ? '' : footerItem.href;
+
+                footer.push({
+                    'label': label,
+                    'href': href,
+                });
+            });
+        };
+        var getFooter = function() {
+            var footerConfig = window.ndexSettings.landingPageConfigServer + '/footer.json';
+
+            ndexService.getObjectViaEndPointV2(footerConfig,
+                function(content) {
+                    fillInFooter(content);
+                },
+                function(error) {
+                    alert('unable to get Footer configuration file ' + footerConfig);
+                }
+            );
+        };
+        getFooter();
+        */
+
+        $scope.collapsedMenuOpened = false;
+
+        var hideRightNavBar = function() {
+            var myNavBarElement         = document.getElementById('slidingRightMenuDivId');
+            $scope.collapsedMenuOpened  = false;
+            myNavBarElement.style.width = '0';
+        };
+        var showRightNavBar = function() {
+            var myNavBarElement         = document.getElementById('slidingRightMenuDivId');
+            $scope.collapsedMenuOpened  = true;
+            myNavBarElement.style.width = '250px';
+        };
+
+        $scope.switchNav = function(event) {
+            event.stopPropagation();
+            return $scope.collapsedMenuOpened ? hideRightNavBar() : showRightNavBar();
+        };
+
+        window.addEventListener('resize', function() {
+            if ($(window).width() >= 1151) {
+                hideRightNavBar();
+            }
+        });
+
+        // when navigating away from this page, close right nav bar if it is opened
+        $scope.$on('$locationChangeStart', function(){
+            hideRightNavBar();
+            $modalStack.dismissAll('close');
+        });
+
+        $scope.isSearchIconVisible = function() {
+            //we want Magnifying glass icon on top menu to be visible everywhere except '/'
+            return $location.path() !== '/';
+        };
+
     }]);

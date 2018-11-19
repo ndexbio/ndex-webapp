@@ -43,6 +43,16 @@ ndexApp.controller('myAccountController',
             //tasks
             myAccountController.tasks = [];
 
+            $scope.getClassForMyTasksTab = function() {
+                var retValue =
+                    (myAccountController.tasks.length === 0) &&
+                    (myAccountController.pendingRequests.length === 0) &&
+                    (myAccountController.sentRequests.length === 0);
+
+                return retValue ? 'disabled' : 'enabled';
+            };
+
+
             // map of network IDs of all networks for which the current user has ADMIN access and therefore can delete
             myAccountController.networksWithAdminAccess = {};
 
@@ -65,10 +75,11 @@ ndexApp.controller('myAccountController',
             //var myNetworksOldHash = 0;
 
 
-            var windowsHeightCorrection = 185;
+            var windowsHeightCorrection = 170;
 
 
             var pageNo = 1;
+
             if ((typeof $routeParams.pageNo !== 'undefined') && ($routeParams.pageNo !== null)) {
                 if ($routeParams.pageNo.match(/p[1-9]+[0-9]*/)) {
                     var pageNoCastFromStr = $routeParams.pageNo.substring(1);
@@ -85,10 +96,10 @@ ndexApp.controller('myAccountController',
 
                 if ((window.performance.navigation.type === 1)) {
                     // it means that the page was reloaded; page no is to be set to 1
-                    // and location to /myAccount without reloading the page
+                    // and location to /myAccount
                     pageNoP = 'p1';
                     pageNo  = 1;
-                    $location.path('/myAccount', false);
+                    $location.path('/myAccount');
                 }
             }
 
@@ -96,10 +107,6 @@ ndexApp.controller('myAccountController',
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on('$destroy', function(){
-                // hide the Search menu item in Nav Bar
-                $scope.$parent.showSearchMenu = false;
-                uiMisc.showSearchMenuItem();
-
 
                 if ($rootScope.signOut) {
                     // in case user hit Sign Out, need to clear sessionStorage since the current
@@ -118,10 +125,6 @@ ndexApp.controller('myAccountController',
             $scope.diskSpaceInfo = {};
 
             myAccountController.showNetworkTable = false;
-
-            uiMisc.hideSearchMenuItem();
-            $scope.$parent.showSearchMenu = true;
-
 
             $scope.editProfileDropDownBulkButtonTitle = '';
             $scope.enableEditPropertiesBulkButton = false;
@@ -1391,10 +1394,10 @@ ndexApp.controller('myAccountController',
 
                 else if (window.currentSignInType === 'basic') {
                     var userCredentials = ndexUtility.getUserCredentials();
-                    anchor.setAttribute('href', link);
-                    anchor.setAttribute('id', myId);
-                    anchor.username = userCredentials.userName;
-                    anchor.password = userCredentials.token;
+                    anchor.setAttribute('href', link + '&auth_token=' +  btoa(userCredentials['userName'] + ':' +userCredentials['token']));
+                 //   anchor.setAttribute('id', myId);
+                //    anchor.username = userCredentials.userName;
+                //    anchor.password = userCredentials.token;
                 }
 
                 anchor.setAttribute('type', 'hidden');
@@ -1784,12 +1787,6 @@ ndexApp.controller('myAccountController',
                     return $scope.networkGridApi.selection.getSelectedRows().length;
                 }
                 return 0;
-            };
-
-            $scope.tasksNotificationsTabDisabled = function() {
-                return (myAccountController.tasks.length === 0) &&
-                    (myAccountController.pendingRequests.length === 0) &&
-                    (myAccountController.sentRequests.length === 0);
             };
 
             myAccountController.getTaskFileExt = function(task)
@@ -3608,9 +3605,6 @@ ndexApp.controller('myAccountController',
 
             };
 
-      /*      $scope.getNetworkDownloadLink = function(rowEntity) {
-                return uiMisc.getNetworkDownloadLink(myAccountController, rowEntity);
-            }; */
 
             $scope.isOwnerOfNetwork = function(networkOwnerUUID)
             {
@@ -3934,5 +3928,10 @@ ndexApp.controller('myAccountController',
             // get groups
             var member = null;
             myAccountController.getUserGroupMemberships(member);
+
+            angular.element(document).ready(function () {
+                $(window).trigger('resize');
+            });
+
         }]);
             //------------------------------------------------------------------------------------//

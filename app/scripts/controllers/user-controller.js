@@ -46,7 +46,7 @@ ndexApp.controller('userController',
             userController.networkSetsOwnerOfPage = [];
             userController.networkSets = [];
 
-            var windowsHeightCorrection = 285;
+            var windowsHeightCorrection = 170;
 
 
             /*
@@ -724,10 +724,6 @@ ndexApp.controller('userController',
             $scope.getNetworkURL = function(networkUUID) {
                 return '#/network/' + networkUUID;
             };
-
- /*           $scope.getNetworkDownloadLink = function(rowEntity) {
-                return uiMisc.getNetworkDownloadLink(userController, rowEntity);
-            }; */
 
             $scope.downloadNetwork= function(rowEntity) {
 

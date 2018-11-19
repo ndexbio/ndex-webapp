@@ -1,0 +1,345 @@
+<style>
+.modal-dialog {
+    width: 600px;
+    max-width:100%;
+}
+/* start: taken from https://www.bootply.com/rY3MGdh1HO */
+.vertical-divider {
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: 50%;
+    line-height: 0;
+    text-align:center;
+    text-transform: uppercase;
+    transform: translateX(-50%);
+    font-size: 1.4em;
+}
+.row-divided > .vertical-divider,
+.row-divided > .vertical-divider {
+    height: calc(56% - 1rem);
+}
+.vertical-divider:before,
+.vertical-divider:after {
+    position: absolute;
+    left: 50%;
+    content: '';
+    z-index: 9;
+    border-left: 1px solid rgba(34,36,38,.15);
+    border-right: 1px solid rgba(255,255,255,.1);
+    width: 0;
+    height: calc(100% - 1rem);
+}
+.vertical-divider:before {
+    top: -100%;
+}
+.vertical-divider:after {
+    top: auto;
+    bottom: 0;
+}
+.row-divided {
+    position:relative;
+}
+
+.row-divided > [class^="col-"],
+.row-divided > [class*=" col-"] {
+    padding-left: 30px;  /* gutter width (give a little extra room) */
+    padding-right: 30px; /* gutter width (give a little extra room) */
+}
+/* start: taken from https://www.bootply.com/rY3MGdh1HO */
+</style>
+
+
+<div class="modal-content" style="min-width: 596px">
+
+    <div class="modal-header">
+        <h4 class="modal-title"><strong><span ng-bind-html="header"></span></strong></h4>
+    </div>
+
+    <div class="modal-body" style="margin-top:0.5em; margin-bottom:-1em;">
+
+        <div class="row">
+            <div id="spinnerSignInWithGoogleId"></div>
+        </div>
+
+        <div class="form-group">
+
+            <div class="row row-divided">
+                <div class="col-xs-6">
+
+                    <div class="google-button">
+                        <button ng-if="googleSSO"
+                                autofocus
+                                class="google-sign-in-button"
+                                type="button"
+                                style="cursor: pointer;"
+                                ng-click="signIn.SignInWithGoogle()">
+                                    <span class="google-sign-in-button-span">
+                                        <img src="images/google-logo.svg"
+                                             alt="" style="height: 70px; width: 70px; max-height: 100%; max-width: 100%;">
+                                        <div style="margin-top: 1.5em; margin-left: 3em; margin-right: 3em">Sign In / Sign Up with Google</div>
+                                    </span>
+                        </button>
+                        <button id="googleSignInButtonId"
+                                ng-if="!googleSSO"
+                                class="google-sign-in-button"
+                                style="color: #B6B6B6; background-color: #FFF; cursor: not-allowed"
+                                ng-init="setToolTips()"
+                                data-placement="bottom"
+                                data-toggle="tooltip"
+                                title="Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser.
+                                To use the Google Sign In feature you can do one of two things:
+    1. Add 'accounts.google.com' to the list of websites allowed to write/read THIRD-PARTY COOKIES, or
+    2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings."
+                                data-placement="bottom"
+                                style="cursor: not-allowed">
+
+                                    <span class="google-sign-in-button-span">
+                                        <img src="images/google-logo-disabled.svg"
+                                             alt="" style="height: 70px; width: 70px; max-height: 100%; max-width: 100%;">
+                                        <div style="margin-top: 1.5em; margin-left: 3em; margin-right: 3em">Sign In / Sign Up with Google</div>
+                                    </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="vertical-divider"><strong>OR</strong></div>
+
+                <div class="col-xs-6">
+
+                    <form name="basicAuthSignIn">
+
+                        <div class="form-group">
+                            <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
+                                   required  ng-model="signIn.userName">
+                        </div>
+                        <div class="form-group">
+                            <input name="password" type="password" class="form-control" placeholder="Password"
+                                   required ng-model="signIn.password">
+                        </div>
+
+                        <div>
+                            <a ng-show="showForgotPassword" ng-click="forgotPassword()">Forgot Password?</a>
+                        </div>
+
+
+                        <div ng-show="showSignUp">
+                            <br>
+                            <span ng-bind-html="needAnAccount"></span><a ng-click="openBasicAuthSignUp()">Click here to sign up!</a>
+                        </div>
+
+                        <div ng-if="errors" class='text-danger' style='word-wrap:break-word'>
+                            <br>
+                            <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
+                        </div>
+
+                        <hr>
+
+                        <div class="AlignRight" style="margin-top:1em">
+                            <button class="btn btn-default" ng-click="cancel()" type="button" >
+                                {{cancelLabel}}
+                            </button>
+
+                            <button ng-class="errors || !basicAuthSignIn.accountName.$valid || !basicAuthSignIn.password.$valid ?
+                                'btn btn-primary disabled' : 'btn btn-primary'" autofocus ng-click="submitSignIn()">
+                                {{confirmLabel}}
+                            </button>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script type="text/ng-template" id="forgotPassword.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Reset Password</h4>
+    </div>
+    <div class="modal-body">
+
+        <div class="row">
+            <div id="spinnerResetPasswordId"></div>
+        </div>
+
+        <form role="form">
+            <div class="form-group">
+                <input class="form-control" placeholder="Account Name" required ng-model="forgot.accountName"/>
+            </div>
+        </form>
+        <div class='text-danger'>
+            <strong> {{forgot.errorMsg}} </strong>
+        </div>
+        <div class='text-success'>
+            <strong> {{forgot.successMsg}} </strong>
+        </div>
+    </div>
+
+    <div class="modal-footer" style="margin-top: -0.5em">
+        <a class="btn btn-primary" ng-click="back()"   ng-disabled="isProcessing">Back</a>
+        <a class="btn btn-default" ng-click="cancel()" ng-disabled="isProcessing">Cancel</a>
+        <button class="btn btn-primary" type="submit"
+                ng-click="resetPassword()"
+                ng-disabled="!forgot.accountName || isProcessing || forgot.errorMsg || forgot.successMsg">
+            Reset Password
+        </button>
+    </div>
+
+</script>
+
+
+<script type="text/ng-template" id="signUp.html">
+    <div class="modal-content">
+        <form name="signUpForm" role="form">
+            <div class="modal-header">
+                <h4>Sign Up for NDEx</h4>
+            </div>
+            <span style="position: relative; left: 20px;"> All fields are required.</span>
+
+            <div class="modal-body text-center">
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <input name="firstName" type="text" class="form-control" ng-model="signIn.newUser.firstName"
+                               placeholder="First Name" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <input name="lastName" type="text" class="form-control" ng-model="signIn.newUser.lastName"
+                               placeholder="Last Name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input name="accountName" type="text" class="form-control" ng-model="signIn.newUser.userName"
+                           placeholder="User Name (e.g. dexterpratt)" required>
+                </div>
+                <div class="form-group">
+                    <input name="email" type="email" class="form-control" ng-model="signIn.newUser.emailAddress"
+                           placeholder="Valid Email Address (required for account verification / password recovery)" required>
+                </div>
+                <div class="form-group">
+                    <input name="password" type="password" class="form-control" ng-model="signIn.newUser.password"
+                           placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <input name="confirmPassword" type="password" class="form-control"
+                           ng-model="signIn.newUser.passwordConfirm"
+                           placeholder="Confirm Password" required>
+                </div>
+
+                <div class="rowWithTwoLinesTopPadAnd11EmFont">
+                    <input required ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
+                    <label>I have read and accept the
+                        <a ng-href="http://home.ndexbio.org/disclaimer-license/" target="_blank">Terms & Conditions</a>
+                    </label>
+                </div>
+
+                <div class='text-danger text-left' style='word-wrap:break-word'>
+                    <strong>
+                        <br>
+                        {{signIn.signUpErrors}}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="margin-top: -0.5em">
+                <a class="btn btn-primary" ng-click="back()">Back</a>
+                <a class="btn btn-default" ng-click="cancel()">Cancel</a>
+                <button class="btn btn-primary" type="submit"
+                        ng-click="basicAuthSignUp()"
+                        ng-disabled="!signUpForm.firstName.$valid || !signUpForm.lastName.$valid
+                        || !signUpForm.accountName.$valid  || !signUpForm.email.$valid
+                        || !signUpForm.password.$valid || !signUpForm.confirmPassword.$valid
+                        || !termsAndConditionsChecked || isProcessing">
+                    Sign Up
+                </button>
+            </div>
+
+        </form>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="signUpSuccess.html">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h4 class="modal-title">Check Your Email</h4>
+        </div>
+
+        <div class="modal-body">
+            <div>
+                ALMOST DONE!
+                <br>
+                We sent a verification link to the e-mail address you provided.
+                Please check your email and follow the instructions to complete your registration.
+                You must complete your registration within 24 hours.
+                Can't find the email? Make sure to check your
+                SPAM folder and add "support@ndexbio.org" to your safe-senders list.
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default" ng-click="cancel()">Close</button>
+        </div>
+
+    </div>
+</script>
+
+<script type="text/ng-template" id="createNewAccountViaGoogle.html">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title"><span ng-bind-html="title"></span></h4>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="row">
+                <div id="spinnerCreateNewAccountViaGoogleId" style="position:relative; top:5em"></div>
+            </div>
+
+            <div style="font-size: 1.2em" ng-bind-html="message"></div>
+
+            <div class="rowWithTwoLinesTopPadAnd11EmFont text-center">
+                <input required ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
+                <label>I have read and accept the
+                    <a ng-href="http://home.ndexbio.org/disclaimer-license/" target="_blank">Terms & Conditions</a>
+                </label>
+            </div>
+
+            <div ng-show="errors" class='text-danger text-left' style='word-wrap:break-word'>
+                <br>
+                <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
+                <br>
+            </div>
+
+        </div>
+
+        <div class="modal-footer" style="margin-top: -0.5em">
+            <button class="btn btn-primary"
+                    ng-click="back()"
+                    ng-disabled="isProcessing">
+                Back
+            </button>
+            <button class="btn btn-default"
+                    ng-click="cancel()"
+                    ng-disabled="isProcessing">Cancel</button>
+            <button class="btn btn-primary"
+                    ng-click="signUpWithGoogle()"
+                    ng-disabled="!termsAndConditionsChecked || isProcessing || errors">
+                Sign Up
+            </button>
+
+        </div>
+    </div>
+</script>

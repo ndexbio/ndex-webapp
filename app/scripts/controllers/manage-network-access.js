@@ -40,21 +40,8 @@ ndexApp.controller('manageNetworkAccessController',
 	$scope.progressMessage = null;
 	$scope.errorMessage = null;
 
-	// turn on (show) Search menu item on the Nav Bar
-	$scope.$parent.showSearchMenu = true;
-
 	$scope.showChangeShareURLButton = false;
 	$scope.showChangeShareURLButtonTitle = "";
-
-	// this function gets called when user navigates away from the current view.
-	// (can also use "$locationChangeStart" instead of "$destroy"
-	$scope.$on("$destroy", function(){
-
-		// hide the Search menu item in Nav Bar
-		$scope.$parent.showSearchMenu = false;
-
-		uiMisc.showSearchMenuItem();
-	});
 
 	$(document).ready(function(){
 		$('[data-toggle="tooltip"]').tooltip();
@@ -1105,8 +1092,6 @@ ndexApp.controller('manageNetworkAccessController',
 
 	//              INTIALIZATIONS
     //------------------------------------------------------------------------------------
-
-	uiMisc.hideSearchMenuItem();
 
     ndexService.getNetworkSummaryV2(identifier)
     	.success(

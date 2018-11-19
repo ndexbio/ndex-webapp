@@ -322,7 +322,7 @@
                           ng-click="checkAndRefreshMyNetworksTableAndDiskInfo();"
                           title="Refresh My Networks"
                           ng-disabled="refreshNetworksButtonDisabled"
-                          ng-style="refreshNetworksButtonDisabled ? {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
+                          ng-style="refreshNetworksButtonDisabled ? {color: '#3576BE', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
                     </span>
 
                 </tab-heading>
@@ -417,9 +417,9 @@
             </tab>
 
             <tab ng-click="onTabSelect('tasks'); updateLastTimeVisitedMyTasksTimestamp(); taskGridApi.core.handleWindowResize()"
-                 disabled="tasksNotificationsTabDisabled()"
                  ng-show="(myAccountController.isLoggedInUser) &&
-                    (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)">
+                    (myAccountController.displayedUser.externalId===myAccountController.loggedInIdentifier)"
+                class='{{getClassForMyTasksTab()}}'>
                 <tab-heading>
                     My Tasks & Notifications &nbsp;
 
@@ -428,7 +428,7 @@
                           title="Refresh My Tasks & Notifications"
                           ng-disabled="refreshTasksButtonDisabled"
                           ng-style="refreshTasksButtonDisabled ?
-                          {color: 'red', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
+                          {color: '#3576BE', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
                     </span>
                     <span class="badge badge-notify" ng-if="myAccountController.numberOfNewTasksAndRequests > 0">
                         {{myAccountController.numberOfNewTasksAndRequests}}

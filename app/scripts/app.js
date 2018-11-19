@@ -3,8 +3,8 @@
 var ndexApp = angular.module('ndexApp',
     ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp',//'ngDialog',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
-     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ui.grid.pagination', 'ngclipboard',
-      'textAngular','angular-google-analytics']);
+     'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ui.grid.pagination',
+      'ngclipboard', 'textAngular', 'ngtweet', 'slick','angular-google-analytics']);
 
 ndexApp.filter('encodeURIComponent', function() {
     return window.encodeURIComponent;
@@ -28,6 +28,12 @@ ndexApp.run(['$route', '$rootScope', '$location', function ($route, $rootScope, 
     };
 }]);
 
+var safeURLs = window.ndexSettings.landingPageConfigServer + '**';
+ndexApp.config(function($sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+        'self', safeURLs
+    ]);
+});
 
 
 //Internet Explorer solution???
@@ -282,7 +288,7 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
         })
         // route for the home page (where sign-in is handled)
         .when('/signIn', {
-            templateUrl: 'views/signIn.html',
+            templateUrl: 'views/home.html',
             controller: 'signInController'
         })
 

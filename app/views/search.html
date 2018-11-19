@@ -27,25 +27,21 @@
 
 <div class="row">
 
-    <div class="col-md-2" ng-if="searcher.isLoggedInUser">
+    <div class="col-2 col-xs-2 col-sm-2 col-md-2 col-lg-2 hideLongLine" ng-if="searcher.isLoggedInUser" style="min-width: 165px; margin-bottom: 10px">
         <h5><strong>Bulk Actions:</strong></h5>
-
-        <span style="float:left; margin-right:1%">
             <show-network-sets-modal
                     controller-name='searcher'
                     my-account-controller='searcher'
                     my-class="{{(searcher.networkTableRowsSelected == 0) ?
-                            'btn btn-primary customButtonWidth disabled' : 'btn btn-primary customButtonWidth'}}">
+                            'btn btn-primary customButtonWidthOnSearchPage disabled' : 'btn btn-primary customButtonWidthOnSearchPage'}}">
             </show-network-sets-modal>
-        </span>
     </div>
 
-    <div id="searchResultTableId" class="col-md-10">
+    <div id="searchResultTableId" class='{{searchViewClass}}'>
 
         <div class="row">
             <div id="spinnerSearchPageId" style="position:relative; top:16em"></div>
         </div>
-
 
         <tabset>
 
@@ -61,7 +57,7 @@
             </tab>
             <tab
                     heading='{{userTabHeading()}}'
-                    ng-click="activateTab('Users'); userGridApi.core.handleWindowResize(); "
+                    ng-click="activateTab('Users'); userGridApi.core.handleWindowResize()"
                     active="activeTab.Users">
                 <div ng-show='searcher.userSearchInProgress'><i>Finding Users...</i></div>
                 <div ng-show='searcher.userSearchNoResults'><i>No Users Found.</i></div>
