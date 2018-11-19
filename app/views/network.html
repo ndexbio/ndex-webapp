@@ -844,10 +844,21 @@
                     style="margin-right: 5px;"> Download Result
             </button>
 
-            <button id="switchViewButtonId2" type="button"
+            <button type="button"
                     ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
-                    data-toggle="tooltip" title="Switch to Table View"
-                    ng-click="switchView()">
+                    data-toggle="tooltip"
+                    title="Switch to Table View"
+                    ng-click="switchView()"
+                    ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Graphic'">
+                {{buttonLabel}}
+            </button>
+
+            <button type="button"
+                    ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
+                    data-toggle="tooltip"
+                    title="Switch to Graphic View"
+                    ng-click="switchView()"
+                    ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Table'">
                 {{buttonLabel}}
             </button>
 
@@ -925,11 +936,21 @@
 
 
             <span>
-                <button id="switchViewButtonId1" type="button"
+                <button type="button"
                         ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
-                        data-toggle="tooltip" title="Switch to Table View"
+                        data-toggle="tooltip"
+                        title="Switch to Table View"
                         ng-click="switchView()"
-                        ng-hide="networkController.hasMultipleSubNetworks()">
+                        ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Graphic'">
+                    {{buttonLabel}}
+                </button>
+
+                <button type="button"
+                        ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
+                        data-toggle="tooltip"
+                        title="Switch to Graphic View"
+                        ng-click="switchView()"
+                        ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Table'">
                     {{buttonLabel}}
                 </button>
 

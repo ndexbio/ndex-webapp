@@ -173,17 +173,6 @@ ndexApp.controller('networkController',
                 return (isVisibility && isAccessKey);
             };
 
-
-            function setTooltipForSwitchViewButton(message) {
-                $('#switchViewButtonId1').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-
-                $('#switchViewButtonId2').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
-
             $scope.changeCytoscapeButtonTitle = function() {
                 $('#openInCytoscapeButtonId').tooltip('hide')
                     .attr('data-original-title', $scope.openInCytoscapeTitle)
@@ -1817,8 +1806,6 @@ ndexApp.controller('networkController',
                     $scope.currentView = 'Table';
                     $scope.buttonLabel = 'Graph';
 
-                    setTooltipForSwitchViewButton('Switch to Graphic View');
-
                     var enableFiltering = true;
                     var setGridWidth = true;
 
@@ -1851,8 +1838,6 @@ ndexApp.controller('networkController',
                                 $scope.currentView = 'Graphic';
                                 $scope.buttonLabel = 'Table';
 
-                                setTooltipForSwitchViewButton('Switch to Table View');
-
                                 if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
@@ -1869,8 +1854,6 @@ ndexApp.controller('networkController',
                         // switch to graphic view
                         $scope.currentView = 'Graphic';
                         $scope.buttonLabel = 'Table';
-
-                        setTooltipForSwitchViewButton('Switch to Table View');
 
                         if ($scope.drawCXNetworkOnCanvasWhenViewSwitched) {
                             $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -3157,9 +3140,6 @@ ndexApp.controller('networkController',
                     $scope.buttonLabel = 'Graph';
                     $scope.switchViewButtonEnabled = true;
 
-                    setTooltipForSwitchViewButton('Switch to Graphic View');
-
-
                     enableFiltering = true;
                     setGridWidth    = true;
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
@@ -3333,9 +3313,6 @@ ndexApp.controller('networkController',
 
                 if ($scope.currentView === 'Table') {
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
-                    setTooltipForSwitchViewButton('Switch to Graphic View');
-                } else {
-                    setTooltipForSwitchViewButton('Switch to Table View');
                 }
 
                 ndexSpinner.startSpinner(spinnerId);
