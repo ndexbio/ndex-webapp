@@ -26,6 +26,7 @@
     "eonasdan-bootstrap-datetimepicker": "4.17.47",
     "moment": "2.19.2",
     "components-font-awesome": "^4.7.0",
+    "angular-google-analytics": "1.1.9",
     "slick-carousel": "^1.8.1",
     "angular-slick": "^0.2.1",
     "ngtweet": "^1.0.0"
