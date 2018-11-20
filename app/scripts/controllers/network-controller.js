@@ -1,9 +1,9 @@
 ndexApp.controller('networkController',
-    ['provenanceService','networkService', 'ndexService', 'ndexConfigs',
+    ['networkService', 'ndexService', 'ndexConfigs',
          'ndexUtility', 'ndexHelper', 'ndexNavigation',
         'sharedProperties', '$scope', '$rootScope', '$routeParams', '$modal', '$modalStack',
         '$route', '$location', 'uiGridConstants', 'uiMisc', 'ndexSpinner', 'cyREST', '$timeout',
-        function ( provenanceService, networkService, ndexService, ndexConfigs,
+        function ( networkService, ndexService, ndexConfigs,
                    ndexUtility, ndexHelper, ndexNavigation,
                   sharedProperties, $scope, $rootScope, $routeParams, $modal, $modalStack,
                   $route , $location, uiGridConstants, uiMisc, ndexSpinner, cyREST , $timeout)
@@ -34,7 +34,6 @@ ndexApp.controller('networkController',
 
             networkController.errors = []; // general page errors
             networkController.queryErrors = [];
-            networkController.displayProvenance = {};
             networkController.selectionContainer = {};
             networkController.baseURL = $location.absUrl();
             networkController.isSample=false;
@@ -295,6 +294,11 @@ ndexApp.controller('networkController',
             networkController.tabs    = new Array(4);
             networkController.tabs[0] = {'heading': 'Network Info',   'active': true};
             networkController.tabs[1] = {'heading': 'Nodes/Edges',    'active': false, 'disabled': true};
+
+
+            /* TODO: for 2.4.1, remove all networkController.tabs[2] since we do not support provevance any longer  */
+            /* TODO: networkController.tabs[2] is left not to refactor code by changing Advanced Query networkController.tabs[3] */
+            /* TODO: to networkController.tabs[2]. We probably need to remove Advanced Query code as well ... Don't we? */
             networkController.tabs[2] = {'heading': 'Provenance',     'active': false};
             networkController.tabs[3] = {'heading': 'Advanced Query', 'active': false, 'hidden': true};
 
@@ -2127,27 +2131,7 @@ ndexApp.controller('networkController',
 
                 $scope.disableQuery = true;
             };
-            
-            
-            $scope.buildProvenanceView = function() {
-                if (networkExternalId === undefined) {
-                    var prov = cxNetworkUtils.getProvenanceFromNiceCX(networkService.getCurrentNiceCX());
-                    provenanceService.setProvenanceObj(prov);
-                }
-                provenanceService.showProvenance(networkController);
-            };
 
-            $scope.getProvenanceTitle = function(prov)
-            {
-               return provenanceService.getProvenanceTitle(prov);
-            };
-
-
-            networkController.refreshProvMap = function (obj) {
-                $scope.$apply(function () {
-                    networkController.displayProvenance = obj;
-                });
-            };
 
             /*
             var getNetworkAdmins = function()
@@ -4024,9 +4008,6 @@ ndexApp.controller('networkController',
             };
 
             var initialize = function () {
-                // vars to keep references to http calls to allow aborts
-
-                provenanceService.resetProvenance();
 
                 // get network summary
                 // keep a reference to the promise
@@ -4423,7 +4404,6 @@ ndexApp.controller('networkController',
             networkController.resetAdvancedQuery = function () {
 
                 ndexSpinner.startSpinner(spinnerId);
-                provenanceService.resetProvenance();
                 networkController.successfullyQueried = false;
 
                 networkService.restoreCurrentNiceCXAfterQuery();

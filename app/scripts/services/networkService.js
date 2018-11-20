@@ -3,8 +3,8 @@
  */
 
 
-ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'provenanceService', 'ndexService','$http', '$q',
-    function (sharedProperties, ndexConfigs, ndexUtility, ndexHelper, provenanceService, ndexService, $http, $q) {
+ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'ndexService','$http', '$q',
+    function (sharedProperties, ndexConfigs, ndexUtility, ndexHelper, ndexService, $http, $q) {
 
         var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
 
