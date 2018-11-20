@@ -170,7 +170,7 @@
                                             ng-class="featuredContentDropDownEnabled?
                                                 'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
                                             data-toggle="dropdown">
-                                        Featured Content <span class="caret"></span>
+                                        Featured Networks <span class="caret"></span>
                                     </button>
 
                                     <ul class="dropdown-menu">
@@ -311,7 +311,7 @@
                     ng-href="{{linkToReleaseDocs}}"
                    target="release_tab"
                    data-toggle="tooltip"
-                   tooltip="Release Notes"
+                   title="Release Notes"
                    data-placement="bottom"> v{{main.ndexServerVersion}}
                 </a>
             </div>
@@ -332,7 +332,9 @@
 
             <ul id="searchMyAccountNameLoginId" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
 
-                <li ng-show="isSearchIconVisible()">
+                <li ng-show="isSearchIconVisible()" data-toggle="tooltip"
+                    title="Browse networks, search by keywords or gene and access featured networks in NDEx"
+                    data-placement="bottom">
                     <a ng-click="collapseHamburgerMenu(); showSearchBar()">
                         <div style="
                             background-image: url('images/search-icon.png');
@@ -370,7 +372,7 @@
                        ng-click="collapseHamburgerMenu();
                              main.showSignInSignUpOptions()"
                             data-toggle="tooltip"
-                            tooltip="Log in or create a new account"
+                            title="Log in or create a new account&nbsp;&nbsp;"
                             data-placement="bottom">
                         Login/Register
                     </button>
