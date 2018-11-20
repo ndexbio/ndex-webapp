@@ -570,7 +570,7 @@
 
                 </tab>
 
-
+<!--
                 <tab active="networkController.tabs[2].active" ng-click="buildProvenanceView()"
                      ng-hide="networkController.successfullyQueried || networkController.accesskey">
 
@@ -593,7 +593,7 @@
                             </span>
                             <span ng-show="(networkController.displayProvenance.properties == null ? 0 : networkController.displayProvenance.properties.length) > 0">
                                 <table style="width:100%">
-                                    <!--<caption>Entity Properties</caption>-->
+                                    <!--<caption>Entity Properties</caption>--
                                     <tr><th>Name</th><th>Value</th></tr>
                                     <tr><td>uuid</td><td>{{networkController.displayProvenance.uuid}}</td></tr>
                                     <tr><td>host</td><td>{{networkController.displayProvenance.host}}</td></tr>
@@ -616,7 +616,7 @@
                             <b>{{networkController.displayProvenance.creationEvent.eventType}}</b>
 
                             <table style="width:100%">
-                                <!--<caption>Event Properties</caption>-->
+                                <!--<caption>Event Properties</caption>--
                                 <tr>
                                     <th>Name</th>
                                     <th>Value</th>
@@ -648,7 +648,7 @@
                                     </td>
                                 </tr>
                             </table>
-                            <!--</span> -->
+                            <!--</span> --
 
 
                         </div>
@@ -656,7 +656,7 @@
 
                 </tab>
 
-
+-->
                 <tab active="networkController.tabs[3].active" ng-hide="networkController.tabs[3].hidden">
 
                     <tab-heading>
@@ -1128,31 +1128,10 @@
             </span>
 
             <span ng-show='!networkController.isLoggedInUser'>
-                <!--
-                this commented out code was added on 4/30/18 by chenjing -- it broke the previous functionality and resulted in a
-                'Blocker Bug NWA-301 Tool tip on "Log in" button in network page is still the old type (very slow)'
-                filed by rpillich on 7/18/18
-
-                <a
-                   class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
-                   data-toggle="tooltip"
-                   ng-attr-title="{{ networkController.hasMultipleSubNetworks() && 'Log in to your account' || 'Log in to operate on this network'  }}">
-                    Log in
-                </a>
-                -->
-
-                <a ng-show="!networkController.hasMultipleSubNetworks()"
-                   class="actionsLabel btn btn-primary" ng-click="main.showSignInSignUpOptions()"
+                <a class="actionsLabel btn btn-primary" ng-click="main.showSignInSignUpOptions()"
                    data-toggle="tooltip" title="Log in to operate on this network">
                     Log in
                 </a>
-
-                <a ng-show="networkController.hasMultipleSubNetworks()"
-                    class="actionsLabel btn btn-primary" ng-click="main.showSignInSignUpOptions()"
-                    data-toggle="tooltip" title="Log in to your account">
-                    Log in
-                </a>
-
             </span>
 
         </div>

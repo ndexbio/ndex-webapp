@@ -9,7 +9,7 @@
 
 @font-face
 {
-    font-family: "Helvetica Neue", Helvetica, Geneva, Arial, Verdana, sans-serif;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
 }
 
 html, body {
@@ -34,6 +34,7 @@ body
     font-weight: normal;
     line-height: 18px;
     -webkit-font-smoothing: subpixel-antialiased;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
 }
 
 a:hover
@@ -64,7 +65,7 @@ h1, h2, h3, h4, h5, h6
 
 legend
 {
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 label

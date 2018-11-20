@@ -369,7 +369,10 @@
                 <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
                     <button type="button" class="btn btn-primary login-button"
                        ng-click="collapseHamburgerMenu();
-                             main.showSignInSignUpOptions()">
+                             main.showSignInSignUpOptions()"
+                            data-toggle="tooltip"
+                            tooltip="Log in or create a new account"
+                            data-placement="bottom">
                         Login/Register
                     </button>
                 </li>
