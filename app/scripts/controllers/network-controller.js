@@ -2728,10 +2728,10 @@ ndexApp.controller('networkController',
                                 networkService.setNetworkProperty(currentNetworkSummary,'@context',
                                     JSON.stringify($scope.context));
                                 ndexService.setNetworkPropertiesV2(networkController.currentNetworkId,
-                                    currentNetworkSummary.properties, (res) =>{
+                                    currentNetworkSummary.properties, function(res){
                                         $modalInstance.dismiss();
                                     },
-                                    (err) =>{
+                                    function(err) {
                                        console.log(errorMessage);
                                        //TODO: print error message in the modal.
 

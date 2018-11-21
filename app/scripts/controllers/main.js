@@ -532,9 +532,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                         if (emailRE.test(String(searchStr).toLowerCase())) {
                                             //search string is a valid email
-                                            ndexService.getUserByEmail (searchStr,successHandler, (err) => {
+                                            ndexService.getUserByEmail (searchStr,successHandler, function(err) {
                                                 if (err.errorCode === 'NDEx_Object_Not_Found_Exception')
-                                                   ndexService.getUserByUserNameV2(searchStr, successHandler, (err) => {
+                                                   ndexService.getUserByUserNameV2(searchStr, successHandler, function(err){
                                                        if (err.errorCode === 'NDEx_Object_Not_Found_Exception' ) {
                                                            ndexSpinner.stopSpinner();
                                                            forgot.errorMsg =  "Can't find user with " +
