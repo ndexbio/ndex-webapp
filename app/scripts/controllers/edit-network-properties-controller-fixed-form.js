@@ -36,6 +36,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     $scope.fillInNameDescriptionVersionFirst =
         'Changing network Visibility requires Name, Description and Version fields to be filled in.';
 
+    const nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference','@context'];
 
     $scope.$watch('editor.visibilityIndex', function() {
         if(editor.visibilityIndex === 'PUBLIC'){
@@ -260,7 +261,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 	editor.changed = function(index, value, property, action) {
 
         var attributeDictionary = editor.buildAttributeDictionary();
-        var nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference'];
 
 		if((index === (editor.propertyValuePairs.length - 1)) && (value.trim().length > 0)) {
 
@@ -398,7 +398,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.checkIfFormIsValid = function(attributeDictionary) {
 
         var disableSaveChangesButton = false;
-        var nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference'];
+        //var nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference','@context'];
 
         for(var i=0; i<editor.propertyValuePairs.length; i++) {
 
@@ -547,7 +547,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         'version',
         'reference',
         'ndex:sourceformat',
-        'sourceformat'
+        'sourceformat',
+        '@context'
     ];
 
     $scope.namesForCustom = [
@@ -973,7 +974,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         $location.path('/network/' + editor.networkExternalId);
     };
 
-
+    /* commented out by cj because we can't find usage of this variable in the app
     editor.preloadedOntologies = [
         {
             prefix: 'GO',
@@ -1055,7 +1056,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             prefix: 'TTHERM',
             uri: 'http://identifiers.org/tgd/'
         }
-    ];
+    ]; */
 
     //				API initializations
     //------------------------------------------------------------------------------------
