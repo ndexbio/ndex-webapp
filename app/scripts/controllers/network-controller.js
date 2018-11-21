@@ -891,33 +891,46 @@ ndexApp.controller('networkController',
             var EMPTY_QUERY_CODE = 0;
             var VALID_QUERY_CODE = 1;
 
-
             networkController.searchDepths = [
                 {
-                    'name': '1-step',
-                    'description': '1-step',
+                    'name': '1-step (default)',
                     'value': 1,
-                    'id': '1'
+                    'searchDepth': 1,
+                    'directOnly': false
+                },
+                {
+                    'name': '1-step direct',
+                    'value': 2,
+                    'searchDepth': 1,
+                    'directOnly': true
                 },
                 {
                     'name': '2-step',
-                    'description': '2-step',
-                    'value': 2,
-                    'id': '2'
+                    'value': 3,
+                    'searchDepth': 2,
+                    'directOnly': false
+
                 },
                 {
-                    'name': 'Interconnect',
-                    'description': 'Interconnect',
-                    'value': 3,
-                    'id': '3'
+                    'name': '2-step direct',
+                    'value': 4,
+                    'searchDepth': 2,
+                    'directOnly': true
+                },
+                {
+                    'name': 'Interconnect (old, searchDepth=2)',
+                    'value': 5,
+                    'searchDepth': 2
+                },
+                {
+                    'name': 'Interconnect direct (new, searchDepth=1)',
+                    'value': 6,
+                    'searchDepth': 1
                 }
             ];
 
             networkController.searchDepth = {
-                'name': '1-step',
-                'description': '1-step',
-                'value': 1,
-                'id': '1'
+                'value': 1
             };
 
 
@@ -3001,7 +3014,7 @@ ndexApp.controller('networkController',
             networkController.rerunQueryAndSaveResult = function (networkId, accesskey, searchString,
                                                                   searchDepth, edgeLimit, save, errorWhenLimitIsOver) {
 
-                ndexService.queryNetworkV2(networkId, accesskey, searchString, searchDepth,
+                ndexService.queryNetworkV2(networkId, accesskey, searchString, networkController.searchDepths[searchDepth-1],
                     edgeLimit, save, errorWhenLimitIsOver,
                         function() {
                             /*
@@ -3049,7 +3062,7 @@ ndexApp.controller('networkController',
                         'nodeCount': nodeCount,
                         'edgeCount': edgeCount,
                         'queryString': networkController.searchString,
-                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].description
+                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].name
                         //'userSetSample' : userSetSample
                     };
 
@@ -3162,7 +3175,8 @@ ndexApp.controller('networkController',
                 ndexSpinner.startSpinner(spinnerId);
                 var networkQueryEdgeLimit = window.ndexSettings.networkQueryEdgeLimit;
                 networkService.neighborhoodQuery(networkController.currentNetworkId,
-                            accesskey, networkController.searchString, networkController.searchDepth.value, networkQueryEdgeLimit)
+                            accesskey, networkController.searchString,
+                            networkController.searchDepths[ networkController.searchDepth.value-1], networkQueryEdgeLimit)
                     .success(
                         function (network) {
 
@@ -3240,7 +3254,15 @@ ndexApp.controller('networkController',
                         function (error) {
                             ndexSpinner.stopSpinner();
                             if (error.status !== 0) {
-                                if (error.data.message &&
+                                if (error.message) {
+                                    networkController.queryWarnings = [];
+                                    if (error.stack) {
+                                        networkController.queryWarnings.push(error.message + ' ' + error.stack);
+                                    } else {
+                                        networkController.queryWarnings.push(error.message);
+                                    };
+                                }
+                                else if (error.data.message &&
                                     (error.data.message.toLowerCase().indexOf('edgelimitexceeded') > 0))
                                 {
                                     var edgeLimitExceededWarning =

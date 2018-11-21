@@ -1507,34 +1507,26 @@ ndexServiceApp.factory('ndexService',
 
 
             factory.queryNetworkV2 = function (networkId, accesskey, searchString,
-                                               searchDepth, edgeLimit, save, errorWhenLimitIsOver, successHandler, errorHandler) {
-
+                                               query, edgeLimit, save, errorWhenLimitIsOver, successHandler, errorHandler) {
                 // Server API : Query Network As CX
                 // POST /search/network/{networkId}/query?accesskey={accesskey}&save={true|false} or
                 // POST /search/network/{networkId}/interconnectquery?accesskey={accesskey}&save={true|false}
 
-                var url = '';
-                var postData = {};
+                var postData = {
+                    searchString: searchString,
+                    searchDepth: query.searchDepth,
+                    edgeLimit: edgeLimit,
+                    errorWhenLimitIsOver: true
+                };
 
-                if (3 === searchDepth) {
+                var url = '/search/network/' + networkId;
 
-                    // this is 1-step Interconnect
-                    url = '/search/network/' + networkId + '/interconnectquery';
-                    postData = {
-                        searchString: searchString,
-                        edgeLimit: edgeLimit
-                    };
-
+                if (query.value < 5) {
+                    url = url + '/query';
+                    postData.directOnly = query.directOnly;
                 } else {
-                    url = '/search/network/' + networkId + '/query';
-                    postData = {
-                        searchString: searchString,
-                        searchDepth: searchDepth,
-                        edgeLimit: edgeLimit
-                    };
+                    url = url + '/interconnectquery';
                 }
-
-                postData.errorWhenLimitIsOver = errorWhenLimitIsOver;
 
                 if (accesskey) {
                     url = url + '?accesskey=' + accesskey;
