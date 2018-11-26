@@ -1572,6 +1572,18 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.cancelDoi = function (networkId, successHandler, errorHandler) {
+
+                var requestData = {
+                    'type': 'Cancel_DOI',
+                    'networkId': networkId,
+                };
+
+                var url = '/admin/request';
+                var config = ndexConfigs.getPostConfigV2(url, requestData);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
             // return factory object
             return factory;
         }]);

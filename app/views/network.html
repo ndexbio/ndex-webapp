@@ -198,10 +198,29 @@
                         </div>
 
                         <div ng-if="networkController.currentNetwork.doi">
-                            <button type="button"
-                                    ng-if="isDOIPending()"
+                            <span ng-if="isDOIPending()">
+                                <button type="button"
                                     class="btn btn-primary btn-sm disabled"><strong>&nbsp;DOI:</strong> Pending &nbsp;
-                            </button>
+                                </button>
+
+                                <span ng-if="showDeleteDOILink">
+                                    <!-- if user is logged in and is owner of this network, then -->
+                                    <!-- show the Delete DOI Request link  -->
+                                    &nbsp;&nbsp;&nbsp;
+
+                                    <a ng-click="networkController.deletelPendingDOIRequest()"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       onmouseenter="$(this).tooltip('show')"
+                                       style="text-decoration: underline; font-size: 0.9em;"
+                                       title="Delete pending DOI Request for this network.">
+                                        <i class="fa fa-times" aria-hidden="true"
+                                           style="color: red; text-decoration: underline;"></i>
+                                        Delete DOI Request
+                                    </a>
+                                </span>
+
+                            </span>
 
 
                             <a id="copyNetworkShareURLToClipboardId3"

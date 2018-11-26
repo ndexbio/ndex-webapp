@@ -335,6 +335,8 @@ ndexApp.controller('networkController',
 
             $scope.showAdvancedQuery = true;
 
+            $scope.showDeleteDOILink = false;
+
 
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
@@ -3577,6 +3579,8 @@ ndexApp.controller('networkController',
                     networkController.networkOwner.lastName  = window.currentNdexUser.lastName;
                     networkController.networkOwner.ownerUUID = networkOwnerUUID;
 
+                    $scope.showDeleteDOILink = $scope.isDOIPending();
+
                 } else {
 
                     ndexService.getUserByUUIDV2(networkOwnerUUID)
@@ -4618,6 +4622,70 @@ ndexApp.controller('networkController',
 
                 //factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
             };
+
+
+
+            networkController.deletelPendingDOIRequest = function() {
+
+                var title = 'Delete DOI Request';
+
+                var message =
+                    'This will delete your DOI request, ' +
+                    'please verify that your network\'s visibility is correct. <br>' +
+                    ' If you still want a DOI for your network, please submit a new request. <br><br>' +
+                    'Would you like to delete this request?';
+
+                var dismissModal = false;
+
+                ndexNavigation.openConfirmationModal(title, message, 'Confirm', 'Cancel', dismissModal,
+                    function ($modalInstance) {
+
+                        $rootScope.errors = null;
+                        $rootScope.confirmButtonDisabled = true;
+                        $rootScope.cancelButtonDisabled = true;
+                        $rootScope.progress = 'Deleting DOI request in progress ...';
+
+                        var confirmationSpinnerId = 'confirmationSpinnerId';
+                        ndexSpinner.startSpinner(confirmationSpinnerId);
+
+
+                        ndexService.cancelDoi(networkController.currentNetworkId,
+                            function() {
+                                delete networkController.currentNetwork.doi;
+                                networkController.currentNetwork.isReadOnly = false;
+                                networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
+                                ndexSpinner.stopSpinner();
+                                $modalInstance.dismiss();
+                                delete $rootScope.errors;
+                                delete $rootScope.confirmButtonDisabled;
+                                delete $rootScope.cancelButtonDisabled;
+                                delete $rootScope.progress;
+                            },
+                            function(error) {
+                                ndexSpinner.stopSpinner();
+                                title = 'Unable to delete DOI';
+                                message  = 'DOI was not deleted for network ' + networkName + '.';
+
+                                if (error.message) {
+                                    message = message + '<br><br>' + error.message;
+                                }
+                                $rootScope.errors = message;
+                                delete $rootScope.progress;
+                                delete $rootScope.cancelButtonDisabled;
+
+                            });
+                    },
+                    function ($modalInstance) {
+                        // User selected Cancel; return
+                        $modalInstance.dismiss();
+                        delete $rootScope.errors;
+                        delete $rootScope.confirmButtonDisabled;
+                        delete $rootScope.cancelButtonDisabled;
+                        delete $rootScope.progress;
+                    });
+            };
+
+
 
             /*
             var resizeCanvas = function() {
