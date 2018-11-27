@@ -1338,14 +1338,18 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 });
 
                 if (includeInDropDown) {
-                    var dropDownItem = featuredItem.hasOwnProperty('title') ?
-                        stripHTML(featuredItem.title) : 'drop down item ' + (currIndex-1);
+                    var dropDownItem = featuredItem.hasOwnProperty('dropdownDispalyName') ?
+                        stripHTML(featuredItem.dropdownDispalyName) : null;
+
+                    if (dropDownItem === null) {
+                        dropDownItem = featuredItem.hasOwnProperty('title') ?
+                            stripHTML(featuredItem.title) : 'drop down item ' + (currIndex - 1);
+                    }
                     $scope.featuredContentDropDown.push(
                         {
                             'description': dropDownItem,
                             'href':        link
                         });
-
                 }
             });
 
