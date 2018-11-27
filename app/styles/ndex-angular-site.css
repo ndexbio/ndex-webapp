@@ -1223,8 +1223,8 @@ body   { background-color: #F60; }
 }
 
 .slideImage {
-    width: auto;
     max-height: 100%;
+    max-width: 33% !important;
     float: left;
 }
 
@@ -1235,7 +1235,7 @@ body   { background-color: #F60; }
 }
 .carousel-indicators {
     font-size: 2em;
-    bottom: -0.75em;
+    bottom: -1em;
     text-align: center;
     text-shadow: none;
 }
@@ -1295,8 +1295,9 @@ div.featuredCollectionDescriptionArea {
     text-overflow: ellipsis;
     text-align: left;
     /*border: 1px solid red;*/
-    height: 85%;
+    height: 90%;
     padding-left: 20px;
+    font-size: 13px;
 }
 
 
@@ -1316,6 +1317,7 @@ div.featuredCollectionDescriptionArea {
     text-align: left;
     overflow-wrap: break-word;
     /*border: 1px solid red;*/
+    font-size: 14px;
 }
 .logosStyle {
     transform: scale(0.75, 0.75);
@@ -1355,3 +1357,4 @@ div.featuredCollectionDescriptionArea {
 .tooltip-inner {
     text-align: left;
 }
+
