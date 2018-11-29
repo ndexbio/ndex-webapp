@@ -1521,10 +1521,11 @@ ndexServiceApp.factory('ndexService',
 
                 var url = '/search/network/' + networkId;
 
-                if (query.value < 5) {
+                if (query.type === 'query') {
                     url = url + '/query';
                     postData.directOnly = query.directOnly;
                 } else {
+                    // type is interconnect
                     url = url + '/interconnectquery';
                 }
 

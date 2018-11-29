@@ -924,10 +924,11 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
 
             var url = "/search/network/" + networkId;
 
-            if (query.value < 5) {
+            if (query.type === 'query') {
                 url = url + "/query";
                 postData['directOnly'] = query.directOnly;
             } else {
+                // type is interconnectquery
                 url = url + "/interconnectquery";
             };
 

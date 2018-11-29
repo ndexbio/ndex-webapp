@@ -299,8 +299,8 @@ ndexApp.controller('networkController',
             /* TODO: for 2.4.1, remove all networkController.tabs[2] since we do not support provevance any longer  */
             /* TODO: networkController.tabs[2] is left not to refactor code by changing Advanced Query networkController.tabs[3] */
             /* TODO: to networkController.tabs[2]. We probably need to remove Advanced Query code as well ... Don't we? */
-            networkController.tabs[2] = {'heading': 'Provenance',     'active': false};
-            networkController.tabs[3] = {'heading': 'Advanced Query', 'active': false, 'hidden': true};
+            //networkController.tabs[2] = {'heading': 'Provenance',     'active': false};
+            //networkController.tabs[3] = {'heading': 'Advanced Query', 'active': false, 'hidden': true};
 
             networkController.queryWarnings = [];
             networkController.queryErrors   = [];
@@ -893,46 +893,71 @@ ndexApp.controller('networkController',
             var EMPTY_QUERY_CODE = 0;
             var VALID_QUERY_CODE = 1;
 
-            networkController.searchDepths = [
+            /*
+             * the elements in drop-down Neigborhood Query menu on Network page will appear in order specified
+             * in networkController.queryTypes below.
+             * 'value' field is used to access networkController.queryTypes object.
+             */
+            networkController.queryTypes = [
                 {
                     'name': '1-step (default)',
-                    'value': 1,
                     'searchDepth': 1,
-                    'directOnly': false
+                    'directOnly': false,
+                    'type': 'query',
+                    'value': 1
                 },
                 {
                     'name': '1-step direct',
-                    'value': 2,
                     'searchDepth': 1,
-                    'directOnly': true
+                    'directOnly': true,
+                    'type': 'query',
+                    'value': 2
                 },
                 {
                     'name': '2-step',
-                    'value': 3,
                     'searchDepth': 2,
-                    'directOnly': false
-
+                    'directOnly': false,
+                    'type': 'query',
+                    'value': 3
                 },
                 {
                     'name': '2-step direct',
-                    'value': 4,
                     'searchDepth': 2,
-                    'directOnly': true
+                    'directOnly': true,
+                    'type': 'query',
+                    'value': 4
                 },
                 {
                     'name': 'Interconnect (old, searchDepth=2)',
-                    'value': 5,
-                    'searchDepth': 2
+                    'searchDepth': 2,
+                    'type': 'interconnect',
+                    'value': 5
                 },
                 {
                     'name': 'Interconnect direct (new, searchDepth=1)',
-                    'value': 6,
-                    'searchDepth': 1
+                    'searchDepth': 1,
+                    'type': 'interconnect',
+                    'value': 6
                 }
             ];
 
-            networkController.searchDepth = {
+            networkController.selectedQueryType = {
+                // 'value' is selected value in the drop down menu for Neighborhood Query on Network page;
+                // the drop-down is defined in networkController.queryTypes;
+                // default value is 1, which corresponds to an element with 'value'=1 in networkController.queryTypes;
                 'value': 1
+            };
+
+            /*
+             * we do not show Query Name for Interconnect direct query since
+             * the header of query result states 'Direct connection query result on network ...'
+             */
+            $scope.showQueryName = function() {
+                var retValue =
+                    (networkController.queryTypes[networkController.selectedQueryType.value-1].type === 'interconnect') &&
+                    (networkController.queryTypes[networkController.selectedQueryType.value-1].searchDepth === 1);
+
+                return !retValue;
             };
 
 
@@ -1100,7 +1125,7 @@ ndexApp.controller('networkController',
                                 } else if (!networkController.tabs[1].active ) {
                                     networkController.tabs[1].active = true;
                                     networkController.tabs[1].disabled = false;
-                                    networkController.tabs[2].active = false;
+                                    //networkController.tabs[2].active = false;
                                 }
 
                                 if (cxNodes.length === 1) {
@@ -2009,6 +2034,7 @@ ndexApp.controller('networkController',
                 sharedProperties.setNetworkViewPage(view);
             };
 
+            /*
             var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById('simpleQueryNetworkViewId').getElementsByTagName('*');
                 for(var i = 0; i < nodes.length; i++){
@@ -2016,6 +2042,7 @@ ndexApp.controller('networkController',
                 }
                 $('#saveQueryButton').prop('disabled', false);
             };
+            */
 
 
             // this function gets called when user navigates away from the current Graphic View page.
@@ -2115,6 +2142,8 @@ ndexApp.controller('networkController',
                 });
             };
 
+            /*
+            // TODO: delete later if not needed
             $scope.activateAdvancedQueryTab = function() {
 
                 networkController.previousNetwork = networkController.currentNetwork;
@@ -2146,6 +2175,7 @@ ndexApp.controller('networkController',
 
                 $scope.disableQuery = true;
             };
+            */
 
 
             /*
@@ -3014,9 +3044,9 @@ ndexApp.controller('networkController',
             };
 
             networkController.rerunQueryAndSaveResult = function (networkId, accesskey, searchString,
-                                                                  searchDepth, edgeLimit, save, errorWhenLimitIsOver) {
+                                                                  queryObj, edgeLimit, save, errorWhenLimitIsOver) {
 
-                ndexService.queryNetworkV2(networkId, accesskey, searchString, networkController.searchDepths[searchDepth-1],
+                ndexService.queryNetworkV2(networkId, accesskey, searchString, queryObj,
                     edgeLimit, save, errorWhenLimitIsOver,
                         function() {
                             /*
@@ -3060,11 +3090,12 @@ ndexApp.controller('networkController',
                 //var userSetSample = networkController.currentNetwork.userSetSample;
 
                 networkController.currentNetwork =
-                    {name: resultName,
+                    {
+                        'name': resultName,
                         'nodeCount': nodeCount,
                         'edgeCount': edgeCount,
                         'queryString': networkController.searchString,
-                        'queryDepth' : networkController.searchDepths[networkController.searchDepth.value-1].name
+                        'queryName' : networkController.queryTypes[networkController.selectedQueryType.value-1].name
                         //'userSetSample' : userSetSample
                     };
 
@@ -3176,9 +3207,11 @@ ndexApp.controller('networkController',
 
                 ndexSpinner.startSpinner(spinnerId);
                 var networkQueryEdgeLimit = window.ndexSettings.networkQueryEdgeLimit;
+
+                var queryObj = networkController.queryTypes[ networkController.selectedQueryType.value-1];
+
                 networkService.neighborhoodQuery(networkController.currentNetworkId,
-                            accesskey, networkController.searchString,
-                            networkController.searchDepths[ networkController.searchDepth.value-1], networkQueryEdgeLimit)
+                            accesskey, networkController.searchString, queryObj, networkQueryEdgeLimit)
                     .success(
                         function (network) {
 
@@ -3207,8 +3240,7 @@ ndexApp.controller('networkController',
                                             networkQueryEdgeLimit = -1;
 
                                             networkController.rerunQueryAndSaveResult(networkController.currentNetworkId,
-                                                accesskey, networkController.searchString,
-                                                networkController.searchDepth.value,
+                                                accesskey, networkController.searchString, queryObj,
                                                 networkQueryEdgeLimit, save, errorWhenLimitIsOver);
 
                                             networkController.cleanUpAfterQuerying();
@@ -3289,7 +3321,7 @@ ndexApp.controller('networkController',
                 $scope.switchViewButtonEnabled = true;
                 networkController.warningShown = false;
 
-
+/*
                 if ($scope.query === 'advanced') {
 
                     if (typeof event !== 'undefined') {
@@ -3304,6 +3336,7 @@ ndexApp.controller('networkController',
 
                     enableSimpleQueryElements();
                 }
+*/
 
                 networkController.tabs[0].active   = true;
                 networkController.tabs[0].disabled = false;
@@ -3376,9 +3409,10 @@ ndexApp.controller('networkController',
                             var save = true;
                             var errorWhenLimitIsOver = false;
 
+                            var queryObj = networkController.queryTypes[ networkController.selectedQueryType.value-1];
+
                             networkController.rerunQueryAndSaveResult(networkController.currentNetworkId,
-                                accesskey, networkController.searchString,
-                                networkController.searchDepth.value,
+                                accesskey, networkController.searchString, queryObj,
                                 networkQueryEdgeLimit, save, errorWhenLimitIsOver);
 
                             $modalInstance.close();

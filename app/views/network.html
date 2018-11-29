@@ -120,15 +120,14 @@
                                ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery">
                     </div>
                     <div class="form-group">
-                        <label>Depth:</label>
+                        <label>Query:</label>
                     </div>
                     <div class="form-group">
                         <select
                             class="form-control"
                             id="selectSearchDepth"
-                            ng-model="networkController.searchDepth.value"
-                            ng-selected="1"
-                            ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
+                            ng-model="networkController.selectedQueryType.value"
+                            ng-options="query.value as query.name for query in networkController.queryTypes"
                             ng-disabled="networkController.hasMultipleSubNetworks() || disableQuery"
                             required>
                         </select>
@@ -246,8 +245,8 @@
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
                             <br>
                             <span class="networkPropertyName"
-                                  ng-show="networkController.searchDepth.value < 6">Query depth: </span>
-                            <span ng-show="networkController.searchDepth.value < 6">{{networkController.currentNetwork.queryDepth}}</span>
+                                  ng-show="showQueryName()">Query: </span>
+                            <span ng-show="showQueryName()">{{networkController.currentNetwork.queryName}}</span>
 
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter:
                                 <br>
