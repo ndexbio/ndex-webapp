@@ -19,4 +19,4 @@ js/*~
 ./ndex-webapp-config.js
 /bower_components
 /app/bower_components
-
+.tmp

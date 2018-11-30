@@ -64,17 +64,22 @@ ndexApp.controller('searchController',
             searchController.showNetworkTable = false;
             var spinnerSearchPageId = 'spinnerSearchPageId';
 
-            var windowsHeightCorrection = 285;
+            var windowsHeightCorrection = 170;
 
 
             //var tableOptions = {};
             //tableOptions.user = searchController.loggedInUserId ? searchController.loggedInUserId : 'anonymous';
-
+/*
             $(document).ready(function() {
                 if (!searchController.loggedInUserId) {
-                    document.getElementById('searchResultTableId').className = 'col-md-12';
+                    document.getElementById('searchResultTableId').className = 'col-12 col-xs-12 col-sm-12 col-md-12';
                 }
             });
+*/
+
+            $scope.searchViewClass = searchController.loggedInUserId ?
+                'col-10 col-xs-10 col-sm-10 col-md-10 col-lg-10' :
+                'col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12';
 
             // this function gets called when user navigates away from the current page.
             // (can also use "$locationChangeStart" instead of "$destroy"
@@ -137,6 +142,31 @@ ndexApp.controller('searchController',
             $scope.activateTab = function(tabName){
                 $scope.activeTab = {};
                 $scope.activeTab[tabName] = true;
+/*
+                switch (tabName.toLowerCase()) {
+
+                    case 'networks':
+                        if ($scope.networkGridApi) {
+                            setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
+                        }
+                        break;
+
+                    case 'users':
+                        if ($scope.userGridApi) {
+                            setTimeout($scope.userGridApi.core.handleWindowResize, 250);
+                        }
+                        break;
+
+                    case 'groups':
+                        if ($scope.groupGridApi) {
+                            setTimeout($scope.groupGridApi.core.handleWindowResize, 250);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+*/
             };
 
 

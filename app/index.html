@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="bower_components/vis/dist/vis.min.css" />
     <link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
     <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="bower_components/slick-carousel/slick/slick.css" />
+    <link rel="stylesheet" href="bower_components/slick-carousel/slick/slick-theme.css" />
     <!-- endbower -->
     <link type="text/css" rel="stylesheet" href="bower_components/qtip2/jquery.qtip.css" />
     <!-- endbuild -->
@@ -69,6 +71,10 @@
     <script src="bower_components/vis/dist/vis.min.js"></script>
     <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="bower_components/angular-google-analytics/dist/angular-google-analytics.min.js"></script>
+    <script src="bower_components/slick-carousel/slick/slick.min.js"></script>
+    <script src="bower_components/angular-slick/dist/slick.js"></script>
+    <script src="bower_components/ngtweet/dist/ngtweet.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -84,8 +90,8 @@
 
 
     <script src="https://apis.google.com/js/api.js"></script>
-
     <script src="ndex-webapp-config.js"></script>
+
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
 
@@ -120,7 +126,6 @@
     <script src="scripts/controllers/home-controller.js"></script>
     <script src="scripts/controllers/my-account-controller.js"></script>
 
-
     <!-- endbuild -->
 
     <noscript>
@@ -146,19 +151,47 @@
         <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
               ng-submit="main.search()">
 
-            <table class="table">
+            <table class="table" >
 
-                    <div class="input-group">
-                        <tr style="border:hidden">
-                            <td style="width: 70px;"  bgcolor="#FFFFFF">
+                <div class="input-group">
 
-                                <div class="input-group-btn dropdown">
-                                    <button type="button" class="btn btn-default dropdown-toggle"
-                                            data-toggle="dropdown" style="border-radius: 24px;">
-                                        Search Examples <span class="caret"></span>
+                    <tr>
+                        <!-- #adff2f -->
+                        <td bgcolor="white" width="15%;" style="border:hidden">
+
+                            <div class="row">
+                                <button type="button" class="btn btn-primary search-examples-button"
+                                        ng-click="main.browse(); closeModal()">
+                                    Browse
+                                </button>
+                            </div>
+
+                            <div class="row">
+                                <div class="dropdown">
+                                    <button type="button"
+                                            ng-class="featuredContentDropDownEnabled?
+                                                'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
+                                            data-toggle="dropdown">
+                                        Featured Content <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu" role="menu">
 
+                                    <ul class="dropdown-menu">
+                                        <li ng-repeat="item in featuredContentDropDown">
+                                            <a ng-href="{{item.href}}">{{item.description}}</a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
+                                            data-toggle="dropdown">
+                                        Examples <span class="caret"></span>
+                                    </button>
+
+                                    <ul class="dropdown-menu">
                                         <li class="AlignLeft" style="padding-left: 5px;"
                                             ng-repeat="item in main.searchNetworksExamples">
                                             <a ng-click="main.runSearchExample(item); closeModal()">
@@ -175,108 +208,86 @@
 
                                     </ul>
                                 </div>
-                            </td>
+                            </div>
 
-                            <td style="width: 35px;"  bgcolor="#FFFFFF">
-                                <div class="input-group-btn">
-                                    <button type="button" class="btn btn-default"
-                                            ng-click="main.browse(); closeModal()" style="border-radius: 24px;">Browse
-                                    </button>
+                        </td>
+
+                        <!-- #87cefa -->
+                        <td bgcolor="white" width="85%" style="border:hidden">
+                            <div class='row' style="margin-left: 1em; margin-right: 0">
+                                <div class="input-group">
+
+                                    <input type="text"
+                                           class="form-control inputHeight"
+                                           style="font-size:1.3em;"
+                                           placeholder="{{main.getSearchPlaceholder()}}"
+                                           ng-model="main.searchString"
+                                           maxlength="{{maxSearchInputLength}}"
+                                           ng-change="checkLengthOfSearchString()">
+
+                                    <span class="input-group-btn">
+                                        <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();"
+                                                ng-class="main.searchString ? 'btn btn-primary inputHeight' : 'btn btn-default inputHeight'">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                    </span>
                                 </div>
-                            </td>
+                            </div>
 
-                            <td bgcolor="#FFFFFF">
-                                <div class="row" style="margin-left:5px; margin-right:5px">
+                            <div class='row' style="margin-left: 1em; margin-top: 1.5em">
 
-                                    <div class="input-group">
-
-                                        <span class="input-group-btn dropdown"
-                                            style="border-bottom-right-radius:0px; border-top-right-radius:0px">
-                                            <button type="button" class="btn btn-default dropdown-toggle"
-                                                    data-toggle="dropdown" style="margin-right:-2px;">
-                                                {{main.searchType}} <span class="caret"></span>
-                                            </button>
-
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li><a class="dropdown-toggle"
-                                                       ng-click="main.searchType = 'All'; main.searchString = ''">All NDEx</a></li>
-                                                <li><a class="dropdown-toggle"
-                                                       ng-click="main.searchType = 'Networks'; main.searchString = ''">Networks</a></li>
-                                                <li><a class="dropdown-toggle"
-                                                       ng-click="main.searchType = 'Users'; main.searchString = ''">Users</a></li>
-                                                <li><a class="dropdown-toggle"
-                                                       ng-click="main.searchType = 'Groups'; main.searchString = ''">Groups</a></li>
-                                            </ul>
-                                        </span>
-
-                                        <input type="text"
-                                               class="form-control"
-                                               placeholder="{{main.getSearchPlaceholder()}}"
-                                               ng-model="main.searchString"
-                                               maxlength="{{maxSearchInputLength}}"
-                                               ng-change="checkLengthOfSearchString()">
-
-                                        <!--!$scope.main.searchString-->
-
-                                        <span class="input-group-btn">
-                                            <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();" class="btn btn-default">
-                                                <span class="glyphicon glyphicon-search"></span>
-                                            </button>
-                                        </span>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr ng-show="stringTooLongWarning">
-                            <td bgcolor="#FFFFFF"></td>
-                            <td bgcolor="#FFFFFF"></td>
-
-                            <td bgcolor="#FFFFFF">
-                                <div ng-show="stringTooLongWarning"
-                                     style="color:red; font-size:1.15em; font-weight:bold; margin-left:60px;"
+                                <div ng-show='stringTooLongWarning' style="color:red; font-size:1.1em; font-weight:bold; margin-bottom: 1em"
                                      ng-bind-html="stringTooLongWarning">
                                 </div>
-                            </td>
-                        </tr>
 
-                        <tr style="border:hidden">
-                            <td bgcolor="#FFFFFF"></td>
-                            <td bgcolor="#FFFFFF"></td>
+                                <input type="checkbox"
+                                       ng-hide="checkSearchTypeAndTermExpansion()"
+                                       title="{{main.searchTitle}}"
+                                       ng-model="main.searchTermExpansionSelected">
 
-                            <td bgcolor="#FFFFFF">
-                                <div class="row" style="margin-left:60px;">
+                                <span ng-style="searchTermExpansionEnabled ?
+                                    {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}"
 
-                                    <input type="checkbox"
-                                           ng-hide="checkSearchTypeAndTermExpansion()"
-                                           title="{{main.searchTitle}}"
-                                           ng-model="main.searchTermExpansionSelected">
-                                            &nbsp;
-                                            <span ng-style="searchTermExpansionEnabled ?
-                                                {'color':'black', 'font-size':'1.15em'} : {'color':'red', 'font-size':'1.15em'}">
-                                                    <strong>{{main.searchTitle}}</strong>
-                                            </span>
-                                </div>
+                                      title="Only applied when searching networks"
+                                      ng-init="setToolTips()">
+                                        <strong>{{main.searchTitle}}</strong>
+                                     &nbsp;
+                                    <i data-toggle="tooltip" data-placement="bottom"
+                                       title="Only applied when searching networks"  ng-init="setToolTips()"
+                                       class="fa fa-info-circle" style="color: #3576BE; cursor: pointer;"
+                                       ng-if="searchTermExpansionEnabled">
 
-                            </td>
-                        </tr>
+                                    </i>
+                                </span>
 
-                    </div>
+
+                            </div>
+                        </td>
+                    </tr>
+                </div>
 
             </table>
+
         </form>
     </div>
 </script>
 
 <!-- Nav Bar -->
-<nav class="navbar navbar-fixed-top">
-    <div class="navbar-ndex navbar-ndex-top" style="padding-right: 20px;">
-        <div class="navbar-header">
+<nav id="topNavBarId" class="navbar navbar-fixed-top" style="display: none;">
+    <div class="navbar-ndex navbar-ndex-top">
+<!--
+        <div class="container-fluid" style="width:100%; max-width: 1800px; min-width: 1100px;">
+-->
+
+        <div class="navbar-header navbar-top-height navbar-ndex-logo-margin">
 
             <button ng-show="(main.serverIsDown != null) && !main.serverIsDown"
                     type="button"
                     class="navbar-toggle"
                     data-toggle="collapse"
-                    data-target="#myNavbar">
+                    data-target="#myNavbar"
+                    ng-click="switchNav($event)"
+                    style="padding-top: 21px">
 
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -285,90 +296,47 @@
             </button>
 
             <a class="navbar-brand"
-               ng-href="{{$location.path()}}"
-               ng-click="collapseHamburgerMenu(); redirectToCurrentServer()"
-               style="max-height: 50px; padding-top: 0; padding-bottom: 0;">
-
-                <div id="hiddenElementId" style="
+               style="padding: 5px 0 5px 0px"
+               ng-click="collapseHamburgerMenu(); goToLandingPage()">
+                <div id="ndexLogoId" style="
                     display: none;
-                    background-image: url('images/NDEx-horizontal-transparent.png');
+                    background-image: url('images/new_landing_page_logo.png');
                     background-repeat: no-repeat;
-                    background-position: 0px 10px;
-                    width: 120px;
-                    height: 50px;
-                    margin-left: 5px;
-                    margin-right: 0px;
-                    background-size: 120px 30px;">
+                    width: 310px;
+                    height: 65px;
+                    background-size: 310px 65px;">
                 </div>
             </a>
+
+            <div class="ndexServerVersion"
+                 style="margin-left: 320px;  padding-top: 42px; height: 65px; width: 65px;">
+                <a id="ndexServerVersionId"
+                   style='color: black'
+                    ng-href="{{linkToReleaseDocs}}"
+                   target="release_tab"
+                   data-toggle="tooltip"
+                   tooltip="Release Notes"
+                   data-placement="bottom"> v{{main.ndexServerVersion}}
+                </a>
+            </div>
         </div>
 
         <div class="navbar-collapse collapse" id="myNavbar">
 
-            <!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
-                disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId1" class="nav navbar-nav navbar-left" style="display: none"
+            <ul id="topMenuId" class="nav navbar-nav navbar-left" style="display: none; padding-top: 14px"
                 ng-show="(main.serverIsDown != null) && !main.serverIsDown">
-                <li>
-                    <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.newsLink)">{{config.newsLink.label}}
-                    </a>
-                </li>
 
-                <li>
+                <li ng-repeat="item in topMenu">
                     <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.aboutLink)">{{config.aboutLink.label}}
-                    </a>
-
-                </li>
-                <li>
-                    <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.documentationLink)">
-                        {{config.documentationLink.label}}
+                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(item)">
+                        {{item.label}}
                     </a>
                 </li>
-                <!--
-                <li>
-                    <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.apiLink)">
-                        {{config.apiLink.label}}
-                    </a>
-                </li>
-                -->
-
-                <li>
-                    <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.reportBugLink)">
-                        {{config.reportBugLink.label}}
-                    </a>
-                </li>
-                <li>
-                    <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(config.contactUsLink)">
-                        {{config.contactUsLink.label}}
-                    </a>
-                </li>
-                <li>
-                    <a id="copyNDExCitationToClipboardId"
-                       ng-click="collapseHamburgerMenuAfterMs(750);"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       ng-mouseover="changeTitle()"
-                       ng-init="setToolTips()"
-                       ngclipboard
-                       data-clipboard-text="{{NDEx.citation}}">
-                        {{config.citeNDEx.label}}
-                    </a>
-                </li>
-
             </ul>
 
+            <ul id="searchMyAccountNameLoginId" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
 
-            <!-- even though we use ng-show directives, we still set style display to none: in case third parties cookies are
-                 disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-            <ul id="hiddenElementId2" class="nav navbar-nav navbar-right" style="display: none">
-
-                <li ng-show="showSearchMenu">
+                <li ng-show="isSearchIconVisible()">
                     <a ng-click="collapseHamburgerMenu(); showSearchBar()">
                         <div style="
                             background-image: url('images/search-icon.png');
@@ -376,87 +344,152 @@
                             margin-bottom: -5px;
                             width: 30px;
                             height: 30px;
-                            background-size: 30px 30px;
-                            ">
+                            background-size: 30px 30px;"
+                            class="marginForCollapsedMode">
                         </div>
                     </a>
                 </li>
 
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()"
-                       ng-class="{'selected-navbar-item' : isActiveUserView('/myAccount/')}">
-
-                        <img src="images/home.png" style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;">
+                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()">
+                        <img src="images/home.png"
+                             style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
+                             class="marginForCollapsedMode">
                         &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
                     </a>
                 </li>
 
                 <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); main.signout()">Sign Out</a>
+                    <button type="button" class="btn btn-primary login-button"
+                            ng-click="collapseHamburgerMenu();
+                            main.signout()">
+                        Logout
+                    </button>
                 </li>
 
+
                 <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
-                    <a ng-click="collapseHamburgerMenu(); main.showSignInSignUpOptions()">Sign In / Sign Up</a>
+                    <button type="button" class="btn btn-primary login-button"
+                       ng-click="collapseHamburgerMenu();
+                             main.showSignInSignUpOptions()">
+                        Login/Register
+                    </button>
                 </li>
 
             </ul>
 
         </div>
 
+
+        <div class="sidenav" id="slidingRightMenuDivId">
+
+            <ul id="slidingRightMenuId" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px"
+                ng-show="(main.serverIsDown != null) && !main.serverIsDown">
+
+                <li ng-repeat="item in topMenu">
+                    <a ng-href="{{$location.path()}}"
+                       ng-click="switchNav($event); redirectToExternalLink(item)">
+                        {{item.label}}
+                    </a>
+                </li>
+            </ul>
+
+            <ul id="slidingRightMenuSearchMyAccountNameLoginId"
+                class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px">
+
+                <li ng-show="isSearchIconVisible()">
+                    <a ng-click="switchNav($event); showSearchBar()">
+                        <div style="
+                            background-image: url('images/search-icon.png');
+                            margin-top: -5px;
+                            margin-bottom: -5px;
+                            width: 30px;
+                            height: 30px;
+                            background-size: 30px 30px;"
+                             class="marginForCollapsedMode">
+                        </div>
+                    </a>
+                </li>
+
+
+                <li ng-show="main.loggedIn">
+                    <a ng-click="switchNav($event); main.goToCurrentUser()">
+                        <img src="images/home.png"
+                             style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
+                             class="marginForCollapsedMode">
+                        &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
+                    </a>
+                </li>
+
+                <li ng-show="main.loggedIn">
+                    <button type="button" class="btn btn-primary login-button"
+                            ng-click="switchNav($event);
+                            main.signout()">
+                        Logout
+                    </button>
+                </li>
+
+
+                <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
+                    <button type="button" class="btn btn-primary login-button"
+                            ng-click="switchNav($event);
+                             main.showSignInSignUpOptions()">
+                        Login/Register
+                    </button>
+                </li>
+
+            </ul>
+
+        </div>
     </div>
 
 </nav>
 
-<div id="main" class="container-fluid">
+<div id="main" class="container-fluid marginsForNGView flexContent">
     <!-- angular templating -->
     <!-- this is where content will be injected -->
 
-    <div id="searchBarId" ng-hide="main.hideSearchBar"
-         class="marginsForNGView" style="background-color: white;  ">
-        <div style="max-width: 1000px; margin-left: auto; margin-right: auto;">
-            <ng-include src="'search_bar.html'"></ng-include>
-        </div>
-
-    </div>
-
-    <div ng-view class="marginsForNGView"></div>
+    <div ng-view></div>
 
 </div>
 
+<div id="footerId" ng-if="footerHtml" class="container-fluid ndexFooter ndexFooterProps" style="display: none;" >
+    <ng-include src="footerHtml"></ng-include>
+</div>
 
 <!--
-<div ng-show='showFooter'>
-    <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignCenter"  >
-        <div class='footer-content' >
-            Copyright &copy; 2016 Regents of the University of California and The Cytoscape Consortium. All rights
-            reserved.
-            &nbsp;<a href="http://home.ndexbio.org/disclaimer-license/">Terms & Conditions</a>
-        </div>
-    </nav>
-</div>
--->
-
-
-<!-- even though we use ng-show directive, we still set style display to none: in case third parties cookies are
-     disabled in the browser, the ng-show is undefined and we use 'display: none' for this scenario -->
-<div ng-show='showFooter' id="hiddenElementId3" style="display: none">
-    <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignLeft"  >
+<div id="footerId" style="display: none;">
+    <nav class="navbar navbar-ndex navbar-fixed-bottom footer-bar AlignLeft">
         <div class='footer-content' >
 
             <div class="row">
 
-                <div class="col-md-10" style="padding-top: 6px;">
-                    <span style="margin-left: 28px">
-                        Copyright &copy; 2013-<script type="text/javascript">var d = new Date(); document.write(d.getFullYear());</script>,
-                        The Regents of the University of California, The Cytoscape Consortium.
-                        All rights reserved.
-                        &nbsp;<a href="https://home.ndexbio.org/disclaimer-license/" style="color:#0272c9">Terms & Conditions</a>
-                    </span>
+                <div class="col-10 col-xs-10 col-sm-10 col-md-10 navbar-ndex-bottom" style="padding-top: 6px;">
+
+                    <div ng-repeat="item in footerNav" style="display: inline; margin-left: 30px;" >
+                        <a ng-if='item.href' ng-href="{{item.href}}" target="_blank" style='color: #149FEC;'>
+                            {{item.label}}
+                        </a>
+                        <span ng-if='!item.href' style='color: #149FEC;'>
+                            {{item.label}}
+                        </span>
+                    </div>
+
+                    <a id="copyNDExCitationToClipboardId"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       ng-mouseover="changeTitle()"
+                       ng-init="setToolTips()"
+                       ngclipboard
+                       data-clipboard-text="{{NDEx.citation}}"
+                        style="margin-left: 30px; color: #149FEC;">
+                        Citing NDEx
+                    </a>
                 </div>
 
-                <div class="col-md-2">
-                    <ul class="social AlignRight" style="margin-right: 12px">
+                <div class="col-2 col-xs-2 col-sm-2 col-md-2">
+                    <ul class="social pull-right" style="min-width: 154px; max-width: 154px; width: 100%">
                         <li class="twitter">
                             <a href="https://twitter.com/NDExProject">
                                 <i class="fa fa-twitter"></i>
@@ -479,7 +512,7 @@
         </div>
     </nav>
 </div>
-
+-->
 
 
 <script>

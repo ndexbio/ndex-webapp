@@ -36,6 +36,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     $scope.fillInNameDescriptionVersionFirst =
         'Changing network Visibility requires Name, Description and Version fields to be filled in.';
 
+    const nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference','@context'];
 
     $scope.$watch('editor.visibilityIndex', function() {
         if(editor.visibilityIndex === 'PUBLIC'){
@@ -231,8 +232,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
         $scope.opened = true;
     };
-    uiMisc.hideSearchMenuItem();
-    $scope.$parent.showSearchMenu = true;
+
 
     editor.buildAttributeDictionary = function() {
         var dict = {};
@@ -261,7 +261,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 	editor.changed = function(index, value, property, action) {
 
         var attributeDictionary = editor.buildAttributeDictionary();
-        var nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference'];
 
 		if((index === (editor.propertyValuePairs.length - 1)) && (value.trim().length > 0)) {
 
@@ -399,7 +398,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.checkIfFormIsValid = function(attributeDictionary) {
 
         var disableSaveChangesButton = false;
-        var nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference'];
+        //var nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference','@context'];
 
         for(var i=0; i<editor.propertyValuePairs.length; i++) {
 
@@ -522,16 +521,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     };
 
-    // this function gets called when user navigates away from the current page
-    // (can also use "$locationChangeStart" instead of "$destroy"
-    $scope.$on('$destroy', function(){
-
-        // hide the Search menu item in Nav Bar
-        $scope.$parent.showSearchMenu = false;
-
-        uiMisc.showSearchMenuItem();
-    });
-
     // these are names used by Solr for indexing.
     // They are found in the server's ndexbio-rest/src/main/resources/solr/ndex-networks/conf/schema.xml
     // under the "Collaborator required index fields" comment
@@ -558,7 +547,8 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         'version',
         'reference',
         'ndex:sourceformat',
-        'sourceformat'
+        'sourceformat',
+        '@context'
     ];
 
     $scope.namesForCustom = [
@@ -984,7 +974,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         $location.path('/network/' + editor.networkExternalId);
     };
 
-
+    /* commented out by cj because we can't find usage of this variable in the app
     editor.preloadedOntologies = [
         {
             prefix: 'GO',
@@ -1066,7 +1056,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             prefix: 'TTHERM',
             uri: 'http://identifiers.org/tgd/'
         }
-    ];
+    ]; */
 
     //				API initializations
     //------------------------------------------------------------------------------------

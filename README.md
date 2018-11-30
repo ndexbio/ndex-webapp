@@ -1,13 +1,20 @@
 ## Cloning NDEx Web App:
 
-- git clone https://github.com/ndexbio/ndex-webapp.git
-- cd ndex-webapp
+```Bash
+git clone https://github.com/ndexbio/ndex-webapp.git
+cd ndex-webapp
+```
 
 ## Building a debug NDEx Web App:
 
-- bower install
-- type 3 when prompted
+```Bash
+bower install
 
+```
+
+Type `3` when prompted with output as seen below:
+
+```Bash
 Unable to find a suitable version for angular, please choose one by typing one of the numbers below:
     1) angular#~1.2.11 which resolved to 1.2.32 and is required by angular-file-upload#1.1.6
     2) angular#>=1 <1.3.0 which resolved to 1.2.32 and is required by angular-bootstrap#0.12.0
@@ -19,11 +26,13 @@ Unable to find a suitable version for angular, please choose one by typing one o
 Prefix the choice with ! to persist it to bower.json
 
 ? Answer --> 3
-
+```
 
 ## Building a Distribution version:
-- npm install
-- grunt build
 
+```Bash
+npm install
+grunt build
+```
 
 

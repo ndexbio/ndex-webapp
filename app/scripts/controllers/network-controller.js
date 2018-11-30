@@ -22,8 +22,6 @@ ndexApp.controller('networkController',
 
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
-            $scope.showFooter = false;
-
             $scope.networkController = {};
 
             var networkController  = $scope.networkController;
@@ -46,9 +44,6 @@ ndexApp.controller('networkController',
 
             networkController.successfullyQueried = false;
 
-            // turn on (show) Search menu item on the Nav Bar
-            $scope.$parent.showSearchMenu = true;
-
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
 
             networkController.advancedQueryNodeCriteria = 'Source';
@@ -61,6 +56,7 @@ ndexApp.controller('networkController',
             networkController.nodePropertyNamesForAdvancedQuery = undefined;
 
             networkController.context = {};
+            networkController.contextIsFromAspect = true; // false if the aspect is from network Attribute
 
             networkController.isAdmin = false;
 
@@ -77,6 +73,8 @@ ndexApp.controller('networkController',
             // if we cloned a network and followed a link to the newly cloned network
             // from the "Network Cloned" information modal.
             //$modalStack.dismissAll('close');
+
+            //$scope.fullScreen = false;
 
             $scope.query = null;
             networkController.searchString = '';
@@ -243,12 +241,12 @@ ndexApp.controller('networkController',
                 $scope.activeTab = tabName;
 
                 if ('Edges' === tabName) {
-                    $('#edgeGridId').height($(window).height() - 235);
+                    $('#edgeGridId').height($(window).height() - 195);
                     /** @namespace $scope.edgeGridApi.core.refresh() **/
                     $scope.edgeGridApi.core.refresh();
 
                 } else if ('Nodes' === tabName) {
-                    $('#nodeGridId').height($(window).height() - 235);
+                    $('#nodeGridId').height($(window).height() - 195);
                     /** @namespace $scope.nodeGridApi.core.refresh(); **/
                     $scope.nodeGridApi.core.refresh();
                 }
@@ -1534,7 +1532,7 @@ ndexApp.controller('networkController',
                     }
                 }
 
-                var windowHeight = $(window).height() - 235;
+                var windowHeight = $(window).height() - 195;
                 $('#nodeGridId').height(windowHeight);
                 $scope.nodeGridApi.grid.gridHeight = windowHeight;
 
@@ -1803,7 +1801,7 @@ ndexApp.controller('networkController',
                         $scope.edgeGridApi.grid.gridWidth = cytoscapeCanvasWidth;
                     }
                 }
-                var windowHeight = $(window).height() - 235;
+                var windowHeight = $(window).height() - 195;
                 $('#edgeGridId').height(windowHeight);
                 $scope.edgeGridApi.grid.gridHeight = windowHeight;
 
@@ -2026,11 +2024,6 @@ ndexApp.controller('networkController',
                 if (checkCytoscapeStatusTimer) {
                     clearInterval(checkCytoscapeStatusTimer);
                 }
-
-                // hide the Search menu item in Nav Bar
-                $scope.$parent.showSearchMenu = false;
-
-                uiMisc.showSearchMenuItem();
 
                 networkService.clearNiceCX();
                 networkService.clearQueryResultInCX();
@@ -2718,18 +2711,33 @@ ndexApp.controller('networkController',
 
                         $scope.save = function() {
                             _.forEach($scope.addTheseContexts, function (addThis) {
-                                $scope.context[addThis.namespace] = addThis.url;
+                                if ( addThis.namespace && addThis.url)
+                                  $scope.context[addThis.namespace] = addThis.url;
                             });
 
-                            networkService.updateNetworkContextFromNdexV2([$scope.context], networkExternalId,
-                            function() {
+                            if ( networkController.contextIsFromAspect) {
+                                networkService.updateNetworkContextFromNdexV2([$scope.context], networkExternalId,
+                                    function () {
 
-                            }, function(errorMessage){
-                                    console.log(errorMessage);
-                                }
-                            );
+                                    }, function (errorMessage) {
+                                        console.log(errorMessage);
+                                    }
+                                );
+                            } else {
+                                // modify the network attribute
+                                networkService.setNetworkProperty(currentNetworkSummary,'@context',
+                                    JSON.stringify($scope.context));
+                                ndexService.setNetworkPropertiesV2(networkController.currentNetworkId,
+                                    currentNetworkSummary.properties, function(res){
+                                        $modalInstance.dismiss();
+                                    },
+                                    function(err) {
+                                       console.log(errorMessage);
+                                       //TODO: print error message in the modal.
 
-                            $modalInstance.dismiss();
+                                     }
+                                );
+                            }
                         };
                     }
                 });
@@ -2803,9 +2811,17 @@ ndexApp.controller('networkController',
 
             $scope.getContextAspectFromNiceCX = function() {
 
-                var contextAspect = networkService.getCurrentNiceCX()['@context'];
-
                 networkController.context = {};
+
+                var contextStr = getNetworkPropertyFromSummary(undefined, '@context');
+
+                if ( contextStr) {
+                    networkController.context = JSON.parse(contextStr);
+                    networkController.contextIsFromAspect = false;
+                    return;
+                }
+
+                var contextAspect = networkService.getCurrentNiceCX()['@context'];
 
                 if (contextAspect) {
                     if (contextAspect.elements) {
@@ -2818,6 +2834,10 @@ ndexApp.controller('networkController',
                 //networkController.context =
                 //    (contextAspect && contextAspect['elements']) ? contextAspect['elements'][0] : {};
 
+
+                // Not sure why do we have this. RDF prefix should be case sensitive. commmenting it out for now -- cj
+
+                /*
                 var keys = Object.keys(networkController.context);
 
                 // now, let's lower-case all keys in networkController.context
@@ -2831,7 +2851,7 @@ ndexApp.controller('networkController',
 
                     // add value with lower-case key
                     networkController.context[lowerCaseKey] = value;
-                }   
+                }  */
             };
 
 
@@ -4169,7 +4189,7 @@ ndexApp.controller('networkController',
                             networkController.currentNetwork.rightsHolder = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rightsHolder');
                             networkController.currentNetwork.rights = getNetworkPropertyFromSummary(networkController.subNetworkId, 'rights');
 
-                            if(networkController.currentNetwork.rights.indexOf('|') > -1){
+                            if ((undefined !== networkController.currentNetwork.rights) && networkController.currentNetwork.rights.indexOf('|') > -1){
                                 var rightsTemp = networkController.currentNetwork.rights;
 
                                 var rightsArray = rightsTemp.split('|');
@@ -4190,7 +4210,7 @@ ndexApp.controller('networkController',
                             networkController.otherProperties =
                                 _.sortBy(
                                     networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
-                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
+                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version', '@context']), 'predicateString');
 
                             //TODO: need to move this to 'add to my set' modal.
                             networkController.getAllNetworkSetsOwnedByUser(
@@ -4648,12 +4668,87 @@ ndexApp.controller('networkController',
                 //factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
             };
 
+            /*
+            var resizeCanvas = function() {
+                cy.destroy();
+                localNetwork = networkService.getCurrentNiceCX();
+
+                setTimeout(
+                    function () {
+                        drawCXNetworkOnCanvas(localNetwork, false);
+                    }, 200);
+            }
+
+            /*
+            $scope.openInFullScreenMode = function(mode) {
+                // the code below is taken from
+                // https://hacks.mozilla.org/2012/01/using-the-fullscreen-api-in-web-browsers/
+
+                var docElm;
+
+                // console.log('cy.width() = ' + cy.width()  + '  cy.height() = ' + cy.height());
+
+                if (mode) {
+                    if ('canvas' === mode) {
+                        docElm = document.getElementById("cytoscape-canvas");
+                    } else if ('page' === mode) {
+                        docElm = document.documentElement;
+                    }
+                }
+
+                if (docElm.requestFullscreen) {
+                    docElm.requestFullscreen();
+                }
+                else if (docElm.mozRequestFullScreen) {
+                    docElm.mozRequestFullScreen();
+                }
+                else if (docElm.webkitRequestFullScreen) {
+                    docElm.webkitRequestFullScreen();
+                }
+                else if (docElm.msRequestFullscreen) {
+                    docElm.msRequestFullscreen();
+                }
+            };
+
+            var setListenerForFullScreenChange = function() {
+                var docElm = document.documentElement;
+
+
+                if (docElm.requestFullscreen) {
+                    document.addEventListener("fullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                }
+                else if (docElm.mozRequestFullScreen) {
+                    document.addEventListener("mozfullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                }
+                else if (docElm.webkitRequestFullScreen) {
+                    document.addEventListener("webkitfullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                }
+                else if (docElm.msRequestFullscreen) {
+                    document.addEventListener("msfullscreenchange", function () {
+                        resizeCanvas();
+                    }, false);
+                };
+            };
+
+            if ($scope.fullScreen) {
+                setListenerForFullScreenChange();
+            };
+            */
+
             //                  PAGE INITIALIZATIONS/INITIAL API CALLS
             //----------------------------------------------------------------------------
 
+
+            /*
             var windowHeight = $(window).height();
             var $cytoscapeCanvas = $('#cytoscape-canvas');
-            $cytoscapeCanvas.height(windowHeight - 200);
+            $cytoscapeCanvas.height(windowHeight - 160);
 
             $('#divNetworkTabs').height(windowHeight);
 
@@ -4672,14 +4767,15 @@ ndexApp.controller('networkController',
                     $('#queryWarningsOrErrorsId').width($nodeGridId.width());
                 }
             }
+            */
 
 
             $(window).resize(function() {
 
                 var $cytoscapeCanvas = $('#cytoscape-canvas');
 
-                $cytoscapeCanvas.height($(window).height() - 200);
-                $('#divNetworkTabs').height($(window).height() - 200);
+                $cytoscapeCanvas.height($(window).height() - 160);
+                $('#divNetworkTabs').height($(window).height() - 160);
 
                 if ($scope.currentView === 'Graphic') {
                     $('#queryWarningsOrErrorsId').width($cytoscapeCanvas.width());
@@ -4688,14 +4784,14 @@ ndexApp.controller('networkController',
                     if ($scope.activeTab === 'Edges') {
                         var $edgeGridId = $('#edgeGridId');
                         $('#queryWarningsOrErrorsId').width($edgeGridId.width());
-                        $edgeGridId.height($(window).height() - 235);
+                        $edgeGridId.height($(window).height() - 195);
                         $scope.edgeGridApi.grid.gridHeight = $edgeGridId.height();
                         $scope.edgeGridApi.core.refresh();
 
                     } else {
                         var $nodeGridId = $('#nodeGridId');
                         $('#queryWarningsOrErrorsId').width($nodeGridId.width());
-                        $nodeGridId.height($(window).height() - 235);
+                        $nodeGridId.height($(window).height() - 195);
                         $scope.nodeGridApi.grid.gridHeight = $nodeGridId.height();
                         $scope.nodeGridApi.core.refresh();
                     }
@@ -4706,8 +4802,6 @@ ndexApp.controller('networkController',
             $(window).trigger('resize');
 
             ndexSpinner.startSpinner(spinnerId);
-
-            uiMisc.hideSearchMenuItem();
 
             if ($routeParams.identifier !== undefined) {
                 initialize();

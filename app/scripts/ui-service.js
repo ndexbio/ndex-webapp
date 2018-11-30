@@ -675,7 +675,6 @@
 
                                         $scope.ndexData.firstName    = $scope.user.firstName;
                                         $scope.ndexData.lastName     = $scope.user.lastName;
-                                        $scope.ndexData.userName     = $scope.user.userName;
                                         $scope.ndexData.emailAddress = $scope.user.emailAddress;
                                         $scope.ndexData.website      = $scope.user.website;
                                         $scope.ndexData.image        = $scope.user.image;
@@ -689,7 +688,6 @@
                                             window.currentNdexUser.website      = $scope.user.website;
                                             window.currentNdexUser.image        = $scope.user.image;
                                             window.currentNdexUser.description  = $scope.user.description;
-                                            window.currentNdexUser.userName     = $scope.user.userName;
                                         };
 
                                         $scope.user = {};
