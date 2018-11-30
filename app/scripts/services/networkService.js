@@ -3,8 +3,8 @@
  */
 
 
-ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'provenanceService', 'ndexService','$http', '$q',
-    function (sharedProperties, ndexConfigs, ndexUtility, ndexHelper, provenanceService, ndexService, $http, $q) {
+ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'ndexUtility', 'ndexHelper', 'ndexService','$http', '$q',
+    function (sharedProperties, ndexConfigs, ndexUtility, ndexHelper, ndexService, $http, $q) {
 
         var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
 
@@ -910,30 +910,27 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
             return promise;
         };
 
-        factory.neighborhoodQuery = function (networkId, accesskey, searchString, searchDepth, edgeLimit) {
+        factory.neighborhoodQuery = function (networkId, accesskey, searchString, query, edgeLimit) {
             // Server API : Query Network As CX
             // POST /search/network/{networkId}/query?accesskey={accesskey} or
             // POST /search/network/{networkId}/interconnectquery?accesskey={accesskey}
 
-            if (3 == searchDepth) {
-
-                // this is 1-step Interconnect
-                var url = "/search/network/" + networkId + "/interconnectquery";
-                var postData = {
-                    searchString: searchString,
-                    edgeLimit: edgeLimit
-                };
-
-            } else {
-                var url = "/search/network/" + networkId + "/query";
-                var postData = {
-                    searchString: searchString,
-                    searchDepth: searchDepth,
-                    edgeLimit: edgeLimit
-                };
+            var postData = {
+                searchString: searchString,
+                searchDepth: query.searchDepth,
+                edgeLimit: edgeLimit,
+                errorWhenLimitIsOver: true
             };
 
-            postData['errorWhenLimitIsOver'] = true;
+            var url = "/search/network/" + networkId;
+
+            if (query.type === 'query') {
+                url = url + "/query";
+                postData['directOnly'] = query.directOnly;
+            } else {
+                // type is interconnectquery
+                url = url + "/interconnectquery";
+            };
 
             if (accesskey) {
                 url = url + "?accesskey=" + accesskey;

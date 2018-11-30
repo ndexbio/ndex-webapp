@@ -9,7 +9,7 @@
 
 @font-face
 {
-    font-family: "Helvetica Neue", Helvetica, Geneva, Arial, Verdana, sans-serif;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
 }
 
 html, body {
@@ -34,6 +34,7 @@ body
     font-weight: normal;
     line-height: 18px;
     -webkit-font-smoothing: subpixel-antialiased;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
 }
 
 a:hover
@@ -64,7 +65,7 @@ h1, h2, h3, h4, h5, h6
 
 legend
 {
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 label
@@ -339,7 +340,7 @@ textarea
 
 .navbar-ndex a
 {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(255, 255, 255);
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -372,7 +373,7 @@ textarea
 
 .navbar-ndex-top
 {
-    font-size: 16px;
+    font-size: 14px;
     letter-spacing:0px;
 }
 .navbar-ndex-bottom
@@ -1127,7 +1128,7 @@ span.glyphicon-refresh {
     margin-left: 1em;
     margin-right: 1em;
     margin-bottom: 0.5em;
-    width: 150px;
+    width: 162px;
 }
 
 
@@ -1222,8 +1223,8 @@ body   { background-color: #F60; }
 }
 
 .slideImage {
-    width: auto;
     max-height: 100%;
+    max-width: 33% !important;
     float: left;
 }
 
@@ -1234,7 +1235,7 @@ body   { background-color: #F60; }
 }
 .carousel-indicators {
     font-size: 2em;
-    bottom: -0.75em;
+    bottom: -1em;
     text-align: center;
     text-shadow: none;
 }
@@ -1294,8 +1295,9 @@ div.featuredCollectionDescriptionArea {
     text-overflow: ellipsis;
     text-align: left;
     /*border: 1px solid red;*/
-    height: 85%;
+    height: 90%;
     padding-left: 20px;
+    font-size: 13px;
 }
 
 
@@ -1315,6 +1317,7 @@ div.featuredCollectionDescriptionArea {
     text-align: left;
     overflow-wrap: break-word;
     /*border: 1px solid red;*/
+    font-size: 14px;
 }
 .logosStyle {
     transform: scale(0.75, 0.75);
@@ -1346,5 +1349,12 @@ div.featuredCollectionDescriptionArea {
 .footerColor {
     color: #fff;
     background: #000;
+}
+
+/* in popup tooltips, make text align on the left. If this is not specified,
+ *  text is centered on every line
+ */
+.tooltip-inner {
+    text-align: left;
 }
 

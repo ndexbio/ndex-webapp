@@ -14,8 +14,8 @@
 <div class='row'>
 
 	<div class='col-sm-offset-2 col-sm-8'>
-		<div class='row rowWithFourLinesBottomPad rowWithTwoLinesTopPad' ng-if="networkManager.showShareURLControl">
-			<div class="col-sm-12">
+		<div class='row rowWithOneLineTopPad rowWithOneLineBottomPad' ng-if="networkManager.showShareURLControl">
+
 				<h4><strong>Share With Others</strong></h4>
 
 				<h5 ng-hide="!networkManager.networkShareableURL">Anyone with the link can view this network</h5>
@@ -52,12 +52,11 @@
 					Copy URL
 				</a>
 
-			</div>
 		</div>
 
 		<hr class="row" ng-if="networkManager.showShareURLControl">
 
-		<div class='row	rowWithThreeLinesTopPad'>
+		<div class='row'>
 			<h4>Manage who has access for <strong>{{networkManager.network.name}}</strong></h4>
 			<br>
 			<p class='text-info'>Users and groups with admin access modify and delete the network as well as manage who

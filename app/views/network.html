@@ -120,20 +120,17 @@
                                ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery">
                     </div>
                     <div class="form-group">
-                        <label>Depth:</label>
+                        <label>Query:</label>
                     </div>
                     <div class="form-group">
-                        <span>
-                            <select
-                                    class="form-control"
-                                    id="selectSearchDepth"
-                                    ng-model="networkController.searchDepth.value"
-                                    ng-selected="1"
-                                    ng-options="searchDepth.value as searchDepth.name for searchDepth in networkController.searchDepths"
-                                    ng-disabled="networkController.hasMultipleSubNetworks() || disableQuery"
-                                    required>
-                            </select>
-                        </span>
+                        <select
+                            class="form-control"
+                            id="selectSearchDepth"
+                            ng-model="networkController.selectedQueryType.value"
+                            ng-options="query.value as query.name for query in networkController.queryTypes"
+                            ng-disabled="networkController.hasMultipleSubNetworks() || disableQuery"
+                            required>
+                        </select>
                     </div>
 
                     <button class="btn btn-default btn-primary"
@@ -160,6 +157,7 @@
                     </a>
                 </span>
 -->
+<!--
                 <span id="disabledQueryId3"
                       class="pull-left" style="margin-top:0.5em"
                       ng-disable="true"
@@ -168,7 +166,7 @@
                         <u><strong>Advanced Query</strong></u>
                     </span>
                 </span>
-
+-->
 <!--
                 <a class="pull-left" style="margin-top:0.5em; color:#999999; cursor: not-allowed">
                     Advanced Query
@@ -199,10 +197,29 @@
                         </div>
 
                         <div ng-if="networkController.currentNetwork.doi">
-                            <button type="button"
-                                    ng-if="isDOIPending()"
+                            <span ng-if="isDOIPending()">
+                                <button type="button"
                                     class="btn btn-primary btn-sm disabled"><strong>&nbsp;DOI:</strong> Pending &nbsp;
-                            </button>
+                                </button>
+
+                                <span ng-if="showDeleteDOILink">
+                                    <!-- if user is logged in and is owner of this network, then -->
+                                    <!-- show the Delete DOI Request link  -->
+                                    &nbsp;&nbsp;&nbsp;
+
+                                    <a ng-click="networkController.deletelPendingDOIRequest()"
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       onmouseenter="$(this).tooltip('show')"
+                                       style="text-decoration: underline; font-size: 0.9em;"
+                                       title="Delete pending DOI Request for this network.">
+                                        <i class="fa fa-times" aria-hidden="true"
+                                           style="color: red; text-decoration: underline;"></i>
+                                        Delete DOI Request
+                                    </a>
+                                </span>
+
+                            </span>
 
 
                             <a id="copyNetworkShareURLToClipboardId3"
@@ -228,8 +245,8 @@
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
                             <br>
                             <span class="networkPropertyName"
-                                  ng-show="networkController.searchDepth.value < 3">Query depth: </span>
-                            <span ng-show="networkController.searchDepth.value < 3">{{networkController.currentNetwork.queryDepth}}</span>
+                                  ng-show="showQueryName()">Query: </span>
+                            <span ng-show="showQueryName()">{{networkController.currentNetwork.queryName}}</span>
 
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter:
                                 <br>
@@ -570,93 +587,7 @@
 
                 </tab>
 
-
-                <tab active="networkController.tabs[2].active" ng-click="buildProvenanceView()"
-                     ng-hide="networkController.successfullyQueried || networkController.accesskey">
-
-                    <tab-heading>
-                        {{ networkController.tabs[2].heading }}
-                    </tab-heading>
-
-                    <div class="row" style="font-size: 1.1em; margin-left: 0px; margin-right: 0px;">
-                        <div class="col-xs-6">
-                            <div id="provenanceNetwork"></div>
-                        </div>
-                        <div class="col-xs-6">
-                            <span ng-show="networkController.displayProvenance.webapp_url">
-                                <a target="_blank" href="{{networkController.displayProvenance.webapp_url}}">
-                                    <span ng-bind="getProvenanceTitle(networkController.displayProvenance)"></span>
-                                </a><br>
-                            </span>
-                            <span ng-show="!networkController.displayProvenance.webapp_url">
-                                {{getProvenanceTitle()}}<br/><br/>
-                            </span>
-                            <span ng-show="(networkController.displayProvenance.properties == null ? 0 : networkController.displayProvenance.properties.length) > 0">
-                                <table style="width:100%">
-                                    <!--<caption>Entity Properties</caption>-->
-                                    <tr><th>Name</th><th>Value</th></tr>
-                                    <tr><td>uuid</td><td>{{networkController.displayProvenance.uuid}}</td></tr>
-                                    <tr><td>host</td><td>{{networkController.displayProvenance.host}}</td></tr>
-
-                                    <tr ng-repeat="property in networkController.displayProvenance.properties">
-                                        <td>
-                                            {{property.name}}
-                                        </td>
-                                        <td class="wrappedCell">
-                                            <span ng-bind-html="property.value"></span>
-                                        </td>
-                                    </tr>
-
-                                </table>
-                                <br>
-                            </span>
-
-                            Generated By:
-
-                            <b>{{networkController.displayProvenance.creationEvent.eventType}}</b>
-
-                            <table style="width:100%">
-                                <!--<caption>Event Properties</caption>-->
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Value</th>
-                                </tr>
-                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime == networkController.displayProvenance.creationEvent.endedAtTime">
-                                    <td>event time</td>
-                                    <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
-                                        date:'medium' }}
-                                    </td>
-                                </tr>
-                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
-                                    <td>start time</td>
-                                    <td>{{networkController.displayProvenance.creationEvent.startedAtTime |
-                                        date:'medium' }}
-                                    </td>
-                                </tr>
-                                <tr ng-show="networkController.displayProvenance.creationEvent.startedAtTime != networkController.displayProvenance.creationEvent.endedAtTime">
-                                    <td>end time</td>
-                                    <td>{{networkController.displayProvenance.creationEvent.endedAtTime |
-                                        date:'medium' }}
-                                    </td>
-                                </tr>
-                                <tr ng-repeat="property in networkController.displayProvenance.creationEvent.properties">
-                                    <td>
-                                        {{property.name}}
-                                    </td>
-                                    <td class="wrappedCell">
-                                        <span ng-bind-html="property.value"></span>
-                                    </td>
-                                </tr>
-                            </table>
-                            <!--</span> -->
-
-
-                        </div>
-                    </div>
-
-                </tab>
-
-
+                <!--
                 <tab active="networkController.tabs[3].active" ng-hide="networkController.tabs[3].hidden">
 
                     <tab-heading>
@@ -757,6 +688,7 @@
                                             <option value="ndex:nameOrTermName">nameOrTermName</option>
                                             <option value="ndex:functionTermType">functionTermType</option>
                                             -->
+<!--
                                             <option disabled role="separator">━━━━━━━━━━━━━━━</option>
                                             <option ng-repeat="nodeProperty in networkController.nodePropertyNamesForAdvancedQuery"
                                                     value="{{nodeProperty}}">{{nodeProperty}}
@@ -810,6 +742,7 @@
 
 
                 </tab>
+-->
 
             </tabset>
 
@@ -844,10 +777,21 @@
                     style="margin-right: 5px;"> Download Result
             </button>
 
-            <button id="switchViewButtonId2" type="button"
+            <button type="button"
                     ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
-                    data-toggle="tooltip" title="Switch to Table View"
-                    ng-click="switchView()">
+                    data-toggle="tooltip"
+                    title="Switch to Table View"
+                    ng-click="switchView()"
+                    ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Graphic'">
+                {{buttonLabel}}
+            </button>
+
+            <button type="button"
+                    ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
+                    data-toggle="tooltip"
+                    title="Switch to Graphic View"
+                    ng-click="switchView()"
+                    ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Table'">
                 {{buttonLabel}}
             </button>
 
@@ -925,11 +869,21 @@
 
 
             <span>
-                <button id="switchViewButtonId1" type="button"
+                <button type="button"
                         ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
-                        data-toggle="tooltip" title="Switch to Table View"
+                        data-toggle="tooltip"
+                        title="Switch to Table View"
                         ng-click="switchView()"
-                        ng-hide="networkController.hasMultipleSubNetworks()">
+                        ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Graphic'">
+                    {{buttonLabel}}
+                </button>
+
+                <button type="button"
+                        ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
+                        data-toggle="tooltip"
+                        title="Switch to Graphic View"
+                        ng-click="switchView()"
+                        ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Table'">
                     {{buttonLabel}}
                 </button>
 
@@ -1107,31 +1061,10 @@
             </span>
 
             <span ng-show='!networkController.isLoggedInUser'>
-                <!--
-                this commented out code was added on 4/30/18 by chenjing -- it broke the previous functionality and resulted in a
-                'Blocker Bug NWA-301 Tool tip on "Log in" button in network page is still the old type (very slow)'
-                filed by rpillich on 7/18/18
-
-                <a
-                   class="actionsLabel btn btn-primary" ng-click="main.startSignIn()"
-                   data-toggle="tooltip"
-                   ng-attr-title="{{ networkController.hasMultipleSubNetworks() && 'Log in to your account' || 'Log in to operate on this network'  }}">
-                    Log in
-                </a>
-                -->
-
-                <a ng-show="!networkController.hasMultipleSubNetworks()"
-                   class="actionsLabel btn btn-primary" ng-click="main.showSignInSignUpOptions()"
+                <a class="actionsLabel btn btn-primary" ng-click="main.showSignInSignUpOptions()"
                    data-toggle="tooltip" title="Log in to operate on this network">
                     Log in
                 </a>
-
-                <a ng-show="networkController.hasMultipleSubNetworks()"
-                    class="actionsLabel btn btn-primary" ng-click="main.showSignInSignUpOptions()"
-                    data-toggle="tooltip" title="Log in to your account">
-                    Log in
-                </a>
-
             </span>
 
         </div>
