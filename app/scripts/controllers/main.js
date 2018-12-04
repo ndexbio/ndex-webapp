@@ -534,7 +534,34 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                     var spinner = 'spinnerResetPasswordId';
                                     ndexSpinner.startSpinner(spinner);
 
-                                    ndexService.getUserByUserNameV2($scope.forgot.accountName,
+                                    var getUserByEmailOrUserName = function (searchStr, successHandler, errorHandler) {
+                                        var emailRE = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                                        if (emailRE.test(String(searchStr).toLowerCase())) {
+                                            //search string is a valid email
+                                            ndexService.getUserByEmail (searchStr,successHandler, function(err) {
+                                                if (err.errorCode === 'NDEx_Object_Not_Found_Exception')
+                                                   ndexService.getUserByUserNameV2(searchStr, successHandler, function(err){
+                                                       if (err.errorCode === 'NDEx_Object_Not_Found_Exception' ) {
+                                                           ndexSpinner.stopSpinner();
+                                                           forgot.errorMsg =  "Can't find user with " +
+                                                               $scope.forgot.accountName + " as user name or email.";
+                                                           $scope.isProcessing = false;
+                                                       } else
+                                                           errorHandler(err);
+
+                                                   });
+                                                else
+                                                   errorHandler(err)
+                                              }
+                                            );
+                                         } else
+                                           //search string is not an email
+                                           ndexService.getUserByUserNameV2(searchStr,successHandler, errorHandler);
+
+                                    };
+
+                                    getUserByEmailOrUserName($scope.forgot.accountName,
                                         function(data) {
                                             var userId = (data && data.externalId) ? data.externalId : null;
                                             if (userId) {
