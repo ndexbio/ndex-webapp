@@ -55,6 +55,7 @@ ndexApp.controller('networkController',
             //networkController.nodePropertyNamesForAdvancedQuery = undefined;
 
             networkController.context = {};
+            networkController.contextIsFromAspect = true; // false if the aspect is from network Attribute
 
             networkController.isAdmin = false;
 
@@ -2756,18 +2757,33 @@ ndexApp.controller('networkController',
 
                         $scope.save = function() {
                             _.forEach($scope.addTheseContexts, function (addThis) {
-                                $scope.context[addThis.namespace] = addThis.url;
+                                if ( addThis.namespace && addThis.url)
+                                  $scope.context[addThis.namespace] = addThis.url;
                             });
 
-                            networkService.updateNetworkContextFromNdexV2([$scope.context], networkExternalId,
-                            function() {
+                            if ( networkController.contextIsFromAspect) {
+                                networkService.updateNetworkContextFromNdexV2([$scope.context], networkExternalId,
+                                    function () {
 
-                            }, function(errorMessage){
-                                    console.log(errorMessage);
-                                }
-                            );
+                                    }, function (errorMessage) {
+                                        console.log(errorMessage);
+                                    }
+                                );
+                            } else {
+                                // modify the network attribute
+                                networkService.setNetworkProperty(currentNetworkSummary,'@context',
+                                    JSON.stringify($scope.context));
+                                ndexService.setNetworkPropertiesV2(networkController.currentNetworkId,
+                                    currentNetworkSummary.properties, function(res){
+                                        $modalInstance.dismiss();
+                                    },
+                                    function(err) {
+                                       console.log(errorMessage);
+                                       //TODO: print error message in the modal.
 
-                            $modalInstance.dismiss();
+                                     }
+                                );
+                            }
                         };
                     }
                 });
@@ -2841,9 +2857,17 @@ ndexApp.controller('networkController',
 
             $scope.getContextAspectFromNiceCX = function() {
 
-                var contextAspect = networkService.getCurrentNiceCX()['@context'];
-
                 networkController.context = {};
+
+                var contextStr = getNetworkPropertyFromSummary(undefined, '@context');
+
+                if ( contextStr) {
+                    networkController.context = JSON.parse(contextStr);
+                    networkController.contextIsFromAspect = false;
+                    return;
+                }
+
+                var contextAspect = networkService.getCurrentNiceCX()['@context'];
 
                 if (contextAspect) {
                     if (contextAspect.elements) {
@@ -2856,6 +2880,10 @@ ndexApp.controller('networkController',
                 //networkController.context =
                 //    (contextAspect && contextAspect['elements']) ? contextAspect['elements'][0] : {};
 
+
+                // Not sure why do we have this. RDF prefix should be case sensitive. commmenting it out for now -- cj
+
+                /*
                 var keys = Object.keys(networkController.context);
 
                 // now, let's lower-case all keys in networkController.context
@@ -2869,7 +2897,7 @@ ndexApp.controller('networkController',
 
                     // add value with lower-case key
                     networkController.context[lowerCaseKey] = value;
-                }   
+                }  */
             };
 
 
@@ -4234,7 +4262,7 @@ ndexApp.controller('networkController',
                             networkController.otherProperties =
                                 _.sortBy(
                                     networkService.getPropertiesExcluding(currentNetworkSummary, networkController.subNetworkId, [
-                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version']), 'predicateString');
+                                        'rights', 'rightsHolder', 'Reference', 'ndex:sourceFormat', 'name', 'description', 'version', '@context']), 'predicateString');
 
                             //TODO: need to move this to 'add to my set' modal.
                             networkController.getAllNetworkSetsOwnedByUser(

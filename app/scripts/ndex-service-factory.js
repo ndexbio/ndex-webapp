@@ -168,6 +168,18 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
+            factory.getUserByEmail = function (emailAddress, successHandler, errorHandler) {
+                // Server API: Get User By Email
+                // GET /user?email={emailAddress}
+
+                var url = '/user?email=' + emailAddress;
+                var config = ndexConfigs.getGetConfigV2(url, null);
+
+                this.sendHTTPRequest(config, successHandler, errorHandler);
+            };
+
+
+
             factory.authenticateUserV2 = function (userName, password, successHandler, errorHandler) {
                 // Server API: Authenticate User
                 // GET /user?valid=true&setAuthHeader=false

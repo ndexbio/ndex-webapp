@@ -4,7 +4,7 @@ var ndexApp = angular.module('ndexApp',
     ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp',//'ngDialog',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
      'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ui.grid.pagination',
-      'ngclipboard', 'textAngular', 'ngtweet', 'slick']);
+      'ngclipboard', 'textAngular', 'ngtweet', 'slick','angular-google-analytics']);
 
 ndexApp.filter('encodeURIComponent', function() {
     return window.encodeURIComponent;
@@ -393,6 +393,12 @@ ndexApp.config(['$routeProvider', function ($routeProvider) {
             controller: 'manageGroupAccessController'
         });
 }]);
+
+
+ndexApp.config(['AnalyticsProvider', function (AnalyticsProvider) {
+    // Add configuration code as desired
+    AnalyticsProvider.setAccount(  ndexSettings.googleAnalyticsTrackingCode);  //UU-XXXXXXX-X should be your tracking code
+}]).run(['Analytics', function(Analytics) { }]);
 
 //Handle enter key with ng-enter
 ndexApp.directive('ngEnter', function($document) {

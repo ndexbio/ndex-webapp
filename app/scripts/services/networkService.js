@@ -1139,10 +1139,10 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
         };
 
 
-     /*   factory.setNetworkProperty = function ( propertyName, propertyValue, propertyValueType ) {
+        factory.setNetworkProperty = function (currentNetworkSummary, propertyName, propertyValue, propertyValueType ) {
 
             var propObject = { "predicateString": propertyName, "value": propertyValue,
-                "dataType": (typeof propertyValueType !== 'undefined ') ? b : 'string'  };
+                "dataType": (typeof propertyValueType !== 'undefined ') ? propertyValueType : 'string'  };
 
             var networkProperties = currentNetworkSummary.properties;
 
@@ -1154,7 +1154,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
                 }
                 networkProperties.push(propObject);
             }
-        } */
+        }
         
         return factory;
 
