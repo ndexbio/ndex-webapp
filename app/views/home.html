@@ -1,4 +1,4 @@
-<div class="container" style="width:100%; max-width: 1800px; min-width: 1100px; margin-bottom: 1em; margin-top: 5px">
+<div class="container" style="width:100%; width: 1180px; margin-bottom: 1em; margin-top: 5px">
     <div class="row" ng-show="!main.serverIsDown">
 
         <div ng-show="main.isSupportedBrowserUsed()">
@@ -22,7 +22,7 @@
                 <div class='login-page-shadow col-5 col-xs-5 col-sm-5 col-md-5 pull-right'
                      style="width: 43%; border: 1px solid #3576BE; border-radius: 20px; padding-left: 2px; padding-right: 2px; height: 150px;">
 
-                    <legend class='centerFeaturedCollection' style="color: #3576BE; border: none; margin-bottom: 7px; padding-top: 5px">Featured Content</legend>
+                    <legend class='centerFeaturedCollection' style="border: none; margin-bottom: 7px; padding-top: 5px">Featured Content</legend>
 
                     <!-- the code below is taken from https://angular-ui.github.io/bootstrap/ -->
                     <!-- https://www.jquery-az.com/bootstrap-carousel-5-single-multiple-horizontal-and-vertical-sliding-demos/ -->
@@ -44,26 +44,42 @@
             <div class='row' style="margin-top: 1em">
                 <div class='col-10 col-xs-10 col-sm-10 col-md-10' style="width: 74%;" >
 
-                    <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:432px;">
+                    <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:556px;">
 
                         <div ng-repeat="item in mainContent">
 
                              <div class='{{mainContentClass}}' style="word-wrap: break-word">
 
-                                 <div class="mainAreaLandingPage" style="height:32em;">
+                                 <div class="mainAreaLandingPage" style="height: 506px;">
                                      <ng-include src="item.content"></ng-include>
                                  </div>
-                                 <a ng-href="{{item.href}}" target="_blank"> more ...</a>
-
+                                 <a ng-href="{{item.href}}" target="_blank" style="text-align: center">>> Learn more ...</a>
                             </div>
 
                         </div>
 
                     </div>
+                </div>
 
-                    <div ng-show="logosDefined()"
-                         class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:110px; margin-top:1em">
+                <!-- Tweets -->
+                <div class='login-page-shadow col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
+                     style="width: 25%; border: 1px solid #3576BE; border-radius: 20px; height: 556px">
 
+                    <br>
+
+                    <twitter-widget>
+                        <a class="twitter-timeline" data-height="520" href="https://twitter.com/NDExProject"
+                           data-widget-id="639213859547521024" data-twitter-extracted-i1478884078554431236="true"
+                           data-chrome="noscrollbar nofooter">
+                        </a>
+                    </twitter-widget>
+
+                </div>
+            </div>
+
+            <div class='row' style="margin-top: 0.5em"  ng-show="logosDefined()">
+                <div class="col-12 col-xs-12 col-sm-12 col-md-12">
+                    <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:110px; margin-top:1em">
                         <div id='logoContainer'>
                             <slick ng-if="logosLoaded" init-onload="true"
                                    data="logosLoaded"
@@ -80,31 +96,14 @@
                                              src="{{logo.image}}"
                                              data-toggle="tooltip"
                                              data-placement="right"
+                                             onmouseenter="$(this).tooltip('show')"
                                              title="{{logo.title}}">
                                     </a>
                                 </div>
                             </slick>
                         </div>
                     </div>
-
                 </div>
-
-
-                <!-- Tweets -->
-                <div class='login-page-shadow col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
-                     style="width: 25%; border: 1px solid #3576BE; border-radius: 20px; height: 556px">
-
-                    <br>
-
-                    <twitter-widget>
-                        <a class="twitter-timeline" data-height="520" href="https://twitter.com/NDExProject"
-                           data-widget-id="639213859547521024" data-twitter-extracted-i1478884078554431236="true"
-                           data-chrome="noscrollbar nofooter">
-                        </a>
-                    </twitter-widget>
-
-                </div>
-
             </div>
 
         </div>

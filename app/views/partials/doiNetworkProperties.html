@@ -114,7 +114,13 @@
 
             <div class="form-group">
                 <div class="col-sm-3">
-                    <label class="control-label">reference &nbsp;&nbsp;
+                    <label class="control-label">reference &nbsp;&nbsp;&nbsp;&nbsp;
+
+                        <a href="http://home.ndexbio.org/publishing-in-ndex/#addref"
+                           tooltip="{{referenceToolTip}}"
+                           style="text-decoration: none;" target="_blank" ng-init="setToolTips()">
+                            <i class="fa fa-info-circle"></i>
+                        </a>
 
                     </label>
                 </div>
@@ -172,7 +178,7 @@
             <div class="form-group rowWithOneLineTopPad" ng-repeat="property in editor.propertyValuePairs" ng-if="property.predicateString == 'rights'">
                 <label class="col-sm-3 control-label">rights &nbsp;&nbsp;
                     <a href="http://home.ndexbio.org/publishing-in-ndex/#rights"
-                       data-toggle="tooltip" title="Click for more information about specific licenses"
+                       tooltip="{{rightsTooltip}}"
                        style="text-decoration: none; font-weight: normal;" target="_blank" ng-init="setToolTips()"><i class="fa fa-info-circle"></i></a>
                     &nbsp;&nbsp;&nbsp;
                     <a ng-show="property.value == editor.rightsCustom && !editor.editCustomRights"

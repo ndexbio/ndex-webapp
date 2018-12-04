@@ -36,6 +36,12 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     $scope.fillInNameDescriptionVersionFirst =
         'Changing network Visibility requires Name, Description and Version fields to be filled in.';
 
+    $scope.referenceToolTip =
+        'The Reference field should only contain info of the publication where this network is described. ' +
+         'Please don\'t list more than 1 publication here. Click for more info about adding a reference to your network.';
+
+    $scope.rightsTooltip = 'Click for more information about specific licenses.';
+
     const nonEditableLabels = ['sourceformat', 'name', 'description', 'version', 'reference','@context'];
 
     $scope.$watch('editor.visibilityIndex', function() {

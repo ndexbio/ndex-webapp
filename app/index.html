@@ -103,7 +103,6 @@
     <script src="scripts/ui-service.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/services/sharedProperties.js"></script>
-    <script src="scripts/services/provenance-service.js"></script>
     <script src="scripts/services/ui-misc.js"></script>
     <script src="scripts/services/log-in-service.js"></script>
     <script src="scripts/services/spinner-service.js"></script>
@@ -172,7 +171,7 @@
                                             ng-class="featuredContentDropDownEnabled?
                                                 'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
                                             data-toggle="dropdown">
-                                        Featured Content <span class="caret"></span>
+                                        Featured Networks <span class="caret"></span>
                                     </button>
 
                                     <ul class="dropdown-menu">
@@ -246,14 +245,13 @@
                                        ng-model="main.searchTermExpansionSelected">
 
                                 <span ng-style="searchTermExpansionEnabled ?
-                                    {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}"
-
-                                      title="Only applied when searching networks"
-                                      ng-init="setToolTips()">
+                                    {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}">
                                         <strong>{{main.searchTitle}}</strong>
                                      &nbsp;
-                                    <i data-toggle="tooltip" data-placement="bottom"
-                                       title="Only applied when searching networks"  ng-init="setToolTips()"
+                                    <i data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="{{popupTitleInSearchModal}}"
+                                       onmouseenter="$(this).tooltip('show')"
                                        class="fa fa-info-circle" style="color: #3576BE; cursor: pointer;"
                                        ng-if="searchTermExpansionEnabled">
 
@@ -309,13 +307,12 @@
             </a>
 
             <div class="ndexServerVersion"
-                 style="margin-left: 320px;  padding-top: 42px; height: 65px; width: 65px;">
+                 style="margin-left: 320px;  padding-top: 42px; height: 65px; width: 65px; text-decoration: underline">
                 <a id="ndexServerVersionId"
-                   style='color: black'
                     ng-href="{{linkToReleaseDocs}}"
                    target="release_tab"
                    data-toggle="tooltip"
-                   tooltip="Release Notes"
+                   title="Release Notes"
                    data-placement="bottom"> v{{main.ndexServerVersion}}
                 </a>
             </div>
@@ -336,7 +333,9 @@
 
             <ul id="searchMyAccountNameLoginId" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
 
-                <li ng-show="isSearchIconVisible()">
+                <li ng-show="isSearchIconVisible()" data-toggle="tooltip"
+                    title="Browse networks, search by keywords or gene and access featured networks in NDEx"
+                    data-placement="bottom">
                     <a ng-click="collapseHamburgerMenu(); showSearchBar()">
                         <div style="
                             background-image: url('images/search-icon.png');
@@ -372,7 +371,10 @@
                 <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
                     <button type="button" class="btn btn-primary login-button"
                        ng-click="collapseHamburgerMenu();
-                             main.showSignInSignUpOptions()">
+                             main.showSignInSignUpOptions()"
+                            data-toggle="tooltip"
+                            title="Log in or create a new account&nbsp;&nbsp;"
+                            data-placement="bottom">
                         Login/Register
                     </button>
                 </li>

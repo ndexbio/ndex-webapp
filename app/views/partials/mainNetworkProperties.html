@@ -245,8 +245,19 @@
                     </div>
                 </div>
             </div>
+
             <div class="form-group">
-                <label class="col-sm-3 control-label">reference</label>
+                <label class="col-sm-3 control-label">reference &nbsp;&nbsp;
+
+                    <a href="http://home.ndexbio.org/publishing-in-ndex/#addref"
+                       tooltip="{{referenceToolTip}}"
+                       style="text-decoration: none;" target="_blank" ng-init="setToolTips()">
+                        <i class="fa fa-info-circle"></i>
+                    </a>
+
+                </label>
+
+
                 <div class="col-sm-8" style="margin-bottom: 15px;">
                     <text-angular
                             ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
@@ -304,7 +315,7 @@
                     <label class="col-sm-3" ng-if="property.predicateString.length > 0" for="input{{property.predicateString}}">{{property.predicateString}}
                         <span ng-if="property.predicateString == 'rights'">&nbsp;
                             <a href="http://home.ndexbio.org/publishing-in-ndex/#rights"
-                               data-toggle="tooltip" title="Click for more information about specific licenses"
+                               tooltip="{{rightsTooltip}}"
                                style="text-decoration: none;" target="_blank" ng-init="setToolTips()">
                                     <i class="fa fa-info-circle"></i>
                             </a>

@@ -1,0 +1,95 @@
+<style>
+.modal-dialog {
+    width: 1000px;
+    max-width:100%;
+}
+</style>
+
+<div class='modal-content' style="font-size: 14px">
+    <button type="button" class="close"
+            style=" margin: 10px 15px 0 0" ng-click="close()"><span style="font-size:1.5em">&times;</span>
+    </button>
+
+    <div class="modal-header">
+        <h4 class="modal-title">NDEx Query Types</h4>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row">
+
+            <div class="col-6 col-xs-6 col-sm-6 col-md-6">
+                <div class="row rowWithHalfLineBottomPad">
+                    <div ng-class="queryTypesDescription" style="text-align: left;">
+                        {{generalDescription}}
+                    </div>
+                    <div ng-class="queryTypesImages">
+                        <img style="width:100%; margin-top: -0.5em" src='images/background.png'>
+                    </div>
+                </div>
+
+                <div class="row rowWithHalfLineBottomPad rowWithOneLineTopPad">
+                    <div ng-class="queryTypesDescription" style="text-align: left;">
+                        <strong style="text-decoration: underline">Neighborhood:</strong>
+                        {{neigborhoodQueryDescription}}
+                    </div>
+                    <div ng-class="queryTypesImages">
+                        <img style="width:100%; margin-top: -0.5em" src='images/neighborhood.png'>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div ng-class="queryTypesDescription" style="text-align: left;" >
+                        <strong style="text-decoration: underline">Adjacent:</strong>
+                        {{adjacentQueryDescription}}
+                    </div>
+                    <div ng-class="queryTypesImages">
+                        <img style="width:100%; margin-top: -0.5em" src='images/adjacent.png'>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-6 col-xs-6 col-sm-6 col-md-6">
+                <div class="row rowWithHalfLineBottomPad">
+                    <div ng-class="queryTypesDescription" style="text-align: left;">
+                        <strong style="text-decoration: underline">Direct:</strong>
+                        {{directQueryDescription}}
+                    </div>
+                    <div ng-class="queryTypesImages">
+                        <img style="width:100%; margin-top: -0.5em" src='images/direct.png'>
+                    </div>
+                </div>
+
+                <div class="row rowWithHalfLineBottomPad">
+                    <div ng-class="queryTypesDescription" style="text-align: left;">
+                        <strong style="text-decoration: underline">Interconnect:</strong>
+                        {{interconnectQueryDescription}}
+                    </div>
+                    <div ng-class="queryTypesImages">
+                        <img style="width:100%; margin-top: -0.5em" src='images/interconnect.png'>
+                    </div>
+                </div>
+
+                <div class="row rowWithThreeLinesTopPad">
+                    <div ng-class="stepsClass" style="text-align: left">
+                        <strong style="text-decoration: underline">1-step</strong> and
+                        <strong style="text-decoration: underline">2-step</strong>
+                        <span ng-bind-html="stepsQueryDescription"></span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+<!--
+    <div class="modal-footer">
+
+        <button class="btn btn-default" type='button' ng-click='close()'>Close</button>
+    </div>
+-->
+
+</div>
+
