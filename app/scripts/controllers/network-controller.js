@@ -955,7 +955,7 @@ ndexApp.controller('networkController',
                         $scope.generalDescription =
                             'This section explains briefly all the available types of query using the ' +
                             ' simple example network pictured to the right. In the examples below, the orange node(s)' +
-                            ' indicate the query terms while bl;ue nodes and edges identify the retrieved subnetwork.';
+                            ' indicate the query terms while blue nodes and edges identify the retrieved subnetwork.';
 
                         $scope.neigborhoodQueryDescription =
                             'Returns all the nodes connected to the query term(s) and all edges between these nodes. ' +
