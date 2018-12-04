@@ -900,7 +900,6 @@ ndexApp.controller('networkController',
             /*
              * the elements in drop-down Neigborhood Query menu on Network page will appear in order specified
              * in networkController.queryTypes below.
-             * 'value' field is used to access networkController.queryTypes object.
              */
             networkController.queryTypes = [
                 {
