@@ -1338,8 +1338,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 });
 
                 if (includeInDropDown) {
-                    var dropDownItem = featuredItem.hasOwnProperty('dropdownDispalyName') ?
-                        stripHTML(featuredItem.dropdownDispalyName) : null;
+                    var dropDownItem = featuredItem.hasOwnProperty('dropdownDisplayName') ?
+                        stripHTML(featuredItem.dropdownDisplayName) : null;
 
                     if (dropDownItem === null) {
                         dropDownItem = featuredItem.hasOwnProperty('title') ?

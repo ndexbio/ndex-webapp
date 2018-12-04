@@ -1507,7 +1507,7 @@ ndexServiceApp.factory('ndexService',
 
 
             factory.queryNetworkV2 = function (networkId, accesskey, searchString,
-                                               query, edgeLimit, save, errorWhenLimitIsOver, successHandler, errorHandler) {
+                                               query, edgeLimit, save, errorWhenOverLimit, successHandler, errorHandler) {
                 // Server API : Query Network As CX
                 // POST /search/network/{networkId}/query?accesskey={accesskey}&save={true|false} or
                 // POST /search/network/{networkId}/interconnectquery?accesskey={accesskey}&save={true|false}
@@ -1516,7 +1516,7 @@ ndexServiceApp.factory('ndexService',
                     searchString: searchString,
                     searchDepth: query.searchDepth,
                     edgeLimit: edgeLimit,
-                    errorWhenLimitIsOver: true
+                    errorWhenLimitIsOver: errorWhenOverLimit
                 };
 
                 var url = '/search/network/' + networkId;
