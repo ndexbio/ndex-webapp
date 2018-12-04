@@ -271,176 +271,177 @@
 
 <!-- Nav Bar -->
 <nav id="topNavBarId" class="navbar navbar-fixed-top" style="display: none;">
+
     <div class="navbar-ndex navbar-ndex-top">
-<!--
-        <div class="container-fluid" style="width:100%; max-width: 1800px; min-width: 1100px;">
--->
 
-        <div class="navbar-header navbar-top-height navbar-ndex-logo-margin">
+        <div class="container-fluid" style="width:100%; max-width: 1460px;">
 
-            <button ng-show="(main.serverIsDown != null) && !main.serverIsDown"
-                    type="button"
-                    class="navbar-toggle"
-                    data-toggle="collapse"
-                    data-target="#myNavbar"
-                    ng-click="switchNav($event)"
-                    style="padding-top: 21px">
+            <div class="navbar-header navbar-top-height navbar-ndex-logo-margin">
 
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+                <button ng-show="(main.serverIsDown != null) && !main.serverIsDown"
+                        type="button"
+                        class="navbar-toggle"
+                        data-toggle="collapse"
+                        data-target="#myNavbar"
+                        ng-click="switchNav($event)"
+                        style="padding-top: 21px">
 
-            <a class="navbar-brand"
-               style="padding: 5px 0 5px 0px"
-               ng-click="collapseHamburgerMenu(); goToLandingPage()">
-                <div id="ndexLogoId" style="
-                    display: none;
-                    background-image: url('images/new_landing_page_logo.png');
-                    background-repeat: no-repeat;
-                    width: 310px;
-                    height: 65px;
-                    background-size: 310px 65px;">
-                </div>
-            </a>
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
 
-            <div class="ndexServerVersion"
-                 style="margin-left: 320px;  padding-top: 42px; height: 65px; width: 65px; text-decoration: underline">
-                <a id="ndexServerVersionId"
-                    ng-href="{{linkToReleaseDocs}}"
-                   target="release_tab"
-                   data-toggle="tooltip"
-                   title="Release Notes"
-                   data-placement="bottom"> v{{main.ndexServerVersion}}
+                <a class="navbar-brand"
+                   style="padding: 5px 0 5px 0px"
+                   ng-click="collapseHamburgerMenu(); goToLandingPage()">
+                    <div id="ndexLogoId" style="
+                        display: none;
+                        background-image: url('images/new_landing_page_logo.png');
+                        background-repeat: no-repeat;
+                        width: 310px;
+                        height: 65px;
+                        background-size: 310px 65px;">
+                    </div>
                 </a>
+
+                <div class="ndexServerVersion"
+                     style="margin-left: 320px;  padding-top: 42px; height: 65px; width: 65px; text-decoration: underline">
+                    <a id="ndexServerVersionId"
+                        ng-href="{{linkToReleaseDocs}}"
+                       target="release_tab"
+                       data-toggle="tooltip"
+                       title="Release Notes"
+                       data-placement="bottom"> v{{main.ndexServerVersion}}
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <div class="navbar-collapse collapse" id="myNavbar">
+            <div class="navbar-collapse collapse" id="myNavbar">
 
-            <ul id="topMenuId" class="nav navbar-nav navbar-left" style="display: none; padding-top: 14px"
-                ng-show="(main.serverIsDown != null) && !main.serverIsDown">
+                <ul id="topMenuId" class="nav navbar-nav navbar-left" style="display: none; padding-top: 14px"
+                    ng-show="(main.serverIsDown != null) && !main.serverIsDown">
 
-                <li ng-repeat="item in topMenu">
-                    <a ng-href="{{$location.path()}}"
-                       ng-click="collapseHamburgerMenu(); redirectToExternalLink(item)">
-                        {{item.label}}
-                    </a>
-                </li>
-            </ul>
+                    <li ng-repeat="item in topMenu">
+                        <a ng-href="{{$location.path()}}"
+                           ng-click="collapseHamburgerMenu(); redirectToExternalLink(item)">
+                            {{item.label}}
+                        </a>
+                    </li>
+                </ul>
 
-            <ul id="searchMyAccountNameLoginId" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
+                <ul id="searchMyAccountNameLoginId" class="nav navbar-nav navbar-right" style="display: none; padding-top: 14px">
 
-                <li ng-show="isSearchIconVisible()" data-toggle="tooltip"
-                    title="Browse networks, search by keywords or gene and access featured networks in NDEx"
-                    data-placement="bottom">
-                    <a ng-click="collapseHamburgerMenu(); showSearchBar()">
-                        <div style="
-                            background-image: url('images/search-icon.png');
-                            margin-top: -5px;
-                            margin-bottom: -5px;
-                            width: 30px;
-                            height: 30px;
-                            background-size: 30px 30px;"
-                            class="marginForCollapsedMode">
-                        </div>
-                    </a>
-                </li>
-
-
-                <li ng-show="main.loggedIn">
-                    <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()">
-                        <img src="images/home.png"
-                             style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
-                             class="marginForCollapsedMode">
-                        &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
-                    </a>
-                </li>
-
-                <li ng-show="main.loggedIn">
-                    <button type="button" class="btn btn-primary login-button"
-                            ng-click="collapseHamburgerMenu();
-                            main.signout()">
-                        Logout
-                    </button>
-                </li>
+                    <li ng-show="isSearchIconVisible()" data-toggle="tooltip"
+                        title="Browse networks, search by keywords or gene and access featured networks in NDEx"
+                        data-placement="bottom">
+                        <a ng-click="collapseHamburgerMenu(); showSearchBar()">
+                            <div style="
+                                background-image: url('images/search-icon.png');
+                                margin-top: -5px;
+                                margin-bottom: -5px;
+                                width: 30px;
+                                height: 30px;
+                                background-size: 30px 30px;"
+                                class="marginForCollapsedMode">
+                            </div>
+                        </a>
+                    </li>
 
 
-                <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
-                    <button type="button" class="btn btn-primary login-button"
-                       ng-click="collapseHamburgerMenu();
-                             main.showSignInSignUpOptions()"
-                            data-toggle="tooltip"
-                            title="Log in or create a new account&nbsp;&nbsp;"
-                            data-placement="bottom">
-                        Login/Register
-                    </button>
-                </li>
+                    <li ng-show="main.loggedIn">
+                        <a ng-click="collapseHamburgerMenu(); main.goToCurrentUser()">
+                            <img src="images/home.png"
+                                 style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
+                                 class="marginForCollapsedMode">
+                            &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
+                        </a>
+                    </li>
 
-            </ul>
-
-        </div>
-
-
-        <div class="sidenav" id="slidingRightMenuDivId">
-
-            <ul id="slidingRightMenuId" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px"
-                ng-show="(main.serverIsDown != null) && !main.serverIsDown">
-
-                <li ng-repeat="item in topMenu">
-                    <a ng-href="{{$location.path()}}"
-                       ng-click="switchNav($event); redirectToExternalLink(item)">
-                        {{item.label}}
-                    </a>
-                </li>
-            </ul>
-
-            <ul id="slidingRightMenuSearchMyAccountNameLoginId"
-                class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px">
-
-                <li ng-show="isSearchIconVisible()">
-                    <a ng-click="switchNav($event); showSearchBar()">
-                        <div style="
-                            background-image: url('images/search-icon.png');
-                            margin-top: -5px;
-                            margin-bottom: -5px;
-                            width: 30px;
-                            height: 30px;
-                            background-size: 30px 30px;"
-                             class="marginForCollapsedMode">
-                        </div>
-                    </a>
-                </li>
+                    <li ng-show="main.loggedIn">
+                        <button type="button" class="btn btn-primary login-button"
+                                ng-click="collapseHamburgerMenu();
+                                main.signout()">
+                            Logout
+                        </button>
+                    </li>
 
 
-                <li ng-show="main.loggedIn">
-                    <a ng-click="switchNav($event); main.goToCurrentUser()">
-                        <img src="images/home.png"
-                             style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
-                             class="marginForCollapsedMode">
-                        &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
-                    </a>
-                </li>
+                    <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
+                        <button type="button" class="btn btn-primary login-button"
+                           ng-click="collapseHamburgerMenu();
+                                 main.showSignInSignUpOptions()"
+                                data-toggle="tooltip"
+                                title="Log in or create a new account&nbsp;&nbsp;"
+                                data-placement="bottom">
+                            Login/Register
+                        </button>
+                    </li>
 
-                <li ng-show="main.loggedIn">
-                    <button type="button" class="btn btn-primary login-button"
-                            ng-click="switchNav($event);
-                            main.signout()">
-                        Logout
-                    </button>
-                </li>
+                </ul>
+
+            </div>
+
+            <div class="sidenav" id="slidingRightMenuDivId">
+
+                <ul id="slidingRightMenuId" class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px"
+                    ng-show="(main.serverIsDown != null) && !main.serverIsDown">
+
+                    <li ng-repeat="item in topMenu">
+                        <a ng-href="{{$location.path()}}"
+                           ng-click="switchNav($event); redirectToExternalLink(item)">
+                            {{item.label}}
+                        </a>
+                    </li>
+                </ul>
+
+                <ul id="slidingRightMenuSearchMyAccountNameLoginId"
+                    class="nav navbar-nav navbar-left hideLongLine" style="display: none; padding-top: 14px">
+
+                    <li ng-show="isSearchIconVisible()">
+                        <a ng-click="switchNav($event); showSearchBar()">
+                            <div style="
+                                background-image: url('images/search-icon.png');
+                                margin-top: -5px;
+                                margin-bottom: -5px;
+                                width: 30px;
+                                height: 30px;
+                                background-size: 30px 30px;"
+                                 class="marginForCollapsedMode">
+                            </div>
+                        </a>
+                    </li>
 
 
-                <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
-                    <button type="button" class="btn btn-primary login-button"
-                            ng-click="switchNav($event);
-                             main.showSignInSignUpOptions()">
-                        Login/Register
-                    </button>
-                </li>
+                    <li ng-show="main.loggedIn">
+                        <a ng-click="switchNav($event); main.goToCurrentUser()">
+                            <img src="images/home.png"
+                                 style="float:left; width:30px; height:30px; margin-bottom:-5px; margin-top:-5px;"
+                                 class="marginForCollapsedMode">
+                            &nbsp;&nbsp;{{main.userFirstAndLastNames}}!
+                        </a>
+                    </li>
 
-            </ul>
+                    <li ng-show="main.loggedIn">
+                        <button type="button" class="btn btn-primary login-button"
+                                ng-click="switchNav($event);
+                                main.signout()">
+                            Logout
+                        </button>
+                    </li>
+
+
+                    <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
+                        <button type="button" class="btn btn-primary login-button"
+                                ng-click="switchNav($event);
+                                 main.showSignInSignUpOptions()">
+                            Login/Register
+                        </button>
+                    </li>
+
+                </ul>
+
+            </div>
 
         </div>
     </div>
@@ -456,7 +457,9 @@
 </div>
 
 <div id="footerId" ng-if="footerHtml" class="container-fluid ndexFooter ndexFooterProps" style="display: none;" >
-    <ng-include src="footerHtml"></ng-include>
+    <div class="container-fluid" style="width:100%; max-width: 1460px;">
+        <ng-include src="footerHtml"></ng-include>
+    </div>
 </div>
 
 <!--
