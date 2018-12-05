@@ -1483,7 +1483,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 var title   = mainItem.title;
                 var content =
                     window.ndexSettings.landingPageConfigServer + '/'+ mainItem.content;
-                var href    = mainItem.href;
+
+                var href = (mainItem.href) ? mainItem.href : null;
 
                 mainContent.push({
                     'title': title,
