@@ -116,14 +116,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.createUserWithGoogleIdTokenV2 = function (successHandler, errorHandler) {
+            factory.createUserWithGoogleIdTokenV2 = function (userName, successHandler, errorHandler) {
                 // Server API: Create User with google token
                 // POST /user?idtoken={GoogleIdToken}
 
                 var res = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
                 var url = '/user?idtoken=' + res.id_token;
 
-                var config = ndexConfigs.getPostConfigV2(url, null);
+                var postData = (userName) ? {'userName': userName} : null;
+
+                var config = ndexConfigs.getPostConfigV2(url, postData);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
