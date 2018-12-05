@@ -937,7 +937,7 @@
                 </span>
 
 
-                <span ng-if="(isDOIPending() || isDOIAssigned()) && !isNetworkCertified()">
+                <span ng-if="networkController.isAdmin && (isDOIPending() || isDOIAssigned()) && !isNetworkCertified() ">
 
                     <reference-for-certification
                         network-controller='networkController'
