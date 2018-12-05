@@ -468,8 +468,12 @@
                 </tab>
 
                 <!-- node/edge tab -->
-                <tab id='nodesEdgesTabId' class='{{isEdgesAndNodesTabDisabled()}}' active="networkController.tabs[1].active"
-                     data-toggle="tooltip" ng-mouseover="changeNodesEdgesTabTitle()" data-placement="bottom" title="">
+                <tab id='nodesEdgesTabId' class='{{isEdgesAndNodesTabDisabled()}}'
+                     active="networkController.tabs[1].active"
+                     tooltip="{{nodesAndEdgesTabTitle}}"
+                     ng-mouseenter="setToolTipOnNodesAndEdgesTab()"
+                     ng-init="setToolTips()"
+                     tooltip-placement="bottom">
                     <tab-heading>{{ networkController.tabs[1].heading }}</tab-heading>
 
                     <div>
@@ -803,10 +807,9 @@
                 {{buttonLabel}}
             </button>
 
-            <button id="setSampleButtonId"
-                    ng-show="showSetSampleButton"
-                    data-toggle="tooltip"
-                    title=""
+            <button ng-show="showSetSampleButton"
+                    tooltip="{{setSampleButtonToolTip}}"
+                    ng-init="setToolTips()"
                     ng-class="showSetSampleButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
                     ng-click="networkController.setSampleFromQuery()" >
                 Set Sample

@@ -121,11 +121,6 @@ ndexApp.controller('networkController',
                     .attr('data-original-title', message)
                     .tooltip('show');
             }
-            function setTooltipOnSetSampleButtonId(message) {
-                $('#setSampleButtonId').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
             $scope.changeTitle = function() {
                 setTooltip('Copy network share URL to clipboard');
             };
@@ -210,14 +205,6 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
-            $scope.changeNodesEdgesTabTitle = function() {
-                var title = networkController.tabs[1].disabled ?
-                    'Select nodes or edges in the graph to enable this tab' : '';
-
-                $('#nodesEdgesTabId').tooltip('hide')
-                    .attr('data-original-title', title)
-                    .tooltip('show');
-            };
 
             $scope.isEdgesAndNodesTabDisabled = function() {
                 return networkController.tabs[1].disabled ? 'disabled' : 'enabled';
@@ -297,6 +284,10 @@ ndexApp.controller('networkController',
             networkController.tabs    = new Array(4);
             networkController.tabs[0] = {'heading': 'Network Info',   'active': true};
             networkController.tabs[1] = {'heading': 'Nodes/Edges',    'active': false, 'disabled': true};
+
+            $scope.setToolTipOnNodesAndEdgesTab = function() {
+                $scope.nodesAndEdgesTabTitle = networkController.tabs[1].disabled ? 'Select nodes or edges in the graph to enable this tab' : '';
+            };
 
 
             /* TODO: for 2.4.1, remove all networkController.tabs[2] since we do not support provevance any longer  */
@@ -3186,27 +3177,25 @@ ndexApp.controller('networkController',
                 if ($scope.showSetSampleButton) {
 
                     if (edgeCount > 1000) {
-                        $scope.showSetSampleButtonEnabled = false;
 
-                        setTooltipOnSetSampleButtonId(
-                            'Cannot set sample for query results with more than 1000 edges');
+                        $scope.showSetSampleButtonEnabled = false;
+                        $scope.setSampleButtonToolTip = 'Cannot set sample for query results with more than 1000 edges';
 
                     } else if (networkController.previousNetwork.edgeCount < $scope.noOfEdgesToShowSetSampleButton) {
-                        setTooltipOnSetSampleButtonId(
-                            'Cannot set sample for networks with less than ' + $scope.noOfEdgesToShowSetSampleButton +  ' edges');
 
                         $scope.showSetSampleButtonEnabled = false;
+                        $scope.setSampleButtonToolTip =
+                            'Cannot set sample for networks with less than ' + $scope.noOfEdgesToShowSetSampleButton +  ' edges';
 
                     } else if ((networkController.previousNetwork.edgeCount <= 12000) && networkController.previousNetwork.hasLayout) {
-                        setTooltipOnSetSampleButtonId('This feature is not yet implemented');
 
                         $scope.showSetSampleButtonEnabled = false;
+                        $scope.setSampleButtonToolTip = 'This feature is not yet implemented';
 
                     }
                     else {
-                            setTooltipOnSetSampleButtonId('Set this query as network sample ');
-
                             $scope.showSetSampleButtonEnabled = true;
+                            $scope.setSampleButtonToolTip = 'Set this query as network sample ';
                         }
                     }
 
