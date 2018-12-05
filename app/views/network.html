@@ -111,28 +111,37 @@
                               ng-mouseover="changeDisabledQueryTitle1()" title="">
 
                             <input class="form-control" type="search"
-                                   placeholder="Network Terms" style="width:300px" disabled>
+                                   placeholder="Query Terms" style="width:300px" disabled>
                         </span>
 
 
                         <input id="inputQueryStrId" class="form-control" type="search" ng-model="networkController.searchString"
-                               placeholder="Network Terms" style="width:300px" required
+                               placeholder="Query Terms (i.e., AKT1 or WNT*)" style="width:330px" required
                                ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery">
                     </div>
                     <div class="form-group">
-                        <label>Query:</label>
+                        &nbsp;&nbsp;
+                        <label>Type:</label>
+
+                        <a data-toggle="tooltip"
+                           ng-click="showQueriesExplanation()"
+                           ng-init="setToolTips()"
+                           tooltip="{{queryTypesTooltipText}}">
+                                <i class="fa fa-info-circle"></i>
+                        </a>
+                        &nbsp;
                     </div>
                     <div class="form-group">
                         <select
                             class="form-control"
-                            id="selectSearchDepth"
-                            ng-model="networkController.selectedQueryType.value"
-                            ng-options="query.value as query.name for query in networkController.queryTypes"
+                            ng-model="selectedQuery"
+                            ng-options="query.name for query in networkController.queryTypes"
                             ng-disabled="networkController.hasMultipleSubNetworks() || disableQuery"
                             required>
                         </select>
                     </div>
 
+                    &nbsp;
                     <button class="btn btn-default btn-primary"
                             ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery"
                             ng-click="networkController.checkQueryNetworkAndDisplay('neighborhood')"
@@ -242,11 +251,10 @@
                         &nbsp;&nbsp;
 
                         <div ng-show = "networkController.successfullyQueried">
-                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query String: </span>{{networkController.currentNetwork.queryString}}
+                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query Terms: </span>{{networkController.currentNetwork.queryString}}
                             <br>
-                            <span class="networkPropertyName"
-                                  ng-show="showQueryName()">Query: </span>
-                            <span ng-show="showQueryName()">{{networkController.currentNetwork.queryName}}</span>
+                            <span class="networkPropertyName">Query Depth: </span>
+                            <span>{{networkController.currentNetwork.depth}}</span>
 
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.edgeFilter">Edge filter:
                                 <br>

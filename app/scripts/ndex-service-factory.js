@@ -116,14 +116,16 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.createUserWithGoogleIdTokenV2 = function (successHandler, errorHandler) {
+            factory.createUserWithGoogleIdTokenV2 = function (userName, successHandler, errorHandler) {
                 // Server API: Create User with google token
                 // POST /user?idtoken={GoogleIdToken}
 
                 var res = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
                 var url = '/user?idtoken=' + res.id_token;
 
-                var config = ndexConfigs.getPostConfigV2(url, null);
+                var postData = (userName) ? {'userName': userName} : null;
+
+                var config = ndexConfigs.getPostConfigV2(url, postData);
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
@@ -1519,7 +1521,7 @@ ndexServiceApp.factory('ndexService',
 
 
             factory.queryNetworkV2 = function (networkId, accesskey, searchString,
-                                               query, edgeLimit, save, errorWhenLimitIsOver, successHandler, errorHandler) {
+                                               query, edgeLimit, save, errorWhenOverLimit, successHandler, errorHandler) {
                 // Server API : Query Network As CX
                 // POST /search/network/{networkId}/query?accesskey={accesskey}&save={true|false} or
                 // POST /search/network/{networkId}/interconnectquery?accesskey={accesskey}&save={true|false}
@@ -1528,7 +1530,7 @@ ndexServiceApp.factory('ndexService',
                     searchString: searchString,
                     searchDepth: query.searchDepth,
                     edgeLimit: edgeLimit,
-                    errorWhenLimitIsOver: true
+                    errorWhenLimitIsOver: errorWhenOverLimit
                 };
 
                 var url = '/search/network/' + networkId;

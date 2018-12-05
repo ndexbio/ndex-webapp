@@ -674,17 +674,17 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                     $rootScope.$emit('SHOW_SIGN_IN_SIGN_UP_MODAL');
                                                 };
 
-                                                $scope.signUpWithGoogle = function() {
-                                                    $scope.isProcessing = true;
-                                                    delete $scope.errors;
+                                                $scope.counter               = 0;
+                                                $scope.maxCounterValue       = 99999;
+                                                $scope.limitOfUserNameLength = 95;
+                                                $scope.userName              = null;
 
-                                                    var spinner = 'spinnerCreateNewAccountViaGoogleId';
-                                                    ndexSpinner.startSpinner(spinner);
 
-                                                    ndexService.createUserWithGoogleIdTokenV2(
-                                                        function() {
+                                                $scope.createUserWithGoogleIdTokenAndUsername = function(uniqueUserName) {
+                                                    ndexService.createUserWithGoogleIdTokenV2(uniqueUserName,
+                                                        function () {
                                                             ndexService.authenticateUserWithGoogleIdToken(
-                                                                function(data) {
+                                                                function (data) {
                                                                     $scope.cancel(); // close modal
                                                                     $scope.isProcessing = false;
                                                                     sharedProperties.setCurrentUser(data.externalId, data.userName);
@@ -696,17 +696,67 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                                     $location.path('/myAccount');
                                                                     ndexSpinner.stopSpinner();
                                                                 },
-                                                                function(error) {
+                                                                function (error) {
                                                                     $scope.isProcessing = false;
                                                                     ndexSpinner.stopSpinner();
                                                                     $scope.errors = error.message;
                                                                 });
                                                         },
-                                                        function(error) {
+                                                        function (error) {
                                                             $scope.isProcessing = false;
                                                             ndexSpinner.stopSpinner();
                                                             $scope.errors = error.message;
                                                         });
+                                                };
+
+                                                $scope.buildUniqueUserNameAndSignup = function(userName) {
+
+                                                    ndexService.getUserByUserNameV2(userName,
+                                                        function() {
+                                                            // user with userName already exists, try a new user name
+                                                            // by incrementing counter and concatinating it with original user name
+
+                                                            $scope.counter++;
+
+                                                            // check if counter exceeds $scope.maxCounterValue and if yes ...
+                                                            if ($scope.counter > $scope.maxCounterValue) {
+
+                                                                // TODO: how do we want to handle this situation?
+                                                            }
+
+                                                            var newName = $scope.userName + $scope.counter;
+                                                            $scope.buildUniqueUserNameAndSignup(newName);
+                                                        },
+                                                        function(error) {
+
+                                                            if (error && error.errorCode && error.errorCode === 'NDEx_Object_Not_Found_Exception') {
+
+                                                                // user with userName is not found - unique user name has been constructed
+                                                                // let's create user with this name
+                                                                $scope.createUserWithGoogleIdTokenAndUsername(userName);
+                                                            }
+                                                        });
+                                                }
+
+                                                $scope.signUpWithGoogle = function() {
+                                                    $scope.isProcessing = true;
+                                                    delete $scope.errors;
+
+                                                    var spinner = 'spinnerCreateNewAccountViaGoogleId';
+                                                    ndexSpinner.startSpinner(spinner);
+
+                                                    // get user email and truncate it from @ to the end to get user name
+                                                    var userEmail = curUser.getBasicProfile().getEmail();
+                                                    var userName  =  userEmail.replace(/@.*$/,'');
+
+                                                    if (userName.length > $scope.limitOfUserNameLength) {
+                                                        // get first $scope.limitOfUserNameLength of user name
+                                                        userName = userName.substring(0, $scope.limitOfUserNameLength);
+                                                    }
+                                                    $scope.userName = userName;
+
+                                                    $scope.buildUniqueUserNameAndSignup(userName);
+
                                                 };
 
                                             }
@@ -1365,8 +1415,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 });
 
                 if (includeInDropDown) {
-                    var dropDownItem = featuredItem.hasOwnProperty('dropdownDispalyName') ?
-                        stripHTML(featuredItem.dropdownDispalyName) : null;
+                    var dropDownItem = featuredItem.hasOwnProperty('dropdownDisplayName') ?
+                        stripHTML(featuredItem.dropdownDisplayName) : null;
 
                     if (dropDownItem === null) {
                         dropDownItem = featuredItem.hasOwnProperty('title') ?
