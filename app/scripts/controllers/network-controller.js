@@ -2706,71 +2706,59 @@ ndexApp.controller('networkController',
                         //$scope.context = {"ncbi": "http://identifiers.org/ncbi",
                         //"pmid": "http://identifiers.org/pubmed"};
 
-                        $scope.context = networkController.context;
-                        $scope.contextIsEmpty = true;
-                        $scope.restoreIfCanceled = [];
+                        $scope.context = [];
+                        _.forEach(networkController.context, function (value,key) {
+                            if ( value && key)
+                                $scope.context.push( {'namespace' :key, 'url' : value});
+                        });
 
-                        for(var key in $scope.context) {
-                            if($scope.context.hasOwnProperty(key)){
-                                $scope.contextIsEmpty = false;
-                                break;
-                            }
-                        }
-
-                        $scope.addTheseContexts = [];
+                        $scope.contextIsEmpty = $scope.context.length === 0;
 
                         $scope.title = title;
                         $scope.message = message;
                         $scope.isEdit = isEdit;
+                        $scope.errors = '';
 
-                        $scope.removeContext = function(key){
-                            $scope.restoreIfCanceled.push({'namespace': key, 'url': $scope.context[key]});
-                            delete $scope.context[key];
-                        };
-
-                        $scope.removeCustomContext = function(index){
-                            if (index > -1) {
-                                $scope.addTheseContexts.splice(index, 1);
-                            }
+                        $scope.removeContext = function(index){
+                            delete $scope.context.splice(index,1);
                         };
 
                         $scope.addContext = function(){
-                            $scope.addTheseContexts.push({'namespace': '', 'url': ''});
-                            $scope.contextIsEmpty = false;
+                            $scope.context.push({'namespace': '', 'url': ''});
                         };
 
                         $scope.close = function() {
                             $modalInstance.dismiss();
-                            _.forEach($scope.restoreIfCanceled, function (addThis) {
-                                $scope.context[addThis.namespace] = addThis.url;
-                            });
                         };
 
                         $scope.save = function() {
-                            _.forEach($scope.addTheseContexts, function (addThis) {
+                            var contextObj = {};
+
+                            _.forEach($scope.context, function (addThis) {
                                 if ( addThis.namespace && addThis.url)
-                                  $scope.context[addThis.namespace] = addThis.url;
+                                    contextObj[addThis.namespace] = addThis.url;
                             });
 
-                            if ( networkController.contextIsFromAspect) {
-                                networkService.updateNetworkContextFromNdexV2([$scope.context], networkExternalId,
-                                    function () {
+                            networkController.context = contextObj;
 
+                            if ( networkController.contextIsFromAspect) {
+                                networkService.updateNetworkContextFromNdexV2([networkController.context], networkExternalId,
+                                    function (dummy) {
+                                        $modalInstance.dismiss();
                                     }, function (errorMessage) {
-                                        console.log(errorMessage);
+                                        $scope.errors = errorMessage;
                                     }
                                 );
                             } else {
                                 // modify the network attribute
                                 networkService.setNetworkProperty(currentNetworkSummary,'@context',
-                                    JSON.stringify($scope.context));
+                                    JSON.stringify(networkController.context));
                                 ndexService.setNetworkPropertiesV2(networkController.currentNetworkId,
                                     currentNetworkSummary.properties, function(res){
                                         $modalInstance.dismiss();
                                     },
                                     function(err) {
-                                       console.log(errorMessage);
-                                       //TODO: print error message in the modal.
+                                        $scope.errors = err;
 
                                      }
                                 );

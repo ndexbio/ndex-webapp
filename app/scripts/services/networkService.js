@@ -950,8 +950,7 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
             XHR.addEventListener('load', function(event) {
 
                 if (XHR.readyState === XHR.DONE) {
-                    if (XHR.status === 200 || XHR.status === 201) {
-                        var newUUID = XHR.responseText;
+                    if (XHR.status === 200 || XHR.status === 201 || XHR.status === 204) {
                         onSuccess(XHR.responseText);
                     }
                 }
