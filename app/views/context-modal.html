@@ -32,34 +32,34 @@
                             <div class="alert alert-warning" role="alert">No namespaces defined for this network. Click the Add button below to define a namespace</div>
                         </div>
                         <div class="col-sm-12" ng-show="!contextIsEmpty">
-                            <div class="row" style="margin-bottom: 5px;" ng-repeat="(key, value) in context">
+                            <div class="row" style="margin-bottom: 5px;" ng-repeat="rec in context">
                                 <div class="col-sm-3">
-                                    <input name="{{key}}_tb" type="text" class="form-control" placeholder="Key" ng-model="key">
+                                    <input name="{{rec.namespace}}_tb" type="text" class="form-control" placeholder="Namespace" ng-model="rec.namespace">
                                 </div>
                                 <div class="col-sm-8">
-                                    <input name="{{key}}value_tb" type="text" class="form-control" placeholder="Key" ng-model="value">
+                                    <input name="{{rec.url}}value_tb" type="text" class="form-control" placeholder="Url" ng-model="rec.url" required>
                                 </div>
                                 <div class="col-sm-1">
-                                    <button class="btn btn-link" style="padding-top:0px; padding-bottom: 0px;" ng-click="removeContext(key);"><i class="fa fa-times" style="color: #D9534F; margin-top: 10px;" aria-hidden="true"></i></button>
+                                    <button class="btn btn-link" style="padding-top:0px; padding-bottom: 0px;" ng-click="removeContext($index);"><i class="fa fa-times" style="color: #D9534F; margin-top: 10px;" aria-hidden="true"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row" style="margin-bottom: 10px;" ng-if="isEdit">
+                   <div class="row" style="margin-bottom: 10px;" ng-if="isEdit">
                         <div class="col-sm-12">
-                            <div class="row" style="margin-bottom: 5px;" ng-repeat="atc in addTheseContexts">
+<!--                            <div class="row" style="margin-bottom: 5px;" ng-repeat="atc in addTheseContexts">
                                 <div class="col-sm-3">
                                     <input name="{{atc.namespace}}_tb" type="text" class="form-control" placeholder="Namespace" ng-model="atc.namespace">
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-8"> -->
                                     <!--<input name="{{atc.url}}value_tb" type="url" class="form-control" placeholder="Url" ng-model="atc.url"
                                            pattern="^(https?://)?([a-zA-Z0-9]([a-zA-ZäöüÄÖÜ0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$" required>-->
-                                    <input name="{{atc.url}}value_tb" type="text" class="form-control" placeholder="Url" ng-model="atc.url" required>
+<!--                                    <input name="{{atc.url}}value_tb" type="text" class="form-control" placeholder="Url" ng-model="atc.url" required>
                                 </div>
                                 <div class="col-sm-1">
                                     <button class="btn btn-link" style="padding-top:0px; padding-bottom: 0px;" ng-click="removeCustomContext($index);"><i class="fa fa-times" style="color: #D9534F; margin-top: 10px;" aria-hidden="true"></i></button>
                                 </div>
-                            </div>
+                            </div>  -->
                         </div>
                     </div>
                     <div class="row" ng-if="isEdit">
