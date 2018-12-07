@@ -281,7 +281,7 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
-            networkController.tabs    = new Array(4);
+            networkController.tabs    = new Array(2);
             networkController.tabs[0] = {'heading': 'Network Info',   'active': true};
             networkController.tabs[1] = {'heading': 'Nodes/Edges',    'active': false, 'disabled': true};
 
@@ -289,6 +289,14 @@ ndexApp.controller('networkController',
                 $scope.nodesAndEdgesTabTitle = networkController.tabs[1].disabled ? 'Select nodes or edges in the graph to enable this tab' : '';
             };
 
+            $scope.handleNodesAndEdgesTabClick = function() {
+
+                if (networkController.tabs[1].disabled) {
+                    // if Nodes/Edges is clicked and it is disabled, then de-activate Nodes/Edges and activate Network Info tab
+                    networkController.tabs[0].active = true;
+                    networkController.tabs[1].active = false;
+                }
+            };
 
             /* TODO: for 2.4.1, remove all networkController.tabs[2] since we do not support provevance any longer  */
             /* TODO: networkController.tabs[2] is left not to refactor code by changing Advanced Query networkController.tabs[3] */
