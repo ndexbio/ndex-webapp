@@ -89,6 +89,13 @@ ndexApp.controller('networkController',
 
             var checkCytoscapeStatusTimer     = null;
             var checkCytoscapeStatusInSeconds = 5;
+            var cytoscape360AndCyndex20RequiredToolTip =
+                'To use this feature, you need Cytoscape 3.6.0 or higher running on ' +
+                ' your machine (default port: 1234) and the CyNDEx-2 app installed';
+            var openNetworkInCytoscapeToolTip = 'Open this network in Cytoscape';
+
+            $scope.openInCytoscapeTitle = 'Checking status ...';
+            $scope.isCytoscapeRunning   = false;
 
             $(document).ready(function(){
                 $('[data-toggle="tooltip"]').tooltip({
@@ -168,12 +175,6 @@ ndexApp.controller('networkController',
                 var isAccessKey = (typeof accesskey !== 'undefined');
 
                 return (isVisibility && isAccessKey);
-            };
-
-            $scope.changeCytoscapeButtonTitle = function() {
-                $('#openInCytoscapeButtonId').tooltip('hide')
-                    .attr('data-original-title', $scope.openInCytoscapeTitle)
-                    .tooltip('show');
             };
 
             $scope.changeShareButtonTitle = function() {
@@ -281,7 +282,7 @@ ndexApp.controller('networkController',
                     .tooltip('show');
             };
 
-            networkController.tabs    = new Array(4);
+            networkController.tabs    = new Array(2);
             networkController.tabs[0] = {'heading': 'Network Info',   'active': true};
             networkController.tabs[1] = {'heading': 'Nodes/Edges',    'active': false, 'disabled': true};
 
@@ -289,6 +290,14 @@ ndexApp.controller('networkController',
                 $scope.nodesAndEdgesTabTitle = networkController.tabs[1].disabled ? 'Select nodes or edges in the graph to enable this tab' : '';
             };
 
+            $scope.handleNodesAndEdgesTabClick = function() {
+
+                if (networkController.tabs[1].disabled) {
+                    // if Nodes/Edges is clicked and it is disabled, then de-activate Nodes/Edges and activate Network Info tab
+                    networkController.tabs[0].active = true;
+                    networkController.tabs[1].active = false;
+                }
+            };
 
             /* TODO: for 2.4.1, remove all networkController.tabs[2] since we do not support provevance any longer  */
             /* TODO: networkController.tabs[2] is left not to refactor code by changing Advanced Query networkController.tabs[3] */
@@ -317,7 +326,6 @@ ndexApp.controller('networkController',
             $scope.deleteTitle               = '';
             $scope.setNetworkSampleViaUUIDTitle     = '';
             $scope.removeFromMyAccountTitle  = '';
-            $scope.openInCytoscapeTitle      = 'Checking status ...';
 
             $scope.disabledQueryTooltip      = 'The Advanced Query feature is being improved and will be back soon!';
 
@@ -2008,11 +2016,11 @@ ndexApp.controller('networkController',
                     function() {
                         // show the "Opened" tooltip ...
                         $scope.openInCytoscapeTitle = 'Opened';
-                        $scope.changeCytoscapeButtonTitle();
+                        $scope.isCytoscapeRunning = true;
 
                         // remove the "Opened" after 2 secs
                         $timeout( function(){
-                            $scope.openInCytoscapeTitle = '';
+                            $scope.openInCytoscapeTitle = openNetworkInCytoscapeToolTip;
                         }, 2000 );
                     },
                     function() {
@@ -2020,16 +2028,17 @@ ndexApp.controller('networkController',
                         console.log('unable to open network in Cytoscape error');
 
                         $scope.openInCytoscapeTitle = 'Unable to open this network in Cytoscape';
-                        $scope.changeCytoscapeButtonTitle();
-
-                        $timeout( function(){
-                            $scope.openInCytoscapeTitle = '';
-                        }, 2000 );
+                        $scope.cytoscapeIsRunning = false;
 
                     });
             };
 
             $scope.networkToCytoscape = function() {
+
+                // check if Cytoscape button is disabled
+                if (!$scope.isCytoscapeRunning) {
+                    return;
+                }
 
                 var numberOfEdges  = networkController.currentNetwork.edgeCount;
                 var edgesThreshold = window.ndexSettings.openInCytoscapeEdgeThresholdWarning;
@@ -3335,7 +3344,7 @@ ndexApp.controller('networkController',
                                         networkController.queryWarnings.push(error.message + ' ' + error.stack);
                                     } else {
                                         networkController.queryWarnings.push(error.message);
-                                    };
+                                    }
                                 }
                                 else if (error.data.message &&
                                     (error.data.message.toLowerCase().indexOf('edgelimitexceeded') > 0))
@@ -3620,7 +3629,7 @@ ndexApp.controller('networkController',
 
   //                      if (networkController.networkShareURL) {
                             // network Share URL is enabled; This network can be opened in Cytoscape.
-                            $scope.openInCytoscapeTitle = '';
+                            //$scope.openInCytoscapeTitle = openNetworkInCytoscapeToolTip;
 
                             // check if Cytoscape is running and if yes if it and CyNDEX have the right versions
                             checkCytoscapeAndCyRESTVersions();
@@ -3969,6 +3978,7 @@ ndexApp.controller('networkController',
                                     'You need Cytoscape version 3.6.0 or later to use this feature.\n';
                                 $scope.openInCytoscapeTitle +=
                                     'Your version of Cytoscape is ' + data.cytoscapeVersion + '.';
+                                $scope.isCytoscapeRunning = false;
 
                             } else {
 
@@ -3992,39 +4002,44 @@ ndexApp.controller('networkController',
                                                     'You need CyNDEx-2 version 2.2.3 or later to use this feature.\n';
                                                 $scope.openInCytoscapeTitle +=
                                                     'Your version of CyNDEx-2 is ' + data.data.appVersion + '.';
+                                                $scope.isCytoscapeRunning = false;
 
                                             } else {
                                                 // everything is fine: both Cytoscape and CyNDEx-2 are recent enough to
                                                 // support the Open in Cytoscape feature.  Enable this button.
-                                                $scope.openInCytoscapeTitle = '';
+                                                $scope.openInCytoscapeTitle = openNetworkInCytoscapeToolTip;
+                                                $scope.isCytoscapeRunning = true;
                                             }
                                         } else {
                                             $scope.openInCytoscapeTitle =
                                                 'You need CyNDEx-2 version 2.2.3 or later to use this feature.\n' +
                                                 'Your version of CyNDEx-2 is too old.';
+                                            $scope.isCytoscapeRunning = false;
                                         }
                                     },
                                     function () {
-                                        $scope.openInCytoscapeTitle =
-                                            'To use this feature, you need Cytoscape 3.6.0 or higher running on ' +
-                                            ' your machine (default port: 1234) and the CyNDEx-2 app installed';
+                                        $scope.openInCytoscapeTitle = cytoscape360AndCyndex20RequiredToolTip;
+                                        $scope.isCytoscapeRunning = false;
                                     }
                                 );
                             }
                         } else {
-                            $scope.openInCytoscapeTitle =
-                                'To use this feature, you need Cytoscape 3.6.0 or higher running on ' +
-                                ' your machine (default port: 1234) and the CyNDEx-2 app installed';
+                            $scope.openInCytoscapeTitle = cytoscape360AndCyndex20RequiredToolTip;
+                            $scope.isCytoscapeRunning = false;
                         }
                     },
                     function() {
-                        $scope.openInCytoscapeTitle =
-                            'To use this feature, you need Cytoscape 3.6.0 or higher running on ' +
-                            ' your machine (default port: 1234) and the CyNDEx-2 app installed';
+                        $scope.openInCytoscapeTitle = cytoscape360AndCyndex20RequiredToolTip;
+                        $scope.isCytoscapeRunning = false;
                     });
             };
 
-            var setEditPropertiesTitle = function() {
+            $scope.getCytoscapeButtonClass = function() {
+                return $scope.isCytoscapeRunning ? 'cyButton' : 'cyButtonDisabled';
+            }
+
+
+                var setEditPropertiesTitle = function() {
                 // !networkController.isAdmin || networkController.hasMultipleSubNetworks()
                 if (networkController.hasMultipleSubNetworks()) {
                     $scope.editPropertiesButtonTitle = 'This network is a Cytoscape collection and cannot be edited in NDEx';
@@ -4273,7 +4288,6 @@ ndexApp.controller('networkController',
 
                 networkService.getNiceCXNetworkFromURL(cxURL,
                     function (niceCX) {
-                        $scope.openInCytoscapeTitle = '';
                         networkController.currentNetwork = cxNetworkUtils.getPartialSummaryFromNiceCX(niceCX);
                         currentNetworkSummary = networkController.currentNetwork;
 

@@ -471,6 +471,7 @@
                 <tab id='nodesEdgesTabId' class='{{isEdgesAndNodesTabDisabled()}}'
                      active="networkController.tabs[1].active"
                      tooltip="{{nodesAndEdgesTabTitle}}"
+                     ng-click="handleNodesAndEdgesTabClick()"
                      ng-mouseenter="setToolTipOnNodesAndEdgesTab()"
                      ng-init="setToolTips()"
                      tooltip-placement="bottom">
@@ -774,12 +775,9 @@
             </button>
 -->
             <span>
-                <img id="openInCytoscapeButtonId2" ng-show="openInCytoscapeTitle" class="cyButtonDisabled"
-                     ng-mouseover="changeCytoscapeButtonTitle()" title=""
-                     style="height: 32px;" src="images/cytoscape_logo.png">
-
-                <img ng-show="!openInCytoscapeTitle" class="cyButton" ng-click="networkToCytoscape()"
-                     data-toggle="tooltip"  title="Open this network in Cytoscape"
+                <img class="{{getCytoscapeButtonClass()}}"
+                     tooltip="{{openInCytoscapeTitle}}"
+                     ng-click="networkToCytoscape()"
                      style="height: 32px;" src="images/cytoscape_logo.png">
             </span>
 
@@ -833,12 +831,9 @@
             </button>
 -->
             <span>
-                <img id="openInCytoscapeButtonId" ng-show="openInCytoscapeTitle" class="cyButtonDisabled"
-                     ng-mouseover="changeCytoscapeButtonTitle()" title=""
-                     style="height: 32px;" src="images/cytoscape_logo.png">
-
-                <img ng-show="!openInCytoscapeTitle" class="cyButton" ng-click="networkToCytoscape()"
-                     data-toggle="tooltip"  title="Open this network in Cytoscape"
+                <img class="{{getCytoscapeButtonClass()}}"
+                     tooltip="{{openInCytoscapeTitle}}"
+                     ng-click="networkToCytoscape()"
                      style="height: 32px;" src="images/cytoscape_logo.png">
             </span>
 
