@@ -15,38 +15,38 @@
 
                     <!------------- USER LOGGED IN AND HAS EDIT PERMISSIONS ---------------->
                     <div class="row" style="margin-bottom: 5px;" ng-if="isEdit && !contextIsEmpty">
-                        <div class="col-sm-3">
+                        <div class="col-sm-3 col-3 col-xs-3 col-md-3">
                             <span style="font-size: medium; font-weight: bold;">Namespace</span>
                         </div>
-                        <div class="col-sm-8">
+                        <div class="col-sm-8 col-8 col-xs-8 col-md-8">
                             <span style="font-size: medium; font-weight: bold;">URL</span>
                         </div>
-                        <div class="col-sm-1">
+                        <div class="col-sm-1 col-1 col-xs-1 col-md-1">
 
                         </div>
                     </div>
 
 
                     <div class="row" ng-if="isEdit">
-                        <div class="col-sm-12" ng-show="contextIsEmpty">
+                        <div class="col-sm-12 col-12 col-xs-12 col-md-12" ng-show="contextIsEmpty">
                             <div class="alert alert-warning" role="alert">No namespaces defined for this network. Click the Add button below to define a namespace</div>
                         </div>
-                        <div class="col-sm-12" ng-show="!contextIsEmpty">
+                        <div class="col-sm-12 col-12 col-xs-12 col-md-12" ng-show="!contextIsEmpty">
                             <div class="row" style="margin-bottom: 5px;" ng-repeat="rec in context">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 col-3 col-xs-3 col-md-3" style="width:170px">
                                     <input name="{{rec.namespace}}_tb" type="text" class="form-control" placeholder="Namespace" ng-model="rec.namespace">
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-sm-8 col-8 col-xs-8 col-md-8" style="width:520px">
                                     <input name="{{rec.url}}value_tb" type="text" class="form-control" placeholder="Url" ng-model="rec.url" required>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-sm-1 col-1 col-xs-1 col-md-1" style="width:60px">
                                     <button class="btn btn-link" style="padding-top:0px; padding-bottom: 0px;" ng-click="removeContext($index);"><i class="fa fa-times" style="color: #D9534F; margin-top: 10px;" aria-hidden="true"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
                    <div class="row" style="margin-bottom: 10px;" ng-if="isEdit">
-                        <div class="col-sm-12">
+                        <div >
 <!--                            <div class="row" style="margin-bottom: 5px;" ng-repeat="atc in addTheseContexts">
                                 <div class="col-sm-3">
                                     <input name="{{atc.namespace}}_tb" type="text" class="form-control" placeholder="Namespace" ng-model="atc.namespace">
@@ -73,7 +73,7 @@
 
                     <!------------- USER NOT LOGGED IN AND/OR DOES NOT HAVE EDIT PERMISSIONS ---------------->
                     <div class="row" ng-if="!isEdit">
-                        <div class="col-sm-12">
+                        <div class="col-sm-12 col-12 col-xs-12 col-md-12">
                             <div class="row" style="margin-bottom: 5px;" ng-show="!contextIsEmpty">
                                 <div class="col-sm-3">
                                     <span style="font-size: medium; font-weight: bold;">Namespace</span>
@@ -82,16 +82,16 @@
                                     <span style="font-size: medium; font-weight: bold;">URL</span>
                                 </div>
                             </div>
-                            <div class="row" ng-repeat="(key, value) in context">
-                                <div class="col-sm-3">
-                                    <div class="well well-sm"><span style="font-size: medium;">{{key}}</span></div>
+                            <div class="row" ng-repeat="rec in context">
+                                <div class="col-sm-3 col-3 col-xs-3 col-md-3" style="width:170px">
+                                    <div class="well well-sm"><span style="font-size: medium;">{{rec.namespace}}</span></div>
                                 </div>
-                                <div class="col-sm-9">
-                                    <div class="well well-sm"><span style="font-size: medium;">{{value}}</span></div>
+                                <div class="col-sm-9 col-9 col-xs-9 col-md-9">
+                                    <div class="well well-sm"><span style="font-size: medium;">{{rec.url}}</span></div>
                                 </div>
                             </div>
                             <div class="row" ng-show="contextIsEmpty">
-                                <div class="col-sm-12">
+                                <div class="col-sm-12 col-12 col-xs-12 col-md-12">
                             <div class="alert alert-warning" role="alert">No namespaces defined for this network. </div><!--To learn more about @context click here-->
                                 </div>
                             </div>
