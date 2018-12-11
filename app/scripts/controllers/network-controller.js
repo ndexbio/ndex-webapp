@@ -483,7 +483,7 @@ ndexApp.controller('networkController',
                     return attributeValue;
                 }
 
-                var prefix = splitString[0].toLowerCase();
+                var prefix = splitString[0];
                 var value  = (splitString.length === 3) ? (splitString[1] + ':' + splitString[2]) : splitString[1];
                 var URI;
 
