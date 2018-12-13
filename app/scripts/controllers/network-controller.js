@@ -485,21 +485,10 @@ ndexApp.controller('networkController',
 
                 var prefix = splitString[0];
                 var value  = (splitString.length === 3) ? (splitString[1] + ':' + splitString[2]) : splitString[1];
+                var URI;
 
-                var getURIFromContextCaseInsensitive = function ( key, contextObj) {
-                    var searchKey = key.toLowerCase()
-                    for (var i in contextObj) {
-                        if (searchKey === i.toLowerCase()) {
-                            return contextObj[i];
-                        }
-                    }
-                    return undefined;
-                }
-
-                var URI = getURIFromContextCaseInsensitive(prefix, networkController.context);
-
-                if (URI) {
-                    //URI = networkController.context[prefix];
+                if (prefix in networkController.context) {
+                    URI = networkController.context[prefix];
                     //if (!URI.endsWith("/")) {
                     //    URI = URI + "/";
                     //}
@@ -2745,7 +2734,7 @@ ndexApp.controller('networkController',
 
                         $scope.addContext = function(){
                             $scope.context.push({'namespace': '', 'url': ''});
-                            $scope.contextIsEmpty = $scope.context.length === 0;
+                            $scope.contextIsEmpty = false;
                         };
 
                         $scope.close = function() {
