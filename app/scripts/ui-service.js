@@ -784,9 +784,8 @@
                 myStyle: '@'
             },
             restrict: 'AE',
-            //template: "<button class='{{myClass}}' style='line-height: 1.428571429;' ng-click='openMe()'>Add To My Sets</button>",
 
-            template: "<button style='{{myStyle}}' class='{{myClass}}' ng-click='openMe()'>Add To My Sets</button>",
+            template: "<button class='{{myClass}}' ng-click='openMe()'>Add To My Sets</button>",
 
             controller: function($scope, $attrs, $modal, $location, ndexService, $route, $rootScope) {
                 var modalInstance;
@@ -949,9 +948,46 @@
             }
         };
     });
-    
-    
-    
+
+    uiServiceApp.directive('removeFromMyNetworks', function() {
+        return {
+            scope: {
+                controllerName: '=',
+                myClass: '@'
+            },
+            restrict: 'AE',
+
+            template: "<button class='{{myClass}}' style='white-space:nowrap;' ng-click='openMe()'>Remove from My Networks</button>",
+
+            controller: function($scope)
+            {
+                $scope.openMe = function() {
+                    $scope.controllerName.removeFromMyNetworks();
+                };
+            }
+        };
+    });
+
+    uiServiceApp.directive('setNetworkSampleViaUuid', function() {
+        return {
+            scope: {
+                controllerName: '=',
+                myClass: '@'
+            },
+            restrict: 'AE',
+
+            template: "<button class='{{myClass}}' style='white-space:nowrap;' ng-click='openMe()'>Set Network Sample</button>",
+
+            controller: function($scope)
+            {
+                $scope.openMe = function() {
+                    $scope.controllerName.setNetworkSampleViaUUID();
+                };
+            }
+        };
+    });
+
+
     // invite members modal
     //      -ndexData takes a group external id as a param
     uiServiceApp.directive('inviteMembersModal', function() {
@@ -1404,12 +1440,11 @@
             scope: {
                 ndexData: '=',
                 privileges: '=',
-                myClass: '@',
-                myStyle: '@'
+                myClass: '@'
             },
             restrict: 'E',
 
-            template: '<button style="{{myStyle}}" class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
+            template: '<button class="{{myClass}}" ng-click="openMe()">Upgrade Permission</button>',
 
             controller: function($scope, $modal, $route, ndexService, ndexUtility, sharedProperties, uiMisc) {
                 var modalInstance;
@@ -1984,19 +2019,45 @@
     });
     */
 
+
+
+    uiServiceApp.directive('requestDoi', function() {
+        return {
+            scope: {
+                networkController: '='
+            },
+
+            restrict: 'E',
+
+            template: '<button class="dropdown-btn" ng-click="editDOI()">Request DOI</button>',
+
+            controller: function($scope, $location)
+            {
+                $scope.editDOI = function() {
+
+                    $location.url('/properties/network/'+
+                        $scope.networkController.currentNetwork.externalId + '/' +
+                        $scope.networkController.subNetworkId + '?doi=true');
+                };
+            }
+        }
+    });
+
+
+
     // modal to export network
     uiServiceApp.directive('exportNetwork', function() {
         return {
             scope: {
-                ndexData: '=',
-                myClass: '@',
-                myStyle: '@'
+                ndexData: '='
             },
             restrict: 'E',
 
             //template: '<button style="line-height: 1.428571429;" class="{{myClass}}" ng-click="openMe()">Export</button>',
 
-            template: '<button style="{{myStyle}}" class="{{myClass}}" ng-click="openMe()">Export</button>',
+            template: '<button class="dropdown-btn" ng-click="openMe()">Export</button>',
+
+            //template: '<a  class="dropdown-btn"  type="button" href="" ng-click="openMe()" style="cursor: pointer; line-height: 1.5em; padding: 3px 20px">Export</a>',
 
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
@@ -3496,7 +3557,7 @@
 
             //template: '<button class="dropdown-btn" style="line-height: 1.428571429;" ng-click="openMe()">Delete</button>',
 
-            template: '<button style="{{myStyle}}" class="{{myClass}}" ng-click="openMe()">Delete</button>',
+            template: '<button class="{{myClass}}" ng-click="openMe()">Delete</button>',
 
             controller: function($scope, $modal, $location) {
 

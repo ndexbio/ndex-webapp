@@ -216,7 +216,7 @@
                                     <!-- show the Delete DOI Request link  -->
                                     &nbsp;&nbsp;&nbsp;
 
-                                    <a ng-click="networkController.deletelPendingDOIRequest()"
+                                    <a ng-click="networkController.deletePendingDOIRequest()"
                                        data-toggle="tooltip"
                                        data-placement="bottom"
                                        onmouseenter="$(this).tooltip('show')"
@@ -902,13 +902,13 @@
             </span>
 
 
-            <span id="shareButtonId" ng-show='networkController.isLoggedInUser && !networkController.isAdmin'
-                class="actionsLabelDisabled-btn btn btn-primary" ng-mouseover="changeShareButtonTitle()" title="">
+            <span ng-show='networkController.isLoggedInUser && !networkController.isAdmin'
+                class="actionsLabelDisabled-btn btn btn-primary" tooltip="{{shareTitle}}">
                 Share
             </span>
             <span ng-show='networkController.isLoggedInUser && networkController.isAdmin'>
                 <a class="actionsLabel btn btn-primary"
-                   data-toggle="tooltip" title="Share this network internally or externally"
+                   tooltip="{{shareTitle}}"
                    ng-href="{{'#/access/network/'+networkController.currentNetwork.externalId}}">
                     Share
                 </a>
@@ -918,18 +918,17 @@
             <span ng-show='networkController.isLoggedInUser'>
                 <span ng-if="(networkController.currentNetwork.doi == null) || isNetworkCertified()">
                     <a class="actionsLabel btn btn-primary"
-                       ng-show="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
+                       ng-if="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
                                     && !networkController.hasMultipleSubNetworks()"
-                       ng-init="setToolTips()" data-toggle="tooltip" title="Modify network properties"
-                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}"
-                       ng-click="setReturnView('network/')">
+                       tooltip="{{editPropertiesButtonTitle}}"
+                       ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}">
                         Edit
 
                     </a>
-                    <a id="editButtonId" class="actionsLabelDisabled-btn btn btn-primary"
-                       ng-show="!(networkController.isAdmin || networkController.canEdit) ||
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
+                       ng-if="!(networkController.isAdmin || networkController.canEdit) ||
                        networkController.hasMultipleSubNetworks() || networkController.readOnlyChecked"
-                       ng-mouseover="changeEditButtonTitle()" title="">
+                       tooltip="{{editPropertiesButtonTitle}}">
                         Edit
                     </a>
                 </span>
@@ -949,7 +948,6 @@
 
             <span ng-show='networkController.isLoggedInUser && networkController.currentNetwork.externalId !== undefined'>
 
-
                 <div class="btn-group dropup">
 
                    <button id="moreNetworkButton" type="button" data-toggle="dropdown"
@@ -958,107 +956,90 @@
                        <span class="caret"></span>
                    </button>
 
-                    <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="moreNetworkButton" >
+                    <ul class="dropdown-menu pull-right" role="menu"  aria-labelledby="moreNetworkButton" >
 
 
-                        <li id="requestDOIId" style="margin: 3px 0" class="disabled" ng-show='networkController.isLoggedInUser &&
-                                    (!networkController.isNetworkOwner || networkController.hasMultipleSubNetworks() || isNetworkCertified()
-                                    || isDOIAssigned() || isDOIPending())'
-                            ng-mouseover="changeRequestDOITitle()" title="">
-                            <a>
-                                Request DOI
+                        <li class="elementOfDropDownOnNetworkPage disabled"  ng-if="!isRequestingDOIEnabled()">
+                            <a class="disabledElementOfDropDownOnNetworkPage"
+                                tooltip="{{requestDOITitle}}">Request DOI</a>
+                        </li>
+                        <li class="elementOfDropDownOnNetworkPage" ng-if="isRequestingDOIEnabled()">
+                            <request-doi network-controller='networkController'</request-doi>
+                        </li>
+
+                        <li class="elementOfDropDownOnNetworkPage disabled"
+                            ng-if='networkController.hasMultipleSubNetworks()'>
+                            <a class="disabledElementOfDropDownOnNetworkPage"
+                                tooltip="{{exportTitle}}">Export
                             </a>
                         </li>
-                        <li style="margin: 3px 0" ng-show='networkController.isLoggedInUser &&
-                                    (networkController.isNetworkOwner && !networkController.hasMultipleSubNetworks() && !isNetworkCertified() &&
-                                     !isDOIAssigned() && !isDOIPending())'>
-
-                            <a class="dropdown-btn"
-                               ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}?doi=true"
-                               ng-click="setReturnView('network/')">
-                                Request DOI
-                            </a>
+                        <li class="elementOfDropDownOnNetworkPage" ng-if='!networkController.hasMultipleSubNetworks()'>
+                            <export-network ndex-data='networkController.currentNetwork'></export-network>
                         </li>
 
-                        <li id="exportNetworkId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
-                                ng-show='networkController.isLoggedInUser && networkController.hasMultipleSubNetworks()'
-                            ng-mouseover="changeExportNetworkTitle()" title="">
-                            <a>Export</a>
-                        </li>
-                        <li style="margin: 3px 0; line-height: 1.2em"
-                                ng-show='networkController.isLoggedInUser && !networkController.hasMultipleSubNetworks()'>
-
-                            <export-network
-                                    ndex-data='networkController.currentNetwork'
-                                    my-class="dropdown-btn"
-                                    my-style="line-height: 1.2em">
-                            </export-network>
-                        </li>
-
-                        <li style="margin: 3px 0; line-height: 1.2em" ng-show='networkController.isLoggedInUser'>
+                        <li class="elementOfDropDownOnNetworkPage">
                             <show-network-sets-modal
-                                    my-account-controller='networkController'
-                                    my-class="dropdown-btn"
-                                    my-style="line-height: 1.2em">
+                                my-account-controller='networkController'
+                                my-class="dropdown-btn">
                             </show-network-sets-modal>
-
                         </li>
 
-                         <li id="setSampleViaUUID" style="margin: 3px 0; line-height: 1.2em"
-                             ng-class="enableSetSampleViaUUID ? 'enabled' : 'disabled'"
-                             ng-mouseover="changeSetSampleViaUUIDTitle()" title=''
-                             ng-click="setNetworkSampleViaUUID()">
-                                <a>Set Network Sample </a>
+                        <li class="elementOfDropDownOnNetworkPage disabled"
+                            ng-if="!enableSetSampleViaUUID">
+                                <a class="disabledElementOfDropDownOnNetworkPage"
+                                    tooltip="{{setNetworkSampleViaUUIDTitle}}">Set Network Sample
+                                </a>
+                         </li>
+                        <li class="elementOfDropDownOnNetworkPage" ng-if="enableSetSampleViaUUID">
+                            <set-network-sample-via-uuid
+                                controller-name='networkController'
+                                my-class="dropdown-btn">
+                            </set-network-sample-via-uuid>
                         </li>
 
-
-                        <li id="upgradePermissionTitleId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
-                            ng-show='networkController.isLoggedInUser &&
-                                (networkController.isAdmin || networkController.canEdit ||
-                                networkController.hasMultipleSubNetworks() || isDOIPending() || isDOIAssigned() || isNetworkCertified())'
-                            ng-mouseover="changeUpgradePermissionTitle()" title="">
-                            <a>Upgrade Permission</a>
+                        <li class="elementOfDropDownOnNetworkPage disabled"
+                            ng-if='!isUpgradingPermissionsEnabled()'>
+                                <a class="disabledElementOfDropDownOnNetworkPage"
+                                    tooltip="{{upgradePermissionTitle}}">Upgrade Permission
+                                </a>
                         </li>
-                        <li style="margin: 3px 0; line-height: 1.2em"
-                            ng-show='networkController.isLoggedInUser && !networkController.isAdmin
-                                && !networkController.canEdit && !networkController.hasMultipleSubNetworks()
-                                && !isDOIPending() && !isDOIAssigned() && !isNetworkCertified()'>
-
+                        <li class="elementOfDropDownOnNetworkPage" ng-if='isUpgradingPermissionsEnabled()'>
                             <create-request-network
                                 privileges='networkController.privilegeLevel'
                                 ndex-data='networkController.currentNetwork'
-                                my-class="dropdown-btn"
-                                my-style="line-height: 1.2em">
+                                my-class="dropdown-btn">
                             </create-request-network>
-
                         </li>
 
 
-                         <li id="removeFromMyAccountTitleId" style="margin: 3px 0; line-height: 1.2em"
-                             ng-class="enableRemoveFromMyAccount ? 'enabled' : 'disabled'"
-                             ng-mouseover="changeRemoveFromMyNetworksTitle()" title=''
-                             ng-click="removeFromMyNetworks()">
-                                <a>Remove from My Networks</a>
+
+                         <li class="elementOfDropDownOnNetworkPage disabled"
+                             ng-if="!enableRemoveFromMyAccount">
+                                <a class="disabledElementOfDropDownOnNetworkPage"
+                                   tooltip="{{removeFromMyAccountTitle}}">Remove from My Networks
+                                </a>
+                        </li>
+                        <li class="elementOfDropDownOnNetworkPage" ng-if="enableRemoveFromMyAccount">
+                            <remove-from-my-networks
+                                controller-name='networkController'
+                                my-class="dropdown-btn">
+                            </remove-from-my-networks>
                         </li>
 
-                         <li id="deleteNetworkTitleId" style="margin: 3px 0; line-height: 1.2em" class="disabled"
-                             ng-show='networkController.isLoggedInUser && !(networkController.isAdmin &&
-                                  !networkController.readOnlyChecked)'
-                             ng-mouseover="changeDeleteNetworkTitle()" title="">
-                            <a>Delete</a>
-                        </li>
-                        <li style="margin: 3px 0; line-height: 1.2em"
-                            ng-show='networkController.isLoggedInUser && networkController.isAdmin &&
-                                  !networkController.readOnlyChecked'>
 
+                        <li class="elementOfDropDownOnNetworkPage disabled"
+                            ng-if='!isDeleteNetworkEnabled()'>
+                            <a class="disabledElementOfDropDownOnNetworkPage"
+                                tooltip="{{deleteTitle}}">Delete
+                            </a>
+                        </li>
+                        <li class="elementOfDropDownOnNetworkPage" ng-if='isDeleteNetworkEnabled()'>
                             <delete-network
                                 ndex-data='networkController.currentNetwork.externalId'
-                                my-class="dropdown-btn"
-                                my-style="line-height: 1.2em">
+                                my-class="dropdown-btn">
                             </delete-network>
 
                         </li>
-
                     </ul>
 
                 </div>
