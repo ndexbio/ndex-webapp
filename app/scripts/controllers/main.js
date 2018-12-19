@@ -14,7 +14,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
         });
-
+/*
         function setTooltip(message) {
             $('#copyNDExCitationToClipboardId').tooltip('hide')
                 .attr('data-original-title', message)
@@ -24,11 +24,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.changeTitle = function() {
             setTooltip('Copy the NDEx citation information to the clipboard');
         };
-
+*/
         $scope.logosLoaded = false;
 
         //noinspection JSCheckFunctionSignatures
-        var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
+        //var clipboard = new Clipboard('#copyNDExCitationToClipboardId');
 
         $scope.footerHtml = window.ndexSettings.landingPageConfigServer + '/footer.html';
         //$scope.footerHtml = 'v2/footer.html';
@@ -40,6 +40,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }, 1000);
         };
         */
+        /*
         clipboard.on('success', function() {
             setTooltip('Copied');
         });
@@ -47,6 +48,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             var myToolTips = $('[data-toggle="tooltip"]');
             myToolTips.tooltip();
         };
+        */
 
         $scope.slickConfig = {
             enabled: true,

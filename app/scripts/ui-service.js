@@ -202,36 +202,20 @@
                     var modalInstance = $modal.open({
                         templateUrl: 'views/networkSetInfoModal.html',
 
-                        controller: function($scope, $modalInstance, ndexNavigation) {
+                        controller: function($scope, $modalInstance) {
 
                             $scope.set = set;
 
-                            $(document).ready(function(){
-                                $('[data-toggle="tooltip"]').tooltip();
-                            });
-                            $scope.changeTitle = function(obj) {
-                                setTooltip("Copy network set share URL to clipboard");
+                            $scope.showOriginalTitle = function() {
+                                $scope.copyNetworkSetURLTitle = 'Copy network set share URL to clipboard';
                             };
-
-                            var clipboard = new Clipboard('#copyNetworkSetURLToClipboardId1');
-
-                            function setTooltip(message) {
-                                $('#copyNetworkSetURLToClipboardId1').tooltip('hide')
-                                    .attr('data-original-title', message)
-                                    .tooltip('show');
-                            }
-                            clipboard.on('success', function(e) {
-                                setTooltip('Copied');
-                            });
-                            $scope.setToolTips = function(){
-                                var myToolTips = $('[data-toggle="tooltip"]');
-                                myToolTips.tooltip();
+                            $scope.showCopiedTitle = function() {
+                                $scope.copyNetworkSetURLTitle = 'Copied';
                             };
 
                             $scope.close = function() {
                                 $modalInstance.dismiss();
                             };
-
                         }
                     });
                 };

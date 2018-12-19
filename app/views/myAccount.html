@@ -51,6 +51,8 @@
 
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
                                    ng-show="!isEditProfileDropDownButtonDisabled()"
+                                   tooltip="Change description, reference, version, visibility, read-only flag of the selected network(s)"
+                                   tooltip-placement="bottom"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
                                {{myAccountController.editProfilesLabel}}
                                <span class="caret"></span>
@@ -255,6 +257,8 @@
                     <span>
                        <div class="btn-group dropdown">
                            <button id="editAccountButton" type="button" data-toggle="dropdown"
+                                   tooltip="Update personal info, change password, delete account"
+                                   tooltip-placement="bottom"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
                                Edit Account
                                <span class="caret"></span>

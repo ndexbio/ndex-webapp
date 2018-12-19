@@ -43,27 +43,13 @@ ndexApp.controller('manageNetworkAccessController',
 	$scope.showChangeShareURLButton = false;
 	$scope.showChangeShareURLButtonTitle = "";
 
-	$(document).ready(function(){
-		$('[data-toggle="tooltip"]').tooltip();
-	});
-	$scope.changeTitle = function(obj) {
-		setTooltip("Copy network share URL to clipboard");
+
+	$scope.showOriginalCopyNetworkShareURLTitle = function() {
+		$scope.copyNetworkShareURLTitle = 'Copy network share URL to clipboard';
 	};
-
-	var clipboard = new Clipboard('#copyShareURLButtonFromSharePageId');
-
-	function setTooltip(message) {
-		$('#copyShareURLButtonFromSharePageId').tooltip('hide')
-			.attr('data-original-title', message)
-			.tooltip('show');
-	}
-	clipboard.on('success', function(e) {
-		setTooltip('Copied');
-	});
-    $scope.setToolTips = function(){
-        var myToolTips = $('[data-toggle="tooltip"]');
-        myToolTips.tooltip();
-    };
+	$scope.showCopiedNetworkShareURLTitle = function() {
+		$scope.copyNetworkShareURLTitle = 'Copied';
+	};
 
 
 	$scope.isDOIPending = function() {

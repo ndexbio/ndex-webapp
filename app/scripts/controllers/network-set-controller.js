@@ -48,19 +48,12 @@ ndexApp.controller('networkSetController',
         setTooltip("Copy network set share URL to clipboard");
     };
 
-    var clipboard = new Clipboard('#copyNetworkSetURLToClipboardId');
 
-    function setTooltip(message) {
-        $('#copyNetworkSetURLToClipboardId').tooltip('hide')
-            .attr('data-original-title', message)
-            .tooltip('show');
+    $scope.showOriginalTitle = function() {
+        $scope.copyNetworkSetURLTitle = 'Copy network set share URL to clipboard';
     };
-    clipboard.on('success', function(e) {
-        setTooltip('Copied');
-    });
-    $scope.setToolTips = function(){
-        var myToolTips = $('[data-toggle="tooltip"]');
-        myToolTips.tooltip();
+    $scope.showCopiedTitle = function() {
+        $scope.copyNetworkSetURLTitle = 'Copied';
     };
 
     networkSetController.getNetworksOfNetworkSet = function() {

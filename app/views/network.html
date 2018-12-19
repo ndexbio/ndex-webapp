@@ -107,8 +107,8 @@
 
                     <div class="form-group">
 
-                        <span id="disabledQueryId1" ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
-                              ng-mouseover="changeDisabledQueryTitle1()" title="">
+                        <span ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
+                             tooltip="{{disabledQueryTooltip}}" tooltip-placement="right">
 
                             <input class="form-control" type="search"
                                    placeholder="Query Terms" style="width:300px" disabled>
@@ -148,10 +148,9 @@
                             style="margin-bottom:0">Run Query
                     </button>
 
-                    <a id="disabledQueryId2"
-                       class="actionsLabelDisabled-btn btn btn-primary"
+                    <a class="actionsLabelDisabled-btn btn btn-primary"
                        ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
-                       ng-mouseover="changeDisabledQueryTitle2()" title="">
+                       tooltip="{{disabledQueryTooltip}}">
                         Run Query
                     </a>
 
@@ -231,11 +230,11 @@
                             </span>
 
 
-                            <a id="copyNetworkShareURLToClipboardId3"
-                               ng-if="!isDOIPending()"
-                               data-toggle="tooltip"
-                               data-placement="bottom"
-                               ng-mouseover="changeTitle3()"
+                            <a ng-if="!isDOIPending()"
+                               tooltip="{{copyNetworkDOITitle}}"
+                               tooltip-placement="bottom"
+                               ng-click="showCopiedDOITitle()"
+                               ng-mouseover="showOriginalCopyDOITitle()"
                                ngclipboard
                                data-clipboard-text="http://doi.org/{{networkController.currentNetwork.doi}}"
                                class="actionsLabel btn btn-primary btn-sm">
@@ -294,13 +293,12 @@
                                     ng-change="readOnlyChanged()"
                                 ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only
                             </span>
-                            <span id="readOnlyButtonId"  class="networkPropertyName"
-                                  ng-show="networkController.currentNetwork.externalId !==undefined && (!networkController.isAdmin)"
-                                  ng-init="setToolTips()" data-toggle="tooltip" ng-mouseover="changeReadOnlyButtonTitle()" title="">
+                            <span class="networkPropertyName"
+                                  ng-show="networkController.currentNetwork.externalId !== undefined && !networkController.isAdmin"
+                                  tooltip="{{onlyNetworkOwnersCanUnsetReadOnlyTitle}}"
+                                  tooltip-placement="bottom">
                                 <input type="checkbox" disabled ng-model="networkController.readOnlyChecked"> Read Only
                             </span>
-
-
                             &nbsp;&nbsp;
                             <span ng-if="!networkController.currentNetwork.doi || networkController.currentNetwork.doi == 'Pending'">
                                 <span ng-if="networkController.isNetworkOwner && (networkController.currentNetwork.visibility.toUpperCase() == 'PRIVATE')">
@@ -309,11 +307,11 @@
                                         {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
                                     </span>
 
-                                    <a id="copyNetworkShareURLToClipboardId1"
-                                       ng-hide="!networkController.networkShareURL"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       ng-mouseover="changeTitle()"
+                                    <a ng-hide="!networkController.networkShareURL"
+                                       tooltip="{{copyNetworkShareURLTitle}}"
+                                       tooltip-placement="bottom"
+                                       ng-click="showCopiedNetworkShareURLTitle()"
+                                       ng-mouseover="showOriginalCopyNetworkShareURLTitle()"
                                        ngclipboard
                                        data-clipboard-text="{{networkController.networkShareURL}}"
                                        class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
@@ -323,11 +321,11 @@
 
                                 <span ng-if="networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC'">
 
-                                    <a id="copyNetworkShareURLToClipboardId2"
-                                       ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
-                                       data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       ng-mouseover="changeTitle2()"
+                                    <a ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
+                                       tooltip="{{copyNetworkShareURLTitle}}"
+                                       tooltip-placement="bottom"
+                                       ng-click="showCopiedNetworkShareURLTitle()"
+                                       ng-mouseover="showOriginalCopyNetworkShareURLTitle()"
                                        ngclipboard
                                        data-clipboard-text="{{networkController.networkURL}}"
                                        class="actionsLabel btn btn-primary btn-xs">Copy URL
@@ -798,8 +796,7 @@
 
             <button type="button"
                     ng-class="switchViewButtonEnabled ? 'actionsLabel btn btn-primary' : 'actionsLabelDisabled-btn btn btn-primary'"
-                    data-toggle="tooltip"
-                    title="Switch to Graphic View"
+                    tooltip="{{switchToGraphViewButtonTitle}}"
                     ng-click="switchView()"
                     ng-show="!networkController.hasMultipleSubNetworks() && currentView=='Table'">
                 {{buttonLabel}}

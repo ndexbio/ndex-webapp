@@ -101,50 +101,6 @@ ndexApp.controller('networkController',
                 $('[data-toggle="tooltip"]').tooltip({
                     html: true
                 });
-
-                $scope.setToolTips();
-            });
-
-
-            //noinspection JSCheckFunctionSignatures
-            var clipboard  = new Clipboard('#copyNetworkShareURLToClipboardId1');
-            //noinspection JSCheckFunctionSignatures
-            var clipboard2 = new Clipboard('#copyNetworkShareURLToClipboardId2');
-            //noinspection JSCheckFunctionSignatures
-            var clipboard3 = new Clipboard('#copyNetworkShareURLToClipboardId3');
-
-            function setTooltip(message) {
-                $('#copyNetworkShareURLToClipboardId1').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
-            function setTooltip2(message) {
-                $('#copyNetworkShareURLToClipboardId2').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
-            function setTooltip3(message) {
-                $('#copyNetworkShareURLToClipboardId3').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
-            $scope.changeTitle = function() {
-                setTooltip('Copy network share URL to clipboard');
-            };
-            $scope.changeTitle2 = function() {
-                setTooltip2('Copy network URL to clipboard');
-            };
-            $scope.changeTitle3 = function() {
-                setTooltip3('Copy network DOI to clipboard');
-            };
-            clipboard.on('success', function() {
-                setTooltip('Copied');
-            });
-            clipboard2.on('success', function() {
-                setTooltip2('Copied');
-            });
-            clipboard3.on('success', function() {
-                setTooltip3('Copied');
             });
 
             $scope.setToolTips = function(){
@@ -154,6 +110,21 @@ ndexApp.controller('networkController',
 
             $scope.enableSetSampleViaUUID    = false;
             $scope.enableRemoveFromMyAccount = false;
+
+
+            $scope.showOriginalCopyNetworkShareURLTitle = function() {
+                $scope.copyNetworkShareURLTitle = 'Copy network share URL to clipboard';
+            };
+            $scope.showCopiedNetworkShareURLTitle = function() {
+                $scope.copyNetworkShareURLTitle = 'Copied';
+            };
+            $scope.showOriginalCopyDOITitle = function() {
+                $scope.copyNetworkDOITitle = 'Copy network DOI to clipboard';
+            };
+            $scope.showCopiedDOITitle = function() {
+                $scope.copyNetworkDOITitle = 'Copied';
+            };
+
 
             /*
              *  We hide the network owner from Network page if
@@ -177,23 +148,11 @@ ndexApp.controller('networkController',
                 return (isVisibility && isAccessKey);
             };
 
-            $scope.changeReadOnlyButtonTitle = function() {
-                var title =
-                    networkController.hasMultipleSubNetworks() ?
-                        $scope.editPropertiesButtonTitle :
-                        'Only network owners can set/unset Read Only flag';
-
-                $('#readOnlyButtonId').tooltip('hide')
-                    .attr('data-original-title', title)
-                    .tooltip('show');
-            };
-
+            $scope.onlyNetworkOwnersCanUnsetReadOnlyTitle = 'Only network owners can set/unset Read Only flag';
 
             $scope.isEdgesAndNodesTabDisabled = function() {
                 return networkController.tabs[1].disabled ? 'disabled' : 'enabled';
             };
-
-
 
             $scope.activeTab = 'Edges';
 
@@ -210,28 +169,6 @@ ndexApp.controller('networkController',
                     /** @namespace $scope.nodeGridApi.core.refresh(); **/
                     $scope.nodeGridApi.core.refresh();
                 }
-            };
-
-
-            $scope.changeDisabledQueryTitle1 = function() {
-                $('#disabledQueryId1').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
-            };
-            $scope.changeDisabledQueryTitle2 = function() {
-                $('#disabledQueryId2').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
-            };
-            $scope.changeDisabledQueryTitle3 = function() {
-                $('#disabledQueryId3').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
-            };
-            $scope.changeDisabledQueryTitle4 = function() {
-                $('#disabledQueryId4').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
             };
 
             networkController.tabs    = new Array(2);
@@ -3170,6 +3107,8 @@ ndexApp.controller('networkController',
                     setGridWidth    = true;
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
+                    $scope.switchToGraphViewButtonTitle = 'Switch to Graphic View';
+
                     drawCXNetworkOnCanvas(network, false);
 
                     populateNodeTable(network, enableFiltering, setGridWidth);
@@ -3181,10 +3120,8 @@ ndexApp.controller('networkController',
                     $scope.buttonLabel = 'Graph';
                     $scope.switchViewButtonEnabled = false;
 
-                    var networkIsTooLargeMessage =
+                    $scope.switchToGraphViewButtonTitle =
                         'This network is too large to display in the browser. Please import it in Cytoscape for visualization purposes.';
-
-                    $('#switchViewButtonId2').tooltip('hide').attr('data-original-title', networkIsTooLargeMessage);
 
                     enableFiltering = true;
                     setGridWidth    = true;
