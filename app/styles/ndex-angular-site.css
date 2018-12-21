@@ -1358,3 +1358,10 @@ div.featuredCollectionDescriptionArea {
     text-align: left;
 }
 
+.elementOfDropDownOnNetworkPage {
+    padding: 3px 0;
+    line-height: 1.3em !important;
+}
+.disabledElementOfDropDownOnNetworkPage {
+    line-height: 1.3em !important;
+}

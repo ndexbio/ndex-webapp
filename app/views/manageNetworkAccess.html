@@ -40,13 +40,12 @@
 					{{networkManager.networkShareableURLLabel}}
 				</a>
 
-				<a id="copyShareURLButtonFromSharePageId"
-				   ng-hide="!networkManager.networkShareableURL"
-				   ng-init="setToolTips()"
+				<a ng-hide="!networkManager.networkShareableURL"
 				   class="btn btn-default"
-				   data-toggle="tooltip"
-				   data-placement="bottom"
-				   ng-mouseover="changeTitle(this)"
+				   tooltip="{{copyNetworkShareURLTitle}}"
+				   tooltip-placement="bottom"
+				   ng-click="showCopiedNetworkShareURLTitle()"
+				   ng-mouseover="showOriginalCopyNetworkShareURLTitle()"
 				   ngclipboard
 				   data-clipboard-text="{{networkManager.networkShareableURL}}">
 					Copy URL

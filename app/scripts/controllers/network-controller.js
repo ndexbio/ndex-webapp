@@ -101,50 +101,6 @@ ndexApp.controller('networkController',
                 $('[data-toggle="tooltip"]').tooltip({
                     html: true
                 });
-
-                $scope.setToolTips();
-            });
-
-
-            //noinspection JSCheckFunctionSignatures
-            var clipboard  = new Clipboard('#copyNetworkShareURLToClipboardId1');
-            //noinspection JSCheckFunctionSignatures
-            var clipboard2 = new Clipboard('#copyNetworkShareURLToClipboardId2');
-            //noinspection JSCheckFunctionSignatures
-            var clipboard3 = new Clipboard('#copyNetworkShareURLToClipboardId3');
-
-            function setTooltip(message) {
-                $('#copyNetworkShareURLToClipboardId1').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
-            function setTooltip2(message) {
-                $('#copyNetworkShareURLToClipboardId2').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
-            function setTooltip3(message) {
-                $('#copyNetworkShareURLToClipboardId3').tooltip('hide')
-                    .attr('data-original-title', message)
-                    .tooltip('show');
-            }
-            $scope.changeTitle = function() {
-                setTooltip('Copy network share URL to clipboard');
-            };
-            $scope.changeTitle2 = function() {
-                setTooltip2('Copy network URL to clipboard');
-            };
-            $scope.changeTitle3 = function() {
-                setTooltip3('Copy network DOI to clipboard');
-            };
-            clipboard.on('success', function() {
-                setTooltip('Copied');
-            });
-            clipboard2.on('success', function() {
-                setTooltip2('Copied');
-            });
-            clipboard3.on('success', function() {
-                setTooltip3('Copied');
             });
 
             $scope.setToolTips = function(){
@@ -154,6 +110,21 @@ ndexApp.controller('networkController',
 
             $scope.enableSetSampleViaUUID    = false;
             $scope.enableRemoveFromMyAccount = false;
+
+
+            $scope.showOriginalCopyNetworkShareURLTitle = function() {
+                $scope.copyNetworkShareURLTitle = 'Copy network share URL to clipboard';
+            };
+            $scope.showCopiedNetworkShareURLTitle = function() {
+                $scope.copyNetworkShareURLTitle = 'Copied';
+            };
+            $scope.showOriginalCopyDOITitle = function() {
+                $scope.copyNetworkDOITitle = 'Copy network DOI to clipboard';
+            };
+            $scope.showCopiedDOITitle = function() {
+                $scope.copyNetworkDOITitle = 'Copied';
+            };
+
 
             /*
              *  We hide the network owner from Network page if
@@ -177,41 +148,11 @@ ndexApp.controller('networkController',
                 return (isVisibility && isAccessKey);
             };
 
-            $scope.changeShareButtonTitle = function() {
-                $('#shareButtonId').tooltip('hide')
-                    .attr('data-original-title', $scope.shareTitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeEditButtonTitle = function() {
-                $('#editButtonId').tooltip('hide')
-                    .attr('data-original-title', $scope.editPropertiesButtonTitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeRequestDOITitle = function() {
-                $('#requestDOIId').tooltip('hide')
-                    .attr('data-original-title', $scope.requestDOITitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeReadOnlyButtonTitle = function() {
-                var title =
-                    networkController.hasMultipleSubNetworks() ?
-                        $scope.editPropertiesButtonTitle :
-                        'Only network owners can set/unset Read Only flag';
-
-                $('#readOnlyButtonId').tooltip('hide')
-                    .attr('data-original-title', title)
-                    .tooltip('show');
-            };
-
+            $scope.onlyNetworkOwnersCanUnsetReadOnlyTitle = 'Only network owners can set/unset Read Only flag';
 
             $scope.isEdgesAndNodesTabDisabled = function() {
                 return networkController.tabs[1].disabled ? 'disabled' : 'enabled';
             };
-
-
 
             $scope.activeTab = 'Edges';
 
@@ -228,58 +169,6 @@ ndexApp.controller('networkController',
                     /** @namespace $scope.nodeGridApi.core.refresh(); **/
                     $scope.nodeGridApi.core.refresh();
                 }
-            };
-
-
-            $scope.changeExportNetworkTitle  = function() {
-                $('#exportNetworkId').tooltip('hide')
-                    .attr('data-original-title', $scope.exportTitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeUpgradePermissionTitle  = function() {
-                $('#upgradePermissionTitleId').tooltip('hide')
-                    .attr('data-original-title', $scope.upgradePermissionTitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeSetSampleViaUUIDTitle  = function() {
-                $('#setSampleViaUUID').tooltip('hide')
-                    .attr('data-original-title', $scope.setNetworkSampleViaUUIDTitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeRemoveFromMyNetworksTitle  = function() {
-                $('#removeFromMyAccountTitleId').tooltip('hide')
-                    .attr('data-original-title', $scope.removeFromMyAccountTitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeDeleteNetworkTitle  = function() {
-                $('#deleteNetworkTitleId').tooltip('hide')
-                    .attr('data-original-title', $scope.deleteTitle)
-                    .tooltip('show');
-            };
-
-            $scope.changeDisabledQueryTitle1 = function() {
-                $('#disabledQueryId1').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
-            };
-            $scope.changeDisabledQueryTitle2 = function() {
-                $('#disabledQueryId2').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
-            };
-            $scope.changeDisabledQueryTitle3 = function() {
-                $('#disabledQueryId3').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
-            };
-            $scope.changeDisabledQueryTitle4 = function() {
-                $('#disabledQueryId4').tooltip('hide')
-                    .attr('data-original-title', $scope.disabledQueryTooltip)
-                    .tooltip('show');
             };
 
             networkController.tabs    = new Array(2);
@@ -322,7 +211,7 @@ ndexApp.controller('networkController',
             $scope.requestDOITitle           = '';
             $scope.exportTitle               = '';
             $scope.upgradePermissionTitle    = '';
-            $scope.shareTitle                = '';
+            $scope.shareTitle                = 'Share this network internally or externally';
             $scope.deleteTitle               = '';
             $scope.setNetworkSampleViaUUIDTitle     = '';
             $scope.removeFromMyAccountTitle  = '';
@@ -2065,10 +1954,6 @@ ndexApp.controller('networkController',
                 }
             };
 
-            $scope.setReturnView = function(view) {
-                sharedProperties.setNetworkViewPage(view);
-            };
-
             /*
             var enableSimpleQueryElements = function () {
                 var nodes = document.getElementById('simpleQueryNetworkViewId').getElementsByTagName('*');
@@ -3223,6 +3108,8 @@ ndexApp.controller('networkController',
                     setGridWidth    = true;
                     $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
 
+                    $scope.switchToGraphViewButtonTitle = 'Switch to Graphic View';
+
                     drawCXNetworkOnCanvas(network, false);
 
                     populateNodeTable(network, enableFiltering, setGridWidth);
@@ -3234,10 +3121,8 @@ ndexApp.controller('networkController',
                     $scope.buttonLabel = 'Graph';
                     $scope.switchViewButtonEnabled = false;
 
-                    var networkIsTooLargeMessage =
+                    $scope.switchToGraphViewButtonTitle =
                         'This network is too large to display in the browser. Please import it in Cytoscape for visualization purposes.';
-
-                    $('#switchViewButtonId2').tooltip('hide').attr('data-original-title', networkIsTooLargeMessage);
 
                     enableFiltering = true;
                     setGridWidth    = true;
@@ -3732,7 +3617,7 @@ ndexApp.controller('networkController',
                 }
             };
 
-            $scope.setNetworkSampleViaUUID = function() {
+            networkController.setNetworkSampleViaUUID = function() {
                 if (!$scope.enableSetSampleViaUUID) {
                     return;
                 }
@@ -3858,7 +3743,7 @@ ndexApp.controller('networkController',
                 });
             };
 
-            $scope.removeFromMyNetworks = function() {
+            networkController.removeFromMyNetworks = function() {
                 if (!$scope.enableRemoveFromMyAccount) {
                     return;
                 }
@@ -4040,7 +3925,7 @@ ndexApp.controller('networkController',
             }
 
 
-                var setEditPropertiesTitle = function() {
+            var setEditPropertiesTitle = function() {
                 // !networkController.isAdmin || networkController.hasMultipleSubNetworks()
                 if (networkController.hasMultipleSubNetworks()) {
                     $scope.editPropertiesButtonTitle = 'This network is a Cytoscape collection and cannot be edited in NDEx';
@@ -4055,6 +3940,8 @@ ndexApp.controller('networkController',
                     $scope.editPropertiesButtonTitle += 'If you need to update this network please clone it.';
                 }  else if (networkController.readOnlyChecked) {
                     $scope.editPropertiesButtonTitle = 'Unable to edit this network: it is read-only';
+                } else {
+                    $scope.editPropertiesButtonTitle = 'Modify network properties';  // default value - Edit button is enabled
                 }
             };
 
@@ -4120,6 +4007,30 @@ ndexApp.controller('networkController',
                             displayErrorMessage(error);
                         });
                 }
+            };
+
+            $scope.isRequestingDOIEnabled = function() {
+                var enabled =
+                 networkController.isNetworkOwner && !networkController.hasMultipleSubNetworks() &&
+                    !$scope.isNetworkCertified() && !$scope.isDOIAssigned() && !$scope.isDOIPending();
+
+                return enabled;
+            };
+
+            $scope.isUpgradingPermissionsEnabled = function() {
+                var enabled =
+                    !networkController.isAdmin && !networkController.canEdit &&
+                    !networkController.hasMultipleSubNetworks() &&
+                    !$scope.isNetworkCertified() && !$scope.isDOIAssigned() && !$scope.isDOIPending();
+
+                return enabled;
+            };
+
+            $scope.isDeleteNetworkEnabled = function() {
+                var enabled =
+                    networkController.isAdmin && !networkController.readOnlyChecked;
+
+                return enabled;
             };
 
             var initialize = function () {
@@ -4715,7 +4626,7 @@ ndexApp.controller('networkController',
 
 
 
-            networkController.deletelPendingDOIRequest = function() {
+            networkController.deletePendingDOIRequest = function() {
 
                 var title = 'Delete DOI Request';
 
@@ -4742,8 +4653,10 @@ ndexApp.controller('networkController',
                         ndexService.cancelDoi(networkController.currentNetworkId,
                             function() {
                                 delete networkController.currentNetwork.doi;
+                                delete networkController.currentNetwork.isCertified;
                                 networkController.currentNetwork.isReadOnly = false;
                                 networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
+                                setEditPropertiesTitle();
                                 ndexSpinner.stopSpinner();
                                 $modalInstance.dismiss();
                                 delete $rootScope.errors;

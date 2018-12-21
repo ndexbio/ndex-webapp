@@ -41,6 +41,11 @@
             {{description}}
         </div>
 
+        <div ng-if="errors" class='text-danger' style='word-wrap:break-word'>
+            <br>
+            <strong><span style="font-size: 1.1em" ng-bind-html="errors"></span></strong>
+        </div>
+
     </div>
 
     <div class='modal-footer'>

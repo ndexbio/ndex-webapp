@@ -58,12 +58,11 @@
                                ng-bind-html="set.shareLinkStatus">
                             </span>
                             &nbsp;
-                            <a id="copyNetworkSetURLToClipboardId1"
-                               ng-hide="set.shareLinkStatus != 'Enabled'"
-                               ng-init="setToolTips()"
-                               data-toggle="tooltip"
-                               data-placement="bottom"
-                               ng-mouseover="changeTitle(this)"
+                            <a ng-show="set.shareLinkStatus == 'Enabled'"
+                               tooltip="{{copyNetworkSetURLTitle}}"
+                               tooltip-placement="bottom"
+                               ng-click="showCopiedTitle()"
+                               ng-mouseover="showOriginalTitle()"
                                ngclipboard
                                data-clipboard-text="{{set.networkSetShareableURL}}"
                                class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
