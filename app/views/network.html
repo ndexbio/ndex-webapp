@@ -345,9 +345,8 @@
                                 && !networkController.hasMultipleSubNetworks() && !networkController.readOnlyChecked">
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(true);"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   title="Click here to view or modify the namespaces defined for this network.">
+                                   tooltip-placement="bottom"
+                                   tooltip="Click here to view or modify the namespaces defined for this network.">
                                     view/edit namespaces
                                 </a>
                             </span>
@@ -356,9 +355,8 @@
                                 || networkController.readOnlyChecked">
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(false);"
-                                   data-toggle="tooltip"
-                                   data-placement="bottom"
-                                   title="Click here to view the namespaces defined for this network.">
+                                   tooltip-placement="bottom"
+                                   tooltip="Click here to view the namespaces defined for this network.">
                                     view namespaces
                                 </a>
                             </span>
@@ -811,7 +809,7 @@
             </button>
 
             <button id="saveQueryButton"
-                    ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary "
+                    ng-show="networkController.isLoggedInUser" class="actionsLabel btn btn-primary"
                     data-toggle="tooltip"
                     title="Save query result to your account"
                     ng-click="networkController.saveQueryResult()" >

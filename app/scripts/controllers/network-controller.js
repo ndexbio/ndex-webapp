@@ -3095,6 +3095,7 @@ ndexApp.controller('networkController',
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = true;
                     } else {
                         $scope.drawCXNetworkOnCanvasWhenViewSwitched = false;
+                        $scope.switchToGraphViewButtonTitle = 'Switch to Graphic View';
                     }
 
                 } else if ((edgeCount > networkController.queryEdgeLimitToShowGraph) &&
