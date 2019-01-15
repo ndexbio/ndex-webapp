@@ -507,7 +507,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                 // display modal asking to check email in order to activate the account
                                                 $uibModal.open({
                                                     templateUrl: 'signUpSuccess.html',
-                                                    backdrop: 'static'
+                                                    backdrop: 'static',
+
+                                                    controller: function ($scope, $uibModalInstance) {
+                                                        $scope.cancel = function () {
+                                                            $uibModalInstance.dismiss();
+                                                        };
+                                                    }
                                                 });
                                             }
                                         },
@@ -554,7 +560,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                                    });
                                                 else
-                                                   errorHandler(err)
+                                                   errorHandler(err);
                                               }
                                             );
                                          } else
@@ -738,7 +744,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                                 $scope.createUserWithGoogleIdTokenAndUsername(userName);
                                                             }
                                                         });
-                                                }
+                                                };
 
                                                 $scope.signUpWithGoogle = function() {
                                                     $scope.isProcessing = true;
@@ -791,7 +797,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     };
                 }
             });
-        }
+        };
 
         /*
          * Check what browser is used.
