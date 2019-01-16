@@ -103,7 +103,7 @@
                  ng-show="!networkController.successfullyQueried"
                  id="simpleQueryNetworkViewId">
 
-                <form id="frmSearchNetwork" class="form-inline pull-left">
+                <form name="queryNetworkForm" id="frmSearchNetwork" class="form-inline pull-left">
 
                     <div class="form-group">
 
@@ -115,8 +115,9 @@
                         </span>
 
 
-                        <input id="inputQueryStrId" class="form-control" type="search" ng-model="networkController.searchString"
+                        <input name="queryTermsInput" id="inputQueryStrId" class="form-control" type="search" ng-model="networkController.searchString"
                                placeholder="Query Terms (i.e., AKT1 or WNT*)" style="width:330px" required
+                               title=""
                                ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery">
                     </div>
                     <div class="form-group">
@@ -137,13 +138,14 @@
                             ng-model="selectedQuery"
                             ng-options="query.name for query in networkController.queryTypes"
                             ng-disabled="networkController.hasMultipleSubNetworks() || disableQuery"
-                            required>
+                            required title="">
                         </select>
                     </div>
 
                     &nbsp;
                     <button class="btn btn-default btn-primary"
                             ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery"
+                            ng-disabled="!queryNetworkForm.queryTermsInput.$valid"
                             ng-click="networkController.checkQueryNetworkAndDisplay('neighborhood')"
                             style="margin-bottom:0">Run Query
                     </button>
@@ -346,7 +348,7 @@
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(true);"
                                    tooltip-placement="bottom"
-                                   tooltip="Click here to view or modify the namespaces defined for this network.">
+                                   tooltip="Click here to view/edit the namespaces associated with this network">
                                     view/edit namespaces
                                 </a>
                             </span>
@@ -356,7 +358,7 @@
                                 <span style="font-weight: bold;">@context: </span>
                                 <a ng-click="networkController.showContextModal(false);"
                                    tooltip-placement="bottom"
-                                   tooltip="Click here to view the namespaces defined for this network.">
+                                   tooltip="Click here to view the namespaces associated with this network">
                                     view namespaces
                                 </a>
                             </span>
@@ -514,7 +516,7 @@
                                                     <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
                                                     <br/>
                                                 </span>
-
+<!--
                                                 <span ng-switch-when="citations">
                                                     <span ng-repeat="citation in node.citations">
                                                         &nbsp;&nbsp;
@@ -522,7 +524,7 @@
                                                         <br />
                                                     </span>
                                                 </span>
-
+-->
                                                 <span ng-switch-when="ndex:internalLink">
                                                     <br>
                                                    <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>

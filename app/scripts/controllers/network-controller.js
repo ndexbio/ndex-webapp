@@ -113,7 +113,10 @@ ndexApp.controller('networkController',
 
 
             $scope.showOriginalCopyNetworkShareURLTitle = function() {
-                $scope.copyNetworkShareURLTitle = 'Copy network share URL to clipboard';
+                $scope.copyNetworkShareURLTitle =
+                    (networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC') ?
+                    'Copy network URL to clipboard' :
+                    'Copy Share URL to clipboard';
             };
             $scope.showCopiedNetworkShareURLTitle = function() {
                 $scope.copyNetworkShareURLTitle = 'Copied';
@@ -3613,7 +3616,7 @@ ndexApp.controller('networkController',
                 // we set Share title only if Share option of More menu is disabled:
                 // !networkController.isAdmin
                 if (!networkController.isNetworkOwner) {
-                    $scope.shareTitle = 'Unable to Share this network: you do not own it ';
+                    $scope.shareTitle = 'You must own the network to manage its access permissions';
                 }
             };
 
