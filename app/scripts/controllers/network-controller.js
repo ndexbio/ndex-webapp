@@ -12,7 +12,7 @@ ndexApp.controller('networkController',
             
             var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
             var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
-
+            var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
             var cy;
 
             var currentNetworkSummary;
@@ -1014,7 +1014,7 @@ ndexApp.controller('networkController',
                         console.log(e);
                     }
 
-
+                    cyAnnotationService.drawAnnotationsFromNiceCX(cy, niceCX);
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
                     // edges, the event is triggered for each node/edge.
                     cy.on('select unselect', function () {
