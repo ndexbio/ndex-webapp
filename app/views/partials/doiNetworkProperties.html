@@ -27,7 +27,7 @@
                 <div class="col-sm-8" style="margin-bottom: 15px;">
                     <input type="text" class="form-control" ng-change="editor.updateScore()"
                            ng-class="mainProperty.name.length > 0 ? 'competeInput': ''" type="text"
-                           placeholder="Network Name" ng-model='mainProperty.name' required>
+                           placeholder="Network Name" ng-model='mainProperty.name' required title="">
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
@@ -54,7 +54,7 @@
                     <input type="text" class="form-control" placeholder="1.0"
                            ng-change="editor.updateScore()"
                            ng-class="mainProperty.version.length > 0 ? 'competeInput': ''"
-                           ng-model='mainProperty.version' required>
+                           ng-model='mainProperty.version' required title="">
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
@@ -199,25 +199,29 @@
 
                     <select ng-show="!editor.editCustomRights" class="form-control input-sm" ng-model="property.value"
                             ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
-                            ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                            ng-options="item for item in editor.rights" ng-change="editor.updateScore()"
+                            name="rights_dd" required title="">
                     </select>
                 </div>
 
                 <div class="col-sm-3" style="margin-bottom: 15px;" ng-if="property.value == 'Other'">
                     <select class="form-control input-sm" ng-model="property.value"
                         ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
-                        ng-options="item for item in editor.rights" ng-change="editor.updateScore()" name="rights_dd" required>
+                        ng-options="item for item in editor.rights" ng-change="editor.updateScore()"
+                            name="rights_dd" required title="">
                     </select>
                 </div>
                 <div class="col-sm-5" style="margin-bottom: 15px;" ng-if="property.value == 'Other'">
 
                     <input class="form-control input-sm" type="text"  placeholder="license title"
                             ng-model="property.rightsOther" id="doiinputrightsOther1"
-                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                           required title="">
 
                     <input class="form-control input-sm" type="url" placeholder="URL (http://www.mylicense.com)"
                            ng-model="property.rightsOtherURL" id="doiinputrightsOtherUrl" style="margin-top: 10px;"
-                           ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)' required>
+                           ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rights.predicateString)'
+                           required title="">
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
@@ -237,7 +241,8 @@
                             class="form-control input-sm" ng-change="editor.updateScore()" type="text"
                             ng-model="property.value" id="doiinputrightsHolder"
                             ng-class="property.value.length > 0 ? 'competeInput': ''"
-                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rightsHolder.predicateString)' required>
+                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.rightsHolder.predicateString)'
+                            required title="">
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
@@ -264,7 +269,8 @@
                             class="form-control input-sm" ng-change="editor.updateScore()" type="text"
                             ng-model="property.value" id="doiinputauthor"
                             ng-class="property.value.length > 0 ? 'competeInput': ''"
-                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.author.predicateString)' required>
+                            ng-readonly='!(editor.isAdmin || editor.canEdit) || !(editor.propertyTemplate.author.predicateString)'
+                            required title="">
                 </div>
                 <div class="col-sm-1">
                     <div class="input-group-btn">
