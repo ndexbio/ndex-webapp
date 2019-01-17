@@ -12,7 +12,8 @@ ndexApp.controller('networkController',
             
             var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
             var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
-            var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
+            
+            
             var cy;
 
             var currentNetworkSummary;
@@ -942,7 +943,6 @@ ndexApp.controller('networkController',
                 return url;
             };
 
-            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
             var initCyGraphFromCyjsComponents = function (cxNetwork, cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
                 //console.log(cyElements);
@@ -1014,8 +1014,8 @@ ndexApp.controller('networkController',
                         });
                         console.log(e);
                     }
-
-                    cyAnnotationService.drawAnnotationsFromNiceCX(cy, niceCX);
+                    var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
+                    cyAnnotationService.drawAnnotationsFromNiceCX(cy, cxNetwork);
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
                     // edges, the event is triggered for each node/edge.
                     cy.on('select unselect', function () {
@@ -1239,7 +1239,7 @@ ndexApp.controller('networkController',
 
                 var cyLayout = {name: layoutName, animate: false, numIter: 50, coolingFactor: 0.9};
 
-                initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
+                initCyGraphFromCyjsComponents(cxNetwork, cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
             };
 
             function checkIfCanvasIsVisibleAndDrawNetwork() {
