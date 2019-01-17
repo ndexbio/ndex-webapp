@@ -495,61 +495,49 @@
                             <tr ng-if="node.$$expanded && getNodeAttributesNames(node).length > 0" ng-repeat-end="">
                                 <td class="wrappedCell">
                                     <span ng-repeat="attributeName in getNodeAttributesNames(node)">
-                                        <span ng-show="getAttributeValue(attributeName, node[attributeName])">
+                                        <span ng-switch="attributeName">
 
-                                            <span ng-switch="attributeName">
-
-                                                <span ng-switch-when="r">
-                                                      &nbsp;&nbsp;&nbsp;<strong>ID:</strong>
-                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                    <br/>
-                                                </span>
-
-                                                <span ng-switch-when="n">
-                                                      &nbsp;&nbsp;&nbsp;<strong>Name:</strong>
-                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                    <br/>
-                                                </span>
-
-                                                <span ng-switch-when="id">
-                                                      &nbsp;&nbsp;&nbsp;<strong>Node Id:</strong>
-                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                    <br/>
-                                                </span>
-<!--
-                                                <span ng-switch-when="citations">
-                                                    <span ng-repeat="citation in node.citations">
-                                                        &nbsp;&nbsp;
-                                                        <span ng-bind-html='getCitation(citation)'></span>
-                                                        <br />
-                                                    </span>
-                                                </span>
--->
-                                                <span ng-switch-when="ndex:internalLink">
-                                                    <br>
-                                                   <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                </span>
-
-                                                <span ng-switch-when="ndex:externalLink">
-                                                   <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                </span>
-
-                                                <span ng-switch-default>
-                                                   &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
-                                                    <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-
-
-                                                    <span ng-show="howManyAttributes(node[attributeName]) > 5">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
-                                                            more...
-                                                        </a>
-                                                        <br>
-                                                    </span>
-                                                    <br />
-                                                </span>
+                                            <span ng-switch-when="r">
+                                                &nbsp;&nbsp;&nbsp;<strong>ID:</strong>
+                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                <br/>
                                             </span>
 
+                                            <span ng-switch-when="n">
+                                                &nbsp;&nbsp;&nbsp;<strong>Name:</strong>
+                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                <br/>
+                                            </span>
+
+                                            <span ng-switch-when="id">
+                                                &nbsp;&nbsp;&nbsp;<strong>Node Id:</strong>
+                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                                <br/>
+                                            </span>
+
+                                            <span ng-switch-when="ndex:internalLink">
+                                                <br>
+                                                <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                            </span>
+
+                                            <span ng-switch-when="ndex:externalLink">
+                                               <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+                                            </span>
+
+                                            <span ng-switch-default>
+                                                &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
+                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
+
+
+                                                <span ng-show="howManyAttributes(node[attributeName]) > 5">
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
+                                                        more...
+                                                    </a>
+                                                    <br>
+                                                </span>
+                                                <br>
+                                            </span>
                                         </span>
                                     </span>
                                 </td>
@@ -572,23 +560,19 @@
                                 <td class="wrappedCell">
 
                                     <span ng-repeat="attributeName in getEdgeAttributesNames(edge)">
-                                        <span ng-show="getAttributeValue(attributeName, edge[attributeName])">
-
-                                       &nbsp;&nbsp;&nbsp;  <strong>{{attributeName}}:</strong>
-                                            <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
+                                        &nbsp;&nbsp;&nbsp;  <strong>{{attributeName}}:</strong>
+                                        <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
 
 
-                                            <span ng-show="howManyAttributes(edge[attributeName]) > 5">
-                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
-                                                    more...
-                                                </a>
-                                                <br>
-                                            </span>
-                                            <br />
-
-
+                                        <span ng-show="howManyAttributes(edge[attributeName]) > 5">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
+                                                more...
+                                            </a>
+                                            <br>
                                         </span>
+                                        <br />
+
                                     </span>
 
                                 </td>
