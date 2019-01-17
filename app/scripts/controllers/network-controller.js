@@ -943,6 +943,7 @@ ndexApp.controller('networkController',
             };
 
             var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
+            var initCyGraphFromCyjsComponents = function (cxNetwork, cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
                 //console.log(cyElements);
 
