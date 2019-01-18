@@ -31,7 +31,7 @@
     "slick-carousel": "^1.8.1",
     "angular-slick": "^0.2.1",
     "ngtweet": "^1.0.0",
-    "cytoscape-canvas": "https://github.com/dotasek/cytoscape.js-canvas.git#^3.0.2"
+    "cytoscape-canvas": "https://github.com/dotasek/cytoscape.js-canvas.git#^4.0.1"
   },
   "appPath": "app",
   "moduleName": "ndexApp",
