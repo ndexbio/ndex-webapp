@@ -346,7 +346,7 @@ ndexApp.controller('networkController',
             var getStringAttributeValue = function(attribute) {
 
                 if (!attribute) {
-                    return null;
+                    return attribute;
                 }
 
                 var attributeValue =
@@ -1659,12 +1659,14 @@ ndexApp.controller('networkController',
                         for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
                             var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
 
-                            if (edgeAttributteProperty && edgeAttributteProperty.toLowerCase() === 'pmid') {
+                            var edgeAttributtePropertyLowerCased = edgeAttributteProperty.toLowerCase();
+
+                            if (edgeAttributteProperty && edgeAttributtePropertyLowerCased === 'pmid') {
                                 // exclude column PMID from the table
                                 continue;
                             }
 
-                            var isItCitationHeader = (edgeAttributteProperty.toLowerCase().indexOf('citation') > -1);
+                            var isItCitationHeader = (edgeAttributtePropertyLowerCased.trim() === 'citation');
 
                             if (isItCitationHeader) {
 
@@ -1680,7 +1682,7 @@ ndexApp.controller('networkController',
                                         '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'Citations\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
                                         '{{grid.appScope.getNumEdgeNdexCitations(COL_FIELD)}}</a></h6></div>'
                                     };
-                            } else if (edgeAttributteProperty.toLowerCase() === 'ndex:externallink') {
+                            } else if (edgeAttributtePropertyLowerCased === 'ndex:externallink') {
 
                                 columnDef = {
                                     field: edgeAttributteProperty,
@@ -2364,10 +2366,10 @@ ndexApp.controller('networkController',
             $scope.getAttributeValue = function(attributeName, attribute) {
 
                 if (!attribute && (attribute !== 0)) {
-                    return null;
+                    return attribute;
                 }
                 if (!attributeName) {
-                    return null;
+                    return attributeName;
                 }
 
                 var attributeValue = '';
@@ -2579,11 +2581,14 @@ ndexApp.controller('networkController',
                         _.forEach(attributeObj, function (attribute) {
 
                             if (_.isString(attribute)) {
+                                attributeValue = attributeValue + '<br>' + $scope.linkify(attribute);
+                                /*
                                 if (attributeValue) {
                                     attributeValue = attributeValue + '<br>' + $scope.linkify(attribute);
                                 } else {
                                     attributeValue = $scope.linkify(attribute);
                                 }
+                                */
                             }
                         });
                     }
