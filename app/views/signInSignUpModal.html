@@ -115,11 +115,11 @@
 
                         <div class="form-group">
                             <input name="accountName" type="accountName" class="form-control" placeholder="Account Name"
-                                   required  ng-model="signIn.userName">
+                                   required title="" ng-model="signIn.userName">
                         </div>
                         <div class="form-group">
                             <input name="password" type="password" class="form-control" placeholder="Password"
-                                   required ng-model="signIn.password">
+                                   required title="" ng-model="signIn.password">
                         </div>
 
                         <div>
@@ -175,7 +175,7 @@
 
         <form role="form">
             <div class="form-group">
-                <input class="form-control" placeholder="Account Name or Email" required ng-model="forgot.accountName"/>
+                <input class="form-control" placeholder="Account Name or Email" required title="" ng-model="forgot.accountName"/>
             </div>
         </form>
         <div class='text-danger'>
@@ -212,33 +212,33 @@
                 <div class="row">
                     <div class="form-group col-md-6">
                         <input name="firstName" type="text" class="form-control" ng-model="signIn.newUser.firstName"
-                               placeholder="First Name" required>
+                               placeholder="First Name" required title="">
                     </div>
                     <div class="form-group col-md-6">
                         <input name="lastName" type="text" class="form-control" ng-model="signIn.newUser.lastName"
-                               placeholder="Last Name" required>
+                               placeholder="Last Name" required title="">
                     </div>
                 </div>
                 <div class="form-group">
                     <input name="accountName" type="text" class="form-control" ng-model="signIn.newUser.userName"
-                           placeholder="User Name (e.g. dexterpratt)" required>
+                           placeholder="User Name (e.g. dexterpratt)" required title="">
                 </div>
                 <div class="form-group">
                     <input name="email" type="email" class="form-control" ng-model="signIn.newUser.emailAddress"
-                           placeholder="Valid Email Address (required for account verification / password recovery)" required>
+                           placeholder="Valid Email Address (required for account verification / password recovery)" required title="">
                 </div>
                 <div class="form-group">
                     <input name="password" type="password" class="form-control" ng-model="signIn.newUser.password"
-                           placeholder="Password" required>
+                           placeholder="Password" required title="">
                 </div>
                 <div class="form-group">
                     <input name="confirmPassword" type="password" class="form-control"
                            ng-model="signIn.newUser.passwordConfirm"
-                           placeholder="Confirm Password" required>
+                           placeholder="Confirm Password" required title="">
                 </div>
 
                 <div class="rowWithTwoLinesTopPadAnd11EmFont">
-                    <input required ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
+                    <input required title="" ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
                     <label>I have read and accept the
                         <a ng-href="http://home.ndexbio.org/disclaimer-license/" target="_blank">Terms & Conditions</a>
                     </label>
@@ -311,7 +311,7 @@
             <div style="font-size: 1.2em" ng-bind-html="message"></div>
 
             <div class="rowWithTwoLinesTopPadAnd11EmFont text-center">
-                <input required ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
+                <input required title="" ng-model="termsAndConditionsChecked" type="checkbox"> &nbsp;
                 <label>I have read and accept the
                     <a ng-href="http://home.ndexbio.org/disclaimer-license/" target="_blank">Terms & Conditions</a>
                 </label>

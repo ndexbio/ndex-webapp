@@ -45,7 +45,10 @@ ndexApp.controller('manageNetworkAccessController',
 
 
 	$scope.showOriginalCopyNetworkShareURLTitle = function() {
-		$scope.copyNetworkShareURLTitle = 'Copy network share URL to clipboard';
+
+		$scope.copyNetworkShareURLTitle = (networkManager.network.visibility.toUpperCase() === 'PUBLIC') ?
+			'Copy network URL to clipboard' :
+			'Copy Share URL to clipboard';
 	};
 	$scope.showCopiedNetworkShareURLTitle = function() {
 		$scope.copyNetworkShareURLTitle = 'Copied';
