@@ -233,7 +233,10 @@ ndexApp.controller('networkController',
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroundColor = function () {
-                networkController.bgColor = '#8fbdd7';
+                //background color needs to be transparent so that multiple canvases can be used for
+                //annotation rendering.
+                networkController.bgColor = 'rgba(0,0,0,0)';
+                //old default color was '#8fbdd7';
             };
 
             var localNetwork;
@@ -1014,6 +1017,19 @@ ndexApp.controller('networkController',
                         });
                         console.log(e);
                     }
+
+                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
+                    if (cxBGColor) {
+                        var backgroundLayer = cy.cyCanvas({
+                            zIndex: -2
+                        });
+                        var canvas = backgroundLayer.getCanvas();
+                        var ctx = backgroundLayer.getCanvas().getContext("2d");
+                        ctx.fillStyle = cxBGColor;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        //networkController.bgColor = cxBGColor;
+                    }
+
                     var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
                     cyAnnotationService.drawAnnotationsFromNiceCX(cy, cxNetwork);
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
@@ -1193,7 +1209,6 @@ ndexApp.controller('networkController',
 
             };
 
-
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
 
                 $scope.getContextAspectFromNiceCX();
@@ -1205,15 +1220,10 @@ ndexApp.controller('networkController',
                 var cyStyle ;
                 if (noStyle) {
                     cyStyle =  cyService.getDefaultStyle();
-                    resetBackgroundColor();
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
-                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
-                    if (cxBGColor) {
-                        networkController.bgColor = cxBGColor;
-                    }
                 }
-
+                resetBackgroundColor();
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
 
