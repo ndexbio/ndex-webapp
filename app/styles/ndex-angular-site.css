@@ -1131,15 +1131,8 @@ span.glyphicon-refresh {
     width: 162px;
 }
 
-
-/*
- * shadow is generated with the help of
- *      http://css3studio.com/page-css3/css-box-shadow.php
- */
-.login-page-shadow {
-    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+.login-page-background {
+    background: #F8F9F8;
 }
 
 .inputHeight {
@@ -1339,8 +1332,8 @@ div.featuredCollectionDescriptionArea {
     background: #000;
 }
 .ndexFooterProps {
-    padding: 45px;
-    margin-top: 40px;
+    padding: 20px;
+    margin-top: 10px;
 
     width:100%;
     min-width: 1170px;
