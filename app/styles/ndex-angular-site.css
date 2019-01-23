@@ -1145,6 +1145,7 @@ span.glyphicon-refresh {
 
 .login-page-background {
     background: #F8F9F8;
+    border-radius: 10px;
 }
 
 .inputHeight {

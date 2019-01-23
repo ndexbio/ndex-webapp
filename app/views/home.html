@@ -4,7 +4,7 @@
         <div ng-show="main.isSupportedBrowserUsed()">
 
             <div class='row' ng-show="!featuredContentDefined">
-                <div class='login-page-background col-md-12' style="border-radius: 10px; height: 150px" >
+                <div class='login-page-background col-md-12' style="height: 150px" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'search_bar.html'"></div>
 
@@ -13,14 +13,14 @@
 
             <div class='row' ng-show="featuredContentDefined">
                 <div class='login-page-background col-7 col-xs-7 col-sm-7 col-md-7'
-                     style="width: 56%; border-radius: 10px; height: 150px;" >
+                     style="width: 56%; height: 150px;" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'search_bar.html'"></div>
 
                 </div>
 
                 <div class='login-page-background col-5 col-xs-5 col-sm-5 col-md-5 pull-right'
-                     style="width: 43%; padding-left: 2px; padding-right: 2px; height: 150px; border-radius: 10px">
+                     style="width: 43%; padding-left: 2px; padding-right: 2px; height: 150px;">
 
                     <legend class='centerFeaturedCollection' style="border: none; margin-bottom: 7px; padding-top: 5px">Featured Content</legend>
 
@@ -44,7 +44,7 @@
             <div class='row' style="margin-top: 1em">
                 <div class='col-10 col-xs-10 col-sm-10 col-md-10' style="width: 74%;" >
 
-                    <div class='login-page-background row' style="border-radius: 10px; height:556px;">
+                    <div class='login-page-background row' style="height:556px;">
 
                         <div ng-repeat="item in mainContent">
 
@@ -66,14 +66,14 @@
 
                 <!-- Tweets -->
                 <div class='login-page-background col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
-                     style="width: 25%; border-radius: 10px; height: 556px">
+                     style="width: 25%; height: 556px">
 
                     <br>
 
                     <twitter-widget>
                         <a class="twitter-timeline " data-height="520" href="https://twitter.com/NDExProject"
                            data-widget-id="639213859547521024" data-twitter-extracted-i1478884078554431236="true"
-                           data-chrome="noscrollbar nofooter" data-chrome="red">
+                           data-chrome="noscrollbar nofooter">
                         </a>
                     </twitter-widget>
 
