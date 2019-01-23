@@ -219,7 +219,7 @@ ndexApp.controller('networkController',
             $scope.setNetworkSampleViaUUIDTitle     = '';
             $scope.removeFromMyAccountTitle  = '';
 
-            $scope.disabledQueryTooltip      = 'The Advanced Query feature is being improved and will be back soon!';
+            $scope.disabledQueryTooltip      = 'Please type a query term in the box to the left to enable this button.';
 
             $scope.disableQuery = false;
 

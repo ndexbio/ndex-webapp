@@ -900,6 +900,18 @@ ul.ndex-nav-pills > li > a:hover {
     cursor: not-allowed;
 }
 
+.actionsLabelDisabledNoMargin-btn {
+    background-color: #73A4D5;
+    border-color: #73A4D5;
+    cursor: not-allowed;
+}
+
+.actionsLabelDisabledNoMargin-btn:hover, .actionsLabelDisabledNoMargin-btn:focus, .actionsLabelDisabledNoMargin-btn:active {
+    background-color: #73A4D5;
+    border-color: #73A4D5;
+    cursor: not-allowed;
+}
+
 
 .actionsLabelDisabled-default-btn {
     opacity: .65;
@@ -1357,4 +1369,8 @@ div.featuredCollectionDescriptionArea {
 }
 .disabledElementOfDropDownOnNetworkPage {
     line-height: 1.3em !important;
+}
+
+.disabledButtonWithCleanTooltip .tooltip-inner {
+    max-width: 200px;
 }
