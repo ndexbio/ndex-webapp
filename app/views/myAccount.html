@@ -58,7 +58,7 @@
                                <span class="caret"></span>
                            </button>
 
-                            <span title="{{editProfileDropDownBulkButtonTitle}}" ng-show="isEditProfileDropDownButtonDisabled()">
+                            <span tooltip="{{editProfileDropDownBulkButtonTitle}}" ng-show="isEditProfileDropDownButtonDisabled()">
                                 <a class="btn btn-primary customButtonWidth disabled">
                                     {{myAccountController.editProfilesLabel}}
                                     <span class="caret"></span>
@@ -68,7 +68,7 @@
                            <ul class="dropdown-menu" role="menu" aria-labelledby="editNetworksPropertiesButton">
 
                                 <li style="margin: 3px 0" ng-show="!enableEditPropertiesBulkButton" class="disabled">
-                                   <a title="{{changeDescriptionButtonTitle}}">Change Description</a>
+                                   <a tooltip="{{changeDescriptionButtonTitle}}">Change Description</a>
                                </li>
                                <li style="margin: 3px 0" ng-show="enableEditPropertiesBulkButton">
                                    <bulk-change-network-property
@@ -76,14 +76,14 @@
                                            directive-title="Change Description of Selected Networks"
                                            directive-action="description"
                                            directive-description="Change Descriptions of the selected networks to the one below:"
-                                           title="Change Description of the selected networks"
+                                           tooltip="Change Description of the selected networks"
                                            directive-label="Change Description">
                                     </bulk-change-network-property>
                                </li>
 
 
                                <li style="margin: 3px 0" ng-show="!enableEditPropertiesBulkButton" class="disabled">
-                                   <a title="{{changeReferenceButtonTitle}}">Change Reference</a>
+                                   <a tooltip="{{changeReferenceButtonTitle}}">Change Reference</a>
                                </li>
                                <li style="margin: 3px 0" ng-show="enableEditPropertiesBulkButton">
                                    <bulk-change-network-property
@@ -91,13 +91,13 @@
                                            directive-title="Change Reference of Selected Networks"
                                            directive-action="reference"
                                            directive-description="Change Reference of the selected networks to the one below:"
-                                           title="Change Reference of the selected networks"
+                                           tooltip="Change Reference of the selected networks"
                                            directive-label="Change Reference">
                                    </bulk-change-network-property>
 
                                </li>
                                <li style="margin: 3px 0" ng-show="!enableEditPropertiesBulkButton" class="disabled">
-                                   <a title="{{changeVersionButtonTitle}}">Change Version</a>
+                                   <a tooltip="{{changeVersionButtonTitle}}">Change Version</a>
                                </li>
                                <li style="margin: 3px 0" ng-show="enableEditPropertiesBulkButton">
                                    <bulk-change-network-property
@@ -105,7 +105,7 @@
                                            directive-title="Change Version of Selected Networks"
                                            directive-action="version"
                                            directive-description="Change Versions of the selected networks to the one below:"
-                                           title="Change Version of the selected networks"
+                                           tooltip="Change Version of the selected networks"
                                            directive-label="Change Version">
                                    </bulk-change-network-property>
                                </li>
@@ -113,7 +113,7 @@
 
 
                                <li style="margin: 3px 0" ng-show="!enableChangeVisibilityBulkButton" class="disabled">
-                                   <a title="{{changeVisibilityButtonTitle}}">Change Visibility</a>
+                                   <a tooltip="{{changeVisibilityButtonTitle}}">Change Visibility</a>
                                </li>
                                <li style="margin: 3px 0" ng-show="enableChangeVisibilityBulkButton">
                                    <bulk-change-network-system-property
@@ -121,13 +121,13 @@
                                            directive-title="Change Visibility of Selected Networks"
                                            directive-action="visibility"
                                            directive-description="Change Visibility of the selected networks to the one below:"
-                                           title="Change Visibility of the selected networks"
+                                           tooltip="Change Visibility of the selected networks"
                                            directive-label="Change Visibility">
                                    </bulk-change-network-system-property>
                                </li>
 
                                <li style="margin: 3px 0" ng-show="!enableSetReadOnlyBulkButton" class="disabled">
-                                   <a title="{{setReadOnlNetworkButtonTitle}}">Set Read-Only</a>
+                                   <a tooltip="{{setReadOnlNetworkButtonTitle}}">Set Read-Only</a>
                                </li>
 
                                <li style="margin: 3px 0" ng-show="enableSetReadOnlyBulkButton">
@@ -136,7 +136,7 @@
                                            directive-title="Change Read-Only Flag of Selected Networks"
                                            directive-action="readOnly"
                                            directive-description="Change Read-Only flag of the selected networks to the one below:"
-                                           title="Change Read-Only Flag of the selected networks"
+                                           tooltip="Change Read-Only Flag of the selected networks"
                                            directive-label="Set Read-Only">
                                    </bulk-change-network-system-property>
                                </li>
@@ -148,7 +148,7 @@
                         <span>
                            <!-- <a ng-class="enableEditAndExportBulkButtons ? 'btn btn-primary customButtonWidth' :'btn btn-primary customButtonWidth disabled'">-->
                                 <bulk-export-network
-                                        title="{{exportNetworkButtonTitle}}"
+                                        tooltip="{{exportNetworkButtonTitle}}"
                                         ndex-data='myAccountController'
                                         my-class="{{enableExportBulkButton ?
                                             'btn btn-primary customButtonWidth' :
@@ -160,7 +160,7 @@
                         <!-- NB: title directive should be in the span element below; if it is moved to a element,
                              it wil not work for case when button is disabled!!!
                          -->
-                        <span title="{{shareNetworkButtonTitle}}">
+                        <span tooltip="{{shareNetworkButtonTitle}}">
                             <a ng-class="enableShareBulkButton ? 'btn btn-primary customButtonWidth' :
                                     'btn btn-primary customButtonWidth disabled'"
                                ng-click="myAccountController.manageBulkAccess('/access/bulk/network', main.getCurrentUserId())">
@@ -168,7 +168,7 @@
                             </a>
                         </span>
 
-                        <span title="{{addToMySetsButtonTitle}}" ng-show="!enableAddToMySetsBulkButton">
+                        <span tooltip="{{addToMySetsButtonTitle}}" ng-show="!enableAddToMySetsBulkButton">
                             <a class="btn btn-primary customButtonWidth disabled">
                                 Add To My Sets
                             </a>
@@ -182,18 +182,27 @@
                         </spn>
 
 
-                        <span title="{{removeFromMyNetworksButtonTitle}}">
-                            <a ng-class="enableRemoveSharedNetworksBulkButton ? 'btn btn-primary customButtonWidth' :
-                                    'btn btn-primary customButtonWidth disabled'"
-                               ng-click="myAccountController.removeSharedSelectedNetworks()">
-                                {{myAccountController.removeNetworksButtonLabel}}
-                            </a>
-                        </span>
+                        <a ng-show="enableRemoveSharedNetworksBulkButton"
+                           tooltip="{{removeFromMyNetworksButtonTitle}}"
+                            class="btn btn-primary customButtonWidth"
+                            ng-click="myAccountController.removeSharedSelectedNetworks()">
+                            {{myAccountController.removeNetworksButtonLabel}}
+                        </a>
+
+
+                       <div class="disabledButtonWithCleanTooltip" ng-show="!enableRemoveSharedNetworksBulkButton">
+                            <div tooltip="{{removeFromMyNetworksButtonTitle}}"
+                                tooltip-placement="bottom"
+                                class="btn btn-primary customButtonWidth actionsLabelDisabledNoMargin-btn">
+                                 {{myAccountController.removeNetworksButtonLabel}}
+                            </div>
+                        </div>
+
 
                         <!-- NB: title directive should be in the span element below; if it is moved to an element,
                             it wil not work for case when button is disabled!!!
                         -->
-                        <span title="{{deleteNetworkButtonTitle}}">
+                        <span tooltip="{{deleteNetworkButtonTitle}}">
                             <a ng-class="enableDeleteBulkButton ? 'btn btn-primary customButtonWidth' :
                                     'btn btn-primary customButtonWidth disabled'"
                                ng-click="myAccountController.checkAndDeleteSelectedNetworks()">
@@ -324,7 +333,7 @@
 
                     <span class="glyphicon glyphicon-refresh" aria-hidden="true"
                           ng-click="checkAndRefreshMyNetworksTableAndDiskInfo();"
-                          title="Refresh My Networks"
+                          tooltip="Refresh My Networks"
                           ng-disabled="refreshNetworksButtonDisabled"
                           ng-style="refreshNetworksButtonDisabled ? {color: '#3576BE', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">
                     </span>
@@ -429,7 +438,7 @@
 
                     <span class="glyphicon glyphicon-refresh" aria-hidden="true"
                           ng-click="checkAndRefreshMyTaskAndNotification();"
-                          title="Refresh My Tasks & Notifications"
+                          tooltip="Refresh My Tasks & Notifications"
                           ng-disabled="refreshTasksButtonDisabled"
                           ng-style="refreshTasksButtonDisabled ?
                           {color: '#3576BE', cursor:'progress'} : {color: '#3576BE', cursor:'pointer'}">

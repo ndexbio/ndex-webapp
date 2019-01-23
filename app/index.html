@@ -146,127 +146,126 @@
 
 <!-- template for search bar -->
 <script type="text/ng-template" id="search_bar.html">
-    <div class="" style="background-color:white; color:black;">
-        <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-              ng-submit="main.search()">
 
-            <table class="table" >
+    <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
+          ng-submit="main.search()">
 
-                <div class="input-group">
+        <table class="table">
 
-                    <tr>
-                        <!-- #adff2f -->
-                        <td bgcolor="white" width="15%;" style="border:hidden">
+            <div class="input-group">
 
-                            <div class="row">
-                                <button type="button" class="btn btn-primary search-examples-button"
-                                        ng-click="main.browse(); closeModal()">
-                                    Browse
+                <tr style="background: transparent;">
+                    <td width="15%;" style="border:hidden;">
+
+                        <div class="row">
+                            <button type="button" class="btn btn-primary search-examples-button"
+                                    ng-click="main.browse(); closeModal()">
+                                Browse
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="dropdown">
+                                <button type="button"
+                                        ng-class="featuredContentDropDownEnabled?
+                                            'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
+                                        data-toggle="dropdown">
+                                    Featured Networks <span class="caret"></span>
                                 </button>
-                            </div>
 
-                            <div class="row">
-                                <div class="dropdown">
-                                    <button type="button"
-                                            ng-class="featuredContentDropDownEnabled?
-                                                'btn btn-primary dropdown-toggle search-examples-button':'btn btn-primary search-examples-button disabled'"
-                                            data-toggle="dropdown">
-                                        Featured Networks <span class="caret"></span>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="item in featuredContentDropDown">
+                                        <a ng-href="{{item.href}}">{{item.description}}</a>
+                                    </li>
+                                </ul>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="dropdown">
+                                <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
+                                        data-toggle="dropdown">
+                                    Search Examples <span class="caret"></span>
+                                </button>
+
+                                <ul class="dropdown-menu">
+                                    <li class="AlignLeft" style="padding-left: 5px;"
+                                        ng-repeat="item in main.searchNetworksExamples">
+                                        <a ng-click="main.runSearchExample(item); closeModal()">
+                                            {{item.description}}
+                                        </a>
+                                    </li>
+
+                                    <li class="AlignLeft" ng-show="config.searchDocLink">
+                                        <a style="color:#428bca; background-color:white;"
+                                           ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
+                                            <u>{{config.searchDocLink.label}}</u>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+
+                    </td>
+
+                    <!-- #87cefa -->
+                    <td width="85%" style="border:hidden">
+                        <div class='row' style="margin-left: 1em; margin-right: 0">
+                            <div class="input-group">
+
+                                <input type="text"
+                                       class="form-control inputHeight"
+                                       style="font-size:1.3em;"
+                                       placeholder="{{main.getSearchPlaceholder()}}"
+                                       ng-model="main.searchString"
+                                       maxlength="{{maxSearchInputLength}}"
+                                       ng-change="checkLengthOfSearchString()">
+
+                                <span class="input-group-btn">
+                                    <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();"
+                                            ng-class="main.searchString ? 'btn btn-primary inputHeight' : 'btn btn-default inputHeight'">
+                                        <span class="glyphicon glyphicon-search"></span>
                                     </button>
-
-                                    <ul class="dropdown-menu">
-                                        <li ng-repeat="item in featuredContentDropDown">
-                                            <a ng-href="{{item.href}}">{{item.description}}</a>
-                                        </li>
-                                    </ul>
-
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="dropdown">
-                                    <button type="button" class="btn btn-primary dropdown-toggle search-examples-button"
-                                            data-toggle="dropdown">
-                                        Search Examples <span class="caret"></span>
-                                    </button>
-
-                                    <ul class="dropdown-menu">
-                                        <li class="AlignLeft" style="padding-left: 5px;"
-                                            ng-repeat="item in main.searchNetworksExamples">
-                                            <a ng-click="main.runSearchExample(item); closeModal()">
-                                                {{item.description}}
-                                            </a>
-                                        </li>
-
-                                        <li class="AlignLeft" ng-show="config.searchDocLink">
-                                            <a style="color:#428bca; background-color:white;"
-                                               ng-click="redirectToExternalLink(config.searchDocLink); closeModal()">
-                                                <u>{{config.searchDocLink.label}}</u>
-                                            </a>
-                                        </li>
-
-                                    </ul>
-                                </div>
-                            </div>
-
-                        </td>
-
-                        <!-- #87cefa -->
-                        <td bgcolor="white" width="85%" style="border:hidden">
-                            <div class='row' style="margin-left: 1em; margin-right: 0">
-                                <div class="input-group">
-
-                                    <input type="text"
-                                           class="form-control inputHeight"
-                                           style="font-size:1.3em;"
-                                           placeholder="{{main.getSearchPlaceholder()}}"
-                                           ng-model="main.searchString"
-                                           maxlength="{{maxSearchInputLength}}"
-                                           ng-change="checkLengthOfSearchString()">
-
-                                    <span class="input-group-btn">
-                                        <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();"
-                                                ng-class="main.searchString ? 'btn btn-primary inputHeight' : 'btn btn-default inputHeight'">
-                                            <span class="glyphicon glyphicon-search"></span>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class='row' style="margin-left: 1em; margin-top: 1.5em">
-
-                                <div ng-show='stringTooLongWarning' style="color:red; font-size:1.1em; font-weight:bold; margin-bottom: 1em"
-                                     ng-bind-html="stringTooLongWarning">
-                                </div>
-
-                                <input type="checkbox"
-                                       ng-hide="checkSearchTypeAndTermExpansion()"
-                                       ng-model="main.searchTermExpansionSelected">
-
-                                <span ng-style="searchTermExpansionEnabled ?
-                                    {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}">
-                                        <strong>{{main.searchTitle}}</strong>
-                                     &nbsp;
-                                    <i data-toggle="tooltip"
-                                       data-placement="bottom"
-                                       title="{{popupTitleInSearchModal}}"
-                                       onmouseenter="$(this).tooltip('show')"
-                                       class="fa fa-info-circle" style="color: #3576BE; cursor: pointer;"
-                                       ng-if="searchTermExpansionEnabled">
-
-                                    </i>
                                 </span>
-
-
                             </div>
-                        </td>
-                    </tr>
-                </div>
+                        </div>
 
-            </table>
+                        <div class='row' style="margin-left: 1em; margin-top: 1.5em">
 
-        </form>
-    </div>
+                            <div ng-show='stringTooLongWarning' style="color:red; font-size:1.1em; font-weight:bold; margin-bottom: 1em"
+                                 ng-bind-html="stringTooLongWarning">
+                            </div>
+
+                            <input type="checkbox"
+                                   ng-hide="checkSearchTypeAndTermExpansion()"
+                                   ng-model="main.searchTermExpansionSelected">
+
+                            <span ng-style="searchTermExpansionEnabled ?
+                                {'color':'black', 'font-size':'1.1em'} : {'color':'red', 'font-size':'1.1em'}">
+                                    <strong>{{main.searchTitle}}</strong>
+                                 &nbsp;
+                                <i data-toggle="tooltip"
+                                   data-placement="bottom"
+                                   title="{{popupTitleInSearchModal}}"
+                                   onmouseenter="$(this).tooltip('show')"
+                                   class="fa fa-info-circle" style="color: #3576BE; cursor: pointer;"
+                                   ng-if="searchTermExpansionEnabled">
+
+                                </i>
+                            </span>
+
+
+                        </div>
+                    </td>
+                </tr>
+            </div>
+
+        </table>
+
+    </form>
+
 </script>
 
 <!-- Nav Bar -->

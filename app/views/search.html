@@ -27,14 +27,25 @@
 
 <div class="row">
 
-    <div class="col-2 col-xs-2 col-sm-2 col-md-2 col-lg-2 hideLongLine" ng-if="searcher.isLoggedInUser" style="min-width: 165px; margin-bottom: 10px">
+    <div class="col-2 col-xs-2 col-sm-2 col-md-2 col-lg-2" ng-if="searcher.isLoggedInUser" style="margin-bottom: 10px">
         <h5><strong>Bulk Actions:</strong></h5>
-            <show-network-sets-modal
-                    controller-name='searcher'
-                    my-account-controller='searcher'
-                    my-class="{{(searcher.networkTableRowsSelected == 0) ?
-                            'btn btn-primary customButtonWidthOnSearchPage disabled' : 'btn btn-primary customButtonWidthOnSearchPage'}}">
-            </show-network-sets-modal>
+
+
+        <div class="disabledButtonWithCleanTooltip" ng-show="searcher.networkTableRowsSelected == 0">
+            <div style="width: 145px; cursor: not-allowed"
+                 tooltip="{{disabledAddToMySetsTooltip}}"
+                 tooltip-placement="bottom">
+                <span class="btn btn-primary customButtonWidthOnSearchPage actionsLabelDisabledNoMargin-btn">Add To My Sets</span>
+            </div>
+        </div>
+
+        <show-network-sets-modal
+                ng-show="searcher.networkTableRowsSelected > 0"
+                controller-name='searcher'
+                my-account-controller='searcher'
+                my-class="btn btn-primary customButtonWidthOnSearchPage">
+        </show-network-sets-modal>
+
     </div>
 
     <div id="searchResultTableId" class='{{searchViewClass}}'>

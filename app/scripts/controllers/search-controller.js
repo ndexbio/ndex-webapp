@@ -66,6 +66,8 @@ ndexApp.controller('searchController',
 
             var windowsHeightCorrection = 170;
 
+            $scope.disabledAddToMySetsTooltip  = 'Select one or more networks to enable this button.';
+
 
             //var tableOptions = {};
             //tableOptions.user = searchController.loggedInUserId ? searchController.loggedInUserId : 'anonymous';
@@ -78,7 +80,7 @@ ndexApp.controller('searchController',
 */
 
             $scope.searchViewClass = searchController.loggedInUserId ?
-                'col-12 col-xs-12 col-sm-12 col-md-12 col-lg-10' :
+                'col-10 col-xs-10 col-sm-10 col-md-10 col-lg-10' :
                 'col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12';
 
             // this function gets called when user navigates away from the current page.

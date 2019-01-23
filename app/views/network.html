@@ -143,19 +143,13 @@
                     </div>
 
                     &nbsp;
-                    <button class="btn btn-default btn-primary"
-                            ng-show="!networkController.hasMultipleSubNetworks() && !disableQuery"
-                            ng-disabled="!queryNetworkForm.queryTermsInput.$valid"
+                    <!-- If Run Query button is enabled, we show no tooltip.  If it is disabled, tooltip explains why. -->
+                    <button ng-class="queryNetworkForm.queryTermsInput.$valid && !disableQuery && !networkController.hasMultipleSubNetworks()?
+                                'btn btn-primary' : 'actionsLabelDisabledNoMargin-btn btn btn-primary'"
                             ng-click="networkController.checkQueryNetworkAndDisplay('neighborhood')"
+                            tooltip="{{queryNetworkForm.queryTermsInput.$valid? '' : disabledQueryTooltip}}"
                             style="margin-bottom:0">Run Query
                     </button>
-
-                    <a class="actionsLabelDisabled-btn btn btn-primary"
-                       ng-show="networkController.hasMultipleSubNetworks() || disableQuery"
-                       tooltip="{{disabledQueryTooltip}}">
-                        Run Query
-                    </a>
-
                     &nbsp;
                 </form>
 

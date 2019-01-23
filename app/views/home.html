@@ -4,7 +4,7 @@
         <div ng-show="main.isSupportedBrowserUsed()">
 
             <div class='row' ng-show="!featuredContentDefined">
-                <div class='login-page-shadow col-md-12' style="border: 1px solid #3576BE; border-radius: 20px; height: 150px" >
+                <div class='login-page-background col-md-12' style="height: 150px" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'search_bar.html'"></div>
 
@@ -12,15 +12,15 @@
             </div>
 
             <div class='row' ng-show="featuredContentDefined">
-                <div class='login-page-shadow col-7 col-xs-7 col-sm-7 col-md-7'
-                     style="width: 56%; border: 1px solid #3576BE; border-radius: 20px; height: 150px;" >
+                <div class='login-page-background col-7 col-xs-7 col-sm-7 col-md-7'
+                     style="width: 56%; height: 150px;" >
 
                     <div class='AlignLeft' style="width: 100%; margin: auto; padding-top: 8px" ng-include="'search_bar.html'"></div>
 
                 </div>
 
-                <div class='login-page-shadow col-5 col-xs-5 col-sm-5 col-md-5 pull-right'
-                     style="width: 43%; border: 1px solid #3576BE; border-radius: 20px; padding-left: 2px; padding-right: 2px; height: 150px;">
+                <div class='login-page-background col-5 col-xs-5 col-sm-5 col-md-5 pull-right'
+                     style="width: 43%; padding-left: 2px; padding-right: 2px; height: 150px;">
 
                     <legend class='centerFeaturedCollection' style="border: none; margin-bottom: 7px; padding-top: 5px">Featured Content</legend>
 
@@ -29,7 +29,7 @@
                     <!-- https://www.jquery-az.com/boots/demo.php?ex=8.0_3 -->
 
                     <div uib-carousel active="active" interval="carouselInterval" nowrap="noWrapSlides">
-                        <div uib-slide ng-repeat="slide in slides track by slide.id" index="slide.id" style='height: 100px;'>
+                        <div uib-slide ng-repeat="slide in slides track by slide.id" index="slide.id" style='height: 100px;' class="login-page-background">
                             <a ng-href="{{slide.link}}" ng-click="saveSlideId(slide.id)">
                                 <img ng-src="{{slide.image}}" class="slideImage">
                                 <div ng-bind-html="slide.text" class='featuredCollectionDescriptionArea'></div>
@@ -44,7 +44,7 @@
             <div class='row' style="margin-top: 1em">
                 <div class='col-10 col-xs-10 col-sm-10 col-md-10' style="width: 74%;" >
 
-                    <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:556px;">
+                    <div class='login-page-background row' style="height:556px;">
 
                         <div ng-repeat="item in mainContent">
 
@@ -65,13 +65,13 @@
                 </div>
 
                 <!-- Tweets -->
-                <div class='login-page-shadow col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
-                     style="width: 25%; border: 1px solid #3576BE; border-radius: 20px; height: 556px">
+                <div class='login-page-background col-2 col-xs-2 col-sm-2 col-md-2 pull-right'
+                     style="width: 25%; height: 556px">
 
                     <br>
 
                     <twitter-widget>
-                        <a class="twitter-timeline" data-height="520" href="https://twitter.com/NDExProject"
+                        <a class="twitter-timeline " data-height="520" href="https://twitter.com/NDExProject"
                            data-widget-id="639213859547521024" data-twitter-extracted-i1478884078554431236="true"
                            data-chrome="noscrollbar nofooter">
                         </a>
@@ -82,7 +82,7 @@
 
             <div class='row' style="margin-top: 0.5em"  ng-show="logosDefined()">
                 <div class="col-12 col-xs-12 col-sm-12 col-md-12">
-                    <div class='login-page-shadow row' style="border: 1px solid #3576BE; border-radius: 20px; height:110px; margin-top:1em">
+                    <div class='row' style="border-radius: 10px; height:110px; margin-top:1em">
                         <div id='logoContainer'>
                             <slick ng-if="logosLoaded" init-onload="true"
                                    data="logosLoaded"
