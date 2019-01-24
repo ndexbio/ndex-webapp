@@ -51,15 +51,16 @@
 
                            <button id="editNetworksPropertiesButton" type="button" data-toggle="dropdown"
                                    ng-show="!isEditProfileDropDownButtonDisabled()"
-                                   tooltip="Change description, reference, version, visibility, read-only flag of the selected network(s)"
+                                   tooltip="{{editProfileDropDownBulkButtonTitle}}"
                                    tooltip-placement="bottom"
                                    class="btn btn-primary dropdown-toggle customButtonWidth">
                                {{myAccountController.editProfilesLabel}}
                                <span class="caret"></span>
                            </button>
 
-                            <span tooltip="{{editProfileDropDownBulkButtonTitle}}" ng-show="isEditProfileDropDownButtonDisabled()">
-                                <a class="btn btn-primary customButtonWidth disabled">
+                            <span tooltip="{{editProfileDropDownBulkButtonTitle}}" tooltip-placement="bottom"
+                                  ng-show="isEditProfileDropDownButtonDisabled()">
+                                <a class="btn btn-primary customButtonWidth actionsLabelDisabled-btn">
                                     {{myAccountController.editProfilesLabel}}
                                     <span class="caret"></span>
                                 </a>
@@ -144,71 +145,70 @@
 
                         </div>
 
+                        <div class="buttonWithCleanTooltip" ng-show="enableExportBulkButton"
+                                tooltip="{{exportNetworkButtonTitle}}" tooltip-placement="bottom">
+                            <bulk-export-network
+                                ndex-data='myAccountController'
+                                my-class="btn btn-primary customButtonWidth">
+                            </bulk-export-network>
+                        </div>
+                        <div class="buttonWithCleanTooltip" ng-show="!enableExportBulkButton">
+                            <div tooltip="{{exportNetworkButtonTitle}}"
+                                 tooltip-placement="bottom"
+                                 class="btn btn-primary customButtonWidth actionsLabelDisabled-btn">
+                                 {{myAccountController.exportNetworksLabel}}
+                            </div>
+                        </div>
 
-                        <span>
-                           <!-- <a ng-class="enableEditAndExportBulkButtons ? 'btn btn-primary customButtonWidth' :'btn btn-primary customButtonWidth disabled'">-->
-                                <bulk-export-network
-                                        tooltip="{{exportNetworkButtonTitle}}"
-                                        ndex-data='myAccountController'
-                                        my-class="{{enableExportBulkButton ?
-                                            'btn btn-primary customButtonWidth' :
-                                            'btn btn-primary customButtonWidth disabled'}}">
-                                </bulk-export-network>
-                        </span>
+                        <div class="buttonWithCleanTooltip">
+                            <div tooltip="{{shareNetworkButtonTitle}}"
+                                 tooltip-placement="bottom"
+                                 ng-class="enableShareBulkButton?
+                                        'btn btn-primary customButtonWidth' :
+                                        'btn btn-primary customButtonWidth actionsLabelDisabled-btn'"
+                                 ng-click="enableShareBulkButton ?
+                                        myAccountController.manageBulkAccess('/access/bulk/network', main.getCurrentUserId()) : angular.noop()">
+                                 Share
+                            </div>
+                        </div>
 
-
-                        <!-- NB: title directive should be in the span element below; if it is moved to a element,
-                             it wil not work for case when button is disabled!!!
-                         -->
-                        <span tooltip="{{shareNetworkButtonTitle}}">
-                            <a ng-class="enableShareBulkButton ? 'btn btn-primary customButtonWidth' :
-                                    'btn btn-primary customButtonWidth disabled'"
-                               ng-click="myAccountController.manageBulkAccess('/access/bulk/network', main.getCurrentUserId())">
-                                Share
-                            </a>
-                        </span>
-
-                        <span tooltip="{{addToMySetsButtonTitle}}" ng-show="!enableAddToMySetsBulkButton">
-                            <a class="btn btn-primary customButtonWidth disabled">
+                        <div tooltip="{{addToMySetsButtonTitle}}" tooltip-placement="bottom" ng-show="!enableAddToMySetsBulkButton">
+                            <a class="btn btn-primary customButtonWidth actionsLabelDisabled-btn">
                                 Add To My Sets
                             </a>
-                        </span>
-                        <spn ng-show="enableAddToMySetsBulkButton">
+                        </div>
+                        <div ng-show="enableAddToMySetsBulkButton" tooltip="{{addToMySetsButtonTitle}}" tooltip-placement="bottom">
                             <show-network-sets-modal
-                                    controller-name='myAccountController'
-                                    my-account-controller='myAccountController'
-                                    my-class="btn btn-primary customButtonWidth">
+                                controller-name='myAccountController'
+                                my-account-controller='myAccountController'
+                                my-class="btn btn-primary customButtonWidth">
                             </show-network-sets-modal>
-                        </spn>
+                        </div>
 
-
-                        <a ng-show="enableRemoveSharedNetworksBulkButton"
-                           tooltip="{{removeFromMyNetworksButtonTitle}}"
-                            class="btn btn-primary customButtonWidth"
-                            ng-click="myAccountController.removeSharedSelectedNetworks()">
-                            {{myAccountController.removeNetworksButtonLabel}}
-                        </a>
-
-
-                       <div class="disabledButtonWithCleanTooltip" ng-show="!enableRemoveSharedNetworksBulkButton">
+                        <div class="buttonWithCleanTooltip">
                             <div tooltip="{{removeFromMyNetworksButtonTitle}}"
-                                tooltip-placement="bottom"
-                                class="btn btn-primary customButtonWidth actionsLabelDisabledNoMargin-btn">
+                                 tooltip-placement="bottom"
+                                 ng-class="enableRemoveSharedNetworksBulkButton?
+                                        'btn btn-primary customButtonWidth' :
+                                        'btn btn-primary customButtonWidth actionsLabelDisabled-btn'"
+                                 ng-click="enableRemoveSharedNetworksBulkButton ?
+                                        myAccountController.removeSharedSelectedNetworks() : angular.noop()">
                                  {{myAccountController.removeNetworksButtonLabel}}
                             </div>
                         </div>
 
+                        <div class="buttonWithCleanTooltip">
+                            <div tooltip="{{deleteNetworkButtonTitle}}"
+                                 tooltip-placement="bottom"
+                                 ng-class="enableDeleteBulkButton?
+                                        'btn btn-primary customButtonWidth' :
+                                        'btn btn-primary customButtonWidth actionsLabelDisabled-btn'"
+                                 ng-click="enableDeleteBulkButton ?
+                                        myAccountController.checkAndDeleteSelectedNetworks() : angular.noop()">
+                                 {{myAccountController.deleteNetworksLabel}}
+                            </div>
+                        </div>
 
-                        <!-- NB: title directive should be in the span element below; if it is moved to an element,
-                            it wil not work for case when button is disabled!!!
-                        -->
-                        <span tooltip="{{deleteNetworkButtonTitle}}">
-                            <a ng-class="enableDeleteBulkButton ? 'btn btn-primary customButtonWidth' :
-                                    'btn btn-primary customButtonWidth disabled'"
-                               ng-click="myAccountController.checkAndDeleteSelectedNetworks()">
-                                {{myAccountController.deleteNetworksLabel}}
-                            </a>
-                        </span>
                     </span>
 
                     <hr>
@@ -263,7 +263,7 @@
                 <div class="btn-group btn-group-vertical buttonWithMarginBottom">
                     <h5><strong>Actions:</strong></h5>
 
-                    <span>
+                    <div>
                        <div class="btn-group dropdown">
                            <button id="editAccountButton" type="button" data-toggle="dropdown"
                                    tooltip="Update personal info, change password, delete account"
@@ -286,20 +286,23 @@
                                </li>
                            </ul>
                        </div>
-                    </span>
+                    </div>
 
 
-                    <trigger-create-group-modal></trigger-create-group-modal>
+                    <div>
+                        <trigger-create-group-modal></trigger-create-group-modal>
+                    </div>
 
-                    <trigger-create-network-set-modal
-                            my-account-controller='myAccountController'
-                            signal-new-set-creation='false'>
-                    </trigger-create-network-set-modal>
+                    <div>
+                        <trigger-create-network-set-modal
+                                my-account-controller='myAccountController'
+                                signal-new-set-creation='false'>
+                        </trigger-create-network-set-modal>
+                    </div>
 
-
-                    <span>
+                    <div>
                         <a class="btn btn-primary customButtonWidth" ng-href="#upload">Upload Networks</a>
-                    </span>
+                    </div>
 
                 </div>
 
