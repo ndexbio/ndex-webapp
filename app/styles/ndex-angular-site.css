@@ -1143,8 +1143,9 @@ span.glyphicon-refresh {
     width: 162px;
 }
 
-.login-page-background {
-    background: #F8F9F8;
+.login-page-border {
+    /*background: #F8F9F8;*/
+    border: 1px solid #3576BE;
     border-radius: 10px;
 }
 
