@@ -1373,6 +1373,6 @@ div.featuredCollectionDescriptionArea {
     line-height: 1.3em !important;
 }
 
-.disabledButtonWithCleanTooltip .tooltip-inner {
+.buttonWithCleanTooltip .tooltip-inner {
     max-width: 200px;
 }
