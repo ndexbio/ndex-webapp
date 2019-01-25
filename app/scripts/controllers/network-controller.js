@@ -12,7 +12,8 @@ ndexApp.controller('networkController',
             
             var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
             var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
-
+            
+            
             var cy;
 
             var currentNetworkSummary;
@@ -235,7 +236,10 @@ ndexApp.controller('networkController',
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroundColor = function () {
-                networkController.bgColor = '#8fbdd7';
+                //background color needs to be transparent so that multiple canvases can be used for
+                //annotation rendering.
+                networkController.bgColor = 'rgba(0,0,0,0)';
+                //old default color was '#8fbdd7';
             };
 
             var localNetwork;
@@ -346,7 +350,7 @@ ndexApp.controller('networkController',
             var getStringAttributeValue = function(attribute) {
 
                 if (!attribute) {
-                    return null;
+                    return attribute;
                 }
 
                 var attributeValue =
@@ -945,7 +949,7 @@ ndexApp.controller('networkController',
                 return url;
             };
 
-            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
+            var initCyGraphFromCyjsComponents = function (cxNetwork, cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
                 //console.log(cyElements);
 
@@ -1017,7 +1021,20 @@ ndexApp.controller('networkController',
                         console.log(e);
                     }
 
+                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
+                    if (cxBGColor) {
+                        var backgroundLayer = cy.cyCanvas({
+                            zIndex: -2
+                        });
+                        var canvas = backgroundLayer.getCanvas();
+                        var ctx = backgroundLayer.getCanvas().getContext("2d");
+                        ctx.fillStyle = cxBGColor;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        //networkController.bgColor = cxBGColor;
+                    }
 
+                    var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
+                    cyAnnotationService.drawAnnotationsFromNiceCX(cy, cxNetwork);
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
                     // edges, the event is triggered for each node/edge.
                     cy.on('select unselect', function () {
@@ -1195,7 +1212,6 @@ ndexApp.controller('networkController',
 
             };
 
-
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
 
                 $scope.getContextAspectFromNiceCX();
@@ -1207,15 +1223,10 @@ ndexApp.controller('networkController',
                 var cyStyle ;
                 if (noStyle) {
                     cyStyle =  cyService.getDefaultStyle();
-                    resetBackgroundColor();
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
-                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
-                    if (cxBGColor) {
-                        networkController.bgColor = cxBGColor;
-                    }
                 }
-
+                resetBackgroundColor();
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
 
@@ -1241,7 +1252,7 @@ ndexApp.controller('networkController',
 
                 var cyLayout = {name: layoutName, animate: false, numIter: 50, coolingFactor: 0.9};
 
-                initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
+                initCyGraphFromCyjsComponents(cxNetwork, cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
             };
 
             function checkIfCanvasIsVisibleAndDrawNetwork() {
@@ -1659,12 +1670,14 @@ ndexApp.controller('networkController',
                         for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
                             var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
 
-                            if (edgeAttributteProperty && edgeAttributteProperty.toLowerCase() === 'pmid') {
+                            var edgeAttributtePropertyLowerCased = edgeAttributteProperty.toLowerCase();
+
+                            if (edgeAttributteProperty && edgeAttributtePropertyLowerCased === 'pmid') {
                                 // exclude column PMID from the table
                                 continue;
                             }
 
-                            var isItCitationHeader = (edgeAttributteProperty.toLowerCase().indexOf('citation') > -1);
+                            var isItCitationHeader = (edgeAttributtePropertyLowerCased.trim() === 'citation');
 
                             if (isItCitationHeader) {
 
@@ -1680,7 +1693,7 @@ ndexApp.controller('networkController',
                                         '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'Citations\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
                                         '{{grid.appScope.getNumEdgeNdexCitations(COL_FIELD)}}</a></h6></div>'
                                     };
-                            } else if (edgeAttributteProperty.toLowerCase() === 'ndex:externallink') {
+                            } else if (edgeAttributtePropertyLowerCased === 'ndex:externallink') {
 
                                 columnDef = {
                                     field: edgeAttributteProperty,
@@ -2364,10 +2377,10 @@ ndexApp.controller('networkController',
             $scope.getAttributeValue = function(attributeName, attribute) {
 
                 if (!attribute && (attribute !== 0)) {
-                    return null;
+                    return attribute;
                 }
                 if (!attributeName) {
-                    return null;
+                    return attributeName;
                 }
 
                 var attributeValue = '';
@@ -2579,11 +2592,14 @@ ndexApp.controller('networkController',
                         _.forEach(attributeObj, function (attribute) {
 
                             if (_.isString(attribute)) {
+                                attributeValue = attributeValue + '<br>' + $scope.linkify(attribute);
+                                /*
                                 if (attributeValue) {
                                     attributeValue = attributeValue + '<br>' + $scope.linkify(attribute);
                                 } else {
                                     attributeValue = $scope.linkify(attribute);
                                 }
+                                */
                             }
                         });
                     }

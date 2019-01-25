@@ -13,6 +13,7 @@
     "cytoscape": "3.3.0",
     "cytoscape-qtip": "2.7.1",
     "cytoscape-cx2js": "0.5.0",
+    "cyannotation-cx2js": "0.4.2",
     "lodash": "4.11.2",
     "angular-file-upload": "2.3.4",
     "font-awesome": "4.7.0",
@@ -29,7 +30,8 @@
     "angular-google-analytics": "1.1.9",
     "slick-carousel": "^1.8.1",
     "angular-slick": "^0.2.1",
-    "ngtweet": "^1.0.0"
+    "ngtweet": "^1.0.0",
+    "cytoscape-canvas": "https://github.com/dotasek/cytoscape.js-canvas.git#^4.0.1"
   },
   "appPath": "app",
   "moduleName": "ndexApp",
