@@ -1376,3 +1376,7 @@ div.featuredCollectionDescriptionArea {
 .disabledButtonWithCleanTooltip .tooltip-inner {
     max-width: 200px;
 }
+
+.buttonWithTopAndBottomRightCornersRound {
+    border-radius: 0 24px 24px 0 !important;
+}

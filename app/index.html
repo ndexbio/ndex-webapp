@@ -147,8 +147,7 @@
 <!-- template for search bar -->
 <script type="text/ng-template" id="search_bar.html">
 
-    <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)"
-          ng-submit="main.search()">
+    <form ng-show="!main.serverIsDown && (!config.requireAuthentication||main.loggedIn)">
 
         <table class="table">
 
@@ -224,8 +223,15 @@
                                        ng-change="checkLengthOfSearchString()">
 
                                 <span class="input-group-btn">
-                                    <button ng-disabled="!main.searchString" type="submit" ng-click="closeModal();"
-                                            ng-class="main.searchString ? 'btn btn-primary inputHeight' : 'btn btn-default inputHeight'">
+                                    <button ng-show="main.searchString"
+                                            class="buttonWithTopAndBottomRightCornersRound btn btn-primary inputHeight"
+                                            ng-click="closeModal(); main.search()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                    <button ng-show="!main.searchString"
+                                            class="buttonWithTopAndBottomRightCornersRound actionsLabelDisabledNoMargin-btn btn btn-primary inputHeight"
+                                            tooltip="{{disabledSearchTooltip}}"
+                                            tooltip-placement="bottom">
                                         <span class="glyphicon glyphicon-search"></span>
                                     </button>
                                 </span>

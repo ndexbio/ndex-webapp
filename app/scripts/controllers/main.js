@@ -33,6 +33,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.footerHtml = window.ndexSettings.landingPageConfigServer + '/footer.html';
         //$scope.footerHtml = 'v2/footer.html';
 
+        $scope.disabledSearchTooltip = 'Please type a query term in the box to the left to enable this button.';
+
         /*
         function hideTooltip() {
             setTimeout(function() {
