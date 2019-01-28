@@ -126,7 +126,6 @@ ndexApp.controller('myAccountController',
 
             myAccountController.showNetworkTable = false;
 
-            $scope.editProfileDropDownBulkButtonTitle = '';
             $scope.enableEditPropertiesBulkButton = false;
             $scope.changeDescriptionButtonTitle   = '';
             $scope.changeReferenceButtonTitle     = '';
@@ -3678,6 +3677,11 @@ ndexApp.controller('myAccountController',
                         'No editing options are available for the selected network';
                 } else {
                     $scope.editProfileDropDownBulkButtonTitle = '';
+                    /*
+                    $scope.editProfileDropDownBulkButtonTitle = (myAccountController.networkTableRowsSelected > 1) ?
+                        "Change description, reference, version, visibility, read-only flag of the selected networks" :
+                        "Change description, reference, version, visibility, read-only flag of the selected network";
+                        */
                 }
 
                 return isDisabled;
