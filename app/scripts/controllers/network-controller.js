@@ -12,7 +12,66 @@ ndexApp.controller('networkController',
             
             var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
             var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
-
+            
+            const defaultStyle = [  {
+                "selector": "node",
+                "css": {
+                  "border-color": "rgb(204,204,204)",
+                  "border-opacity": 1,
+                  "border-width": 0,
+                  "background-color": "rgb(137,208,245)",
+                  "height": 35,
+                  "color": "rgb(0,0,0)",
+                  "font-family": "Arial,Helvetica Neue,Helvetica,sans-serif",
+                  "font-size": 12,
+                  "text-valign": "center",
+                  "text-halign": "center",
+                  "text-opacity": 1,
+                  "text-wrap": "wrap",
+                  "text-max-width": "200.0",
+                  "shape": "roundrectangle",
+                  "width": 75,
+                  "background-opacity": 1
+                }
+              },
+              {
+                "selector": "node[name]",
+                "css": {
+                  "content": "data(name)"
+                }
+              },
+              {
+                "selector": "edge",
+                "css": {
+                  "curve-style": "bezier",
+                  "color": "rgb(0,0,0)",
+                  "font-family": "Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif",
+                  "font-size": 10,
+                  "text-opacity": 1,
+                  "line-style": "solid",
+                  "source-arrow-shape": "none",
+                  "source-arrow-color": "rgb(0,0,0)",
+                  "line-color": "rgb(132,132,132)",
+                  "target-arrow-shape": "none",
+                  "target-arrow-color": "rgb(0,0,0)",
+                  "opacity": 1,
+                  "width": 2
+                }
+              }, {
+                "selector": "node:selected",
+                "css": {
+                  "background-color": "rgb(255,255,0)"
+                }
+              },
+              {
+                "selector": "edge:selected",
+                "css": {
+                  "source-arrow-color": "rgb(255,255,0)",
+                  "line-color": "rgb(255,0,0)",
+                  "target-arrow-color": "rgb(255,255,0)"
+                }
+              }];
+            
             var cy;
 
             var currentNetworkSummary;
@@ -235,7 +294,10 @@ ndexApp.controller('networkController',
             //networkController.prettyStyle = "no style yet";
             //networkController.prettyVisualProperties = "nothing yet";
             var resetBackgroundColor = function () {
-                networkController.bgColor = '#8fbdd7';
+                //background color needs to be transparent so that multiple canvases can be used for
+                //annotation rendering.
+                networkController.bgColor = 'rgba(0,0,0,0)';
+                //old default color was '#8fbdd7';
             };
 
             var localNetwork;
@@ -945,9 +1007,9 @@ ndexApp.controller('networkController',
                 return url;
             };
 
-            var initCyGraphFromCyjsComponents = function (cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
+            var initCyGraphFromCyjsComponents = function (cxNetwork, cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
-                //console.log(cyElements);
+                //console.log(cyStyle);
 
                 $(function () { // on dom ready
 
@@ -970,36 +1032,7 @@ ndexApp.controller('networkController',
                         });
                     }
                     catch (e) {
-                        var defaultStyle = [{
-                            'selector': 'node',
-                            'style': {
-                                'background-color': '#f6eecb',
-                                'background-opacity': 0.8,
-                                'width': '40px',
-                                'height': '40px',
-                                'label': 'data(name)',
-                                'font-family': 'Roboto, sans-serif'
-                            }
-                        }, {
-                            'selector': 'edge',
-                            'style': {
-                                'line-color': '#75736c',
-                                'width': '2px',
-                                'font-family': 'Roboto, sans-serif',
-                                'text-opacity': 0.8
-                            }
-                        }, {
-                            'selector': 'node:selected',
-                            'style': {'color': '#fb1605', 'background-color': 'yellow'}
-                        }, {
-                            'selector': 'edge:selected',
-                            'style': {
-                                'label': 'data(interaction)',
-                                'color': '#fb1605',
-                                'line-color': 'yellow',
-                                'width': 6
-                            }
-                        }];
+                        
                         cy = cytoscape({
                             container: cv,
 
@@ -1017,7 +1050,20 @@ ndexApp.controller('networkController',
                         console.log(e);
                     }
 
+                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
+                    if (cxBGColor) {
+                        var backgroundLayer = cy.cyCanvas({
+                            zIndex: -2
+                        });
+                        var canvas = backgroundLayer.getCanvas();
+                        var ctx = backgroundLayer.getCanvas().getContext("2d");
+                        ctx.fillStyle = cxBGColor;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        //networkController.bgColor = cxBGColor;
+                    }
 
+                    var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
+                    cyAnnotationService.drawAnnotationsFromNiceCX(cy, cxNetwork);
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
                     // edges, the event is triggered for each node/edge.
                     cy.on('select unselect', function () {
@@ -1195,7 +1241,6 @@ ndexApp.controller('networkController',
 
             };
 
-
             var drawCXNetworkOnCanvas = function (cxNetwork, noStyle) {
 
                 $scope.getContextAspectFromNiceCX();
@@ -1204,18 +1249,14 @@ ndexApp.controller('networkController',
 
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
 
-                var cyStyle ;
-                if (noStyle) {
-                    cyStyle =  cyService.getDefaultStyle();
-                    resetBackgroundColor();
+                var cyStyle;
+
+                if (noStyle || !cxNetwork['cyVisualProperties']) {
+                    cyStyle =  defaultStyle;
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
-                    var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
-                    if (cxBGColor) {
-                        networkController.bgColor = cxBGColor;
-                    }
                 }
-
+                resetBackgroundColor();
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
 
@@ -1241,7 +1282,7 @@ ndexApp.controller('networkController',
 
                 var cyLayout = {name: layoutName, animate: false, numIter: 50, coolingFactor: 0.9};
 
-                initCyGraphFromCyjsComponents(cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
+                initCyGraphFromCyjsComponents(cxNetwork, cyElements, cyLayout, cyStyle, 'cytoscape-canvas', attributeNameMap);
             };
 
             function checkIfCanvasIsVisibleAndDrawNetwork() {
