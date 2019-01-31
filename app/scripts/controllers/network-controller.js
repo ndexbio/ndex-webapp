@@ -13,6 +13,64 @@ ndexApp.controller('networkController',
             var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
             var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
             
+            const defaultStyle = [  {
+                "selector": "node",
+                "css": {
+                  "border-color": "rgb(204,204,204)",
+                  "border-opacity": 1,
+                  "border-width": 0,
+                  "background-color": "rgb(137,208,245)",
+                  "height": 35,
+                  "color": "rgb(0,0,0)",
+                  "font-family": "Arial,Helvetica Neue,Helvetica,sans-serif",
+                  "font-size": 12,
+                  "text-valign": "center",
+                  "text-halign": "center",
+                  "text-opacity": 1,
+                  "text-wrap": "wrap",
+                  "text-max-width": "200.0",
+                  "shape": "roundrectangle",
+                  "width": 75,
+                  "background-opacity": 1
+                }
+              },
+              {
+                "selector": "node[name]",
+                "css": {
+                  "content": "data(name)"
+                }
+              },
+              {
+                "selector": "edge",
+                "css": {
+                  "curve-style": "bezier",
+                  "color": "rgb(0,0,0)",
+                  "font-family": "Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif",
+                  "font-size": 10,
+                  "text-opacity": 1,
+                  "line-style": "solid",
+                  "source-arrow-shape": "none",
+                  "source-arrow-color": "rgb(0,0,0)",
+                  "line-color": "rgb(132,132,132)",
+                  "target-arrow-shape": "none",
+                  "target-arrow-color": "rgb(0,0,0)",
+                  "opacity": 1,
+                  "width": 2
+                }
+              }, {
+                "selector": "node:selected",
+                "css": {
+                  "background-color": "rgb(255,255,0)"
+                }
+              },
+              {
+                "selector": "edge:selected",
+                "css": {
+                  "source-arrow-color": "rgb(255,255,0)",
+                  "line-color": "rgb(255,0,0)",
+                  "target-arrow-color": "rgb(255,255,0)"
+                }
+              }];
             
             var cy;
 
@@ -951,7 +1009,7 @@ ndexApp.controller('networkController',
 
             var initCyGraphFromCyjsComponents = function (cxNetwork, cyElements, cyLayout, cyStyle, canvasName, attributeNameMap) {
 
-                //console.log(cyElements);
+                //console.log(cyStyle);
 
                 $(function () { // on dom ready
 
@@ -974,64 +1032,7 @@ ndexApp.controller('networkController',
                         });
                     }
                     catch (e) {
-                        var defaultStyle = [  {
-                            "selector": "node",
-                            "css": {
-                              "border-color": "rgb(204,204,204)",
-                              "border-opacity": 1,
-                              "border-width": 0,
-                              "background-color": "rgb(137,208,245)",
-                              "height": 35,
-                              "color": "rgb(0,0,0)",
-                              "font-family": "Arial,Helvetica Neue,Helvetica,sans-serif",
-                              "font-size": 12,
-                              "text-valign": "center",
-                              "text-halign": "center",
-                              "text-opacity": 1,
-                              "text-wrap": "wrap",
-                              "text-max-width": "200.0",
-                              "shape": "roundrectangle",
-                              "width": 75,
-                              "background-opacity": 1
-                            }
-                          },
-                          {
-                            "selector": "node[name]",
-                            "css": {
-                              "content": "data(name)"
-                            }
-                          },
-                          {
-                            "selector": "edge",
-                            "css": {
-                              "curve-style": "bezier",
-                              "color": "rgb(0,0,0)",
-                              "font-family": "Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif",
-                              "font-size": 10,
-                              "text-opacity": 1,
-                              "line-style": "solid",
-                              "source-arrow-shape": "none",
-                              "source-arrow-color": "rgb(0,0,0)",
-                              "line-color": "rgb(132,132,132)",
-                              "target-arrow-shape": "none",
-                              "target-arrow-color": "rgb(0,0,0)",
-                              "opacity": 1,
-                              "width": 2
-                            }
-                          }, {
-                            "selector": "node:selected",
-                            "css": {
-                              "background-color": "rgb(255,255,0)"
-                            }
-                          },
-                          {
-                            "selector": "edge:selected",
-                            "css": {
-                              "source-arrow-color": "rgb(255,255,0)",
-                              "line-color": "rgb(255,0,0)",
-                              "target-arrow-color": "rgb(255,255,0)"
-                            }
-                          }];
+                        
                         cy = cytoscape({
                             container: cv,
 
@@ -1248,9 +1249,10 @@ ndexApp.controller('networkController',
 
                 var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
 
-                var cyStyle ;
-                if (noStyle) {
-                    cyStyle =  cyService.getDefaultStyle();
+                var cyStyle;
+
+                if (noStyle || !cxNetwork['cyVisualProperties']) {
+                    cyStyle =  defaultStyle;
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
                 }
