@@ -1380,3 +1380,10 @@ div.featuredCollectionDescriptionArea {
 .buttonWithTopAndBottomRightCornersRound {
     border-radius: 0 24px 24px 0 !important;
 }
+.enabledEditNetworkLight {
+    color: #3476BE;
+}
+.disabledEditNetworkLight, .disabledEditNetworkLight:hover, .disabledEditNetworkLight:focus, .disabledEditNetworkLight:active {
+    color: #8F9497; /*#6192CB;*/
+    cursor: not-allowed;
+}

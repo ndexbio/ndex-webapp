@@ -197,7 +197,17 @@
                     <div class="networkPropertyValueInTabsetMargins">
 
                         <div class="networkViewHeader rowWithOneLineBottomPad" id="networkViewHeaderId">
-                            {{networkController.currentNetwork.name}}  <br/>
+                            {{networkController.currentNetwork.name}}
+                           <span class="fa-stack" ng-show='networkController.isLoggedInUser && !networkController.successfullyQueried'
+                                 uib-tooltip="{{changeNameTooltip}}" tooltip-placement="bottom">
+                               &nbsp;
+                               <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
+                                   aria-hidden="true"
+                                    ng-click="isNetworkEditable()? editNetworkSummaryProperty('name') : angular.noop()">
+                                </a>
+
+                            </span>
+                            <br/>
                         </div>
 
                         <div ng-if="networkController.currentNetwork.doi">
@@ -397,10 +407,18 @@
                                 This network is part of a Cytoscape collection and cannot be operated on or edited in NDEx<br/>
                             </span>
 
-                            <div class='wrapLongLine rowWithOneLineTopPad'
-                                 ng-show="networkController.currentNetwork.description"
-                                 style="margin-right: 1px;">
-                                <span class="networkPropertyName">Description: </span>
+                            <div class='wrapLongLine rowWithOneLineTopPad' style="margin-right: 1px;">
+                                <div class="networkPropertyName">Description &nbsp;
+                                    <span class="networkViewHeader" ng-show='networkController.isLoggedInUser'>
+                                        <span class="fa-stack"
+                                              uib-tooltip="{{changeDescriptionTooltip}}" tooltip-placement="bottom">
+                                            <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
+                                               aria-hidden="true"
+                                               ng-click="isNetworkEditable()? editNetworkSummaryProperty('description') : angular.noop();">
+                                            </a>
+                                        </span>
+                                    </span>
+                                </div>
                                 <span ng-bind-html="networkController.currentNetwork.description"></span>
                             </div>
 
@@ -417,16 +435,34 @@
                             </span>
 
 
-                            <div class='wrapLongLine rowWithOneLineTopPad'
-                                 ng-show="networkController.currentNetwork.reference"
-                                 style="margin-right: 1px;">
-                                <div class="networkPropertyName">Reference: </div>
+                            <div class='wrapLongLine rowWithOneLineTopPad' style="margin-right: 1px;">
+                                <span class="networkPropertyName">Reference &nbsp;
+                                    <span class="networkViewHeader" ng-show='networkController.isLoggedInUser'>
+                                        <span class="fa-stack"
+                                              uib-tooltip="{{changeReferenceTooltip}}" tooltip-placement="bottom">
+                                            <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
+                                               aria-hidden="true"
+                                               ng-click="isNetworkEditable()? editNetworkSummaryProperty('reference') : angular.noop();">
+                                            </a>
+                                        </span>
+                                    </span>
+                                </span>
                                 <div ng-bind-html="networkController.currentNetwork.reference"></div>
                             </div>
 
-                            <div class='rowWithOneLineTopPad' ng-show='networkController.currentNetwork.version'>
+                            <div class='wrapLongLine rowWithOneLineTopPad' style="margin-right: 1px;">
                                 <span class="networkPropertyName">Version: </span>
                                 {{networkController.currentNetwork.version}}
+                                <span class="networkViewHeader">
+                                    <span class="fa-stack" ng-show='networkController.isLoggedInUser'
+                                          uib-tooltip="{{changeVersionTooltip}}" tooltip-placement="bottom">
+                                        &nbsp;
+                                        <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
+                                           aria-hidden="true"
+                                           ng-click="isNetworkEditable()? editNetworkSummaryProperty('version') : angular.noop()">
+                                        </a>
+                                    </span>
+                                </span>
                             </div>
 
                             <div class='rowWithOneLineTopPad' ng-if="networkController.otherProperties.length > 0">
@@ -893,16 +929,14 @@
             <span ng-show='networkController.isLoggedInUser'>
                 <span ng-if="(networkController.currentNetwork.doi == null) || isNetworkCertified()">
                     <a class="actionsLabel btn btn-primary"
-                       ng-if="(networkController.isAdmin || networkController.canEdit) && !networkController.readOnlyChecked
-                                    && !networkController.hasMultipleSubNetworks()"
+                       ng-if="isNetworkEditable()"
                        tooltip="{{editPropertiesButtonTitle}}"
                        ng-href="{{'#/properties/network/'+networkController.currentNetwork.externalId+'/'+networkController.subNetworkId}}">
                         Edit
 
                     </a>
                     <a class="actionsLabelDisabled-btn btn btn-primary"
-                       ng-if="!(networkController.isAdmin || networkController.canEdit) ||
-                       networkController.hasMultipleSubNetworks() || networkController.readOnlyChecked"
+                       ng-if="!isNetworkEditable()"
                        tooltip="{{editPropertiesButtonTitle}}">
                         Edit
                     </a>

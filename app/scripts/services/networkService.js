@@ -1139,19 +1139,19 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
 
 
         factory.setNetworkProperty = function (currentNetworkSummary, propertyName, propertyValue, propertyValueType ) {
+            var property = _.find( currentNetworkSummary.properties, {'predicateString':propertyName});
 
-            var propObject = { "predicateString": propertyName, "value": propertyValue,
-                "dataType": (typeof propertyValueType !== 'undefined ') ? propertyValueType : 'string'  };
-
-            var networkProperties = currentNetworkSummary.properties;
-
-            for( var i = 0; i < networkProperties.length; i++ ) {
-
-                if ((networkProperties[i].predicateString.toLowerCase() === propertyName.toLowerCase())) {
-                    networkProperties[i] = propObject;
-                    return;
-                }
-                networkProperties.push(propObject);
+            if (property) {
+                // if property is found - replace the value
+                property.value = propertyValue;
+            } else {
+                // property not found - add it
+                var propObject = {
+                    'predicateString': propertyName,
+                    'value': propertyValue,
+                    'dataType': (typeof propertyValueType !== 'undefined ') ? propertyValueType : 'string'
+                };
+                currentNetworkSummary.properties.push(propObject);
             }
         }
         

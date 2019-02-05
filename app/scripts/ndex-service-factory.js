@@ -1151,8 +1151,8 @@ ndexServiceApp.factory('ndexService',
             };
 
             factory.setNetworkSummaryV2 = function(networkId, summaryProperties, successHandler, errorHandler) {
-                // Server API: Set Network Properties
-                // PUT /network/{networkId}/properties
+                // Server API: Update Network Profile and properties
+                // PUT /network/{networkId}/summary
 
                 var url = '/network/' + networkId + '/summary';
                 var config = ndexConfigs.getPutConfigV2(url, summaryProperties);

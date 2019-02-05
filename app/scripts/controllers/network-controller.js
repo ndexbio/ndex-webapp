@@ -111,6 +111,165 @@ ndexApp.controller('networkController',
             $scope.enableSetSampleViaUUID    = false;
             $scope.enableRemoveFromMyAccount = false;
 
+            $scope.changeNameTooltip        = 'Edit network name';
+            $scope.changeDescriptionTooltip = 'Edit description';
+            $scope.changeReferenceTooltip   = 'Edit reference';
+            $scope.changeVersionTooltip     = 'Edit version';
+
+
+            $scope.editNetworkSummaryProperty = function(property) {
+
+                $modal.open({
+                    templateUrl: 'views/changeNetworkSummaryProperty.html',
+
+                    controller: function($scope, $uibModalInstance) {
+
+                        $scope.maxInputLength = 250;
+
+                        //$scope.newValue = '';
+                        //$scope.previousValue = '';
+
+                        $scope.property = property;
+
+                        if ('name' === property) {
+                            $scope.title = 'Edit Network Name';
+                            $scope.label = 'Name: ';
+
+                            $scope.newValue      = networkController.currentNetwork.name;
+                            $scope.previousValue = networkController.currentNetwork.name;
+                        }
+                        else if ('version' === property) {
+                            $scope.title = 'Edit Network Version';
+                            $scope.label = 'Version: ';
+
+                            $scope.maxInputLength = 100;
+
+                            $scope.newValue      = networkController.currentNetwork.version;
+                            $scope.previousValue = networkController.currentNetwork.version;
+
+                        } else if ('description' === property) {
+                            $scope.title = 'Edit Network Description';
+                            $scope.label = 'Description: ';
+
+                            $scope.descrOrReference = {
+                                'newValue': networkController.currentNetwork.description,
+                                'previousValue': networkController.currentNetwork.description
+                            };
+
+                        } else if ('reference' === property) {
+                            $scope.title = 'Edit Network Reference';
+                            $scope.label = 'Reference: ';
+
+                            $scope.descrOrReference = {
+                                'newValue': networkController.currentNetwork.reference,
+                                'previousValue': networkController.currentNetwork.reference
+                            };
+
+                        }
+                        $scope.cancel = function () {
+                            $uibModalInstance.dismiss();
+                        };
+
+                        $scope.descriptionOrReference = function() {
+                            return (property === 'description' || property ==='reference');
+                        }
+
+
+
+                        $scope.checkLengthOfInputString = function() {
+                            var strLength = $scope.newValue.length;
+
+                            if (strLength >= $scope.maxInputLength) {
+                                $scope.errors = 'The maximum length for this field is ' + $scope.maxInputLength + ' characters';
+                            } else {
+                                if ($scope.errors) {
+                                    delete $scope.errors;
+                                }
+                            }
+                        };
+
+                        $scope.submit = function () {
+                            $scope.progress = 'Changing network ' + property + ' ...';
+
+                            if ($scope.descriptionOrReference()) {
+                                $scope.newValue      = $scope.descrOrReference.newValue;
+                                $scope.previousValue = $scope.descrOrReference.previousValue;
+                            }
+
+                            if ($scope.newValue === $scope.previousValue) {
+                                $scope.progress = 'Same ' + property + ' as previous ... nothing to change ';
+                                setTimeout($scope.cancel, 500);
+                                return;
+                            }
+
+                            var networkSummaryProperties = {
+                                'properties': networkController.currentNetwork.properties,
+                                'name': networkController.currentNetwork.name,
+                                'description': networkController.currentNetwork.description,
+                                'version': networkController.currentNetwork.version,
+                                'visibility': networkController.currentNetwork.visibility
+                            };
+
+                            if ('reference' === property) {
+                                networkService.setNetworkProperty(networkController.currentNetwork, 'reference', $scope.newValue, 'string');
+                            }
+                            else {
+                                networkSummaryProperties[property] = $scope.newValue;
+                            }
+
+                            if ('reference' === property) {
+                                ndexService.setNetworkPropertiesV2(networkController.currentNetwork.externalId,
+                                    networkController.currentNetwork.properties,
+                                    function () {
+
+                                        $scope.progress = 'Done. ';
+                                        networkController.currentNetwork.reference = $scope.newValue;
+                                        $scope.cancel();
+                                    },
+                                    function (error) {
+
+                                        delete $scope.progress;
+                                        if (error && error.message) {
+                                            $scope.errors = error.message;
+                                        } else {
+                                            $scope.errors = 'Server returned HTTP error response code : ' +
+                                                error.status + '. Error message : ' + error.statusText + '.';
+                                        }
+                                    });
+                            } else {
+                                ndexService.setNetworkSummaryV2(networkController.currentNetwork.externalId, networkSummaryProperties,
+                                    function () {
+
+                                        $scope.progress = 'Done. ';
+
+                                        if ('name' === property) {
+                                            networkController.currentNetwork.name = $scope.newValue ? $scope.newValue : 'Untitled';
+
+                                        } else if ('version' === property) {
+                                            networkController.currentNetwork.version = $scope.newValue;
+
+                                        } else if ('description' === property) {
+                                            networkController.currentNetwork.description = $scope.newValue;
+                                        }
+
+                                        $scope.cancel();
+                                    },
+                                    function (error) {
+
+                                        delete $scope.progress;
+                                        if (error && error.message) {
+                                            $scope.errors = error.message;
+                                        } else {
+                                            $scope.errors = 'Server returned HTTP error response code : ' +
+                                                error.status + '. Error message : ' + error.statusText + '.';
+                                        }
+                                    });
+                            }
+                        };
+                    }
+                });
+            }
+
 
             $scope.showOriginalCopyNetworkShareURLTitle = function() {
                 $scope.copyNetworkShareURLTitle =
@@ -3937,20 +4096,37 @@ ndexApp.controller('networkController',
             var setEditPropertiesTitle = function() {
                 // !networkController.isAdmin || networkController.hasMultipleSubNetworks()
                 if (networkController.hasMultipleSubNetworks()) {
+                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
+                    $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'This network is a Cytoscape collection and cannot be edited in NDEx';
                 } else if (!networkController.isNetworkOwner) {
+                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
+                    $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'Unable to edit this network: you do not have privilege to modify it';
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
+                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
+                    $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'This network is certified and cannot be modified further';
                 } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
+                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
+                    $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'Unable to edit this network: DOI is pending';
                 } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
                     $scope.editPropertiesButtonTitle = 'This network has been assigned a DOI and cannot be modified further. ';
                     $scope.editPropertiesButtonTitle += 'If you need to update this network please clone it.';
+
+                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip = $scope.changeReferenceTooltip =
+                        $scope.changeVersionTooltip = $scope.editPropertiesButtonTitle;
                 }  else if (networkController.readOnlyChecked) {
+                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
+                    $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'Unable to edit this network: it is read-only';
                 } else {
-                    $scope.editPropertiesButtonTitle = 'Modify network properties';  // default value - Edit button is enabled
+                    $scope.editPropertiesButtonTitle = 'Modify network properties';
+                    $scope.changeNameTooltip        = 'Edit network name';
+                    $scope.changeDescriptionTooltip = 'Edit description';
+                    $scope.changeReferenceTooltip   = 'Edit reference';
+                    $scope.changeVersionTooltip     = 'Edit version';// default value - Edit button is enabled
                 }
             };
 
@@ -4846,6 +5022,12 @@ ndexApp.controller('networkController',
                 // TODO: Handle error
                 console.log('Unexpected route.');
             }
+
+            $scope.isNetworkEditable = function() {
+                return (networkController.isAdmin || networkController.canEdit) &&
+                    !networkController.readOnlyChecked &&
+                    !networkController.hasMultipleSubNetworks();
+            };
         }
      ]
 );
