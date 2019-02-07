@@ -117,6 +117,21 @@ ndexApp.controller('networkController',
             $scope.changeVersionTooltip     = 'Edit version';
 
 
+            $scope.checkNameDescriptionVersion = function() {
+                var retvalue =  (
+                    networkController.currentNetwork.name && networkController.currentNetwork.name.length > 0 &&
+                    networkController.currentNetwork.name.trim() !== 'Untitled' &&
+                    networkController.currentNetwork.description && networkController.currentNetwork.description.length > 0 &&
+                    networkController.currentNetwork.version && networkController.currentNetwork.version.length > 0);
+                return retvalue;
+            };
+
+            networkController.setChangeVisibilityTooltip = function() {
+                $scope.changeVisibilityTooltip = $scope.checkNameDescriptionVersion() ?
+                    'Edit visibility' :
+                    'Changing network Visibility requires Name, Description and Version to be filled in';
+            };
+
             $scope.editNetworkSummaryProperty = function(property) {
 
                 $modal.open({
@@ -172,8 +187,7 @@ ndexApp.controller('networkController',
 
                         $scope.descriptionOrReference = function() {
                             return (property === 'description' || property ==='reference');
-                        }
-
+                        };
 
 
                         $scope.checkLengthOfInputString = function() {
@@ -253,6 +267,7 @@ ndexApp.controller('networkController',
                                         }
 
                                         $scope.cancel();
+                                        networkController.setChangeVisibilityTooltip();
                                     },
                                     function (error) {
 
@@ -268,12 +283,12 @@ ndexApp.controller('networkController',
                         };
                     }
                 });
-            }
+            };
 
 
             $scope.showOriginalCopyNetworkShareURLTitle = function() {
                 $scope.copyNetworkShareURLTitle =
-                    (networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC') ?
+                    (networkController.currentNetwork.visibility.toUpperCase() === 'PUBLIC') ?
                     'Copy network URL to clipboard' :
                     'Copy Share URL to clipboard';
             };
@@ -4096,37 +4111,44 @@ ndexApp.controller('networkController',
             var setEditPropertiesTitle = function() {
                 // !networkController.isAdmin || networkController.hasMultipleSubNetworks()
                 if (networkController.hasMultipleSubNetworks()) {
-                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
-                    $scope.changeReferenceTooltip =
+                    $scope.changeNameTooltip = $scope.changeVisibilityTooltip = $scope.changeDescriptionTooltip  =
+                    $scope.changeVersionTooltip = $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'This network is a Cytoscape collection and cannot be edited in NDEx';
+
                 } else if (!networkController.isNetworkOwner) {
-                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
-                    $scope.changeReferenceTooltip =
+                    $scope.changeNameTooltip = $scope.changeVisibilityTooltip = $scope.changeDescriptionTooltip  =
+                    $scope.changeVersionTooltip = $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'Unable to edit this network: you do not have privilege to modify it';
+
                 } else if (uiMisc.isNetworkCertified(networkController.currentNetwork)) {
-                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
-                    $scope.changeReferenceTooltip =
+                    $scope.changeNameTooltip = $scope.changeVisibilityTooltip = $scope.changeDescriptionTooltip  =
+                    $scope.changeVersionTooltip = $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'This network is certified and cannot be modified further';
+
                 } else if (uiMisc.isDOIPending(networkController.currentNetwork)) {
-                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
-                    $scope.changeReferenceTooltip =
+                    $scope.changeNameTooltip = $scope.changeVisibilityTooltip = $scope.changeDescriptionTooltip  =
+                    $scope.changeVersionTooltip = $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'Unable to edit this network: DOI is pending';
+
                 } else if (uiMisc.isDOIAssigned(networkController.currentNetwork)) {
                     $scope.editPropertiesButtonTitle = 'This network has been assigned a DOI and cannot be modified further. ';
                     $scope.editPropertiesButtonTitle += 'If you need to update this network please clone it.';
 
-                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip = $scope.changeReferenceTooltip =
-                        $scope.changeVersionTooltip = $scope.editPropertiesButtonTitle;
+                    $scope.changeNameTooltip = $scope.changeVisibilityTooltip = $scope.changeDescriptionTooltip =
+                    $scope.changeReferenceTooltip = $scope.changeVersionTooltip = $scope.editPropertiesButtonTitle;
+
                 }  else if (networkController.readOnlyChecked) {
-                    $scope.changeNameTooltip = $scope.changeDescriptionTooltip  = $scope.changeVersionTooltip =
-                    $scope.changeReferenceTooltip =
+                    $scope.changeNameTooltip = $scope.changeVisibilityTooltip = $scope.changeDescriptionTooltip  =
+                        $scope.changeVersionTooltip = $scope.changeReferenceTooltip =
                     $scope.editPropertiesButtonTitle = 'Unable to edit this network: it is read-only';
+
                 } else {
                     $scope.editPropertiesButtonTitle = 'Modify network properties';
                     $scope.changeNameTooltip        = 'Edit network name';
                     $scope.changeDescriptionTooltip = 'Edit description';
                     $scope.changeReferenceTooltip   = 'Edit reference';
-                    $scope.changeVersionTooltip     = 'Edit version';// default value - Edit button is enabled
+                    $scope.changeVersionTooltip     = 'Edit version';
+                    networkController.setChangeVisibilityTooltip();
                 }
             };
 
@@ -4234,6 +4256,7 @@ ndexApp.controller('networkController',
                             if (network && network.visibility) {
                                 networkController.visibility = network.visibility.toLowerCase();
                             }
+                            networkController.setChangeVisibilityTooltip();
 
                             if (!network.name) {
                                 networkController.currentNetwork.name = 'Untitled';
@@ -4465,6 +4488,209 @@ ndexApp.controller('networkController',
                         displayErrorMessage(error);
                     }
                 );
+            };
+
+            $scope.editVisibility = function()
+            {
+                $modal.open({
+                    templateUrl: 'views/changeVisibility.html',
+
+                    controller: function($scope, $uibModalInstance) {
+
+                        $scope.title = 'Edit Network Visibility';
+
+                        $scope.network = {
+                            'showcased':        networkController.currentNetwork.isShowcase,
+                            'fullIndexed':      false,
+                            'visibilityIndex': 'PRIVATE_NOT_INDEXED'
+                        };
+
+                        var network = $scope.network;
+
+                        $scope.mainProperty = {
+                            'visibility': networkController.currentNetwork.visibility,
+                            'indexLevel': 'NONE',
+                        }
+
+                        $scope.mainProperty.indexLevel =
+                            (networkController.currentNetwork.indexLevel) ?
+                            networkController.currentNetwork.indexLevel.toUpperCase() : 'NONE';
+
+                        $scope.originalIndexLevel = $scope.mainProperty.indexLevel;
+                        $scope.originalVisibility = $scope.mainProperty.visibility;
+                        network.fullIndexed       =  ($scope.originalIndexLevel === 'ALL');
+
+                        $scope.originalShowCased  = networkController.currentNetwork.isShowcase;
+
+                        $scope.fullIndexToolTip =
+                            'Marking this checkbox will force the indexing of "name", "represent" and "alias"' +
+                            ' for each node of the network. This feature increases the network file' +
+                            ' size/complexity and should be used sparingly.';
+
+
+                        if($scope.mainProperty.visibility === 'PRIVATE') {
+
+                            if($scope.mainProperty.indexLevel === 'NONE'){
+                                network.visibilityIndex = 'PRIVATE_NOT_INDEXED';
+                                $scope.mainProperty.visibility = 'PRIVATE_NOT_INDEXED';
+                            } else {
+                                network.visibilityIndex = 'PRIVATE';
+                                $scope.mainProperty.visibility = 'PRIVATE';
+                            }
+
+                        } else {
+                            if($scope.mainProperty.indexLevel === 'NONE'){
+                                network.visibilityIndex = 'PUBLIC_NOT_INDEXED';
+                                $scope.mainProperty.visibility = 'PUBLIC_NOT_INDEXED';
+                            } else {
+                                network.visibilityIndex = 'PUBLIC';
+                                $scope.mainProperty.visibility = 'PUBLIC';
+                            }
+                        }
+
+
+                        $scope.setToolTips = function(){
+                            var myToolTips = $('[data-toggle="tooltip"]');
+
+                            myToolTips.tooltip();
+                        };
+
+
+                        $scope.showFullIndexAdvisory = function() {
+                            if (network.fullIndexed) {
+                                network.fullIndexed = !network.fullIndexed;
+                                return;
+                            }
+
+                            var title = 'Full Index Advisory';
+                            var message =
+                                ' Full Index is resource-expensive feature and should only be used for high quality, ' +
+                                ' published networks made available to the scientific community... Although we ' +
+                                ' understand that this feature might also be useful for PRIVATE networks, ' +
+                                ' we ask you to be considerate and use it sparingly. ' +
+                                ' <br><br>' +
+                                '<strong>Would you like to activate the Full Index feature?</strong>';
+
+                            var dismissModal = true;
+
+                            ndexNavigation.openConfirmationModal(title, message, 'Proceed', 'Cancel', dismissModal,
+                                function () {
+                                    network.fullIndexed = !network.fullIndexed;
+                                },
+                                function () {
+                                    // user canceled - do nothing
+                                });
+                        };
+
+
+                        $scope.$watch('network.visibilityIndex', function() {
+                            if(network.visibilityIndex === 'PUBLIC'){
+
+                                $scope.mainProperty.visibility = 'PUBLIC';
+                                $scope.mainProperty.indexLevel = network.fullIndexed ? 'ALL' : 'META';
+
+                            } else if(network.visibilityIndex === 'PUBLIC_NOT_INDEXED'){
+
+                                $scope.mainProperty.visibility = 'PUBLIC_NOT_INDEXED';
+                                $scope.mainProperty.indexLevel = 'NONE';
+
+                            } else if(network.visibilityIndex === 'PRIVATE'){
+
+                                $scope.mainProperty.visibility = 'PRIVATE';
+                                $scope.mainProperty.indexLevel = network.fullIndexed ? 'ALL' : 'META';
+
+                            } else if(network.visibilityIndex === 'PRIVATE_NOT_INDEXED'){
+
+                                $scope.mainProperty.visibility = 'PRIVATE_NOT_INDEXED';
+                                $scope.mainProperty.indexLevel = 'NONE';
+                            }
+                        });
+
+                        $scope.$watch('network.fullIndexed', function() {
+                            if(network.fullIndexed){
+                                $scope.mainProperty.indexLevel = 'ALL';
+
+                            } else {
+
+                                if(network.visibilityIndex === 'PUBLIC'){
+
+                                    $scope.mainProperty.visibility = 'PUBLIC';
+                                    $scope.mainProperty.indexLevel = 'META';
+
+                                } else if(network.visibilityIndex === 'PUBLIC_NOT_INDEXED') {
+
+                                    $scope.mainProperty.visibility = 'PUBLIC_NOT_INDEXED';
+                                    $scope.mainProperty.indexLevel = 'NONE';
+
+                                } else if(network.visibilityIndex === 'PRIVATE'){
+
+                                    $scope.mainProperty.visibility = 'PRIVATE';
+                                    $scope.mainProperty.indexLevel = 'META';
+
+                                } else if(network.visibilityIndex === 'PRIVATE_NOT_INDEXED'){
+
+                                    $scope.mainProperty.visibility = 'PRIVATE_NOT_INDEXED';
+                                    $scope.mainProperty.indexLevel = 'NONE';
+                                }
+                            }
+                        });
+
+
+                        $scope.cancel = function () {
+                            $uibModalInstance.dismiss();
+                        };
+
+
+                        $scope.submit = function () {
+                            $scope.progress = 'Changing visibility ...';
+
+                            // server only accepts PUBLIC or PRIVATE for visibility, so adjust it accordingly
+                            if ($scope.mainProperty.visibility === 'PUBLIC_NOT_INDEXED') {
+                                $scope.mainProperty.visibility = 'PUBLIC';
+                            } else if ($scope.mainProperty.visibility === 'PRIVATE_NOT_INDEXED') {
+                                $scope.mainProperty.visibility = 'PRIVATE';
+                            }
+
+                            var systemProperties = {};
+
+                            if ($scope.originalIndexLevel !== $scope.mainProperty.indexLevel) {
+                                systemProperties.index_level = $scope.mainProperty.indexLevel;
+                            }
+                            if ($scope.originalVisibility !== $scope.mainProperty.visibility) {
+                                systemProperties.visibility = $scope.mainProperty.visibility;
+                            }
+                            if (network.showcased !== $scope.originalShowCased) {
+                                systemProperties.showcase = network.showcased;
+                            }
+
+                            if (!_.isEmpty(systemProperties)) {
+
+                                ndexService.setMultiplelNetworkSystemPropertiesV2(networkController.currentNetwork.externalId, systemProperties,
+                                    function() {
+                                        if ('index_level' in systemProperties) {
+                                            networkController.currentNetwork.indexLevel = $scope.mainProperty.indexLevel;
+                                        }
+                                        if ('visibility' in systemProperties) {
+                                            networkController.currentNetwork.visibility = $scope.mainProperty.visibility;
+                                        }
+                                        if ('showcase' in systemProperties) {
+                                            networkController.currentNetwork.isShowcase = network.showcased;
+                                        }
+                                        $scope.cancel();
+                                    },
+                                    function (error) {
+                                        delete $scope.progress;
+                                        $scope.errors = error.message;
+                                    }
+                                );
+
+                            } else {
+
+                                $scope.cancel();
+                            }
+                        };
+                    }
+                });
             };
 
             $scope.readOnlyChanged = function()
@@ -4717,7 +4943,7 @@ ndexApp.controller('networkController',
                     });
             };
 
-            /*
+/*
             var setUserSetSampleProperty = function() {
                 // sets userSetSample network property on the server
                 // if it is not already set
@@ -4852,7 +5078,7 @@ ndexApp.controller('networkController',
                             function(error) {
                                 ndexSpinner.stopSpinner();
                                 title = 'Unable to delete DOI';
-                                message  = 'DOI was not deleted for network ' + networkName + '.';
+                                message  = 'DOI was not deleted for network ' + networkController.currentNetwork.name + '.';
 
                                 if (error.message) {
                                     message = message + '<br><br>' + error.message;

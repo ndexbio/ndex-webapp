@@ -1,0 +1,93 @@
+<div class="modal-content">
+    <form name="changeVisibility" class='form-horizontal' role="form">
+        <div class="modal-header">
+            <h4 class="modal-title">{{title}}</h4>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-md-3 control-label">Visibility:</label>
+                <div class="col-md-7">
+
+                    <div class="form-group">
+                        <select class="form-control" ng-model="network.visibilityIndex">
+                            <option value='PUBLIC'
+                                    ng-selected='network.visibilityIndex === "PUBLIC"'>Public
+                            </option>
+                            <option value='PUBLIC_NOT_INDEXED'
+                                    ng-selected='network.visibilityIndex === "PUBLIC_NOT_INDEXED"'>Public (not searchable)
+                            </option>
+                            <option value='PRIVATE'
+                                    ng-selected='network.visibilityIndex === "PRIVATE"'>Private
+                            </option>
+                            <option value='PRIVATE_NOT_INDEXED'
+                                    ng-selected='network.visibilityIndex === "PRIVATE_NOT_INDEXED"'>Private (not searchable)
+                            </option>
+                        </select>
+
+
+                        <div class="rowWithOneLineTopPad" ng-show="(mainProperty.visibility === 'PUBLIC' || mainProperty.visibility === 'PUBLIC_NOT_INDEXED')">
+
+                            <a ng-click="network.showcased = !network.showcased" style="text-decoration: none; color: #656565;">
+
+                                <span class="fa-stack" ng-show="!network.showcased">
+                                    <i class="fa fa-square-o fa-stack-2x"></i>
+                                </span>
+
+                                <span class="fa-stack" ng-show="network.showcased">
+                                    <i class="fa fa-square-o fa-stack-2x"></i>
+                                    <i class="fa fa-check fa-stack-1x"></i>
+                                </span>
+
+                                <span style="font-size: 15px;">&nbsp;Showcase</span>
+                            </a>
+                        </div>
+
+                        <div ng-show="(mainProperty.visibility === 'PUBLIC' || mainProperty.visibility === 'PRIVATE')"
+                             ng-class="(mainProperty.visibility === 'PUBLIC') ? 'rowWithOneHalfLineTopPad' : 'rowWithOneLineTopPad'">
+
+                            <a ng-click="showFullIndexAdvisory();" style="text-decoration: none; color: #656565;">
+
+                                <span class="fa-stack" >
+                                    <i class="fa fa-square-o fa-stack-2x"></i>
+                                    <i ng-show="network.fullIndexed" class="fa fa-check fa-stack-1x"></i>
+                                </span>
+
+                                <span style="font-size: 15px;">&nbsp;Full Index</span>
+
+                                &nbsp;&nbsp;
+
+                                <span tooltip="{{fullIndexToolTip}}"  tooltip-placement="bottom"
+                                      style="cursor: pointer; color: #428bca;">
+                                    <i class="fa fa-info-circle"></i>
+                                </span>
+                            </a>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div ng-show="progress" class="rowWithTwoLinesBottomPad">
+                <span style="color: green; font-size: 1.2em; font-weight: bold" ng-bind-html="progress"></span>
+            </div>
+
+            <div ng-show="errors" class='text-danger rowWithOneLineBottomPad'>
+                <span style="font-size: 1.2em; font-weight: bold" ng-bind-html="errors"></span>
+            </div>
+        </div>
+
+        <div class="modal-footer" style="margin-top: -1em">
+            <button class="btn btn-default" ng-click="cancel()" ng-show="errors">Close</button>
+
+            <button class="btn btn-default" ng-click="cancel()" ng-show="!errors">Cancel</button>
+
+            <button class="btn btn-primary"
+                    ng-click="submit()"
+                    ng-show="!errors">
+                Change
+            </button>
+        </div>
+    </form>
+</div>

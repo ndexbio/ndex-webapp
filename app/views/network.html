@@ -289,6 +289,18 @@
                                 <strong>{{networkController.currentNetwork.visibility}}</strong>
                                 &nbsp;
                                 <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexLevel != 'NONE'"></i>
+
+                                <span class="networkViewHeader" ng-show='networkController.isLoggedInUser'>
+                                    &nbsp;
+                                    <span class="fa-stack"
+                                          uib-tooltip="{{changeVisibilityTooltip}}" tooltip-placement="bottom">
+                                        <a ng-class="isNetworkEditable() && checkNameDescriptionVersion()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
+                                           aria-hidden="true"
+                                           ng-click="isNetworkEditable() && checkNameDescriptionVersion()? editVisibility() : angular.noop();">
+                                        </a>
+                                    </span>
+                                </span>
+
                             </span>
                             &nbsp;&nbsp;
 

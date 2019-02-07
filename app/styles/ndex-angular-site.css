@@ -631,6 +631,10 @@ hr {
     padding-top: 4em;
 }
 
+.rowWithOneHalfLineTopPad {
+    padding-top: 0.5em;
+}
+
 .rowWithOneLineTopPad {
     padding-top: 1em;
 }

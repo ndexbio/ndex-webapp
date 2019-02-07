@@ -999,6 +999,27 @@ ndexServiceApp.factory('ndexService',
                     });
             };
 
+            factory.setMultiplelNetworkSystemPropertiesV2 = function(networkId, putData, successHandler, errorHandler) {
+                // Server API: Set Network System Properties
+                // PUT /network/{networkId}/systemproperty
+
+                // similar to factory.setNetworkSystemPropertiesV2, but putData can have multiple properties, for example
+                // putData = {"index_level":"NONE", "visibility":"PUBLIC", "showcase":true}
+
+                var url = '/network/' + networkId + '/systemproperty';
+                var config = ndexConfigs.getPutConfigV2(url, putData);
+
+                $http(config)
+                    .success(function(data)
+                    {
+                        successHandler(data, networkId, putData);
+                    })
+                    .error(function(error)
+                    {
+                        errorHandler(error);
+                    });
+            };
+
             factory.setNetworkSystemPropertiesNoHandlersV2 = function(networkId, mapOfProperties) {
                 // Server API: Set Network System Properties
                 // PUT /network/{networkId}/systemproperty
