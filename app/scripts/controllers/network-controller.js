@@ -205,6 +205,9 @@ ndexApp.controller('networkController',
                         $scope.submit = function () {
                             $scope.progress = 'Changing network ' + property + ' ...';
 
+                            var changeNetworkSummaryPropertyId = 'changeNetworkSummaryPropertyId';
+                            ndexSpinner.startSpinner(changeNetworkSummaryPropertyId);
+
                             if ($scope.descriptionOrReference()) {
                                 $scope.newValue      = $scope.descrOrReference.newValue;
                                 $scope.previousValue = $scope.descrOrReference.previousValue;
@@ -238,6 +241,7 @@ ndexApp.controller('networkController',
 
                                         $scope.progress = 'Done. ';
                                         networkController.currentNetwork.reference = $scope.newValue;
+                                        ndexSpinner.stopSpinner();
                                         $scope.cancel();
                                     },
                                     function (error) {
@@ -267,6 +271,7 @@ ndexApp.controller('networkController',
                                         }
 
                                         $scope.cancel();
+                                        ndexSpinner.stopSpinner();
                                         networkController.setChangeVisibilityTooltip();
                                     },
                                     function (error) {
@@ -4548,14 +4553,6 @@ ndexApp.controller('networkController',
                             }
                         }
 
-
-                        $scope.setToolTips = function(){
-                            var myToolTips = $('[data-toggle="tooltip"]');
-
-                            myToolTips.tooltip();
-                        };
-
-
                         $scope.showFullIndexAdvisory = function() {
                             if (network.fullIndexed) {
                                 network.fullIndexed = !network.fullIndexed;
@@ -4644,6 +4641,9 @@ ndexApp.controller('networkController',
                         $scope.submit = function () {
                             $scope.progress = 'Changing visibility ...';
 
+                            var changeVisibilityId = 'changeVisibilityId';
+                            ndexSpinner.startSpinner(changeVisibilityId);
+
                             // server only accepts PUBLIC or PRIVATE for visibility, so adjust it accordingly
                             if ($scope.mainProperty.visibility === 'PUBLIC_NOT_INDEXED') {
                                 $scope.mainProperty.visibility = 'PUBLIC';
@@ -4676,6 +4676,7 @@ ndexApp.controller('networkController',
                                         if ('showcase' in systemProperties) {
                                             networkController.currentNetwork.isShowcase = network.showcased;
                                         }
+                                        ndexSpinner.stopSpinner(changeVisibilityId);
                                         $scope.cancel();
                                     },
                                     function (error) {
@@ -4685,7 +4686,7 @@ ndexApp.controller('networkController',
                                 );
 
                             } else {
-
+                                ndexSpinner.stopSpinner(changeVisibilityId);
                                 $scope.cancel();
                             }
                         };

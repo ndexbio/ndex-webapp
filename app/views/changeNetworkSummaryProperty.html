@@ -1,0 +1,64 @@
+<div class="modal-content">
+    <form name="changeNetworkSummaryProperty" class='form-horizontal' role="form">
+        <div class="modal-header">
+            <h4 class="modal-title">{{title}}</h4>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group rowWithOneLineTopPad">
+                <label class="col-md-3 control-label">{{label}}</label>
+
+                <div class='col-md-7' ng-show="!descriptionOrReference()">
+                    <input name="newValue"
+                       class="form-control"
+                       ng-model="newValue"
+                       maxlength="{{maxInputLength}}"
+                       ng-change="checkLengthOfInputString()" title="">
+                </div>
+
+                <div class='col-md-8' ng-show="descriptionOrReference()">
+                    <text-angular
+                            name="newValue"
+                            ta-toolbar='[["h3","h4","h5","h6","p","pre"],["bold","italics","underline","clear"],["justifyLeft","justifyCenter"],["html","insertLink"]]'
+                            ta-toolbar-class="btn-toolbar"
+                            ta-toolbar-group-class="btn-group btn-group-xs"
+                            ta-toolbar-button-class="btn btn-default"
+                            ta-toolbar-button-active-class="active"
+                            ta-default-wrap="null"
+                            ng-model="descrOrReference.newValue">
+                    </text-angular>
+                </div>
+
+
+            </div>
+
+            <div ng-show="progress" style="margin-bottom: -1em">
+                <span style="color: green; font-size: 1.2em; font-weight: bold" ng-bind-html="progress"></span>
+            </div>
+
+            <div ng-show="errors" class='text-danger' style="margin-bottom: -1em">
+                <br>
+                <span style="font-size: 1.2em; font-weight: bold" ng-bind-html="errors"></span>
+            </div>
+
+            <div id="changeNetworkSummaryPropertyId"></div>
+        </div>
+
+        <div class="modal-footer">
+            <a class="btn btn-default" ng-click="cancel()">Cancel</a>
+
+            <!--
+            <button ng-show="!descriptionOrReference()" class="btn btn-primary"
+                    ng-click="submit()"
+                    ng-disabled="errors || !changeNetworkSummaryProperty.newValue.$valid">
+                Change
+            </button>
+            -->
+            <button class="btn btn-primary"
+                    ng-click="submit()"
+                    ng-disabled="errors">
+                Change
+            </button>
+        </div>
+    </form>
+</div>
