@@ -1,7 +1,7 @@
 <div class="row">
 
     <div style="margin-bottom: 1em" ng-show="networkController.errors.length > 0">
-        <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold" ng-repeat='error in networkController.errors' style='word-wrap:break-word'>
+        <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold; word-wrap:break-word" ng-repeat='error in networkController.errors'>
             {{error}}
             <span class="glyphicon glyphicon-remove pull-right"
                   style='cursor:pointer'
@@ -201,9 +201,8 @@
                            <span class="fa-stack" ng-show='networkController.isLoggedInUser && !networkController.successfullyQueried'
                                  uib-tooltip="{{changeNameTooltip}}" tooltip-placement="bottom">
                                &nbsp;
-                               <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
-                                   aria-hidden="true"
-                                    ng-click="isNetworkEditable()? editNetworkSummaryProperty('name') : angular.noop()">
+                               <a ng-class="getClassForQuickEdit('name')"
+                                  ng-click="editNetworkSummaryProperty('name')">
                                 </a>
 
                             </span>
@@ -294,16 +293,13 @@
                                     &nbsp;
                                     <span class="fa-stack"
                                           uib-tooltip="{{changeVisibilityTooltip}}" tooltip-placement="bottom">
-                                        <a ng-class="isNetworkEditable() && checkNameDescriptionVersion()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
-                                           aria-hidden="true"
-                                           ng-click="isNetworkEditable() && checkNameDescriptionVersion()? editVisibility() : angular.noop();">
+                                        <a ng-class="getClassForQuickEdit('visibility')"
+                                           ng-click="editVisibility()">
                                         </a>
                                     </span>
                                 </span>
-
                             </span>
                             &nbsp;&nbsp;
-
 
                             <span class="networkPropertyName" ng-show="networkController.isAdmin">
                                 <input type="checkbox"
@@ -424,9 +420,8 @@
                                     <span class="networkViewHeader" ng-show='networkController.isLoggedInUser'>
                                         <span class="fa-stack"
                                               uib-tooltip="{{changeDescriptionTooltip}}" tooltip-placement="bottom">
-                                            <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
-                                               aria-hidden="true"
-                                               ng-click="isNetworkEditable()? editNetworkSummaryProperty('description') : angular.noop();">
+                                            <a ng-class="getClassForQuickEdit('description')"
+                                               ng-click="editNetworkSummaryProperty('description')">
                                             </a>
                                         </span>
                                     </span>
@@ -452,9 +447,8 @@
                                     <span class="networkViewHeader" ng-show='networkController.isLoggedInUser'>
                                         <span class="fa-stack"
                                               uib-tooltip="{{changeReferenceTooltip}}" tooltip-placement="bottom">
-                                            <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
-                                               aria-hidden="true"
-                                               ng-click="isNetworkEditable()? editNetworkSummaryProperty('reference') : angular.noop();">
+                                            <a ng-class="getClassForQuickEdit('reference')"
+                                               ng-click="editNetworkSummaryProperty('reference')">
                                             </a>
                                         </span>
                                     </span>
@@ -469,9 +463,8 @@
                                     <span class="fa-stack" ng-show='networkController.isLoggedInUser'
                                           uib-tooltip="{{changeVersionTooltip}}" tooltip-placement="bottom">
                                         &nbsp;
-                                        <a ng-class="isNetworkEditable()? 'fa fa-pencil-square-o enabledEditNetworkLight' : 'fa fa-pencil-square-o disabledEditNetworkLight'"
-                                           aria-hidden="true"
-                                           ng-click="isNetworkEditable()? editNetworkSummaryProperty('version') : angular.noop()">
+                                        <a ng-class="getClassForQuickEdit('version')"
+                                           ng-click="editNetworkSummaryProperty('version')">
                                         </a>
                                     </span>
                                 </span>
