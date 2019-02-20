@@ -657,29 +657,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     };
 
 /*
-    editor.genericInfoModalAutoClose = function(title, message, closeIntervalInMs)
-    {
-        var InfoCtrl = function($scope, $modalInstance) {
-            $scope.title = title;
-            $scope.message = message;
-
-            $scope.close = function() {
-                $modalInstance.dismiss();
-            };
-
-            setTimeout(function() {
-                $modalInstance.dismiss();
-            }, closeIntervalInMs);
-        };
-
-        $modal.open({
-            templateUrl: 'views/generic-info-modal.html',
-            controller: InfoCtrl,
-            backdrop: 'static'
-        });
-    };
-*/
-/*
     editor.openConfirmationModal = function(title, message, confirmLabel, cancelLabel,
                                          dismissModal, confirmHandler, cancelHandler){
 

@@ -6,8 +6,8 @@
 'use strict';
 
 angular.module('ndexServiceApp')
-    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility','sharedProperties', '$routeParams',
-                function (ndexNavigation, ndexService, ndexUtility, sharedProperties, $routeParams) {
+    .service('uiMisc', ['ndexNavigation', 'ndexService', 'ndexUtility','sharedProperties', '$routeParams', '$rootScope',
+                function (ndexNavigation, ndexService, ndexUtility, sharedProperties, $routeParams, $rootScope) {
 
         var self = this;
 
@@ -831,6 +831,19 @@ angular.module('ndexServiceApp')
             };
 
             propertyList.push(newProp);
+        };
+
+
+        self.clearAndCloseModal = function(modalInstance, scope) {
+            delete $rootScope.progress;
+            delete $rootScope.progress2;
+            delete $rootScope.errors;
+            if (typeof $rootScope.confirmButtonDisabled !== 'undefined') {
+                delete $rootScope.confirmButtonDisabled;
+            }
+
+            scope.isProcessing = false;
+            modalInstance.dismiss();
         };
 
     }

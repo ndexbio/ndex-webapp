@@ -107,30 +107,6 @@
                     });
                 };
 
-                /*
-                factory.genericInfoModalAutoClose = function(title, message, closeIntervalInMs)
-                {
-                    var InfoCtrl = function($scope, $modalInstance) {
-                        $scope.title = title;
-                        $scope.message = message;
-
-                        $scope.close = function() {
-                            $modalInstance.dismiss();
-                        };
-
-                        setTimeout(function() {
-                            $modalInstance.dismiss();
-                        }, closeIntervalInMs);
-                    };
-
-                    $modal.open({
-                        templateUrl: 'views/generic-info-modal.html',
-                        controller: InfoCtrl,
-                        backdrop: 'static'
-                    });
-                };
-                */
-
                 factory.openManageBulkRequestsModal = function(title, message, acceptLabel, declineLabel, cancelLabel,
                                                          manageHandler, cancelHandler) {
                     var ConfirmCtrl = function($scope, $modalInstance, $rootScope, uiMisc) {
@@ -2619,17 +2595,13 @@
                     $scope.isProcessing = false;
 
                     if (0 == updatedNetworksCounter) {
-                        modalInstance.close();
-                        modalInstance = null;
                         $scope.network = {};
                     } else {
                         if (myAccountController.getNoOfSelectedNetworksOnCurrentPage() > 0) {
                             myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                         };
-                        setTimeout(function () {
-                            modalInstance.close();
-                        }, 1000);
                     }
+                    modalInstance.close();
                 };
 
                 var sequence = function(array, callback) {
@@ -2764,15 +2736,7 @@
                                     myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                                 };
 
-                                setTimeout(function() {
-                                    delete $scope.progress1;
-                                    delete $scope.progress2;
-                                    delete $scope.errors;
-                                    delete $scope.confirmButtonDisabled;
-
-                                    $scope.isProcessing = false;
-                                    modalInstance.dismiss();
-                                }, 1000);
+                                uiMisc.clearAndCloseModal(modalInstance, $scope);
                             };
                         });
                     }).catch(function (reason) {
@@ -2976,17 +2940,12 @@
                     cancelHit = true;
                     $scope.isProcessing = false;
 
-                    if (0 == updatedNetworksCounter) {
-                        modalInstance.close();
-                        modalInstance = null;
-                    } else {
+                    if (updatedNetworksCounter > 0) {
                         if (myAccountController.getNoOfSelectedNetworksOnCurrentPage() > 0) {
                             myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                         };
-                        setTimeout(function () {
-                            modalInstance.close();
-                        }, 1000);
                     }
+                    modalInstance.close();
                 };
 
 
@@ -3024,11 +2983,8 @@
                             $scope.progress2 += "read-write."
                         };
 
-                        setTimeout(function() {
-                            $scope.isProcessing = false;
-                            modalInstance.dismiss();
-                        }, 1000);
-
+                        $scope.isProcessing = false;
+                        modalInstance.dismiss();
                         return;
                     };
 
@@ -3048,9 +3004,7 @@
 
                                 myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
 
-                                setTimeout(function() {
-                                    modalInstance.dismiss();
-                                }, 1000);
+                                modalInstance.dismiss();
                             };
                         });
                     }).catch(function (reason) {
@@ -3098,13 +3052,8 @@
                     var numberOfNetworksToChange = _.size(networksToModify);
 
                     if (0 == numberOfNetworksToChange) {
-
                         $scope.progress2 = "Nothing to do.";
-
-                        setTimeout(function() {
-                            modalInstance.dismiss();
-                        }, 1000);
-
+                        modalInstance.dismiss();
                         return;
                     };
 
@@ -3122,11 +3071,7 @@
 
                             if ((updatedNetworksCounter == numberOfNetworksToChange) || !$scope.isProcessing) {
                                 myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
-
-                                setTimeout(function() {
-
-                                    modalInstance.dismiss();
-                                }, 1000);
+                                modalInstance.dismiss();
                             };
                         });
                     }).catch(function (reason) {
@@ -3231,7 +3176,7 @@
                 var bulkNetworkManager = $scope.ndexData;
 
                 $scope.openMe = function() {
-                    $scope.cancelHit = false;
+                    $scope.cancelHitWhileOperationInProgress = false;
                     $scope.accessType.permission = '';
                     $scope.isProcessing = false;
 
@@ -3250,31 +3195,24 @@
                     });
                 };
 
-                $scope.cancel = function() {
-                    if (0 == updatedCount) {
-                        modalInstance.dismiss();
-                        delete $scope.errors;
-                        delete $scope.progress;
-                        delete $scope.summary;
-                        $scope.IDsOfNetworksToUpdate = [];
-                    } else {
-                        $scope.cancelHit = true;
-
-                        setTimeout(function() {
-                            $scope.close();
-                            $scope.isProcessing = false;
-                            $location.path("/user/" + bulkNetworkManager.currentUserId);
-                        }, 1000);
-                    }
-                };
-
                 $scope.close = function() {
                     modalInstance.dismiss();
                     delete $scope.errors;
                     delete $scope.progress;
+                    delete $scope.summary;
                     $scope.IDsOfNetworksToUpdate = [];
                     $scope.isProcessing = false;
                 };
+
+                $scope.cancel = function() {
+                    if (updatedCount > 0) {
+                        $scope.cancelHitWhileOperationInProgress = true;
+                        $location.path("/user/" + bulkNetworkManager.currentUserId);
+                    }
+                    $scope.close();
+                };
+
+
 
 
                 var sequence = function(array, callback) {
@@ -3291,7 +3229,7 @@
                     var numberOfMembershipsTopdate = _.size(membershipsForSending);
 
                     sequence(membershipsForSending, function (membership) {
-                        if ($scope.cancelHit || errorFromServer) {
+                        if ($scope.cancelHitWhileOperationInProgress || errorFromServer) {
                             return;
                         };
 
@@ -3303,11 +3241,8 @@
                                 " for network " + membership.resourceName;
 
                             if (updatedCount == numberOfMembershipsTopdate) {
-
-                                setTimeout(function() {
-                                    $scope.close();
-                                    $location.path("/user/" + bulkNetworkManager.currentUserId);
-                                }, 1000);
+                                $scope.close();
+                                $location.path("/user/" + bulkNetworkManager.currentUserId);
                             };
 
                         });
@@ -3390,12 +3325,9 @@
 
                     if (membershipToUpdateReadyForSending.length == 0) {
                         $scope.progress = "No need to update.";
-
-                        setTimeout(function() {
-                            $scope.close();
-                            $scope.isProcessing = false;
-                            $location.path("/user/" + bulkNetworkManager.currentUserId);
-                        }, 1000);
+                        $scope.close();
+                        $scope.isProcessing = false;
+                        $location.path("/user/" + bulkNetworkManager.currentUserId);
                     } else {
                         $scope.updateMembershipsOnServer(membershipToUpdateReadyForSending);
                     }
