@@ -2972,20 +2972,6 @@
                     var numberOfNetworksToChange = _.size(networksToModify);
 
                     if (0 == numberOfNetworksToChange) {
-
-                        if (1 == numberOfNetworksSelected) {
-                            $scope.progress2 = "Nothing to do: the selected network is ";
-                        } else {
-                            $scope.progress2 = "Nothing to do: all of selected " + numberOfNetworksSelected +
-                                " networks are ";
-                        };
-
-                        if (readOnlyOperationBoolean) {
-                            $scope.progress2 += "read-only."
-                        } else {
-                            $scope.progress2 += "read-write."
-                        };
-
                         $scope.isProcessing = false;
                         modalInstance.dismiss();
                         return;
@@ -3055,7 +3041,6 @@
                     var numberOfNetworksToChange = _.size(networksToModify);
 
                     if (0 == numberOfNetworksToChange) {
-                        $scope.progress2 = "Nothing to do.";
                         modalInstance.dismiss();
                         return;
                     };
