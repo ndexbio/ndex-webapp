@@ -29,10 +29,10 @@
     </div>
 
     <div class="modal-footer">
-        <button ng-class="cancelButtonDisabled ? 'btn btn-default disabled' : 'btn btn-default'" ng-click="cancel()">
+        <button ng-class="cancelButtonEnabled ? 'btn btn-default' : 'btn btn-default disabled'" ng-click="cancel()">
             {{cancelLabel}}
         </button>
-        <button ng-class="confirmButtonDisabled ? 'btn btn-primary disabled' : 'btn btn-primary' "
+        <button ng-class="confirmButtonEnabled ? 'btn btn-primary' : 'btn btn-primary disabled'"
                 ng-click="confirm()">
             {{confirmLabel}}
         </button>
