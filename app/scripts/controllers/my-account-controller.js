@@ -1862,17 +1862,16 @@ ndexApp.controller('myAccountController',
                     ' removing it from your account might prevent you from accessing it in the future. <br><br>' +
                     'Are you sure you want to remove this shared network?';
 
-                var cancelHitWhileOperationInProgress = false;
+                var cancelHit = false;
                 var errorFromServer = false;
                 var removedCount = 0;
 
                 ndexNavigation.openConfirmationModal(title, message, 'Remove', 'Cancel', dismissModal,
                     function ($modalInstance) {
-                        $scope.isProcessing = true;
-                        $rootScope.confirmButtonDisabled = true;
+                        $modalInstance.disableConfirmButton();
 
                         sequence(networksToRemove, function (network) {
-                            if (cancelHitWhileOperationInProgress || errorFromServer) {
+                            if (cancelHit || errorFromServer) {
                                 return;
                             }
                             return removeSharedNetwork(network.externalId).then(function () {
@@ -1884,23 +1883,25 @@ ndexApp.controller('myAccountController',
                                 delete $scope.selectedRowsNetworkExternalIds[network.externalId];
                                 userSessionTablesSettings.deleteUUIDFromSelectedNetworks(network.externalId);
 
-                                $rootScope.progress  = 'Removed: ' + removedCount + ' of ' + numberOfNetworksToRemove + ' selected networks';
-                                $rootScope.progress2 = 'Removed: ' + network.name;
+                                $modalInstance.setProgress('Removed: ' + removedCount + ' of ' + numberOfNetworksToRemove + ' selected networks');
+                                $modalInstance.setProgress2('Removed: ' + network.name);
 
                                 if ((removedCount === numberOfNetworksToRemove) || !$scope.isProcessing) {
                                     $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
                                     myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
 
-                                    uiMisc.clearAndCloseModal($modalInstance, $scope);
+                                    $modalInstance.dismiss();
                                 }
                             });
                         }).catch(function (reason) {
 
                             errorFromServer = true;
                             var errorMessage = 'Unable to remove';
+                            var errorMessage1 =
+                                (reason.data && reason.data.message) ? errorMessage + ': ' +  reason.data.message :
+                                    errorMessage + '.';
 
-                            $rootScope.errors = (reason.data && reason.data.message) ?
-                                errorMessage + ': ' +  reason.data.message : '.';
+                            $modalInstance.setError(errorMessage1);
 
                             $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
                             myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
@@ -1908,14 +1909,11 @@ ndexApp.controller('myAccountController',
                         });
                     },
                     function ($modalInstance) {
+                        // user hit Cancel; in case operation was in progress, set cancelHit to true
+                        // to prevent sending more requests to the server
+                        cancelHit = true;
 
-                        if (removedCount > 0 && !errorFromServer) {
-                            // user hit Cancel while operation was in progress;  stop the operation - do not send more
-                            // requests to the server
-                            cancelHitWhileOperationInProgress = true;
-                        }
-
-                        uiMisc.clearAndCloseModal($modalInstance, $scope);
+                        $modalInstance.dismiss();
                     });
             };
 
@@ -1931,50 +1929,6 @@ ndexApp.controller('myAccountController',
                 var networksToDelete            = networksInfo.networks;
 
                 var numberOfNetworksToDel = networksToDelete.length;
-/*
-                if ((numberOfNetworksToDel == 0) && (numberOfSelectedNetworks > 0)) {
-                    var title = (numberOfSelectedNetworks == 1) ? "Cannot Delete Selected Network" :
-                        "Cannot Delete Selected Networks";
-
-                    if (numberOfSelectedNetworks == 1) {
-                        var message = "The selected network cannot be deleted";
-
-                        if ((1 == numberOfReadOnly) && (1 == numberOfNonAdminNetworks)) {
-                            message += " since you are not an owner and it is read-only.";
-                        } else if (1 == numberOfReadOnly) {
-                            message += " since it is read-only.";
-                        } else if (1 == numberOfNonAdminNetworks) {
-                            message += " since you are not an owner.";
-                        } else {
-                            // this should never execute though
-                            message += ".";
-                        };
-                    } else {
-                        message = "The selected " + numberOfSelectedNetworks + " networks cannot be deleted: "
-
-                        if ((0 == numberOfReadOnly) && (numberOfNonAdminNetworks > 1)) {
-                            message += " you are not an owner.";
-                        } else if ((numberOfReadOnly > 1) && (0 == numberOfNonAdminNetworks)) {
-                            message += " they are read-only.";
-                        } else {
-                            if (1 == numberOfNonAdminNetworks) {
-                                message += " you do not own 1 network";
-                            } else {
-                                message += " you do not own " + numberOfNonAdminNetworks + " networks";
-                            };
-
-                            if (1 == numberOfReadOnly) {
-                                message += " and 1 network is read-only.";
-                            } else {
-                                message += " and " + numberOfReadOnly + " networks are read-only.";
-                            };
-                        };
-                    };
-
-                    myAccountController.genericInfoModal(title, message);
-                    return;
-                };
-*/
 
                 var message = '';
                 var title   = '';
@@ -2038,14 +1992,9 @@ ndexApp.controller('myAccountController',
                 }
                 var dismissModal = false;
 
-                $rootScope.progress  = null;
-                $rootScope.progress2 = null;
-                $rootScope.errors    = null;
-                $rootScope.confirmButtonDisabled = false;
-
                 var deletedCount = 0;
 
-                var cancelHitWhileOperationInProgress = false;
+                var cancelHit = false;
                 var errorFromServer = false;
 
                 title = (numberOfNetworksToDel > 1) ? 'Delete Selected Networks' : 'Delete Selected Network';
@@ -2056,11 +2005,10 @@ ndexApp.controller('myAccountController',
 
                 ndexNavigation.openConfirmationModal(title, message, 'Confirm', 'Cancel', dismissModal,
                     function ($modalInstance) {
-                        $scope.isProcessing = true;
-                        $rootScope.confirmButtonDisabled = true;
+                        $modalInstance.disableConfirmButton();
 
                         sequence(networksToDelete, function (network) {
-                            if (cancelHitWhileOperationInProgress|| errorFromServer) {
+                            if (cancelHit|| errorFromServer) {
                                 return;
                             }
                             return deleteNetwork(network).then(function () {
@@ -2072,23 +2020,25 @@ ndexApp.controller('myAccountController',
                                 delete $scope.selectedRowsNetworkExternalIds[network.externalId];
                                 userSessionTablesSettings.deleteUUIDFromSelectedNetworks(network.externalId);
 
-                                $rootScope.progress  = 'Deleted: ' + deletedCount + ' of ' + numberOfNetworksToDel + ' selected networks';
-                                $rootScope.progress2 = 'Deleted: ' + network.name;
+                                $modalInstance.setProgress('Deleted: ' + deletedCount + ' of ' + numberOfNetworksToDel + ' selected networks');
+                                $modalInstance.setProgress2('Deleted: ' + network.name);
 
                                 if ((deletedCount === numberOfNetworksToDel) || !$scope.isProcessing) {
                                     $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
                                     myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
 
-                                    uiMisc.clearAndCloseModal($modalInstance, $scope);
+                                    $modalInstance.dismiss();
                                 }
                             });
                         }).catch(function (reason) {
 
                             errorFromServer = true;
                             var errorMessage = 'Unable to delete';
+                            var errorMessage1 =
+                                (reason.data && reason.data.message) ? errorMessage + ': ' +  reason.data.message :
+                                    errorMessage + '.';
 
-                            $rootScope.errors = (reason.data && reason.data.message) ?
-                                errorMessage + ': ' +  reason.data.message : '.';
+                            $modalInstance.setError(errorMessage1);
 
                             $scope.networkGridApi.grid.selection.selectedCount = myAccountController.networkTableRowsSelected;
                             myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
@@ -2096,13 +2046,11 @@ ndexApp.controller('myAccountController',
                         });
                     },
                     function ($modalInstance) {
+                        // user hit Cancel; in case operation was in progress, set cancelHit to true
+                        // to prevent sending more requests to the server
+                        cancelHit = true;
 
-                        if (deletedCount > 0 && !errorFromServer) {
-                            // user hit Cancel while delete operation was in progress;  stop the operation - do not send more
-                            // delete requests to the server
-                            cancelHitWhileOperationInProgress = true;
-                        }
-                        uiMisc.clearAndCloseModal($modalInstance, $scope);
+                        $modalInstance.dismiss();
 
                     });
             };
@@ -2199,36 +2147,27 @@ ndexApp.controller('myAccountController',
                 }
                 var dismissModal = false;
 
-                $rootScope.progress  = null;
-                $rootScope.progress2 = null;
-                $rootScope.errors    = null;
-                $rootScope.confirmButtonDisabled = false;
-
                 var markedCount = 0;
 
-                var cancelHitWhileOperationInProgress = false;
+                var cancelHit = false;
                 var errorFromServer = false;
 
                 ndexNavigation.openConfirmationModal(title, message, 'Mark As Read', 'Cancel', dismissModal,
                     function ($modalInstance) {
-                        $scope.isProcessing = true;
-                        $rootScope.confirmButtonDisabled = true;
+                        $modalInstance.disableConfirmButton();
 
                         sequence(tasksToMark, function (task) {
-                            if (cancelHitWhileOperationInProgress|| errorFromServer) {
+                            if (cancelHit|| errorFromServer) {
                                 return;
                             }
                             return markTask(task).then(function () {
                                 markedCount++;
 
-                                $rootScope.progress = 'Marked: ' + markedCount +
-                                    ' of ' + numberOfTasksToMark + ' selected tasks';
+                                $modalInstance.setProgress('Marked: ' + markedCount + ' of ' + numberOfTasksToMark + ' selected tasks');
 
                                 if ((markedCount === numberOfTasksToMark) || !$scope.isProcessing) {
                                     myAccountController.checkAndRefreshMyTaskAndNotification();
-
-                                    uiMisc.clearAndCloseModal($modalInstance, $scope);
-
+                                    $modalInstance.dismiss();
                                 }
                             });
                         }).catch(function (reason) {
@@ -2236,20 +2175,21 @@ ndexApp.controller('myAccountController',
                             errorFromServer = true;
                             var errorMessage = 'Unable to mark';
 
-                            $rootScope.errors = (reason.data && reason.data.message) ?
-                                errorMessage + ': ' +  reason.data.message : '.';
+                            var errorMessage1 =
+                                (reason.data && reason.data.message) ? errorMessage + ': ' +  reason.data.message :
+                                    errorMessage + '.';
+
+                            $modalInstance.setError(errorMessage1);
 
                             myAccountController.checkAndRefreshMyTaskAndNotification();
                         });
                     },
                     function ($modalInstance) {
+                        // user hit Cancel; in case operation was in progress, set cancelHit to true
+                        // to prevent sending more requests to the server
+                        cancelHit = true;
 
-                        if (markedCount > 0 && !errorFromServer) {
-                            // user hit Cancel while operation was in progress;  stop the operation
-                            cancelHitWhileOperationInProgress = true;
-                        }
-
-                        uiMisc.clearAndCloseModal($modalInstance, $scope);
+                        $modalInstance.dismiss();
                     });
 
 
@@ -2320,20 +2260,14 @@ ndexApp.controller('myAccountController',
                 }
                 var dismissModal = false;
 
-                $rootScope.progress  = null;
-                $rootScope.progress2 = null;
-                $rootScope.errors    = null;
-                $rootScope.confirmButtonDisabled = false;
-
                 var deletedCount = 0;
 
-                var cancelHitWhileOperationInProgress = false;
+                var cancelHit = false;
                 var errorFromServer = false;
 
                 ndexNavigation.openConfirmationModal(title, message, 'Delete', 'Cancel', dismissModal,
                     function ($modalInstance) {
-                        $scope.isProcessing = true;
-                        $rootScope.confirmButtonDisabled = true;
+                        $modalInstance.disableConfirmButton();
 
                         var selTaskRows = $scope.taskGridApi.selection.getSelectedRows();
 
@@ -2350,7 +2284,7 @@ ndexApp.controller('myAccountController',
                         var tasksToDel = _.without(tasks, null);
 
                         sequence(tasksToDel, function (task) {
-                            if (cancelHitWhileOperationInProgress|| errorFromServer) {
+                            if (cancelHit|| errorFromServer) {
                                 return;
                             }
                             return delTask(task).then(function () {
@@ -2360,14 +2294,13 @@ ndexApp.controller('myAccountController',
                                 myAccountController.taskTableRowsSelected--;
                                 delete $scope.selectedRowsTasksExternalIds[taskId];
 
-                                $rootScope.progress = 'Deleted: ' + deletedCount + ' of ' +
-                                    numberOfTasksToDelete + ' selected tasks';
+                                $modalInstance.setProgress('Deleted: ' + deletedCount + ' of ' + numberOfTasksToDelete + ' selected tasks');
 
                                 if ((deletedCount === numberOfTasksToDelete) || !$scope.isProcessing) {
                                     myAccountController.checkAndRefreshMyTaskAndNotification();
                                     $scope.taskGridApi.grid.selection.selectedCount = myAccountController.taskTableRowsSelected;
 
-                                    uiMisc.clearAndCloseModal($modalInstance, $scope);
+                                    $modalInstance.dismiss();
                                 }
                             });
                         }).catch(function (reason) {
@@ -2375,8 +2308,11 @@ ndexApp.controller('myAccountController',
                             errorFromServer = true;
                             var errorMessage = 'Unable to delete';
 
-                            $rootScope.errors = (reason.data && reason.data.message) ?
-                                errorMessage + ': ' +  reason.data.message : '.';
+                            var errorMessage1 =
+                                (reason.data && reason.data.message) ? errorMessage + ': ' +  reason.data.message :
+                                    errorMessage + '.';
+
+                            $modalInstance.setError(errorMessage1);
 
                             myAccountController.checkAndRefreshMyTaskAndNotification();
                             $scope.taskGridApi.grid.selection.selectedCount = myAccountController.taskTableRowsSelected;
@@ -2384,14 +2320,11 @@ ndexApp.controller('myAccountController',
                         });
                     },
                     function ($modalInstance) {
+                        // user hit Cancel; in case operation was in progress, set cancelHit to true
+                        // to prevent sending more requests to the server
+                        cancelHit = true;
 
-                        if (deletedCount > 0 && !errorFromServer) {
-                            // user hit Cancel while delete operation was in progress;  stop the operation - do not send more
-                            // delete requests to the server
-                            cancelHitWhileOperationInProgress = true;
-                        }
-
-                        uiMisc.clearAndCloseModal($modalInstance, $scope);
+                        $modalInstance.dismiss();
                     });
 
             };
@@ -2454,13 +2387,9 @@ ndexApp.controller('myAccountController',
                 var requestsToManage = _.filter($scope.taskGridApi.selection.getSelectedRows(), {whatType: 'received'});
                 var countSelectedRequests = requestsToManage.length;
 
-                $rootScope.progress  = null;
-                $rootScope.progress2 = null;
-                $rootScope.errors    = null;
-
                 var managedCount = 0;
 
-                var cancelHitWhileOperationInProgress = false;
+                var cancelHit = false;
                 var errorFromServer = false;
 
                 var title = 'Respond to ' + countSelectedRequests + ' Selected '  +
@@ -2473,22 +2402,20 @@ ndexApp.controller('myAccountController',
 
                         var progressLabel = acceptRequests ? 'Accepted: ' : 'Declined: ';
 
-                        $scope.isProcessing = true;
-
                         sequence(requestsToManage, function (request) {
-                            if (cancelHitWhileOperationInProgress || errorFromServer) {
+                            if (cancelHit || errorFromServer) {
                                 return;
                             }
                             return manageRequest(request, acceptRequests, responseMessage).then(function () {
                                 managedCount++;
 
-                                $rootScope.progress = progressLabel + managedCount + ' of ' + countSelectedRequests +
-                                     ' selected requests';
+                                $modalInstance.setProgress(
+                                    progressLabel + managedCount + ' of ' + countSelectedRequests + ' selected requests');
 
                                 if ((managedCount === countSelectedRequests) || !$scope.isProcessing) {
                                     myAccountController.checkAndRefreshMyTaskAndNotification();
 
-                                    uiMisc.clearAndCloseModal($modalInstance, $scope);
+                                    $modalInstance.dismiss();
                                 }
                             });
 
@@ -2497,22 +2424,22 @@ ndexApp.controller('myAccountController',
                             errorFromServer = true;
                             var errorMessage = 'Unable to process request';
 
-                            $rootScope.errors = (reason.data && reason.data.message) ?
-                                errorMessage + ': ' +  reason.data.message : '.';
+                            var errorMessage1 =
+                                (reason.data && reason.data.message) ? errorMessage + ': ' +  reason.data.message :
+                                    errorMessage + '.';
+
+                            $modalInstance.setError(errorMessage1);
 
                             myAccountController.checkAndRefreshMyTaskAndNotification();
                         });
                     },
 
                     function ($modalInstance) {
+                        // user hit Cancel; in case operation was in progress, set cancelHit to true
+                        // to prevent sending more requests to the server
+                        cancelHit = true;
 
-                        if (managedCount > 0 && !errorFromServer) {
-                            // user hit Cancel while delete operation was in progress;  stop the operation
-                            cancelHitWhileOperationInProgress = true;
-                        }
-
-                        uiMisc.clearAndCloseModal($modalInstance, $scope);
-
+                        $modalInstance.dismiss();
                     });
             };
 

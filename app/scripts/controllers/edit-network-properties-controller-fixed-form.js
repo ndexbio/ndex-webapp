@@ -656,67 +656,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         }
     };
 
-/*
-    editor.openConfirmationModal = function(title, message, confirmLabel, cancelLabel,
-                                         dismissModal, confirmHandler, cancelHandler){
-
-        ////console.log("attempting to open confirmationModal");
-
-        var ConfirmCtrl = function($scope, $modalInstance, $rootScope) {
-
-            $scope.title = title;
-            $scope.message = message;
-            $scope.cancelLabel = cancelLabel ? cancelLabel : "Cancel";
-            $scope.confirmLabel = confirmLabel ? confirmLabel : "Delete";
-
-            $scope.progress  = $rootScope.progress;
-            $scope.progress2 = $rootScope.progress2;
-            $scope.errors    = $rootScope.errors;
-            $scope.confirmButtonDisabled = $rootScope.confirmButtonDisabled;
-            $scope.cancelButtonDisabled  = $rootScope.cancelButtonDisabled;
-
-            $scope.confirm = function(){
-                if (dismissModal) {
-                    $modalInstance.dismiss();
-                    confirmHandler();
-                } else {
-                    confirmHandler($modalInstance);
-                };
-            };
-
-            $scope.cancel = function(){
-                if (dismissModal) {
-                    $modalInstance.dismiss();
-                    cancelHandler();
-                } else {
-                    cancelHandler($modalInstance);
-                };
-            };
-
-            $rootScope.$watch('progress', function(newValue, oldValue) {
-                $scope.progress = newValue;
-            });
-            $rootScope.$watch('progress2', function(newValue, oldValue) {
-                $scope.progress2 = newValue;
-            });
-            $rootScope.$watch('errors', function(newValue, oldValue) {
-                $scope.errors = newValue;
-            });
-            $rootScope.$watch('confirmButtonDisabled', function(newValue, oldValue) {
-                $scope.confirmButtonDisabled = newValue;
-            });
-            $rootScope.$watch('cancelButtonDisabled', function(newValue, oldValue) {
-                $scope.cancelButtonDisabled = newValue;
-            });
-        };
-
-        $modal.open({
-            templateUrl: 'pages/confirmationModal.html',
-            controller: ConfirmCtrl
-        });
-    };
-*/
-
     var returnToNetworkViewPage = function() {
         $location.path('/network/' + editor.networkExternalId);
     };

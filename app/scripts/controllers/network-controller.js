@@ -4541,10 +4541,10 @@ ndexApp.controller('networkController',
                 ndexNavigation.openConfirmationModal(title, message, 'Confirm', 'Cancel', dismissModal,
                     function ($modalInstance) {
 
-                        $rootScope.errors = null;
-                        $rootScope.confirmButtonDisabled = true;
-                        $rootScope.cancelButtonDisabled = true;
-                        $rootScope.progress = 'Cloning network in progress ...';
+                        $modalInstance.disableConfirmButton();
+                        $modalInstance.disableCancelButton();
+
+                        $modalInstance.setProgress('Cloning network in progress ...');
 
                         var confirmationSpinnerId = 'confirmationSpinnerId';
                         ndexSpinner.startSpinner(confirmationSpinnerId);
@@ -4553,10 +4553,6 @@ ndexApp.controller('networkController',
                             function() {
                                 ndexSpinner.stopSpinner();
                                 $modalInstance.dismiss();
-                                delete $rootScope.errors;
-                                delete $rootScope.confirmButtonDisabled;
-                                delete $rootScope.cancelButtonDisabled;
-                                delete $rootScope.progress;
                             },
                             function(error) {
                                 ndexSpinner.stopSpinner();
@@ -4566,19 +4562,14 @@ ndexApp.controller('networkController',
                                 if (error.message) {
                                     message = message + '<br>' + error.message;
                                 }
-                                $rootScope.errors = message;
-                                delete $rootScope.progress;
-                                delete $rootScope.cancelButtonDisabled;
-
+                                $modalInstance.clearProgressMessage();
+                                $modalInstance.setError(message);
+                                $modalInstance.enableCancelButton();
                             });
                     },
                     function ($modalInstance) {
                         // User selected Cancel; return
                         $modalInstance.dismiss();
-                        delete $rootScope.errors;
-                        delete $rootScope.confirmButtonDisabled;
-                        delete $rootScope.cancelButtonDisabled;
-                        delete $rootScope.progress;
                     });
             };
 
@@ -4618,10 +4609,10 @@ ndexApp.controller('networkController',
                 ndexNavigation.openConfirmationModal(title, message, 'Set Sample', 'Cancel', dismissModal,
                     function ($modalInstance) {
 
-                        $rootScope.errors = null;
-                        $rootScope.confirmButtonDisabled = true;
-                        $rootScope.cancelButtonDisabled = true;
-                        $rootScope.progress = 'Setting sample network in progress ...';
+                        $modalInstance.disableConfirmButton();
+                        $modalInstance.disableCancelButton();
+
+                        $modalInstance.setProgress('Setting sample network in progress ...');
 
                         var confirmationSpinnerId = 'confirmationSpinnerId';
                         ndexSpinner.startSpinner(confirmationSpinnerId);
@@ -4633,8 +4624,6 @@ ndexApp.controller('networkController',
                                 networkService.setQueryResultAsOriginalNiceCX();
 
                                 networkController.previousNetwork.hasSample     = true;
-                                //networkController.previousNetwork.userSetSample = true;
-                                //networkController.currentNetwork.userSetSample  = true;
                                 networkController.isSamplePrevious              = true;
                                 networkController.sampleSizePrevious = networkController.currentNetwork.edgeCount;
 
@@ -4642,10 +4631,7 @@ ndexApp.controller('networkController',
 
                                 ndexSpinner.stopSpinner();
                                 $modalInstance.dismiss();
-                                delete $rootScope.errors;
-                                delete $rootScope.confirmButtonDisabled;
-                                delete $rootScope.cancelButtonDisabled;
-                                delete $rootScope.progress;
+
                             },
                             function(error) {
                                 //$location.path();
@@ -4656,19 +4642,15 @@ ndexApp.controller('networkController',
                                 if (error.message) {
                                     message = message + '<br>' + error.message;
                                 }
-                                $rootScope.errors = message;
-                                delete $rootScope.progress;
-                                delete $rootScope.cancelButtonDisabled;
 
+                                $modalInstance.clearProgressMessage();
+                                $modalInstance.setError(message);
+                                $modalInstance.enableCancelButton();
                             });
                     },
                     function ($modalInstance) {
                         // User selected Cancel; return
                         $modalInstance.dismiss();
-                        delete $rootScope.errors;
-                        delete $rootScope.confirmButtonDisabled;
-                        delete $rootScope.cancelButtonDisabled;
-                        delete $rootScope.progress;
                     });
 
                 //factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
@@ -4691,10 +4673,10 @@ ndexApp.controller('networkController',
                 ndexNavigation.openConfirmationModal(title, message, 'Confirm', 'Cancel', dismissModal,
                     function ($modalInstance) {
 
-                        $rootScope.errors = null;
-                        $rootScope.confirmButtonDisabled = true;
-                        $rootScope.cancelButtonDisabled = true;
-                        $rootScope.progress = 'Deleting DOI request in progress ...';
+                        $modalInstance.disableConfirmButton();
+                        $modalInstance.disableCancelButton();
+
+                        $modalInstance.setProgress('Deleting DOI request in progress ...');
 
                         var confirmationSpinnerId = 'confirmationSpinnerId';
                         ndexSpinner.startSpinner(confirmationSpinnerId);
@@ -4709,32 +4691,24 @@ ndexApp.controller('networkController',
                                 setEditPropertiesTitle();
                                 ndexSpinner.stopSpinner();
                                 $modalInstance.dismiss();
-                                delete $rootScope.errors;
-                                delete $rootScope.confirmButtonDisabled;
-                                delete $rootScope.cancelButtonDisabled;
-                                delete $rootScope.progress;
                             },
                             function(error) {
                                 ndexSpinner.stopSpinner();
                                 title = 'Unable to delete DOI';
-                                message  = 'DOI was not deleted for network ' + networkName + '.';
+                                message  = 'DOI was not deleted for network ' + networkController.currentNetwork.name + '.';
 
                                 if (error.message) {
                                     message = message + '<br><br>' + error.message;
                                 }
-                                $rootScope.errors = message;
-                                delete $rootScope.progress;
-                                delete $rootScope.cancelButtonDisabled;
 
+                                $modalInstance.clearProgressMessage();
+                                $modalInstance.setError(message);
+                                $modalInstance.enableCancelButton();
                             });
                     },
                     function ($modalInstance) {
                         // User selected Cancel; return
                         $modalInstance.dismiss();
-                        delete $rootScope.errors;
-                        delete $rootScope.confirmButtonDisabled;
-                        delete $rootScope.cancelButtonDisabled;
-                        delete $rootScope.progress;
                     });
             };
 

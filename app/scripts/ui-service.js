@@ -35,18 +35,16 @@
 
                     ////console.log("attempting to open confirmationModal");
 
-                    var ConfirmCtrl = function($scope, $modalInstance, $rootScope) {
+                    var ConfirmCtrl = function($scope, $modalInstance) {
 
                         $scope.title = title;
                         $scope.message = message;
                         $scope.cancelLabel = cancelLabel ? cancelLabel : "Cancel";
                         $scope.confirmLabel = confirmLabel ? confirmLabel : "Delete";
 
-                        $scope.progress  = $rootScope.progress;
-                        $scope.progress2 = $rootScope.progress2;
-                        $scope.errors    = $rootScope.errors;
-                        $scope.confirmButtonDisabled = $rootScope.confirmButtonDisabled;
-                        $scope.cancelButtonDisabled  = $rootScope.cancelButtonDisabled;
+                        $scope.confirmButtonEnabled = true;
+                        $scope.cancelButtonEnabled  = true;
+
 
                         $scope.confirm = function(){
                             if (dismissModal) {
@@ -54,7 +52,7 @@
                                 confirmHandler();
                             } else {
                                 confirmHandler($modalInstance);
-                            };
+                            }
                         };
 
                         $scope.cancel = function(){
@@ -63,24 +61,34 @@
                                 cancelHandler();
                             } else {
                                 cancelHandler($modalInstance);
-                            };
+                            }
                         };
 
-                        $rootScope.$watch('progress', function(newValue, oldValue) {
+                        $modalInstance.setProgress = function(newValue) {
                             $scope.progress = newValue;
-                        });
-                        $rootScope.$watch('progress2', function(newValue, oldValue) {
+                        };
+                        $modalInstance.setProgress2 = function(newValue) {
                             $scope.progress2 = newValue;
-                        });
-                        $rootScope.$watch('errors', function(newValue, oldValue) {
+                        };
+                        $modalInstance.setError = function(newValue) {
                             $scope.errors = newValue;
-                        });
-                        $rootScope.$watch('confirmButtonDisabled', function(newValue, oldValue) {
-                            $scope.confirmButtonDisabled = newValue;
-                        });
-                        $rootScope.$watch('cancelButtonDisabled', function(newValue, oldValue) {
-                            $scope.cancelButtonDisabled = newValue;
-                        });
+                        };
+
+                        $modalInstance.clearProgressMessage = function() {
+                            delete $scope.progress;
+                        };
+
+                        $modalInstance.disableConfirmButton = function() {
+                            $scope.confirmButtonEnabled = false;
+                        };
+
+
+                        $modalInstance.disableCancelButton = function() {
+                            $scope.cancelButtonEnabled = false;
+                        };
+                        $modalInstance.enableCancelButton = function() {
+                            $scope.cancelButtonEnabled = true;
+                        };
                     };
 
                     $modal.open({
@@ -118,11 +126,6 @@
                         $scope.acceptLabel  = acceptLabel  ? acceptLabel  : "Accept";
                         $scope.declineLabel = declineLabel ? declineLabel : "Decline";
                         $scope.cancelLabel  = cancelLabel  ? cancelLabel  : "Cancel";
-
-                        $scope.progress  = $rootScope.progress;
-                        $scope.progress2 = $rootScope.progress2;
-                        $scope.errors    = $rootScope.errors;
-
 
                         $scope.accept = function() {
                             var acceptRequests = true;
@@ -2736,7 +2739,7 @@
                                     myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                                 };
 
-                                uiMisc.clearAndCloseModal(modalInstance, $scope);
+                                modalInstance.dismiss();
                             };
                         });
                     }).catch(function (reason) {
