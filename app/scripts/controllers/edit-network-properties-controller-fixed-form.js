@@ -8,6 +8,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 	//              Process the URL to get application state
     //-----------------------------------------------------------------------------------
     var networkExternalId = $routeParams.identifier;
+    var networkId = networkExternalId;
     var subNetworkId = ($routeParams.subNetworkId.toLocaleLowerCase() === 'null') ? null : $routeParams.subNetworkId;
 
     //              CONTROLLER INITIALIZATIONS
@@ -1179,7 +1180,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         );
 
     var userId = sharedProperties.getCurrentUserId();
-    var networkId = networkExternalId;
     var directonly = false;
 
     ndexService.getUserPermissionForNetworkV2(userId, networkId, directonly,
@@ -1196,6 +1196,10 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 }
                 if (myMembership === 'READ') {
                     editor.canRead = true;
+                }
+                if (!editor.isAdmin) {
+                    $scope.disabledVisibilityTooltip = 'Only network owners can change network Visibility';
+                    $scope.disabledFullIndexTooltip  = 'Only network owners can change Full Index option';
                 }
             }
         },
