@@ -7,8 +7,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
 	//              Process the URL to get application state
     //-----------------------------------------------------------------------------------
-    var networkExternalId = $routeParams.identifier;
-    var networkId = networkExternalId;
+    var networkId = $routeParams.identifier;
     var subNetworkId = ($routeParams.subNetworkId.toLocaleLowerCase() === 'null') ? null : $routeParams.subNetworkId;
 
     //              CONTROLLER INITIALIZATIONS
@@ -16,7 +15,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
 	$scope.editor = {};
 	var editor = $scope.editor;
-    editor.networkExternalId = networkExternalId;
 	editor.propertyValuePairs = [];
 	editor.errors = [];
     editor.isAdmin = false;
@@ -632,7 +630,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         if ($scope.mainProperty.readonly) {
                             // network is read-only; make it writeable and then save properties and
                             // request a DOI
-                            ndexService.setNetworkSystemPropertiesV2(editor.networkExternalId, 'readOnly', false,
+                            ndexService.setNetworkSystemPropertiesV2(networkId, 'readOnly', false,
 
                                 function () {
                                     editor.save(requestDOI, showThesePropertiesInEmail);
@@ -658,7 +656,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     };
 
     var returnToNetworkViewPage = function() {
-        $location.path('/network/' + editor.networkExternalId);
+        $location.path('/network/' + networkId);
     };
 
     editor.save = function(requestDOI, showThesePropertiesInEmail) {
@@ -760,7 +758,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 'visibility': visibility
             };
 
-            ndexService.setNetworkSummaryV2(networkExternalId, networkSummaryProperties,
+            ndexService.setNetworkSummaryV2(networkId, networkSummaryProperties,
                 function() {
 
                     $scope.isProcessing = false;
@@ -769,7 +767,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                         ndexService.setNetworkSystemPropertiesV2(networkId, 'showcase', editor.showcased.state,
                             function () {
                                 if (requestDOI) {
-                                    ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
+                                    ndexService.requestDoi(networkId, showThesePropertiesInEmail,
                                         function () {
                                             returnToNetworkViewPage();
                                         },
@@ -785,7 +783,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                             });
                     } else {
                         if (requestDOI) {
-                            ndexService.requestDoi(editor.networkExternalId, showThesePropertiesInEmail,
+                            ndexService.requestDoi(networkId, showThesePropertiesInEmail,
                                 function () {
                                     returnToNetworkViewPage();
                                 },
@@ -870,12 +868,13 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 		//TODO api call
 	};
 
+/*
 	editor.addNamespace = function() {
         var namespace = {
             prefix : editor.newPrefix,
             uri : editor.newURI
         };
-		ndexService.addNamespaceToNetwork(networkExternalId, namespace,
+		ndexService.addNamespaceToNetwork(networkId, namespace,
             function() {
                 editor.namespaces.push(namespace);
                 editor.newPrefix = null;
@@ -887,14 +886,15 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
             });
 	};
 
+
 	editor.setURI = function(item) {
 		editor.newURI = item.uri;
 	};
-
+*/
     editor.refresh = $route.reload;
 
     editor.cancel = function() {
-        $location.path('/network/' + editor.networkExternalId);
+        $location.path('/network/' + networkId);
     };
 
     /* commented out by cj because we can't find usage of this variable in the app
@@ -983,7 +983,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
 
     //				API initializations
     //------------------------------------------------------------------------------------
-    ndexService.getNetworkSummaryV2(networkExternalId)
+    ndexService.getNetworkSummaryV2(networkId)
         .success(
             function(network) {
 
@@ -1147,9 +1147,6 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
                 editor.propertyValuePairs.push({dataType: 'string', predicateString: '', value: '', subNetworkId: subNetworkId});
 
                 editor.disableSaveChangesButton = editor.checkIfFormIsValidOnLoad();
-                var networkOwnerUUID = network.ownerUUID;
-                var loggedInUserUUID = sharedProperties.getCurrentUserId();
-                editor.isOwner = (networkOwnerUUID === loggedInUserUUID);
 
 
                 if($routeParams.doi){
@@ -1208,7 +1205,7 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
         });
 
 /*
-    ndexService.getNetworkSummaryV2(networkExternalId)
+    ndexService.getNetworkSummaryV2(networkId)
         .success(
             function (network) {
                 editor.currentNetwork = network;
