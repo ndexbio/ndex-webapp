@@ -80,7 +80,7 @@
                 <label class="col-sm-3 control-label">visibility</label>
                 <div class="col-sm-5" style="margin-bottom: 15px;">
 
-                    <span ng-show="editor.isOwner">
+                    <span ng-show="editor.isAdmin">
 
                         <div ng-show="checkNameDescriptionVersion()">
                             <select class="form-control minwidth170"
@@ -107,9 +107,8 @@
                         </div>
                     </span>
 
-                    <span ng-show="!editor.isOwner">
-                        <select class="form-control minwidth170" ng-model='editor.visibilityIndex'
-                                title="Only network owners can change network Visibility" disabled>
+                    <span ng-show="!editor.isAdmin" tooltip="{{disabledVisibilityTooltip}}">
+                    <select class="form-control minwidth170" ng-model='editor.visibilityIndex' disabled>
                             <option value='PUBLIC' ng-selected='editor.visibilityIndex ==  "PUBLIC"'>Public </option>
                             <option value='PUBLIC_NOT_INDEXED' ng-selected='editor.visibilityIndex ==  "PUBLIC_NOT_INDEXED"'>Public (not searchable)</option>
                             <option value='PRIVATE' ng-selected='editor.visibilityIndex ==  "PRIVATE"'>Private </option>
@@ -161,23 +160,24 @@
                 <div class="col-sm-3" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')"
                      style="margin-top: 5px; padding-right:0">
 
-                    <span ng-show="checkNameDescriptionVersion()">
-                        <a ng-click="showFullIndexAdvisory();"
-                           style="text-decoration: none; color: #656565; white-space: nowrap;">
+                    <div ng-if="editor.isAdmin">
+                        <span ng-show="checkNameDescriptionVersion()">
+                            <a ng-click="showFullIndexAdvisory();"
+                               style="text-decoration: none; color: #656565; white-space: nowrap;">
 
-                            <span class="fa-stack" >
-                                <i class="fa fa-square-o fa-stack-2x"></i>
-                                <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x"></i>
-                            </span>
+                                <span class="fa-stack" >
+                                    <i class="fa fa-square-o fa-stack-2x"></i>
+                                    <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x"></i>
+                                </span>
 
-                            <span style="font-size: 15px;">
-                                Full Index
-                            </span>
-                        </a>
-                    </span>
+                                <span style="font-size: 15px;">
+                                    Full Index
+                                </span>
+                            </a>
+                        </span>
 
-                    <span ng-show="!checkNameDescriptionVersion()" ng-click="doNothingOnMouseClick()"
-                          tooltip="{{fillInNameDescriptionVersionFirst}}">
+                        <span ng-show="!checkNameDescriptionVersion()" ng-click="doNothingOnMouseClick()"
+                              tooltip="{{fillInNameDescriptionVersionFirst}}">
 
                             <span class="fa-stack" >
                                 <i class="fa fa-square-o fa-stack-2x fa-disabled"></i>
@@ -187,19 +187,27 @@
                             <span class="fa-disabled" style="font-size: 15px;">
                                 Full Index
                             </span>
-
-
-                    </span>
-
-
-                        <!--
-                        <span data-toggle="tooltip" title="{{fullIndexToolTip}}"
-                           style="cursor: pointer; color: #428bca;"
-                           target="_blank" ng-init="setToolTips()">
-                            <i class="fa fa-info-circle"></i>
                         </span>
-                        -->
+                    </div>
+
+
+                    <div ng-if="!editor.isAdmin">
+                        <span ng-click="doNothingOnMouseClick()">
+
+                            <span class="fa-stack" tooltip="{{disabledFullIndexTooltip}}">
+                                <i class="fa fa-square-o fa-stack-2x fa-disabled"></i>
+                                <i ng-show="editor.fullIndexed.state" class="fa fa-check fa-stack-1x fa-disabled"></i>
+                            </span>
+
+                            <span class="fa-disabled" tooltip="{{disabledFullIndexTooltip}}" style="font-size: 15px;">
+                                Full Index
+                            </span>
+                        </span>
+                    </div>
+
                 </div>
+
+
 
                 <div class="col-sm-1" ng-show="(mainProperty.visibility == 'PUBLIC' || mainProperty.visibility == 'PRIVATE')"
                      style="margin-top: 5px; padding-left: 0">
