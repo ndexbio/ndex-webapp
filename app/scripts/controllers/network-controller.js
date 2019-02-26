@@ -1059,7 +1059,10 @@ ndexApp.controller('networkController',
                         var ctx = backgroundLayer.getCanvas().getContext("2d");
                         ctx.fillStyle = cxBGColor;
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        //networkController.bgColor = cxBGColor;
+                        networkController.bgColor = cxBGColor;
+                    } else {
+                        // no background color for Canvas - set to default
+                        resetBackgroundColor();
                     }
 
                     var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
@@ -1256,7 +1259,7 @@ ndexApp.controller('networkController',
                 } else {
                     cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
                 }
-                resetBackgroundColor();
+
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
                 //networkController.prettyStyle = JSON.stringify(cyStyle, null, 2);
 
@@ -4178,8 +4181,7 @@ ndexApp.controller('networkController',
                                     networkController.canEdit ||
                                     networkController.canRead || accesskey)
                                 {
-                                        resetBackgroundColor();
-                                        getNetworkAndDisplay(networkExternalId,drawCXNetworkOnCanvas);
+                                    getNetworkAndDisplay(networkExternalId, drawCXNetworkOnCanvas);
                                 }
                             });
 
@@ -4278,7 +4280,7 @@ ndexApp.controller('networkController',
                         //getCytoscapeAndCyRESTVersions();
 
 
-                        resetBackgroundColor();
+                        //resetBackgroundColor();
                         drawCXNetworkOnCanvas(niceCX, false);
 
                         networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
