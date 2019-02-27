@@ -2740,6 +2740,7 @@
                                 };
 
                                 modalInstance.dismiss();
+                                $scope.isProcessing = false;
                             };
                         });
                     }).catch(function (reason) {
