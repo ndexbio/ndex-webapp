@@ -366,8 +366,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     $scope.signIn         = {'userName': '', 'password': ''};
                     $scope.signIn.newUser = {};
 
-                    $scope.cancelButtonDisabled  = false;
-                    $scope.confirmButtonDisabled = true;
 
                     delete $scope.errors;
 

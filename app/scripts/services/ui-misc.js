@@ -832,5 +832,26 @@ angular.module('ndexServiceApp')
 
             propertyList.push(newProp);
         };
+
+        /*
+         *  Called by
+         *
+         *      bulkChangeNetworkProperty
+         *      bulkChangeNetworkSystemProperty
+         *
+         *  directives.
+         *
+         *  Before opening modal, we need to clear the state variables possibly left
+         *  from previous invocation of this operation.
+         *
+         */
+        self.resetProgressErrosRunningFlagNetworkStruct = function (scope) {
+            delete scope.progress1;
+            delete scope.progress2;
+            delete scope.errors;
+            scope.isProcessing = false;
+
+            scope.network = {};
+        };
     }
 ]);
