@@ -12,7 +12,7 @@ ndexApp.controller('networkController',
             
             var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
             var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
-            
+
             const defaultStyle = [  {
                 "selector": "node",
                 "css": {
@@ -289,16 +289,6 @@ ndexApp.controller('networkController',
             $scope.showAdvancedQuery = true;
 
             $scope.showDeleteDOILink = false;
-
-
-            //networkController.prettyStyle = "no style yet";
-            //networkController.prettyVisualProperties = "nothing yet";
-            var resetBackgroundColor = function () {
-                //background color needs to be transparent so that multiple canvases can be used for
-                //annotation rendering.
-                networkController.bgColor = 'rgba(0,0,0,0)';
-                //old default color was '#8fbdd7';
-            };
 
             var localNetwork;
 
@@ -1050,20 +1040,27 @@ ndexApp.controller('networkController',
                         console.log(e);
                     }
 
+                    // cxBGColor is used as fill color for Canvas
+                    // cyService.cyBackgroundColorFromNiceCX returns color as string, or undefined
                     var cxBGColor = cyService.cyBackgroundColorFromNiceCX(cxNetwork);
-                    if (cxBGColor) {
-                        var backgroundLayer = cy.cyCanvas({
-                            zIndex: -2
-                        });
-                        var canvas = backgroundLayer.getCanvas();
-                        var ctx = backgroundLayer.getCanvas().getContext("2d");
+
+                    // see if cxNetwork has background color; if no - we will use default.
+                    if (!cxBGColor) {
+                        // default background color for the Cytsocape.js Graph mode;
+                        cxBGColor = 'rgba(0, 0, 0, 0)';
+                    }
+
+                    var backgroundLayer = cy.cyCanvas({
+                        zIndex: -2
+                    });
+
+                    var canvas = backgroundLayer.getCanvas();
+                    var ctx = backgroundLayer.getCanvas().getContext("2d");
+
+                    cy.on("render cyCanvas.resize", function() {
                         ctx.fillStyle = cxBGColor;
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        networkController.bgColor = cxBGColor;
-                    } else {
-                        // no background color for Canvas - set to default
-                        resetBackgroundColor();
-                    }
+                    });
 
                     var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
                     cyAnnotationService.drawAnnotationsFromNiceCX(cy, cxNetwork);
@@ -4280,7 +4277,6 @@ ndexApp.controller('networkController',
                         //getCytoscapeAndCyRESTVersions();
 
 
-                        //resetBackgroundColor();
                         drawCXNetworkOnCanvas(niceCX, false);
 
                         networkController.readOnlyChecked = networkController.currentNetwork.isReadOnly;
