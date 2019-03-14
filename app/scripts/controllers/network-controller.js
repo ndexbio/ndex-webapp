@@ -12,7 +12,7 @@ ndexApp.controller('networkController',
             
             var cxNetworkUtils = new cytoscapeCx2js.CyNetworkUtils();
             var cyService = new cytoscapeCx2js.CxToJs(cxNetworkUtils);
-            
+
             const defaultStyle = [  {
                 "selector": "node",
                 "css": {
@@ -289,10 +289,6 @@ ndexApp.controller('networkController',
             $scope.showAdvancedQuery = true;
 
             $scope.showDeleteDOILink = false;
-
-            // default background color for the Cytsocape.js Graph mode;
-            var defaultBackgroundColor = 'rgba(0,0,0,0)';
-            networkController.bgColor  = defaultBackgroundColor;
 
             var localNetwork;
 
@@ -1050,7 +1046,8 @@ ndexApp.controller('networkController',
 
                     // see if cxNetwork has background color; if no - we will use default.
                     if (!cxBGColor) {
-                        cxBGColor = defaultBackgroundColor;
+                        // default background color for the Cytsocape.js Graph mode;
+                        cxBGColor = 'rgba(0, 0, 0, 0)';
                     }
 
                     var backgroundLayer = cy.cyCanvas({
