@@ -2483,13 +2483,11 @@
                 var myAccountController = $scope.ndexData;
 
                 $scope.openMe = function() {
-                    delete $scope.progress1;
-                    delete $scope.progress2;
-                    delete $scope.errors;
-                    $scope.confirmButtonDisabled = false;
-                    updatedNetworksCounter = 0;
 
-                    $scope.network = {};
+                    // clear progress indication, error message (if any), network struct; set running flag to false, init net
+                    uiMisc.resetProgressErrosRunningFlagNetworkStruct($scope);
+
+                    updatedNetworksCounter = 0;
 
                     // the following properties should be set to "", not to null; null
                     // doesn't work correctly in case you enter an empty bulk value -- it is
@@ -2595,14 +2593,9 @@
 
                 $scope.cancel = function() {
                     cancelHit = true;
-                    $scope.isProcessing = false;
 
-                    if (0 == updatedNetworksCounter) {
-                        $scope.network = {};
-                    } else {
-                        if (myAccountController.getNoOfSelectedNetworksOnCurrentPage() > 0) {
-                            myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
-                        };
+                    if (updatedNetworksCounter > 0) {
+                         myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                     }
                     modalInstance.close();
                 };
@@ -2686,7 +2679,7 @@
                 };
 
                 $scope.submit = function() {
-                    if( $scope.isProcessing )
+                    if ($scope.isProcessing)
                         return;
                     $scope.isProcessing = true;
 
@@ -2706,12 +2699,6 @@
                         data = $scope.network.version;
                     };
 
-
-                    $scope.progress1 = null;
-                    $scope.progress2 = null;
-                    $scope.errors    = null;
-                    $scope.confirmButtonDisabled = true;
-
                     var modifiedCount = 0;
 
                     cancelHit = false;
@@ -2719,26 +2706,19 @@
 
                     var numberOfNetworksToChange = networksToModify.length;
 
-                    $scope.progress1 = "Changed: " + updatedNetworksCounter + " of " + numberOfNetworksToChange + " selected networks";
-
                     sequence(networksToModify, function (network) {
-                        if (cancelHit || errorFromServer || !$scope.isProcessing) {
+                        if (cancelHit || errorFromServer) {
                             return;
                         };
 
                         return modifyNetwork(network, operation, data).then(function (info) {
-                            $scope.confirmButtonDisabled = true;
                             updatedNetworksCounter++;
 
                             $scope.progress1 = "Changed: " + updatedNetworksCounter + " of " + numberOfNetworksToChange + " selected networks";
                             $scope.progress2 = "Changed: " + network.name;
 
-                            if ((updatedNetworksCounter == numberOfNetworksToChange) || !$scope.isProcessing) {
-
-                                if (myAccountController.getNoOfSelectedNetworksOnCurrentPage() > 0) {
-                                    myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
-                                };
-
+                            if (updatedNetworksCounter == numberOfNetworksToChange) {
+                                myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                                 modalInstance.dismiss();
                             };
                         });
@@ -2750,8 +2730,7 @@
                             errorMessage + ": " +  reason.data.message : errorMessage + ".";
 
                         errorFromServer = true;
-                        //$scope.isProcessing = false;
-                        $scope.confirmButtonDisabled = true;
+
                     });
                 };
             }
@@ -2813,15 +2792,11 @@
 
                     //$scope.network.visibilityIndex;
 
-                    delete $scope.progress1;
-                    delete $scope.progress2;
-                    delete $scope.errors;
-                    delete $scope.confirmButtonDisabled;
+                    // clear progress indication, error message (if any), network struct; set running flag to false
+                    uiMisc.resetProgressErrosRunningFlagNetworkStruct($scope);
 
                     updatedNetworksCounter = 0;
 
-                    $scope.isProcessing = false;
-                    $scope.network = {};
 
                     // only Admins can modify Network System Properties; check if we have this privilege
                     // for selected network(s)
@@ -2941,12 +2916,9 @@
 
                 $scope.cancel = function() {
                     cancelHit = true;
-                    $scope.isProcessing = false;
 
                     if (updatedNetworksCounter > 0) {
-                        if (myAccountController.getNoOfSelectedNetworksOnCurrentPage() > 0) {
-                            myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
-                        };
+                        myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                     }
                     modalInstance.close();
                 };
@@ -2972,27 +2944,23 @@
                     var numberOfNetworksToChange = _.size(networksToModify);
 
                     if (0 == numberOfNetworksToChange) {
-                        $scope.isProcessing = false;
                         modalInstance.dismiss();
                         return;
                     };
 
                     sequence(networksToModify, function (network) {
-                        if (cancelHit || errorFromServer || !$scope.isProcessing) {
+                        if (cancelHit || errorFromServer) {
                             return;
                         };
 
                         return modifyReadOnlyFlagOnNetwork(network, readOnlyOperationBoolean).then(function (info) {
-                            $scope.confirmButtonDisabled = true;
                             updatedNetworksCounter++;
 
                             $scope.progress1 = "Changed: " + updatedNetworksCounter + " of " + numberOfNetworksSelected + " selected networks";
                             $scope.progress2 = "Changed: " + network.name;
 
-                            if ((updatedNetworksCounter == numberOfNetworksToChange) || !$scope.isProcessing) {
-
+                            if (updatedNetworksCounter == numberOfNetworksToChange) {
                                 myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
-
                                 modalInstance.dismiss();
                             };
                         });
@@ -3028,11 +2996,6 @@
                 var updateVisibility = function(networksToModify, numberOfNetworksSelected, visibility, showCase) {
                     updatedNetworksCounter = 0;
 
-                    $scope.progress1 = null;
-                    $scope.progress2 = null;
-                    $scope.errors    = null;
-                    $scope.confirmButtonDisabled = true;
-
                     var modifiedCount = 0;
 
                     cancelHit = false;
@@ -3046,18 +3009,17 @@
                     };
 
                     sequence(networksToModify, function (network) {
-                        if (cancelHit|| errorFromServer) {
+                        if (cancelHit || errorFromServer) {
                             return;
                         };
 
                         return modifyVisibilityOfNetwork(network, visibility, showCase).then(function (info) {
-                            $scope.confirmButtonDisabled = true;
                             updatedNetworksCounter++;
 
                             $scope.progress1 = "Changed: " + updatedNetworksCounter + " of " + numberOfNetworksSelected + " selected networks";
                             $scope.progress2 = "Changed: " + network.name;
 
-                            if ((updatedNetworksCounter == numberOfNetworksToChange) || !$scope.isProcessing) {
+                            if (updatedNetworksCounter == numberOfNetworksToChange) {
                                 myAccountController.checkAndRefreshMyNetworksTableAndDiskInfo();
                                 modalInstance.dismiss();
                             };
@@ -3076,7 +3038,7 @@
 
 
                 $scope.submit = function() {
-                    if( $scope.isProcessing )
+                    if ($scope.isProcessing)
                         return;
                     $scope.isProcessing = true;
 
