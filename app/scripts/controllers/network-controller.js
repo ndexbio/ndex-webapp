@@ -1247,14 +1247,21 @@ ndexApp.controller('networkController',
 
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
-                var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
+                try {
+                    var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
 
-                var cyStyle;
+                    var cyStyle;
 
-                if (noStyle || !cxNetwork['cyVisualProperties']) {
-                    cyStyle =  defaultStyle;
-                } else {
-                    cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
+                    if (noStyle || !cxNetwork['cyVisualProperties']) {
+                        cyStyle = defaultStyle;
+                    } else {
+                        cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
+                    }
+                } catch (error) {
+                    networkController.errors.push ("Web app failed to render the network (Error: " + error.message +
+                        ".). Please contact support@ndexbio.org to report this error.");
+                    ndexSpinner.stopSpinner();
+                    return;
                 }
 
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
@@ -1544,7 +1551,7 @@ ndexApp.controller('networkController',
                 var edgeCitations = network.edgeCitations;
                 var edgeKeys = Object.keys(edges);
 
-                $scope.edgeGridOptions.data = [];
+               // $scope.edgeGridOptions.data = [];
 
                 // the @namespace network.edgeAttributes silences the 'Unresolved variable edgeAttributes'
                 // weak warning produced by WebStorm Annotator
@@ -1555,6 +1562,7 @@ ndexApp.controller('networkController',
                 {
                     var edgeKey = edgeKeys[i];
 
+                    //cj: this object has edge, edge attributes and citations collectively stored in one object.
                     var edgeObj = networkService.getEdgeInfo(edgeKey);
 
                     var sourceNodeObj = networkService.getNodeInfo(edgeObj.s);
@@ -1604,12 +1612,44 @@ ndexApp.controller('networkController',
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
 
+                $scope.edgeGridOptions.data = [];   //cj: holding the actual data in the table
+
                 var longestSubject   = '';    // source
                 var longestPredicate = '';
                 var longestObject    = '';     // target
 
                 if (!edges) {
                     return;
+                }
+
+                var rowCount = 0;
+                for ( var key in edges) {
+                    var edge = edges[key];
+
+                    if ( edges.hasOwnProperty(key)) {
+
+                        // determine the longest subject, predicate and object
+                        var predicate = edge.i ? (edge) : '';
+                        var subject = network.nodes[edge.s].n ? network.nodes[edge.s].n : '';
+                        var object = network.nodes[edge.t].n ? network.nodes[edge.t].n : '';
+
+                        longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
+                        longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
+                        longestObject = longestObject.length < object.length ? object : longestObject;
+
+                        //Get edge source, target and interaction
+                        var edgeObj = networkService.getEdgeInfo(edgeKey);
+
+                        var sourceNodeObj = networkService.getNodeInfo(edgeObj.s);
+                        var source = networkService.getNodeName(sourceNodeObj);
+                        var interaction = edgeObj.i;
+                        var targetNodeObj = networkService.getNodeInfo(edgeObj.t);
+                        var target = networkService.getNodeName(targetNodeObj);
+
+                        var row = {'Source Node': source, 'Interaction': interaction, 'Target Node': target};
+
+                        rowCount++;
+                    }
                 }
 
                 var edgeKeys = Object.keys(edges);
@@ -1629,7 +1669,7 @@ ndexApp.controller('networkController',
                 }
 
                 // enable filtering if number of edges in the network is no greater than 500
-                var filteringEnabled = (edgeKeys.length <= 500);
+                var filteringEnabled = (rowCount <= 500);
 
                 if (enableFiltering) {
                     // enable filtering even if the number of edges in the network is greater than 500;
@@ -1659,7 +1699,7 @@ ndexApp.controller('networkController',
                         displayName: reservedEdgeTableColumnNames[2],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
-                        minWidth: calcColumnWidth(longestObject, false)
+                        minWidth: calcColumnWidth(longestObject, false)   //cj: this might be wrong if there is no other attributes on the edge
                     }
                 ];
 
@@ -1669,7 +1709,7 @@ ndexApp.controller('networkController',
                             field: 'citation',
                             displayName: 'citation',
                             cellToolTip: false,
-                            minWidth: calcColumnWidth('citation'),
+                            minWidth: calcColumnWidth('citation'),  //cj: default is not last column. might be wrong if there is no edge attributes.
                             enableFiltering: true,
                             enableSorting: true,
                             cellTemplate: '<div class="text-center"><h6>' +
@@ -1684,6 +1724,12 @@ ndexApp.controller('networkController',
                 var edgeAttributes = network.edgeAttributes;
                 var edgeAttributesHeaders = {};
 
+                // cj: should check if the attribute name has already been processed, only process it if it new
+                // cj: iteration logic is too tangled. should be simplified.
+                // cj: should be able to collect the data and the header def in one run.
+                // cj: create new field name using pattern ea0, ea1, ea2 ... and register it in the columnDef. displayName still
+                // cj: uses the real name. Should also record the data type in the columndef so that the sorting can work properly
+                // cj: sorting on lists need to be defined.
                 if (edgeAttributes) {
 
                     var edgeAttributesKeys = _.keys(edgeAttributes);
@@ -1751,13 +1797,13 @@ ndexApp.controller('networkController',
                                 } else {
 
                                     columnDef = {
-                                        field: edgeAttributteProperty,
+                                        field: edgeAttributteProperty ,
                                         displayName: edgeAttributteProperty,
                                         cellTooltip: true,
                                         minWidth: calcColumnWidth(edgeAttributteProperty, false),
                                         enableFiltering: filteringEnabled,
-                                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html',
-                                        sortingAlgorithm: function (a, b) {
+                                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+                                       /* sortingAlgorithm: function (a, b) {
                                             if (!isNaN(a) && !isNaN(b)) {
                                                 var parsedA = parseFloat(a);
                                                 var parsedB = parseFloat(b);
@@ -1779,7 +1825,7 @@ ndexApp.controller('networkController',
                                                 }
                                                 return 1;
                                             }
-                                        }
+                                        }*/
                                     };
                                 }
                             }
