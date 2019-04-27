@@ -1607,10 +1607,75 @@ ndexApp.controller('networkController',
                 }
             };
 
+            // convert cx data type to ui-grid cell data type
+            var cxdTypeToUIGridDataType = function ( cxDataType) {
+                if ( (!cxDataType) || cxDataType === 'string') return 'string';
+                if (cxDataType === 'boolean') return 'boolean';
+                if ( cxDataType === 'double' || cxDataType === 'integer' || cxDataType === 'long')
+                    return 'number';
+                return null;
+            }
+
+            // comparator used for sorting list values in UI-grid
+            var comparatorForList =  function (a, b , elementIsNumeric) {
+
+                if ( !a && !b) return 0;
+                if (!a && b ) return -1;
+                if ( a && !b ) return 1;
+
+                if ( a instanceof Array ) {
+                    if ( b instanceof Array) {
+                        if (a.length > b.length)
+                            return 1;
+                        if (a.length < b.length)
+                            return -1;
+                        else
+                            return 0;
+                    } else
+                        return -1;
+                }
+
+                if ( b instanceof Array) return 1;
+
+                if (elementIsNumeric) {
+                    var parsedA = parseFloat(a);
+                    var parsedB = parseFloat(b);
+
+                    if (parsedA === parsedB) {
+                        return 0;
+                    }
+                    if (parsedA < parsedB) {
+                        return -1;
+                    }
+                    return 1;
+
+                } else {
+                    if (a === b) {
+                        return 0;
+                    }
+                    if (a < b) {
+                        return -1;
+                    }
+                    return 1;
+                }
+
+            };
+
+            //numeric list comparotor
+            var numericListComparator = function (a,b) {
+                return comparatorForList(a,b,true);
+            };
+
+            var nonNumericListComparator = function ( a,b) {
+                return comparatorForList(a,b,false);
+            };
+
             var populateEdgeTable = function(network, enableFiltering, setGridWidth)
             {
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
+
+                var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
 
                 $scope.edgeGridOptions.data = [];   //cj: holding the actual data in the table
 
@@ -1622,10 +1687,17 @@ ndexApp.controller('networkController',
                     return;
                 }
 
+
                 var rowCount = 0;
+                var dataTable = [];  //cj: the actual data in the table
+                var columnDefinitionList = []; //cj: column definitions for ui-grid
+                var attributeCounter = 0;  //cj: counter to create unique simple attribute names in data
+                var attributeNameMapper = {}   //cj: a mapping table to map an edge attribute name to a unique attibute name we created (A0,A1,A2...)
+
                 for ( var key in edges) {
                     var edge = edges[key];
 
+                    //optional check for properties from prototype chain
                     if ( edges.hasOwnProperty(key)) {
 
                         // determine the longest subject, predicate and object
@@ -1638,35 +1710,69 @@ ndexApp.controller('networkController',
                         longestObject = longestObject.length < object.length ? object : longestObject;
 
                         //Get edge source, target and interaction
-                        var edgeObj = networkService.getEdgeInfo(edgeKey);
-
-                        var sourceNodeObj = networkService.getNodeInfo(edgeObj.s);
-                        var source = networkService.getNodeName(sourceNodeObj);
-                        var interaction = edgeObj.i;
-                        var targetNodeObj = networkService.getNodeInfo(edgeObj.t);
-                        var target = networkService.getNodeName(targetNodeObj);
+                        var source = cxNetworkUtils.getDefaultNodeLabel(network, network.nodes[edge.s]);
+                        var interaction = edge.i;
+                        var target = cxNetworkUtils.getDefaultNodeLabel(network, network.nodes[edge.t]);
 
                         var row = {'Source Node': source, 'Interaction': interaction, 'Target Node': target};
 
+                        //Add citation aspect
+                        if (edgeCitations) {
+                            row.citation = (edgeCitations[key]) ? key : '';
+                        }
+
+                        // handles edge attributes
+                        if (edgeAttributes) {
+                            for (var attrName in edgeAttributes[key]) {
+
+                                if (edgeAttributes[key].hasOwnProperty(attrName)) {
+                                    if (attrName.startsWith('__')) {
+                                        continue;
+                                    }
+
+                                    var attributeValue = edgeAttributes[key][attrName].v;
+                                    var attributeType = edgeAttributes[key][attrName].d;
+
+                                    var internalAttrName = attributeNameMapper[attrName];
+
+                                    if ( !internalAttrName ) {
+                                        //handles new attribute name.
+                                        internalAttrName = 'A' + attributeCounter;
+                                        attributeCounter ++;
+                                        attributeNameMapper[attrName]= internalAttrName;
+
+                                        var columnDef = {
+                                            field: internalAttrName ,
+                                            displayName: attrName,
+                                            cellTooltip: true,
+                                            minWidth: calcColumnWidth(attrName, false),
+                                            //enableFiltering: filteringEnabled,  // add back at the very end.
+                                            cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'};
+
+                                        var gridCellDataType = cxdTypeToUIGridDataType(attributeType);
+                                        if (gridCellDataType ) {
+                                            columnDef.type = gridCellDataType;
+                                        } else {
+                                            // type is a list
+                                            columnDef.sortingAlgorithm =
+                                                (attributeType === 'list_of_string' || attributeType === 'list_of_boolean') ?
+                                                    nonNumericListComparator : numericListComparator;
+                                        }
+
+                                        columnDefinitionList.push(columnDef);
+
+                                    }
+
+                                    row[internalAttrName] = (attributeValue) ? attributeValue : '';
+                                }
+                            }
+                        }
+
+                        dataTable.push(row);
                         rowCount++;
                     }
                 }
 
-                var edgeKeys = Object.keys(edges);
-
-                // determine the longest subject, predicate and object
-                for( var i = 0; i < edgeKeys.length; i++ )
-                {
-                    var edgeKey = edgeKeys[i];
-
-                    var predicate = edges[edgeKey].i ? (edges[edgeKey].i) : '';
-                    var subject = network.nodes[edges[edgeKey].s].n ? network.nodes[edges[edgeKey].s].n : '';
-                    var object = network.nodes[edges[edgeKey].t].n ? network.nodes[edges[edgeKey].t].n : '';
-
-                    longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
-                    longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
-                    longestObject = longestObject.length < object.length ? object : longestObject;
-                }
 
                 // enable filtering if number of edges in the network is no greater than 500
                 var filteringEnabled = (rowCount <= 500);
@@ -1676,8 +1782,6 @@ ndexApp.controller('networkController',
                     // this is the case when we want filtering on after running simple or advance query
                     filteringEnabled = true;
                 }
-
-                var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
 
                 var columnDefs = [
                     {
@@ -1699,7 +1803,7 @@ ndexApp.controller('networkController',
                         displayName: reservedEdgeTableColumnNames[2],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
-                        minWidth: calcColumnWidth(longestObject, false)   //cj: this might be wrong if there is no other attributes on the edge
+                        minWidth: calcColumnWidth(longestObject, false)
                     }
                 ];
 
@@ -1711,7 +1815,6 @@ ndexApp.controller('networkController',
                             cellToolTip: false,
                             minWidth: calcColumnWidth('citation'),  //cj: default is not last column. might be wrong if there is no edge attributes.
                             enableFiltering: true,
-                            enableSorting: true,
                             cellTemplate: '<div class="text-center"><h6>' +
                             '<a ng-click="grid.appScope.showEdgeCitations(COL_FIELD)" ng-show="grid.appScope.getNumEdgeCitations(COL_FIELD) > 0">' +
                             '{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}' +
@@ -1720,16 +1823,11 @@ ndexApp.controller('networkController',
                     columnDefs.push(citationsHeader);
                 }
 
+                var fullDefinition = columnDefs.concat(columnDefinitionList);
 
-                var edgeAttributes = network.edgeAttributes;
-                var edgeAttributesHeaders = {};
+                var lastDef = fullDefinition[fullDefinition.length-1];
+                lastDef.minWidth = calcColumnWidth(lastDef.displayName, true);
 
-                // cj: should check if the attribute name has already been processed, only process it if it new
-                // cj: iteration logic is too tangled. should be simplified.
-                // cj: should be able to collect the data and the header def in one run.
-                // cj: create new field name using pattern ea0, ea1, ea2 ... and register it in the columnDef. displayName still
-                // cj: uses the real name. Should also record the data type in the columndef so that the sorting can work properly
-                // cj: sorting on lists need to be defined.
                 if (edgeAttributes) {
 
                     var edgeAttributesKeys = _.keys(edgeAttributes);
