@@ -1247,14 +1247,21 @@ ndexApp.controller('networkController',
 
                 var attributeNameMap = {} ; //cyService.createElementAttributeTable(cxNetwork);
 
-                var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
+                try {
+                    var cyElements = cyService.cyElementsFromNiceCX(cxNetwork, attributeNameMap);
 
-                var cyStyle;
+                    var cyStyle;
 
-                if (noStyle || !cxNetwork['cyVisualProperties']) {
-                    cyStyle =  defaultStyle;
-                } else {
-                    cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
+                    if (noStyle || !cxNetwork['cyVisualProperties']) {
+                        cyStyle = defaultStyle;
+                    } else {
+                        cyStyle = cyService.cyStyleFromNiceCX(cxNetwork, attributeNameMap);
+                    }
+                } catch (error) {
+                    networkController.errors.push ("Web app failed to render the network (Error: " + error.message +
+                        ".). Please contact support@ndexbio.org to report this error.");
+                    ndexSpinner.stopSpinner();
+                    return;
                 }
 
                 // networkController.prettyStyle added for debugging -- remove/comment out when done
@@ -1538,23 +1545,25 @@ ndexApp.controller('networkController',
                 refreshNodeTable(network);
             };
 
-            var refreshEdgeTable = function (network) {
+  /*   TODO: delete this functino after test. It is no longer used.
+         var refreshEdgeTable = function (network) {
 
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
                 var edgeKeys = Object.keys(edges);
 
-                $scope.edgeGridOptions.data = [];
+               // $scope.edgeGridOptions.data = []; */
 
                 // the @namespace network.edgeAttributes silences the 'Unresolved variable edgeAttributes'
                 // weak warning produced by WebStorm Annotator
                 /** @namespace network.edgeAttributes **/
-                var edgeAttributes = network.edgeAttributes;
+  /*              var edgeAttributes = network.edgeAttributes;
 
                 for (var i = 0; i < edgeKeys.length; i++)
                 {
                     var edgeKey = edgeKeys[i];
 
+                    //cj: this object has edge, edge attributes and citations collectively stored in one object.
                     var edgeObj = networkService.getEdgeInfo(edgeKey);
 
                     var sourceNodeObj = networkService.getNodeInfo(edgeObj.s);
@@ -1597,12 +1606,109 @@ ndexApp.controller('networkController',
                     }
                     $scope.edgeGridOptions.data.push( row );
                 }
+            }; */
+  
+            var stringComparator = function ( a, b) {
+                if ( !a && !b) return 0;
+                if (!a && b ) return -1;
+                if ( a && !b ) return 1;
+
+                var a1 = a.toLowerCase();
+                var b1 = b.toLowerCase();
+
+                if (a1 > b1 ) return 1;
+                if ( a1 < b1 ) return -1;
+                if ( a > b ) return 1;
+                if ( a < b ) return -1;
+                return 0;
             };
+
+            var numericStringComparator = function (a, b) {
+                if ( !a && !b) return 0;
+                if (!a && b ) return -1;
+                if ( a && !b ) return 1;
+
+                var parsedA = parseFloat(a);
+                var parsedB = parseFloat(b);
+
+                if (parsedA > parsedB) {
+                    return 1;
+                }
+                if (parsedA < parsedB) {
+                    return -1;
+                }
+                return 0;
+
+            };
+
+            // comparator used for sorting list values in UI-grid
+            var comparatorForList =  function (a, b , elementIsNumeric) {
+
+                if ( !a && !b) return 0;
+                if (!a && b ) return -1;
+                if ( a && !b ) return 1;
+
+                if ( a instanceof Array ) {
+                    if ( b instanceof Array) {
+                        if (a.length > b.length)
+                            return 1;
+                        if (a.length < b.length)
+                            return -1;
+                        else {
+                            for (var i = 0, l=a.length; i < l; i++) {
+                                var result = elementIsNumeric ?
+                                        numericStringComparator(a[i], b[i]) : stringComparator(a[i],b[i]);
+                                if (result != 0)
+                                    return result;
+                            }
+
+                            return 0;
+                        }
+                    } else
+                        return -1;
+                }
+
+                if ( b instanceof Array) return 1;
+
+                if (elementIsNumeric) {
+                    return numericStringComparator(a,b);
+                } else {
+                    return stringComparator(a,b);
+                }
+
+            };
+
+            //numeric list comparator
+            var numericListComparator = function (a,b) {
+                return comparatorForList(a,b,true);
+            };
+
+            var nonNumericListComparator = function ( a,b) {
+                return comparatorForList(a,b,false);
+            };
+
+            var getComparator = function ( cxDataType ) {
+                if (!cxDataType  || cxDataType === 'string' || cxDataType === 'boolean')
+                    return null;
+
+                if ( cxDataType === 'double' || cxDataType === 'long' ||
+                    cxDataType === 'integer' || cxDataType === 'float' )
+                    return numericStringComparator;
+
+                if (cxDataType === 'list_of_string' || cxDataType === 'list_of_boolean')
+                   return nonNumericListComparator;
+
+                return numericListComparator;
+
+            }
 
             var populateEdgeTable = function(network, enableFiltering, setGridWidth)
             {
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
+
+                var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
+                var edgeAttributes = network.edgeAttributes;
 
                 var longestSubject   = '';    // source
                 var longestPredicate = '';
@@ -1612,32 +1718,113 @@ ndexApp.controller('networkController',
                     return;
                 }
 
-                var edgeKeys = Object.keys(edges);
+                var rowCount = 0;
+                var dataTable = [];  //cj: the actual data in the table
+                var columnDefinitionList = []; //cj: column definitions for ui-grid
+                var attributeCounter = 0;  //cj: counter to create unique simple attribute names in data
+                var attributeNameMapper = {}   //cj: a mapping table to map an edge attribute name to a unique attibute name we created (A0,A1,A2...)
 
-                // determine the longest subject, predicate and object
-                for( var i = 0; i < edgeKeys.length; i++ )
-                {
-                    var edgeKey = edgeKeys[i];
+                for ( var key in edges) {
+                    var edge = edges[key];
 
-                    var predicate = edges[edgeKey].i ? (edges[edgeKey].i) : '';
-                    var subject = network.nodes[edges[edgeKey].s].n ? network.nodes[edges[edgeKey].s].n : '';
-                    var object = network.nodes[edges[edgeKey].t].n ? network.nodes[edges[edgeKey].t].n : '';
+                    //optional check for properties from prototype chain
+                    if ( edges.hasOwnProperty(key)) {
 
-                    longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
-                    longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
-                    longestObject = longestObject.length < object.length ? object : longestObject;
+                        // determine the longest subject, predicate and object
+                        var predicate = edge.i ? (edge) : '';
+                        var subject = network.nodes[edge.s].n ? network.nodes[edge.s].n : '';
+                        var object = network.nodes[edge.t].n ? network.nodes[edge.t].n : '';
+
+                        longestSubject = longestSubject.length < subject.length ? subject : longestSubject;
+                        longestPredicate = longestPredicate.length < predicate.length ? predicate : longestPredicate;
+                        longestObject = longestObject.length < object.length ? object : longestObject;
+
+                        //Get edge source, target and interaction
+                        var source = cxNetworkUtils.getDefaultNodeLabel(network, network.nodes[edge.s]);
+                        var interaction = edge.i;
+                        var target = cxNetworkUtils.getDefaultNodeLabel(network, network.nodes[edge.t]);
+
+                        var row = {'Source Node': source, 'Interaction': interaction, 'Target Node': target};
+
+                        //Add citation aspect
+                        if (edgeCitations) {
+                            row.citation = (edgeCitations[key]) ? key : '';
+                        }
+
+                        // handles edge attributes
+                        if (edgeAttributes) {
+                            for (var attrName in edgeAttributes[key]) {
+
+                                if (edgeAttributes[key].hasOwnProperty(attrName)) {
+                                    if (attrName.startsWith('__')) {
+                                        continue;
+                                    }
+
+                                    var attributeValue = edgeAttributes[key][attrName].v;
+                                    var attributeType = edgeAttributes[key][attrName].d;
+
+                                    var internalAttrName = attributeNameMapper[attrName];
+
+                                    if ( !internalAttrName ) {
+                                        //handles new attribute name.
+                                        internalAttrName = 'A' + attributeCounter;
+                                        attributeCounter ++;
+                                        attributeNameMapper[attrName]= internalAttrName;
+
+                                        if (attrName === 'ndex:externallink') {
+
+                                            columnDef = {
+                                                field: internalAttrName,
+                                                displayName: attrName,
+                                                cellTooltip: true,
+                                                minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                                enableFiltering: filteringEnabled,
+                                                type: 'string',
+                                                cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
+                                            };
+
+                                        } else {
+
+                                            var columnDef = {
+                                                field: internalAttrName,
+                                                displayName: reservedEdgeTableColumnNames.includes(attrName) ?
+                                                    (attrName + ' (2)') : attrName,
+                                                cellTooltip: true,
+                                                minWidth: calcColumnWidth(attrName, false),
+                                                //enableFiltering: filteringEnabled,  // add back at the very end.
+                                                cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+                                            };
+
+                                            var colComparator = getComparator(attributeType);
+                                            if (colComparator) {
+                                                columnDef.sortingAlgorithm = colComparator;
+                                            }
+                                        }
+
+                                        columnDefinitionList.push(columnDef);
+
+                                    }
+
+                                    row[internalAttrName] = (attributeValue) ?
+                                        attributeValue : '';
+                                }
+                            }
+                        }
+
+                        dataTable.push(row);
+                        rowCount++;
+                    }
                 }
 
+
                 // enable filtering if number of edges in the network is no greater than 500
-                var filteringEnabled = (edgeKeys.length <= 500);
+                var filteringEnabled = (rowCount <= 500);
 
                 if (enableFiltering) {
                     // enable filtering even if the number of edges in the network is greater than 500;
                     // this is the case when we want filtering on after running simple or advance query
                     filteringEnabled = true;
                 }
-
-                var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
 
                 var columnDefs = [
                     {
@@ -1669,9 +1856,8 @@ ndexApp.controller('networkController',
                             field: 'citation',
                             displayName: 'citation',
                             cellToolTip: false,
-                            minWidth: calcColumnWidth('citation'),
+                            minWidth: calcColumnWidth('citation'),  //cj: default is not last column. might be wrong if there is no edge attributes.
                             enableFiltering: true,
-                            enableSorting: true,
                             cellTemplate: '<div class="text-center"><h6>' +
                             '<a ng-click="grid.appScope.showEdgeCitations(COL_FIELD)" ng-show="grid.appScope.getNumEdgeCitations(COL_FIELD) > 0">' +
                             '{{grid.appScope.getNumEdgeCitations(COL_FIELD)}}' +
@@ -1680,121 +1866,13 @@ ndexApp.controller('networkController',
                     columnDefs.push(citationsHeader);
                 }
 
+                var fullDefinition = columnDefs.concat(columnDefinitionList);
 
-                var edgeAttributes = network.edgeAttributes;
-                var edgeAttributesHeaders = {};
+                var lastDef = fullDefinition[fullDefinition.length-1];
+                lastDef.minWidth = calcColumnWidth(lastDef.displayName, true);
 
-                if (edgeAttributes) {
-
-                    var edgeAttributesKeys = _.keys(edgeAttributes);
-
-                    for ( i=0; i<edgeAttributesKeys.length; i++)
-                    {
-                        var edgeAttributeKey = edgeAttributesKeys[i];
-
-                        var keys = _.keys(edgeAttributes[edgeAttributeKey]);
-                        var edgeAttributePropertiesKeys =  $scope.removeHiddenAttributes(keys);
-
-                        var columnDef;
-
-                        for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
-                            var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
-
-                            var edgeAttributtePropertyLowerCased = edgeAttributteProperty.toLowerCase();
-
-                            if (edgeAttributteProperty && edgeAttributtePropertyLowerCased === 'pmid') {
-                                // exclude column PMID from the table
-                                continue;
-                            }
-
-                            var isItCitationHeader = (edgeAttributtePropertyLowerCased.trim() === 'citation');
-
-                            if (isItCitationHeader) {
-
-                                columnDef =
-                                    {
-                                        field: edgeAttributteProperty,
-                                        displayName: edgeAttributteProperty,
-                                        cellToolTip: false,
-                                        minWidth: calcColumnWidth(edgeAttributteProperty),
-                                        enableFiltering: true,
-                                        enableSorting: true,
-                                        cellTemplate: '<div class="text-center"><h6>' +
-                                        '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'Citations\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
-                                        '{{grid.appScope.getNumEdgeNdexCitations(COL_FIELD)}}</a></h6></div>'
-                                    };
-                            } else if (edgeAttributtePropertyLowerCased === 'ndex:externallink') {
-
-                                columnDef = {
-                                    field: edgeAttributteProperty,
-                                    displayName: edgeAttributteProperty,
-                                    cellTooltip: true,
-                                    minWidth: calcColumnWidth(edgeAttributteProperty, false),
-                                    enableFiltering: filteringEnabled,
-                                    cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
-                                };
-
-                            } else {
-
-                                if (_.includes(reservedEdgeTableColumnNames, edgeAttributteProperty)) {
-
-                                    columnDef = {
-                                        field: edgeAttributteProperty + ' 2',
-                                        displayName: edgeAttributteProperty + ' (2)',
-                                        cellTooltip: true,
-                                        minWidth: calcColumnWidth(edgeAttributteProperty, false),
-                                        enableFiltering: filteringEnabled
-                                    };
-
-                                    edgeAttributteProperty = edgeAttributteProperty + ' 2';
-
-                                } else {
-
-                                    columnDef = {
-                                        field: edgeAttributteProperty,
-                                        displayName: edgeAttributteProperty,
-                                        cellTooltip: true,
-                                        minWidth: calcColumnWidth(edgeAttributteProperty, false),
-                                        enableFiltering: filteringEnabled,
-                                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html',
-                                        sortingAlgorithm: function (a, b) {
-                                            if (!isNaN(a) && !isNaN(b)) {
-                                                var parsedA = parseFloat(a);
-                                                var parsedB = parseFloat(b);
-
-                                                if (parsedA === parsedB) {
-                                                    return 0;
-                                                }
-                                                if (parsedA < parsedB) {
-                                                    return -1;
-                                                }
-                                                return 1;
-
-                                            } else {
-                                                if (a === b) {
-                                                    return 0;
-                                                }
-                                                if (a < b) {
-                                                    return -1;
-                                                }
-                                                return 1;
-                                            }
-                                        }
-                                    };
-                                }
-                            }
-
-                            edgeAttributesHeaders[edgeAttributteProperty] = columnDef;
-                        }
-                    }
-                }
-
-                for (var key in edgeAttributesHeaders) {
-                    var col = edgeAttributesHeaders[key];
-                    columnDefs.push(col);
-                }
-
-                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.edgeGridOptions.data = dataTable;
+                $scope.edgeGridApi.grid.options.columnDefs = fullDefinition;
 
                 if (setGridWidth) {
                     var cytoscapeCanvasWidth = $('#cytoscape-canvas').width();
@@ -1806,7 +1884,7 @@ ndexApp.controller('networkController',
                 $('#edgeGridId').height(windowHeight);
                 $scope.edgeGridApi.grid.gridHeight = windowHeight;
 
-                refreshEdgeTable(network);
+           //     refreshEdgeTable(network);
             };
 
             $scope.switchView = function() {
