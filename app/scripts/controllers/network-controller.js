@@ -1545,18 +1545,19 @@ ndexApp.controller('networkController',
                 refreshNodeTable(network);
             };
 
-            var refreshEdgeTable = function (network) {
+  /*   TODO: delete this functino after test. It is no longer used.
+         var refreshEdgeTable = function (network) {
 
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
                 var edgeKeys = Object.keys(edges);
 
-               // $scope.edgeGridOptions.data = [];
+               // $scope.edgeGridOptions.data = []; */
 
                 // the @namespace network.edgeAttributes silences the 'Unresolved variable edgeAttributes'
                 // weak warning produced by WebStorm Annotator
                 /** @namespace network.edgeAttributes **/
-                var edgeAttributes = network.edgeAttributes;
+  /*              var edgeAttributes = network.edgeAttributes;
 
                 for (var i = 0; i < edgeKeys.length; i++)
                 {
@@ -1605,16 +1606,40 @@ ndexApp.controller('networkController',
                     }
                     $scope.edgeGridOptions.data.push( row );
                 }
+            }; */
+  
+            var stringComparator = function ( a, b) {
+                if ( !a && !b) return 0;
+                if (!a && b ) return -1;
+                if ( a && !b ) return 1;
+
+                var a1 = a.toLowerCase();
+                var b1 = b.toLowerCase();
+
+                if (a1 > b1 ) return 1;
+                if ( a1 < b1 ) return -1;
+                if ( a > b ) return 1;
+                if ( a < b ) return -1;
+                return 0;
             };
 
-            // convert cx data type to ui-grid cell data type
-            var cxdTypeToUIGridDataType = function ( cxDataType) {
-                if ( (!cxDataType) || cxDataType === 'string') return 'string';
-                if (cxDataType === 'boolean') return 'boolean';
-                if ( cxDataType === 'double' || cxDataType === 'integer' || cxDataType === 'long')
-                    return 'number';
-                return null;
-            }
+            var numericStringComparator = function (a, b) {
+                if ( !a && !b) return 0;
+                if (!a && b ) return -1;
+                if ( a && !b ) return 1;
+
+                var parsedA = parseFloat(a);
+                var parsedB = parseFloat(b);
+
+                if (parsedA > parsedB) {
+                    return 1;
+                }
+                if (parsedA < parsedB) {
+                    return -1;
+                }
+                return 0;
+
+            };
 
             // comparator used for sorting list values in UI-grid
             var comparatorForList =  function (a, b , elementIsNumeric) {
@@ -1629,8 +1654,16 @@ ndexApp.controller('networkController',
                             return 1;
                         if (a.length < b.length)
                             return -1;
-                        else
+                        else {
+                            for (var i = 0, l=a.length; i < l; i++) {
+                                var result = elementIsNumeric ?
+                                        numericStringComparator(a[i], b[i]) : stringComparator(a[i],b[i]);
+                                if (result != 0)
+                                    return result;
+                            }
+
                             return 0;
+                        }
                     } else
                         return -1;
                 }
@@ -1638,30 +1671,14 @@ ndexApp.controller('networkController',
                 if ( b instanceof Array) return 1;
 
                 if (elementIsNumeric) {
-                    var parsedA = parseFloat(a);
-                    var parsedB = parseFloat(b);
-
-                    if (parsedA === parsedB) {
-                        return 0;
-                    }
-                    if (parsedA < parsedB) {
-                        return -1;
-                    }
-                    return 1;
-
+                    return numericStringComparator(a,b);
                 } else {
-                    if (a === b) {
-                        return 0;
-                    }
-                    if (a < b) {
-                        return -1;
-                    }
-                    return 1;
+                    return stringComparator(a,b);
                 }
 
             };
 
-            //numeric list comparotor
+            //numeric list comparator
             var numericListComparator = function (a,b) {
                 return comparatorForList(a,b,true);
             };
@@ -1670,14 +1687,28 @@ ndexApp.controller('networkController',
                 return comparatorForList(a,b,false);
             };
 
+            var getComparator = function ( cxDataType ) {
+                if (!cxDataType  || cxDataType === 'string' || cxDataType === 'boolean')
+                    return null;
+
+                if ( cxDataType === 'double' || cxDataType === 'long' ||
+                    cxDataType === 'integer' || cxDataType === 'float' )
+                    return numericStringComparator;
+
+                if (cxDataType === 'list_of_string' || cxDataType === 'list_of_boolean')
+                   return nonNumericListComparator;
+
+                return numericListComparator;
+
+            }
+
             var populateEdgeTable = function(network, enableFiltering, setGridWidth)
             {
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
 
                 var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
-
-                $scope.edgeGridOptions.data = [];   //cj: holding the actual data in the table
+                var edgeAttributes = network.edgeAttributes;
 
                 var longestSubject   = '';    // source
                 var longestPredicate = '';
@@ -1686,7 +1717,6 @@ ndexApp.controller('networkController',
                 if (!edges) {
                     return;
                 }
-
 
                 var rowCount = 0;
                 var dataTable = [];  //cj: the actual data in the table
@@ -1741,29 +1771,42 @@ ndexApp.controller('networkController',
                                         attributeCounter ++;
                                         attributeNameMapper[attrName]= internalAttrName;
 
-                                        var columnDef = {
-                                            field: internalAttrName ,
-                                            displayName: attrName,
-                                            cellTooltip: true,
-                                            minWidth: calcColumnWidth(attrName, false),
-                                            //enableFiltering: filteringEnabled,  // add back at the very end.
-                                            cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'};
+                                        if (attrName === 'ndex:externallink') {
 
-                                        var gridCellDataType = cxdTypeToUIGridDataType(attributeType);
-                                        if (gridCellDataType ) {
-                                            columnDef.type = gridCellDataType;
+                                            columnDef = {
+                                                field: internalAttrName,
+                                                displayName: attrName,
+                                                cellTooltip: true,
+                                                minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                                enableFiltering: filteringEnabled,
+                                                type: 'string',
+                                                cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
+                                            };
+
                                         } else {
-                                            // type is a list
-                                            columnDef.sortingAlgorithm =
-                                                (attributeType === 'list_of_string' || attributeType === 'list_of_boolean') ?
-                                                    nonNumericListComparator : numericListComparator;
+
+                                            var columnDef = {
+                                                field: internalAttrName,
+                                                displayName: reservedEdgeTableColumnNames.includes(attrName) ?
+                                                    (attrName + ' (2)') : attrName,
+                                                cellTooltip: true,
+                                                minWidth: calcColumnWidth(attrName, false),
+                                                //enableFiltering: filteringEnabled,  // add back at the very end.
+                                                cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+                                            };
+
+                                            var colComparator = getComparator(attributeType);
+                                            if (colComparator) {
+                                                columnDef.sortingAlgorithm = colComparator;
+                                            }
                                         }
 
                                         columnDefinitionList.push(columnDef);
 
                                     }
 
-                                    row[internalAttrName] = (attributeValue) ? attributeValue : '';
+                                    row[internalAttrName] = (attributeValue) ?
+                                        attributeValue : '';
                                 }
                             }
                         }
@@ -1828,117 +1871,8 @@ ndexApp.controller('networkController',
                 var lastDef = fullDefinition[fullDefinition.length-1];
                 lastDef.minWidth = calcColumnWidth(lastDef.displayName, true);
 
-                if (edgeAttributes) {
-
-                    var edgeAttributesKeys = _.keys(edgeAttributes);
-
-                    for ( i=0; i<edgeAttributesKeys.length; i++)
-                    {
-                        var edgeAttributeKey = edgeAttributesKeys[i];
-
-                        var keys = _.keys(edgeAttributes[edgeAttributeKey]);
-                        var edgeAttributePropertiesKeys =  $scope.removeHiddenAttributes(keys);
-
-                        var columnDef;
-
-                        for (var j=0; j<edgeAttributePropertiesKeys.length; j++) {
-                            var edgeAttributteProperty = edgeAttributePropertiesKeys[j];
-
-                            var edgeAttributtePropertyLowerCased = edgeAttributteProperty.toLowerCase();
-
-                            if (edgeAttributteProperty && edgeAttributtePropertyLowerCased === 'pmid') {
-                                // exclude column PMID from the table
-                                continue;
-                            }
-
-                            var isItCitationHeader = (edgeAttributtePropertyLowerCased.trim() === 'citation');
-
-                            if (isItCitationHeader) {
-
-                                columnDef =
-                                    {
-                                        field: edgeAttributteProperty,
-                                        displayName: edgeAttributteProperty,
-                                        cellToolTip: false,
-                                        minWidth: calcColumnWidth(edgeAttributteProperty),
-                                        enableFiltering: true,
-                                        enableSorting: true,
-                                        cellTemplate: '<div class="text-center"><h6>' +
-                                        '<a ng-click="grid.appScope.showMoreEdgeAttributes(\'Citations\', COL_FIELD)" ng-show="grid.appScope.getNumEdgeNdexCitations(COL_FIELD) > 0">' +
-                                        '{{grid.appScope.getNumEdgeNdexCitations(COL_FIELD)}}</a></h6></div>'
-                                    };
-                            } else if (edgeAttributtePropertyLowerCased === 'ndex:externallink') {
-
-                                columnDef = {
-                                    field: edgeAttributteProperty,
-                                    displayName: edgeAttributteProperty,
-                                    cellTooltip: true,
-                                    minWidth: calcColumnWidth(edgeAttributteProperty, false),
-                                    enableFiltering: filteringEnabled,
-                                    cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
-                                };
-
-                            } else {
-
-                                if (_.includes(reservedEdgeTableColumnNames, edgeAttributteProperty)) {
-
-                                    columnDef = {
-                                        field: edgeAttributteProperty + ' 2',
-                                        displayName: edgeAttributteProperty + ' (2)',
-                                        cellTooltip: true,
-                                        minWidth: calcColumnWidth(edgeAttributteProperty, false),
-                                        enableFiltering: filteringEnabled
-                                    };
-
-                                    edgeAttributteProperty = edgeAttributteProperty + ' 2';
-
-                                } else {
-
-                                    columnDef = {
-                                        field: edgeAttributteProperty ,
-                                        displayName: edgeAttributteProperty,
-                                        cellTooltip: true,
-                                        minWidth: calcColumnWidth(edgeAttributteProperty, false),
-                                        enableFiltering: filteringEnabled,
-                                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
-                                       /* sortingAlgorithm: function (a, b) {
-                                            if (!isNaN(a) && !isNaN(b)) {
-                                                var parsedA = parseFloat(a);
-                                                var parsedB = parseFloat(b);
-
-                                                if (parsedA === parsedB) {
-                                                    return 0;
-                                                }
-                                                if (parsedA < parsedB) {
-                                                    return -1;
-                                                }
-                                                return 1;
-
-                                            } else {
-                                                if (a === b) {
-                                                    return 0;
-                                                }
-                                                if (a < b) {
-                                                    return -1;
-                                                }
-                                                return 1;
-                                            }
-                                        }*/
-                                    };
-                                }
-                            }
-
-                            edgeAttributesHeaders[edgeAttributteProperty] = columnDef;
-                        }
-                    }
-                }
-
-                for (var key in edgeAttributesHeaders) {
-                    var col = edgeAttributesHeaders[key];
-                    columnDefs.push(col);
-                }
-
-                $scope.edgeGridApi.grid.options.columnDefs = columnDefs;
+                $scope.edgeGridOptions.data = dataTable;
+                $scope.edgeGridApi.grid.options.columnDefs = fullDefinition;
 
                 if (setGridWidth) {
                     var cytoscapeCanvasWidth = $('#cytoscape-canvas').width();
@@ -1950,7 +1884,7 @@ ndexApp.controller('networkController',
                 $('#edgeGridId').height(windowHeight);
                 $scope.edgeGridApi.grid.gridHeight = windowHeight;
 
-                refreshEdgeTable(network);
+           //     refreshEdgeTable(network);
             };
 
             $scope.switchView = function() {
