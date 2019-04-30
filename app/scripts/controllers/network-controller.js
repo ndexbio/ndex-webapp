@@ -720,6 +720,7 @@ ndexApp.controller('networkController',
                 return numOfCitations;
             };
 
+            /* no longer used. To be deleted after review.
             $scope.getNumEdgeNdexCitations = function(citations)
             {
                 var numOfCitations = 0;
@@ -735,8 +736,9 @@ ndexApp.controller('networkController',
                 }
 
                 return numOfCitations;
-            };
+            };  */
 
+       /*   no longer used. To be deleted after review.
             $scope.getNumNodeCitations = function(nodeKey)
             {
                 var numOfCitations = 0;
@@ -745,8 +747,10 @@ ndexApp.controller('networkController',
                     numOfCitations = localNetwork.nodeCitations[nodeKey].length;
                 }
                 return numOfCitations;
-            };
+            };  */
 
+       /*
+            No longer used to be deleted after review.
             $scope.getNumNodeAttributes = function(nodeAttributesObj)
             {
                 var numOfNodeAttributes = 0;
@@ -754,8 +758,8 @@ ndexApp.controller('networkController',
                     numOfNodeAttributes = nodeAttributesObj.v.length;
                 }
                 return numOfNodeAttributes;
-            };
-            $scope.getNumEdgeAttributes = function(edgeAttributesObj)
+            }; */
+            $scope.getNumOfAttributes = function(edgeAttributesObj)
             {
                 var numOfEdgeAttributes = 1;
 
@@ -1299,7 +1303,7 @@ ndexApp.controller('networkController',
                     setTimeout(checkIfCanvasIsVisibleAndDrawNetwork, 50);
                 }
             }
-
+/*
             var refreshNodeTable = function(network)
             {
                 var nodes = network.nodes;
@@ -1307,9 +1311,6 @@ ndexApp.controller('networkController',
 
                 $scope.nodeGridOptions.data = [];
 
-                // the @namespace network.nodeAttributes silences the 'Unresolved variable nodeAttributes'
-                // weak warning produced by WebStorm Annotator
-                /** @namespace network.nodeAttributes **/
                 var nodeAttributes = network.nodeAttributes;
 
                 for (var key in nodeKeys)
@@ -1349,7 +1350,7 @@ ndexApp.controller('networkController',
 
                     $scope.nodeGridOptions.data.push( row );
                 }
-            };
+            };  */
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -1361,32 +1362,124 @@ ndexApp.controller('networkController',
                 return result > 250 ? 250 : result;
             };
 
-            var populateNodeTable = function(network, enableFiltering, setGridWidth)
+            var populateNodeTable = function(cxNetwork, enableFiltering, setGridWidth)
             {
-                var nodes = network.nodes;
-                var nodeCitations = network.nodeCitations;
-                var numOfNodeKeys = 0;
+                var nodes = cxNetwork.nodes;
 
                 if (!nodes) {
                     return;
                 }
 
+               // var nodeCitations = cxNetwork.nodeCitations;
+                var nodeAttributeTable = cxNetwork.nodeAttributes;
+
+                var numOfNodes = 0;
+                var dataTable = [];
                 var longestName = 'Name';
+                var longestRepresents = 'Represents';
+                var reservedTableColumnNames = ['Name', 'Represents'];
+
+                var columnDefinitionList = []; //cj: column definitions for ui-grid
+                var attributeCounter = 0;  //cj: counter to create unique simple attribute names in data
+                var attributeNameMapper = {}   //cj: a mapping table to map an edge attribute name to a unique attibute name we created (A0,A1,A2...)
+
                 for (var key in nodes) {
-                    // we need to add the nodes.hasOwnProperty(key) check to
-                    // silence the JSHint warning
-                    // Warning: Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check
+                    //optional check for properties from prototype chain
                     if (nodes.hasOwnProperty(key)) {
-                        if (nodes[key].n) {
-                            longestName = (nodes[key].n.length > longestName.length) ? nodes[key].n : longestName;
+                        var currentNode = nodes[key];
+                        var nodeName = cxNetworkUtils.getDefaultNodeLabel(cxNetwork, currentNode);
+                        if (currentNode.n) {
+                            longestName = (currentNode.n.length > longestName.length) ? currentNode.n : longestName;
                         }
-                        numOfNodeKeys = numOfNodeKeys + 1;
+                        if ( currentNode.r) {
+                            longestRepresents = (currentNode.r.length > longestRepresents.length) ? currentNode.r : longestRepresents;
+                        }
+
+                        var row = {'Name': nodeName, 'Represents': currentNode.r ? currentNode.r : ''};
+
+
+                        if (nodeAttributeTable) {
+                            for (var attrName in nodeAttributeTable[key]) {
+
+                                if (nodeAttributeTable[key].hasOwnProperty(attrName)) {
+                                    if (attrName.startsWith('__')) {
+                                        continue;
+                                    }
+
+                                    var attributeValue = nodeAttributeTable[key][attrName].v;
+                                    var attributeType = nodeAttributeTable[key][attrName].d;
+
+                                    var internalAttrName = attributeNameMapper[attrName];
+
+                                    if ( !internalAttrName ) {
+                                        //handles new attribute name.
+                                        internalAttrName = 'A' + attributeCounter;
+                                        attributeCounter ++;
+                                        attributeNameMapper[attrName]= internalAttrName;
+
+                                        if (attrName === 'ndex:externallink') {
+
+                                            columnDef = {
+                                                field: internalAttrName,
+                                                displayName: attrName,
+                                                cellTooltip: true,
+                                                minWidth: calcColumnWidth(attrName, false),
+                                                enableFiltering: filteringEnabled,
+                                                type: 'string',
+                                                cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
+                                            };
+
+                                        } else if (attrName === 'ndex:internalLink') {
+
+                                            columnDef = {
+                                                field: internalAttrName,
+                                                displayName: attrName,
+                                                cellTooltip: true,
+                                                minWidth: calcColumnWidth(attrName, false),
+                                                enableFiltering: filteringEnabled,
+                                                type: 'string',
+                                                cellTemplate: '<a class="ui-grid-cell-contents hideLongLine" ' +
+                                                    'ng-bind-html="grid.appScope.getInternalNetworkUUID(COL_FIELD)" ' +
+                                                    'ng-href="{{grid.appScope.getURLForMapNode(COL_FIELD)}}" target="_blank">' +
+                                                    '</a>'
+                                            };
+
+                                        } else {
+
+                                            var columnDef = {
+                                                field: internalAttrName,
+                                                displayName: reservedTableColumnNames.includes(attrName) ?
+                                                    (attrName + ' (2)') : attrName,
+                                                cellTooltip: true,
+                                                minWidth: calcColumnWidth(attrName, false),
+                                                //enableFiltering: filteringEnabled,  // add back at the very end.
+                                                cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
+                                            };
+
+                                            var colComparator = getComparator(attributeType);
+                                            if (colComparator) {
+                                                columnDef.sortingAlgorithm = colComparator;
+                                            }
+                                        }
+
+                                        columnDefinitionList.push(columnDef);
+
+                                    }
+
+                                    row[internalAttrName] = (attributeValue) ?
+                                        attributeValue : '';
+                                }
+                            }
+                        }
+
+                        dataTable.push(row);
+                        numOfNodes = numOfNodes + 1;
                     }
                 }
 
                 // enable filtering if number of edges in the network is no greater than 500;
                 // we still check number of edges even though we populate node headers in this routine
-                var filteringEnabled = (numOfNodeKeys <= 500);
+                var filteringEnabled = (numOfNodes <= 500);
 
                 if (enableFiltering) {
                     // enable filtering even if the number of edges in the network is greater than 500;
@@ -1401,25 +1494,19 @@ ndexApp.controller('networkController',
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestName)
+                    },
+                    {
+                        field: 'Represents',
+                        displayName: 'Represents',
+                        cellTooltip: true,
+                        enableFiltering: filteringEnabled,
+                        minWidth: calcColumnWidth(longestRepresents),
+                        cellTemplate: 'views/gridTemplates/showCellContentsInNetworkTable.html'
                     }
+
                 ];
 
-                if (nodeCitations) {
-                    var citationsHeader =
-                        {
-                            field: 'Citations',
-                            displayName: 'citation',
-                            cellToolTip: false,
-                            enableFiltering: false,
-                            enableSorting: false,
-                            cellTemplate: '<div class="text-center"><h6>' +
-                            '<a ng-click="grid.appScope.showNodeCitations(COL_FIELD)" ng-show="grid.appScope.getNumNodeCitations(COL_FIELD) > 0">' +
-                            '{{grid.appScope.getNumNodeCitations(COL_FIELD)}}' +
-                            '</h6></div>'
-                        };
-                    columnDefs.push(citationsHeader);
-                }
-
+  /*
                 var nodeAttributes = network.nodeAttributes;
                 var nodeAttributesHeaders = {};
 
@@ -1527,9 +1614,14 @@ ndexApp.controller('networkController',
                 for (var key1 in nodeAttributesHeaders) {
                     var col = nodeAttributesHeaders[key1];
                     columnDefs.push(col);
-                }
+                } */
+                var fullDefinition = columnDefs.concat(columnDefinitionList);
 
-                $scope.nodeGridApi.grid.options.columnDefs = columnDefs;
+                var lastDef = fullDefinition[fullDefinition.length-1];
+                lastDef.minWidth = calcColumnWidth(lastDef.displayName, true);
+
+                $scope.nodeGridOptions.data = dataTable;
+                $scope.nodeGridApi.grid.options.columnDefs = fullDefinition;
 
                 if (setGridWidth) {
                     var cytoscapeCanvasWidth = $('#cytoscape-canvas').width();
@@ -1542,10 +1634,11 @@ ndexApp.controller('networkController',
                 $('#nodeGridId').height(windowHeight);
                 $scope.nodeGridApi.grid.gridHeight = windowHeight;
 
-                refreshNodeTable(network);
+               // refreshNodeTable(network);
             };
 
-  /*   TODO: delete this functino after test. It is no longer used.
+  /*   TODO: delete this function after test. It is no longer used.
+
          var refreshEdgeTable = function (network) {
 
                 var edges = network.edges;
@@ -1700,14 +1793,14 @@ ndexApp.controller('networkController',
 
                 return numericListComparator;
 
-            }
+            };
 
             var populateEdgeTable = function(network, enableFiltering, setGridWidth)
             {
                 var edges = network.edges;
                 var edgeCitations = network.edgeCitations;
 
-                var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
+                var reservedTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
                 var edgeAttributes = network.edgeAttributes;
 
                 var longestSubject   = '';    // source
@@ -1777,7 +1870,7 @@ ndexApp.controller('networkController',
                                                 field: internalAttrName,
                                                 displayName: attrName,
                                                 cellTooltip: true,
-                                                minWidth: calcColumnWidth(edgeAttributteProperty, false),
+                                                minWidth: calcColumnWidth(attrName, false),
                                                 enableFiltering: filteringEnabled,
                                                 type: 'string',
                                                 cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
@@ -1787,7 +1880,7 @@ ndexApp.controller('networkController',
 
                                             var columnDef = {
                                                 field: internalAttrName,
-                                                displayName: reservedEdgeTableColumnNames.includes(attrName) ?
+                                                displayName: reservedTableColumnNames.includes(attrName) ?
                                                     (attrName + ' (2)') : attrName,
                                                 cellTooltip: true,
                                                 minWidth: calcColumnWidth(attrName, false),
@@ -1828,22 +1921,22 @@ ndexApp.controller('networkController',
 
                 var columnDefs = [
                     {
-                        field: reservedEdgeTableColumnNames[0],
-                        displayName: reservedEdgeTableColumnNames[0],
+                        field: reservedTableColumnNames[0],
+                        displayName: reservedTableColumnNames[0],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestSubject, false)
                     },
                     {
-                        field: reservedEdgeTableColumnNames[1],
-                        displayName: reservedEdgeTableColumnNames[1],
+                        field: reservedTableColumnNames[1],
+                        displayName: reservedTableColumnNames[1],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestPredicate, false)
                     },
                     {
-                        field: reservedEdgeTableColumnNames[2],
-                        displayName: reservedEdgeTableColumnNames[2],
+                        field: reservedTableColumnNames[2],
+                        displayName: reservedTableColumnNames[2],
                         cellTooltip: true,
                         enableFiltering: filteringEnabled,
                         minWidth: calcColumnWidth(longestObject, false)
@@ -2653,7 +2746,8 @@ ndexApp.controller('networkController',
                 networkController.genericInfoModal(title, attributeValue);
             };
 
-            $scope.showMoreEdgeAttributes = function(attributeName, attributeObj) {
+            //TODO: review what the differences are between this function and the function above. -- cj
+            $scope.showMoreAttributesInTable = function(attributeName, attributeObj) {
 
                 var title;
                 var typeOfAttributeName = typeof attributeName;
