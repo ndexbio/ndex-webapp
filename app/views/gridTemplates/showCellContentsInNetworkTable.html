@@ -6,7 +6,7 @@
 
     <span ng-if="grid.appScope.getNumOfAttributes(COL_FIELD) > 1">
         <div class="text-center">
-            <a ng-click="grid.appScope.showMoreAttributesInTable(row, COL_FIELD)">
+            <a ng-click="grid.appScope.showMoreAttributesInTable(col.displayName, COL_FIELD)">
                 {{grid.appScope.getNumOfAttributes(COL_FIELD)}}
             </a>
         </div>
