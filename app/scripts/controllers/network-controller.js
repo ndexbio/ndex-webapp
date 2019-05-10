@@ -2746,11 +2746,12 @@ ndexApp.controller('networkController',
                 networkController.genericInfoModal(title, attributeValue);
             };
 
-            //TODO: review what the differences are between this function and the function above. -- cj
-            $scope.showMoreAttributesInTable = function(attributeName, attributeObj) {
+            // The only difference between this and -- cj
 
-                var title;
-                var typeOfAttributeName = typeof attributeName;
+            $scope.showMoreAttributesInTable = function(attributeDisplayName, attributeObj) {
+
+             //   var title = attributeDisplayName;
+          /*      var typeOfAttributeName = typeof attributeName;
 
                 if ((typeOfAttributeName === 'object') && (Array.isArray(attributeObj))) {
 
@@ -2778,7 +2779,7 @@ ndexApp.controller('networkController',
                     }
                 } else {
                     title = attributeName + ':';
-                }
+                } */
 
                 var attributeValue = '';
 
@@ -2807,7 +2808,7 @@ ndexApp.controller('networkController',
                     }
                 }
 
-                networkController.genericInfoModal(title, attributeValue);
+                networkController.genericInfoModal(attributeDisplayName + ":", attributeValue);
             };
 
             networkController.contextModal = function(title, message, isEdit)
