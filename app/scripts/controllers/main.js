@@ -95,7 +95,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         $scope.featuredContentDefined         = false;
-        $scope.featuredContentDropDownEnabled = false;
+        $scope.featuredNetworksDropDownEnabled = false;
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
@@ -1328,20 +1328,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         getTopMenu();
 
-        /*
-         * stripHTML removes html from a string (using jQuery) an returns text.
-         * In case string contains no html, the function returns empty string; to avoid
-         * returning empty string, we wrap string in '<html> ... </html>' tags.
-         */
-        var stripHTML = function(html) {
-            return $('<html>'+html+'</html>').text();
-        };
-
-        function fillInFeaturedContentChannelAndDropDown(featuredContent) {
-
-            //$scope.featuredContentDefined = false;
-
-            $scope.featuredContentDropDown = [];
+        function fillInFeaturedContentChannel(featuredContent) {
 
             $scope.noWrapSlides = false;
 
@@ -1373,11 +1360,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 var imageUrl = featuredItem.hasOwnProperty('imageURL') ?  featuredItem.imageURL : null;
                 var text     = featuredItem.title + '<br>' + featuredItem.text;
                 var link     = null;
-
-                var includeInDropDown = false;
-                if (featuredItem.hasOwnProperty('includeInDropDownMenu')) {
-                    includeInDropDown = (featuredItem.includeInDropDownMenu.toLowerCase() === 'true');
-                }
 
                 switch(type) {
 
@@ -1419,34 +1401,17 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     'link':  link,
                     'id':    currIndex++
                 });
-
-                if (includeInDropDown) {
-                    var dropDownItem = featuredItem.hasOwnProperty('dropdownDisplayName') ?
-                        stripHTML(featuredItem.dropdownDisplayName) : null;
-
-                    if (dropDownItem === null) {
-                        dropDownItem = featuredItem.hasOwnProperty('title') ?
-                            stripHTML(featuredItem.title) : 'drop down item ' + (currIndex - 1);
-                    }
-                    $scope.featuredContentDropDown.push(
-                        {
-                            'description': dropDownItem,
-                            'href':        link
-                        });
-                }
             });
 
             $scope.featuredContentDefined = slides.length > 0;
-
-            $scope.featuredContentDropDownEnabled = $scope.featuredContentDropDown.length > 0;
         }
 
         var getFeaturedContentChannel = function() {
-            var featuredContentConfig  = window.ndexSettings.landingPageConfigServer + '/featured.json';
+            var featuredContentConfig  = window.ndexSettings.landingPageConfigServer + '/featured_content.json';
 
             ndexService.getObjectViaEndPointV2(featuredContentConfig,
                 function(featuredContent) {
-                    fillInFeaturedContentChannelAndDropDown(featuredContent);
+                    fillInFeaturedContentChannel(featuredContent);
                 },
                 function(error) {
                     alert('unable to get Featured Content configuration file ' + featuredContentConfig);
@@ -1455,6 +1420,100 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         getFeaturedContentChannel();
+
+
+
+        function fillInFeaturedNetworksDropDown(featuredNetworks) {
+
+            $scope.featuredNetworksDropDown = [];
+
+            var currIndex = 0;
+
+            if (!(featuredNetworks.hasOwnProperty('items') && Array.isArray(featuredNetworks.items) && featuredNetworks.items.length > 0)) {
+                return;
+            }
+
+            var featuredContentTypes = new Set(['user', 'group', 'networkset', 'network']);
+
+            var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
+            if (ndexServer && !ndexServer.endsWith('/')) {
+                ndexServer = ndexServer + '/';
+            }
+
+            _.forEach(featuredNetworks.items, function(featuredItem) {
+
+                var type = featuredItem.hasOwnProperty('type') ? featuredItem.type.toLowerCase() : null;
+
+                if (!(featuredContentTypes.has(type))) {
+                    // unknown type or null - return, i.e., get the next element from featuredNetworks.items
+                    return;
+                }
+
+                var imageUrl = featuredItem.hasOwnProperty('imageURL') ?  featuredItem.imageURL : null;
+                var link     = null;
+
+                switch(type) {
+
+                    case 'user':
+                        link = ndexServer + 'user/' +  featuredItem.UUID;
+                        break;
+
+                    case 'group':
+                        link = ndexServer + 'group/' +  featuredItem.UUID;
+                        break;
+
+                    case 'networkset':
+                        link = ndexServer + 'networkset/' +  featuredItem.UUID;
+                        if (null === imageUrl) {
+                            imageUrl = 'images/default_networkSet.png';
+                        }
+                        break;
+
+                    case 'network':
+                        link = ndexServer + 'network/' +  featuredItem.UUID;
+                        break;
+
+                    default:
+                        // this should never happen since feature type is validated at this point
+                        return;
+                }
+
+                var dropDownItem = featuredItem.hasOwnProperty('dropdownDisplayName') ?
+                    uiMisc.stripHTML(featuredItem.dropdownDisplayName) : null;
+
+                if (dropDownItem === null) {
+                    dropDownItem = featuredItem.hasOwnProperty('title') ?
+                        uiMisc.stripHTML(featuredItem.title) : 'drop down item ' + (currIndex - 1);
+                }
+
+                $scope.featuredNetworksDropDown.push(
+                    {
+                        'description': dropDownItem,
+                        'href':        link
+                    });
+            });
+
+            $scope.featuredNetworksDropDownEnabled = $scope.featuredNetworksDropDown.length > 0;
+        }
+
+
+        var getFeaturedNetworksDropDownMenu = function() {
+            var featuredNetworksConfig  = window.ndexSettings.landingPageConfigServer + '/featured_networks.json';
+
+            ndexService.getObjectViaEndPointV2(featuredNetworksConfig,
+                function(featuredNetworks) {
+
+                    fillInFeaturedNetworksDropDown(featuredNetworks);
+                },
+                function(error) {
+                    alert('unable to get Featured Networks configuration file ' + featuredNetworksConfig);
+                }
+            );
+        };
+
+        getFeaturedNetworksDropDownMenu();
+
+
 
         var fillInMainChannel = function(content) {
 

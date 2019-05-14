@@ -109,36 +109,6 @@ ndexApp.controller('searchController',
                 uiMisc.showNetworkInfo(network);
             };
 
-            /*
-             * This function removes most HTML tags and replaces them with markdown symbols so that this
-             * field could be displayed in the title element of networkName.html template in the pop-up window
-             * when mouse cursor hovers over it.
-             */
-            var stripHTML = function(html) {
-
-                if (!html) {
-                    return '';
-                }
-
-                return $('<html>' + html + '</html>').text();
-
-                /*
-                // convert HTML to markdown; toMarkdown is defined in to-markdown.min.js
-                var markDown = toMarkdown(html);
-
-                // after using toMarkdown() at previous statement, markDown var can still contain
-                // some HTML Code (i.e.,<span class=...></span>). In order to remove it, we use jQuery text() function.
-                // We need to add <html> and </html> in the beginning and of markDown variable; otherwise, markDown
-                // will not be recognized by text() as a valid HTML and exception will be thrown.
-
-                // Note that we need to use toMarkdown() followed by jQuery text(); if just jQuery text() is used, then
-                // all new lines and </p> , </h1>...</h6> tags are removed; and all lines get "glued" together
-                var markDownFinal  = $("<html>"+markDown+"</html>").text();
-
-                return markDownFinal;
-                */
-            };
-
             $scope.activeTab = {};
 
             $scope.activateTab = function(tabName){
@@ -322,7 +292,7 @@ ndexApp.controller('searchController',
                         networkStatus = 'collection';
                     }
 
-                    var description = stripHTML(network.description);
+                    var description = uiMisc.stripHTML(network.description);
                     var externalId = network.externalId;
                     var nodes = parseInt(network.nodeCount);
                     var edges = parseInt(network.edgeCount);
@@ -585,7 +555,7 @@ ndexApp.controller('searchController',
                     var user = searchController.userSearchResults[i];
 
                     var userName = user.userName;
-                    var description = stripHTML(user.description);
+                    var description = uiMisc.stripHTML(user.description);
                     var externalId = user.externalId;
                     var firstName = user.firstName;
                     var lastName = user.lastName;
@@ -728,7 +698,7 @@ ndexApp.controller('searchController',
                 {
                     var group = searchController.groupSearchResults[i];
                     var groupName = group.groupName;
-                    var description = stripHTML(group.description);
+                    var description = uiMisc.stripHTML(group.description);
                     var externalId = group.externalId;
                     //var userName = group['userName'];
                     
