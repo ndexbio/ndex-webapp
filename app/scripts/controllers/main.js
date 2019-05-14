@@ -1449,8 +1449,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     return;
                 }
 
-                var imageUrl = featuredItem.hasOwnProperty('imageURL') ?  featuredItem.imageURL : null;
-                var link     = null;
+                var link = null;
 
                 switch(type) {
 
@@ -1464,9 +1463,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                     case 'networkset':
                         link = ndexServer + 'networkset/' +  featuredItem.UUID;
-                        if (null === imageUrl) {
-                            imageUrl = 'images/default_networkSet.png';
-                        }
                         break;
 
                     case 'network':
