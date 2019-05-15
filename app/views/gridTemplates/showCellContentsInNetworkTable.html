@@ -1,7 +1,7 @@
 <div id="showCellContentsInNetworkTableId" class="ui-grid-cell-contents" >
 
     <span ng-if="grid.appScope.getNumOfAttributes(COL_FIELD) <= 1">
-        <div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>
+        <div class="hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>
     </span>
 
     <span ng-if="grid.appScope.getNumOfAttributes(COL_FIELD) > 1">
