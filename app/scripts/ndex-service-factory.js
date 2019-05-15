@@ -1798,7 +1798,7 @@ ndexServiceApp.factory('cyREST', ['ndexConfigs', 'ndexService', '$http',
         var factory = {};
 
         factory.getCyRESTUrl = function() {
-            return 'http://localhost:1234';
+            return 'http://127.0.0.1:1234';
         };
 
         factory.getNdexServerUriHTTP = function() {
