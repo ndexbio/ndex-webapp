@@ -5,26 +5,26 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
     function ( ndexService, ndexUtility, sharedProperties, userSessionTablesSettings,
               $scope, $location, $modal, $route, $http, $interval, uiMisc, $rootScope, $uibModal, ndexSpinner, $modalStack) {
 
-        $scope.$on('IdleStart', function() {
+        $scope.$on('IdleStart', function () {
             if (window.currentSignInType === 'basic') {
                 $scope.main.signout();
             }
         });
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
         });
-/*
-        function setTooltip(message) {
-            $('#copyNDExCitationToClipboardId').tooltip('hide')
-                .attr('data-original-title', message)
-                .tooltip('show');
-        }
+        /*
+                function setTooltip(message) {
+                    $('#copyNDExCitationToClipboardId').tooltip('hide')
+                        .attr('data-original-title', message)
+                        .tooltip('show');
+                }
 
-        $scope.changeTitle = function() {
-            setTooltip('Copy the NDEx citation information to the clipboard');
-        };
-*/
+                $scope.changeTitle = function() {
+                    setTooltip('Copy the NDEx citation information to the clipboard');
+                };
+        */
         $scope.logosLoaded = false;
 
         //noinspection JSCheckFunctionSignatures
@@ -75,7 +75,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.main.loggedIn = false;
         $scope.main.showSignIn = true;
 
-        var showUserGreeting = function() {
+        var showUserGreeting = function () {
             var userFirstAndLastNames = sharedProperties.getLoggedInUserFirstAndLastNames();
             $scope.main.userFirstAndLastNames = userFirstAndLastNames ? 'Hi, ' + userFirstAndLastNames : 'MyAccount';
         };
@@ -94,14 +94,14 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         };
 
-        $scope.featuredContentDefined         = false;
+        $scope.featuredContentDefined = false;
         $scope.featuredNetworksDropDownEnabled = false;
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
         var signOutHandler = function () {
             $rootScope.signOut = true;
-            if (typeof(Storage) !== 'undefined') {
+            if (typeof (Storage) !== 'undefined') {
                 sessionStorage.clear();
             }
             userSessionTablesSettings.clearState();
@@ -113,14 +113,14 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 delete $http.defaults.headers.common.Authorization;
             } else {
                 /** @namespace gapi.auth2.getAuthInstance() **/
-                var authInstanceObj =  gapi.auth2.getAuthInstance();
+                var authInstanceObj = gapi.auth2.getAuthInstance();
                 if (authInstanceObj) {
                     /** @namespace authInstanceObj.signOut() **/
                     authInstanceObj.signOut();
                 }
                 //gapi.auth2.getAuthInstance().signOut();
             }
-	        window.currentNdexUser = null;
+            window.currentNdexUser = null;
             window.currentSignInType = null;
             sharedProperties.currentNetworkId = null;
             sharedProperties.currentUserId = null;
@@ -138,10 +138,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.strLength = 0;
         $scope.maxSearchInputLength = 250;
 
-        $scope.notAllowedInSearchExpansion      = [' NOT ', ' OR ', ' AND ', ':'];
-        $scope.notAllowedInSearchExpansionStart = ['NOT ',  'OR ',  'AND '];
-        $scope.notAllowedInSearchExpansionEnd   = [' NOT',  ' OR',  ' AND'];
-        $scope.notAllowedInSearchExpansionEqual = ['NOT',   'OR',   'AND', ':'];
+        $scope.notAllowedInSearchExpansion = [' NOT ', ' OR ', ' AND ', ':'];
+        $scope.notAllowedInSearchExpansionStart = ['NOT ', 'OR ', 'AND '];
+        $scope.notAllowedInSearchExpansionEnd = [' NOT', ' OR', ' AND'];
+        $scope.notAllowedInSearchExpansionEqual = ['NOT', 'OR', 'AND', ':'];
 
         $scope.arrayOfValsForSearchExpansion = ['ALL', 'NETWORKS'];
         var searchTitle = 'Perform Search Term Expansion (Genes and Proteins only)';
@@ -158,7 +158,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $scope.searchTermExpansionEnabled = false;
 
 
-        $scope.checkLengthOfSearchString = function() {
+        $scope.checkLengthOfSearchString = function () {
             var strLength = $scope.main.searchString.length;
             //console.log("strLength = " + strLength);
             if (strLength >= $scope.maxSearchInputLength) {
@@ -171,13 +171,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         };
 
-        $scope.main.goToNetworkView = function(path){
+        $scope.main.goToNetworkView = function (path) {
             if (sharedProperties.currentNetworkId) {
                 $location.path(path + sharedProperties.currentNetworkId);
             }
         };
 
-        $scope.main.goToCurrentUser = function(){
+        $scope.main.goToCurrentUser = function () {
             if (sharedProperties.currentUserId) {
                 //$location.path("/user/" + sharedProperties.currentUserId);
                 $location.path('/myAccount');
@@ -244,7 +244,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 // replace the messages.serverDown message
                 config.messages.serverDown = 'Error in ndex-webapp-config.js:<br>' +
                     'The parameter ndexServerUri is required.<br>' +
-                    'Please edit the configuration file to provide this URI.'   ;
+                    'Please edit the configuration file to provide this URI.';
             }
 
 
@@ -282,7 +282,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 config.openInCytoscapeEdgeThresholdWarning = 0;
             }
         }
-        
+
         // check configuration parameters loaded from ndex-webapp-config.js;
         // if any of config parameters missing, assign default values
 
@@ -303,7 +303,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         window.navigator.ndexServerVersion = 'ndex-webapp/';
 
         ndexService.getServerStatus('full',
-            function(data) {
+            function (data) {
                 // this callback will be called asynchronously
                 // when the response is available
                 if (data && data.properties) {
@@ -319,57 +319,56 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 }
                 $scope.main.serverIsDown = false;
 
-                document.getElementById('topNavBarId').style.display                = '';
-                document.getElementById('ndexLogoId').style.display                 = '';
-                document.getElementById('topMenuId').style.display                  = '';
+                document.getElementById('topNavBarId').style.display = '';
+                document.getElementById('ndexLogoId').style.display = '';
+                document.getElementById('topMenuId').style.display = '';
                 document.getElementById('searchMyAccountNameLoginId').style.display = '';
-                document.getElementById('footerId').style.display                   = '';
+                document.getElementById('footerId').style.display = '';
 
-                document.getElementById('slidingRightMenuId').style.display         = '';
+                document.getElementById('slidingRightMenuId').style.display = '';
                 document.getElementById('slidingRightMenuSearchMyAccountNameLoginId').style.display = '';
             },
-            function() {
+            function () {
                 $scope.main.serverIsDown = true;
                 window.navigator.ndexServerVersion += 'unknown';
 
-                document.getElementById('topNavBarId').style.display                = '';
-                document.getElementById('ndexLogoId').style.display                 = '';
-                document.getElementById('topMenuId').style.display                  = '';
+                document.getElementById('topNavBarId').style.display = '';
+                document.getElementById('ndexLogoId').style.display = '';
+                document.getElementById('topMenuId').style.display = '';
                 document.getElementById('searchMyAccountNameLoginId').style.display = '';
-                document.getElementById('footerId').style.display                   = '';
+                document.getElementById('footerId').style.display = '';
 
-                document.getElementById('slidingRightMenuId').style.display         = '';
+                document.getElementById('slidingRightMenuId').style.display = '';
                 document.getElementById('slidingRightMenuSearchMyAccountNameLoginId').style.display = '';
 
                 // this will remove (hide) NDEx logo from the top left in the Navigation Bar
-                document.getElementById('ndexLogoId').style.background  = 'transparent';
+                document.getElementById('ndexLogoId').style.background = 'transparent';
             });
 
 
-
-        $scope.main.showSignInSignUpOptions = function() {
+        $scope.main.showSignInSignUpOptions = function () {
             $uibModal.open({
                 templateUrl: 'views/signInSignUpModal.html',
 
                 controller: function ($scope, $uibModalInstance) {
 
-                    $scope.header             = window.ndexSettings.signIn.header;
+                    $scope.header = window.ndexSettings.signIn.header;
                     $scope.showForgotPassword = window.ndexSettings.signIn.showForgotPassword;
-                    $scope.cancelLabel        = 'Cancel';
-                    $scope.confirmLabel       = 'Sign In';
+                    $scope.cancelLabel = 'Cancel';
+                    $scope.confirmLabel = 'Sign In';
 
-                    $scope.needAnAccount      = window.ndexSettings.signIn.footer + '&nbsp;';
-                    $scope.showSignUp         = window.ndexSettings.signIn.showSignup;
+                    $scope.needAnAccount = window.ndexSettings.signIn.footer + '&nbsp;';
+                    $scope.showSignUp = window.ndexSettings.signIn.showSignup;
 
-                    $scope.googleSSO          = window.googleSSO;
+                    $scope.googleSSO = window.googleSSO;
 
-                    $scope.signIn         = {'userName': '', 'password': ''};
+                    $scope.signIn = {'userName': '', 'password': ''};
                     $scope.signIn.newUser = {};
 
 
                     delete $scope.errors;
 
-                    $scope.setToolTips = function(){
+                    $scope.setToolTips = function () {
                         var myToolTips = $('[data-toggle="tooltip"]');
                         myToolTips.tooltip();
                     };
@@ -381,14 +380,14 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                         $uibModalInstance.dismiss();
                     };
 
-                    $scope.$watch('signIn.userName', function() {
+                    $scope.$watch('signIn.userName', function () {
                         delete $scope.errors;
                     });
-                    $scope.$watch('signIn.password', function() {
+                    $scope.$watch('signIn.password', function () {
                         delete $scope.errors;
                     });
 
-                    var basicAuthSuccessHandler = function(data) {
+                    var basicAuthSuccessHandler = function (data) {
                         sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
                         ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
 
@@ -411,7 +410,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                         ndexService.authenticateUserV2(userName, password,
                             basicAuthSuccessHandler,
-                            function(error) { //.error(function (data, status, headers, config, statusText) {
+                            function (error) { //.error(function (data, status, headers, config, statusText) {
 
                                 if (error && error.message) {
                                     $scope.errors = error.message;
@@ -430,7 +429,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                             backdrop: 'static',
 
                             controller: function ($scope, $uibModalInstance) {
-                                $scope.signIn         = {'userName': '', 'password': ''};
+                                $scope.signIn = {'userName': '', 'password': ''};
                                 $scope.signIn.newUser = {};
 
                                 $scope.cancel = function () {
@@ -468,7 +467,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                         return;
                                     }
 
-                                    var basicAuthSuccessHandler = function(data) {
+                                    var basicAuthSuccessHandler = function (data) {
                                         sharedProperties.setCurrentUser(data.externalId, data.userName); //this info will have to be sent via emit if we want dynamic info on the nav bar
                                         ndexUtility.setUserInfo(data.userName, data.firstName, data.lastName, data.externalId, $scope.signIn.password);
 
@@ -490,10 +489,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                 var newUserId = url.split('/').pop();
                                                 var data = {};
 
-                                                data.userName          = $scope.signIn.newUser.userName;
-                                                data.firstName         = $scope.signIn.newUser.firstName;
-                                                data.lastName          = $scope.signIn.newUser.lastName;
-                                                data.externalId        = newUserId;
+                                                data.userName = $scope.signIn.newUser.userName;
+                                                data.firstName = $scope.signIn.newUser.firstName;
+                                                data.lastName = $scope.signIn.newUser.lastName;
+                                                data.externalId = newUserId;
 
                                                 $scope.signIn.password = $scope.signIn.newUser.password;
 
@@ -545,30 +544,30 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                         if (emailRE.test(String(searchStr).toLowerCase())) {
                                             //search string is a valid email
-                                            ndexService.getUserByEmail (searchStr,successHandler, function(err) {
-                                                if (err.errorCode === 'NDEx_Object_Not_Found_Exception')
-                                                   ndexService.getUserByUserNameV2(searchStr, successHandler, function(err){
-                                                       if (err.errorCode === 'NDEx_Object_Not_Found_Exception' ) {
-                                                           ndexSpinner.stopSpinner();
-                                                           forgot.errorMsg =  "Can't find user with " +
-                                                               $scope.forgot.accountName + " as user name or email.";
-                                                           $scope.isProcessing = false;
-                                                       } else
-                                                           errorHandler(err);
+                                            ndexService.getUserByEmail(searchStr, successHandler, function (err) {
+                                                    if (err.errorCode === 'NDEx_Object_Not_Found_Exception')
+                                                        ndexService.getUserByUserNameV2(searchStr, successHandler, function (err) {
+                                                            if (err.errorCode === 'NDEx_Object_Not_Found_Exception') {
+                                                                ndexSpinner.stopSpinner();
+                                                                forgot.errorMsg = "Can't find user with " +
+                                                                    $scope.forgot.accountName + " as user name or email.";
+                                                                $scope.isProcessing = false;
+                                                            } else
+                                                                errorHandler(err);
 
-                                                   });
-                                                else
-                                                   errorHandler(err);
-                                              }
+                                                        });
+                                                    else
+                                                        errorHandler(err);
+                                                }
                                             );
-                                         } else
-                                           //search string is not an email
-                                           ndexService.getUserByUserNameV2(searchStr,successHandler, errorHandler);
+                                        } else
+                                        //search string is not an email
+                                            ndexService.getUserByUserNameV2(searchStr, successHandler, errorHandler);
 
                                     };
 
                                     getUserByEmailOrUserName($scope.forgot.accountName,
-                                        function(data) {
+                                        function (data) {
                                             var userId = (data && data.externalId) ? data.externalId : null;
                                             if (userId) {
 
@@ -585,17 +584,16 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                         forgot.errorMsg = error.message;
                                                         $scope.isProcessing = false;
                                                     });
-                                            }
-                                            else {
+                                            } else {
                                                 ndexSpinner.stopSpinner();
                                                 forgot.errorMsg = 'Unable to get User Id for user ' +
                                                     $scope.forgot.accountName + ' and request password reset.';
                                                 $scope.isProcessing = false;
                                             }
                                         },
-                                        function(error){
+                                        function (error) {
                                             ndexSpinner.stopSpinner();
-                                            forgot.errorMsg =  error.message;
+                                            forgot.errorMsg = error.message;
                                             $scope.isProcessing = false;
                                         });
                                 };
@@ -608,7 +606,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                     $uibModalInstance.dismiss();
                                 };
 
-                                $scope.$watch('forgot.accountName', function() {
+                                $scope.$watch('forgot.accountName', function () {
                                     delete $scope.forgot.successMsg;
                                     delete $scope.forgot.errorMsg;
                                 });
@@ -633,7 +631,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                         ndexSpinner.startSpinner(spinner);
 
                         ndexService.authenticateUserWithGoogleIdToken(
-                            function(data) {
+                            function (data) {
                                 ndexSpinner.stopSpinner();
                                 sharedProperties.setCurrentUser(data.externalId, data.userName);
 
@@ -648,7 +646,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                 $uibModalInstance.dismiss();
                             },
-                            function(error) {
+                            function (error) {
                                 ndexSpinner.stopSpinner();
 
                                 if (error) {
@@ -671,22 +669,22 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                                 delete $scope.errors;
 
-                                                $scope.cancel = function() {
+                                                $scope.cancel = function () {
                                                     $uibModalInstance.dismiss();
                                                 };
 
-                                                $scope.back = function() {
+                                                $scope.back = function () {
                                                     $uibModalInstance.dismiss();
                                                     $rootScope.$emit('SHOW_SIGN_IN_SIGN_UP_MODAL');
                                                 };
 
-                                                $scope.counter               = 0;
-                                                $scope.maxCounterValue       = 99999;
+                                                $scope.counter = 0;
+                                                $scope.maxCounterValue = 99999;
                                                 $scope.limitOfUserNameLength = 95;
-                                                $scope.userName              = null;
+                                                $scope.userName = null;
 
 
-                                                $scope.createUserWithGoogleIdTokenAndUsername = function(uniqueUserName) {
+                                                $scope.createUserWithGoogleIdTokenAndUsername = function (uniqueUserName) {
                                                     ndexService.createUserWithGoogleIdTokenV2(uniqueUserName,
                                                         function () {
                                                             ndexService.authenticateUserWithGoogleIdToken(
@@ -715,10 +713,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                         });
                                                 };
 
-                                                $scope.buildUniqueUserNameAndSignup = function(userName) {
+                                                $scope.buildUniqueUserNameAndSignup = function (userName) {
 
                                                     ndexService.getUserByUserNameV2(userName,
-                                                        function() {
+                                                        function () {
                                                             // user with userName already exists, try a new user name
                                                             // by incrementing counter and concatinating it with original user name
 
@@ -733,7 +731,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                             var newName = $scope.userName + $scope.counter;
                                                             $scope.buildUniqueUserNameAndSignup(newName);
                                                         },
-                                                        function(error) {
+                                                        function (error) {
 
                                                             if (error && error.errorCode && error.errorCode === 'NDEx_Object_Not_Found_Exception') {
 
@@ -744,7 +742,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                                                         });
                                                 };
 
-                                                $scope.signUpWithGoogle = function() {
+                                                $scope.signUpWithGoogle = function () {
                                                     $scope.isProcessing = true;
                                                     delete $scope.errors;
 
@@ -753,7 +751,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                                                     // get user email and truncate it from @ to the end to get user name
                                                     var userEmail = curUser.getBasicProfile().getEmail();
-                                                    var userName  =  userEmail.replace(/@.*$/,'');
+                                                    var userName = userEmail.replace(/@.*$/, '');
 
                                                     if (userName.length > $scope.limitOfUserNameLength) {
                                                         // get first $scope.limitOfUserNameLength of user name
@@ -791,7 +789,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                         $scope.signIn.userName = null;
                         $scope.signIn.password = null;
 
-                        gapi.auth2.getAuthInstance().signIn({prompt:'consent select_account'}).then(googleUserHandler, googleFailureHandler);
+                        gapi.auth2.getAuthInstance().signIn({prompt: 'consent select_account'}).then(googleUserHandler, googleFailureHandler);
                     };
                 }
             });
@@ -819,7 +817,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
          *   Opera:   Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36 OPR/56.0.3051.43
          *
          */
-        $scope.main.isSupportedBrowserUsed = function() {
+        $scope.main.isSupportedBrowserUsed = function () {
 
             $scope.main.showSignIn = true;
 
@@ -846,40 +844,32 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             signOutHandler();
         };
 
-        $scope.main.handleStorageEvent = function(event)
-        {
-            if (event.key === 'loggedInUser')
-            {
+        $scope.main.handleStorageEvent = function (event) {
+            if (event.key === 'loggedInUser') {
                 // we need to use  /** @type {boolean} */ below to silence up Webstorm's
                 // "Binary operation argument type string is not compatible with type null" warning
-                if (event.newValue === /** @type {boolean} */null || event.newValue === 'null')
-                {
+                if (event.newValue === /** @type {boolean} */null || event.newValue === 'null') {
                     $scope.main.signout();
                 }
             }
         };
 
-        if (window.addEventListener)
-        {
+        if (window.addEventListener) {
             window.addEventListener('storage', $scope.main.handleStorageEvent, false);
-        }
-        else
-        {
+        } else {
             window.attachEvent('onstorage', $scope.main.handleStorageEvent);
         }
 
         //The purpose of the heart beat is measure the time since the app was last used.
         var lastHeartbeat = localStorage.getItem('last-heartbeat');
-        if( lastHeartbeat && window.currentSignInType === 'basic')
-        {
-            if( Date.now() - lastHeartbeat > $scope.config.idleTime * 1000 ) {
+        if (lastHeartbeat && window.currentSignInType === 'basic') {
+            if (Date.now() - lastHeartbeat > $scope.config.idleTime * 1000) {
                 $scope.main.signout();
             }
         }
 
-        var recordHeartbeat = function()
-        {
-            localStorage.setItem('last-heartbeat', Date.now() );
+        var recordHeartbeat = function () {
+            localStorage.setItem('last-heartbeat', Date.now());
         };
 
 
@@ -898,8 +888,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         }
 
         //Whenever the browser or a tab containing the app is closed or reloaded, record the heart beat.
-        window.onbeforeunload = function ()
-        {
+        window.onbeforeunload = function () {
             /*
             if ($scope.main.loggedIn) {
                 // for logged in users only, remember the View name where reload was just performed
@@ -910,7 +899,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         //To avoid affecting other controllers, destroy window.onbeforeunload when this controller goes out of scope.
-        $scope.$on('$destroy', function() {
+        $scope.$on('$destroy', function () {
             delete window.onbeforeunload;
         });
 
@@ -929,10 +918,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         $scope.main.searchType = 'All';
         const SEARCH_PLACEHOLDER_TEXT_MAP = {
-            All : 'Search for networks, users, and groups',
-            Networks : 'Search for networks',
-            Users : 'Search for users',
-            Groups : 'Search for groups'
+            All: 'Search for networks, users, and groups',
+            Networks: 'Search for networks',
+            Users: 'Search for users',
+            Groups: 'Search for groups'
         };
 
         /*
@@ -944,12 +933,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             }
         ];
         */
-        
-        $scope.main.getSearchPlaceholder = function(){
+
+        $scope.main.getSearchPlaceholder = function () {
             //console.log("placeholder for " + $scope.main.searchType);
             return SEARCH_PLACEHOLDER_TEXT_MAP[$scope.main.searchType];
         };
-        
+
         $scope.main.searchString = '';
         $scope.main.search = function () {
             delete $scope.stringTooLongWarning;
@@ -968,7 +957,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             $location.search({
                 'searchType': $scope.main.searchType,
                 'searchString': searchStringEncoded,
-                'searchTermExpansion':  ($scope.main.searchTermExpansionSelected && $scope.searchTermExpansionEnabled)
+                'searchTermExpansion': ($scope.main.searchTermExpansionSelected && $scope.searchTermExpansionEnabled)
             });
 
 
@@ -988,20 +977,20 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         }
         */
 
-/*
-        $scope.main.searchAllExamples = [
-            {
-                description: 'Any mention of "melanoma"',
-                searchString: 'melanoma',
-                searchType: 'All'
-            },
-            
-            {
-                description: 'Any mention of "RBL2"',
-                searchString: 'RBL2',
-                searchType: 'All'
-            }];
-*/
+        /*
+                $scope.main.searchAllExamples = [
+                    {
+                        description: 'Any mention of "melanoma"',
+                        searchString: 'melanoma',
+                        searchType: 'All'
+                    },
+
+                    {
+                        description: 'Any mention of "RBL2"',
+                        searchString: 'RBL2',
+                        searchType: 'All'
+                    }];
+        */
         $scope.main.searchNetworksExamples = [
 
             {
@@ -1039,33 +1028,33 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 searchString: 'creationTime:[2016-01-01T00:00:01Z TO 2016-04-27T23:59:59Z]',
                 searchType: 'Networks'
             }
-            
-/*
-            {
-                description: 'By wildcard terms: "mel*"',
-                searchString: 'mel*',
-                searchType: 'Networks'
-            },
-            {
-                description: 'With more complex "AND" : "NCI AND edgeCount:[100 TO 300]"',
-                searchString: 'NCI AND edgeCount:[100 TO 300]',
-                searchType: 'Networks'
-            },
-            /*
-             name:metabolism AND edgeCount:[1 TO 5000]
-             creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]
 
-            */
+            /*
+                        {
+                            description: 'By wildcard terms: "mel*"',
+                            searchString: 'mel*',
+                            searchType: 'Networks'
+                        },
+                        {
+                            description: 'With more complex "AND" : "NCI AND edgeCount:[100 TO 300]"',
+                            searchString: 'NCI AND edgeCount:[100 TO 300]',
+                            searchType: 'Networks'
+                        },
+                        /*
+                         name:metabolism AND edgeCount:[1 TO 5000]
+                         creationTime:[2016-02-26T00:00:01Z TO 2016-02-27T23:59:59Z]
+
+                        */
         ];
 
-        $scope.main.runSearchExample = function(example){
+        $scope.main.runSearchExample = function (example) {
             $scope.main.searchString = example.searchString;
             $scope.main.searchType = example.searchType;
             $scope.main.search();
 
         };
 
-        $scope.main.browse = function(){
+        $scope.main.browse = function () {
             $scope.main.searchString = '';
             $scope.main.searchType = 'All';
             $scope.main.search();
@@ -1095,20 +1084,20 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // citation that will be copied to clipboard; we replace HTML new break line chars (<br>) with ascii "\n"
         // $scope.NDEx.citationProcessed = $scope.NDEx.citation.replace(/<br>/g, "\n");
 
-/*
-        $scope.NDEx.openQuoteNDExModal = function () {
-            $scope.NDEx.modalInstance = $modal.open({
-                templateUrl: 'quoteNDEx.html',
-                scope: $scope,
-                backdrop: 'static'
-            });
-        };
+        /*
+                $scope.NDEx.openQuoteNDExModal = function () {
+                    $scope.NDEx.modalInstance = $modal.open({
+                        templateUrl: 'quoteNDEx.html',
+                        scope: $scope,
+                        backdrop: 'static'
+                    });
+                };
 
-        $scope.NDEx.closeModal = function () {
-            $scope.NDEx.modalInstance.close();
-            $scope.NDEx.modalInstance = null;
-        };
-*/
+                $scope.NDEx.closeModal = function () {
+                    $scope.NDEx.modalInstance.close();
+                    $scope.NDEx.modalInstance = null;
+                };
+        */
 
         /*----------------------------------------------
          External Link Handling
@@ -1119,7 +1108,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
          * was configured to follow the link "silently" or warn user about navigating
          * to an external domain.
          */
-        $scope.redirectToExternalLink = function(redirectObj) {
+        $scope.redirectToExternalLink = function (redirectObj) {
 
             if (redirectObj.showWarning) {
                 var choice = window.confirm(redirectObj.warning + '\n' + redirectObj.href);
@@ -1138,123 +1127,122 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         };
 
-        $scope.goToLandingPage = function() {
+        $scope.goToLandingPage = function () {
             $location.path('/');
         };
 
-        $scope.collapseHamburgerMenu = function() {
+        $scope.collapseHamburgerMenu = function () {
             $('.navbar-collapse.in').collapse('hide');
         };
-        $scope.collapseHamburgerMenuAfterMs = function(timeInMs) {
-            setTimeout(function() {
+        $scope.collapseHamburgerMenuAfterMs = function (timeInMs) {
+            setTimeout(function () {
                 $scope.collapseHamburgerMenu();
             }, timeInMs);
         };
 
 
+        $scope.showSearchBar = function () {
 
-         $scope.showSearchBar = function() {
+            $modal.open({
+                templateUrl: 'views/search-modal.html',
+                //keyboard: true,
+                scope: $scope,
+                windowClass: 'popup_search_bar_modal',
 
-             $modal.open({
-                 templateUrl: 'views/search-modal.html',
-                 //keyboard: true,
-                 scope: $scope,
-                 windowClass: 'popup_search_bar_modal',
+                controller: function ($scope, $modalInstance) {
 
-                 controller: function($scope, $modalInstance) {
+                    $scope.title = 'Search';
 
-                     $scope.title = 'Search';
+                    $scope.cancel = function () {
+                        $modalInstance.dismiss();
+                    };
 
-                     $scope.cancel = function() {
-                         $modalInstance.dismiss();
-                     };
-
-                     $scope.closeModal = function() {
-                         $modalInstance.close();
-                     };
-                 }
-             });
-         };
-
-
-         $scope.checkSearchTypeAndTermExpansion = function() {
-
-             var foundNotAllowedInSearchExpansion = false;
-             $scope.searchTermExpansionEnabled = false;
+                    $scope.closeModal = function () {
+                        $modalInstance.close();
+                    };
+                }
+            });
+        };
 
 
-             if ($scope.main.searchType.toUpperCase() === 'USERS') {
-                 $scope.main.searchTitle = 'Search Term Expansion is not available when performing a User search';
-                 return true;
-             }
-             if ($scope.main.searchType.toUpperCase() === 'GROUPS') {
-                 $scope.main.searchTitle = 'Search Term Expansion is not available when performing a Group search';
-                 return true;
-             }
+        $scope.checkSearchTypeAndTermExpansion = function () {
 
-             if (!$scope.main.searchTermExpansionSelected) {
-                 $scope.main.searchTitle = searchTitle;
-                 $scope.searchTermExpansionEnabled = true;
-                 return false;
-             }
+            var foundNotAllowedInSearchExpansion = false;
+            $scope.searchTermExpansionEnabled = false;
 
 
-             _.forEach($scope.notAllowedInSearchExpansionEqual, function(term) {
-                 if ($scope.main.searchString.trim() === term) {
-                     foundNotAllowedInSearchExpansion = true;
-                     // the return false;  statement breaks out of the current lodash _.forEach loop
-                     return false;
-                 }
-             });
-             if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
-                 return true;
-             }
+            if ($scope.main.searchType.toUpperCase() === 'USERS') {
+                $scope.main.searchTitle = 'Search Term Expansion is not available when performing a User search';
+                return true;
+            }
+            if ($scope.main.searchType.toUpperCase() === 'GROUPS') {
+                $scope.main.searchTitle = 'Search Term Expansion is not available when performing a Group search';
+                return true;
+            }
+
+            if (!$scope.main.searchTermExpansionSelected) {
+                $scope.main.searchTitle = searchTitle;
+                $scope.searchTermExpansionEnabled = true;
+                return false;
+            }
 
 
-             _.forEach($scope.notAllowedInSearchExpansionStart, function(term) {
-
-                 if ($scope.main.searchString.startsWith(term)) {
-                     foundNotAllowedInSearchExpansion = true;
-                     // the return false;  statement breaks out of the current lodash _.forEach loop
-                     return false;
-                 }
-             });
-             if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
-                 return true;
-             }
-
-             _.forEach($scope.notAllowedInSearchExpansion, function(term) {
-
-                 if ($scope.main.searchString.indexOf(term) > -1) {
-                     foundNotAllowedInSearchExpansion = true;
-                     // the return false;  statement breaks out of the current lodash _.forEach loop
-                     return false;
-                 }
-             });
-             if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
-                 return true;
-             }
+            _.forEach($scope.notAllowedInSearchExpansionEqual, function (term) {
+                if ($scope.main.searchString.trim() === term) {
+                    foundNotAllowedInSearchExpansion = true;
+                    // the return false;  statement breaks out of the current lodash _.forEach loop
+                    return false;
+                }
+            });
+            if (foundNotAllowedInSearchExpansion) {
+                $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
+                return true;
+            }
 
 
-             _.forEach($scope.notAllowedInSearchExpansionEnd, function(term) {
-                 if ($scope.main.searchString.endsWith(term)) {
-                     foundNotAllowedInSearchExpansion = true;
-                     // the return false;  statement breaks out of the current lodash _.forEach loop
-                     return false;
-                 }
-             });
-             if (foundNotAllowedInSearchExpansion) {
-                 $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
-                 return true;
-             }
+            _.forEach($scope.notAllowedInSearchExpansionStart, function (term) {
 
-             $scope.main.searchTitle = searchTitle;
-             $scope.searchTermExpansionEnabled = true;
-             return false;
-         };
+                if ($scope.main.searchString.startsWith(term)) {
+                    foundNotAllowedInSearchExpansion = true;
+                    // the return false;  statement breaks out of the current lodash _.forEach loop
+                    return false;
+                }
+            });
+            if (foundNotAllowedInSearchExpansion) {
+                $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
+                return true;
+            }
+
+            _.forEach($scope.notAllowedInSearchExpansion, function (term) {
+
+                if ($scope.main.searchString.indexOf(term) > -1) {
+                    foundNotAllowedInSearchExpansion = true;
+                    // the return false;  statement breaks out of the current lodash _.forEach loop
+                    return false;
+                }
+            });
+            if (foundNotAllowedInSearchExpansion) {
+                $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
+                return true;
+            }
+
+
+            _.forEach($scope.notAllowedInSearchExpansionEnd, function (term) {
+                if ($scope.main.searchString.endsWith(term)) {
+                    foundNotAllowedInSearchExpansion = true;
+                    // the return false;  statement breaks out of the current lodash _.forEach loop
+                    return false;
+                }
+            });
+            if (foundNotAllowedInSearchExpansion) {
+                $scope.main.searchTitle = 'Search Term Expansion is not compatible with Lucene syntax (Boolean operators)';
+                return true;
+            }
+
+            $scope.main.searchTitle = searchTitle;
+            $scope.searchTermExpansionEnabled = true;
+            return false;
+        };
 
 
         /*----------------------------------------------
@@ -1275,8 +1263,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             registerSignedInUser(window.currentNdexUser);
         }
 
-
-        var showSignInSignUpEventHandler = function() {
+        var showSignInSignUpEventHandler = function () {
             $scope.collapseHamburgerMenu();
             $scope.main.showSignInSignUpOptions();
         };
@@ -1284,7 +1271,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         $rootScope.$on('SHOW_SIGN_IN_SIGN_UP_MODAL', showSignInSignUpEventHandler);
 
 
-        var fillInTopMenu = function(content) {
+        var fillInTopMenu = function (content) {
 
             if (!(content.hasOwnProperty('topMenu') && Array.isArray(content.topMenu) && content.topMenu.length > 0)) {
                 return;
@@ -1313,20 +1300,36 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
 
-        var getTopMenu = function() {
-            var topMenuConfig  = window.ndexSettings.landingPageConfigServer + '/topmenu.json';
+        var getTopMenu = function () {
+            var topMenuConfig = window.ndexSettings.landingPageConfigServer + '/topmenu.json';
 
             ndexService.getObjectViaEndPointV2(topMenuConfig,
-                function(content) {
-                    fillInTopMenu(content);
-                },
-                function(error) {
+                    fillInTopMenu,
+                function (error) {
                     alert('unable to get Top Menu configuration file ' + topMenuConfig);
                 }
             );
         };
 
         getTopMenu();
+
+        // convert a type and uuid tuple to a URL which points to the object in this web app.
+        // return null if the type is not a valid NDEx type.
+        function getNDExLink(type, uuid) {
+
+            if (type === null) return null;
+
+            var ndexObjectTypes = new Set(['user', 'group', 'networkset', 'network']);
+
+            var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
+            if (ndexServer && !ndexServer.endsWith('/')) {
+                ndexServer = ndexServer + '/';
+            }
+
+            if (ndexObjectTypes.has(type))
+                return  ndexServer + type + '/' + uuid;
+        }
+
 
         function fillInFeaturedContentChannel(featuredContent) {
 
@@ -1341,66 +1344,35 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             $scope.carouselInterval = window.ndexSettings.featuredContentScrollIntervalInMs;
 
-            var featuredContentTypes = new Set(['user', 'group', 'networkset', 'network', 'webpage', 'publication']);
-
-            var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
-            if (ndexServer && !ndexServer.endsWith('/')) {
-                ndexServer = ndexServer + '/';
-            }
-
             _.forEach(featuredContent.items, function(featuredItem) {
 
                 var type = featuredItem.hasOwnProperty('type') ? featuredItem.type.toLowerCase() : null;
 
-                if (!(featuredContentTypes.has(type))) {
-                    // unknown type or null - return, i.e., get the next element from featuredContent.items
-                    return;
-                }
-
                 var imageUrl = featuredItem.hasOwnProperty('imageURL') ?  featuredItem.imageURL : null;
                 var text     = featuredItem.title + '<br>' + featuredItem.text;
-                var link     = null;
+                var link     = getNDExLink(type,featuredItem.UUID);
 
-                switch(type) {
+                if ( null === imageUrl && type === 'networkset') {
+                    imageUrl = 'images/default_networkSet.png';
+                }
 
-                    case 'user':
-                        link = ndexServer + 'user/' +  featuredItem.UUID;
-                        break;
-
-                    case 'group':
-                        link = ndexServer + 'group/' +  featuredItem.UUID;
-                        break;
-
-                    case 'networkset':
-                        link = ndexServer + 'networkset/' +  featuredItem.UUID;
-                        if (null === imageUrl) {
-                            imageUrl = 'images/default_networkSet.png';
-                        }
-                        break;
-
-                    case 'network':
-                        link = ndexServer + 'network/' +  featuredItem.UUID;
-                        break;
-
-                    case 'webpage':
+                if (link === null) {
+                    if (type === 'webpage' || type === 'publication')
                         link = featuredItem.URL;
-                        break;
+                }
 
-                    case 'publication':
-                        link = featuredItem.DOI;
-                        break;
-
-                    default:
-                        // this should never happen since feature type is validated at this point
-                        return;
+                if (link === null) {
+                    alert("Can't create URL for entry '" + featuredItem.title + "'" );
+                    return;   // this element won't be enable in this case.
                 }
 
                 slides.push({
                     'image': imageUrl,
-                    'text':  text,
-                    'link':  link,
-                    'id':    currIndex++
+                    'text': text,
+                    'link': link,
+                    'id': currIndex++
                 });
+
             });
 
             $scope.featuredContentDefined = slides.length > 0;
@@ -1410,9 +1382,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             var featuredContentConfig  = window.ndexSettings.landingPageConfigServer + '/featured_content.json';
 
             ndexService.getObjectViaEndPointV2(featuredContentConfig,
-                function(featuredContent) {
-                    fillInFeaturedContentChannel(featuredContent);
-                },
+                    fillInFeaturedContentChannel,
                 function(error) {
                     alert('unable to get Featured Content configuration file ' + featuredContentConfig);
                 }
@@ -1420,8 +1390,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         getFeaturedContentChannel();
-
-
 
         function fillInFeaturedNetworksDropDown(featuredNetworks) {
 
@@ -1433,54 +1401,20 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 return;
             }
 
-            var featuredContentTypes = new Set(['user', 'group', 'networkset', 'network']);
-
-            var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
-            if (ndexServer && !ndexServer.endsWith('/')) {
-                ndexServer = ndexServer + '/';
-            }
-
             _.forEach(featuredNetworks.items, function(featuredItem) {
 
                 var type = featuredItem.hasOwnProperty('type') ? featuredItem.type.toLowerCase() : null;
 
-                if (!(featuredContentTypes.has(type))) {
+                var link = getNDExLink(type,featuredItem.UUID);
+
+                if (link === null) {
                     // unknown type or null - return, i.e., get the next element from featuredNetworks.items
-                    return;
+                    alert("Can't create URL for entry '" + featuredItem.title + "'" );
+                    return;  // featured networks won't be enabled in this case.
                 }
 
-                var link = null;
-
-                switch(type) {
-
-                    case 'user':
-                        link = ndexServer + 'user/' +  featuredItem.UUID;
-                        break;
-
-                    case 'group':
-                        link = ndexServer + 'group/' +  featuredItem.UUID;
-                        break;
-
-                    case 'networkset':
-                        link = ndexServer + 'networkset/' +  featuredItem.UUID;
-                        break;
-
-                    case 'network':
-                        link = ndexServer + 'network/' +  featuredItem.UUID;
-                        break;
-
-                    default:
-                        // this should never happen since feature type is validated at this point
-                        return;
-                }
-
-                var dropDownItem = featuredItem.hasOwnProperty('dropdownDisplayName') ?
-                    uiMisc.stripHTML(featuredItem.dropdownDisplayName) : null;
-
-                if (dropDownItem === null) {
-                    dropDownItem = featuredItem.hasOwnProperty('title') ?
+                var dropDownItem = featuredItem.hasOwnProperty('title') ?
                         uiMisc.stripHTML(featuredItem.title) : 'drop down item ' + (currIndex - 1);
-                }
 
                 $scope.featuredNetworksDropDown.push(
                     {
@@ -1497,10 +1431,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             var featuredNetworksConfig  = window.ndexSettings.landingPageConfigServer + '/featured_networks.json';
 
             ndexService.getObjectViaEndPointV2(featuredNetworksConfig,
-                function(featuredNetworks) {
-
-                    fillInFeaturedNetworksDropDown(featuredNetworks);
-                },
+                    fillInFeaturedNetworksDropDown,
                 function(error) {
                     alert('unable to get Featured Networks configuration file ' + featuredNetworksConfig);
                 }
@@ -1508,8 +1439,6 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         getFeaturedNetworksDropDownMenu();
-
-
 
         var fillInMainChannel = function(content) {
 
@@ -1560,11 +1489,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             var mainContentConfig  = window.ndexSettings.landingPageConfigServer + '/main.json';
 
             ndexService.getObjectViaEndPointV2(mainContentConfig,
-                function(mainContent) {
-                    fillInMainChannel(mainContent);
-                },
+                    fillInMainChannel,
                 function(error) {
-                    alert('unable to get Main Content configuration file ' + mainContentConfig);
+                    alert('unable to get Main Content configuration file ' + mainContentConfig + ". Error: " + error.getMessage());
                 }
             );
         };
@@ -1608,9 +1535,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
             var logosConfig  = window.ndexSettings.landingPageConfigServer + '/logos.json';
 
             ndexService.getObjectViaEndPointV2(logosConfig,
-                function(content) {
-                    fillInLogosChannel(content);
-                },
+                    fillInLogosChannel,
                 function(error) {
                     alert('unable to get Logos Content configuration file ' + logosConfig);
                 }
