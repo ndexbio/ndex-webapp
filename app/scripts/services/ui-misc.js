@@ -853,5 +853,14 @@ angular.module('ndexServiceApp')
 
             scope.network = {};
         };
+
+        /*
+         * stripHTML removes html from a string (using jQuery) and returns text.
+         * In case string contains no html, the function returns empty string; to avoid
+         * returning empty string, we wrap string in '<html> ... </html>' tags.
+         */
+        self.stripHTML = function(html) {
+            return $('<html>'+html+'</html>').text();
+        };
     }
 ]);
