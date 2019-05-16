@@ -13,7 +13,7 @@
     "cytoscape": "3.3.0",
     "cytoscape-qtip": "2.7.1",
     "cytoscape-cx2js": "0.5.3",
-    "cyannotation-cx2js": "0.4.2",
+    "cyannotation-cx2js": "0.6.0",
     "lodash": "4.17.11",
     "angular-file-upload": "2.3.4",
     "font-awesome": "4.7.0",
