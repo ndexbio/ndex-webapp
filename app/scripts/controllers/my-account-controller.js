@@ -1,10 +1,10 @@
 ndexApp.controller('myAccountController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$rootScope',
         '$location', '$routeParams', '$route', '$modal', 'uiMisc', 'ndexNavigation', 'uiGridConstants', 'ndexSpinner',
-         '$compile', 'userSessionTablesSettings',
+         '$compile', 'userSessionTablesSettings', '$interval',
         function (ndexService, ndexUtility, sharedProperties, $scope, $rootScope,
                   $location, $routeParams, $route, $modal, uiMisc, ndexNavigation, uiGridConstants, ndexSpinner,
-                  $compile, userSessionTablesSettings) {
+                  $compile, userSessionTablesSettings, $interval) {
             //              Process the URL to get application state
             //-----------------------------------------------------------------------------------
 
@@ -108,18 +108,18 @@ ndexApp.controller('myAccountController',
             // (can also use "$locationChangeStart" instead of "$destroy"
             $scope.$on('$destroy', function(){
 
+                if ((refreshIntervalInSeconds > 0) && (timerVariable !== -1)) {
+                    $interval.cancel(timerVariable);
+                }
+
                 if ($rootScope.signOut) {
                     // in case user hit Sign Out, need to clear sessionStorage since the current
                     // $scope.$on("$destroy", function() handler might be called AFTER
                     // signOutHandler() handler in main.js
                     $rootScope.signOut = false;
                     userSessionTablesSettings.clearState();
-
                 }
 
-                if ((refreshIntervalInSeconds > 0) && (timerVariable !== -1)) {
-                    clearInterval(timerVariable);
-                }
             });
 
             $scope.diskSpaceInfo = {};
@@ -1383,7 +1383,7 @@ ndexApp.controller('myAccountController',
             $scope.getCredentialsForExportedNetworkDownload = function(taskId) {
                 var link = ndexService.getNdexServerUri() + '/task/' + taskId + '/file?download=true';
                 var anchor = document.createElement('a');
-                var myId = taskId + '';
+                //var myId = taskId + '';
 
                 if (window.currentSignInType === 'google') {
                     /** @namespace gapi.auth2.getAuthInstance.currentUser.get.getAuthResponse.id_token **/
@@ -3560,7 +3560,7 @@ ndexApp.controller('myAccountController',
                 }
 
                 if ((refreshIntervalInSeconds > 0) && (timerVariable !== -1)) {
-                    clearInterval(timerVariable);
+                    $interval.cancel(timerVariable);
                 }
 
                 // start spinner if it is not already started
@@ -3583,7 +3583,7 @@ ndexApp.controller('myAccountController',
                 }
 
                 if ((refreshIntervalInSeconds > 0) && (timerVariable !== -1)) {
-                    clearInterval(timerVariable);
+                    $interval.cancel(timerVariable);
                 }
 
                 myAccountController.checkAndRefreshMyTaskAndNotification();
@@ -3637,9 +3637,10 @@ ndexApp.controller('myAccountController',
 
                     if (refreshIntervalInSeconds > 0) {
                         if (timerVariable !== -1) {
-                            clearInterval(timerVariable);
+                            $interval.cancel(timerVariable);
                         }
-                        timerVariable = setInterval(myAccountController.loadNetworksTasksAndRequests,
+
+                        timerVariable = $interval(myAccountController.loadNetworksTasksAndRequests,
                             refreshIntervalInSeconds * 1000);
                     }
                 }
