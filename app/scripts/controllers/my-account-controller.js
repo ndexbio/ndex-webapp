@@ -1393,7 +1393,7 @@ ndexApp.controller('myAccountController',
 
                 else if (window.currentSignInType === 'basic') {
                     var userCredentials = ndexUtility.getUserCredentials();
-                    anchor.setAttribute('href', link + '&auth_token=' +  btoa(userCredentials['userName'] + ':' +userCredentials['token']));
+                    anchor.setAttribute('href', link + '&auth_token=' +  btoa(userCredentials.userName + ':' + userCredentials.token));
                  //   anchor.setAttribute('id', myId);
                 //    anchor.username = userCredentials.userName;
                 //    anchor.password = userCredentials.token;
@@ -2808,6 +2808,12 @@ ndexApp.controller('myAccountController',
 
                             var groupsUUIDs = Object.keys(userMembershipsMap);
 
+                            if (!groupsUUIDs.length) {
+                                myAccountController.groupSearchResults = [];
+                                myAccountController.originalGroupSearchResults = [];
+                                return;
+                            }
+
                             ndexService.getGroupsByUUIDsV2(groupsUUIDs)
                                 .success(
                                     function (groupList) {
@@ -3096,6 +3102,12 @@ ndexApp.controller('myAccountController',
                     {
                         var userUUIDs = getUsersUUIDs(requests);
 
+                        if (!userUUIDs.length) {
+                            myAccountController.sentRequests = [];
+                            successHandler();
+                            return;
+                        }
+
                         ndexService.getUsersByUUIDsV2(userUUIDs)
                             .success(
                                 function (userList) {
@@ -3140,6 +3152,12 @@ ndexApp.controller('myAccountController',
                     function (requests)
                     {
                         var userUUIDs = getUsersUUIDs(requests);
+
+                        if (!userUUIDs.length) {
+                            myAccountController.pendingRequests = [];
+                            successHandler();
+                            return;
+                        }
 
                         ndexService.getUsersByUUIDsV2(userUUIDs)
                             .success(
