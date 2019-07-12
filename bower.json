@@ -30,7 +30,7 @@
     "slick-carousel": "^1.8.1",
     "angular-slick": "^0.2.1",
     "ngtweet": "^1.0.0",
-    "angular-bootstrap-toggle": "0.4.2",
+    "angular-bootstrap-toggle": "^0.4.2",
     "cytoscape-canvas": "https://github.com/dotasek/cytoscape.js-canvas.git#^4.0.1"
   },
   "appPath": "app",
@@ -41,6 +41,12 @@
         "less/bootstrap.less",
         "dist/css/bootstrap.css",
         "dist/js/bootstrap.js"
+      ]
+    },
+    "angular-bootstrap-toggle": {
+      "main": [
+        "dist/angular-bootstrap-toggle.min.css",
+        "dist/angular-bootstrap-toggle.min.js"
       ]
     }
   }
