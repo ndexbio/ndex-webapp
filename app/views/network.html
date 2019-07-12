@@ -90,15 +90,21 @@
                     </span>
                 </p>
             </div>
+            <div ng-show="networkController.successfullyQueried" >
+                <button type="button"
+                        class="btn btn-primary"
+                        ng-click="networkController.backToOriginalNetwork($event)">
+                    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                    Back To Original Network
+                </button>
 
-            <button type="button"
-                    class="btn btn-primary"
-                    ng-click="networkController.backToOriginalNetwork($event)"
-                    ng-show="networkController.successfullyQueried">
-                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-                Back To Original Network
-            </button>
+                <div  class="networkPropertyName pull-right">
+                    Highlight Query Node:
+                    <toggle ng-model="networkController.highlightNodes"
+                       ng-change="networkController.toggleHighlight()"  on-class="btn-primary"></toggle>
 
+                </div>
+            </div>
             <div class="networkActionsSection"
                  ng-show="!networkController.successfullyQueried"
                  id="simpleQueryNetworkViewId">
@@ -673,7 +679,7 @@
                                             <option value="">[Select Node Property Name]</option>
                                             <option disabled role="separator">━━━━━━━━━━━━━━━</option>
                                             <option value="ndex:name">name</option>
-                                            <!--
+
                                             <option value="ndex:nameOrTermName">nameOrTermName</option>
                                             <option value="ndex:functionTermType">functionTermType</option>
                                             -->

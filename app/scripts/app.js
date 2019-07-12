@@ -4,7 +4,7 @@ var ndexApp = angular.module('ndexApp',
     ['ngRoute', 'ngResource', 'ngTouch', 'ngSanitize', 'ndexServiceApp',//'ngDialog',
      'ui.bootstrap', 'angularFileUpload', 'uiServiceApp', 'ui.grid', 'ui.grid.resizeColumns',
      'ui.grid.selection', 'ui.grid.expandable', 'ui.grid.pinning', 'ui.grid.pagination',
-      'ngclipboard', 'textAngular', 'ngtweet', 'slick','angular-google-analytics']);
+      'ngclipboard', 'textAngular', 'ngtweet', 'slick','angular-google-analytics', 'ui.toggle']);
 
 ndexApp.filter('encodeURIComponent', function() {
     return window.encodeURIComponent;

@@ -74,6 +74,8 @@ ndexApp.controller('networkController',
             
             var cy;
 
+            var directQueryName = "Direct";
+
             var currentNetworkSummary;
             var networkExternalId = $routeParams.identifier;
             var accesskey         = $routeParams.accesskey;
@@ -101,6 +103,8 @@ ndexApp.controller('networkController',
             networkController.sampleSizePrevious=0;
 
             networkController.successfullyQueried = false;
+            networkController.highlightNodes = true;
+
 
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
 
@@ -304,6 +308,24 @@ ndexApp.controller('networkController',
             };
             $scope.isNetworkCertified = function() {
                 return uiMisc.isNetworkCertified(networkController.currentNetwork);
+            };
+
+
+            var changeHighlightOnCy = function (cy, highlightNodes) {
+                if ( highlightNodes) {
+                    cy.elements().addClass('faded');
+                    var query = cy.filter('node[querynode = "true" ]');
+                    query.addClass('highlight')
+                } else {
+                    cy.elements()
+                        .removeClass('faded')
+                        .removeClass('highlight')
+                }
+            };
+
+            networkController.toggleHighlight = function () {
+                var cy = window.cy;
+                changeHighlightOnCy(cy, networkController.highlightNodes);
             };
 
             var showCitations = function(citations)
@@ -720,45 +742,6 @@ ndexApp.controller('networkController',
                 return numOfCitations;
             };
 
-            /* no longer used. To be deleted after review.
-            $scope.getNumEdgeNdexCitations = function(citations)
-            {
-                var numOfCitations = 0;
-
-                if (citations) {
-                    if (_.isArray(citations)) {
-                        numOfCitations = citations.length;
-
-                    } else if (_.isString(citations)) {
-                        numOfCitations = 1;
-
-                    }
-                }
-
-                return numOfCitations;
-            };  */
-
-       /*   no longer used. To be deleted after review.
-            $scope.getNumNodeCitations = function(nodeKey)
-            {
-                var numOfCitations = 0;
-
-                if (localNetwork && localNetwork.nodeCitations && localNetwork.nodeCitations[nodeKey]) {
-                    numOfCitations = localNetwork.nodeCitations[nodeKey].length;
-                }
-                return numOfCitations;
-            };  */
-
-       /*
-            No longer used to be deleted after review.
-            $scope.getNumNodeAttributes = function(nodeAttributesObj)
-            {
-                var numOfNodeAttributes = 0;
-                if (nodeAttributesObj && nodeAttributesObj.v) {
-                    numOfNodeAttributes = nodeAttributesObj.v.length;
-                }
-                return numOfNodeAttributes;
-            }; */
             $scope.getNumOfAttributes = function(edgeAttributesObj)
             {
                 var numOfEdgeAttributes = 1;
@@ -863,7 +846,7 @@ ndexApp.controller('networkController',
                     'type': 'query'
                 },
                 {
-                    'name': 'Direct',
+                    'name': directQueryName,
                     'searchDepth': 1,
                     'type': 'interconnect'
 
@@ -1068,6 +1051,13 @@ ndexApp.controller('networkController',
 
                     var cyAnnotationService = new cyannotationCx2js.CxToCyCanvas(cyService);
                     cyAnnotationService.drawAnnotationsFromNiceCX(cy, cxNetwork);
+
+
+                    // highlighting query nodes if displaying query result
+                    if ( networkController.successfullyQueried && networkController.highlightNodes)
+                        changeHighlightOnCy(cy, true);
+
+
                     // this is a workaround to catch select, deselect in one event. Otherwise if a use select multiple nodes/
                     // edges, the event is triggered for each node/edge.
                     cy.on('select unselect', function () {
@@ -1287,6 +1277,35 @@ ndexApp.controller('networkController',
                     edgeCSS.css['curve-style'] = 'bezier';
                 }
 
+                if ( networkController.successfullyQueried) {
+                    cyStyle = cyStyle.concat([
+                        {
+                            selector: 'node.faded',
+                            css: {
+                                opacity: 0.2
+                            }
+                        },
+
+                        {
+                            selector: 'edge.faded',
+                            css: {
+                                opacity: 0.2
+                            }
+                        },
+                        {
+                            selector: '.highlight',
+                            css: {
+                                opacity: 1.0,
+                                'overlay-color': '#C51162',
+                                'overlay-padding': 15,
+                                'overlay-opacity': 0.5
+                            }
+                        }
+                        ]
+
+                    );
+                }
+
                 /** @namespace cxNetwork.cartesianLayout **/
                 var layoutName = (cxNetwork.cartesianLayout) ? 'preset' :
                     (Object.keys(cxNetwork.edges).length <= 1000 ? 'cose' : 'circle') ;
@@ -1303,54 +1322,6 @@ ndexApp.controller('networkController',
                     setTimeout(checkIfCanvasIsVisibleAndDrawNetwork, 50);
                 }
             }
-/*
-            var refreshNodeTable = function(network)
-            {
-                var nodes = network.nodes;
-                var nodeKeys = Object.keys(nodes);
-
-                $scope.nodeGridOptions.data = [];
-
-                var nodeAttributes = network.nodeAttributes;
-
-                for (var key in nodeKeys)
-                {
-                    var nodeId = nodeKeys[key];
-
-                    var nodeObj = networkService.getNodeInfo(nodeId);
-                    var nodeName = networkService.getNodeName(nodeObj);
-
-                    var row = {'Name': nodeName};
-
-                    if (nodeAttributes) {
-
-                        var nodeAttrs = nodeAttributes[nodeId];
-
-                        for (var key1 in nodeAttrs) {
-
-                            // we need to add the nodeAttrs.hasOwnProperty(key1) check to
-                            // silence the JSHint warning
-                            // Warning: Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check
-                            if (nodeAttrs.hasOwnProperty(key1)) {
-                                var attributeObj = nodeAttrs[key1];
-                                var attributeObjName = attributeObj.n;
-
-                                if (attributeObjName && attributeObjName.startsWith('__')) {
-                                    continue;
-                                }
-
-                                if (attributeObjName && ((attributeObjName === 'alias') || (attributeObjName === 'relatedTo'))) {
-                                    row[key1] = attributeObj;
-                                } else {
-                                    row[key1] = (attributeObj.v) ? attributeObj.v : '';
-                                }
-                            }
-                        }
-                    }
-
-                    $scope.nodeGridOptions.data.push( row );
-                }
-            };  */
 
             var calcColumnWidth = function(header, isLastColumn)
             {
@@ -1506,115 +1477,6 @@ ndexApp.controller('networkController',
 
                 ];
 
-  /*
-                var nodeAttributes = network.nodeAttributes;
-                var nodeAttributesHeaders = {};
-
-                if (nodeAttributes) {
-
-                    var nodeAttributesKeys = Object.keys(nodeAttributes);
-
-                    for (var i=0; i<nodeAttributesKeys.length; i++)
-                    {
-                        var nodeAttributeKey = nodeAttributesKeys[i];
-
-                        var keys = _.keys(nodeAttributes[nodeAttributeKey]);
-                        var nodeAttributePropertiesKeys = $scope.removeHiddenAttributes(keys);
-
-                        var links = [];
-                        var ndexInternalLink = 'ndex:internalLink';
-                        var ndexExternalLink = 'ndex:externalLink';
-
-                        if (nodeAttributePropertiesKeys.indexOf(ndexInternalLink) > -1) {
-                            links.push(ndexInternalLink);
-                            _.pull(nodeAttributePropertiesKeys, ndexInternalLink);
-                        }
-                        if (nodeAttributePropertiesKeys.indexOf(ndexExternalLink) > -1) {
-                            _.pull(nodeAttributePropertiesKeys, ndexExternalLink);
-                        }
-
-                        if (links.length > 0) {
-                            nodeAttributePropertiesKeys = nodeAttributePropertiesKeys.concat(links);
-                        }
-
-                        for (var j=0; j<nodeAttributePropertiesKeys.length; j++) {
-                            var nodeAttributteProperty = nodeAttributePropertiesKeys[j];
-
-                            var columnDef;
-
-                            if ((nodeAttributteProperty === 'alias') || (nodeAttributteProperty === 'relatedTo')) {
-                                columnDef = {
-                                    field: nodeAttributteProperty,
-                                    displayName: nodeAttributteProperty,
-                                    cellTooltip: true,
-                                    minWidth: calcColumnWidth(nodeAttributteProperty, false),
-                                    enableFiltering: filteringEnabled,
-                                    //cellTemplate: "<div class='ui-grid-cell-contents hideLongLine' ng-bind-html='grid.appScope.linkify(COL_FIELD)'></div>"
-
-                                    cellTemplate: '<div class="text-center"><h6>' +
-                                    '<a ng-click="grid.appScope.showNodeAttributes(COL_FIELD)" ng-show="grid.appScope.getNumNodeAttributes(COL_FIELD) > 0">' +
-                                    '{{grid.appScope.getNumNodeAttributes(COL_FIELD)}}' +
-                                    '</a></h6></div>'
-                                };
-
-                            } else if (nodeAttributteProperty === ndexInternalLink) {
-
-                                var sampleUUIDToCalcFieldWidth = 'cfab341c-362d-11e5-8ac5-06603eb7f303';
-
-                                columnDef = {
-                                    field: nodeAttributteProperty,
-                                    displayName: 'View Network',
-                                    cellTooltip: true,
-                                    minWidth: calcColumnWidth(sampleUUIDToCalcFieldWidth, false),
-                                    enableFiltering: filteringEnabled,
-                                    cellTemplate: '<a class="ui-grid-cell-contents hideLongLine" ' +
-                                    'ng-bind-html="grid.appScope.getInternalNetworkUUID(COL_FIELD)" ' +
-                                    'ng-href="{{grid.appScope.getURLForMapNode(COL_FIELD)}}" target="_blank">' +
-                                    '</a>'
-                                };
-
-                            } else {
-                                columnDef = {
-                                    field: nodeAttributteProperty,
-                                    displayName: nodeAttributteProperty,
-                                    cellTooltip: true,
-                                    minWidth: calcColumnWidth(nodeAttributteProperty, false),
-                                    enableFiltering: filteringEnabled,
-                                    sortingAlgorithm: function (a, b) {
-                                        if (!isNaN(a) && !isNaN(b)) {
-                                            var parsedA = parseFloat(a);
-                                            var parsedB = parseFloat(b);
-
-                                            if (parsedA === parsedB) {
-                                                return 0;
-                                            }
-                                            if (parsedA < parsedB) {
-                                                return -1;
-                                            }
-                                            return 1;
-
-                                        } else {
-                                            if (a === b) {
-                                                return 0;
-                                            }
-                                            if (a < b) {
-                                                return -1;
-                                            }
-                                            return 1;
-                                        }
-                                    },
-                                    cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.linkify(COL_FIELD)"></div>'
-                                };
-                            }
-                            nodeAttributesHeaders[nodeAttributteProperty] = columnDef;
-                        }
-                    }
-                }
-
-                for (var key1 in nodeAttributesHeaders) {
-                    var col = nodeAttributesHeaders[key1];
-                    columnDefs.push(col);
-                } */
                 var fullDefinition = columnDefs.concat(columnDefinitionList);
 
                 var lastDef = fullDefinition[fullDefinition.length-1];
@@ -1637,69 +1499,6 @@ ndexApp.controller('networkController',
                // refreshNodeTable(network);
             };
 
-  /*   TODO: delete this function after test. It is no longer used.
-
-         var refreshEdgeTable = function (network) {
-
-                var edges = network.edges;
-                var edgeCitations = network.edgeCitations;
-                var edgeKeys = Object.keys(edges);
-
-               // $scope.edgeGridOptions.data = []; */
-
-                // the @namespace network.edgeAttributes silences the 'Unresolved variable edgeAttributes'
-                // weak warning produced by WebStorm Annotator
-                /** @namespace network.edgeAttributes **/
-  /*              var edgeAttributes = network.edgeAttributes;
-
-                for (var i = 0; i < edgeKeys.length; i++)
-                {
-                    var edgeKey = edgeKeys[i];
-
-                    //cj: this object has edge, edge attributes and citations collectively stored in one object.
-                    var edgeObj = networkService.getEdgeInfo(edgeKey);
-
-                    var sourceNodeObj = networkService.getNodeInfo(edgeObj.s);
-                    var source = networkService.getNodeName(sourceNodeObj);
-                    var interaction = edgeObj.i;
-                    var targetNodeObj = networkService.getNodeInfo(edgeObj.t);
-                    var target = networkService.getNodeName(targetNodeObj);
-
-                    var row = {'Source Node': source, 'Interaction': interaction, 'Target Node': target};
-
-                    if (edgeCitations) {
-                        row.citation = (edgeCitations[edgeKey]) ? edgeKey : '';
-                    }
-
-                    if (edgeAttributes) {
-
-                        var reservedEdgeTableColumnNames = ['Source Node', 'Interaction', 'Target Node'];
-
-                        for (var key in edgeAttributes[edgeKey]) {
-                            // we need to add the  if (edgeAttributes[edgeKey].hasOwnProperty(key) check to
-                            // silence the JSHint warning
-                            // Warning: Possible iteration over unexpected (custom / inherited) members, probably missing hasOwnProperty check
-                            if (edgeAttributes[edgeKey].hasOwnProperty(key)) {
-                                if (key.startsWith('__')) {
-                                    continue;
-                                }
-                                if (key.toLowerCase() === 'pmid') {
-                                    // exclude PMID data from the table
-                                    continue;
-                                }
-                                var attributeValue = edgeAttributes[edgeKey][key].v;
-
-                                if (_.includes(reservedEdgeTableColumnNames, key)) {
-                                    key = key + ' 2';
-                                }
-
-                                row[key] = (attributeValue) ? attributeValue : '';
-                            }
-                        }
-                    }
-                    $scope.edgeGridOptions.data.push( row );
-                }
-            }; */
   
             var stringComparator = function ( a, b) {
                 if ( !a && !b) return 0;
@@ -3371,6 +3170,8 @@ ndexApp.controller('networkController',
                     accesskey, networkController.searchString, $scope.selectedQuery, networkQueryEdgeLimit, save, errorWhenOverLimit,
                         function (networkInCX) {
 
+                            networkController.highlightNodes = $scope.selectedQuery.name != directQueryName;
+
                             networkService.setQueryResultInCX(networkInCX);
 
                             var network = cxNetworkUtils.rawCXtoNiceCX(networkInCX);
@@ -3479,6 +3280,7 @@ ndexApp.controller('networkController',
                 networkController.selectionContainer = {};
                 $scope.switchViewButtonEnabled = true;
                 networkController.warningShown = false;
+                networkController.highlightNodes = true;
 
 /*
                 if ($scope.query === 'advanced') {
