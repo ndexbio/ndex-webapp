@@ -52,7 +52,7 @@
                 </span>
                 &nbsp;&nbsp;
                 <a ng-show="networkSetController.networkSetShareableURL"
-                   tooltip="{{copyNetworkSetURLTitle}}"
+                   tooltip="{{networkSetController.copyNetworkSetURLTitle}}"
                    tooltip-placement="bottom"
                    ng-click="showCopiedTitle()"
                    ng-mouseover="showOriginalTitle()"
@@ -124,7 +124,7 @@
 
         <tabset justified="true">
             <tab heading="Networks in set {{networkSetController.displayedSet.name}}">
-                <div id="divNetworks" ng-show='renderNetworkTable'>
+                <div id="divNetworks" ng-show='networkSetController.renderNetworkTable'>
                     <div id="myNetworksOfSetGridId"
                          ui-grid-selection
                          ui-grid="networkGridOptions"
@@ -133,16 +133,16 @@
                          class="networkGrid">
                     </div>
                 </div>
-                <div class='row' ng-hide='renderNetworkTable || tooManyNetworksWarning'>
+                <div class='row' ng-hide='networkSetController.renderNetworkTable || networkSetController.tooManyNetworksWarning'>
                     <br>
                     <p class='text-center text-muted'>No networks to display</p>
                 </div>
-                <div class='row' ng-show='tooManyNetworksWarning'>
+                <div class='row' ng-show='networkSetController.tooManyNetworksWarning'>
                     <br><br>
 
                     <div class="text-center tooManyNetworksWarning wrapLongLine">
                         <i class="fa fa-exclamation-triangle tooManyNetworksWarningIcon"></i>
-                        <span ng-bind-html="tooManyNetworksWarning"></span>
+                        <span ng-bind-html="networkSetController.tooManyNetworksWarning"></span>
                     </div>
                 </div>
             </tab>

@@ -55,13 +55,13 @@ ndexApp.controller('networkSetController',
         setTooltip("Copy network set share URL to clipboard");
     };
 
-    $scope.renderNetworkTable = false;
+    networkSetController.renderNetworkTable = false;
 
     $scope.showOriginalTitle = function() {
-        $scope.copyNetworkSetURLTitle = 'Copy network set share URL to clipboard';
+        networkSetController.copyNetworkSetURLTitle = 'Copy network set share URL to clipboard';
     };
     $scope.showCopiedTitle = function() {
-        $scope.copyNetworkSetURLTitle = 'Copied';
+        networkSetController.copyNetworkSetURLTitle = 'Copied';
     };
 
 
@@ -79,10 +79,8 @@ ndexApp.controller('networkSetController',
                     ndexSpinner.stopSpinner();
                 },
                 function (error) {
-                    if (error) {
-                        ndexSpinner.stopSpinner();
-                        displayErrorMessage(error);
-                    }
+                    ndexSpinner.stopSpinner();
+                    displayErrorMessage(error);
                 });
         } else {
             firstUUIDs = networkUUIDs.slice(0, networkSetController.summaryRetrievalChunks);
@@ -97,10 +95,8 @@ ndexApp.controller('networkSetController',
                     getNetworkSummaries(trailingUUIDs);
                 },
                 function (error) {
-                    if (error) {
-                        ndexSpinner.stopSpinner();
-                        displayErrorMessage(error);
-                    }
+                    ndexSpinner.stopSpinner();
+                    displayErrorMessage(error);
                 });
         }
     };
@@ -161,7 +157,7 @@ ndexApp.controller('networkSetController',
                 }
 
                 if (networksInSet > networkSetController.maxNetworksInSetToDisplay) {
-                    $scope.tooManyNetworksWarning =
+                    networkSetController.tooManyNetworksWarning =
                         'The number of networks in this set exceeds the maximum limit allowed for display ('+
                         (networkSetController.maxNetworksInSetToDisplay).toLocaleString() + ' networks).';
                     ndexSpinner.stopSpinner();
@@ -172,9 +168,7 @@ ndexApp.controller('networkSetController',
 
             },
             function (error) {
-                if (error) {
-                    displayErrorMessage(error);
-                }
+                displayErrorMessage(error);
             });
     };
 
@@ -340,7 +334,7 @@ ndexApp.controller('networkSetController',
                 "indexLevel"    :   indexLevel
             };
             $scope.networkGridOptions.data.push(row);
-            $scope.renderNetworkTable = true;
+            networkSetController.renderNetworkTable = true;
             setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
         }
     };
