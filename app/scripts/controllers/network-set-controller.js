@@ -1,6 +1,8 @@
 ndexApp.controller('networkSetController',
     ['ndexService', 'ndexUtility', 'ndexNavigation', 'sharedProperties', '$scope', '$location', '$routeParams', 'uiMisc',
-        function (ndexService, ndexUtility, ndexNavigation, sharedProperties, $scope, $location, $routeParams, uiMisc) {
+        'ndexSpinner',
+        function (ndexService, ndexUtility, ndexNavigation, sharedProperties, $scope, $location, $routeParams, uiMisc,
+                  ndexSpinner) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -24,6 +26,9 @@ ndexApp.controller('networkSetController',
 
     networkSetController.isLoggedInUser = (window.currentNdexUser != null);
 
+    networkSetController.maxNetworksInSetToDisplay = window.ndexSettings.maxNetworksInSetToDisplay;
+    networkSetController.summaryRetrievalChunks = 2000;
+
     networkSetController.isSetOwner = false;
 
 
@@ -39,6 +44,8 @@ ndexApp.controller('networkSetController',
     var activateURLLabel   = "Enable Share URL";
     var deActivateURLLabel = "Disable Share URL";
 
+    var spinnerNetworkSetPageId = 'spinnerNetworkSetPageId';
+
     var windowsHeightCorrection = 170;
 
     $(document).ready(function(){
@@ -48,6 +55,7 @@ ndexApp.controller('networkSetController',
         setTooltip("Copy network set share URL to clipboard");
     };
 
+    $scope.renderNetworkTable = false;
 
     $scope.showOriginalTitle = function() {
         $scope.copyNetworkSetURLTitle = 'Copy network set share URL to clipboard';
@@ -55,6 +63,49 @@ ndexApp.controller('networkSetController',
     $scope.showCopiedTitle = function() {
         $scope.copyNetworkSetURLTitle = 'Copied';
     };
+
+
+    var getNetworkSummaries = function(networkUUIDs) {
+
+        if (networkUUIDs.length <= networkSetController.summaryRetrievalChunks) {
+
+            ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, networkSetController.accesskey,
+                function (networkSummaries) {
+
+                    networkSetController.networkSearchResults =
+                        networkSetController.networkSearchResults.concat(networkSummaries);
+
+                    populateNetworkTable();
+                    ndexSpinner.stopSpinner();
+                },
+                function (error) {
+                    if (error) {
+                        ndexSpinner.stopSpinner();
+                        displayErrorMessage(error);
+                    }
+                });
+        } else {
+            firstUUIDs = networkUUIDs.slice(0, networkSetController.summaryRetrievalChunks);
+            trailingUUIDs = networkUUIDs.slice(networkSetController.summaryRetrievalChunks);
+
+            ndexService.getNetworkSummariesByUUIDsV2(firstUUIDs, networkSetController.accesskey,
+                function (networkSummaries) {
+
+                    networkSetController.networkSearchResults =
+                        networkSetController.networkSearchResults.concat(networkSummaries);
+
+                    getNetworkSummaries(trailingUUIDs);
+                },
+                function (error) {
+                    if (error) {
+                        ndexSpinner.stopSpinner();
+                        displayErrorMessage(error);
+                    }
+                });
+        }
+    };
+
+
 
     networkSetController.getNetworksOfNetworkSet = function() {
 
@@ -76,6 +127,7 @@ ndexApp.controller('networkSetController',
             function (networkSetInformation) {
                 var networkUUIDs = networkSetInformation["networks"];
 
+
                 networkSetController.networkSetOwnerId = networkSetInformation["ownerId"];
                 networkSetController.displayedSet['name'] = networkSetInformation['name'];
 
@@ -90,13 +142,14 @@ ndexApp.controller('networkSetController',
 
                 networkSetController.displayedSet['creationTime'] = networkSetInformation['creationTime'];
                 networkSetController.displayedSet['modificationTime'] = networkSetInformation['modificationTime'];
-                networkSetController.displayedSet['networks'] = networkSetInformation['networks'].length;
+                networksInSet = networkSetInformation['networks'].length
+                networkSetController.displayedSet['networks'] = networksInSet;
 
                 if (networkSetInformation['properties'] &&
                     networkSetInformation['properties']['reference']) {
                     networkSetController.displayedSet['properties'] =
                         {reference: networkSetInformation['properties']['reference']};
-                };
+                }
 
                 if (networkSetController.isLoggedInUser &&
                     (networkSetInformation['ownerId'] == sharedProperties.getCurrentUserId()) ) {
@@ -105,18 +158,18 @@ ndexApp.controller('networkSetController',
                     // status of the Shareable URl is shown in the Share Set modal that pops up after
                     // selecting Share button. This button is only shown to the owner of the set.
                     networkSetController.getStatusOfShareableURL();
-                };
+                }
 
-                ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, networkSetController.accesskey,
-                    function (networkSummaries) {
-                        networkSetController.networkSearchResults = networkSummaries;
-                        populateNetworkTable();
-                    },
-                    function (error) {
-                        if (error) {
-                            displayErrorMessage(error);
-                        };
-                    });
+                if (networksInSet > networkSetController.maxNetworksInSetToDisplay) {
+                    $scope.tooManyNetworksWarning =
+                        'The number of networks in this set exceeds the maximum limit allowed for display ('+
+                        (networkSetController.maxNetworksInSetToDisplay).toLocaleString() + ' networks).';
+                    ndexSpinner.stopSpinner();
+
+                } else {
+                    getNetworkSummaries(networkUUIDs);
+                }
+
             },
             function (error) {
                 if (error) {
@@ -287,6 +340,8 @@ ndexApp.controller('networkSetController',
                 "indexLevel"    :   indexLevel
             };
             $scope.networkGridOptions.data.push(row);
+            $scope.renderNetworkTable = true;
+            setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
         }
     };
 
@@ -578,6 +633,7 @@ ndexApp.controller('networkSetController',
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //------------------------------------------------------------------------------------
 
+    ndexSpinner.startSpinner(spinnerNetworkSetPageId);
     networkSetController.getNetworksOfNetworkSet();
 
     $(window).resize(function() {

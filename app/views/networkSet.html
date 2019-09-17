@@ -1,16 +1,16 @@
   <div id="divGroup" class="row" >
 
-<!--
-    <div style="margin-bottom: 1em" ng-show="groupController.errors.length > 0">
-        <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold" ng-repeat='error in groupController.errors'>
+
+    <div style="margin-bottom: 1em" ng-show="networkSetController.errors.length > 0">
+        <div class="alert alert-danger" style="margin-bottom: 1em; font-size: 1.2em; font-weight: bold" ng-repeat='error in networkSetController.errors'>
             {{error}}
             <span class="glyphicon glyphicon-remove pull-right"
                   style='cursor:pointer'
-                  ng-click='groupController.errors.splice($index,1)'>
+                  ng-click='networkSetController.errors.splice($index,1)'>
             </span>
         </div>
     </div>
--->
+
 
     <div class="col-md-2">
         <div class="row">
@@ -118,10 +118,13 @@
 
     <!-- tabs -->
     <div id="divgroupTabs" class="col-md-10">
+        <div class="row">
+            <div id="spinnerNetworkSetPageId" style="position:relative; top:20em"></div>
+        </div>
 
         <tabset justified="true">
             <tab heading="Networks in set {{networkSetController.displayedSet.name}}">
-                <div id="divNetworks" ng-show='networkSetController.networkSearchResults.length > 0'>
+                <div id="divNetworks" ng-show='renderNetworkTable'>
                     <div id="myNetworksOfSetGridId"
                          ui-grid-selection
                          ui-grid="networkGridOptions"
@@ -130,9 +133,17 @@
                          class="networkGrid">
                     </div>
                 </div>
-                <div class='row' ng-hide='networkSetController.networkSearchResults.length > 0'>
+                <div class='row' ng-hide='renderNetworkTable || tooManyNetworksWarning'>
                     <br>
                     <p class='text-center text-muted'>No networks to display</p>
+                </div>
+                <div class='row' ng-show='tooManyNetworksWarning'>
+                    <br><br>
+
+                    <div class="text-center tooManyNetworksWarning wrapLongLine">
+                        <i class="fa fa-exclamation-triangle tooManyNetworksWarningIcon"></i>
+                        <span ng-bind-html="tooManyNetworksWarning"></span>
+                    </div>
                 </div>
             </tab>
         </tabset>

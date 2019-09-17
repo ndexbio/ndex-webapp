@@ -281,6 +281,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 config.openInCytoscapeEdgeThresholdWarning < 0) {
                 config.openInCytoscapeEdgeThresholdWarning = 0;
             }
+
+            if ((typeof config.maxNetworksInSetToDisplay === 'undefined') ||
+                (typeof config.maxNetworksInSetToDisplay !== 'number') ||
+                config.maxNetworksInSetToDisplay < 0) {
+                config.maxNetworksInSetToDisplay = 50000;
+            }
+
         }
 
         // check configuration parameters loaded from ndex-webapp-config.js;
