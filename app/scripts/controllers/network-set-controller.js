@@ -64,6 +64,13 @@ ndexApp.controller('networkSetController',
         networkSetController.copyNetworkSetURLTitle = 'Copied';
     };
 
+    var displayErrorMessage = function(error) {
+        ndexSpinner.stopSpinner(); // it is safe to call stopSpinner if it is not running
+
+        var message = (error && error.message) ? error.message: "Unknown error; Server returned no error information.";
+        networkSetController.errors.push(message);
+    };
+
 
     var getNetworkSummaries = function(networkUUIDs) {
 
@@ -78,10 +85,9 @@ ndexApp.controller('networkSetController',
                     populateNetworkTable();
                     ndexSpinner.stopSpinner();
                 },
-                function (error) {
-                    ndexSpinner.stopSpinner();
-                    displayErrorMessage(error);
-                });
+
+                displayErrorMessage
+            );
         } else {
             firstUUIDs = networkUUIDs.slice(0, networkSetController.summaryRetrievalChunks);
             trailingUUIDs = networkUUIDs.slice(networkSetController.summaryRetrievalChunks);
@@ -94,13 +100,11 @@ ndexApp.controller('networkSetController',
 
                     getNetworkSummaries(trailingUUIDs);
                 },
-                function (error) {
-                    ndexSpinner.stopSpinner();
-                    displayErrorMessage(error);
-                });
+
+                displayErrorMessage
+            );
         }
     };
-
 
 
     networkSetController.getNetworksOfNetworkSet = function() {
@@ -160,16 +164,17 @@ ndexApp.controller('networkSetController',
                     networkSetController.tooManyNetworksWarning =
                         'The number of networks in this set exceeds the maximum limit allowed for display ('+
                         (networkSetController.maxNetworksInSetToDisplay).toLocaleString() + ' networks).';
-                    ndexSpinner.stopSpinner();
 
-                } else {
+                } else if (networksInSet > 0) {
+                    // start spinner before performing a potentially time-consuming operation
+                    ndexSpinner.startSpinner(spinnerNetworkSetPageId);
                     getNetworkSummaries(networkUUIDs);
                 }
 
             },
-            function (error) {
-                displayErrorMessage(error);
-            });
+
+            displayErrorMessage
+        );
     };
 
     //table
@@ -335,15 +340,9 @@ ndexApp.controller('networkSetController',
             };
             $scope.networkGridOptions.data.push(row);
             networkSetController.renderNetworkTable = true;
-            setTimeout($scope.networkGridApi.core.handleWindowResize, 250);
+            setTimeout($scope.networkGridApi.core.handleWindowResize, 5);
         }
-    };
-
-    var displayErrorMessage = function(error) {
-        var message = (error && error.message) ? error.message: "Unknown error; Server returned no error information.";
-        networkSetController.errors.push(message);
-    };
-
+    }
 
     var removeSelectedNetworksFromSet = function ()
     {
@@ -380,11 +379,9 @@ ndexApp.controller('networkSetController',
                 networkSetController.networkTableRowsSelected = 0;
 
             },
-            function (error) {
-                if (error) {
-                    displayErrorMessage(error);
-                };
-            });
+
+            displayErrorMessage
+        );
 
     };
 
@@ -626,8 +623,6 @@ ndexApp.controller('networkSetController',
 
     //                  PAGE INITIALIZATIONS/INITIAL API CALLS
     //------------------------------------------------------------------------------------
-
-    ndexSpinner.startSpinner(spinnerNetworkSetPageId);
     networkSetController.getNetworksOfNetworkSet();
 
     $(window).resize(function() {
