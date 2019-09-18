@@ -1375,3 +1375,11 @@ div.featuredCollectionDescriptionArea {
 .buttonWithCleanTooltip .tooltip-inner {
     max-width: 200px;
 }
+
+.tooManyNetworksWarning {
+    font-size: 1.5em;
+}
+.tooManyNetworksWarningIcon {
+    font-size: 1.4em;
+    color: red;
+}
