@@ -74,36 +74,26 @@ ndexApp.controller('networkSetController',
 
     var getNetworkSummaries = function(networkUUIDs) {
 
-        if (networkUUIDs.length <= networkSetController.summaryRetrievalChunks) {
-
-            ndexService.getNetworkSummariesByUUIDsV2(networkUUIDs, networkSetController.accesskey,
-                function (networkSummaries) {
-
-                    networkSetController.networkSearchResults =
-                        networkSetController.networkSearchResults.concat(networkSummaries);
-
-                    populateNetworkTable();
-                    ndexSpinner.stopSpinner();
-                },
-
-                displayErrorMessage
-            );
-        } else {
-            firstUUIDs = networkUUIDs.slice(0, networkSetController.summaryRetrievalChunks);
-            trailingUUIDs = networkUUIDs.slice(networkSetController.summaryRetrievalChunks);
-
-            ndexService.getNetworkSummariesByUUIDsV2(firstUUIDs, networkSetController.accesskey,
-                function (networkSummaries) {
-
-                    networkSetController.networkSearchResults =
-                        networkSetController.networkSearchResults.concat(networkSummaries);
-
-                    getNetworkSummaries(trailingUUIDs);
-                },
-
-                displayErrorMessage
-            );
+        if ( networkUUIDs.length === 0 ) {
+            populateNetworkTable();
+            ndexSpinner.stopSpinner();
+            return;
         }
+
+        var firstUUIDs = networkUUIDs.slice(0, networkSetController.summaryRetrievalChunks);
+        var trailingUUIDs = networkUUIDs.slice(networkSetController.summaryRetrievalChunks);
+
+        ndexService.getNetworkSummariesByUUIDsV2(firstUUIDs, networkSetController.accesskey,
+            function (networkSummaries) {
+
+                networkSetController.networkSearchResults =
+                    networkSetController.networkSearchResults.concat(networkSummaries);
+
+                getNetworkSummaries(trailingUUIDs);
+            },
+            displayErrorMessage
+        );
+
     };
 
 
@@ -165,7 +155,7 @@ ndexApp.controller('networkSetController',
                         'The number of networks in this set exceeds the maximum limit allowed for display ('+
                         (networkSetController.maxNetworksInSetToDisplay).toLocaleString() + ' networks).';
 
-                } else if (networksInSet > 0) {
+                } else  {
                     // start spinner before performing a potentially time-consuming operation
                     ndexSpinner.startSpinner(spinnerNetworkSetPageId);
                     getNetworkSummaries(networkUUIDs);
