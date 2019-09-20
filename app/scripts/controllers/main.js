@@ -1324,7 +1324,9 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         // return null if the type is not a valid NDEx type.
         function getNDExLink(type, uuid) {
 
-            if (type === null) return null;
+            if (type === null) {
+                return undefined;
+            }
 
             var ndexObjectTypes = new Set(['user', 'group', 'networkset', 'network']);
 
@@ -1335,6 +1337,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             if (ndexObjectTypes.has(type))
                 return  ndexServer + type + '/' + uuid;
+            return undefined;
         }
 
 
@@ -1363,12 +1366,12 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                     imageUrl = 'images/default_networkSet.png';
                 }
 
-                if (link === null) {
+                if (link === undefined) {
                     if (type === 'webpage' || type === 'publication')
                         link = featuredItem.URL;
                 }
 
-                if (link === null) {
+                if (link === undefined) {
                     alert("Can't create URL for entry '" + featuredItem.title + "'" );
                     return;   // this element won't be enable in this case.
                 }
