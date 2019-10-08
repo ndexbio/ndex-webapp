@@ -1,0 +1,40 @@
+<div class="modal-content">
+    <form name="deleteNetworkSetForm" class='form-horizontal'  role="form" ng-submit="submit()">
+        <div class="modal-header">
+            <h4 class="modal-title">Delete This Network Set</h4>
+        </div>
+
+        <div class="modal-body">
+            This network set will be deleted from NDEx. You have {{deleteNetworkSetController.nNetworks}} in this set. <br/>
+            <div class="form-group rowWithOneLineTopPad">
+               <ul>
+                 <label class="control-label ">
+                    <input  type="radio" ng-model="deleteNetworkSetController.keepNetwork" value="true"/>
+                         Keep them in my account.
+                    </label>
+               </ul>
+
+                <ul>
+                <label class=" control-label ">
+                <input type="radio" ng-model="deleteNetworkSetController.keepNetwork" value="false"/>
+                   Delete them with the set.
+                </label>
+
+               </ul>
+            </div>
+
+            <div class='text-danger'>
+                <strong>
+                {{deleteNetworkSetController.errors}}
+                </strong>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a class="btn btn-default" ng-click="cancel()">Cancel</a>
+            <button class="btn btn-primary" type ="submit"
+                    ng-disabled="deleteNetworkSetController.errors || deleteNetworkSetController.isProcessing">
+                Confirm</button>
+        </div>
+    </form>
+</div>

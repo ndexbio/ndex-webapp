@@ -15,6 +15,28 @@ ndexServiceApp.factory('ndexService',
 
             var ndexServerURI = window.ndexSettings.ndexServerUri;
 
+            // defining a utility function here. It should be in a separate utility service. or maybe as a private function
+            // for implementing a group of batch functions that execute sequentially. Just put it here for now. -- cj
+            factory.sequence = function (array, callback) {
+                return array.reduce(function chain(promise, item) {
+                    return promise.then(function () {
+                        return callback(item);
+                    });
+                }, Promise.resolve());
+            };
+
+            // another utility function to pluralize a phrase. If the third parameter is the plural form of word, if
+            // it is not just adding a 's' to it.
+            factory.pluralize = function (number, word, pluralWord) {
+                if (number < 2) {
+                    return number + ' ' + word;
+                }
+                if ( pluralWord !== undefined) {
+                    return number + ' ' + pluralWord;
+                }
+                return number + ' ' + word + 's';
+            };
+
             factory.getNdexServerUri = function()
             {
                 return ndexServerURI;
