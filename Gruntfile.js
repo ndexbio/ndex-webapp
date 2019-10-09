@@ -404,6 +404,11 @@ module.exports = function (grunt) {
             cwd: 'app/bower_components/angular-ui-grid',
             src: ['ui-grid.woff','ui-grid.ttf'],
             dest: '<%= yeoman.dist %>/styles'
+        }, {
+          expand: true,
+          cwd: 'app/bower_components/slick-carousel/slick/fonts',
+          src: ['slick.woff','slick.ttf'],
+          dest: '<%= yeoman.dist %>/styles/fonts'
         }]
       },
       styles: {

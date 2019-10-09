@@ -434,6 +434,7 @@ ndexApp.controller('networkSetController',
         return selectedIds;
     };
 
+    /* This function has been replaced by the delete network set directive. Will be deleted in the future. -- cj
     networkSetController.deleteNetworkSet = function(networkSetId) {
         var noOfNetworksInThisSet = networkSetController.networkSearchResults.length;
         var title = 'Delete This Network Set';
@@ -472,7 +473,7 @@ ndexApp.controller('networkSetController',
 
         return;
     };
-
+*/
 
     // local functions
 
