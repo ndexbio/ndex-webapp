@@ -21,7 +21,7 @@
                     deleteNetworkSetController.keepNetwork = "true";
                     var userUUID = window.currentNdexUser.externalId;
                     deleteNetworkSetController.networkSummaries = $scope.networkSetController.networkSearchResults
-                        .filter(summary => summary.ownerUUID === userUUID);
+                        .filter(function (summary) { return summary.ownerUUID === userUUID; } );
                     deleteNetworkSetController.uuid = $scope.networkSetController.identifier;
                     deleteNetworkSetController.cancelled = false;
 
@@ -65,12 +65,12 @@
                         var userNets = deleteNetworkSetController.networkSummaries;
 
                         // check if any of them is readonly
-                        if (userNets.some(summary => summary.isReadOnly)) {
+                        if (userNets.some(function (summary) { return summary.isReadOnly;} )) {
                             deleteNetworkSetController.errors = "Some of the networks you own are read only. Please clear the readonly flag on therm first.";
                             deleteNetworkSetController.isProcessing = false;
                             return;
                         }
-                        var myNetIds = userNets.map(summary => summary.externalId);
+                        var myNetIds = userNets.map(function (summary) { return summary.externalId;} );
                         var deletedCount = 0;
 
                         ndexService.sequence(myNetIds, function (networkid) {
