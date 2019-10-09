@@ -1308,7 +1308,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
 
         var getTopMenu = function () {
-            var topMenuConfig = window.ndexSettings.landingPageConfigServer + '/topmenu.json';
+            var topMenuConfig = window.ndexSettings.landingPageConfigServer + '/topmenu.json?hash_id=' + Math.random();
 
             ndexService.getObjectViaEndPointV2(topMenuConfig,
                     fillInTopMenu,
@@ -1389,7 +1389,8 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         }
 
         var getFeaturedContentChannel = function() {
-            var featuredContentConfig  = window.ndexSettings.landingPageConfigServer + '/featured_content.json';
+            // adding a random number to workaround the cached file issue.
+            var featuredContentConfig  = window.ndexSettings.landingPageConfigServer + '/featured_content.json?hash_id=' + Math.random();
 
             ndexService.getObjectViaEndPointV2(featuredContentConfig,
                     fillInFeaturedContentChannel,
@@ -1438,7 +1439,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
 
         var getFeaturedNetworksDropDownMenu = function() {
-            var featuredNetworksConfig  = window.ndexSettings.landingPageConfigServer + '/featured_networks.json';
+            var featuredNetworksConfig  = window.ndexSettings.landingPageConfigServer + '/featured_networks.json?hash_id=' + Math.random();
 
             ndexService.getObjectViaEndPointV2(featuredNetworksConfig,
                     fillInFeaturedNetworksDropDown,
@@ -1496,7 +1497,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         var getMainChannel = function() {
-            var mainContentConfig  = window.ndexSettings.landingPageConfigServer + '/main.json';
+            var mainContentConfig  = window.ndexSettings.landingPageConfigServer + '/main.json?hash_id=' + Math.random();
 
             ndexService.getObjectViaEndPointV2(mainContentConfig,
                     fillInMainChannel,
@@ -1542,7 +1543,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
         };
 
         var getLogos = function() {
-            var logosConfig  = window.ndexSettings.landingPageConfigServer + '/logos.json';
+            var logosConfig  = window.ndexSettings.landingPageConfigServer + '/logos.json?hash_id=' + Math.random();
 
             ndexService.getObjectViaEndPointV2(logosConfig,
                     fillInLogosChannel,
