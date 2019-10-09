@@ -43,6 +43,7 @@
     "request": ">=2.68.0",
     "shell-quote": ">=1.6.1",
     "tar-fs": ">=1.16.2",
+    "lodash": ">=4.17.13",
     "uglify-js": ">=2.6.0"
   },
   "engines": {
