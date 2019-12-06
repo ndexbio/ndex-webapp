@@ -759,6 +759,10 @@ ndexApp.controller('networkController',
 
             $scope.getInternalNetworkUUID = function(nodeAttributeInternalLink)
             {
+                if (!nodeAttributeInternalLink) {
+                    return null;
+                }
+
                 var markup = parseNdexMarkupValue(nodeAttributeInternalLink);
                 return (markup && markup.id) ? markup.id : null;
             };
@@ -1395,7 +1399,7 @@ ndexApp.controller('networkController',
                                                 displayName: attrName,
                                                 cellTooltip: true,
                                                 minWidth: calcColumnWidth(attrName, false),
-                                                enableFiltering: filteringEnabled,
+                                                //enableFiltering: filteringEnabled,
                                                 type: 'string',
                                                 cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
                                             };
@@ -1407,11 +1411,11 @@ ndexApp.controller('networkController',
                                                 displayName: attrName,
                                                 cellTooltip: true,
                                                 minWidth: calcColumnWidth(attrName, false),
-                                                enableFiltering: filteringEnabled,
+                                                //enableFiltering: filteringEnabled,
                                                 type: 'string',
-                                                cellTemplate: '<a class="ui-grid-cell-contents hideLongLine" ' +
-                                                    'ng-bind-html="grid.appScope.getInternalNetworkUUID(COL_FIELD)" ' +
+                                                cellTemplate: '<a class="ui-grid-cell-contents" ' +
                                                     'ng-href="{{grid.appScope.getURLForMapNode(COL_FIELD)}}" target="_blank">' +
+                                                    '{{grid.appScope.getInternalNetworkUUID(COL_FIELD)}}' +
                                                     '</a>'
                                             };
 
@@ -1670,7 +1674,7 @@ ndexApp.controller('networkController',
                                                 displayName: attrName,
                                                 cellTooltip: true,
                                                 minWidth: calcColumnWidth(attrName, false),
-                                                enableFiltering: filteringEnabled,
+                                                //enableFiltering: filteringEnabled,
                                                 type: 'string',
                                                 cellTemplate: '<div class="ui-grid-cell-contents hideLongLine" ng-bind-html="grid.appScope.getURLsForNdexExternalLink(COL_FIELD)"></div>'
                                             };
