@@ -1618,7 +1618,7 @@ ndexApp.controller('networkController',
                 var dataTable = [];  //cj: the actual data in the table
                 var columnDefinitionList = []; //cj: column definitions for ui-grid
                 var attributeCounter = 0;  //cj: counter to create unique simple attribute names in data
-                var attributeNameMapper = {}   //cj: a mapping table to map an edge attribute name to a unique attibute name we created (A0,A1,A2...)
+                var attributeNameMapper = {};   //cj: a mapping table to map an edge attribute name to a unique attibute name we created (A0,A1,A2...)
 
                 for ( var key in edges) {
                     var edge = edges[key];
@@ -1865,7 +1865,9 @@ ndexApp.controller('networkController',
 
                 outputFileName += '.txt';
 
-                anchor.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(textToSaveInTheFile));
+                anchor.setAttribute('href',
+                    URL.createObjectURL(new Blob([textToSaveInTheFile],{type: "application/octet-stream;charset=utf-8" }))
+                );
                 anchor.setAttribute('download', outputFileName);
 
                 document.body.appendChild(anchor);
