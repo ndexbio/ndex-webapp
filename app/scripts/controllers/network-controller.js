@@ -314,7 +314,7 @@ ndexApp.controller('networkController',
             var changeHighlightOnCy = function (cy, highlightNodes) {
                 if ( highlightNodes) {
                     cy.elements().addClass('faded');
-                    var query = cy.filter('node[querynode = "true" ]');
+                    var query = cy.nodes('[?querynode]');
                     query.addClass('highlight')
                 } else {
                     cy.elements()
