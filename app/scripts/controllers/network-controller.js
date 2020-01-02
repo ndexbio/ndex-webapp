@@ -1356,7 +1356,7 @@ ndexApp.controller('networkController',
 
                 var columnDefinitionList = []; //cj: column definitions for ui-grid
                 var attributeCounter = 0;  //cj: counter to create unique simple attribute names in data
-                var attributeNameMapper = {}   //cj: a mapping table to map an edge attribute name to a unique attibute name we created (A0,A1,A2...)
+                var attributeNameMapper = {}; //cj: a mapping table to map an edge attribute name to a unique attibute name we created (A0,A1,A2...)
 
                 for (var key in nodes) {
                     //optional check for properties from prototype chain
