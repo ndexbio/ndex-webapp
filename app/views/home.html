@@ -92,12 +92,12 @@
                                    dots="false"
                                    variable-width="true"
                                    autoplay="true"
-                             arrows="false">
+                                   arrows="false">
 
                                 <div ng-repeat='logo in logos'>
                                     <a ng-href="{{logo.href}}" target="_blank">
                                         <img class="logosStyle"
-                                             src="{{logo.image}}"
+                                             ng-src="{{logo.image}}"
                                              data-toggle="tooltip"
                                              data-placement="right"
                                              onmouseenter="$(this).tooltip('show')"
