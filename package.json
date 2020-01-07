@@ -44,7 +44,9 @@
     "shell-quote": ">=1.6.1",
     "tar-fs": ">=1.16.2",
     "lodash": ">=4.17.13",
-    "uglify-js": ">=2.6.0"
+    "uglify-js": ">=2.6.0",
+    "clean-css": ">=4.1.11",
+    "tunnel-agent": ">=0.6.0"
   },
   "engines": {
     "node": "10.16.3"
