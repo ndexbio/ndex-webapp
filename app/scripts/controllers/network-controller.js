@@ -2828,7 +2828,7 @@ ndexApp.controller('networkController',
                 var hasLayout = networkController.currentNetwork.hasLayout;
 
                 /** @namespace networkController.currentNetwork.hasSample **/
-                if (hasLayout && networkController.currentNetwork.edgeCount <= 12000) {
+                if (hasLayout && networkController.currentNetwork.edgeCount <= 20000) {
                     // get complete CX stream and build the CX network object.
                     networkController.isSample = false;
                     networkService.getCompleteNetworkInCXV2(networkId, accesskey)
@@ -2844,7 +2844,7 @@ ndexApp.controller('networkController',
                         );
                 }
 
-                else if ((hasLayout && networkController.currentNetwork.edgeCount > 12000) ||
+                else if ((hasLayout && networkController.currentNetwork.edgeCount > 20000) ||
                         networkController.currentNetwork.hasSample) {
                     // get sample CX network
                     networkController.isSample = true;
