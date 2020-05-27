@@ -2221,13 +2221,15 @@ ndexApp.controller('networkController',
                     }
                 }
 
-                attributeNames = Array.from(attributeNames).sort((a, b) => {
+                var comparator2 = function (a, b) {
                     if ( networkController.attrListSortingAsc) {
                         return a.localeCompare(b, 'en', {sensitivity: 'base'});
                     } else {
                         return b.localeCompare(a, 'en', {sensitivity: 'base'});
                     }
-                });
+                };
+
+                attributeNames = Array.from(attributeNames).sort(comparator2);
 
 
                 // here, we want the last elements in resultList to be ndex:internalLink and ndex:externalLink (if
