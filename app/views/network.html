@@ -494,52 +494,51 @@
                             </tr>
                             <tr ng-if="node.$$expanded && getNodeAttributesNames(node).length > 0" ng-repeat-end="">
                                 <td class="wrappedCell">
-                                    <span ng-repeat="attributeName in getNodeAttributesNames(node)">
-                                        <span ng-switch="attributeName">
+                                    <table class="borderless"  style="width:100%;">
+                                        <colgroup>
+                                            <col span="1" style="width:23%;"/>
+                                            <col span="1" style="width:77%;"/>
+                                        </colgroup>
+                                        <thead>
+                                        <tr style="background-color: #D2F2FF;">
+                                        <th >Attribute
+                                            <button style="border: none; background: none;float: right" ng-switch="networkController.attrListSortingAsc"
+                                                    ng-click="networkController.attrListSortingAsc=!networkController.attrListSortingAsc">
+                                                <i ng-switch-when="true"  class="fa fa-arrow-circle-o-up" style="color:blue" aria-hidden="true"></i>
+                                                <i ng-switch-when="false"  class="fa fa-arrow-circle-o-down" style="color:blue" aria-hidden="true"></i>
+                                            </button>
+                                        </th>
+                                        <th sytle="vertical-align: center;">Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="propInspectorTBody">
 
-                                            <span ng-switch-when="r">
-                                                &nbsp;&nbsp;&nbsp;<strong>ID:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                <br/>
-                                            </span>
+                                   <tr ng-repeat="attributeName in getNodeAttributesNames(node)" ng-switch="attributeName">
+                                            <td  ng-switch-when="id" class="inspectorReservedAttrName">
+                                                Node Id
+                                            </td>
+                                            <td  ng-switch-when="n" class="inspectorReservedAttrName">
+                                              Name
+                                            </td>
+                                       <td  ng-switch-when="r" class="inspectorReservedAttrName">
+                                           Represents
+                                       </td>
 
-                                            <span ng-switch-when="n">
-                                                &nbsp;&nbsp;&nbsp;<strong>Name:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                <br/>
-                                            </span>
-
-                                            <span ng-switch-when="id">
-                                                &nbsp;&nbsp;&nbsp;<strong>Node Id:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                <br/>
-                                            </span>
-
-                                            <span ng-switch-when="ndex:internalLink">
-                                                <br>
-                                                <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                            </span>
-
-                                            <span ng-switch-when="ndex:externalLink">
-                                               <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                            </span>
-
-                                            <span ng-switch-default>
-                                                &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-
-
-                                                <span ng-show="howManyAttributes(node[attributeName]) > 5">
+                                       <td style="font-weight:bold" ng-switch-default>
+                                                {{attributeName}}
+                                            </td>
+                                            <td compile='getAttributeValue(attributeName, node[attributeName])'>
+                                             <!--   <span ng-show="howManyAttributes(node[attributeName]) > 5">
                                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                     <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
                                                         more...
                                                     </a>
                                                     <br>
-                                                </span>
-                                                <br>
-                                            </span>
-                                        </span>
-                                    </span>
+                                                </span> -->
+                                            </td>
+                                    </tr >
+                                        </tbody>
+                                    </table>
                                 </td>
                             </tr>
 

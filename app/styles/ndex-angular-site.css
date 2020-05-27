@@ -9,7 +9,7 @@
 
 @font-face
 {
-    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+    font-family: "Open Sans Light", Arial, Helvetica, sans-serif;
 }
 
 html, body {
@@ -34,7 +34,7 @@ body
     font-weight: normal;
     line-height: 18px;
     -webkit-font-smoothing: subpixel-antialiased;
-    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+    font-family: /*"Open Sans",*/ "Open Sans Light", Arial, Helvetica, sans-serif;
 }
 
 a:hover
@@ -1382,4 +1382,24 @@ div.featuredCollectionDescriptionArea {
 .tooManyNetworksWarningIcon {
     font-size: 1.4em;
     color: red;
+}
+
+
+.borderless td, .borderless th, .borderless tr {
+    border: none !important;
+}
+
+/* Node/Edge property inspector table in the network page.*/
+
+tbody.propInspectorTBody > tr:nth-child(odd) {
+    background: white;
+}
+
+tbody.propInspectorTBody > tr:nth-child(even) {
+    background:  #E2F7FF; /*#E1F7FF; */
+}
+
+td.inspectorReservedAttrName {
+    font-weight:bold;
+    color: rgb(2, 114, 201);
 }

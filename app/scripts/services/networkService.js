@@ -671,6 +671,12 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
             return returnStr;
         };
 
+        factory.getCXNode= function(nodeId) {
+            if (currentNiceCX) {
+                return currentNiceCX.nodes[nodeId];
+            }
+            return null;
+        };
 
         factory.getNodeInfo = function (nodeId) {
             if (!currentNiceCX) return null;
@@ -1014,66 +1020,6 @@ ndexServiceApp.factory('networkService', ['sharedProperties', 'ndexConfigs', 'nd
 
         };
 
-        // TODO: delete later if Advanced Query is not used
-/*
-        factory.advancedNetworkQueryV2 = function (networkId, accesskey, query, size) {
-            // Server API: Query Network
-            // POST /search/network/{networkId}/advancedquery?accesskey={accesskey}
-
-            var url = "/search/network/" + networkId + "/advancedquery";
-            if (accesskey) {
-                url = url + "?accesskey=" + accesskey;
-            };
-            
-            //var urlConfig = ndexConfigs.getPostConfigAdvQueryV2(url, query);
-            var urlConfig = ndexConfigs.getPostConfigV2(url, query);
-
-            // The $http timeout property takes a deferred value that can abort AJAX request
-            var deferredAbort = $q.defer();
-
-            urlConfig.timeout = deferredAbort.promise;
-
-            var request = $http(urlConfig);
-            var promise = {};
-
-            promise.success = function (handler) {
-                request.success(
-                    function (network) {
-                        currentNiceCX = cxNetworkUtils.rawCXtoNiceCX(network.data);
-                        handler(currentNiceCX);
-                    }
-                );
-                return promise;
-            };
-
-            promise.error = function (handler) {
-                request.then(
-                    null,
-                    function (error) {
-                        handler(error);
-                    }
-                );
-                return promise;
-            };
-
-            // The $http service uses a deferred value for the timeout. Resolving the value will abort the AJAX request
-            promise.abort = function () {
-                deferredAbort.resolve();
-            };
-
-            // Let's make garbage collection smoother. This cleanup is performed once the request is finished.
-            promise.finally = function () {
-                request.finally(
-                    function () {
-                        promise.abort = angular.noop; // angular.noop is an empty function
-                        deferredAbort = request = promise = null;
-                    }
-                );
-            };
-
-            return promise;
-        };
-*/
 
         /**
          * Return the value of a given property in the network. I assume the property names a unique in each subnetwork.

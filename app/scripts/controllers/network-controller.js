@@ -104,6 +104,11 @@ ndexApp.controller('networkController',
 
             networkController.successfullyQueried = false;
             networkController.highlightNodes = true;
+            /* sorting order for the Node/Edge attribute inspector:
+                true -> ascending
+                false -> descending
+                */
+            networkController.attrListSortingAsc = true;
 
 
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
@@ -2119,180 +2124,14 @@ ndexApp.controller('networkController',
             };
             */
 
-
-            /*
-            var getNetworkAdmins = function()
-            {
-                if (networkController.isLoggedInUser) {
-                    ndexService.getNetworkUserMemberships(networkController.currentNetworkId, 'ADMIN',
-                        function (networkAdmins) {
-                            for (var i = 0; i < networkAdmins.length; i++) {
-                                var networkAdmin = networkAdmins[i];
-                                if (networkAdmin.memberUUID == sharedProperties.getCurrentUserId()) {
-                                    networkAdmins.splice(i, 1);
-                                }
-                            }
-                            networkController.networkAdmins = networkAdmins;
-                        },
-                        function (error) {
-                            var errorMessageText;
-                            if (error) {
-                                if (error.status) {
-                                    errorMessageText = "HTTP response code: " + error.status + ". ";
-                                }
-                                if (error.data && error.data.message) {
-                                    errorMessageText = errorMessageText + error.data.message;
-                                }
-                            }
-                            console.log(errorMessageText);
-                        });
-                }
-            };
-            */
-
-
             $scope.downloadNetwork = function () {
                 uiMisc.downloadCXNetwork(networkExternalId);
             };
-
-            /*
-            var validateEntityID = function(URI, entityId) {
-                var retValue = false;
-
-                if (!URI || !entityId) {
-                    return retValue;
-                }
-                
-                switch (URI.toLowerCase()) {
-
-                    case 'http://identifiers.org/bindingDB/':
-                        retValue = /^\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/cas/':
-                        retValue = /^\d{1,7}\-\d{2}\-\d$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/chebi/':
-                        retValue = /^CHEBI:\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/chembl.compound/':
-                        retValue = /^CHEMBL\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/drugbank/':
-                        retValue = /^DB\d{5}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/go/':
-                        retValue = /^GO:\d{7}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/hgnc/':
-                        retValue = /^((HGNC|hgnc):)?\d{1,5}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/hgnc.symbol/':
-                        retValue = /^[A-Za-z-0-9_]+(\@)?$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/biogrid/':
-                        retValue = /^\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/intact/':
-                        retValue = /^EBI\-[0-9]+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/kegg.compound/':
-                        retValue = /^C\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/kegg.pathway/':
-                        retValue = /^\w{2,4}\d{5}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/ncbigene/':
-                        retValue = /^\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/pubmed/':
-                        retValue = /^\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/reactome/':
-                        retValue = /(^(REACTOME:)?R-[A-Z]{3}-[0-9]+(-[0-9]+)?$)|(^REACT_\d+$)/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/refseq/':
-                        retValue =
-                           /^((AC|AP|NC|NG|NM|NP|NR|NT|NW|XM|XP|XR|YP|ZP)_\d+|(NZ\_[A-Z]{4}\d+))(\.\d+)?$'/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/omim/':
-                        retValue = /^[*#+%^]?\d{6}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/pdb/':
-                        retValue = /^[0-9][A-Za-z0-9]{3}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/rgd/':
-                        retValue = /^\d{4,7}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/uniprot/':
-                        retValue =
-                            /^([A-N,R-Z][0-9]([A-Z][A-Z, 0-9][A-Z, 0-9][0-9]){1,2})|([O,P,Q][0-9][A-Z, 0-9][A-Z, 0-9][A-Z, 0-9][0-9])(\.\d+)?$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/mgd/':
-                        retValue = /^MGI:\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/sgd/':
-                        retValue = /^((S\d+$)|(Y[A-Z]{2}\d{3}[a-zA-Z](\-[A-Z])?))$/.test(entityId);
-                        break;
-
-
-                    case 'http://identifiers.org/ricegap/':
-                        retValue = /^LOC\_Os\d{1,2}g\d{5}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/mesh/':
-                        retValue = /^(C|D)\d{6}$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/pubchem.compound/':
-                        retValue = /^\d+$/.test(entityId);
-                        break;
-
-                    case 'http://identifiers.org/tair.locus/':
-                        retValue = /^AT[1-5]G\d{5}$/.test(entityId);
-                        break;
-
-                    case 'http://gdc-portal.nci.nih.gov/projects/':
-                        if (!entityId) {
-                            return false;
-                        };
-
-                        retValue = /^TCGA-[A-Z]+$/.test(entityId);
-                        if (!retValue) {
-                            retValue = /^TARGET-[A-Z]+$/.test(entityId);
-                        };
-                        break;
-                }
-
-                return retValue;
-            }
-            */
 
             $scope.getNodeName = function(node)
             {
                 return networkService.getNodeName(node);
             };
-
 
             $scope.removeHiddenAttributes = function(attributeNames) {
 
@@ -2310,6 +2149,52 @@ ndexApp.controller('networkController',
                 return attributeNamesWithoutHiddenElements;
             };
 
+            /**
+             *
+             * @param node
+             * @return Object with this structure:
+             *   { reserved: array of {"n", "v"},
+             *     others: array of {"n","v"}}
+             *     where n is the display name, and v is the stringified attribute value.
+             *
+             */
+            $scope.getNodeAttributesForPanel = function (node) {
+                //var cxn = networkService.getCXNode(node.id);
+                // this array holds reserved fields in a certain order
+                var resv = [];
+                // 1. node id
+                resv.push ( {"n": "Node Id", "v": 2333});
+
+          /*      //2. node name
+                if ( cxn.n !== undefined) {
+                    resv.push ( {"n": "Name", "v": cxn.n});
+                }
+                //3. represents
+                if ( cxn.r !== undefined ) {
+                    resv.push({"n": "Represents", "v": cxn.r});
+                } */
+                //4. citations
+          //      var otherAttrs = networkService.getNodeAttributes(cxn.id);
+          //      var othv = [];
+
+      /*          var topList = ['alias','relatedTo','citations'];
+                topList.forEach(function (value) {
+                    if (otherAttrs[value]) {
+                        resv.push({"n": value, "v": $scope.getAttributeValue("1",otherAttrs[value])});
+                    }
+                });
+
+                for (var prop in otherAttrs) {
+                    if (Object.prototype.hasOwnProperty.call(otherAttrs, prop)) {
+                        if (topList.indexOf(prop) <0) {
+                            othv.push ({"n": prop,"v": $scope.getAttributeValue(prop,otherAttrs[prop])});
+                        }
+                    }
+                };
+*/
+                return resv;
+               // return {reserved: resv, others: othv };
+            };
 
             $scope.getNodeAttributesNames = function(node) {
 
@@ -2326,7 +2211,7 @@ ndexApp.controller('networkController',
                     }
                 });
 
-                var elementsToRemove = topList.concat([ '_cydefaultLabel', 'id', '$$hashKey', '$$expanded', 'pmid']);
+                var elementsToRemove = topList.concat([ '_cydefaultLabel', 'id', '$$hashKey', '$$expanded']);
 
                 for (var i = 0; i < elementsToRemove.length; i++) {
 
@@ -2335,6 +2220,15 @@ ndexApp.controller('networkController',
                         attributeNames.splice(index, 1);
                     }
                 }
+
+                attributeNames = Array.from(attributeNames).sort((a, b) => {
+                    if ( networkController.attrListSortingAsc) {
+                        return a.localeCompare(b, 'en', {sensitivity: 'base'});
+                    } else {
+                        return b.localeCompare(a, 'en', {sensitivity: 'base'});
+                    }
+                });
+
 
                 // here, we want the last elements in resultList to be ndex:internalLink and ndex:externalLink (if
                 // they are present in attributeNames).  So we remove them from attributeNames, and then add them
@@ -2395,31 +2289,18 @@ ndexApp.controller('networkController',
                     if (attribute.v && Array.isArray(attribute.v) && (attribute.v.length > 0) &&
                         (attributeName.toLowerCase() !== 'ndex:externallink'))
                     {
-                        if(attribute.v.length > 5) {
-
-                            for (var i = 0; i < 5; i++) {
+                            for (var i = 0; i < 5 && i < attribute.v.length; i++) {
                                 if (i === 0) {
-                                    attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                    attributeValue =  '&nbsp;&nbsp;&nbsp;&nbsp; ' +
                                         getStringAttributeValue(attribute.v[i]) + '<br>';
                                 } else {
-                                    attributeValue = attributeValue +  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
+                                    attributeValue = attributeValue +  '&nbsp;&nbsp;&nbsp;&nbsp; ' +
                                         getStringAttributeValue(attribute.v[i]) + '<br>';
                                 }
                             }
-
-                        } else {
-
-                            for (var i1 = 0; i1 < attribute.v.length; i1++) {
-                                if (i1 === 0) {
-                                    attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
-                                        getStringAttributeValue(attribute.v[i1]) + '<br>';
-                                } else {
-                                    attributeValue = attributeValue + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
-                                        getStringAttributeValue(attribute.v[i1]) + '<br> ';
-                                }
+                            if ( attribute.v.length > 5) {
+                                attributeValue += '&nbsp;&nbsp;&nbsp;&nbsp; <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">more...</a>';
                             }
-                        }
-                        
                     } else {
 
                         if (attributeName.toLowerCase() === 'ndex:internallink') {
@@ -2432,9 +2313,7 @@ ndexApp.controller('networkController',
 
                         } else if  (Array.isArray(attribute) && attribute.length > 0) {
 
-                            if(attribute.length > 5) {
-
-                                for (var i2 = 0; i2 < 5; i2++) {
+                                for (var i2 = 0; i2 < 5 && i2 < attribute.length; i2++) {
                                     if (i2 === 0) {
                                         attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
                                             getStringAttributeValue(attribute[i2]) + '<br>';
@@ -2443,19 +2322,6 @@ ndexApp.controller('networkController',
                                             getStringAttributeValue(attribute[i2]) + '<br>';
                                     }
                                 }
-
-                            } else {
-
-                                for (var i3 = 0; i3 < attribute.length; i3++) {
-                                    if (i3 === 0) {
-                                        attributeValue = '<br>' + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
-                                            getStringAttributeValue(attribute[i3]) + '<br>';
-                                    } else {
-                                        attributeValue = attributeValue + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' +
-                                            getStringAttributeValue(attribute[i3]) + '<br> ';
-                                    }
-                                }
-                            }
 
                             return attributeValue;
                         }
@@ -2526,6 +2392,30 @@ ndexApp.controller('networkController',
                 });
             };
 
+            networkController.showMoreAttributesByNodeId = function(nodeId, attributeName) {
+
+                var title = attributeName + ':';
+
+                var attributeValue = '';
+
+                var attribute = networkService.getNodeAttr(nodeId,attributeName);
+                if (attribute instanceof Object) {
+                    if (attribute.v && Array.isArray(attribute.v)) {
+
+                        for (var i = 0; i < attribute.v.length; i++) {
+                            attributeValue = attributeValue + getStringAttributeValue(attribute.v[i]) + '<br>';
+                        }
+
+                    } else if (attribute && Array.isArray(attribute)) {
+
+                        for (var j = 0; j < attribute.length; j++) {
+                            attributeValue = attributeValue + getStringAttributeValue(attribute[j]) + '<br>';
+                        }
+                    }
+                }
+
+                networkController.genericInfoModal(title, attributeValue);
+            };
 
             networkController.showMoreAttributes = function(attributeName, attribute) {
 
