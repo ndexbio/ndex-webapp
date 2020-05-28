@@ -507,12 +507,12 @@
                                             <col span="1" style="width:77%;"/>
                                         </colgroup>
                                         <thead>
-                                        <tr style="background-color: #D2F2FF;">
-                                        <th >Attribute
-                                            <button style="border: none; background: none;float: right" ng-switch="networkController.nodeAttrListSortingAsc"
+                                        <tr style="background-color: rgb(2, 114, 201); color: white">
+                                        <th >Attribute &nbsp;
+                                            <button style="border: none; background: none;vertical-align: top" ng-switch="networkController.nodeAttrListSortingAsc"
                                                     ng-click="networkController.nodeAttrListSortingAsc=!networkController.nodeAttrListSortingAsc">
-                                                <i ng-switch-when="true"  class="fa fa-arrow-circle-o-up" style="color:blue" aria-hidden="true"></i>
-                                                <i ng-switch-when="false"  class="fa fa-arrow-circle-o-down" style="color:blue" aria-hidden="true"></i>
+                                                <i ng-switch-when="true"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>
+                                                <i ng-switch-when="false"  class="fa fa-caret-down" style="color:white" aria-hidden="true"></i>
                                             </button>
                                         </th>
                                         <th sytle="vertical-align: center;">Value</th>
@@ -521,9 +521,9 @@
                                         <tbody class="propInspectorTBody">
 
                                    <tr ng-repeat="attributeName in getNodeAttributesNames(node)" ng-switch="attributeName">
-                                            <td  ng-switch-when="id" class="inspectorReservedAttrName">
+                                    <!--        <td  ng-switch-when="id" class="inspectorReservedAttrName">
                                                 Node Id
-                                            </td>
+                                            </td> -->
                                             <td  ng-switch-when="n" class="inspectorReservedAttrName">
                                               Name
                                             </td>
@@ -534,14 +534,7 @@
                                        <td style="font-weight:bold" ng-switch-default>
                                                 {{attributeName}}
                                             </td>
-                                            <td compile='getAttributeValue(attributeName, node[attributeName])'>
-                                             <!--   <span ng-show="howManyAttributes(node[attributeName]) > 5">
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
-                                                        more...
-                                                    </a>
-                                                    <br>
-                                                </span> -->
+                                            <td style="display: block; overflow-y: auto;max-height: 12em;" compile='getAttributeValue(attributeName, node[attributeName])'>
                                             </td>
                                     </tr >
                                         </tbody>
@@ -570,12 +563,12 @@
                                             <col span="1" style="width:77%;"/>
                                         </colgroup>
                                         <thead>
-                                        <tr style="background-color: #D2F2FF;">
+                                        <tr style="background-color: rgb(2, 114, 201); color: white">
                                             <th >Attribute
                                                 <button style="border: none; outline: none; background: none;float: right" ng-switch="networkController.edgeAttrListSortingAsc"
                                                         ng-click="networkController.edgeAttrListSortingAsc=!networkController.edgeAttrListSortingAsc">
-                                                    <i ng-switch-when="true"  class="fa fa-arrow-circle-o-up fa-lg" style="color:blue" aria-hidden="true"></i>
-                                                    <i ng-switch-when="false"  class="fa fa-arrow-circle-o-down fa-lg" style="color:blue" aria-hidden="true"></i>
+                                                    <i ng-switch-when="true"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>
+                                                    <i ng-switch-when="false"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>
                                                 </button>
                                             </th>
                                             <th sytle="vertical-align: center;">Value</th>
