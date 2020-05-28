@@ -1403,3 +1403,8 @@ td.inspectorReservedAttrName {
     font-weight:bold;
     color: rgb(2, 114, 201);
 }
+
+table.attrValuePair {
+    background: white;
+    width: 100%
+}

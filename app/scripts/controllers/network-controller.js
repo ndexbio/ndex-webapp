@@ -108,7 +108,8 @@ ndexApp.controller('networkController',
                 true -> ascending
                 false -> descending
                 */
-            networkController.attrListSortingAsc = true;
+            networkController.nodeAttrListSortingAsc = true;
+            networkController.edgeAttrListSortingAsc = true;
 
 
             networkController.baseURL = networkController.baseURL.replace(/(.*\/).*$/,'$1');
@@ -208,7 +209,7 @@ ndexApp.controller('networkController',
              *  hide owners of PRIVATE and networks with access key for both anonymous
              *  and logged in users.
              */
-            $scope.hideNetworkOwner = function() {
+         /*   $scope.hideNetworkOwner = function() {
 
                 var isVisibility = ((typeof networkController.currentNetwork !== 'undefined') &&
                                     (typeof networkController.currentNetwork.visibility !== 'undefined') &&
@@ -217,7 +218,7 @@ ndexApp.controller('networkController',
                 var isAccessKey = (typeof accesskey !== 'undefined');
 
                 return (isVisibility && isAccessKey);
-            };
+            }; */
 
             $scope.onlyNetworkOwnersCanUnsetReadOnlyTitle = 'Only network owners can set/unset Read Only flag';
 
@@ -2201,10 +2202,10 @@ ndexApp.controller('networkController',
                 var nodeAttributeNames = _.keys(node);
                 var attributeNames     =  $scope.removeHiddenAttributes(nodeAttributeNames);
 
-                var resultList = ['id'];
+                var resultList = [];
 
                 //First section has these attributes in order if they exists
-                var topList = ['n', 'r','alias','relatedTo','citations'];
+                var topList = [ 'n','r','alias','relatedTo','citations'];
                 _(topList).forEach(function (value) {
                     if (node[value]) {
                         resultList.push(value);
@@ -2222,7 +2223,7 @@ ndexApp.controller('networkController',
                 }
 
                 var comparator2 = function (a, b) {
-                    if ( networkController.attrListSortingAsc) {
+                    if ( networkController.nodeAttrListSortingAsc) {
                         return a.localeCompare(b, 'en', {sensitivity: 'base'});
                     } else {
                         return b.localeCompare(a, 'en', {sensitivity: 'base'});
@@ -2263,7 +2264,7 @@ ndexApp.controller('networkController',
                 var edgeAttributeNames  = _.keys(node);
                 var attributeNames      =  $scope.removeHiddenAttributes(edgeAttributeNames);
 
-                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded', 'pmid'];
+                var elementsToRemove = ['s', 't', 'i', 'id', '$$hashKey', '$$expanded'];
 
                 for (var i = 0; i < elementsToRemove.length; i++) {
 
@@ -2272,6 +2273,16 @@ ndexApp.controller('networkController',
                         attributeNames.splice(index, 1);
                     }
                 }
+
+                var comparator3 = function (a, b) {
+                    if ( networkController.edgeAttrListSortingAsc) {
+                        return a.localeCompare(b, 'en', {sensitivity: 'base'});
+                    } else {
+                        return b.localeCompare(a, 'en', {sensitivity: 'base'});
+                    }
+                };
+
+                attributeNames = Array.from(attributeNames).sort(comparator3);
 
                 return attributeNames;
             };
@@ -2327,7 +2338,6 @@ ndexApp.controller('networkController',
 
                             return attributeValue;
                         }
-
 
                         attributeValue = (attribute.v) ? attribute.v : '';
 
@@ -4444,29 +4454,6 @@ ndexApp.controller('networkController',
                     });
             };
 
-            /*
-            var setUserSetSampleProperty = function() {
-                // sets userSetSample network property on the server
-                // if it is not already set
-
-                if(currentNetworkSummary.userSetSample) {
-                    return;
-                }
-                var properties = (currentNetworkSummary.hasOwnProperty('properties')) ? currentNetworkSummary.properties : [];
-
-                uiMisc.addNetworkProperty('userSetSample', true, 'boolean', properties, networkController.subNetworkId);
-
-                ndexService.setNetworkPropertiesV2(networkController.currentNetworkId, properties,
-                    function() {
-                        networkController.currentNetwork.userSetSample  = true;
-                        networkController.previousNetwork.userSetSample = true;
-                        currentNetworkSummary.userSetSample             = true;
-                    },
-                    function() {
-
-                    });
-            };
-*/
             networkController.setSampleFromQuery = function() {
 
                 if (!$scope.showSetSampleButtonEnabled) {
@@ -4526,8 +4513,6 @@ ndexApp.controller('networkController',
 
                 //factory.setNetworkSampleV2 = function (networkId, sampleInCX, successHandler, errorHandler) {
             };
-
-
 
             networkController.deletePendingDOIRequest = function() {
 
@@ -4730,7 +4715,7 @@ ndexApp.controller('networkController',
             }
             else {
                 // TODO: Handle error
-                console.log('Unexpected route.');
+                console.log('Unexpected route.');f
             }
         }
      ]
