@@ -446,16 +446,20 @@
                                 <span class="networkPropertyName">Version: </span>
                                 {{networkController.currentNetwork.version}}
                             </div>
-
+                            <br/>
                             <div class='rowWithOneLineTopPad' ng-if="networkController.otherProperties.length > 0">
-                                <span class="networkPropertyName">Properties:</span>
-
                                 <div>
                                     <table class="attrValuePair borderless" style="width:100%">
                                         <colgroup>
                                             <col span="1" style="width:23%;"/>
                                             <col span="1" style="width:77%;"/>
                                         </colgroup>
+                                        <thead>
+                                        <tr style="background-color: rgb(2, 114, 201); color: white">
+                                            <th colspan="2">Properties:
+                                            </th>
+                                        </tr>
+                                        </thead>
                                         <tbody class="propInspectorTBody">
                                         <tr ng-repeat='property in networkController.otherProperties'>
                                             <td style="font-weight: bold" ng-bind-html="property.predicateString"></td>
@@ -534,7 +538,7 @@
                                        <td style="font-weight:bold" ng-switch-default>
                                                 {{attributeName}}
                                             </td>
-                                            <td style="display: block; overflow-y: auto;max-height: 12em;" compile='getAttributeValue(attributeName, node[attributeName])'>
+                                            <td style="display: block; overflow-y: auto;max-height: 14em;" compile='getAttributeValue(attributeName, node[attributeName])'>
                                             </td>
                                     </tr >
                                         </tbody>
@@ -577,7 +581,7 @@
                                         <tbody class="propInspectorTBody">
                                         <tr ng-repeat="attributeName in getEdgeAttributesNames(edge)">
                                             <td style="font-weight: bold;">{{attributeName}}</td>
-                                            <td compile='getAttributeValue(attributeName, edge[attributeName])'></td>
+                                            <td style="display: block; overflow-y: auto;max-height: 14em;" compile='getAttributeValue(attributeName, edge[attributeName])'></td>
                                         </tr>
                                         </tbody>
                                     </table>
