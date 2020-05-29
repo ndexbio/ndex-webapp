@@ -455,7 +455,7 @@
                                             <col span="1" style="width:77%;"/>
                                         </colgroup>
                                         <thead>
-                                        <tr style="background-color: rgb(2, 114, 201); color: white">
+                                        <tr class="propInspectorHeader">
                                             <th colspan="2">Properties:
                                             </th>
                                         </tr>
@@ -511,7 +511,7 @@
                                             <col span="1" style="width:77%;"/>
                                         </colgroup>
                                         <thead>
-                                        <tr style="background-color: rgb(2, 114, 201); color: white">
+                                        <tr class="propInspectorHeader">
                                         <th >Attribute &nbsp;
                                             <button style="border: none; background: none;vertical-align: top" ng-switch="networkController.nodeAttrListSortingAsc"
                                                     ng-click="networkController.nodeAttrListSortingAsc=!networkController.nodeAttrListSortingAsc">
@@ -567,9 +567,9 @@
                                             <col span="1" style="width:77%;"/>
                                         </colgroup>
                                         <thead>
-                                        <tr style="background-color: rgb(2, 114, 201); color: white">
-                                            <th >Attribute
-                                                <button style="border: none; outline: none; background: none;float: right" ng-switch="networkController.edgeAttrListSortingAsc"
+                                        <tr class="propInspectorHeader">
+                                            <th >Attribute  &nbsp;
+                                                <button style="border: none; outline: none; background: none" ng-switch="networkController.edgeAttrListSortingAsc"
                                                         ng-click="networkController.edgeAttrListSortingAsc=!networkController.edgeAttrListSortingAsc">
                                                     <i ng-switch-when="true"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>
                                                     <i ng-switch-when="false"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>

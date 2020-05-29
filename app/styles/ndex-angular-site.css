@@ -1404,6 +1404,13 @@ td.inspectorReservedAttrName {
     color: rgb(2, 114, 201);
 }
 
+/* table header of property-value table.*/
+tr.propInspectorHeader th{
+    background-color: rgb(2, 114, 201);
+    color: white;
+    font-size: 1em;
+}
+
 table.attrValuePair {
     background: white;
     width: 100%
