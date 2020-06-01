@@ -246,10 +246,95 @@
                             <br><br>
                         </div>
 
-                        <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
-                        &nbsp;&nbsp;
-                        <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
-                        &nbsp;&nbsp;
+                        <table class="borderless" style="width:100%; background: white;">
+                            <colgroup>
+                                <col span="1" style="width: 120px"/>
+                                <col span="1" style="width: 120px"/>
+                            </colgroup>
+                            <tr style="background: white">
+                                <td >
+                                    <span class="networkPropertyName">Nodes: </span>{{networkController.currentNetwork.nodeCount}}
+
+                                </td>
+                                <td >
+                                    <span class="networkPropertyName">Edges: </span>{{networkController.currentNetwork.edgeCount}}
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr style="background: white;" ng-if="!networkController.successfullyQueried && networkController.currentNetwork.externalId !== undefined">
+                                <td >  <strong>{{networkController.currentNetwork.visibility}}</strong>
+                                    &nbsp;
+                                    <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexLevel != 'NONE'"></i>
+                                </td>
+                                <td  ng-show="networkController.isAdmin">
+                                    <input type="checkbox"
+                                           ng-model="networkController.readOnlyChecked"
+                                           ng-change="readOnlyChanged()"
+                                           ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only
+                                </td>
+                                <td>
+                                    <span ng-if="!networkController.currentNetwork.doi || networkController.currentNetwork.doi == 'Pending'">
+                                      <span ng-if="networkController.isNetworkOwner && (networkController.currentNetwork.visibility.toUpperCase() == 'PRIVATE')">
+                                        <strong>Share URL: </strong>
+                                         <span ng-style="networkController.networkShareURL ? {color:'#18AD31'} : {color:'black'}">
+                                             {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
+                                         </span>
+
+                                          <a ng-hide="!networkController.networkShareURL"
+                                             tooltip="{{copyNetworkShareURLTitle}}"
+                                             tooltip-placement="bottom"
+                                             ng-click="showCopiedNetworkShareURLTitle()"
+                                             ng-mouseover="showOriginalCopyNetworkShareURLTitle()"
+                                             ngclipboard
+                                             data-clipboard-text="{{networkController.networkShareURL}}"
+                                             class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
+                                         </a>
+                                      </span>
+                                      <span ng-if="networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC'">
+
+                                        <a ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
+                                           tooltip="{{copyNetworkShareURLTitle}}"
+                                           tooltip-placement="bottom"
+                                           ng-click="showCopiedNetworkShareURLTitle()"
+                                           ng-mouseover="showOriginalCopyNetworkShareURLTitle()"
+                                           ngclipboard
+                                           data-clipboard-text="{{networkController.networkURL}}"
+                                           class="actionsLabel btn btn-primary btn-xs">Copy URL
+                                        </a>
+                                      </span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="background: white;" >
+                                <td>
+                                    <span style="font-weight: bold;">@context: </span>
+                                </td>
+                                <td colspan="2">
+                                    <!--======================================-->
+                                    <!--=============  CONTEXT  ==============-->
+                                    <!--======================================-->
+                                    <span ng-show="networkController.isLoggedInUser && networkController.isAdmin
+                                && !networkController.currentNetwork.doi && !isNetworkCertified()
+                                && !networkController.hasMultipleSubNetworks() && !networkController.readOnlyChecked">
+                                <a ng-click="networkController.showContextModal(true);"
+                                   tooltip-placement="bottom"
+                                   tooltip="Click here to view/edit the namespaces associated with this network">
+                                    view/edit namespaces
+                                </a>
+                            </span>
+                                    <span ng-show="!networkController.isLoggedInUser || !networkController.isAdmin
+                                || networkController.currentNetwork.doi || isNetworkCertified() || networkController.hasMultipleSubNetworks()
+                                || networkController.readOnlyChecked">
+                                <a ng-click="networkController.showContextModal(false);"
+                                   tooltip-placement="bottom"
+                                   tooltip="Click here to view the namespaces associated with this network">
+                                    view namespaces
+                                </a>
+                            </span>
+
+                                </td>
+                            </tr>
+                        </table>
 
                         <div ng-show = "networkController.successfullyQueried">
                             <span class="networkPropertyName" ng-show="networkController.currentNetwork.queryString">Query Terms: </span>{{networkController.currentNetwork.queryString}}
@@ -281,120 +366,47 @@
                         </div>
 
                         <div ng-show = "!networkController.successfullyQueried">
-                            <span ng-show = "networkController.currentNetwork.externalId !== undefined">
-                                <strong>{{networkController.currentNetwork.visibility}}</strong>
-                                &nbsp;
-                                <i class="fa fa-search" aria-hidden="true" ng-if="networkController.currentNetwork.indexLevel != 'NONE'"></i>
-                            </span>
-                            &nbsp;&nbsp;
 
-
-                            <span class="networkPropertyName" ng-show="networkController.isAdmin">
-                                <input type="checkbox"
-                                    ng-model="networkController.readOnlyChecked"
-                                    ng-change="readOnlyChanged()"
-                                ng-disabled="networkController.currentNetwork.isReadOnly && networkController.currentNetwork.doi"> Read Only
-                            </span>
-                            <span class="networkPropertyName"
-                                  ng-show="networkController.currentNetwork.externalId !== undefined && !networkController.isAdmin"
-                                  tooltip="{{onlyNetworkOwnersCanUnsetReadOnlyTitle}}"
-                                  tooltip-placement="bottom">
-                                <input type="checkbox" disabled ng-model="networkController.readOnlyChecked"> Read Only
-                            </span>
-                            &nbsp;&nbsp;
-                            <span ng-if="!networkController.currentNetwork.doi || networkController.currentNetwork.doi == 'Pending'">
-                                <span ng-if="networkController.isNetworkOwner && (networkController.currentNetwork.visibility.toUpperCase() == 'PRIVATE')">
-                                    <strong>Share URL: </strong>
-                                    <span ng-style="networkController.networkShareURL ? {color:'#18AD31'} : {color:'black'}">
-                                        {{networkController.networkShareURL ? 'Enabled' : 'Disabled'}}
-                                    </span>
-
-                                    <a ng-hide="!networkController.networkShareURL"
-                                       tooltip="{{copyNetworkShareURLTitle}}"
-                                       tooltip-placement="bottom"
-                                       ng-click="showCopiedNetworkShareURLTitle()"
-                                       ng-mouseover="showOriginalCopyNetworkShareURLTitle()"
-                                       ngclipboard
-                                       data-clipboard-text="{{networkController.networkShareURL}}"
-                                       class="actionsLabel btn btn-primary btn-xs copy-url-button">Copy URL
-                                    </a>
-
-                                </span>
-
-                                <span ng-if="networkController.currentNetwork.visibility.toUpperCase() == 'PUBLIC'">
-
-                                    <a ng-hide="networkController.currentNetwork.doi && networkController.currentNetwork.doi != 'Pending'"
-                                       tooltip="{{copyNetworkShareURLTitle}}"
-                                       tooltip-placement="bottom"
-                                       ng-click="showCopiedNetworkShareURLTitle()"
-                                       ng-mouseover="showOriginalCopyNetworkShareURLTitle()"
-                                       ngclipboard
-                                       data-clipboard-text="{{networkController.networkURL}}"
-                                       class="actionsLabel btn btn-primary btn-xs">Copy URL
-                                    </a>
-
-
-                                </span>
-                            </span>
-
-
-                            <br />
-                            <!--======================================-->
-                            <!--=============  CONTEXT  ==============-->
-                            <!--======================================-->
-                            <span ng-show="networkController.isLoggedInUser && networkController.isAdmin
-                                && !networkController.currentNetwork.doi && !isNetworkCertified()
-                                && !networkController.hasMultipleSubNetworks() && !networkController.readOnlyChecked">
-                                <span style="font-weight: bold;">@context: </span>
-                                <a ng-click="networkController.showContextModal(true);"
-                                   tooltip-placement="bottom"
-                                   tooltip="Click here to view/edit the namespaces associated with this network">
-                                    view/edit namespaces
-                                </a>
-                            </span>
-                            <span ng-show="!networkController.isLoggedInUser || !networkController.isAdmin
-                                || networkController.currentNetwork.doi || isNetworkCertified() || networkController.hasMultipleSubNetworks()
-                                || networkController.readOnlyChecked">
-                                <span style="font-weight: bold;">@context: </span>
-                                <a ng-click="networkController.showContextModal(false);"
-                                   tooltip-placement="bottom"
-                                   tooltip="Click here to view the namespaces associated with this network">
-                                    view namespaces
-                                </a>
-                            </span>
 
                             <span ng-show="networkController.currentNetwork.externalId !== undefined">
-                                <br /><br />
+                                <br />
 
-                                <span ng-hide="hideNetworkOwner()">
-                                    <span class="networkPropertyName"  >Owner: </span>
-                                    <a ng-href="#/user/{{networkController.networkOwner.ownerUUID}}">
+                                <table class="attrValuePair borderless">
+                                       <colgroup>
+                                            <col span="1" style="width: 120px"/>
+                                        </colgroup>
+                                       <tbody class="propInspectorTBody">
+                                       <tr>
+                                          <td class="networkPropertyName">Owner</td>
+                                           <td><a ng-href="#/user/{{networkController.networkOwner.ownerUUID}}">
                                         {{networkController.networkOwner.firstName}}
                                         {{networkController.networkOwner.lastName}}
-                                    </a>
-                                    <br/>
-                                </span>
+                                    </a></td>
+                                       </tr>
+                                        <tr>
+                                           <td class="networkPropertyName">Created</td>
+                                            <td>{{networkController.currentNetwork.creationTime | date: 'medium'}}</td>
+                                        </tr>
 
-                                <span class="networkPropertyName" >Created: </span>
-                                {{networkController.currentNetwork.creationTime | date: 'medium'}} <br/>
-
-                                <span ng-show="(networkController.currentNetwork.creationTime) !=
+                                <tr ng-if="(networkController.currentNetwork.creationTime) !=
                                                (networkController.currentNetwork.modificationTime)">
-                                    <span class="networkPropertyName">Last Modified: </span>
-                                    {{networkController.currentNetwork.modificationTime | date: 'medium'}} <br/>
-                                </span>
-
-                            </span>
-
-                            <span class="networkPropertyName" ng-show="networkController.currentNetwork.externalId !== undefined">UUID: </span>
-                            {{networkController.currentNetwork.externalId}}<br/>
-
-                            <span class="networkPropertyName">Format: </span>
-                            {{networkController.currentNetwork.sourceFormat}}<br/>
-
-                            <span ng-show="networkController.isLoggedInUser && networkController.currentNetwork.externalId !== undefined">
-                                <span class="networkPropertyName">Your Privileges: </span>
-                                {{networkController.privilegeLevel}}<br/>
+                                    <td class="networkPropertyName">Last Modified</td>
+                                    <td>{{networkController.currentNetwork.modificationTime | date: 'medium'}}</td>
+                                </tr>
+                                       <tr>
+                                           <td class="networkPropertyName">UUID</td>
+                                           <td>{{networkController.currentNetwork.externalId}}</td>
+                                       </tr>
+                                        <tr ng-if="networkController.currentNetwork.sourceFormat!='Unknown'">
+                                            <td class="networkPropertyName">Format</td>
+                                            <td>{{networkController.currentNetwork.sourceFormat}}</td>
+                                        </tr>
+                                       <tr ng-if="networkController.isLoggedInUser">
+                                           <td class="networkPropertyName">Your Privileges</td>
+                                           <td>{{networkController.privilegeLevel}}</td>
+                                       </tr>
+                                       </tbody>
+                                   </table>
                             </span>
 
 
@@ -434,30 +446,29 @@
                                 <span class="networkPropertyName">Version: </span>
                                 {{networkController.currentNetwork.version}}
                             </div>
-
+                            <br/>
                             <div class='rowWithOneLineTopPad' ng-if="networkController.otherProperties.length > 0">
-                                <span class="networkPropertyName">Properties:</span>
+                                <div>
+                                    <table class="attrValuePair borderless" style="width:100%">
+                                        <colgroup>
+                                            <col span="1" style="width:23%;"/>
+                                            <col span="1" style="width:77%;"/>
+                                        </colgroup>
+                                        <thead>
+                                        <tr class="propInspectorHeader">
+                                            <th colspan="2">Properties:
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="propInspectorTBody">
+                                        <tr ng-repeat='property in networkController.otherProperties'>
+                                            <td style="font-weight: bold" ng-bind-html="property.predicateString"></td>
+                                            <td class="wrappedCell" ng-show='property.value'
+                                                ng-bind-html="property.value"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
 
-                                <div class="networkPropertiesNameMargins">
-
-                                        <span class='' ng-repeat='property in networkController.otherProperties'>
-                                            <span>
-                                               <span class="networkPropertiesNameFont"
-                                                     ng-bind-html="property.predicateString">
-                                               </span>
-                                                <!--
-                                               <span class="networkPropertiesValueFont"
-                                                     ng-hide='property.value.toString().length > 40'
-                                                     ng-bind-html="property.value.toString()">
-                                               </span>
-                                               -->
-                                               <span class="networkPropertiesValueFont"
-                                                     ng-show='property.value'
-                                                     ng-bind-html="property.value">
-                                               </span>
-                                               <br/>
-                                            </span>
-                                        </span>
                                 </div>
                             </div>
                         </div>
@@ -494,52 +505,44 @@
                             </tr>
                             <tr ng-if="node.$$expanded && getNodeAttributesNames(node).length > 0" ng-repeat-end="">
                                 <td class="wrappedCell">
-                                    <span ng-repeat="attributeName in getNodeAttributesNames(node)">
-                                        <span ng-switch="attributeName">
+                                    <table class="borderless"  style="width:100%;">
+                                        <colgroup>
+                                            <col span="1" style="width:23%;"/>
+                                            <col span="1" style="width:77%;"/>
+                                        </colgroup>
+                                        <thead>
+                                        <tr class="propInspectorHeader">
+                                        <th >Attribute &nbsp;
+                                            <button style="border: none; background: none;vertical-align: top" ng-switch="networkController.nodeAttrListSortingAsc"
+                                                    ng-click="networkController.nodeAttrListSortingAsc=!networkController.nodeAttrListSortingAsc">
+                                                <i ng-switch-when="true"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>
+                                                <i ng-switch-when="false"  class="fa fa-caret-down" style="color:white" aria-hidden="true"></i>
+                                            </button>
+                                        </th>
+                                        <th sytle="vertical-align: center;">Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="propInspectorTBody">
 
-                                            <span ng-switch-when="r">
-                                                &nbsp;&nbsp;&nbsp;<strong>ID:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                <br/>
-                                            </span>
+                                   <tr ng-repeat="attributeName in getNodeAttributesNames(node)" ng-switch="attributeName">
+                                    <!--        <td  ng-switch-when="id" class="inspectorReservedAttrName">
+                                                Node Id
+                                            </td> -->
+                                            <td  ng-switch-when="n" class="inspectorReservedAttrName">
+                                              Name
+                                            </td>
+                                       <td  ng-switch-when="r" class="inspectorReservedAttrName">
+                                           Represents
+                                       </td>
 
-                                            <span ng-switch-when="n">
-                                                &nbsp;&nbsp;&nbsp;<strong>Name:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                <br/>
-                                            </span>
-
-                                            <span ng-switch-when="id">
-                                                &nbsp;&nbsp;&nbsp;<strong>Node Id:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                                <br/>
-                                            </span>
-
-                                            <span ng-switch-when="ndex:internalLink">
-                                                <br>
-                                                <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                            </span>
-
-                                            <span ng-switch-when="ndex:externalLink">
-                                               <span style="font-size:0.9em" ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-                                            </span>
-
-                                            <span ng-switch-default>
-                                                &nbsp;&nbsp;&nbsp;<strong>{{attributeName}}:</strong>
-                                                <span ng-bind-html='getAttributeValue(attributeName, node[attributeName])'></span>
-
-
-                                                <span ng-show="howManyAttributes(node[attributeName]) > 5">
-                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <a ng-click="networkController.showMoreAttributes(attributeName, node[attributeName])">
-                                                        more...
-                                                    </a>
-                                                    <br>
-                                                </span>
-                                                <br>
-                                            </span>
-                                        </span>
-                                    </span>
+                                       <td style="font-weight:bold" ng-switch-default>
+                                                {{attributeName}}
+                                            </td>
+                                            <td style="display: block; overflow-y: auto;max-height: 14em;" compile='getAttributeValue(attributeName, node[attributeName])'>
+                                            </td>
+                                    </tr >
+                                        </tbody>
+                                    </table>
                                 </td>
                             </tr>
 
@@ -558,23 +561,30 @@
                             </tr>
                             <tr ng-if="edge.$$expanded && getEdgeAttributesNames(edge).length > 0" ng-repeat-end="">
                                 <td class="wrappedCell">
-
-                                    <span ng-repeat="attributeName in getEdgeAttributesNames(edge)">
-                                        &nbsp;&nbsp;&nbsp;  <strong>{{attributeName}}:</strong>
-                                        <span ng-bind-html='getAttributeValue(attributeName, edge[attributeName])'></span>
-
-
-                                        <span ng-show="howManyAttributes(edge[attributeName]) > 5">
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            <a ng-click="networkController.showMoreAttributes(attributeName, edge[attributeName])">
-                                                more...
-                                            </a>
-                                            <br>
-                                        </span>
-                                        <br />
-
-                                    </span>
-
+                                    <table class="borderless"  style="width:100%;">
+                                        <colgroup>
+                                            <col span="1" style="width:23%;"/>
+                                            <col span="1" style="width:77%;"/>
+                                        </colgroup>
+                                        <thead>
+                                        <tr class="propInspectorHeader">
+                                            <th >Attribute  &nbsp;
+                                                <button style="border: none; outline: none; background: none" ng-switch="networkController.edgeAttrListSortingAsc"
+                                                        ng-click="networkController.edgeAttrListSortingAsc=!networkController.edgeAttrListSortingAsc">
+                                                    <i ng-switch-when="true"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>
+                                                    <i ng-switch-when="false"  class="fa fa-caret-up" style="color:white" aria-hidden="true"></i>
+                                                </button>
+                                            </th>
+                                            <th sytle="vertical-align: center;">Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="propInspectorTBody">
+                                        <tr ng-repeat="attributeName in getEdgeAttributesNames(edge)">
+                                            <td style="font-weight: bold;">{{attributeName}}</td>
+                                            <td style="display: block; overflow-y: auto;max-height: 14em;" compile='getAttributeValue(attributeName, edge[attributeName])'></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
