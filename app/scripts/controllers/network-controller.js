@@ -3590,7 +3590,7 @@ ndexApp.controller('networkController',
 
                                         var sampleNetworkEdgeCount = network.edgeCount;
                                         //var currentNetworkEdgeCount = networkController.currentNetwork.edgeCount;
-                                        var limitForSettingNetwrokSample = 2000;
+                                        var limitForSettingNetwrokSample = 2500;
 
                                         if (sampleNetworkEdgeCount > limitForSettingNetwrokSample) {
                                             $scope.errors = 'The network with UUID ' + $scope.networkUUID + ' has ' +
