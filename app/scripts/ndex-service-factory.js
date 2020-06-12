@@ -1457,18 +1457,41 @@ ndexServiceApp.factory('ndexService',
                 this.sendHTTPRequest(config, successHandler, errorHandler);
             };
 
-            factory.getNetworkPermissionsByUUIDsV2 = function(networksUUIDsList, successHandler, errorHandler) {
+            var getNetworkPermissionsByUUIDsV2 = function(networksUUIDsList, successHandler, errorHandler) {
                 // Server API: Get Network Permissions by UUIDs
                 // POST /batch/network/permission
 
                 var url = '/batch/network/permission';
-                //if (accesskey) {
-                //    url = url + "?accesskey=" + accesskey;
-                //};
 
                 var config = ndexConfigs.getPostConfigV2(url, networksUUIDsList);
-                this.sendHTTPRequest(config, successHandler, errorHandler);
+                factory.sendHTTPRequest(config, successHandler, errorHandler);
             };
+
+            factory.getNetworkPermissionsByUUIDs = function ( networksUUIDsList, successHandler, errorHandler, resultObj) {
+                var batchSize = 500; // server API has a limit to 500 on the UUID List
+
+                if ( resultObj === undefined ) {
+                    resultObj = {};
+                }
+                if ( networksUUIDsList.length <= batchSize) {
+                    getNetworkPermissionsByUUIDsV2(networksUUIDsList,
+                        function (resultChunck) {
+                          successHandler (  Object.assign(resultObj, resultChunck));
+                        }, errorHandler);
+                } else {
+                    var firstBatchUUIDs = networksUUIDsList.slice(0, batchSize);
+                    var trailingUUIDs = networksUUIDsList.slice(batchSize);
+
+                    getNetworkPermissionsByUUIDsV2(firstBatchUUIDs,
+                        function (resultChunck) {
+                            factory.getNetworkPermissionsByUUIDs(trailingUUIDs, successHandler, errorHandler,
+                                Object.assign(resultObj, resultChunck));
+                        },
+                        errorHandler
+                        );
+                }
+            };
+
 
             factory.exportNetworksV2 = function (networkExportFormat, listOfNetworkIDs, successHandler, errorHandler)
             {

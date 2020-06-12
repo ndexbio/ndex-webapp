@@ -154,12 +154,10 @@ ndexApp.controller('myAccountController',
             $scope.enableDeleteBulkButton   = false;
             $scope.deleteNetworkButtonTitle = '';
 
-
             myAccountController.editProfilesLabel         = 'Edit Profile';
             myAccountController.exportNetworksLabel       = 'Export Network';
             myAccountController.removeNetworksButtonLabel = 'Remove from My Networks';
             myAccountController.deleteNetworksLabel       = 'Delete Network';
-
 
             myAccountController.networkSets = [];
 
@@ -177,18 +175,13 @@ ndexApp.controller('myAccountController',
             $scope.selectedRowsNetworkExternalIds = {};
             $scope.selectedRowsTasksExternalIds   = {};
 
-
             myAccountController.numberOfNewTasksAndRequests = 0;
             myAccountController.numberOfReceivedRequests    = 0;
             myAccountController.numberOfDownloadableTasks   = 0;
 
-
             myAccountController.currentTab = 'networks';
 
-
-
             userSessionTablesSettings.initMyAccountPageStates();
-
 
             $scope.networksTasksAndRequestsReceived = function() {
                 return (networksReceived &&
@@ -1047,7 +1040,7 @@ ndexApp.controller('myAccountController',
                 enableColumnMenus: false,
                 enableRowHeaderSelection: true,
 
-                paginationPageSizes: [25, 50, 75],
+                paginationPageSizes: [100, 500, 1000],
                 paginationPageSize: $rootScope.myAccountPageStates.table.networksPerPage,
                 useExternalPagination: true,
 
@@ -3229,7 +3222,7 @@ ndexApp.controller('myAccountController',
                         }
                         var networkUUIDs = _.map(networkSummaries, 'externalId');
 
-                        ndexService.getNetworkPermissionsByUUIDsV2(networkUUIDs,
+                        ndexService.getNetworkPermissionsByUUIDs(networkUUIDs,
                             function(networkPermissionsMap) {
 
                                 // build list of networks with ADMIN and WRITE permissions

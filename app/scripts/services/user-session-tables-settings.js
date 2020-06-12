@@ -112,10 +112,9 @@ angular.module('ndexServiceApp')
                     $rootScope.myAccountPageStates.table = {};
 
                     $rootScope.myAccountPageStates.table.selectedNetworks = new Set([]);
-                    $rootScope.myAccountPageStates.table.networksPerPage  = 50;
+                    $rootScope.myAccountPageStates.table.networksPerPage  = 500;
                 }
 
-                console.log();
             };
 
             self.addUUIDToSelectedNetworks = function(networkUUID) {
