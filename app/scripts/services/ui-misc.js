@@ -101,13 +101,11 @@ angular.module('ndexServiceApp')
         };
 
         self.getSetReferenceObj = function(networkSet) {
-            var reference = "";
 
-            if (!networkSet || !networkSet.properties || !networkSet.properties.reference) {
-                return reference;
-            }
+            return (!networkSet || !networkSet.properties || !networkSet.properties.reference) ?
+                 "" : networkSet.properties.reference;
 
-            reference = networkSet.properties.reference;
+/*            reference = networkSet.properties.reference;
             var referenceInPlainText;
 
             // reference can be plain text (has no HTML tags), in which case the text() method of jQuery
@@ -134,7 +132,7 @@ angular.module('ndexServiceApp')
                 referenceHTML: reference ? reference : "",
                 url: url ? url : "",
                 urlCount: countURLs
-            };
+            };*/
         };
 
 

@@ -80,7 +80,6 @@ ndexApp.controller('networkController',
             var networkExternalId = $routeParams.identifier;
             var accesskey         = $routeParams.accesskey;
 
-
             sharedProperties.setCurrentNetworkId(networkExternalId);
 
             $scope.networkController = {};
@@ -315,7 +314,6 @@ ndexApp.controller('networkController',
             $scope.isNetworkCertified = function() {
                 return uiMisc.isNetworkCertified(networkController.currentNetwork);
             };
-
 
             var changeHighlightOnCy = function (cy, highlightNodes) {
                 if ( highlightNodes) {
