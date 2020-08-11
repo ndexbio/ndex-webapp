@@ -41,7 +41,7 @@
     "jasmine-core": "^2.99.1",
     "jit-grunt": "^0.10.0",
     "jshint-stylish": "^1.0.2",
-    "lodash": ">=4.17.13",
+    "lodash": ">=4.17.19",
     "minimist": ">=1.2.2",
     "phantomjs-prebuilt": "^2.1.15",
     "request": "^2.88.2",
