@@ -1,0 +1,6 @@
+<div id="downloadNetworkTemplate" class="ui-grid-cell-contents">
+    <span ng-if="(row.entity.Status != 'processing') && (row.entity.Status != 'Set')"
+          style="cursor:pointer;" title="open this network in new viewer">
+        <a href="viewer/networks/{{row.entity.externalId}}" target="_blank"><i class="fa fa-external-link fa-lg"  aria-hidden="true"></i></a>
+    </span>
+</div>

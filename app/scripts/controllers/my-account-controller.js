@@ -950,6 +950,7 @@ ndexApp.controller('myAccountController',
                     { field: '  ', enableFiltering: false, maxWidth: 42, cellTemplate: 'views/gridTemplates/networkStatusOnMyAccountPage.html'},
                     { field: 'Network Name', enableFiltering: true, cellTemplate: 'views/gridTemplates/networkName.html' },
                     { field: ' ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/downloadNetwork.html' },
+                    { field: '   ', enableFiltering: false, width:40, cellTemplate: 'views/gridTemplates/openNetworkInViewer.html' },
 
                     { field: 'Format', enableFiltering: true, maxWidth:77,
                         sort: {
