@@ -3222,37 +3222,39 @@ ndexApp.controller('myAccountController',
                         }
                         var networkUUIDs = _.map(networkSummaries, 'externalId');
 
+                        var networkPermissionsMapHandler = function(networkPermissionsMap) {
+
+                            // build list of networks with ADMIN and WRITE permissions
+                            var invertedMapsPermissions = _.invertBy(networkPermissionsMap);
+
+                            var networksWithAdminPermissions = invertedMapsPermissions.ADMIN;
+                            var networksWithWritePermissions = invertedMapsPermissions.WRITE;
+                            var networksWithReadPermissions  = invertedMapsPermissions.READ;
+
+                            myAccountController.networksWithAdminAccess =
+                                networksWithAdminPermissions ? _.invert(networksWithAdminPermissions) : {};
+
+                            myAccountController.networksWithWriteAccess =
+                                networksWithWritePermissions ? _.invert(networksWithWritePermissions) : {};
+
+                            myAccountController.networksWithReadAccess =
+                                networksWithReadPermissions ? _.invert(networksWithReadPermissions) : {};
+
+                            // loop through the network summaries and find what networks have multiple subnetworks
+                            _.forEach(myAccountController.networkSearchResults, function (networkSummaryObj) {
+
+                                var noOfSubNetworks = uiMisc.getNoOfSubNetworks(networkSummaryObj);
+
+                                if (noOfSubNetworks >= 1) {
+                                    myAccountController.networksWithMultipleSubNetworks[networkSummaryObj.externalId] = noOfSubNetworks;
+                                }
+                            });
+
+                            successHandler();
+                        };
+
                         ndexService.getNetworkPermissionsByUUIDs(networkUUIDs,
-                            function(networkPermissionsMap) {
-
-                                // build list of networks with ADMIN and WRITE permissions
-                                var invertedMapsPermissions = _.invertBy(networkPermissionsMap);
-
-                                var networksWithAdminPermissions = invertedMapsPermissions.ADMIN;
-                                var networksWithWritePermissions = invertedMapsPermissions.WRITE;
-                                var networksWithReadPermissions  = invertedMapsPermissions.READ;
-
-                                myAccountController.networksWithAdminAccess =
-                                    networksWithAdminPermissions ? _.invert(networksWithAdminPermissions) : {};
-
-                                myAccountController.networksWithWriteAccess =
-                                    networksWithWritePermissions ? _.invert(networksWithWritePermissions) : {};
-
-                                myAccountController.networksWithReadAccess =
-                                    networksWithReadPermissions ? _.invert(networksWithReadPermissions) : {};
-
-                                // loop through the network summaries and find what networks have multiple subnetworks
-                                _.forEach(myAccountController.networkSearchResults, function (networkSummaryObj) {
-
-                                    var noOfSubNetworks = uiMisc.getNoOfSubNetworks(networkSummaryObj);
-
-                                    if (noOfSubNetworks >= 1) {
-                                        myAccountController.networksWithMultipleSubNetworks[networkSummaryObj.externalId] = noOfSubNetworks;
-                                    }
-                                });
-
-                                successHandler();
-                            },
+                            networkPermissionsMapHandler,
                             function() {
                                 console.log('unable to get user network permissions for the logged in user');
                                 errorHandler();
@@ -3633,7 +3635,9 @@ ndexApp.controller('myAccountController',
                             $interval.cancel(timerVariable);
                         }
 
-                        timerVariable = $interval(myAccountController.loadNetworksTasksAndRequests,
+                        timerVariable = $interval(
+                            myAccountController.loadNetworks,
+                            //myAccountController.loadNetworksTasksAndRequests,
                             refreshIntervalInSeconds * 1000);
                     }
                 }
