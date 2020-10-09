@@ -1,14 +1,15 @@
 ndexApp.controller('editNetworkPropertiesFixedFormController',
 	['$scope', '$location', '$routeParams', '$route', 'ndexService', '$modal',
-        'sharedProperties', '$timeout', 'uiMisc', 'ndexNavigation', 'ndexUtility', 'userSessionTablesSettings',
+        'sharedProperties', '$timeout', '$window','uiMisc', 'ndexNavigation', 'ndexUtility', 'userSessionTablesSettings',
 		function($scope, $location, $routeParams, $route, ndexService, $modal,
-                 sharedProperties, $timeout, uiMisc, ndexNavigation, ndexUtility, userSessionTablesSettings, datepicker){
+                 sharedProperties, $timeout, $window, uiMisc, ndexNavigation, ndexUtility, userSessionTablesSettings, datepicker){
 	 //testing
 
 	//              Process the URL to get application state
     //-----------------------------------------------------------------------------------
     var networkId = $routeParams.identifier;
     var subNetworkId = ($routeParams.subNetworkId.toLocaleLowerCase() === 'null') ? null : $routeParams.subNetworkId;
+    var returnto = $routeParams.returnto;
 
     //              CONTROLLER INITIALIZATIONS
     //------------------------------------------------------------------------------------
@@ -656,7 +657,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     };
 
     var returnToNetworkViewPage = function() {
-        $location.path('/network/' + networkId);
+        if ( returnto === 'nnv') {
+            $window.location.href = ('/viewer/networks/' + networkId);
+        } else {
+            $location.path('/network/' + networkId);
+        }
     };
 
     editor.save = function(requestDOI, showThesePropertiesInEmail) {
