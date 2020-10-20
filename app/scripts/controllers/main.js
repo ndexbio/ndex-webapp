@@ -1335,8 +1335,13 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 ndexServer = ndexServer + '/';
             }
 
-            if (ndexObjectTypes.has(type))
-                return  ndexServer + type + '/' + uuid;
+            if (ndexObjectTypes.has(type)) {
+                if ( type === 'network') {
+                    return window.ndexSettings.ndexServerUri.replace('v2', 'viewer') + '/networks/' + uuid;
+                } else {
+                    return ndexServer + type + '/' + uuid;
+                }
+            }
             return undefined;
         }
 
