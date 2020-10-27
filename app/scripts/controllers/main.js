@@ -1330,16 +1330,16 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
             var ndexObjectTypes = new Set(['user', 'group', 'networkset', 'network']);
 
-            var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
+           /* var ndexServer = window.ndexSettings.ndexServerUri.replace('v2', '#');
             if (ndexServer && !ndexServer.endsWith('/')) {
                 ndexServer = ndexServer + '/';
-            }
+            } */
 
             if (ndexObjectTypes.has(type)) {
                 if ( type === 'network') {
-                    return window.ndexSettings.ndexServerUri.replace('v2', 'viewer') + '/networks/' + uuid;
+                    return '/viewer/networks/' + uuid;
                 } else {
-                    return ndexServer + type + '/' + uuid;
+                    return '/#/' + type + '/' + uuid;
                 }
             }
             return undefined;
