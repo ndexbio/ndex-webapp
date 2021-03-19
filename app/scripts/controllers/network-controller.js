@@ -1903,7 +1903,8 @@ ndexApp.controller('networkController',
 
                 var postData = {
                     'serverUrl': serverURL,
-                    'uuid': networkExternalId
+                    'uuid': networkExternalId,
+                    'createView': true
                 };
 
                 if (accesskey) {
