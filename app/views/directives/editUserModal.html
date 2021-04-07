@@ -1,7 +1,7 @@
 <div class='modal-content'>
   <form name="editPersonalInfo" class="form-horizontal" role="form" ng-submit='submit()'>
     <div class="modal-header">
-        <h4 class="modal-title">Edit Personal Info</h4>
+        <h4 class="modal-title">Edit Account Settings</h4>
     </div>
     <div class="modal-body">
         
@@ -92,7 +92,14 @@
               </div>
           </div>
 
-          <div class='text-danger'>
+          <div class="form-group">
+              <label class="col-sm-3 control-label">Usage Stats</label>
+            <div class="col-sm-8 "> <label class="control-label"> <input  type="checkbox"
+                   ng-model="user.properties.emailUsageStats"> Send me monthly usage statistics by e-mail.</label>
+                </div>
+          </div>
+
+        <div class='text-danger'>
             <strong>
               {{errors}}
             </strong>

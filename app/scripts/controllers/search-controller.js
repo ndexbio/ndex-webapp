@@ -15,7 +15,7 @@ ndexApp.controller('searchController',
             searchController.userErrors = [];
             searchController.groupErrors = [];
 
-            searchController.pageSize = 1000000;
+            searchController.pageSize = 2000;
             
             searchController.networkSearchResults = [];
             searchController.networkSearchInProgress = false;
@@ -131,7 +131,10 @@ ndexApp.controller('searchController',
                 } else if (searchController.networkSearchNoResults) {
                     return 'Networks (0)';
                 } else {
-                    return 'Networks (' + searchController.numberOfNetworksFound + ')';
+                    return 'Networks (' +
+                        (searchController.networkSearchResults.length === searchController.numberOfNetworksFound ?
+                            searchController.numberOfNetworksFound :
+                            (searchController.networkSearchResults.length + " of " + searchController.numberOfNetworksFound ) )+ ')';
                 }
             };
 

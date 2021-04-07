@@ -582,7 +582,7 @@
                 ndexData: '='
             },
             restrict: 'AE',
-            template: '<button class="dropdown-btn" ng-click="openMe()">Edit Personal Info</span>',
+            template: '<button class="dropdown-btn" ng-click="openMe()">Edit settings</span>',
 
             controller: function($scope, $modal, $location, ndexService, $route) {
 
@@ -599,6 +599,12 @@
                                 $scope.user[key] = $scope.ndexData[key];
                             };
 
+                            if ($scope.user['properties'] === undefined ) {
+                                $scope.user['properties'] = {}
+                                $scope.user['properties']['emailUsageStats'] = true;
+                            } else if ($scope.user['properties']['emailUsageStats'] === undefined) {
+                                $scope.user['properties']['emailUsageStats'] = true;
+                            }
                             $scope.cancel = function () {
                                 //for (var key in $scope.ndexData) {
                                 //    $scope.user[key] = $scope.ndexData[key];
@@ -651,6 +657,8 @@
                                             window.currentNdexUser.website      = $scope.user.website;
                                             window.currentNdexUser.image        = $scope.user.image;
                                             window.currentNdexUser.description  = $scope.user.description;
+                                            window.currentNdexUser.properties.emailUsageStats =
+                                                $scope.user['properties']['emailUsageStats'];
                                         };
 
                                         $scope.user = {};
