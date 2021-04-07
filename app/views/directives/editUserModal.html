@@ -93,9 +93,10 @@
           </div>
 
           <div class="form-group">
-              <span class="col-sm-3 control-label"></span>
-            <input  type="checkbox"
-                   ng-model="user.properties.emailUsageStats"> Email me network usage stats every month.
+              <label class="col-sm-3 control-label">Usage Stats</label>
+            <div class="col-sm-8 "> <label class="control-label"> <input  type="checkbox"
+                   ng-model="user.properties.emailUsageStats"> Send me monthly usage statistics by e-mail.</label>
+                </div>
           </div>
 
         <div class='text-danger'>
