@@ -7,7 +7,7 @@ ndexApp.controller('manageNetworkAccessController',
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
     var identifier = $routeParams.identifier;
-
+    var returnto = $routeParams.returnto;
 
     //              CONTROLLER DECLARATIONS/INTIALIZATIONS
     //------------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ ndexApp.controller('manageNetworkAccessController',
 		}
 
 		return true;
-	}
+	};
 
 
 	networkManager.accessWasModified = function(accessObj) {
@@ -469,7 +469,13 @@ ndexApp.controller('manageNetworkAccessController',
 			// the "Save Changes" button is unavailable on the Manage Access page and
 			// this function cannot be called since it is invoked by clicking the "Save Changes" button
 			$scope.isProcessing = false;
-			$location.path("network/"+ $scope.networkManager.externalId);
+			//$location.path("network/"+ $scope.networkManager.externalId);
+
+			if ( returnto === 'nnv') {
+				$window.location.href = ('/viewer/networks/' + networkId);
+			} else {
+				$location.path('/network/' + networkManager.externalId);
+			}
 			return;
 		}
 
@@ -794,7 +800,7 @@ ndexApp.controller('manageNetworkAccessController',
 			// no changes to the list of accounts with permissions were made;
 			// no action is required
 			return;
-		};
+		}
 
 		// to discard all the changes, we need to empty the list of selectedAccountsForUpdatingAccessPermissions and
 		// repopulate it with the values from originalAccessPermissions
@@ -814,8 +820,8 @@ ndexApp.controller('manageNetworkAccessController',
 				for (var j = 0; j < networkManager.newGroups.length; j++) {
 					if (networkManager.newGroups[j].externalId === accountToRemove.memberUUID) {
 						networkManager.newGroups[j].member = false;
-					};
-				};
+					}
+				}
 			};
 		};
 
