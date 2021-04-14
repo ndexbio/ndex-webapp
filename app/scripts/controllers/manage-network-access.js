@@ -1,8 +1,8 @@
 ndexApp.controller('manageNetworkAccessController',
     ['ndexService', 'ndexUtility', 'sharedProperties', '$scope', '$location',
-		'$routeParams', '$q', 'ndexNavigation', 'uiMisc',
+		'$routeParams', '$q', 'ndexNavigation', 'uiMisc','$window',
         function (ndexService, ndexUtility, sharedProperties, $scope, $location,
-				  $routeParams, $q, ndexNavigation, uiMisc) {
+				  $routeParams, $q, ndexNavigation, uiMisc, $window ) {
 
     //              Process the URL to get application state
     //-----------------------------------------------------------------------------------
@@ -167,7 +167,11 @@ ndexApp.controller('manageNetworkAccessController',
 		//console.log('DONE changing admin, go back to Network View page.');
 		$scope.progressMessage = null;
 		$scope.isProcessing = false;
-		$location.path("network/"+ $scope.networkManager.externalId);
+		if ( returnto === 'nnv') {
+			$window.location.href = ('/viewer/networks/' + networkManager.externalId);
+		} else {
+			$location.path('/network/' + networkManager.externalId);
+		}
 	});
 
 
