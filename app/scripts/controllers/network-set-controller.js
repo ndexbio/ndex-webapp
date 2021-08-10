@@ -487,7 +487,7 @@ ndexApp.controller('networkSetController',
     };
 
     $scope.getNetworkURL = function(networkUUID) {
-        var url =  "#/network/" + networkUUID;
+        var url =  "viewer/networks/" + networkUUID;
 
         if (networkSetController.accesskey) {
             url = url + "?accesskey=" + networkSetController.accesskey;
@@ -496,8 +496,7 @@ ndexApp.controller('networkSetController',
         return url;
     };
 
-
-    $scope.downloadNetwork= function(rowEntity) {
+            $scope.downloadNetwork= function(rowEntity) {
         uiMisc.downloadCXNetwork(rowEntity.externalId);
     }
 
