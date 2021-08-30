@@ -617,6 +617,16 @@
         location.replace(`https:${location.href.substring(location.protocol.length)}`);
     }
 
+    // check host name
+    oldName = 'public.ndexbio.org';
+    if ( location.hostname.toLowerCase() === oldName ) {
+        location.replace(location.href.replace(oldName,'www.ndexbio.org'));
+    }
+    oldName = 'ndexbio.org';
+    if ( location.hostname.toLowerCase() === oldName ) {
+        location.replace(location.href.replace(oldName,'www.ndexbio.org'));
+    }
+
     if (navigator.cookieEnabled) {
 
         window.googleSSO = true;
