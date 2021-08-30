@@ -722,7 +722,7 @@ ndexApp.controller('userController',
             */
 
             $scope.getNetworkURL = function(networkUUID) {
-                return '#/network/' + networkUUID;
+                return 'viewer/networks/' + networkUUID;
             };
 
             $scope.downloadNetwork= function(rowEntity) {

@@ -445,7 +445,7 @@ ndexApp.controller('groupController',
     };
 
     $scope.getNetworkURL = function(networkUUID) {
-        return "#/network/" + networkUUID;
+        return "viewer/networks/" + networkUUID;
     };
 
 

@@ -899,7 +899,11 @@ ndexApp.controller('editNetworkPropertiesFixedFormController',
     editor.refresh = $route.reload;
 
     editor.cancel = function() {
-        $location.path('/network/' + networkId);
+        if ( returnto === 'nnv') {
+            $window.location.href = ('/viewer/networks/' + networkId);
+        } else {
+            $location.path('/network/' + networkId);
+        }
     };
 
     /* commented out by cj because we can't find usage of this variable in the app
