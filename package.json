@@ -46,6 +46,7 @@
     "jshint-stylish": "^1.0.2",
     "lodash": ">=4.17.21",
     "minimist": ">=1.2.2",
+    "path-parse": ">=1.0.7",
     "phantomjs-prebuilt": "^2.1.15",
     "request": "^2.88.2",
     "shell-quote": ">=1.6.1",
