@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>NDEx WebApp v2.5.1</title>
+    <title>NDEx WebApp</title>
     <meta name="description" content="NDEx, the Network Data Exchange, is a collaborative software infrastructure for storing, sharing and publishing biological network knowledge; NDEx is developed in tight association with Cytoscape at the UC San Diego School of Medicine.">
     <meta name="viewport" content="width=device-width">
 
@@ -553,7 +553,7 @@
         }
     }
 
-  function initClient() {
+    function initClient() {
       gapi.client.init({
           clientId: ndexSettings.googleClientId,
           scope: 'profile email',
@@ -599,7 +599,7 @@
 
   }
 
-  function startWebApp (signedInUser, type) {
+    function startWebApp (signedInUser, type) {
 
       if ( signedInUser !=null ) {
           window.currentNdexUser = signedInUser;
@@ -613,7 +613,19 @@
       }
   }
 
+    if (location.protocol !== 'https:') {
+        location.replace(`https:${location.href.substring(location.protocol.length)}`);
+    }
 
+    // check host name
+    oldName = 'public.ndexbio.org';
+    if ( location.hostname.toLowerCase() === oldName ) {
+        location.replace(location.href.replace(oldName,'www.ndexbio.org'));
+    }
+    oldName = 'ndexbio.org';
+    if ( location.hostname.toLowerCase() === oldName ) {
+        location.replace(location.href.replace(oldName,'www.ndexbio.org'));
+    }
 
     if (navigator.cookieEnabled) {
 

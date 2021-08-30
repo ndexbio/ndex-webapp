@@ -227,7 +227,7 @@ ndexApp.controller('networkSetController',
             { field: 'Visibility', enableFiltering: true, width: 90, cellTemplate: 'views/gridTemplates/visibility.html'},
             { field: 'Owner', enableFiltering: true, width:80,
                 cellTemplate: 'views/gridTemplates/ownedBy.html'},
-            { field: 'Last Modified', enableFiltering: false, maxWidth:120, cellFilter: "date:'short'" },
+            { field: 'Last Modified',  sort: { direction: 'desc' }, enableFiltering: false, maxWidth:120, cellFilter: "date:'short'", type: 'date' },
             { field: 'indexLevel',   enableFiltering: false,  visible: false}
         ];
         $scope.networkGridApi.grid.options.columnDefs = columnDefs;
@@ -487,7 +487,7 @@ ndexApp.controller('networkSetController',
     };
 
     $scope.getNetworkURL = function(networkUUID) {
-        var url =  "#/network/" + networkUUID;
+        var url =  "viewer/networks/" + networkUUID;
 
         if (networkSetController.accesskey) {
             url = url + "?accesskey=" + networkSetController.accesskey;
@@ -496,8 +496,7 @@ ndexApp.controller('networkSetController',
         return url;
     };
 
-
-    $scope.downloadNetwork= function(rowEntity) {
+            $scope.downloadNetwork= function(rowEntity) {
         uiMisc.downloadCXNetwork(rowEntity.externalId);
     }
 
