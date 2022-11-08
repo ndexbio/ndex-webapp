@@ -2033,12 +2033,12 @@
             controller: function($scope, $modal, $route, ndexService, ndexUtility)
             {
                 var modalInstance;
-                $scope.errors = null;
-                $scope.modal = {};
                 $scope.title = 'Export Network';
                 $scope.exportButtonLabel = "Export Network";
 
                 $scope.openMe = function() {
+                    delete $scope.errors;
+                    $scope.modal = {};
                     
                     $scope.exporters = _.filter($scope.$root.ImporterExporters, 'exporter');
 
@@ -2084,18 +2084,17 @@
 
                     ndexService.exportNetworksV2(networkExporterName, networkUUIDsList,
                         function(data) {
-                            ///console.log(data);
                             $scope.isProcessing = false;
-                            //var userController = $scope.userController;
-                            //userController.refreshTasks();
                             modalInstance.close();
                         },
                         function(error) {
-                            //console.log(error);
+                            $scope.errors = 'Unable to Export this network';
+
+                            if (error.message) {
+                                $scope.errors = $scope.errors + ': ' + error.message;
+                            }
+
                             $scope.isProcessing = false;
-                            //var userController = $scope.userController;
-                            //userController.refreshTasks();
-                            modalInstance.close();
                         });
 
                 };
