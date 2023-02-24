@@ -142,8 +142,8 @@ ndexServiceApp.factory('ndexService',
                 // Server API: Create User with google token
                 // POST /user?idtoken={GoogleIdToken}
 
-                var res = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
-                var url = '/user?idtoken=' + res.id_token;
+                //var res = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
+                var url = '/user?idtoken=' + window.keycloak.token; //res.id_token;
 
                 var postData = (userName) ? {'userName': userName} : null;
 
@@ -223,9 +223,9 @@ ndexServiceApp.factory('ndexService',
                 var url = '/user?valid=true&setAuthHeader=false';
 
 
-                var res = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
+                //var res = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
                 var headers = {
-                    'Authorization': 'Bearer ' + res.id_token
+                    'Authorization': 'Bearer ' + window.keycloak.token //res.id_token
                 };
                 var config = ndexConfigs.getGetConfigV2(url, null);
                 config.headers = headers;
@@ -1665,7 +1665,7 @@ ndexServiceApp.factory('ndexUtility', function () {
             return 'Basic ' + btoa(window.currentNdexUser.userName + ':' + factory.getLoggedInUserAuthToken());
         }
         else if (window.currentSignInType === 'google') {
-            return 'Bearer ' +  gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+            return 'Bearer ' +  window.keycloak.token; // gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
         } else {
             return null;
         }

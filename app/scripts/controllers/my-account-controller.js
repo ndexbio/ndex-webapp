@@ -1379,9 +1379,9 @@ ndexApp.controller('myAccountController',
                 //var myId = taskId + '';
 
                 if (window.currentSignInType === 'google') {
-                    /** @namespace gapi.auth2.getAuthInstance.currentUser.get.getAuthResponse.id_token **/
                     anchor.setAttribute('href', link + '&id_token=' +
-                        gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
+                         window.keycloak.token);
+                    //gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token);
                 }
 
                 else if (window.currentSignInType === 'basic') {

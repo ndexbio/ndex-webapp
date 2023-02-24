@@ -112,13 +112,20 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 ndexUtility.clearUserCredentials();
                 delete $http.defaults.headers.common.Authorization;
             } else {
-                /** @namespace gapi.auth2.getAuthInstance() **/
-                var authInstanceObj = gapi.auth2.getAuthInstance();
-                if (authInstanceObj) {
-                    /** @namespace authInstanceObj.signOut() **/
-                    authInstanceObj.signOut();
+                ///** @namespace gapi.auth2.getAuthInstance() **/
+                //var authInstanceObj = gapi.auth2.getAuthInstance();
+
+                window.currentNdexUser = null;
+                window.currentSignInType = null;
+                sharedProperties.currentNetworkId = null;
+                sharedProperties.currentUserId = null;
+                $scope.main.showSignIn = true;
+
+                $location.path('/');
+
+                if (window.keycloak) {
+                    window.keycloak.logout({redirectUri: location.href.substring(0, location.href.indexOf("#"))});
                 }
-                //gapi.auth2.getAuthInstance().signOut();
             }
             window.currentNdexUser = null;
             window.currentSignInType = null;
@@ -795,8 +802,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                         delete $scope.errors;
                         $scope.signIn.userName = null;
                         $scope.signIn.password = null;
+                       // console.log ($location);
+                       // console.log(window.keycloak);
 
-                        gapi.auth2.getAuthInstance().signIn({prompt: 'consent select_account'}).then(googleUserHandler, googleFailureHandler);
+                        window.keycloak.login({redirectUri: $location.absUrl() + "myAccount"} );
+                        //gapi.auth2.getAuthInstance().signIn({prompt: 'consent select_account'}).then(googleUserHandler, googleFailureHandler);
                     };
                 }
             });

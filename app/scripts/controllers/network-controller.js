@@ -1918,7 +1918,8 @@ ndexApp.controller('networkController',
                 }
 
                 if (window.currentSignInType === 'google') {
-                    postData.idToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+                    postData.idToken = window.keycloak.token;
+                    //gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
 
                 } else if (window.currentSignInType === 'basic') {
 

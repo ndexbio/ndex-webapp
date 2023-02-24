@@ -281,7 +281,7 @@ angular.module('ndexServiceApp')
             };
 
             if ( window.currentSignInType=='google') {
-                link = link + "&id_token=" + gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
+                link = link + "&id_token=" + window.keycloak.token; //gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token;
 
             } else if (window.currentSignInType == 'basic') {
 

@@ -47,8 +47,10 @@ ndexServiceApp.factory('logInService', ['sharedProperties', 'ndexUtility', 'ndex
 
 
                     $scope.signInWithGoogle = function () {
-                        gapi.auth2.getAuthInstance().signIn({prompt:'consent select_account'}).then(googleUserHandler, googleFailureHandler);
-                    }
+                        //gapi.auth2.getAuthInstance().signIn({prompt:'consent select_account'}).then(googleUserHandler, googleFailureHandler);
+                        console.log(window.keycloak);
+                        window.keycloak.login();
+                    };
 
 
                     var googleUserHandler = function (curUser) {

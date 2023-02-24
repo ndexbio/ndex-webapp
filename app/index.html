@@ -90,7 +90,8 @@
          to full jQuery functionality instead of angular's internal 'lite' version -->
 
 
-    <script src="https://apis.google.com/js/api.js"></script>
+    <!-- script src="https://apis.google.com/js/api.js"></script -->
+    <script src="https://dev.ndexbio.org/auth2/js/keycloak.js"></script>
     <script src="ndex-webapp-config.js"></script>
 
 
@@ -553,8 +554,58 @@
         }
     }
 
+     function refreshToken() {
+        window.keycloak.updateToken(-1).then(function() {});
+     }
+
+
     function initClient() {
-      gapi.client.init({
+        window.keycloak = new Keycloak({ url:   ndexSettings.keyCloakServerURL ,
+                                  realm: ndexSettings.keyCloakRealm,
+                                  clientId: ndexSettings.keyCloadClientId });
+        silenthtml = location.href.replace("index.html", 'silent-check-sso.html');
+
+        window.keycloak.init(
+            {   onLoad: 'check-sso',
+                silentCheckSsoRedirectUri: silenthtml}
+        ).then(function(authenticated) {
+            //alert(authenticated ? 'authenticated' : 'not authenticated');
+            console.log("Keycloak init done.");
+
+            const initInjector = angular.injector(["ng"]);
+            const $http = initInjector.get("$http");
+
+            if ( authenticated) {
+                console.log("user silently authenticated.");
+                setInterval(refreshToken, 60000); // set timer to refresh token.
+
+                $http({
+                        method: 'GET',
+                        url: ndexSettings.ndexServerUri + "/user?valid=true&setAuthHeader=false",
+                        headers: {
+                            Authorization: "Bearer " + window.keycloak.token
+                        }
+                    }
+                )
+                    .success(function(data, status, headers, config, statusText) {
+                        startWebApp(data, 'google');
+                    })
+                    .error(function(error, status, headers, config, statusText) {
+                        startWebApp(null,null);
+                    })
+
+            } else {
+                logInUserWithBasicAuth();
+            }
+        }).catch(function(e) {
+            console.log(e);
+            alert('Failed to initialize NDEx web app.');
+            window.googleSSO = false;
+            logInUserWithBasicAuth();
+        });
+
+        /*
+        gapi.client.init({
           clientId: ndexSettings.googleClientId,
           scope: 'profile email',
       }).then(function () {
@@ -595,7 +646,7 @@
           //localStorage.setItem('noGoogleSSO', 'true');
           window.googleSSO = false;
           logInUserWithBasicAuth();
-      });
+      });*/
 
   }
 
@@ -613,9 +664,9 @@
       }
   }
 
-    if (location.protocol !== 'https:') {
+   /* if (location.protocol !== 'https:') {
         location.replace(`https:${location.href.substring(location.protocol.length)}`);
-    }
+    } */
 
     // check host name
     oldName = 'public.ndexbio.org';
@@ -639,7 +690,7 @@
         if (typeof ndexSettings === 'undefined') {
             alert("We have updated our web site. Please reload this page.\n\nIf this error still exists after refreshing this page, please contact us at admin@ndexbio.org with error message: \"Couldn't load ndex-webapp-config.js file\".");
         } else {
-            gapi.load('client:auth2', initClient);
+            initClient();
         }
 
     } else {
