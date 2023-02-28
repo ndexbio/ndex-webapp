@@ -99,6 +99,11 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
         $rootScope.$on('LOGGED_IN', signInHandler);
 
+        function getAppBase(s) {
+            const k = s.indexOf("#");
+            return k === -1? s: s.substring ( 0,k);
+        }
+
         var signOutHandler = function () {
             $rootScope.signOut = true;
             if (typeof (Storage) !== 'undefined') {
@@ -124,7 +129,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 $location.path('/');
 
                 if (window.keycloak) {
-                    window.keycloak.logout({redirectUri: location.href.substring(0, location.href.indexOf("#"))});
+                    window.keycloak.logout({redirectUri: getAppBase (location.href)});
                 }
             }
             window.currentNdexUser = null;
@@ -638,7 +643,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
 
                     };
 
-
+/*
                     var googleUserHandler = function (curUser) {
 
                         var spinner = 'spinnerSignInWithGoogleId';
@@ -789,7 +794,7 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                             });
 
                     };
-
+*/
                     var googleFailureHandler = function (err) {
                         if (err.error !== 'popup_closed_by_user') {
                             $scope.errors = 'Failed to authenticate with google: ' + err.error;

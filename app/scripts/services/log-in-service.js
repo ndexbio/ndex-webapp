@@ -53,7 +53,7 @@ ndexServiceApp.factory('logInService', ['sharedProperties', 'ndexUtility', 'ndex
                     };
 
 
-                    var googleUserHandler = function (curUser) {
+            /*        var googleUserHandler = function (curUser) {
 
                         ndexService.authenticateUserWithGoogleIdToken(
                             function(data) {
@@ -75,7 +75,7 @@ ndexServiceApp.factory('logInService', ['sharedProperties', 'ndexUtility', 'ndex
                                 errorHandler();
                             });
 
-                    }
+                    } */
 
                     var googleFailureHandler = function ( err) {
                         if ( err.error != "popup_closed_by_user")

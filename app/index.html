@@ -555,7 +555,7 @@
     }
 
      function refreshToken() {
-        window.keycloak.updateToken(-1).then(function() {});
+        window.keycloak.updateToken(30).then(function(refreshed) {console.log("Refreshing token: " + refreshed)});
      }
 
 
@@ -577,7 +577,7 @@
 
             if ( authenticated) {
                 console.log("user silently authenticated.");
-                setInterval(refreshToken, 60000); // set timer to refresh token.
+                setInterval(refreshToken, 5000); // set timer to refresh token.
 
                 $http({
                         method: 'GET',
@@ -591,7 +591,32 @@
                         startWebApp(data, 'google');
                     })
                     .error(function(error, status, headers, config, statusText) {
-                        startWebApp(null,null);
+                        if ( status === 401 && error.errorCode === "NDEx_Object_Not_Found_Exception") {
+
+                            console.log("error:" + error.message);
+                            // automatically create the user on the server
+
+                            $http({
+                                    method: 'POST',
+                                    url: ndexSettings.ndexServerUri + '/user?idtoken=' + window.keycloak.token,
+                                    data: {}
+                                }
+                            ).success(function ()  {
+                                $http({
+                                    method: 'GET',
+                                    url: ndexSettings.ndexServerUri + "/user?valid=true&setAuthHeader=false",
+                                    headers: {
+                                        Authorization: "Bearer " + window.keycloak.token
+                                    }
+                                }).success( function (data) { startWebApp(data,'google');})
+                                    .error (function (error) {startWebApp(null,null)})
+                            })
+                                .error(function () { startWebApp(null,null);
+                                     } );
+                        } else {
+                            //location.replace(location.href.substring(0, location.href.indexOf("#")));
+                           startWebApp(null, null);
+                        }
                     })
 
             } else {
