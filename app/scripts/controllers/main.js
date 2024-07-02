@@ -364,6 +364,10 @@ ndexApp.controller('mainController', [ 'ndexService', 'ndexUtility', 'sharedProp
                 document.getElementById('ndexLogoId').style.background = 'transparent';
             });
 
+        $scope.main.keycloakSignIn = function () {
+            ndexUtility.clearUserCredentials();
+            window.keycloak.login({redirectUri: $location.absUrl() + "myAccount"} );
+        };    
 
         $scope.main.showSignInSignUpOptions = function () {
             $uibModal.open({

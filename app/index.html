@@ -70,7 +70,7 @@
     <script src="bower_components/to-markdown/dist/to-markdown.js"></script>
     <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="bower_components/angular-google-analytics/dist/angular-google-analytics.min.js"></script>
+    <!--script src="bower_components/angular-google-analytics/dist/angular-google-analytics.min.js"></script -->
     <script src="bower_components/slick-carousel/slick/slick.js"></script>
     <script src="bower_components/angular-slick/dist/slick.js"></script>
     <script src="bower_components/ngtweet/dist/ngtweet.js"></script>
@@ -91,8 +91,9 @@
 
 
     <!-- script src="https://apis.google.com/js/api.js"></script -->
-    <script src="https://dev.ndexbio.org/auth2/js/keycloak.js"></script>
     <script src="ndex-webapp-config.js"></script>
+  <!--  <script async src="https://www.googletagmanager.com/gtag/js?G-HXWB7NX0XR"></script> -->
+
 
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
@@ -372,7 +373,7 @@
                     <li ng-show="!main.loggedIn && !config.requireAuthentication && !main.serverIsDown && main.showSignIn">
                         <button type="button" class="btn btn-primary login-button"
                            ng-click="collapseHamburgerMenu();
-                                 main.showSignInSignUpOptions()"
+                                 main.keycloakSignIn()"
                                 data-toggle="tooltip"
                                 title="Log in or create a new account&nbsp;&nbsp;"
                                 data-placement="bottom">
@@ -523,6 +524,37 @@
 
 <script>
 
+    // Set up Google Analytics 4
+
+  function loadScript(url, callback, errorCallback) {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = url;
+
+    script.onload = callback;
+    script.onerror = errorCallback;
+
+    document.head.appendChild(script);
+  }
+
+  function initGA(GA4Property) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', GA4Property); //'G-F6L232GT7E');
+    } 
+
+  function handleGAError() {
+    console.error('Google Analytics failed to load');
+    // Implement any fallback logic here
+  }
+
+
+
+  
+  
     function logInUserWithBasicAuth() {
         var initInjector = angular.injector(["ng"]);
         var $http = initInjector.get("$http");
@@ -693,6 +725,10 @@
         location.replace(`https:${location.href.substring(location.protocol.length)}`);
     } */
 
+    if ( location.pathname === '/' ) {
+        location.replace("https://"+location.hostname+"/index.html"+location.hash);
+    }
+
     // check host name
     oldName = 'public.ndexbio.org';
     if ( location.hostname.toLowerCase() === oldName ) {
@@ -715,7 +751,22 @@
         if (typeof ndexSettings === 'undefined') {
             alert("We have updated our web site. Please reload this page.\n\nIf this error still exists after refreshing this page, please contact us at admin@ndexbio.org with error message: \"Couldn't load ndex-webapp-config.js file\".");
         } else {
-            initClient();
+
+            loadScript('https://www.googletagmanager.com/gtag/js?id=' + ndexSettings.GA4Property, 
+            function () { initGA(ndexSettings.GA4Property); } , handleGAError);
+
+            if (ndexSettings.keyCloakServerURL) {
+                script = document.createElement('script');
+                script.src = ndexSettings.keyCloakServerURL + '/js/keycloak.js';
+                script.onload = function() {
+                    initClient();
+                };
+                document.body.appendChild(script);
+
+            } else {
+                //warn user that keycloak is not configured
+                alert("We have updated our web site. Please reload this page.\n\nIf this error still exists after refreshing this page, please contact us at admin@ndexbio.org");
+            }
         }
 
     } else {
