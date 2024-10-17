@@ -143,6 +143,38 @@
     <!-- This element will be filled in and shown in case  cookies are blocked by the browser -->
     <div id="noCookiesEnabledId"></div>
 
+
+    <style>
+        .modal {
+          display: block; /* Show the modal */
+          position: fixed;
+          z-index: 1000;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+  
+        .modal-content {
+          background-color: #fefefe;
+          margin: 15% auto;
+          padding: 20px;
+          border: 1px solid #888;
+          width: 80%;
+          max-width: 500px;
+          text-align: center;
+        }
+  
+        .modal-content button {
+          margin: 10px;
+          padding: 10px 20px;
+          font-size: 16px;
+        }
+      </style>
+  
+
 </head>
 
 <!-- define angular controller -->
@@ -524,8 +556,36 @@
 
 <script>
 
+function showVerificationModal(username, email) {
+        // Create modal HTML
+        const modalHTML = `
+          <div id="verificationModal" class="modal">
+            <div class="modal-content">
+              <img src="images/NDEx-horizontal-transparent.png" alt="NDEx Logo" style="width: 200px; height: auto;"/>
+              <h3>Email Verification Required ${username != null ? `For User: ${username}` : ''}</h3>
+              <p>Please check the email address ${email != null ? `${email}` : 'associated with your username' } to verify your account.</p>
+              <p>Refresh the page once verified.  Alternatively, logout and browse NDEx as a anonymous user.</p>
+              <button id="logoutButton">Log Out</button>
+              <button id="refreshButton">Refresh Page</button>
+            </div>
+          </div>
+        `;
+
+        // Append modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Add event listeners for buttons
+        document.getElementById('logoutButton').addEventListener('click', function() {
+          window.keycloak.logout({redirectUri: location.href});
+        });
+
+        document.getElementById('refreshButton').addEventListener('click', function() {
+          location.reload();
+        });
+      }
     // Set up Google Analytics 4
 
+    
   function loadScript(url, callback, errorCallback) {
     var script = document.createElement('script');
     script.type = 'text/javascript';
@@ -646,8 +706,22 @@
                                 .error(function () { startWebApp(null,null);
                                      } );
                         } else {
+                            if(error != null && error.errorCode === "NDEx_User_Account_Not_Verified") {
+                                window.keycloak.loadUserInfo().then(function(userInfo) {
+                                    var userName = userInfo.preferred_username;
+                                    var userEmail = userInfo.email;
+                                    console.log("Username:", userName);
+                                    console.log("Email:", userEmail);
+                                    showVerificationModal(userName, userEmail);
+
+                                }).catch(function(error) {
+                                    showVerificationModal(null, null);
+                                    console.error("Failed to load user info:", error);
+                                });
+                            } else {
                             //location.replace(location.href.substring(0, location.href.indexOf("#")));
                            startWebApp(null, null);
+                            }
                         }
                     })
 
