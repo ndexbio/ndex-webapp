@@ -145,8 +145,8 @@
 
 
     <style>
-        .modal {
-          display: block; /* Show the modal */
+        .email-verification-modal {
+          display: block; /* Show the email-verification-modal */
           position: fixed;
           z-index: 1000;
           left: 0;
@@ -157,7 +157,7 @@
           background-color: rgba(0, 0, 0, 0.5);
         }
   
-        .modal-content {
+        .email-verification-modal-content {
           background-color: #fefefe;
           margin: 15% auto;
           padding: 20px;
@@ -167,7 +167,7 @@
           text-align: center;
         }
   
-        .modal-content button {
+        .email-verification-modal-content button {
           margin: 10px;
           padding: 10px 20px;
           font-size: 16px;
@@ -559,8 +559,8 @@
 function showVerificationModal(username, email) {
         // Create modal HTML
         const modalHTML = `
-          <div id="verificationModal" class="modal">
-            <div class="modal-content">
+          <div id="verificationModal" class="email-verification-modal">
+            <div class="email-verification-modal-content">
               <img src="images/NDEx-horizontal-transparent.png" alt="NDEx Logo" style="width: 200px; height: auto;"/>
               <h3>Email Verification Required ${username != null ? `For User: ${username}` : ''}</h3>
               <p>Please check the email address ${email != null ? `${email}` : 'associated with your username' } to verify your account.</p>
@@ -576,7 +576,7 @@ function showVerificationModal(username, email) {
 
         // Add event listeners for buttons
         document.getElementById('logoutButton').addEventListener('click', function() {
-          window.keycloak.logout({redirectUri: location.href});
+          window.keycloak.logout({redirectUri: location.origin});
         });
 
         document.getElementById('refreshButton').addEventListener('click', function() {
