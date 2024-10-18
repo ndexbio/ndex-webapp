@@ -5,6 +5,13 @@ git clone https://github.com/ndexbio/ndex-webapp.git
 cd ndex-webapp
 ```
 
+## Setup Environment
+
+```Bash
+npm install -g bower
+npm install -g grunt-cli
+```
+
 ## Building a debug NDEx Web App:
 
 ```Bash
@@ -26,6 +33,16 @@ Unable to find a suitable version for angular, please choose one by typing one o
 Prefix the choice with ! to persist it to bower.json
 
 ? Answer --> 3
+
+
+Unable to find a suitable version for slick-carousel, please choose one by typing one of the numbers below:
+    1) slick-carousel#~1.4.1 which resolved to 1.4.1 and is required by angular-slick#0.2.1
+    2) slick-carousel#^1.8.1 which resolved to 1.8.1 and is required by ndex-webapp
+
+Prefix the choice with ! to persist it to bower.json
+
+? Answer 2
+
 ```
 
 ## Building a Distribution version:
